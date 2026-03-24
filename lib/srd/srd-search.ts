@@ -46,7 +46,7 @@ export function setConditionData(data: SrdCondition[]): void {
 export function searchMonsters(
   query: string,
   version?: RulesetVersion
-): Fuse.FuseResult<SrdMonster>[] {
+): FuseResult<SrdMonster>[] {
   if (!monsterIndex || !query) return [];
   const results = monsterIndex.search(query);
   if (version) return results.filter((r) => r.item.ruleset_version === version);
@@ -56,7 +56,7 @@ export function searchMonsters(
 export function searchSpells(
   query: string,
   version?: RulesetVersion
-): Fuse.FuseResult<SrdSpell>[] {
+): FuseResult<SrdSpell>[] {
   if (!spellIndex || !query) return [];
   const results = spellIndex.search(query);
   if (version) return results.filter((r) => r.item.ruleset_version === version);
