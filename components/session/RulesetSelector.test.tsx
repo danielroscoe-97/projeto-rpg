@@ -32,7 +32,7 @@ describe("RulesetSelector", () => {
     expect(onChange).toHaveBeenCalledWith("2024");
   });
 
-  it("does not call onChange when clicking already-active version", async () => {
+  it("calls onChange even when clicking already-active version", async () => {
     const onChange = jest.fn();
     render(<RulesetSelector value="2014" onChange={onChange} />);
     await userEvent.click(screen.getByTestId("ruleset-btn-2014"));

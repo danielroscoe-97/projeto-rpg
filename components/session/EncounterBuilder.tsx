@@ -8,7 +8,8 @@ import { loadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { RulesetSelector, VersionBadge } from "@/components/session/RulesetSelector";
-import type { RulesetVersion } from "@/lib/types/database";
+import { CampaignLoader } from "@/components/session/CampaignLoader";
+import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 
 const DEBOUNCE_MS = 150;
@@ -40,6 +41,7 @@ export function EncounterBuilder() {
   const [npcForm, setNpcForm] = useState<CustomNpcForm>(EMPTY_NPC);
   const [npcErrors, setNpcErrors] = useState<Partial<CustomNpcForm>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Clear encounter on mount so the builder always starts fresh
@@ -51,6 +53,7 @@ export function EncounterBuilder() {
   useEffect(() => {
     let cancelled = false;
     setIsSearching(true);
+    setSearchError(null);
     loadMonsters(rulesetVersion)
       .then((monsters) => {
         if (!cancelled) {
@@ -67,7 +70,10 @@ export function EncounterBuilder() {
         }
       })
       .catch(() => {
-        if (!cancelled) setIsSearching(false);
+        if (!cancelled) {
+          setIsSearching(false);
+          setSearchError("Failed to load monsters. Please refresh.");
+        }
       });
     return () => {
       cancelled = true;
@@ -75,8 +81,9 @@ export function EncounterBuilder() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rulesetVersion]);
 
-  // Debounced search against in-memory index (synchronous after index is built)
+  // Debounced search — only runs when the index is ready (isSearching = false)
   useEffect(() => {
+    if (isSearching) return;
     const timer = setTimeout(() => {
       setResults(
         query.trim()
@@ -85,7 +92,7 @@ export function EncounterBuilder() {
       );
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [query, rulesetVersion]);
+  }, [query, rulesetVersion, isSearching]);
 
   const handleAddMonster = useCallback(
     (monster: SrdMonster) => {
@@ -107,6 +114,33 @@ export function EncounterBuilder() {
       });
     },
     [addCombatant, combatants]
+  );
+
+  const handleLoadCampaign = useCallback(
+    (characters: PlayerCharacter[]) => {
+      const currentCombatants = [...useCombatStore.getState().combatants];
+      characters.forEach((pc) => {
+        const numberedName = getNumberedName(pc.name, currentCombatants);
+        const newCombatant: Omit<Combatant, "id"> = {
+          name: numberedName,
+          current_hp: pc.max_hp,
+          max_hp: pc.max_hp,
+          temp_hp: 0,
+          ac: pc.ac,
+          spell_save_dc: pc.spell_save_dc,
+          initiative: null,
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: null,
+          is_defeated: false,
+          is_player: true,
+          monster_id: null,
+        };
+        addCombatant(newCombatant);
+        currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
+      });
+    },
+    [addCombatant]
   );
 
   const validateNpc = (): boolean => {
@@ -200,6 +234,9 @@ export function EncounterBuilder() {
         {isSearching && (
           <p className="text-white/30 text-xs">Searching…</p>
         )}
+        {searchError && (
+          <p className="text-red-400 text-xs" role="alert">{searchError}</p>
+        )}
         {results.length > 0 && (
           <ul
             className="bg-[#16213e] border border-white/10 rounded-md divide-y divide-white/5 overflow-hidden"
@@ -233,16 +270,19 @@ export function EncounterBuilder() {
         )}
       </div>
 
-      {/* Custom NPC form */}
+      {/* Custom NPC form + Load Campaign */}
       <div>
         {!showCustomForm ? (
-          <button
-            onClick={() => setShowCustomForm(true)}
-            className="text-sm text-white/50 hover:text-white/80 underline transition-colors"
-            data-testid="show-custom-npc-btn"
-          >
-            + Add Custom NPC
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowCustomForm(true)}
+              className="text-sm text-white/50 hover:text-white/80 underline transition-colors"
+              data-testid="show-custom-npc-btn"
+            >
+              + Add Custom NPC
+            </button>
+            <CampaignLoader onLoad={handleLoadCampaign} />
+          </div>
         ) : (
           <div
             className="bg-[#16213e] border border-white/10 rounded-md p-4 space-y-3"

@@ -23,33 +23,17 @@ export function CombatSessionClient({
 }: CombatSessionClientProps) {
   const { combatants, startCombat, setEncounterId, is_active, setError } =
     useCombatStore();
+  const current_turn_index = useCombatStore((s) => s.current_turn_index);
 
-  // Hydrate the store from server-fetched data on mount
+  // Hydrate the store from server-fetched data. Uses hydrateCombatants to
+  // preserve DB ids (avoids UUID regeneration on StrictMode double-invoke).
   useEffect(() => {
     const store = useCombatStore.getState();
     store.clearEncounter();
     store.setEncounterId(encounterId, sessionId);
-    initialCombatants.forEach((c) => {
-      // Add each combatant directly to avoid auto-numbering side-effects
-      store.addCombatant({
-        name: c.name,
-        current_hp: c.current_hp,
-        max_hp: c.max_hp,
-        temp_hp: c.temp_hp,
-        ac: c.ac,
-        spell_save_dc: c.spell_save_dc,
-        initiative: c.initiative,
-        initiative_order: c.initiative_order,
-        conditions: c.conditions,
-        ruleset_version: c.ruleset_version,
-        is_defeated: c.is_defeated,
-        is_player: c.is_player,
-        monster_id: c.monster_id,
-      });
-    });
+    store.hydrateCombatants(initialCombatants);
     if (isActive) store.startCombat();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [encounterId]);
+  }, [encounterId, sessionId, isActive, initialCombatants]);
 
   const handleStartCombat = async () => {
     const { combatants: current, encounter_id } = useCombatStore.getState();
@@ -91,12 +75,11 @@ export function CombatSessionClient({
         data-testid="initiative-list"
       >
         {combatants.map((c, index) => {
-          const isCurrentTurn =
-            index === useCombatStore.getState().current_turn_index;
-          const hpPct = Math.max(
-            0,
-            Math.round((c.current_hp / c.max_hp) * 100)
-          );
+          const isCurrentTurn = index === current_turn_index;
+          const hpPct =
+            c.max_hp > 0
+              ? Math.max(0, Math.round((c.current_hp / c.max_hp) * 100))
+              : 0;
           const hpColor =
             hpPct > 50
               ? "bg-green-500"

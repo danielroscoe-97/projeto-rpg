@@ -53,10 +53,12 @@ async function loadWithCache<T>(
   return data;
 }
 
-export const useSrdStore = create<SrdStore>((set) => ({
+export const useSrdStore = create<SrdStore>((set, get) => ({
   ...initialState,
 
   initializeSrd: async () => {
+    const { is_loading, monsters } = get();
+    if (is_loading || monsters.length > 0) return;
     set({ is_loading: true, error: null });
     try {
       const [monsters2014, monsters2024, spells2014, spells2024, conditions] =

@@ -53,18 +53,18 @@ development_status:
 
   # Epic 2: Campaign & Player Group Management
   epic-2: in-progress
-  2-1-first-time-dm-onboarding-flow: review
+  2-1-first-time-dm-onboarding-flow: done
   2-2-create-and-manage-campaigns-player-groups: review
-  2-3-add-and-edit-player-characters-in-a-campaign: ready-for-dev
-  2-4-load-saved-player-group-into-encounter: ready-for-dev
-  2-5-account-deletion-and-data-erasure: ready-for-dev
+  2-3-add-and-edit-player-characters-in-a-campaign: review
+  2-4-load-saved-player-group-into-encounter: review
+  2-5-account-deletion-and-data-erasure: review
   epic-2-retrospective: optional
 
   # Epic 3: Combat Tracker Core
   epic-3: in-progress
-  3-1-create-encounter-and-add-monsters: review
-  3-2-ruleset-version-selection-per-session: review
-  3-3-initiative-entry-sorting-and-tiebreaker-resolution: review
+  3-1-create-encounter-and-add-monsters: done
+  3-2-ruleset-version-selection-per-session: done
+  3-3-initiative-entry-sorting-and-tiebreaker-resolution: done
   3-4-turn-advancement-and-combat-flow: in-progress
   3-5-hp-management-damage-healing-and-temporary-hp: backlog
   3-6-conditions-apply-display-and-remove: backlog
@@ -76,8 +76,8 @@ development_status:
 
   # Epic 4: Rules Oracle (Spells, Monsters, Conditions)
   epic-4: in-progress
-  4-1-srd-client-side-search-index-and-indexeddb-cache: review
-  4-2-monster-search-and-inline-stat-block-expansion: backlog
+  4-1-srd-client-side-search-index-and-indexeddb-cache: done
+  4-2-monster-search-and-inline-stat-block-expansion: review
   4-3-spell-search-and-description-modal-overlay: backlog
   4-4-condition-rules-lookup: backlog
   4-5-dual-version-content-labeling: backlog

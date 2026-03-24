@@ -70,10 +70,13 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
                 value={c.initiative ?? ""}
                 onChange={(e) => {
                   const raw = e.target.value;
-                  setInitiative(
-                    c.id,
-                    raw === "" ? null : Number(raw)
-                  );
+                  if (raw === "") {
+                    setInitiative(c.id, null);
+                    return;
+                  }
+                  const val = Number(raw);
+                  if (isNaN(val)) return;
+                  setInitiative(c.id, Math.min(30, Math.max(-5, val)));
                 }}
                 placeholder="Init"
                 min={-5}

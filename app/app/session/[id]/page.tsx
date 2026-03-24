@@ -27,14 +27,14 @@ export default async function SessionPage({ params }: SessionPageProps) {
 
   if (sessionError || !session) notFound();
 
-  // Fetch the most recent encounter for this session
+  // Fetch the most recent encounter for this session (maybeSingle: zero rows = null, not error)
   const { data: encounter } = await supabase
     .from("encounters")
     .select("id, name, round_number, current_turn_index, is_active")
     .eq("session_id", sessionId)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   // Fetch combatants sorted by initiative_order
   const rawCombatants = encounter

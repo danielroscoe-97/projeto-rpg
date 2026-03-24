@@ -43,4 +43,6 @@ export interface CombatActions {
   reorderCombatants: (newOrder: Combatant[]) => void;
   /** Mark the encounter as active and set current_turn_index = 0. */
   startCombat: () => void;
+  /** Hydrate the store with server-fetched combatants, preserving their DB ids. */
+  hydrateCombatants: (combatants: Combatant[]) => void;
 }

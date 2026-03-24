@@ -26,7 +26,7 @@ interface TiebreakerDragListProps {
 }
 
 export function TiebreakerDragList({ tiedCombatants }: TiebreakerDragListProps) {
-  const { combatants, reorderCombatants } = useCombatStore();
+  const { reorderCombatants } = useCombatStore();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -45,9 +45,8 @@ export function TiebreakerDragList({ tiedCombatants }: TiebreakerDragListProps) 
 
     const reorderedTied = arrayMove(tiedCombatants, oldIndex, newIndex);
 
-    // Splice the reordered tied group back into the full combatant list
-    // keeping non-tied combatants at their positions
-    const updatedAll = [...combatants];
+    // Read current store state to avoid stale closure when multiple tie groups exist
+    const updatedAll = [...useCombatStore.getState().combatants];
     let tiedIdx = 0;
     for (let i = 0; i < updatedAll.length; i++) {
       if (reorderedTied.some((t) => t.id === updatedAll[i].id)) {

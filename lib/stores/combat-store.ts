@@ -57,6 +57,8 @@ export const useCombatStore = create<CombatStore>((set) => ({
 
   startCombat: () =>
     set({ is_active: true, current_turn_index: 0 }),
+
+  hydrateCombatants: (combatants) => set({ combatants }),
 }));
 
 /** Auto-number combatants with the same base name.
@@ -68,7 +70,7 @@ export function getNumberedName(
   existingCombatants: Combatant[]
 ): string {
   const sameBase = existingCombatants.filter(
-    (c) => c.name === baseName || c.name.match(new RegExp(`^${escapeRegex(baseName)} \\d+$`))
+    (c) => c.name.match(new RegExp(`^${escapeRegex(baseName)} \\d+$`))
   );
   return `${baseName} ${sameBase.length + 1}`;
 }

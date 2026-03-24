@@ -3,22 +3,29 @@ import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
 const DB_NAME = "srd-cache";
-const DB_VERSION = 1;
+// Bumped to 2: SrdMonster extended with full stat block fields (story 4.2)
+const DB_VERSION = 2;
 
-async function getDb() {
-  return openDB(DB_NAME, DB_VERSION, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains("monsters")) {
-        db.createObjectStore("monsters");
-      }
-      if (!db.objectStoreNames.contains("spells")) {
-        db.createObjectStore("spells");
-      }
-      if (!db.objectStoreNames.contains("conditions")) {
-        db.createObjectStore("conditions");
-      }
-    },
-  });
+// Singleton promise — one IDBDatabase connection shared across all reads/writes
+let _dbPromise: ReturnType<typeof openDB> | null = null;
+
+function getDb() {
+  if (!_dbPromise) {
+    _dbPromise = openDB(DB_NAME, DB_VERSION, {
+      upgrade(db) {
+        if (!db.objectStoreNames.contains("monsters")) {
+          db.createObjectStore("monsters");
+        }
+        if (!db.objectStoreNames.contains("spells")) {
+          db.createObjectStore("spells");
+        }
+        if (!db.objectStoreNames.contains("conditions")) {
+          db.createObjectStore("conditions");
+        }
+      },
+    });
+  }
+  return _dbPromise;
 }
 
 export async function getCachedMonsters(
