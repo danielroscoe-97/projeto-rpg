@@ -6,7 +6,8 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "generate-srd": "ts-node scripts/generate-srd-bundles.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
