@@ -90,7 +90,7 @@ describe("CombatantRow", () => {
 
     it("renders HP bar as progressbar ARIA role", () => {
       render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
-      const bar = screen.getByRole("progressbar", { name: "Aragorn hit points" });
+      const bar = screen.getByRole("progressbar", { name: "Aragorn hit points — OK" });
       expect(bar).toBeInTheDocument();
       expect(bar).toHaveAttribute("aria-valuenow", "40");
       expect(bar).toHaveAttribute("aria-valuemax", "40");
@@ -230,6 +230,58 @@ describe("CombatantRow", () => {
       mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
       render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
       expect(screen.getByText("2014")).toBeInTheDocument();
+    });
+
+    it("name button has aria-expanded=false when collapsed", () => {
+      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
+      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
+      expect(screen.getByTestId("combatant-name-m1")).toHaveAttribute("aria-expanded", "false");
+    });
+
+    it("name button has aria-expanded=true after expanding", async () => {
+      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
+      const user = userEvent.setup();
+      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
+      await user.click(screen.getByTestId("combatant-name-m1"));
+      expect(screen.getByTestId("combatant-name-m1")).toHaveAttribute("aria-expanded", "true");
+    });
+  });
+
+  describe("accessibility (NFR20–NFR24)", () => {
+    it("shows HP threshold label OK when HP > 50%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 30, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("OK");
+    });
+
+    it("shows HP threshold label LOW when HP is 25–50%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 15, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("LOW");
+    });
+
+    it("shows HP threshold label CRIT when HP < 25%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 5, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("CRIT");
+    });
+
+    it("progressbar aria-label includes threshold label", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 5, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      const bar = screen.getByRole("progressbar");
+      expect(bar).toHaveAttribute("aria-label", "Aragorn hit points — CRIT");
+    });
+
+    it("current turn indicator uses shape glyph, not color alone (NFR21)", () => {
+      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={true} />);
+      const indicator = screen.getByTestId("current-turn-indicator");
+      expect(indicator).toHaveTextContent("▶");
+    });
+
+    it("aria-current is boolean true (not string) when current turn", () => {
+      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={true} />);
+      expect(screen.getByTestId("combatant-row-c1")).toHaveAttribute("aria-current", "true");
     });
   });
 });

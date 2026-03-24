@@ -143,4 +143,43 @@ describe("CampaignLoader", () => {
       ).not.toBeInTheDocument()
     );
   });
+
+  describe("accessibility (NFR20–NFR24)", () => {
+    it("dialog has accessible title 'Load Player Group'", async () => {
+      render(<CampaignLoader onLoad={jest.fn()} />);
+      await userEvent.click(screen.getByTestId("load-campaign-btn"));
+      expect(screen.getByRole("dialog", { name: "Load Player Group" })).toBeInTheDocument();
+    });
+
+    it("Load button has aria-label including campaign name", async () => {
+      render(<CampaignLoader onLoad={jest.fn()} />);
+      await userEvent.click(screen.getByTestId("load-campaign-btn"));
+
+      await waitFor(() =>
+        expect(screen.getByTestId("load-campaign-camp-1")).toBeInTheDocument()
+      );
+
+      expect(
+        screen.getByRole("button", { name: "Load The Lost Mine into encounter" })
+      ).toBeInTheDocument();
+    });
+
+    it("dialog closes when Escape is pressed", async () => {
+      const user = userEvent.setup();
+      render(<CampaignLoader onLoad={jest.fn()} />);
+      await user.click(screen.getByTestId("load-campaign-btn"));
+      expect(screen.getByTestId("campaign-loader-dialog")).toBeInTheDocument();
+
+      await user.keyboard("{Escape}");
+
+      await waitFor(() =>
+        expect(screen.queryByTestId("campaign-loader-dialog")).not.toBeInTheDocument()
+      );
+    });
+
+    it("trigger button has min-h-[44px] tap target class (NFR24)", () => {
+      render(<CampaignLoader onLoad={jest.fn()} />);
+      expect(screen.getByTestId("load-campaign-btn")).toHaveClass("min-h-[44px]");
+    });
+  });
 });

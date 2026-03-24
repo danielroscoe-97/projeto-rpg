@@ -200,4 +200,53 @@ describe("MonsterSearch", () => {
       expect(mockSearch).toHaveBeenCalledWith("gob", "2014");
     });
   });
+
+  describe("accessibility (NFR20–NFR24)", () => {
+    it("expand button has aria-expanded=false before expanding", async () => {
+      mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
+      const user = userEvent.setup();
+      render(<MonsterSearch />);
+      await user.type(screen.getByRole("searchbox"), "gob");
+
+      await waitFor(() => screen.getByTestId("monster-row-goblin"));
+      expect(screen.getByTestId("monster-row-goblin")).toHaveAttribute("aria-expanded", "false");
+    });
+
+    it("expand button has aria-expanded=true after expanding", async () => {
+      mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
+      const user = userEvent.setup();
+      render(<MonsterSearch />);
+      await user.type(screen.getByRole("searchbox"), "gob");
+
+      await waitFor(() => screen.getByTestId("monster-row-goblin"));
+      await user.click(screen.getByTestId("monster-row-goblin"));
+
+      expect(screen.getByTestId("monster-row-goblin")).toHaveAttribute("aria-expanded", "true");
+    });
+
+    it("Add button has aria-label including monster name (NFR20)", async () => {
+      mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
+      const user = userEvent.setup();
+      render(<MonsterSearch onAddToCombat={jest.fn()} />);
+      await user.type(screen.getByRole("searchbox"), "gob");
+
+      await waitFor(() => screen.getByTestId("add-monster-goblin"));
+      expect(
+        screen.getByRole("button", { name: "Add Goblin to combat" })
+      ).toBeInTheDocument();
+    });
+
+    it("expand button has aria-controls pointing to stat block panel", async () => {
+      mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
+      const user = userEvent.setup();
+      render(<MonsterSearch />);
+      await user.type(screen.getByRole("searchbox"), "gob");
+
+      await waitFor(() => screen.getByTestId("monster-row-goblin"));
+      expect(screen.getByTestId("monster-row-goblin")).toHaveAttribute(
+        "aria-controls",
+        "stat-block-goblin:2014"
+      );
+    });
+  });
 });

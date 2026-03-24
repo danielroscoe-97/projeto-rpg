@@ -40,7 +40,7 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
         <h2 className="text-lg font-semibold text-white">Set Initiative</h2>
         {ties.size > 0 && (
           <span className="text-amber-400 text-xs">
-            ⚠ Ties detected — drag to resolve
+            <span role="img" aria-label="Warning">⚠</span> Ties detected — drag to resolve
           </span>
         )}
       </div>
