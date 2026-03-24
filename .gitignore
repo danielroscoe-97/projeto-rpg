@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local reference assets (not part of the codebase)
+"referencia visual"/
+referencia visual/
+story-4-2-diff.txt
+supabase/.temp/
