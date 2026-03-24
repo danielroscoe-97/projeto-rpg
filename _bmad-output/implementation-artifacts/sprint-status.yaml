@@ -77,7 +77,7 @@ development_status:
   # Epic 4: Rules Oracle (Spells, Monsters, Conditions)
   epic-4: in-progress
   4-1-srd-client-side-search-index-and-indexeddb-cache: done
-  4-2-monster-search-and-inline-stat-block-expansion: review
+  4-2-monster-search-and-inline-stat-block-expansion: done
   4-3-spell-search-and-description-modal-overlay: backlog
   4-4-condition-rules-lookup: backlog
   4-5-dual-version-content-labeling: backlog

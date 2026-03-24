@@ -6,6 +6,7 @@ import {
   searchSpells,
   findCondition,
   getAllConditions,
+  getMonsterById,
   resetSrdIndexes,
 } from "./srd-search";
 import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
@@ -205,5 +206,44 @@ describe("getAllConditions", () => {
     resetSrdIndexes();
     const all = getAllConditions();
     expect(all).toHaveLength(0);
+  });
+});
+
+// --- Monster map lookup ---
+
+describe("getMonsterById", () => {
+  beforeEach(() => {
+    resetSrdIndexes();
+    buildMonsterIndex(MONSTERS);
+  });
+
+  it("returns the correct monster by id and version", () => {
+    const m = getMonsterById("goblin", "2014");
+    expect(m).toBeDefined();
+    expect(m?.name).toBe("Goblin");
+    expect(m?.ruleset_version).toBe("2014");
+  });
+
+  it("returns the 2024 variant when version is 2024", () => {
+    const m = getMonsterById("goblin-2024", "2024");
+    expect(m).toBeDefined();
+    expect(m?.id).toBe("goblin-2024");
+    expect(m?.ruleset_version).toBe("2024");
+  });
+
+  it("returns undefined for an unknown id", () => {
+    const m = getMonsterById("dragon", "2014");
+    expect(m).toBeUndefined();
+  });
+
+  it("returns undefined for wrong version", () => {
+    const m = getMonsterById("goblin", "2024");
+    expect(m).toBeUndefined();
+  });
+
+  it("returns undefined after resetSrdIndexes clears the map", () => {
+    resetSrdIndexes();
+    const m = getMonsterById("goblin", "2014");
+    expect(m).toBeUndefined();
   });
 });
