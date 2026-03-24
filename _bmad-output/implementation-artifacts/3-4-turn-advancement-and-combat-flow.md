@@ -2,7 +2,7 @@
 story_key: 3-4-turn-advancement-and-combat-flow
 epic: 3
 story_id: 3.4
-status: ready-for-dev
+status: done
 created: 2026-03-24
 updated: 2026-03-24
 ---

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import { persistInitiativeAndStartCombat, persistTurnAdvance } from "@/lib/supabase/session";
 import { InitiativeTracker } from "@/components/combat/InitiativeTracker";
@@ -24,6 +24,7 @@ export function CombatSessionClient({
   roundNumber,
   currentTurnIndex,
 }: CombatSessionClientProps) {
+  const [turnPending, setTurnPending] = useState(false);
   const { combatants, startCombat, setEncounterId, is_active, setError, advanceTurn } =
     useCombatStore();
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
@@ -38,7 +39,13 @@ export function CombatSessionClient({
     store.setEncounterId(encounterId, sessionId);
     store.hydrateCombatants(initialCombatants);
     if (isActive) {
-      store.hydrateActiveState(currentTurnIndex, roundNumber);
+      // F3: clamp index against actual array (guards stale DB values after combatant deletion)
+      const clampedIndex =
+        initialCombatants.length > 0
+          ? Math.max(0, Math.min(currentTurnIndex, initialCombatants.length - 1))
+          : 0;
+      // F9: round_number must be >= 1 (guards DB storing 0 or negative)
+      store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
 
@@ -57,14 +64,30 @@ export function CombatSessionClient({
   };
 
   const handleAdvanceTurn = async () => {
-    advanceTurn(); // optimistic — instant UI update
-    const { encounter_id, current_turn_index: nextIdx, round_number: nextRound } =
+    if (turnPending) return; // F2: guard concurrent invocations
+
+    // F4: check encounter_id before any store mutation
+    const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } =
       useCombatStore.getState();
     if (!encounter_id) return;
+
+    advanceTurn(); // optimistic — instant UI update
+
+    const { current_turn_index: nextIdx, round_number: nextRound } =
+      useCombatStore.getState();
+
+    // F8: skip persist if advanceTurn was a no-op (all combatants defeated)
+    if (nextIdx === prevIdx && nextRound === prevRound) return;
+
+    setTurnPending(true);
     try {
       await persistTurnAdvance(encounter_id, nextIdx, nextRound);
     } catch (err) {
+      // F1: rollback optimistic update so UI stays in sync with DB
+      useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
       setError(err instanceof Error ? err.message : "Failed to save turn.");
+    } finally {
+      setTurnPending(false);
     }
   };
 
@@ -89,11 +112,12 @@ export function CombatSessionClient({
           <button
             type="button"
             onClick={handleAdvanceTurn}
-            className="px-4 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors text-sm min-h-[44px]"
+            disabled={turnPending}
+            className="px-4 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Advance to next turn"
             data-testid="next-turn-btn"
           >
-            Next Turn →
+            {turnPending ? "Saving…" : "Next Turn →"}
           </button>
         </div>
       </div>

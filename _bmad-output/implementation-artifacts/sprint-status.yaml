@@ -66,7 +66,7 @@ development_status:
   3-1-create-encounter-and-add-monsters: done
   3-2-ruleset-version-selection-per-session: done
   3-3-initiative-entry-sorting-and-tiebreaker-resolution: done
-  3-4-turn-advancement-and-combat-flow: review
+  3-4-turn-advancement-and-combat-flow: done
   3-5-hp-management-damage-healing-and-temporary-hp: backlog
   3-6-conditions-apply-display-and-remove: backlog
   3-7-defeat-remove-and-add-combatants-mid-combat: backlog
@@ -105,7 +105,7 @@ development_status:
   # Epic 7: Performance, Accessibility & Production Hardening
   epic-7: in-progress
   7-1-performance-optimization-and-web-vitals: done
-  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: in-progress
+  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: review
   7-3-load-testing-and-scalability-validation: backlog
   7-4-error-tracking-and-monitoring-setup: backlog
   7-5-security-hardening-and-input-validation: backlog

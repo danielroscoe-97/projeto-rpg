@@ -237,4 +237,16 @@ describe("useCombatStore – advanceTurn", () => {
     useCombatStore.getState().advanceTurn(); // index = 1
     expect(useCombatStore.getState().round_number).toBe(1);
   });
+
+  it("increments round when wrapping past a defeated combatant at index 0", () => {
+    addCombatant("A", true); // defeated — sits at index 0
+    addCombatant("B");       // index 1
+    addCombatant("C");       // index 2
+    // Simulate being on C's turn in round 1
+    useCombatStore.getState().hydrateActiveState(2, 1);
+    useCombatStore.getState().advanceTurn(); // passes through defeated A (index 0) → lands on B (index 1)
+    const state = useCombatStore.getState();
+    expect(state.current_turn_index).toBe(1);
+    expect(state.round_number).toBe(2); // round incremented because we crossed index 0
+  });
 });

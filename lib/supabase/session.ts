@@ -37,9 +37,11 @@ export async function persistTurnAdvance(
   roundNumber: number
 ): Promise<void> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { error, data } = await supabase
     .from("encounters")
     .update({ current_turn_index: currentTurnIndex, round_number: roundNumber })
-    .eq("id", encounterId);
+    .eq("id", encounterId)
+    .select("id");
   if (error) throw new Error(error.message);
+  if (!data || data.length === 0) throw new Error("Encounter not found.");
 }
