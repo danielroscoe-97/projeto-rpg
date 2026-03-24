@@ -1,46 +1,82 @@
-import Fuse, { type IFuseOptions } from "fuse.js";
+import Fuse, { type IFuseOptions, type FuseResult } from "fuse.js";
+import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
-import { loadMonsters, type SrdMonster } from "./srd-loader";
 
 export type { SrdMonster };
 
-/** Singleton indexes keyed by ruleset version. Built once per session. */
-const indexes: Partial<Record<RulesetVersion, Fuse<SrdMonster>>> = {};
-/** Raw data cache so we can run programmatic lookups. */
-const monsterData: Partial<Record<RulesetVersion, SrdMonster[]>> = {};
+// Singletons — built once by srd-store initializeSrd(), reused for all queries
+let monsterIndex: Fuse<SrdMonster> | null = null;
+let spellIndex: Fuse<SrdSpell> | null = null;
+let conditionData: SrdCondition[] = [];
 
-const FUSE_OPTIONS: IFuseOptions<SrdMonster> = {
-  keys: ["name", "type"],
-  threshold: 0.35,
-  minMatchCharLength: 1,
+const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
+  keys: [
+    { name: "name", weight: 0.5 },
+    { name: "type", weight: 0.3 },
+    { name: "cr", weight: 0.2 },
+  ],
+  threshold: 0.3,
+  includeScore: true,
+  minMatchCharLength: 2,
 };
 
-async function getIndex(version: RulesetVersion): Promise<Fuse<SrdMonster>> {
-  if (!indexes[version]) {
-    const monsters = await loadMonsters(version);
-    monsterData[version] = monsters;
-    indexes[version] = new Fuse(monsters, FUSE_OPTIONS);
-  }
-  return indexes[version]!;
+const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
+  keys: [
+    { name: "name", weight: 0.6 },
+    { name: "classes", weight: 0.2 },
+    { name: "school", weight: 0.2 },
+  ],
+  threshold: 0.3,
+  includeScore: true,
+  minMatchCharLength: 2,
+};
+
+export function buildMonsterIndex(data: SrdMonster[]): void {
+  monsterIndex = new Fuse(data, MONSTER_OPTIONS);
 }
 
-/** Search SRD monsters by name or type using Fuse.js.
- *  Returns all monsters when query is empty. */
-export async function searchMonsters(
+export function buildSpellIndex(data: SrdSpell[]): void {
+  spellIndex = new Fuse(data, SPELL_OPTIONS);
+}
+
+export function setConditionData(data: SrdCondition[]): void {
+  conditionData = data;
+}
+
+export function searchMonsters(
   query: string,
-  version: RulesetVersion
-): Promise<SrdMonster[]> {
-  const index = await getIndex(version);
-  if (!query.trim()) {
-    return monsterData[version] ?? [];
-  }
-  return index.search(query).map((r) => r.item);
+  version?: RulesetVersion
+): Fuse.FuseResult<SrdMonster>[] {
+  if (!monsterIndex || !query) return [];
+  const results = monsterIndex.search(query);
+  if (version) return results.filter((r) => r.item.ruleset_version === version);
+  return results;
 }
 
-/** Resets the singleton indexes (useful for testing). */
+export function searchSpells(
+  query: string,
+  version?: RulesetVersion
+): Fuse.FuseResult<SrdSpell>[] {
+  if (!spellIndex || !query) return [];
+  const results = spellIndex.search(query);
+  if (version) return results.filter((r) => r.item.ruleset_version === version);
+  return results;
+}
+
+/** Exact match by name (case-insensitive). Conditions is a small dataset. */
+export function findCondition(name: string): SrdCondition | undefined {
+  return conditionData.find(
+    (c) => c.name.toLowerCase() === name.toLowerCase()
+  );
+}
+
+export function getAllConditions(): SrdCondition[] {
+  return conditionData;
+}
+
+/** Resets singleton indexes — for testing only. */
 export function resetSrdIndexes(): void {
-  (Object.keys(indexes) as RulesetVersion[]).forEach((k) => {
-    delete indexes[k];
-    delete monsterData[k];
-  });
+  monsterIndex = null;
+  spellIndex = null;
+  conditionData = [];
 }

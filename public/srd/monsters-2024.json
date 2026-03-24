@@ -1,0 +1,17 @@
+[
+  { "id": "bandit-2024", "name": "Bandit", "cr": "1/8", "type": "humanoid", "hit_points": 11, "armor_class": 12, "ruleset_version": "2024" },
+  { "id": "cultist-2024", "name": "Cultist", "cr": "1/8", "type": "humanoid", "hit_points": 9, "armor_class": 12, "ruleset_version": "2024" },
+  { "id": "goblin-2024", "name": "Goblin", "cr": "1/4", "type": "humanoid", "hit_points": 10, "armor_class": 15, "ruleset_version": "2024" },
+  { "id": "kobold-2024", "name": "Kobold", "cr": "1/8", "type": "humanoid", "hit_points": 5, "armor_class": 12, "ruleset_version": "2024" },
+  { "id": "wolf-2024", "name": "Wolf", "cr": "1/4", "type": "beast", "hit_points": 11, "armor_class": 13, "ruleset_version": "2024" },
+  { "id": "giant-spider-2024", "name": "Giant Spider", "cr": "1", "type": "beast", "hit_points": 26, "armor_class": 14, "ruleset_version": "2024" },
+  { "id": "skeleton-2024", "name": "Skeleton", "cr": "1/4", "type": "undead", "hit_points": 13, "armor_class": 13, "ruleset_version": "2024" },
+  { "id": "zombie-2024", "name": "Zombie", "cr": "1/4", "type": "undead", "hit_points": 22, "armor_class": 8, "ruleset_version": "2024" },
+  { "id": "ghoul-2024", "name": "Ghoul", "cr": "1", "type": "undead", "hit_points": 22, "armor_class": 12, "ruleset_version": "2024" },
+  { "id": "hobgoblin-2024", "name": "Hobgoblin", "cr": "1/2", "type": "humanoid", "hit_points": 11, "armor_class": 18, "ruleset_version": "2024" },
+  { "id": "orc-2024", "name": "Orc", "cr": "1", "type": "humanoid", "hit_points": 42, "armor_class": 13, "ruleset_version": "2024" },
+  { "id": "ogre-2024", "name": "Ogre", "cr": "2", "type": "giant", "hit_points": 59, "armor_class": 11, "ruleset_version": "2024" },
+  { "id": "troll-2024", "name": "Troll", "cr": "5", "type": "giant", "hit_points": 84, "armor_class": 15, "ruleset_version": "2024" },
+  { "id": "black-dragon-wyrmling-2024", "name": "Black Dragon Wyrmling", "cr": "2", "type": "dragon", "hit_points": 33, "armor_class": 17, "ruleset_version": "2024" },
+  { "id": "owlbear-2024", "name": "Owlbear", "cr": "3", "type": "monstrosity", "hit_points": 59, "armor_class": 13, "ruleset_version": "2024" }
+]

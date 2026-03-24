@@ -1,0 +1,111 @@
+# generated: 2026-03-24
+# last_updated: 2026-03-24
+# project: projeto-rpg
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-24
+last_updated: 2026-03-24
+project: projeto-rpg
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Project Foundation & DM Authentication
+  epic-1: backlog
+  1-1-initialize-project-with-starter-template: done
+  1-2-database-schema-and-rls-policies: done
+  1-3-srd-content-seeding-and-static-bundle-generation: backlog
+  1-4-dm-registration-and-login: backlog
+  1-5-legal-pages-attribution-and-privacy-policy: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Campaign & Player Group Management
+  epic-2: in-progress
+  2-1-first-time-dm-onboarding-flow: review
+  2-2-create-and-manage-campaigns-player-groups: review
+  2-3-add-and-edit-player-characters-in-a-campaign: ready-for-dev
+  2-4-load-saved-player-group-into-encounter: ready-for-dev
+  2-5-account-deletion-and-data-erasure: ready-for-dev
+  epic-2-retrospective: optional
+
+  # Epic 3: Combat Tracker Core
+  epic-3: in-progress
+  3-1-create-encounter-and-add-monsters: review
+  3-2-ruleset-version-selection-per-session: review
+  3-3-initiative-entry-sorting-and-tiebreaker-resolution: review
+  3-4-turn-advancement-and-combat-flow: in-progress
+  3-5-hp-management-damage-healing-and-temporary-hp: backlog
+  3-6-conditions-apply-display-and-remove: backlog
+  3-7-defeat-remove-and-add-combatants-mid-combat: backlog
+  3-8-edit-combatant-stats-mid-combat: backlog
+  3-9-in-combat-ruleset-version-switching: backlog
+  3-10-save-and-resume-encounter: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Rules Oracle (Spells, Monsters, Conditions)
+  epic-4: in-progress
+  4-1-srd-client-side-search-index-and-indexeddb-cache: review
+  4-2-monster-search-and-inline-stat-block-expansion: backlog
+  4-3-spell-search-and-description-modal-overlay: backlog
+  4-4-condition-rules-lookup: backlog
+  4-5-dual-version-content-labeling: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Real-Time Player View & Session Sharing
+  epic-5: backlog
+  5-1-session-link-generation-and-player-anonymous-auth: backlog
+  5-2-player-view-live-initiative-board-and-turn-indicator: backlog
+  5-3-player-view-live-hp-display: backlog
+  5-4-player-spell-oracle-access: backlog
+  5-5-realtime-dual-write-and-channel-subscription: backlog
+  5-6-connection-resilience-and-state-reconnect: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Admin Panel & Content Management
+  epic-6: backlog
+  6-1-admin-authentication-and-layout-guard: backlog
+  6-2-usage-metrics-dashboard: backlog
+  6-3-srd-content-editing-and-live-propagation: backlog
+  6-4-user-account-management: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Performance, Accessibility & Production Hardening
+  epic-7: backlog
+  7-1-performance-optimization-and-web-vitals: backlog
+  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: backlog
+  7-3-load-testing-and-scalability-validation: backlog
+  7-4-error-tracking-and-monitoring-setup: backlog
+  7-5-security-hardening-and-input-validation: backlog
+  epic-7-retrospective: optional

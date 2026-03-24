@@ -1,0 +1,17 @@
+[
+  { "id": "bandit", "name": "Bandit", "cr": "1/8", "type": "humanoid", "hit_points": 11, "armor_class": 12, "ruleset_version": "2014" },
+  { "id": "cultist", "name": "Cultist", "cr": "1/8", "type": "humanoid", "hit_points": 9, "armor_class": 12, "ruleset_version": "2014" },
+  { "id": "goblin", "name": "Goblin", "cr": "1/4", "type": "humanoid", "hit_points": 7, "armor_class": 15, "ruleset_version": "2014" },
+  { "id": "kobold", "name": "Kobold", "cr": "1/8", "type": "humanoid", "hit_points": 5, "armor_class": 12, "ruleset_version": "2014" },
+  { "id": "wolf", "name": "Wolf", "cr": "1/4", "type": "beast", "hit_points": 11, "armor_class": 13, "ruleset_version": "2014" },
+  { "id": "giant-spider", "name": "Giant Spider", "cr": "1", "type": "beast", "hit_points": 26, "armor_class": 14, "ruleset_version": "2014" },
+  { "id": "skeleton", "name": "Skeleton", "cr": "1/4", "type": "undead", "hit_points": 13, "armor_class": 13, "ruleset_version": "2014" },
+  { "id": "zombie", "name": "Zombie", "cr": "1/4", "type": "undead", "hit_points": 22, "armor_class": 8, "ruleset_version": "2014" },
+  { "id": "ghoul", "name": "Ghoul", "cr": "1", "type": "undead", "hit_points": 22, "armor_class": 12, "ruleset_version": "2014" },
+  { "id": "hobgoblin", "name": "Hobgoblin", "cr": "1/2", "type": "humanoid", "hit_points": 11, "armor_class": 18, "ruleset_version": "2014" },
+  { "id": "orc", "name": "Orc", "cr": "1/2", "type": "humanoid", "hit_points": 15, "armor_class": 13, "ruleset_version": "2014" },
+  { "id": "ogre", "name": "Ogre", "cr": "2", "type": "giant", "hit_points": 59, "armor_class": 11, "ruleset_version": "2014" },
+  { "id": "troll", "name": "Troll", "cr": "5", "type": "giant", "hit_points": 84, "armor_class": 15, "ruleset_version": "2014" },
+  { "id": "black-dragon-wyrmling", "name": "Black Dragon Wyrmling", "cr": "2", "type": "dragon", "hit_points": 33, "armor_class": 17, "ruleset_version": "2014" },
+  { "id": "owlbear", "name": "Owlbear", "cr": "3", "type": "monstrosity", "hit_points": 59, "armor_class": 13, "ruleset_version": "2014" }
+]

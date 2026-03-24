@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { CampaignManager } from "@/components/dashboard/CampaignManager";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -10,38 +10,40 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/auth/login");
-  }
+  if (!user) redirect("/auth/login");
+
+  // Onboarding redirect — new DMs with no campaigns go through the wizard
+  const { count } = await supabase
+    .from("campaigns")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", user.id);
+
+  if (count === 0) redirect("/app/onboarding");
+
+  // Fetch campaigns with player character count
+  const { data: rawCampaigns } = await supabase
+    .from("campaigns")
+    .select("id, name, created_at, player_characters(count)")
+    .eq("owner_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const campaigns = (rawCampaigns ?? []).map((c) => ({
+    id: c.id as string,
+    name: c.name as string,
+    created_at: c.created_at as string,
+    player_count:
+      (c.player_characters as { count: number }[])[0]?.count ?? 0,
+  }));
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-          <p className="text-white/50 mt-1 text-sm">
-            Manage your encounters and campaigns.
-          </p>
-        </div>
-        <Link
-          href="/app/session/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#e94560] text-white font-medium text-sm hover:bg-[#c73652] transition-colors"
-          data-testid="new-encounter-btn"
-        >
-          + New Encounter
-        </Link>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
+        <p className="text-white/50 mt-1 text-sm">
+          Manage your campaigns and player groups.
+        </p>
       </div>
-
-      <div className="text-white/40 text-sm text-center mt-20">
-        No encounters yet.{" "}
-        <Link
-          href="/app/session/new"
-          className="text-[#e94560] hover:underline"
-        >
-          Start your first encounter
-        </Link>{" "}
-        to get going.
-      </div>
+      <CampaignManager initialCampaigns={campaigns} userId={user.id} />
     </div>
   );
 }
