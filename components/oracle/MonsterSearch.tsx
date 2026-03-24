@@ -82,7 +82,7 @@ export function MonsterSearch({
                   <button
                     type="button"
                     onClick={() => toggleExpand(rowKey)}
-                    className="flex-1 flex items-center gap-2 text-left hover:text-[#e94560] transition-colors"
+                    className="flex-1 flex items-center gap-2 text-left hover:text-[#e94560] transition-colors min-h-[44px]"
                     aria-expanded={isExpanded}
                     aria-controls={`stat-block-${rowKey}`}
                     data-testid={`monster-row-${monster.id}`}
@@ -109,7 +109,7 @@ export function MonsterSearch({
                     <button
                       type="button"
                       onClick={() => onAddToCombat(monster)}
-                      className="px-2 py-1 text-xs text-[#e94560] border border-[#e94560]/40 rounded hover:bg-[#e94560]/10 transition-colors shrink-0"
+                      className="px-2 py-1 text-xs text-[#e94560] border border-[#e94560]/40 rounded hover:bg-[#e94560]/10 transition-colors shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
                       aria-label={`Add ${monster.name} to combat`}
                       data-testid={`add-monster-${monster.id}`}
                     >

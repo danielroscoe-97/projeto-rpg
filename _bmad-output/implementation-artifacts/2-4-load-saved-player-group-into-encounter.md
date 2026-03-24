@@ -1,6 +1,6 @@
 # Story 2.4: Load Saved Player Group into Encounter
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -32,34 +32,34 @@ so that session setup takes seconds instead of manually re-entering each player.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create `components/session/CampaignLoader.tsx`** (AC: 2, 3, 5)
-  - [ ] `"use client"` component; renders a `<Dialog>` (shadcn/ui) triggered by a button
-  - [ ] On open: fetch the current user's campaigns with player count from Supabase
-  - [ ] Display campaign list with name and player count; each row has a "Load" button
-  - [ ] On "Load": fetch all `player_characters` for selected campaign, then call `onLoad(characters)` callback prop
-  - [ ] If campaign has 0 players: show "This campaign has no players yet." — disable Load button
-  - [ ] Close dialog after successful load
+- [x] **Task 1: Create `components/session/CampaignLoader.tsx`** (AC: 2, 3, 5)
+  - [x] `"use client"` component; renders a `<Dialog>` (shadcn/ui) triggered by a button
+  - [x] On open: fetch the current user's campaigns with player count from Supabase
+  - [x] Display campaign list with name and player count; each row has a "Load" button
+  - [x] On "Load": fetch all `player_characters` for selected campaign, then call `onLoad(characters)` callback prop
+  - [x] If campaign has 0 players: show "This campaign has no players yet." — disable Load button
+  - [x] Close dialog after successful load
 
-- [ ] **Task 2: Modify `components/session/EncounterBuilder.tsx`** (AC: 1, 3, 4)
-  - [ ] Add "Load Campaign" button in the EncounterBuilder UI (near the top, next to other add actions)
-  - [ ] Import and render `<CampaignLoader>` with an `onLoad` callback
-  - [ ] `onLoad` callback receives `PlayerCharacter[]` and calls `addCombatant(...)` for each character
-  - [ ] Player combatants are added with `is_player: true`; all other fields mapped from player character data
-  - [ ] Do NOT clear existing combatants on load — append players to the existing list
-  - [ ] Use `getNumberedName` to avoid name collisions if the same campaign is loaded twice
+- [x] **Task 2: Modify `components/session/EncounterBuilder.tsx`** (AC: 1, 3, 4)
+  - [x] Add "Load Campaign" button in the EncounterBuilder UI (near the top, next to other add actions)
+  - [x] Import and render `<CampaignLoader>` with an `onLoad` callback
+  - [x] `onLoad` callback receives `PlayerCharacter[]` and calls `addCombatant(...)` for each character
+  - [x] Player combatants are added with `is_player: true`; all other fields mapped from player character data
+  - [x] Do NOT clear existing combatants on load — append players to the existing list
+  - [x] Use `getNumberedName` to avoid name collisions if the same campaign is loaded twice
 
-- [ ] **Task 3: Write tests** (AC: 1–5)
-  - [ ] File: `components/session/CampaignLoader.test.tsx`
-  - [ ] Test: dialog opens when "Load Campaign" button clicked
-  - [ ] Test: renders campaign list with names and player counts
-  - [ ] Test: Load button calls onLoad with correct player characters
-  - [ ] Test: campaign with 0 players shows empty message and disables Load
-  - [ ] Test: dialog closes after successful load
-  - [ ] Mock: Supabase browser client via Jest mock
-  - [ ] Note: do NOT break existing EncounterBuilder tests — run full test suite after changes
+- [x] **Task 3: Write tests** (AC: 1–5)
+  - [x] File: `components/session/CampaignLoader.test.tsx`
+  - [x] Test: dialog opens when "Load Campaign" button clicked
+  - [x] Test: renders campaign list with names and player counts
+  - [x] Test: Load button calls onLoad with correct player characters
+  - [x] Test: campaign with 0 players shows empty message and disables Load
+  - [x] Test: dialog closes after successful load
+  - [x] Mock: Supabase browser client via Jest mock
+  - [x] Note: do NOT break existing EncounterBuilder tests — run full test suite after changes
 
-- [ ] **Task 4: Update sprint-status.yaml**
-  - [ ] Change `2-4-load-saved-player-group-into-encounter` → `in-progress` when starting, `review` on completion
+- [x] **Task 4: Update sprint-status.yaml**
+  - [x] Change `2-4-load-saved-player-group-into-encounter` → `in-progress` when starting, `review` on completion
 
 ## Dev Notes
 
@@ -283,16 +283,26 @@ If `Dialog` subcomponents are not all in `components/ui/dialog.tsx`, check which
 
 ### Agent Model Used
 
-_to be filled by dev agent_
+claude-sonnet-4-6
 
 ### Debug Log References
 
-_to be filled by dev agent_
+- shadcn/ui Dialog not installed; implemented custom modal overlay using plain React state + Tailwind CSS instead.
 
 ### Completion Notes List
 
-_to be filled by dev agent_
+- Created `components/session/CampaignLoader.tsx`: custom dialog (no shadcn Dialog available) with Supabase-powered campaign list, player count display, per-campaign Load button, empty-campaign guard, and close-on-success behavior.
+- Modified `components/session/EncounterBuilder.tsx`: added `handleLoadCampaign` callback (appends players with `is_player: true`, uses `getNumberedName` for collision-safe sequential naming) and rendered `<CampaignLoader>` next to the custom NPC button.
+- Created `components/session/CampaignLoader.test.tsx`: 6 tests covering all ACs — dialog open, campaign list render, onLoad callback with correct characters, empty-campaign message, Load button absence for empty campaigns, and dialog close after load. All 6 pass.
+- Full regression suite: 125/125 tests pass.
 
 ### File List
 
-_to be filled by dev agent_
+- `components/session/CampaignLoader.tsx` — NEW
+- `components/session/CampaignLoader.test.tsx` — NEW
+- `components/session/EncounterBuilder.tsx` — MODIFIED
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — MODIFIED
+
+## Change Log
+
+- 2026-03-24: Story 2.4 implemented — CampaignLoader component created, EncounterBuilder updated, 6 new tests added (125 total passing).

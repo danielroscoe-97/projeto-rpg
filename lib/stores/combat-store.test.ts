@@ -168,3 +168,73 @@ describe("useCombatStore – startCombat", () => {
     expect(state.current_turn_index).toBe(0);
   });
 });
+
+describe("useCombatStore – hydrateActiveState", () => {
+  it("sets is_active, current_turn_index and round_number from server values", () => {
+    useCombatStore.getState().hydrateActiveState(3, 2);
+    const state = useCombatStore.getState();
+    expect(state.is_active).toBe(true);
+    expect(state.current_turn_index).toBe(3);
+    expect(state.round_number).toBe(2);
+  });
+});
+
+describe("useCombatStore – advanceTurn", () => {
+  function addCombatant(name: string, is_defeated = false) {
+    useCombatStore.getState().addCombatant({
+      ...baseCombatant,
+      name,
+      is_defeated,
+      initiative: null,
+      initiative_order: null,
+    });
+  }
+
+  it("advances current_turn_index by 1", () => {
+    addCombatant("A");
+    addCombatant("B");
+    addCombatant("C");
+    useCombatStore.getState().startCombat(); // index = 0
+    useCombatStore.getState().advanceTurn();
+    expect(useCombatStore.getState().current_turn_index).toBe(1);
+  });
+
+  it("wraps from last combatant to first and increments round_number", () => {
+    addCombatant("A");
+    addCombatant("B");
+    useCombatStore.getState().startCombat(); // index = 0
+    useCombatStore.getState().advanceTurn(); // index = 1
+    useCombatStore.getState().advanceTurn(); // wraps → index = 0, round = 2
+    const state = useCombatStore.getState();
+    expect(state.current_turn_index).toBe(0);
+    expect(state.round_number).toBe(2);
+  });
+
+  it("skips defeated combatants", () => {
+    addCombatant("A");
+    addCombatant("B", true); // defeated
+    addCombatant("C");
+    useCombatStore.getState().startCombat(); // index = 0 (A)
+    useCombatStore.getState().advanceTurn(); // B is defeated → skip to C (index 2)
+    expect(useCombatStore.getState().current_turn_index).toBe(2);
+  });
+
+  it("is a no-op when all combatants are defeated", () => {
+    addCombatant("A", true);
+    addCombatant("B", true);
+    useCombatStore.getState().startCombat();
+    useCombatStore.getState().advanceTurn();
+    const state = useCombatStore.getState();
+    expect(state.current_turn_index).toBe(0);
+    expect(state.round_number).toBe(1);
+  });
+
+  it("does not increment round when wrap is not crossed", () => {
+    addCombatant("A");
+    addCombatant("B");
+    addCombatant("C");
+    useCombatStore.getState().startCombat(); // index = 0
+    useCombatStore.getState().advanceTurn(); // index = 1
+    expect(useCombatStore.getState().round_number).toBe(1);
+  });
+});

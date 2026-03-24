@@ -1,7 +1,9 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 status: complete
-inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md", "_bmad-output/planning-artifacts/architecture.md", "_bmad-output/planning-artifacts/epics.md"]
+lastRevision: 2026-03-24
+revisionNotes: "Visual system enriched from ro-modern (Liberty RO) reference: gold accent (#d4a853) replaces pink-red, Cinzel display font added, background noise+depth gradient, box-shadow glow system, pixel sprite rendering rules, ornamental dividers, ghost render atmospheric backgrounds."
+inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md", "_bmad-output/planning-artifacts/architecture.md", "_bmad-output/planning-artifacts/epics.md", "referencia visual/ro-modern/css/theme.css", "referencia visual/ro-modern/preview.html", "referencia visual/ro-modern/header.php"]
 ---
 
 # UX Design Specification projeto-rpg
@@ -128,7 +130,7 @@ The shared emotional signal is relief. The moment the table realizes they're not
 - **Calm recovery** → Reconnect is automatic and silent. A subtle "reconnecting..." indicator, not a blocking modal. State is never lost.
 - **Warm and casual tone** → UI copy should be direct, friendly, and low-ceremony. No corporate language. Error messages should feel like a friend explaining, not a system warning.
 - **Engaged awareness (player)** → The player view should feel alive — subtle animations on turn changes, smooth HP transitions. Not static; gently dynamic.
-- **Atmospheric but not theatrical** → Dark theme (#1a1a2e) with warm accent colors. The app should feel like it belongs at the table — not a spreadsheet, not a video game. Functional atmosphere.
+- **Atmospheric but not theatrical** → Dark theme (`#13131e`) with gold accent (`#d4a853`) and layered background depth (noise texture + radial gradients). The app should feel like it belongs at the table — not a spreadsheet, not a video game. Functional atmosphere. Fantasy-register headings (Cinzel) and gold glow on interactive elements reinforce the D&D aesthetic without crossing into theme-park territory.
 
 ### Emotional Design Principles
 
@@ -140,6 +142,12 @@ The shared emotional signal is relief. The moment the table realizes they're not
 ## UX Pattern Analysis & Inspiration
 
 ### Inspiring Products Analysis
+
+**4. Liberty RO / ro-modern (Ragnarok Online fan server theme)**
+- Does well: Dark premium theme that balances information density with atmospheric depth. Proves that a functional app UI can carry fantasy aesthetic weight without sacrificing usability. Key techniques: near-invisible borders (`rgba(255,255,255,0.08)`), layered background (noise + radial gradients), `Cinzel` for display headings, warm gold (`#D4A853`) as the single dominant accent, `box-shadow` glows as interactive feedback, pixel sprite rendering with `image-rendering: pixelated`.
+- UX lesson: The "warm fantasy dark" register is achievable with CSS alone — no images required. The background depth comes from two fixed pseudo-elements; the fantasy feel comes from one display font and one gold accent. Everything else is functional. This proves the aesthetic is maintainable by a solo developer without a design system team.
+- Limitation to surpass: It's a marketing/server-info site, not an interactive app. The patterns are adapted here for a real-time, data-dense session tool. Navigation, hover states, and modal patterns are the transferable layer; the server-info content structure is not.
+- **Directly transferable to projeto-rpg:** Background noise + depth gradient, `Cinzel` for modal/stat block headings, gold accent system, `box-shadow` glow hover pattern, pixel sprite `image-rendering`, ornamental section dividers, ghost render atmospheric backgrounds.
 
 **1. Improved Initiative (combat tracker)**
 - Does well: Stripped-down, fast initiative tracker. Zero learning curve — add names, roll initiative, go. The simplicity is the feature.
@@ -168,7 +176,7 @@ The shared emotional signal is relief. The moment the table realizes they're not
 - **Optimistic UI with silent sync** (from Linear, Figma) — every DM action (HP change, turn advance, condition apply) takes effect visually before server confirmation. No spinners, no "saving..." text. If sync fails, a gentle toast; never a blocking error.
 
 **Visual Patterns:**
-- **Dark theme with warm accents** (from Linear, Spotify) — #1a1a2e background, muted text for secondary info, warm accent color (amber/gold or soft red) for active turn and critical states. Avoids cold blue-heavy palettes.
+- **Dark theme with warm accents** (from Linear, Spotify, ro-modern) — `#13131e` background with layered depth (noise + radial gradient), muted text for secondary info, gold (`#d4a853`) as the dominant accent for active turn and primary actions, orange-red (`#e8593c`) exclusively for danger/critical states. Avoids cold blue-heavy palettes. Avoids neon pink-red as a primary accent (cyberpunk register, wrong genre).
 - **HP as horizontal progress bar** (from game UIs, health bars) — a thin colored bar beneath or beside the HP numbers. Green → yellow → red gradient communicates health status at a glance without reading numbers. Combined with text labels for accessibility (NFR21).
 - **Condition badges as compact pills** (from GitHub labels, Jira tags) — conditions displayed as small colored pills with short text (e.g., "Stunned", "Poisoned") directly on the combatant row. Scannable, stackable, color-coded but always with text.
 
@@ -191,11 +199,19 @@ The shared emotional signal is relief. The moment the table realizes they're not
 - Optimistic UI on all combat actions (Linear/Figma model)
 - Dark theme with warm accents and health bar visualization (game UI conventions)
 - Condition badges as compact pills (GitHub/Jira label pattern)
+- Background noise texture + radial depth gradient (ro-modern technique) — applied to `body` via CSS pseudo-elements, no images
+- `Cinzel` display font for modal titles, stat block section headers, round counter (ro-modern/fantasy convention)
+- Gold (`#d4a853`) as the dominant accent — active turn, primary CTA, hover glow (ro-modern palette, adapted from `#D4A853`)
+- `box-shadow` glow as the hover feedback system — `rgba(212,168,83,0.2–0.4)` scale (ro-modern pattern)
+- `image-rendering: pixelated` for all pixel-art sprite assets (ro-modern `.sprite-icon` technique)
+- Ornamental section dividers (line + central icon + line) inside stat block modals (ro-modern `.ro-divider` pattern)
+- Ghost render atmospheric backgrounds for empty/onboarding states (ro-modern `.mvp-ghost` technique)
 
 **Adapt:**
 - 5e.tools' search-first navigation — adapt as an overlay inside the combat view, not a standalone page
 - Improved Initiative's lightweight tracker rows — add one-tap expansion for stat blocks while preserving the default leanness
 - Linear's keyboard shortcut system — adapt for DM-specific actions (advance turn, open oracle, adjust HP)
+- ro-modern's `.navbar-server-time` pattern (monospace clock in header) — adapt as round counter + sync indicator in the DM view header bar
 
 **Avoid:**
 - D&D Beyond's information-dense default state
@@ -203,6 +219,7 @@ The shared emotional signal is relief. The moment the table realizes they're not
 - Confirmation dialogs on combat actions
 - Responsive shrinking instead of purpose-built mobile view
 - Any login requirement before the player view
+- ro-modern's decorative animations (poring-hop, magic-rotate, fog-drift) in the combat tracker — atmospheric motion is fine in onboarding/marketing surfaces but strictly forbidden in the active combat view where they compete with functional state changes
 
 ## Design System Foundation
 
@@ -227,28 +244,30 @@ shadcn/ui is an unstyled-first, accessible component library built on Radix UI p
 | Component | Feature Use | Notes |
 |-----------|------------|-------|
 | `Command` | Oracle search palette (Cmd+K) | Fuzzy search over Fuse.js results |
-| `Dialog` | Spell description modal overlay | Dimmed backdrop, Escape to dismiss |
+| `Dialog` | Spell description modal overlay | Dimmed backdrop, Escape to dismiss. Modal title in Cinzel. |
 | `Sheet` | Mobile slide-over panels | Player view spell details |
 | `DropdownMenu` | Condition selector, version switcher | Keyboard-navigable |
 | `Toast` | Silent error/sync feedback | Non-blocking, auto-dismiss |
-| `Button` | Turn advance, HP adjust, actions | 44×44px minimum on mobile |
+| `Button` | Turn advance, HP adjust, actions | 44×44px minimum on mobile. Gold glow on hover. |
 | `Badge` | Condition pills on combatant rows | Color-coded + text labels |
 | `Tooltip` | AC, DC, secondary info on hover | Desktop DM view only |
-| `Collapsible` | Inline stat block expansion | Combatant row expand/collapse |
+| `Collapsible` | Inline stat block expansion | Combatant row expand/collapse. Stat section headers in Cinzel. |
 
 **Tailwind design tokens to define:**
 
-- **Colors:** Background (#1a1a2e), surface layers, warm accent (amber/gold), HP gradient (green → yellow → red), condition badge palette, muted text
-- **Typography:** 16px minimum body, monospace for HP numbers, readable font for stat blocks and spell descriptions
+- **Colors:** Background (`#13131e`), surface layers (`#1a1a28`, `#222234`), gold accent (`#d4a853`), danger accent (`#e8593c`), cool accent (`#5b8def`), HP gradient (green → yellow → red), condition badge palette, muted text, glow values (`rgba(212,168,83,0.35)`)
+- **Typography:** Cinzel for display headings, Inter for body (16px minimum), JetBrains Mono for numbers
 - **Spacing:** Compact for DM desktop rows (information density), generous for mobile tap targets (44×44px)
-- **Borders/Shadows:** Subtle separators between combatant rows, no heavy borders. Soft elevation for modals.
+- **Borders/Shadows:** Near-invisible borders (`rgba(255,255,255,0.08)`), gold glow on hover, soft elevation for modals
+- **Background layers:** Noise texture (fractal SVG, opacity 0.025) + radial depth gradient (blue top-left, gold bottom-right)
 
 ### Customization Strategy
 
-1. **Theme layer first** — define all custom colors, spacing, and typography as Tailwind theme extensions in `tailwind.config.ts`. No hard-coded values in components.
+1. **Theme layer first** — define all custom colors, spacing, typography, and glow values as Tailwind theme extensions in `tailwind.config.ts`. No hard-coded values in components. Includes `fontFamily.cinzel`, `colors.accent`, `colors.accent-danger`, `colors.gold-glow`, and `boxShadow.gold-glow`.
 2. **Component variants** — create combat-specific variants of shadcn/ui components (e.g., `CombatantRow` built on `Collapsible`, `OracleSearch` built on `Command`).
 3. **Two breakpoint systems** — DM view components use dense spacing/smaller text; player view components use generous spacing/larger tap targets. Not responsive scaling — separate component configurations.
-4. **Animation tokens** — define subtle transition durations for HP bar changes, turn indicator shifts, and modal open/close. Keep animations fast (150–200ms) and purposeful — no decorative motion.
+4. **Animation tokens** — define subtle transition durations for HP bar changes, turn indicator shifts, and modal open/close. Keep animations fast (150–200ms) and purposeful — no decorative motion. Atmospheric animations (noise, depth gradients) are static CSS — no JavaScript or keyframes required.
+5. **CSS layer architecture** — three layers in `globals.css`: (1) background atmosphere (`body::before`, `body::after` — noise + gradient), (2) design tokens (CSS custom properties), (3) component styles. This order ensures atmosphere layers are always below content z-index.
 
 ## Defining Core Experience
 
@@ -342,46 +361,69 @@ projeto-rpg does not invent new interaction paradigms. Every pattern is proven:
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `background` | `#1a1a2e` | App background — dark gray-blue, reduces halation |
-| `surface` | `#16213e` | Card/panel surfaces, combatant rows |
-| `surface-elevated` | `#0f3460` | Modals, overlays, expanded stat blocks |
-| `border` | `#1e2a45` | Subtle row separators |
-| `accent` | `#e94560` | Active turn highlight, critical states, primary actions |
-| `accent-warm` | `#f5a623` | Secondary highlights, XP/reward states, version badges |
-| `text-primary` | `#eaeaea` | Main text — headings, combatant names, HP values |
-| `text-secondary` | `#8892a4` | Secondary text — labels, metadata, AC/DC values |
-| `text-muted` | `#4a5568` | Placeholder text, disabled states |
+| `background` | `#13131e` | App background — deeper dark, aligns with ro-modern baseline; reduces halation more than the earlier `#1a1a2e` |
+| `surface` | `#1a1a28` | Card/panel surfaces, combatant rows |
+| `surface-alt` | `#16213e` | Alternate section surfaces (campaign detail panels) |
+| `surface-elevated` | `#222234` | Modals, overlays, expanded stat blocks |
+| `border` | `rgba(255,255,255,0.08)` | Subtle row separators — near-invisible, creates depth without weight |
+| `border-hover` | `rgba(255,255,255,0.15)` | Border on hover states, focus rings |
+| `accent` | `#d4a853` | **Gold** — active turn highlight, primary CTA, Cinzel heading accents. Shifted from pink-red (`#e94560`) to warm gold: more legible on dark surfaces, thematically aligned with D&D treasure/power aesthetic, consistent with fantasy UI convention (see ro-modern rationale below) |
+| `accent-danger` | `#e8593c` | Critical states (0 HP warning, error indicators, "defeated" dimming). Replaces the former `accent` pink-red, now reserved for danger/destruction contexts only |
+| `accent-cool` | `#5b8def` | Version badge 2024, link text, secondary interactive states |
+| `text-primary` | `#e8e6e0` | Main text — slightly warm white (not pure `#ffffff`), reduces eye strain in dark rooms. Headings, combatant names, HP values |
+| `text-secondary` | `#9896a0` | Secondary text — labels, metadata, AC/DC values |
+| `text-muted` | `#5c5a65` | Placeholder text, disabled states, tertiary metadata |
 | `hp-high` | `#48bb78` | HP bar: ≥50% |
 | `hp-mid` | `#ed8936` | HP bar: 25–49% |
 | `hp-low` | `#e53e3e` | HP bar: <25% |
 | `hp-temp` | `#9f7aea` | Temporary HP overlay on bar |
-| `success` | `#48bb78` | Positive feedback toasts |
-| `error` | `#e53e3e` | Error toasts, defeated combatant dimming |
+| `success` | `#2dd4bf` | Positive feedback toasts, "online" status indicator (teal — avoids conflict with hp-high green) |
+| `error` | `#e8593c` | Error toasts, defeated combatant dimming (same as accent-danger) |
+| `gold-glow` | `rgba(212,168,83,0.35)` | box-shadow glow value for accent hover states |
+
+**Accent color rationale — gold over pink-red:**
+The original `#e94560` accent came from a cyberpunk/anime register. For a D&D combat companion, warm gold (`#d4a853`) is more contextually resonant: it evokes candlelight, treasure, magic circles, and the brass/gold aesthetic of physical D&D books and dice. It also provides better contrast against the blue-shifted dark background (`#13131e`) than the pink-red. `#e8593c` is retained for danger states (near-death, errors) where the warm-orange-red communicates urgency without the neon pink association.
 
 **Contrast compliance:** All text/background combinations meet WCAG 2.1 AA (≥4.5:1 for body, ≥3:1 for large text). Color never used as sole indicator (NFR21).
 
 **Condition badge palette (color + text label always paired):**
-Blinded (gray), Charmed (pink), Frightened (purple), Grappled (orange), Incapacitated (red), Invisible (blue-gray), Paralyzed (dark red), Petrified (stone gray), Poisoned (green), Prone (brown), Restrained (teal), Stunned (yellow), Unconscious (black with white text).
+Blinded (gray), Charmed (pink), Frightened (purple), Grappled (orange), Incapacitated (`#e8593c` red), Invisible (blue-gray), Paralyzed (dark red), Petrified (stone gray), Poisoned (green), Prone (brown), Restrained (teal), Stunned (`#d4a853` yellow-gold), Unconscious (black with white text).
+
 
 ### Typography System
 
 **Font stack:**
-- **Primary:** `Inter` (or system-ui fallback) — clean, readable at small sizes, excellent for dense information layouts
-- **Monospace:** `JetBrains Mono` (or `ui-monospace` fallback) — HP numbers, initiative values, stat block numbers. Makes numeric scanning faster.
+- **Display/Fantasy:** `Cinzel` (Google Fonts, serif) — classical Roman letterforms with a high-fantasy register. Used exclusively for decorative headings: modal titles (spell name, monster name), stat block section labels (ACTIONS, REACTIONS, LEGENDARY ACTIONS), round counter display, and page-level headings. Weight 600–700. Letter-spacing: 0.02–0.06em. Never used for body text or interactive controls — legibility at small sizes is poor.
+- **Primary:** `Inter` (or system-ui fallback) — clean, readable at small sizes, excellent for dense information layouts. All UI text, labels, combatant names, spell descriptions.
+- **Monospace:** `JetBrains Mono` (or `ui-monospace` fallback) — HP numbers, initiative values, stat block numbers, AC, DC, CR. Makes numeric scanning faster. Also used for the server-time clock pattern if ever displayed.
+
+**Font loading strategy:** `Cinzel` loaded via Google Fonts with `display=swap`. Subset to `wght@400;600;700`. Inter loaded as system-ui fallback first — no external load required in most environments. JetBrains Mono loaded via Google Fonts, subset to weights 400 and 700.
 
 **Type scale:**
 
-| Token | Size | Weight | Usage |
-|-------|------|--------|-------|
-| `text-xs` | 12px | 400 | Condition badges, metadata |
-| `text-sm` | 14px | 400 | Secondary stats (AC, DC), labels |
-| `text-base` | 16px | 400 | Body text, spell descriptions, stat block text (minimum per NFR23) |
-| `text-lg` | 18px | 500 | Combatant names, section headings |
-| `text-xl` | 20px | 600 | HP values (DM view), round counter |
-| `text-2xl` | 24px | 700 | HP values (player view, own character), turn announcement |
-| `text-3xl` | 30px | 700 | Page-level headings, modal titles |
+| Token | Size | Weight | Font | Usage |
+|-------|------|--------|------|-------|
+| `text-xs` | 12px | 400 | Inter | Condition badges, metadata |
+| `text-sm` | 14px | 400 | Inter | Secondary stats (AC, DC), labels |
+| `text-base` | 16px | 400 | Inter | Body text, spell descriptions, stat block text (minimum per NFR23) |
+| `text-lg` | 18px | 500 | Inter | Combatant names, section headings |
+| `text-xl` | 20px | 600 | Inter / JetBrains Mono | HP values (DM view) |
+| `text-2xl` | 24px | 700 | JetBrains Mono | HP values (player view), round counter number |
+| `text-3xl` | 30px | 700 | **Cinzel** | Modal titles (spell name, monster name), page headings |
+| `text-4xl` | 36px | 700 | **Cinzel** | Stat block section headers (ACTIONS), round counter label |
 
-**Line heights:** 1.4 for body text, 1.2 for headings, 1.0 for numbers/badges.
+**Cinzel usage rules:**
+- ✅ Modal title: `<h2 class="font-cinzel text-3xl">Fireball</h2>`
+- ✅ Stat block section headers: `ACTIONS`, `REACTIONS`, `LEGENDARY ACTIONS`
+- ✅ Round counter display: `Round 3`
+- ✅ Page-level hero headings (dashboard, empty state headline)
+- ❌ Never for combatant names in the tracker (too slow to scan)
+- ❌ Never for body text, descriptions, or labels
+- ❌ Never below 18px (illegible)
+
+**Letter-spacing by font:** Cinzel → `0.04–0.06em`. Inter → default (`0`). JetBrains Mono → `0` (numbers only).
+
+**Line heights:** 1.4 for body text (Inter), 1.2 for Cinzel headings, 1.0 for numbers/badges (JetBrains Mono).
 
 ### Spacing & Layout Foundation
 
@@ -402,6 +444,152 @@ Blinded (gray), Charmed (pink), Frightened (purple), Grappled (orange), Incapaci
 - Own character card: prominent, top of view
 
 **Grid:** No strict column grid for the tracker itself — combatant rows are full-width. Modals and panels use an 8-column grid at 1024px+.
+
+### Atmospheric & Textural Design
+
+These are layered background treatments that create ambient depth without adding interactive noise. All are non-interactive (`pointer-events: none`) and respect `prefers-reduced-motion` (static fallback).
+
+#### Background Texture Layer
+
+A subtle fractal noise texture applied to the `body` via `::before` pseudo-element using an inline SVG data URI:
+
+```css
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 0;
+}
+```
+
+This adds organic texture to the flat background color — visible as a very faint grain that prevents the dark surface from feeling like a void. Opacity 0.025 is the threshold where it reads as atmosphere without appearing as image noise. No external asset required.
+
+#### Depth Gradient Layer
+
+A radial gradient overlay on `body::after` that creates directional lighting — subtle cool-blue from the top-left and warm gold from the bottom-right:
+
+```css
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 15% 0%, rgba(91,141,239,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 100%, rgba(212,168,83,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+```
+
+The two gradients represent the dual accent axes of the product — cool/magical (blue) and warm/power (gold) — manifested as ambient environmental light. All `nav`, `main`, `section`, and modal elements sit on `z-index: 1` above these layers.
+
+**Implementation note:** Both pseudo-elements are `position: fixed` (not `absolute`) so they remain stable during scroll. All content containers must have `position: relative; z-index: 1` to render above them.
+
+#### Hover Glow System
+
+Interactive surface elements use a `box-shadow` glow on hover to create a "magical aura" effect consistent with the fantasy register. This replaces simple border-color transitions:
+
+```css
+/* Primary interactive card hover */
+.interactive-card:hover {
+  border-color: rgba(212,168,83,0.4);
+  box-shadow: 0 0 15px rgba(212,168,83,0.2), 0 4px 32px rgba(0,0,0,0.4);
+  transform: translateY(-1px);
+}
+
+/* Primary button hover */
+.btn-primary:hover {
+  box-shadow: 0 0 15px rgba(212,168,83,0.4);
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+/* Danger/active state glow */
+.combatant-row--active {
+  box-shadow: inset 0 0 0 1px rgba(212,168,83,0.3),
+              0 0 20px rgba(212,168,83,0.08);
+}
+```
+
+**Glow intensity scale:**
+- `0.08–0.10 opacity` — ambient/active state (always-on, non-intrusive)
+- `0.20 opacity` — hover state (noticeable but not harsh)
+- `0.35–0.40 opacity` — focus/press state (clear feedback)
+
+**Gold glow is the default.** Danger states (defeated combatants, error indicators) use `rgba(232,89,60,0.3)` red glow instead.
+
+#### Pixel Sprite Rendering
+
+Any pixel-art assets (monster token icons, item icons, condition icons if pixel-art style is adopted) must use:
+
+```css
+.sprite-icon {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges; /* Firefox fallback */
+  filter: drop-shadow(0 0 6px rgba(212,168,83,0.35));
+}
+```
+
+Without `image-rendering: pixelated`, browser scaling blurs pixel art into an unreadable smear. The `drop-shadow` filter adds a faint gold halo that makes sprites legible against the dark background.
+
+**Size classes:**
+- `sprite-sm`: 32×32px — condition icons, inline badges
+- `sprite-md`: 48×48px — combatant row avatar/token
+- `sprite-lg`: 64×64px — monster modal header icon
+
+#### Ornamental Section Dividers
+
+Within stat block modals and expanded combatant rows, use a three-part ornamental divider to separate stat sections (Attributes | Actions | Reactions | Legendary Actions):
+
+```css
+.stat-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.stat-divider::before,
+.stat-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,168,83,0.4), transparent);
+}
+/* Central motif: a d20 SVG icon or ✦ character */
+.stat-divider-icon {
+  color: rgba(212,168,83,0.6);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+```
+
+This pattern comes from ro-modern's `.ro-divider` (which uses a Poring sprite as the central motif). For projeto-rpg, the central motif is a `✦` unicode character or a minimal d20 SVG. Used only inside modals and expanded stat blocks — not in the combat tracker rows themselves (too decorative for fast-scan context).
+
+#### Atmospheric Ghost Renders
+
+Large, low-opacity monster or character silhouettes can be absolutely positioned behind section content to add spatial depth without visual noise. Technique adapted from ro-modern's `.mvp-ghost` pattern:
+
+```css
+.section-ghost {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.035;
+  filter: grayscale(100%);
+  z-index: 0;
+  max-width: 300px;
+  height: auto;
+}
+```
+
+**Usage contexts:**
+- **Encounter builder empty state** — faint silhouette of a dragon or dungeon monster in the background of the empty encounter panel
+- **Dashboard hero area** — subtle D&D character render behind the "Create your first encounter" CTA
+- **Stat block modal** — very faint monster render behind the stat block content area (opacity 0.02, only for large-format modals)
+
+**Implementation constraint:** Ghost renders must NOT appear in the active combat tracker view. The tracker is a zero-distraction context; any decorative background element competes with HP bars and condition badges for attention. Restricted to marketing/onboarding surfaces and modal backgrounds only.
 
 ### Accessibility Considerations
 

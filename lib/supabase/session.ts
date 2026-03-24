@@ -29,3 +29,17 @@ export async function persistInitiativeAndStartCombat(
 
   if (error) throw new Error(error.message);
 }
+
+/** Persists current_turn_index and round_number after a turn advance. */
+export async function persistTurnAdvance(
+  encounterId: string,
+  currentTurnIndex: number,
+  roundNumber: number
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("encounters")
+    .update({ current_turn_index: currentTurnIndex, round_number: roundNumber })
+    .eq("id", encounterId);
+  if (error) throw new Error(error.message);
+}

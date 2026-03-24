@@ -59,6 +59,27 @@ export const useCombatStore = create<CombatStore>((set) => ({
     set({ is_active: true, current_turn_index: 0 }),
 
   hydrateCombatants: (combatants) => set({ combatants }),
+
+  advanceTurn: () =>
+    set((state) => {
+      const { combatants, current_turn_index, round_number } = state;
+      if (combatants.length === 0) return state;
+      let next = current_turn_index;
+      let roundBumped = false;
+      for (let i = 0; i < combatants.length; i++) {
+        next = (next + 1) % combatants.length;
+        if (next === 0) roundBumped = true;
+        if (!combatants[next].is_defeated) break;
+      }
+      if (combatants[next].is_defeated) return state;
+      return {
+        current_turn_index: next,
+        round_number: roundBumped ? round_number + 1 : round_number,
+      };
+    }),
+
+  hydrateActiveState: (currentTurnIndex, roundNumber) =>
+    set({ is_active: true, current_turn_index: currentTurnIndex, round_number: roundNumber }),
 }));
 
 /** Auto-number combatants with the same base name.

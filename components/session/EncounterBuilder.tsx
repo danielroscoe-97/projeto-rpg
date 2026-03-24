@@ -272,8 +272,8 @@ export function EncounterBuilder() {
 
       {/* Custom NPC form + Load Campaign */}
       <div>
-        {!showCustomForm ? (
-          <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mb-2">
+          {!showCustomForm && (
             <button
               onClick={() => setShowCustomForm(true)}
               className="text-sm text-white/50 hover:text-white/80 underline transition-colors"
@@ -281,9 +281,10 @@ export function EncounterBuilder() {
             >
               + Add Custom NPC
             </button>
-            <CampaignLoader onLoad={handleLoadCampaign} />
-          </div>
-        ) : (
+          )}
+          <CampaignLoader onLoad={handleLoadCampaign} />
+        </div>
+        {showCustomForm ? (
           <div
             className="bg-[#16213e] border border-white/10 rounded-md p-4 space-y-3"
             data-testid="custom-npc-form"
@@ -379,7 +380,7 @@ export function EncounterBuilder() {
               </button>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Combatant list */}

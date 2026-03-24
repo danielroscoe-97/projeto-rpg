@@ -1,6 +1,6 @@
 # Story 2.3: Add & Edit Player Characters in a Campaign
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -37,39 +37,39 @@ so that I never have to re-enter player data between sessions.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create `app/app/campaigns/[id]/page.tsx`** (AC: 4, 5)
-  - [ ] Server Component — verify auth (`createClient` from server), redirect to `/auth/login` if no user
-  - [ ] Fetch campaign by `id` where `owner_id = user.id`; if not found or not owned by user → `redirect('/app/dashboard')`
-  - [ ] Fetch all player characters for this campaign ordered by `created_at ASC`
-  - [ ] Render campaign name as heading, "Back to Dashboard" link, and `<PlayerCharacterManager>` client component
-  - [ ] Pass `initialCharacters`, `campaignId`, and `campaignName` as props
+- [x] **Task 1: Create `app/app/campaigns/[id]/page.tsx`** (AC: 4, 5)
+  - [x] Server Component — verify auth (`createClient` from server), redirect to `/auth/login` if no user
+  - [x] Fetch campaign by `id` where `owner_id = user.id`; if not found or not owned by user → `redirect('/app/dashboard')`
+  - [x] Fetch all player characters for this campaign ordered by `created_at ASC`
+  - [x] Render campaign name as heading, "Back to Dashboard" link, and `<PlayerCharacterManager>` client component
+  - [x] Pass `initialCharacters`, `campaignId`, and `campaignName` as props
 
-- [ ] **Task 2: Create `components/dashboard/PlayerCharacterManager.tsx`** (AC: 1, 2, 3, 4)
-  - [ ] `"use client"` component receiving `initialCharacters: PlayerCharacter[]`, `campaignId: string`, `campaignName: string`
-  - [ ] Renders list of player characters; each row shows: name, max HP, current HP, AC, spell save DC (or "—"), Edit button, Remove button
-  - [ ] "Add Player" button → shows inline form with fields: name (text), max_hp (number), ac (number), spell_save_dc (number, optional)
-  - [ ] Validation: name non-empty, max_hp ≥ 1, ac ≥ 1; spell_save_dc ≥ 1 if provided
-  - [ ] On save: insert new character with `current_hp = max_hp` on creation
-  - [ ] Edit mode: inline form per row with pre-filled values; Save persists, Cancel discards
-  - [ ] Note: editing `max_hp` should also update `current_hp` if `current_hp === max_hp` (character at full health)
-  - [ ] Remove: confirmation dialog before delete
-  - [ ] Show loading state during async operations; show error inline
+- [x] **Task 2: Create `components/dashboard/PlayerCharacterManager.tsx`** (AC: 1, 2, 3, 4)
+  - [x] `"use client"` component receiving `initialCharacters: PlayerCharacter[]`, `campaignId: string`, `campaignName: string`
+  - [x] Renders list of player characters; each row shows: name, max HP, current HP, AC, spell save DC (or "—"), Edit button, Remove button
+  - [x] "Add Player" button → shows inline form with fields: name (text), max_hp (number), ac (number), spell_save_dc (number, optional)
+  - [x] Validation: name non-empty, max_hp ≥ 1, ac ≥ 1; spell_save_dc ≥ 1 if provided
+  - [x] On save: insert new character with `current_hp = max_hp` on creation
+  - [x] Edit mode: inline form per row with pre-filled values; Save persists, Cancel discards
+  - [x] Note: editing `max_hp` should also update `current_hp` if `current_hp === max_hp` (character at full health)
+  - [x] Remove: confirmation dialog before delete
+  - [x] Show loading state during async operations; show error inline
 
-- [ ] **Task 3: Write tests for `PlayerCharacterManager`** (AC: 1–4)
-  - [ ] File: `components/dashboard/PlayerCharacterManager.test.tsx`
-  - [ ] Test: renders list of characters with stats
-  - [ ] Test: "Add Player" button shows inline form
-  - [ ] Test: Save disabled when required fields are empty
-  - [ ] Test: valid form calls `supabase.from('player_characters').insert(...)`
-  - [ ] Test: new character appears in list after successful save
-  - [ ] Test: Edit button shows form pre-filled with character data
-  - [ ] Test: update calls `supabase.from('player_characters').update(...)`
-  - [ ] Test: Remove button shows confirmation
-  - [ ] Test: confirm remove calls `supabase.from('player_characters').delete(...)`
-  - [ ] Mock: Supabase browser client via Jest mock
+- [x] **Task 3: Write tests for `PlayerCharacterManager`** (AC: 1–4)
+  - [x] File: `components/dashboard/PlayerCharacterManager.test.tsx`
+  - [x] Test: renders list of characters with stats
+  - [x] Test: "Add Player" button shows inline form
+  - [x] Test: Save disabled when required fields are empty
+  - [x] Test: valid form calls `supabase.from('player_characters').insert(...)`
+  - [x] Test: new character appears in list after successful save
+  - [x] Test: Edit button shows form pre-filled with character data
+  - [x] Test: update calls `supabase.from('player_characters').update(...)`
+  - [x] Test: Remove button shows confirmation
+  - [x] Test: confirm remove calls `supabase.from('player_characters').delete(...)`
+  - [x] Mock: Supabase browser client via Jest mock
 
-- [ ] **Task 4: Update sprint-status.yaml**
-  - [ ] Change `2-3-add-and-edit-player-characters-in-a-campaign` → `in-progress` when starting, `review` on completion
+- [x] **Task 4: Update sprint-status.yaml**
+  - [x] Change `2-3-add-and-edit-player-characters-in-a-campaign` → `in-progress` when starting, `review` on completion
 
 ## Dev Notes
 
@@ -257,16 +257,28 @@ The `app/app/campaigns/[id]/page.tsx` is protected by `app/app/layout.tsx` which
 
 ### Agent Model Used
 
-_to be filled by dev agent_
+claude-sonnet-4-6
 
 ### Debug Log References
 
-_to be filled by dev agent_
+No blockers encountered. All tasks implemented in a single pass.
 
 ### Completion Notes List
 
-_to be filled by dev agent_
+- Task 1: Created `app/app/campaigns/[id]/page.tsx` as a Server Component. Verifies auth, checks campaign ownership (redirects to dashboard if not owned), fetches player characters ordered by `created_at ASC`, and renders `PlayerCharacterManager` with props.
+- Task 2: Created `PlayerCharacterManager.tsx` as a `"use client"` component. Implements full CRUD: inline add form, per-row inline edit form (pre-filled), inline remove confirmation. `current_hp` is synced to `max_hp` on insert and on edit when the character is at full health. Inline error display and loading state included. Confirmation uses inline state (no external dialog component) consistent with `CampaignManager` pattern.
+- Task 3: Created 15 unit tests covering all story-specified scenarios. Mocks Supabase browser client via Jest mock following the established `CampaignManager.test.tsx` pattern.
+- Task 4: sprint-status.yaml updated: `ready-for-dev → in-progress` at start, `in-progress → review` at completion.
+- All 140 tests pass (125 pre-existing + 15 new), zero regressions.
 
 ### File List
 
-_to be filled by dev agent_
+- `app/app/campaigns/[id]/page.tsx` — NEW
+- `components/dashboard/PlayerCharacterManager.tsx` — NEW
+- `components/dashboard/PlayerCharacterManager.test.tsx` — NEW
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — MODIFIED (story status → review)
+- `_bmad-output/implementation-artifacts/2-3-add-and-edit-player-characters-in-a-campaign.md` — MODIFIED (tasks checked, dev record filled, status → review)
+
+### Change Log
+
+- 2026-03-24: Story 2.3 implemented — campaign detail page + PlayerCharacterManager CRUD component + 15 unit tests. All ACs satisfied, full regression suite green (140/140).

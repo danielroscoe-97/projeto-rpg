@@ -31,6 +31,15 @@ function getHpBarColor(current: number, max: number): string {
   return "bg-red-500";
 }
 
+/** Returns a text label for the HP threshold — satisfies NFR21 (color is not the sole indicator). */
+function getHpThresholdLabel(current: number, max: number): string {
+  if (max === 0) return "";
+  const pct = current / max;
+  if (pct > 0.5) return "OK";
+  if (pct > 0.25) return "LOW";
+  return "CRIT";
+}
+
 interface CombatantRowProps {
   combatant: Combatant;
   isCurrentTurn: boolean;
@@ -43,6 +52,7 @@ export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
     ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
     : 0;
   const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
+  const hpThresholdLabel = getHpThresholdLabel(combatant.current_hp, combatant.max_hp);
   const hasTempHp = combatant.temp_hp > 0;
 
   // Look up full monster data for stat block expansion
@@ -67,27 +77,29 @@ export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
         isCurrentTurn ? "border-[#e94560]" : "border-white/10"
       } ${combatant.is_defeated ? "opacity-50" : ""}`}
       role="listitem"
-      aria-current={isCurrentTurn ? "true" : undefined}
+      aria-current={isCurrentTurn ? true : undefined}
       data-testid={`combatant-row-${combatant.id}`}
     >
       {/* === ZERO-TAP TIER: always visible === */}
       <div className="px-4 py-3">
         {/* Name row */}
         <div className="flex items-center gap-2 mb-2">
-          {/* Turn indicator */}
+          {/* Turn indicator — shape glyph (▶) satisfies NFR21: color is not the sole indicator */}
           {isCurrentTurn && (
             <span
-              className="w-2 h-2 rounded-full bg-[#e94560] shrink-0"
+              className="text-[#e94560] shrink-0 text-xs leading-none select-none"
               aria-label="Current turn"
               data-testid="current-turn-indicator"
-            />
+            >
+              ▶
+            </span>
           )}
 
-          {/* Name — clickable to expand if monster */}
+          {/* Name — clickable to expand if monster; min-h-[44px] satisfies NFR24 */}
           <button
             type="button"
             onClick={handleToggle}
-            className={`flex-1 text-left text-sm font-medium transition-colors ${
+            className={`flex-1 flex items-center text-left text-sm font-medium transition-colors min-h-[44px] ${
               canExpand
                 ? "text-white hover:text-[#e94560] cursor-pointer"
                 : "text-white cursor-default"
@@ -124,6 +136,15 @@ export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
             <span className="text-white/50 text-xs">HP</span>
             <span className="text-white/70 text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
               {combatant.current_hp} / {combatant.max_hp}
+              {/* HP threshold text label — satisfies NFR21 for sighted color-blind users */}
+              {hpThresholdLabel && (
+                <span
+                  className="text-xs font-mono ml-1 text-white/50"
+                  data-testid={`hp-threshold-${combatant.id}`}
+                >
+                  {hpThresholdLabel}
+                </span>
+              )}
               {hasTempHp && (
                 <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
                   +{combatant.temp_hp} temp
@@ -137,7 +158,7 @@ export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
             aria-valuenow={combatant.current_hp}
             aria-valuemin={0}
             aria-valuemax={combatant.max_hp}
-            aria-label={`${combatant.name} hit points`}
+            aria-label={`${combatant.name} hit points${hpThresholdLabel ? ` — ${hpThresholdLabel}` : ""}`}
           >
             <div
               className={`h-full rounded-full transition-all ${hpBarColor}`}

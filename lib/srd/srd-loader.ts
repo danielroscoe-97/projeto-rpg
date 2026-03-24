@@ -1,13 +1,48 @@
 import type { RulesetVersion } from "@/lib/types/database";
 
+export interface MonsterAction {
+  name: string;
+  desc: string;
+  attack_bonus?: number;
+}
+
 export interface SrdMonster {
+  // --- Search fields ---
   id: string;
   name: string;
+  /** Maps from DB challenge_rating */
   cr: string;
   type: string;
+  /** Maps from DB hp */
   hit_points: number;
+  /** Maps from DB ac */
   armor_class: number;
   ruleset_version: RulesetVersion;
+
+  // --- Full stat block fields (present in bundles; optional for lean test fixtures) ---
+  size?: string;
+  alignment?: string | null;
+  hp_formula?: string | null;
+  speed?: Record<string, string | number>;
+  str?: number;
+  dex?: number;
+  con?: number;
+  int?: number;
+  wis?: number;
+  cha?: number;
+  saving_throws?: Record<string, number> | null;
+  skills?: Record<string, number> | null;
+  damage_vulnerabilities?: string | null;
+  damage_resistances?: string | null;
+  damage_immunities?: string | null;
+  condition_immunities?: string | null;
+  senses?: string | null;
+  languages?: string | null;
+  xp?: number | null;
+  special_abilities?: MonsterAction[] | null;
+  actions?: MonsterAction[] | null;
+  legendary_actions?: MonsterAction[] | null;
+  reactions?: MonsterAction[] | null;
 }
 
 export interface SrdSpell {

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git --version)",
+      "Bash(npm --version)",
+      "WebFetch(domain:github.com)",
+      "Bash(npx bmad-method:*)",
+      "Bash(gh auth:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "WebSearch",
+      "Read(//c/Users/dani_/Downloads/**)",
+      "Bash(npx create-next-app@latest projeto-rpg-temp --template with-supabase --yes)",
+      "Bash(cp -r app components lib \"c:/Users/dani_/Downloads/projeto-rpg/\")",
+      "Bash(cp package.json package-lock.json tsconfig.json tailwind.config.ts next.config.ts postcss.config.mjs eslint.config.mjs components.json proxy.ts .env.example \"c:/Users/dani_/Downloads/projeto-rpg/\")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(grep -r \"signout\\\\|sign-out\\\\|signOut\" c:/Users/dani_/Downloads/projeto-rpg/app/ --include=*.ts --include=*.tsx -l)",
+      "Bash(grep -v \"^$\")",
+      "Bash(npx jest:*)",
+      "Bash(npx supabase:*)"
+    ]
+  }
+}

@@ -80,7 +80,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
         </div>
         <Link
           href="/app/dashboard"
-          className="text-sm text-white/40 hover:text-white/70 transition-colors"
+          className="text-sm text-white/40 hover:text-white/70 transition-colors min-h-[44px] inline-flex items-center"
+          aria-label="Back to Dashboard"
         >
           ← Dashboard
         </Link>
@@ -94,6 +95,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
           initialCombatants={combatants}
           isActive={encounter.is_active ?? false}
           roundNumber={encounter.round_number ?? 1}
+          currentTurnIndex={encounter.current_turn_index ?? 0}
         />
       ) : (
         <p className="text-white/40 text-sm text-center mt-12">

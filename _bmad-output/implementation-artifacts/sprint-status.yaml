@@ -37,6 +37,7 @@
 generated: 2026-03-24
 last_updated: 2026-03-24
 project: projeto-rpg
+
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -52,12 +53,12 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Campaign & Player Group Management
-  epic-2: in-progress
+  epic-2: done
   2-1-first-time-dm-onboarding-flow: done
   2-2-create-and-manage-campaigns-player-groups: done
-  2-3-add-and-edit-player-characters-in-a-campaign: review
-  2-4-load-saved-player-group-into-encounter: review
-  2-5-account-deletion-and-data-erasure: review
+  2-3-add-and-edit-player-characters-in-a-campaign: done
+  2-4-load-saved-player-group-into-encounter: done
+  2-5-account-deletion-and-data-erasure: done
   epic-2-retrospective: optional
 
   # Epic 3: Combat Tracker Core
@@ -65,7 +66,7 @@ development_status:
   3-1-create-encounter-and-add-monsters: done
   3-2-ruleset-version-selection-per-session: done
   3-3-initiative-entry-sorting-and-tiebreaker-resolution: done
-  3-4-turn-advancement-and-combat-flow: in-progress
+  3-4-turn-advancement-and-combat-flow: review
   3-5-hp-management-damage-healing-and-temporary-hp: backlog
   3-6-conditions-apply-display-and-remove: backlog
   3-7-defeat-remove-and-add-combatants-mid-combat: backlog
@@ -102,9 +103,9 @@ development_status:
   epic-6-retrospective: optional
 
   # Epic 7: Performance, Accessibility & Production Hardening
-  epic-7: backlog
-  7-1-performance-optimization-and-web-vitals: backlog
-  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: backlog
+  epic-7: in-progress
+  7-1-performance-optimization-and-web-vitals: done
+  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: in-progress
   7-3-load-testing-and-scalability-validation: backlog
   7-4-error-tracking-and-monitoring-setup: backlog
   7-5-security-hardening-and-input-validation: backlog

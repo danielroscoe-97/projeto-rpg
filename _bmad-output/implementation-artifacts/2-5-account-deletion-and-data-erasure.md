@@ -1,6 +1,6 @@
 # Story 2.5: Account Deletion & Data Erasure
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -32,44 +32,44 @@ so that my right to data erasure under LGPD/GDPR is respected.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Create `app/api/account/delete/route.ts`** (AC: 2, 3)
-  - [ ] POST handler — verify request is from an authenticated user (use `createClient` from server)
-  - [ ] Call `supabase.auth.admin.deleteUser(user.id)` using a Supabase Admin client (service role key)
-  - [ ] DB cascade handles deletion of all related data (see Dev Notes)
-  - [ ] Return `{ success: true }` on success, or `{ error: "..." }` with appropriate HTTP status on failure
-  - [ ] Do NOT expose service role key to client — this route is server-side only
+- [x] **Task 1: Create `app/api/account/delete/route.ts`** (AC: 2, 3)
+  - [x] POST handler — verify request is from an authenticated user (use `createClient` from server)
+  - [x] Call `supabase.auth.admin.deleteUser(user.id)` using a Supabase Admin client (service role key)
+  - [x] DB cascade handles deletion of all related data (see Dev Notes)
+  - [x] Return `{ success: true }` on success, or `{ error: "..." }` with appropriate HTTP status on failure
+  - [x] Do NOT expose service role key to client — this route is server-side only
 
-- [ ] **Task 2: Create `app/app/settings/page.tsx`** (AC: 1, 5)
-  - [ ] Server Component — auth check, redirect to `/auth/login` if no user
-  - [ ] Render `<AccountDeletion>` client component (passing `userId` is NOT needed — the API route re-verifies auth)
-  - [ ] Page heading: "Account Settings"
+- [x] **Task 2: Create `app/app/settings/page.tsx`** (AC: 1, 5)
+  - [x] Server Component — auth check, redirect to `/auth/login` if no user
+  - [x] Render `<AccountDeletion>` client component (passing `userId` is NOT needed — the API route re-verifies auth)
+  - [x] Page heading: "Account Settings"
 
-- [ ] **Task 3: Create `components/settings/AccountDeletion.tsx`** (AC: 1, 2, 3, 4)
-  - [ ] `"use client"` component with a "Delete Account" button
-  - [ ] Clicking the button opens a confirmation `<AlertDialog>` (shadcn/ui)
-  - [ ] Dialog warns: "This will permanently delete your account and all your campaigns, player characters, and session history. This cannot be undone."
-  - [ ] On confirm: POST to `/api/account/delete`, then call `supabase.auth.signOut()`, then `router.push('/')`
-  - [ ] Show loading state during the deletion; disable button to prevent double-submit
-  - [ ] On error: show inline error message (not Toast)
+- [x] **Task 3: Create `components/settings/AccountDeletion.tsx`** (AC: 1, 2, 3, 4)
+  - [x] `"use client"` component with a "Delete Account" button
+  - [x] Clicking the button opens a confirmation `<AlertDialog>` (shadcn/ui)
+  - [x] Dialog warns: "This will permanently delete your account and all your campaigns, player characters, and session history. This cannot be undone."
+  - [x] On confirm: POST to `/api/account/delete`, then call `supabase.auth.signOut()`, then `router.push('/')`
+  - [x] Show loading state during the deletion; disable button to prevent double-submit
+  - [x] On error: show inline error message (not Toast)
 
-- [ ] **Task 4: Add Settings link to navigation** (AC: 5)
-  - [ ] In `app/app/layout.tsx` — add a "Settings" link in the nav bar pointing to `/app/settings`
-  - [ ] Use minimal, non-intrusive styling (e.g., `text-white/50 hover:text-white text-sm`)
-  - [ ] Do NOT break existing nav bar layout
+- [x] **Task 4: Add Settings link to navigation** (AC: 5)
+  - [x] In `app/app/layout.tsx` — add a "Settings" link in the nav bar pointing to `/app/settings`
+  - [x] Use minimal, non-intrusive styling (e.g., `text-white/50 hover:text-white text-sm`)
+  - [x] Do NOT break existing nav bar layout
 
-- [ ] **Task 5: Write tests for `AccountDeletion`** (AC: 1–4)
-  - [ ] File: `components/settings/AccountDeletion.test.tsx`
-  - [ ] Test: renders "Delete Account" button
-  - [ ] Test: clicking button opens confirmation dialog
-  - [ ] Test: confirmation dialog shows warning text
-  - [ ] Test: cancel button closes dialog without calling API
-  - [ ] Test: confirm button POSTs to `/api/account/delete` then signs out and navigates to `/`
-  - [ ] Test: shows loading state during deletion
-  - [ ] Test: shows error message if API returns error
-  - [ ] Mock: `fetch`, `@/lib/supabase/client`, `next/navigation`
+- [x] **Task 5: Write tests for `AccountDeletion`** (AC: 1–4)
+  - [x] File: `components/settings/AccountDeletion.test.tsx`
+  - [x] Test: renders "Delete Account" button
+  - [x] Test: clicking button opens confirmation dialog
+  - [x] Test: confirmation dialog shows warning text
+  - [x] Test: cancel button closes dialog without calling API
+  - [x] Test: confirm button POSTs to `/api/account/delete` then signs out and navigates to `/`
+  - [x] Test: shows loading state during deletion
+  - [x] Test: shows error message if API returns error
+  - [x] Mock: `fetch`, `@/lib/supabase/client`, `next/navigation`
 
-- [ ] **Task 6: Update sprint-status.yaml**
-  - [ ] Change `2-5-account-deletion-and-data-erasure` → `in-progress` when starting, `review` on completion
+- [x] **Task 6: Update sprint-status.yaml**
+  - [x] Change `2-5-account-deletion-and-data-erasure` → `in-progress` when starting, `review` on completion
 
 ## Dev Notes
 
@@ -299,16 +299,28 @@ No custom type imports needed for this story — uses standard Supabase auth typ
 
 ### Agent Model Used
 
-_to be filled by dev agent_
+claude-sonnet-4-6
 
 ### Debug Log References
 
-_to be filled by dev agent_
+- Test: `getByText(/permanently delete your account/i)` matched both the static description paragraph and the dialog description — fixed by scoping assertion with `within(dialog)`.
 
 ### Completion Notes List
 
-_to be filled by dev agent_
+- Tasks 1–3 were already implemented from a prior session; verified all files match the story spec exactly.
+- Task 4: Added Settings link to `app/app/layout.tsx` nav bar between Dashboard and LogoutButton, using `text-white/50 hover:text-white text-sm transition-colors` styling.
+- Task 5: Created 7 unit tests covering all required scenarios (render, open dialog, warning text, cancel, confirm+signout+redirect, loading state, error display). All 7 pass. Full suite: 147 tests, 0 regressions.
+- `alert-dialog` shadcn component was already installed at `components/ui/alert-dialog.tsx`.
 
 ### File List
 
-_to be filled by dev agent_
+- `app/api/account/delete/route.ts` — NEW: POST handler for account deletion (server-side, service role key)
+- `app/app/settings/page.tsx` — NEW: Server Component settings page with auth guard
+- `components/settings/AccountDeletion.tsx` — NEW: Client component with AlertDialog delete flow
+- `components/settings/AccountDeletion.test.tsx` — NEW: 7 unit tests for AccountDeletion
+- `app/app/layout.tsx` — MODIFIED: Added Settings nav link
+- `_bmad-output/implementation-artifacts/2-5-account-deletion-and-data-erasure.md` — MODIFIED: story tracking
+
+## Change Log
+
+- 2026-03-24: Implemented Story 2.5 — account deletion API route, settings page, AccountDeletion component, nav link, and full unit test suite (7 tests). All ACs satisfied.

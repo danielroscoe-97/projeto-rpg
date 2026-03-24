@@ -45,4 +45,8 @@ export interface CombatActions {
   startCombat: () => void;
   /** Hydrate the store with server-fetched combatants, preserving their DB ids. */
   hydrateCombatants: (combatants: Combatant[]) => void;
+  /** Advance to the next non-defeated combatant, incrementing round_number if the list wraps. No-op if all defeated. */
+  advanceTurn: () => void;
+  /** Hydrate active combat state from server on page load (preserves real turn/round, avoids startCombat resetting to 0). */
+  hydrateActiveState: (currentTurnIndex: number, roundNumber: number) => void;
 }

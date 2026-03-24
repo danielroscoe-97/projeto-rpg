@@ -8,6 +8,8 @@ export type { SrdMonster };
 let monsterIndex: Fuse<SrdMonster> | null = null;
 let spellIndex: Fuse<SrdSpell> | null = null;
 let conditionData: SrdCondition[] = [];
+// keyed by `${id}:${ruleset_version}` for O(1) stat block lookup
+let monsterMap: Map<string, SrdMonster> = new Map();
 
 const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
   keys: [
@@ -33,6 +35,7 @@ const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
 
 export function buildMonsterIndex(data: SrdMonster[]): void {
   monsterIndex = new Fuse(data, MONSTER_OPTIONS);
+  monsterMap = new Map(data.map((m) => [`${m.id}:${m.ruleset_version}`, m]));
 }
 
 export function buildSpellIndex(data: SrdSpell[]): void {
@@ -74,9 +77,18 @@ export function getAllConditions(): SrdCondition[] {
   return conditionData;
 }
 
+/** Look up a single monster by SRD id and ruleset version. O(1) map lookup. */
+export function getMonsterById(
+  id: string,
+  version: RulesetVersion
+): SrdMonster | undefined {
+  return monsterMap.get(`${id}:${version}`);
+}
+
 /** Resets singleton indexes — for testing only. */
 export function resetSrdIndexes(): void {
   monsterIndex = null;
   spellIndex = null;
   conditionData = [];
+  monsterMap = new Map();
 }
