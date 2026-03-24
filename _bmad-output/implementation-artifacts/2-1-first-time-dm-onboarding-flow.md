@@ -1,6 +1,6 @@
 # Story 2.1: First-Time DM Onboarding Flow
 
-Status: review
+Status: done
 
 ## Story
 
@@ -16,7 +16,7 @@ so that I can start my first session quickly without confusion.
 
 2. **Given** the `/app/onboarding` page,
    **When** the DM follows the guided flow,
-   **Then** they are prompted to: (a) name their first campaign, (b) add at least one player character (name, HP, AC, spell save DC), and (c) create their first encounter.
+   **Then** they are prompted to: (a) name their first campaign, (b) add at least one player character (name, HP, AC; spell save DC optional), and (c) name and create their first encounter.
 
 3. **Given** completion of all onboarding steps,
    **When** the DM finishes the flow,

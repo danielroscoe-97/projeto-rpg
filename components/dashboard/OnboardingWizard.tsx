@@ -15,30 +15,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+const MAX_PLAYERS = 8;
+
+let _playerIdCounter = 0;
+function newPlayer(): PlayerInput {
+  return { _id: ++_playerIdCounter, name: "", max_hp: 20, ac: 10, spell_save_dc: null };
+}
+
 interface PlayerInput {
+  _id: number;
   name: string;
   max_hp: number;
   ac: number;
   spell_save_dc: number | null;
 }
 
-type WizardStep = 1 | 2 | 3 | "done";
+type WizardStep = 1 | 2 | 3 | 4 | "done";
 
 interface WizardState {
   step: WizardStep;
   campaignName: string;
   players: PlayerInput[];
+  encounterName: string;
   sessionLink: string | null;
   isSubmitting: boolean;
   error: string | null;
+  copyError: string | null;
 }
-
-const EMPTY_PLAYER: PlayerInput = {
-  name: "",
-  max_hp: 20,
-  ac: 10,
-  spell_save_dc: null,
-};
 
 interface OnboardingWizardProps {
   userId: string;
@@ -49,13 +52,15 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   const [state, setState] = useState<WizardState>({
     step: 1,
     campaignName: "",
-    players: [{ ...EMPTY_PLAYER }],
+    players: [newPlayer()],
+    encounterName: "First Encounter",
     sessionLink: null,
     isSubmitting: false,
     error: null,
+    copyError: null,
   });
 
-  // ── Step 1 handlers ──────────────────────────────────────────────
+  // ── Step 1 ────────────────────────────────────────────────────────
   function handleCampaignNameChange(value: string) {
     setState((s) => ({ ...s, campaignName: value, error: null }));
   }
@@ -67,16 +72,13 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       return;
     }
     if (trimmed.length > 50) {
-      setState((s) => ({
-        ...s,
-        error: "Campaign name must be 50 characters or fewer.",
-      }));
+      setState((s) => ({ ...s, error: "Campaign name must be 50 characters or fewer." }));
       return;
     }
     setState((s) => ({ ...s, step: 2, error: null }));
   }
 
-  // ── Step 2 handlers ──────────────────────────────────────────────
+  // ── Step 2 ────────────────────────────────────────────────────────
   function handlePlayerChange(
     index: number,
     field: keyof PlayerInput,
@@ -87,18 +89,16 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         if (i !== index) return p;
         if (field === "name") return { ...p, name: value };
         if (field === "spell_save_dc")
-          return { ...p, spell_save_dc: value === "" ? null : Number(value) };
-        return { ...p, [field]: Number(value) };
+          return { ...p, spell_save_dc: value === "" ? null : parseInt(value, 10) };
+        return { ...p, [field]: parseInt(value, 10) };
       });
       return { ...s, players: updated, error: null };
     });
   }
 
   function handleAddPlayer() {
-    setState((s) => ({
-      ...s,
-      players: [...s.players, { ...EMPTY_PLAYER }],
-    }));
+    if (state.players.length >= MAX_PLAYERS) return;
+    setState((s) => ({ ...s, players: [...s.players, newPlayer()] }));
   }
 
   function handleRemovePlayer(index: number) {
@@ -109,24 +109,58 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   }
 
   function handleStep2Next() {
-    const valid = state.players.every(
-      (p) => p.name.trim() && p.max_hp > 0 && p.ac > 0
-    );
-    if (!valid) {
-      setState((s) => ({
-        ...s,
-        error: "All players need a name, HP, and AC.",
-      }));
-      return;
+    for (const p of state.players) {
+      if (!p.name.trim()) {
+        setState((s) => ({ ...s, error: "All players need a name, HP, and AC." }));
+        return;
+      }
+      if (!p.max_hp || isNaN(p.max_hp) || p.max_hp <= 0 || p.max_hp > 9999) {
+        setState((s) => ({ ...s, error: "All players need a name, HP, and AC." }));
+        return;
+      }
+      if (!p.ac || isNaN(p.ac) || p.ac <= 0 || p.ac > 99) {
+        setState((s) => ({ ...s, error: "All players need a name, HP, and AC." }));
+        return;
+      }
+      if (
+        p.spell_save_dc !== null &&
+        (isNaN(p.spell_save_dc) || p.spell_save_dc <= 0 || p.spell_save_dc > 99)
+      ) {
+        setState((s) => ({
+          ...s,
+          error: "Spell save DC must be between 1 and 99 if provided.",
+        }));
+        return;
+      }
     }
     setState((s) => ({ ...s, step: 3, error: null }));
   }
 
-  // ── Step 3 submit ─────────────────────────────────────────────────
+  // ── Step 3 ────────────────────────────────────────────────────────
+  function handleEncounterNameChange(value: string) {
+    setState((s) => ({ ...s, encounterName: value, error: null }));
+  }
+
+  function handleStep3Next() {
+    const trimmed = state.encounterName.trim();
+    if (!trimmed) {
+      setState((s) => ({ ...s, error: "Encounter name is required." }));
+      return;
+    }
+    if (trimmed.length > 50) {
+      setState((s) => ({ ...s, error: "Encounter name must be 50 characters or fewer." }));
+      return;
+    }
+    setState((s) => ({ ...s, step: 4, error: null }));
+  }
+
+  // ── Step 4 submit ─────────────────────────────────────────────────
   async function handleSubmit() {
+    if (state.isSubmitting) return;
     setState((s) => ({ ...s, isSubmitting: true, error: null }));
     const supabase = createClient();
     const campaignName = state.campaignName.trim();
+    const encounterName = state.encounterName.trim();
 
     try {
       // 1. Create Campaign
@@ -150,7 +184,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       const { error: pcErr } = await supabase
         .from("player_characters")
         .insert(characters);
-      if (pcErr) throw new Error("Failed to save player characters. Please try again.");
+      if (pcErr)
+        throw new Error("Failed to save player characters. Please try again.");
 
       // 3. Create Session
       const { data: session, error: sessionErr } = await supabase
@@ -167,13 +202,14 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       if (sessionErr || !session)
         throw new Error("Failed to create session. Please try again.");
 
-      // 4. Create Encounter
+      // 4. Create Encounter (named by DM in Step 3)
       const { error: encErr } = await supabase.from("encounters").insert({
         session_id: session.id,
-        name: "First Encounter",
+        name: encounterName,
         is_active: true,
       });
-      if (encErr) throw new Error("Failed to create encounter. Please try again.");
+      if (encErr)
+        throw new Error("Failed to create encounter. Please try again.");
 
       // 5. Generate Session Token
       const token = crypto.randomUUID();
@@ -183,10 +219,9 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       if (tokenErr)
         throw new Error("Failed to generate session link. Please try again.");
 
-      const link = `/join/${token}`;
       setState((s) => ({
         ...s,
-        sessionLink: link,
+        sessionLink: `/join/${token}`,
         step: "done",
         isSubmitting: false,
       }));
@@ -201,22 +236,30 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
 
   async function handleCopyLink() {
     if (!state.sessionLink) return;
-    const url = `${window.location.origin}${state.sessionLink}`;
-    await navigator.clipboard.writeText(url);
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}${state.sessionLink}`
+      );
+      setState((s) => ({ ...s, copyError: null }));
+    } catch {
+      setState((s) => ({
+        ...s,
+        copyError: "Could not copy — please copy the link manually.",
+      }));
+    }
   }
 
   // ── Render ────────────────────────────────────────────────────────
-  const stepLabels = ["Campaign", "Players", "Launch"];
+  const stepLabels = ["Campaign", "Players", "Encounter", "Launch"];
 
   return (
     <Card className="max-w-lg w-full bg-[#16213e] border-white/10 text-white">
       <CardHeader>
-        {/* Step indicator */}
         <div className="flex gap-2 mb-2" aria-label="Onboarding progress">
           {stepLabels.map((label, i) => {
             const num = i + 1;
             const isActive =
-              state.step === num || (state.step === "done" && num === 3);
+              state.step === num || (state.step === "done" && num === 4);
             const isDone =
               (typeof state.step === "number" && state.step > num) ||
               state.step === "done";
@@ -235,9 +278,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 </span>
                 <span
                   className={`text-xs ${
-                    isActive
-                      ? "text-[#e94560] font-medium"
-                      : "text-white/50"
+                    isActive ? "text-[#e94560] font-medium" : "text-white/50"
                   }`}
                 >
                   {label}
@@ -252,7 +293,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         <CardTitle className="text-white">
           {state.step === 1 && "Name your campaign"}
           {state.step === 2 && "Add your players"}
-          {state.step === 3 && "Ready to launch"}
+          {state.step === 3 && "Set up your first encounter"}
+          {state.step === 4 && "Ready to launch"}
           {state.step === "done" && "You're all set!"}
         </CardTitle>
         <CardDescription className="text-white/60">
@@ -260,7 +302,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             "Give your group a name — you can change it later."}
           {state.step === 2 &&
             "Add your players. HP and AC are required; spell save DC is optional."}
-          {state.step === 3 && "Review your setup and create your first session."}
+          {state.step === 3 && "Name the first encounter your group will face."}
+          {state.step === 4 && "Review your setup and create your first session."}
           {state.step === "done" && "Share the link below with your players."}
         </CardDescription>
       </CardHeader>
@@ -292,7 +335,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           <div className="space-y-4">
             {state.players.map((player, index) => (
               <div
-                key={index}
+                key={player._id}
                 className="p-3 rounded-lg bg-white/5 border border-white/10 space-y-3"
               >
                 <div className="flex justify-between items-center">
@@ -312,15 +355,16 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2 space-y-1">
                     <Label
-                      htmlFor={`player-name-${index}`}
+                      htmlFor={`player-name-${player._id}`}
                       className="text-white text-xs"
                     >
                       Character name *
                     </Label>
                     <Input
-                      id={`player-name-${index}`}
+                      id={`player-name-${player._id}`}
                       placeholder="e.g. Thorin"
                       value={player.name}
+                      maxLength={50}
                       onChange={(e) =>
                         handlePlayerChange(index, "name", e.target.value)
                       }
@@ -329,15 +373,16 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                   </div>
                   <div className="space-y-1">
                     <Label
-                      htmlFor={`player-hp-${index}`}
+                      htmlFor={`player-hp-${player._id}`}
                       className="text-white text-xs"
                     >
                       Max HP *
                     </Label>
                     <Input
-                      id={`player-hp-${index}`}
+                      id={`player-hp-${player._id}`}
                       type="number"
                       min={1}
+                      max={9999}
                       value={player.max_hp}
                       onChange={(e) =>
                         handlePlayerChange(index, "max_hp", e.target.value)
@@ -347,15 +392,16 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                   </div>
                   <div className="space-y-1">
                     <Label
-                      htmlFor={`player-ac-${index}`}
+                      htmlFor={`player-ac-${player._id}`}
                       className="text-white text-xs"
                     >
                       AC *
                     </Label>
                     <Input
-                      id={`player-ac-${index}`}
+                      id={`player-ac-${player._id}`}
                       type="number"
                       min={1}
+                      max={99}
                       value={player.ac}
                       onChange={(e) =>
                         handlePlayerChange(index, "ac", e.target.value)
@@ -365,16 +411,17 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                   </div>
                   <div className="col-span-2 space-y-1">
                     <Label
-                      htmlFor={`player-dc-${index}`}
+                      htmlFor={`player-dc-${player._id}`}
                       className="text-white text-xs"
                     >
                       Spell save DC{" "}
                       <span className="text-white/40">(optional)</span>
                     </Label>
                     <Input
-                      id={`player-dc-${index}`}
+                      id={`player-dc-${player._id}`}
                       type="number"
                       min={1}
+                      max={99}
                       placeholder="—"
                       value={player.spell_save_dc ?? ""}
                       onChange={(e) =>
@@ -390,20 +437,43 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 </div>
               </div>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddPlayer}
-              className="w-full border-white/20 text-white/70 hover:text-white hover:bg-white/10"
-            >
-              + Add another player
-            </Button>
+            {state.players.length < MAX_PLAYERS && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleAddPlayer}
+                className="w-full border-white/20 text-white/70 hover:text-white hover:bg-white/10"
+              >
+                + Add another player
+              </Button>
+            )}
           </div>
         )}
 
-        {/* ── Step 3: Confirm ── */}
+        {/* ── Step 3: Encounter Name ── */}
         {state.step === 3 && (
+          <div className="space-y-2">
+            <Label htmlFor="encounter-name" className="text-white">
+              Encounter name
+            </Label>
+            <Input
+              id="encounter-name"
+              placeholder="e.g. Goblin Ambush"
+              value={state.encounterName}
+              onChange={(e) => handleEncounterNameChange(e.target.value)}
+              maxLength={50}
+              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
+              onKeyDown={(e) => e.key === "Enter" && handleStep3Next()}
+            />
+            <p className="text-xs text-white/40 text-right">
+              {state.encounterName.length}/50
+            </p>
+          </div>
+        )}
+
+        {/* ── Step 4: Confirm ── */}
+        {state.step === 4 && (
           <div className="space-y-3">
             <div className="p-3 rounded-lg bg-white/5 border border-white/10">
               <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
@@ -416,13 +486,19 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 Players ({state.players.length})
               </p>
               <ul className="space-y-1">
-                {state.players.map((p, i) => (
-                  <li key={i} className="text-sm text-white/80">
+                {state.players.map((p) => (
+                  <li key={p._id} className="text-sm text-white/80">
                     {p.name} — HP {p.max_hp} · AC {p.ac}
-                    {p.spell_save_dc ? ` · DC ${p.spell_save_dc}` : ""}
+                    {p.spell_save_dc !== null ? ` · DC ${p.spell_save_dc}` : ""}
                   </li>
                 ))}
               </ul>
+            </div>
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
+                First Encounter
+              </p>
+              <p className="text-white font-medium">{state.encounterName}</p>
             </div>
           </div>
         )}
@@ -435,9 +511,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 Session link
               </p>
               <p className="text-sm font-mono text-[#e94560] break-all">
-                {typeof window !== "undefined"
-                  ? `${window.location.origin}${state.sessionLink}`
-                  : state.sessionLink}
+                {state.sessionLink}
               </p>
             </div>
             <Button
@@ -449,9 +523,12 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             >
               Copy link
             </Button>
+            {state.copyError && (
+              <p className="text-xs text-red-400">{state.copyError}</p>
+            )}
             <p className="text-xs text-white/40 text-center">
-              Share this link with players — the player view will be available
-              in a future update.
+              Share this link with players — they&apos;ll be able to join once
+              the player view is ready.
             </p>
           </div>
         )}
@@ -497,6 +574,24 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             <Button
               variant="outline"
               onClick={() => setState((s) => ({ ...s, step: 2, error: null }))}
+              className="border-white/20 text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleStep3Next}
+              disabled={!state.encounterName.trim()}
+              className="bg-[#e94560] hover:bg-[#c73652] text-white"
+            >
+              Next
+            </Button>
+          </>
+        )}
+        {state.step === 4 && (
+          <>
+            <Button
+              variant="outline"
+              onClick={() => setState((s) => ({ ...s, step: 3, error: null }))}
               className="border-white/20 text-white/70 hover:text-white hover:bg-white/10"
             >
               Back

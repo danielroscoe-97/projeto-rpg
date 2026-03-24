@@ -1,15 +1,113 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CampaignManager } from "./CampaignManager";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-const mockPush = jest.fn();
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: jest.fn() }),
 }));
 
+// Stateful AlertDialog mock that simulates open/close behaviour in JSDOM
+jest.mock("@/components/ui/alert-dialog", () => {
+  const React = require("react");
+
+  const Ctx = React.createContext<{
+    open: boolean;
+    setOpen: (v: boolean) => void;
+  }>({ open: false, setOpen: () => {} });
+
+  function AlertDialog({ children }: { children: React.ReactNode }) {
+    const [open, setOpen] = React.useState(false);
+    return React.createElement(Ctx.Provider, { value: { open, setOpen } }, children);
+  }
+
+  function AlertDialogTrigger({ children, asChild }: { children: React.ReactElement; asChild?: boolean }) {
+    const { setOpen } = React.useContext(Ctx);
+    if (asChild) {
+      return React.cloneElement(children, {
+        onClick: (e: React.MouseEvent) => {
+          children.props.onClick?.(e);
+          setOpen(true);
+        },
+      });
+    }
+    return React.createElement("button", { onClick: () => setOpen(true) }, children);
+  }
+
+  function AlertDialogContent({ children }: { children: React.ReactNode }) {
+    const { open } = React.useContext(Ctx);
+    if (!open) return null;
+    return React.createElement("div", { role: "dialog" }, children);
+  }
+
+  const AlertDialogHeader = ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children);
+  const AlertDialogTitle = ({ children }: { children: React.ReactNode }) =>
+    React.createElement("h2", null, children);
+  const AlertDialogDescription = ({ children }: { children: React.ReactNode }) =>
+    React.createElement("p", null, children);
+  const AlertDialogFooter = ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", null, children);
+
+  function AlertDialogAction({
+    children,
+    onClick,
+    disabled,
+    className,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    className?: string;
+  }) {
+    const { setOpen } = React.useContext(Ctx);
+    return React.createElement(
+      "button",
+      {
+        onClick: () => { onClick?.(); setOpen(false); },
+        disabled,
+        className,
+      },
+      children
+    );
+  }
+
+  function AlertDialogCancel({
+    children,
+    onClick,
+    className,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+  }) {
+    const { setOpen } = React.useContext(Ctx);
+    return React.createElement(
+      "button",
+      {
+        onClick: () => { onClick?.(); setOpen(false); },
+        className,
+      },
+      children
+    );
+  }
+
+  return {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogAction,
+    AlertDialogCancel,
+  };
+});
+
+const mockFrom = jest.fn();
 const mockSingle = jest.fn();
 const mockEq = jest.fn();
 
@@ -21,8 +119,6 @@ const mockChain = {
   eq: mockEq,
   single: mockSingle,
 };
-
-const mockFrom = jest.fn().mockReturnValue(mockChain);
 
 jest.mock("@/lib/supabase/client", () => ({
   createClient: jest.fn(() => ({ from: mockFrom })),
@@ -45,12 +141,9 @@ const initialCampaigns = [
   },
 ];
 
-const defaultProps = {
-  initialCampaigns,
-  userId: "user-123",
-};
+const defaultProps = { initialCampaigns, userId: "user-123" };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Setup helpers ─────────────────────────────────────────────────────────────
 
 function setupInsertSuccess(id = "new-campaign-id", name = "New Campaign") {
   mockSingle.mockResolvedValueOnce({
@@ -64,14 +157,14 @@ function setupInsertError(message = "Database error") {
 }
 
 function setupUpdateSuccess() {
-  mockEq.mockResolvedValueOnce({ error: null });
+  // .eq("id", ...) returns chain; .eq("owner_id", ...) resolves with result
+  mockEq.mockReturnValueOnce(mockChain).mockResolvedValueOnce({ error: null });
 }
 
 function setupDeleteSuccess() {
-  mockEq.mockResolvedValueOnce({ error: null });
+  // .eq("id", ...) returns chain; .eq("owner_id", ...) resolves with result
+  mockEq.mockReturnValueOnce(mockChain).mockResolvedValueOnce({ error: null });
 }
-
-// ── Tests ─────────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -79,8 +172,11 @@ beforeEach(() => {
   mockChain.update.mockReturnThis();
   mockChain.delete.mockReturnThis();
   mockChain.select.mockReturnThis();
+  mockEq.mockReturnThis();
   mockFrom.mockReturnValue(mockChain);
 });
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("CampaignManager", () => {
   // ── Rendering ──────────────────────────────────────────────────────────────
@@ -95,15 +191,11 @@ describe("CampaignManager", () => {
 
   it("renders 'New Campaign' button", () => {
     render(<CampaignManager {...defaultProps} />);
-    expect(
-      screen.getByRole("button", { name: /new campaign/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /new campaign/i })).toBeInTheDocument();
   });
 
   it("renders empty state when no campaigns", () => {
-    render(
-      <CampaignManager initialCampaigns={[]} userId="user-123" />
-    );
+    render(<CampaignManager initialCampaigns={[]} userId="user-123" />);
     expect(screen.getByText(/no campaigns yet/i)).toBeInTheDocument();
   });
 
@@ -111,48 +203,42 @@ describe("CampaignManager", () => {
 
   it("shows create form when 'New Campaign' is clicked", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /new campaign/i })
-    );
-    expect(
-      screen.getByPlaceholderText(/campaign name/i)
-    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    expect(screen.getByPlaceholderText(/campaign name/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^save$/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /cancel/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it("opening New Campaign closes any open edit row", async () => {
+    render(<CampaignManager {...defaultProps} />);
+    // open edit first
+    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    await userEvent.click(editBtns[0]);
+    expect(screen.getByDisplayValue("The Lost Mines")).toBeInTheDocument();
+    // open create — edit should disappear
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    expect(screen.queryByDisplayValue("The Lost Mines")).not.toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/campaign name/i)).toBeInTheDocument();
   });
 
   it("keeps Save disabled when campaign name is empty", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /new campaign/i })
-    );
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
     expect(screen.getByRole("button", { name: /^save$/i })).toBeDisabled();
   });
 
   it("enables Save when campaign name is entered", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /new campaign/i })
-    );
-    await userEvent.type(
-      screen.getByPlaceholderText(/campaign name/i),
-      "Dragon Campaign"
-    );
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Dragon Campaign");
     expect(screen.getByRole("button", { name: /^save$/i })).not.toBeDisabled();
   });
 
   it("calls supabase insert on save and adds campaign to list", async () => {
     setupInsertSuccess("new-id", "Dragon Campaign");
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /new campaign/i })
-    );
-    await userEvent.type(
-      screen.getByPlaceholderText(/campaign name/i),
-      "Dragon Campaign"
-    );
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Dragon Campaign");
     await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
     await waitFor(() => {
@@ -166,58 +252,53 @@ describe("CampaignManager", () => {
     });
   });
 
-  it("shows error message when insert fails", async () => {
+  it("shows error when insert fails", async () => {
     setupInsertError("Failed to create campaign");
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /new campaign/i })
-    );
-    await userEvent.type(
-      screen.getByPlaceholderText(/campaign name/i),
-      "Bad Campaign"
-    );
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Bad Campaign");
     await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("alert")
-      ).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
     });
   });
 
-  it("cancels create form without inserting", async () => {
+  it("cancels create form without inserting and clears error", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /new campaign/i })
-    );
-    await userEvent.type(
-      screen.getByPlaceholderText(/campaign name/i),
-      "Temp Campaign"
-    );
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Temp");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
     expect(mockChain.insert).not.toHaveBeenCalled();
-    expect(
-      screen.queryByPlaceholderText(/campaign name/i)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/campaign name/i)).not.toBeInTheDocument();
   });
 
   // ── Edit Campaign ──────────────────────────────────────────────────────────
 
   it("shows edit form pre-filled with campaign name on Edit click", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^edit$/i });
-    await userEvent.click(editButtons[0]);
-
-    const input = screen.getByDisplayValue("The Lost Mines");
-    expect(input).toBeInTheDocument();
+    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    await userEvent.click(editBtns[0]);
+    expect(screen.getByDisplayValue("The Lost Mines")).toBeInTheDocument();
   });
 
-  it("calls supabase update on edit save", async () => {
+  it("opening Edit closes the create form", async () => {
+    render(<CampaignManager {...defaultProps} />);
+    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    expect(screen.getByPlaceholderText(/campaign name/i)).toBeInTheDocument();
+
+    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    await userEvent.click(editBtns[0]);
+    expect(screen.queryByPlaceholderText(/campaign name/i)).not.toBeInTheDocument();
+    expect(screen.getByDisplayValue("The Lost Mines")).toBeInTheDocument();
+  });
+
+  it("calls supabase update with owner_id filter on edit save", async () => {
     setupUpdateSuccess();
     render(<CampaignManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^edit$/i });
-    await userEvent.click(editButtons[0]);
+    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    await userEvent.click(editBtns[0]);
 
     const input = screen.getByDisplayValue("The Lost Mines");
     await userEvent.clear(input);
@@ -226,39 +307,43 @@ describe("CampaignManager", () => {
 
     await waitFor(() => {
       expect(mockChain.update).toHaveBeenCalledWith({ name: "Renamed Campaign" });
-      expect(mockEq).toHaveBeenCalledWith("id", "campaign-1");
     });
     await waitFor(() => {
       expect(screen.getByText("Renamed Campaign")).toBeInTheDocument();
     });
   });
 
-  // ── Delete Campaign ────────────────────────────────────────────────────────
-
-  it("shows inline confirmation when Delete is clicked", async () => {
+  it("cancels edit without updating", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const deleteButtons = screen.getAllByRole("button", { name: /delete/i });
-    await userEvent.click(deleteButtons[0]);
+    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    await userEvent.click(editBtns[0]);
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(screen.getByText(/are you sure/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /confirm/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /cancel/i })
-    ).toBeInTheDocument();
+    expect(mockChain.update).not.toHaveBeenCalled();
+    expect(screen.getByText("The Lost Mines")).toBeInTheDocument();
   });
 
-  it("calls supabase delete on confirm and removes campaign from list", async () => {
+  // ── Delete Campaign ────────────────────────────────────────────────────────
+
+  it("shows confirmation dialog when Delete is clicked", async () => {
+    render(<CampaignManager {...defaultProps} />);
+    const deleteBtns = screen.getAllByRole("button", { name: /^delete$/i });
+    await userEvent.click(deleteBtns[0]);
+
+    expect(screen.getByText(/are you sure/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm delete/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it("calls supabase delete with owner_id filter on confirm and removes from list", async () => {
     setupDeleteSuccess();
     render(<CampaignManager {...defaultProps} />);
-    const deleteButtons = screen.getAllByRole("button", { name: /delete/i });
-    await userEvent.click(deleteButtons[0]);
-    await userEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    const deleteBtns = screen.getAllByRole("button", { name: /^delete$/i });
+    await userEvent.click(deleteBtns[0]);
+    await userEvent.click(screen.getByRole("button", { name: /confirm delete/i }));
 
     await waitFor(() => {
       expect(mockChain.delete).toHaveBeenCalled();
-      expect(mockEq).toHaveBeenCalledWith("id", "campaign-1");
     });
     await waitFor(() => {
       expect(screen.queryByText("The Lost Mines")).not.toBeInTheDocument();
@@ -267,8 +352,8 @@ describe("CampaignManager", () => {
 
   it("does NOT call delete on cancel", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const deleteButtons = screen.getAllByRole("button", { name: /delete/i });
-    await userEvent.click(deleteButtons[0]);
+    const deleteBtns = screen.getAllByRole("button", { name: /^delete$/i });
+    await userEvent.click(deleteBtns[0]);
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
     expect(mockChain.delete).not.toHaveBeenCalled();

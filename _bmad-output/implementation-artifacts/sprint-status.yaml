@@ -54,7 +54,7 @@ development_status:
   # Epic 2: Campaign & Player Group Management
   epic-2: in-progress
   2-1-first-time-dm-onboarding-flow: done
-  2-2-create-and-manage-campaigns-player-groups: review
+  2-2-create-and-manage-campaigns-player-groups: done
   2-3-add-and-edit-player-characters-in-a-campaign: review
   2-4-load-saved-player-group-into-encounter: review
   2-5-account-deletion-and-data-erasure: review

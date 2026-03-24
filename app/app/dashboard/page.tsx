@@ -13,12 +13,12 @@ export default async function DashboardPage() {
   if (!user) redirect("/auth/login");
 
   // Onboarding redirect — new DMs with no campaigns go through the wizard
-  const { count } = await supabase
+  const { count, error: countErr } = await supabase
     .from("campaigns")
     .select("id", { count: "exact", head: true })
     .eq("owner_id", user.id);
 
-  if (count === 0) redirect("/app/onboarding");
+  if (!countErr && count === 0) redirect("/app/onboarding");
 
   // Fetch campaigns with player character count
   const { data: rawCampaigns } = await supabase

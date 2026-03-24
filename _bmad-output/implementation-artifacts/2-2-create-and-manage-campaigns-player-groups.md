@@ -1,6 +1,6 @@
 # Story 2.2: Create & Manage Campaigns (Player Groups)
 
-Status: review
+Status: done
 
 ## Story
 
