@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="author" content="Daniel Roscoe">
+        <link rel="shortcut icon" href="favicon.ico"/> 
+            <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+            <link rel="stylesheet" href="maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">        
+            <link href="css/style.css" rel="stylesheet" type="text/css"/>     
+      <title>AdvT RO - Comandos</title>
+  </head>
+<body>
+    <div class="preloader">
+	  <div class="container-fluid">
+		<div class="spinner">
+		  <span class="ball-1"></span>
+		  <span class="ball-2"></span>
+		  <span class="ball-3"></span>
+		  <span class="ball-4"></span>
+		</div>
+	  </div>
+	</div>
+     <header>
+       <div class="container">
+       	  <div class="logo">
+     		<a href="index.html">
+     		   <img src="img/logoro.png" alt="">
+     		</a>
+     	  </div>
+     	  <div class="nav-menu-icon">
+			 <a href="#"><i></i></a>
+		  </div>
+     	<nav>
+			<ul>
+			    <li><img src="img/icon-menu/ico1.png" width="32" height="32"><a href="index.html">Início</a></li>
+				<li class="active"><img src="img/icon-menu/ico2.png" width="32" height="32"><a href="#">Informações<span class="fa fa-times open-drop"></span></a>
+				   <ul class="dropmenu">
+												<li><a href="informacoes-gerais-do-servidor.html">Básicas</a></li>
+						<li><a href="comandos-gerais.html">Comandos</a></li>
+						<li><a href="equipe-do-servidor.html">Staff</a></li>
+						<li><a href="regras.html">Regras</a></li>
+						<li><a href="balanceclasses.html">Balanceamento de Classes</a></li>
+				   </ul>
+				</li>
+				<li><img src="img/icon-menu/ico3.png" width="32" height="32"><a href="downloads.html">Downloads</a></li>
+				<li><img src="img/icon-menu/ico4.png" width="32" height="32"><a href="doar.html">Doações</a></li>
+				<li><img src="img/icon-menu/ico5.png" width="32" height="32"><a href="#" target="_blank">Registrar</a></li>
+				<li><img src="img/icon-menu/ico6.png" width="32" height="32"><a href="#" target="_blank">Fórum</a></li>
+			</ul>
+     	</nav>
+       </div>
+     </header>
+     <div class="main-section canvas-graph">
+     	<div class="container">
+     	    <div class="row">
+     	    	<div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-12">
+     	    		<div class="second-title">
+     	    			<h2>COMANDOS DO SERVIDOR</h2>
+     	    			  <p>Lista dos comandos disponíveis no servidor: Comandos livres, Comandos VIP e Comandos Super VIP</p>
+     	    		</div>
+     	    	</div>
+   	      </div>
+     	     <div class="row">
+     	     	<div class="col-md-12">
+     	     	  <div class="table-responsive">
+     	     		<table class="tables b-shadow table">
+                        <tr>
+						   <td width="17%"><b>COMANDOS LIVRES</b></td>
+						   <td width="17%"><b>Super VIP (LVL5)</b></td>
+						   <td width="13%"><b>VIP (LVL1)</b></td>
+						   <td width="16%"><b>NÃO VIP (LVL 0)</b></td>
+						   <td width="37%"><b>DESCRIÇÃO</b></td>
+						</tr>
+						<tr>
+						  <td>@go</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+						  <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Teleporta o personagem para qualquer cidade</td>
+						</tr>
+						<tr>
+						  <td>@warp</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Teleporta o personagem para qualquer mapa (Coordenadas desativadas)</td>
+						</tr>
+					  <tr>
+						  <td>@changeleader</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td>Troca o lider da party</td>
+					  </tr>
+						<tr>
+						  <td>@changegm</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td>Passa o cargo para outro jogador Clã</td>
+						</tr>
+						<tr>
+						  <td>@ii</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Mostra informações de qualquer item</td>
+						</tr>
+						<tr>
+						  <td>@commands</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Mostra a lista de Comandos Diponíveis</td>
+						</tr>
+						<tr>
+						  <td>@refresh</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Sincroniza a posição do personagem com o servidor</td>
+						</tr>
+						<tr>
+						  <td>@storage</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Abre o armazém</td>
+						</tr>
+						<tr>
+						  <td>@autoloot</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Pega itens dropados diretos em seu inventário</td>
+						</tr>
+						<tr>
+						  <td>@mail</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td>Abre seu email do jogo</td>
+						</tr>
+						<tr>
+						  <td>@duel "nome do jogador"</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td>Faz um pedido de duelo</td>
+						</tr>
+						<tr>
+						  <td>@accept/reject/leave</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td>Aceita/ Rejeita pedidos de duelo/ Abandona um duelo</td>
+						</tr>
+						<tr>
+						  <td>@die</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Mata seu personag</td>
+						</tr>
+						<tr>
+						<td>@afk</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td>Deixa o personagem online, com um Hat de AFK</td>
+						</tr>
+						<tr>
+                         <td>@autotrade/at</td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td> Mantém loja aberta mesmo estando offline no jogo</td>
+						</tr>
+						<tr>
+                         <td>@party <party_name></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td> Cria Party</td>
+						</tr>
+						<tr>
+                         <td>@guild <guild_name></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/sim.png" width="16" height="16"></td>
+	                      <td><img src="img/nao.png" width="16" height="16"></td>
+	                      <td> Cria Guild</td>
+						</tr>
+						<tr>
+						  
+					</table>
+     	     		<br>
+     	     		<table class="tables b-shadow table">
+                      <tr>
+                        <td width="17%"><b>COMANDOS SUPER VIP</b></td>
+                        <td width="17%"><b>SUPER VIP (LVL5)</b></td>
+                        <td width="13%"><b>VIP (LVL 1)</b></td>
+						<td width="16%"><b>NÃO VIP (LVL 0)</b></td>
+                        <td width="37%"><b>DESCRIÇÃO</b></td>
+                      </tr>
+                      <tr>
+                        <td>@noask </td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Bloqueia envio de convites (trocas, clã, grupo, amizades)</td>
+                      </tr>
+                      <tr>
+                        <td>@autoloot item 607</td>
+	                <td><img src="img/sim.png" width="16" height="16"></td>
+	                <td><img src="img/sim.png" width="16" height="16"></td>
+	                <td><img src="img/nao.png" width="16" height="16"></td>
+	                <td> Pega itens em especifico do mob por exemplo 607 YGG</td>
+                      </tr>
+                      <tr>
+                        <td>@hstyle</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Muda o estilo do cabelo do personagem</td>
+                      </tr>
+                      <tr>
+                        <td>@hcolor</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Muda a cor do cabelo do personagem</td>
+                      </tr>
+                      <tr>
+                        <td>@dye</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Muda a cor da roupa do personagem</td>
+                      </tr>
+					   <tr>
+                        <td>@model</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Muda seu estilo sem ir ao NPC de cores, ex: @model 1 1 1 irá usar o cabelo 1 a cor do cabelo 1 e a cor de roupa 1</td>
+                      </tr>
+                      <tr>
+                        <td>@repairall</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Repara todos os itens de seu inventário</td>
+                      </tr>
+                      <tr>
+                        <td>@mobsearch "nome/id do monstro"</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Procura determinado monstro no mapa</td>
+                      </tr>
+                      <tr>
+                        <td>@petrename</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Muda o nome do seu PET.</td>
+                      </tr>
+                      <tr>
+                        <td>@storeall</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Coloca todos seus itens do inventario e equipados no storage.</td>
+                      </tr>
+                      <tr>
+                        <td>@changesex</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Muda o sexo da conta. </td>
+                      </tr>
+					  <tr>
+                        <td>@homtalk</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Faz o homunclus falar </td>
+                      </tr>
+					 <tr>
+                        <td>@hominfo</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Mostra as informaçoes do homunclus </td>
+                      </tr>
+					  <tr>
+                        <td>@homstats</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Mostra os status do homunclus </td>
+                      </tr>
+					  <tr>
+                        <td>@feelreset</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Reseta os mapas do star gladiator </td>
+                      </tr>
+					  <tr>
+                        <td>@pettalk</td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/sim.png" width="16" height="16"></td>
+                        <td><img src="img/nao.png" width="16" height="16"></td>
+                        <td>Faz o pet falar </td>
+                      </tr>
+					  
+                      <tr>                      
+                    </table>
+                    <br>
+   	          </div>	
+     	     	</div>
+     	     </div>
+	   </div>	
+</div>
+    <footer class="bg-dark">
+      <div class="top-footer-info">
+      	 <div class="container">
+        	<div class="row">
+        		<div class="col-md-4 col-sm-6 col-xs-12">
+        			<div class="top-f-block">
+        				<img src="img/support.png" alt="">
+						<a href="equipe-do-servidor.html">
+        				  <b>SUPORTE ATIVO</b>
+						  </a>
+        			</div>
+        		</div>
+        		<div class="col-md-4 col-sm-6 col-xs-12">
+        			<div class="top-f-block text-center">
+        				<img src="img/mail.png" alt="">
+						<a href="faleconosco.html">
+        				  <b>ENVIE UM TICKET</b>
+						  </a>
+        			</div>
+        		</div>
+        		<div class="col-md-4 col-sm-6 col-xs-12">
+        			<div class="top-f-block text-center">
+        				<img src="img/chats.png" alt="">
+						<a href="equipe-do-servidor.html">
+        				  <b>WHATSAPP</b>
+						  </a>
+        			</div>
+        		</div>
+        	</div>
+         </div>
+      </div> 
+      <div class="container">
+      	<div class="row">
+      		<div class="col-md-6 col-md-offset-3">
+      			<div class="footer-title">
+      			     <a href="index.html">
+      				    <img src="img/logo.png" alt="">
+      				 </a>
+      				 <p class="font-13">Ragnarök Online é um produto Gravity Corp & LeeMyougjin.
+                     <br>
+                      Todos os direitos reservados.
+                      <br>
+                    Design by: <a href="https://www.facebook.com/daniel.oliveira.984991" target="_blank">Daniel Roscoe</a>
+                    
+                     </p>
+
+      				   <div class="footer-folow">
+      				   	  <a href="#" class="fa fa-linkedin bg-blue-2"></a>
+      				   	  <a href="#" class="fa fa-google-plus bg-red-2"></a>
+      				   	  <a href="#" class="fa fa-twitter bg-twitter"></a>
+						  <a href="https://www.youtube.com/channel/UCYXQTawkqn9Om2w9l_5Ny6Q" class="fa fa-youtube bg-red-3"></a>
+						  <a href="https://www.facebook.com/advgro/" class="fa fa-facebook bg-facebook" target="_blank"></a>
+      				   </div>
+      			</div>
+</div>
+      	</div>
+      	<div class="row">
+      		<div class="col-md-3 col-sm-6 col-xs-12"></div>
+      		<div class="col-md-3 col-sm-6 col-xs-12"></div>
+      		<div class="col-md-3 col-sm-6 col-xs-12"></div>
+     	    <div class="col-md-3 col-sm-6 col-xs-12"></div>
+      	</div>
+      </div>
+      
+      <div class="copyright bg-dark-2">
+       	  <div class="container">
+       	  	 <div class="row">
+       	  	 	<div class="col-md-12">
+   	  	 		  <ul>
+       	  	 			<li><a href="index.html">Início</a></li>
+       	  	 			<li><a href="informacoes-gerais-do-servidor.html">Informações</a></li>
+       	  	 			<li><a href="comandos-gerais.html">Comandos</a></li>
+       	  	 			<li><a href="equipe-do-servidor.html">Staff</a></li>
+       	  	 			<li><a href="downloads.html">Downloads</a></li>
+       	  	 			<li><a href="doar.html">Doações</a></li>
+       	  	 			<li><a href="#" target="_blank">Registrar</a></li>
+       	  	 			<li><a href="#" target="_blank">Fórum</a></li>
+       	  	 		</ul>
+       	  	 		<span><img src="img/ragnarok_livre.png" width="220" height="41"></span>
+       	  	 	</div>
+       	  	 </div>
+       	  </div>
+      </div> 	
+	
+    </footer>               
+	
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/idangerous.swiper.min.js"></script>
+<script src="js/all.js"></script>
+</body>
+
+
+</html>				   

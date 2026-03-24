@@ -1,0 +1,2364 @@
+warning: in the working copy of 'lib/srd/srd-loader.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/srd/monsters-2014.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/srd/monsters-2024.json', LF will be replaced by CRLF the next time Git touches it
+diff --git a/lib/srd/srd-loader.ts b/lib/srd/srd-loader.ts
+index a6de80d..9b67c5a 100644
+--- a/lib/srd/srd-loader.ts
++++ b/lib/srd/srd-loader.ts
+@@ -1,13 +1,48 @@
+ import type { RulesetVersion } from "@/lib/types/database";
+ 
++export interface MonsterAction {
++  name: string;
++  desc: string;
++  attack_bonus?: number;
++}
++
+ export interface SrdMonster {
++  // --- Search fields ---
+   id: string;
+   name: string;
++  /** Maps from DB challenge_rating */
+   cr: string;
+   type: string;
++  /** Maps from DB hp */
+   hit_points: number;
++  /** Maps from DB ac */
+   armor_class: number;
+   ruleset_version: RulesetVersion;
++
++  // --- Full stat block fields (present in bundles; optional for lean test fixtures) ---
++  size?: string;
++  alignment?: string | null;
++  hp_formula?: string | null;
++  speed?: Record<string, string | number>;
++  str?: number;
++  dex?: number;
++  con?: number;
++  int?: number;
++  wis?: number;
++  cha?: number;
++  saving_throws?: Record<string, number> | null;
++  skills?: Record<string, number> | null;
++  damage_vulnerabilities?: string | null;
++  damage_resistances?: string | null;
++  damage_immunities?: string | null;
++  condition_immunities?: string | null;
++  senses?: string | null;
++  languages?: string | null;
++  xp?: number | null;
++  special_abilities?: MonsterAction[] | null;
++  actions?: MonsterAction[] | null;
++  legendary_actions?: MonsterAction[] | null;
++  reactions?: MonsterAction[] | null;
+ }
+ 
+ export interface SrdSpell {
+diff --git a/lib/srd/srd-search.test.ts b/lib/srd/srd-search.test.ts
+index 1533961..f0261d0 100644
+--- a/lib/srd/srd-search.test.ts
++++ b/lib/srd/srd-search.test.ts
+@@ -6,6 +6,7 @@ import {
+   searchSpells,
+   findCondition,
+   getAllConditions,
++  getMonsterById,
+   resetSrdIndexes,
+ } from "./srd-search";
+ import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
+@@ -207,3 +208,37 @@ describe("getAllConditions", () => {
+     expect(all).toHaveLength(0);
+   });
+ });
++
++// --- Monster map lookup ---
++
++describe("getMonsterById", () => {
++  it("returns the correct monster by id and version", () => {
++    const m = getMonsterById("goblin", "2014");
++    expect(m).toBeDefined();
++    expect(m?.name).toBe("Goblin");
++    expect(m?.ruleset_version).toBe("2014");
++  });
++
++  it("returns the 2024 variant when version is 2024", () => {
++    const m = getMonsterById("goblin-2024", "2024");
++    expect(m).toBeDefined();
++    expect(m?.id).toBe("goblin-2024");
++    expect(m?.ruleset_version).toBe("2024");
++  });
++
++  it("returns undefined for an unknown id", () => {
++    const m = getMonsterById("dragon", "2014");
++    expect(m).toBeUndefined();
++  });
++
++  it("returns undefined for wrong version", () => {
++    const m = getMonsterById("goblin", "2024");
++    expect(m).toBeUndefined();
++  });
++
++  it("returns undefined after resetSrdIndexes clears the map", () => {
++    resetSrdIndexes();
++    const m = getMonsterById("goblin", "2014");
++    expect(m).toBeUndefined();
++  });
++});
+diff --git a/lib/srd/srd-search.ts b/lib/srd/srd-search.ts
+index 5044a62..62f3bb2 100644
+--- a/lib/srd/srd-search.ts
++++ b/lib/srd/srd-search.ts
+@@ -8,6 +8,8 @@ export type { SrdMonster };
+ let monsterIndex: Fuse<SrdMonster> | null = null;
+ let spellIndex: Fuse<SrdSpell> | null = null;
+ let conditionData: SrdCondition[] = [];
++// keyed by `${id}:${ruleset_version}` for O(1) stat block lookup
++let monsterMap: Map<string, SrdMonster> = new Map();
+ 
+ const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
+   keys: [
+@@ -33,6 +35,7 @@ const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
+ 
+ export function buildMonsterIndex(data: SrdMonster[]): void {
+   monsterIndex = new Fuse(data, MONSTER_OPTIONS);
++  monsterMap = new Map(data.map((m) => [`${m.id}:${m.ruleset_version}`, m]));
+ }
+ 
+ export function buildSpellIndex(data: SrdSpell[]): void {
+@@ -74,9 +77,18 @@ export function getAllConditions(): SrdCondition[] {
+   return conditionData;
+ }
+ 
++/** Look up a single monster by SRD id and ruleset version. O(1) map lookup. */
++export function getMonsterById(
++  id: string,
++  version: RulesetVersion
++): SrdMonster | undefined {
++  return monsterMap.get(`${id}:${version}`);
++}
++
+ /** Resets singleton indexes — for testing only. */
+ export function resetSrdIndexes(): void {
+   monsterIndex = null;
+   spellIndex = null;
+   conditionData = [];
++  monsterMap = new Map();
+ }
+diff --git a/package.json b/package.json
+index 36e38ea..3df3ae4 100644
+--- a/package.json
++++ b/package.json
+@@ -12,6 +12,7 @@
+   "dependencies": {
+     "@dnd-kit/core": "^6.3.1",
+     "@dnd-kit/sortable": "^10.0.0",
++    "@radix-ui/react-alert-dialog": "^1.1.15",
+     "@radix-ui/react-checkbox": "^1.3.1",
+     "@radix-ui/react-dropdown-menu": "^2.1.14",
+     "@radix-ui/react-label": "^2.1.6",
+@@ -25,6 +26,7 @@
+     "lucide-react": "^0.511.0",
+     "next": "latest",
+     "next-themes": "^0.4.6",
++    "radix-ui": "^1.4.3",
+     "react": "^19.0.0",
+     "react-dom": "^19.0.0",
+     "tailwind-merge": "^3.3.0",
+diff --git a/public/srd/monsters-2014.json b/public/srd/monsters-2014.json
+index 96b1351..60797f3 100644
+--- a/public/srd/monsters-2014.json
++++ b/public/srd/monsters-2014.json
+@@ -1,17 +1,553 @@
+ [
+-  { "id": "bandit", "name": "Bandit", "cr": "1/8", "type": "humanoid", "hit_points": 11, "armor_class": 12, "ruleset_version": "2014" },
+-  { "id": "cultist", "name": "Cultist", "cr": "1/8", "type": "humanoid", "hit_points": 9, "armor_class": 12, "ruleset_version": "2014" },
+-  { "id": "goblin", "name": "Goblin", "cr": "1/4", "type": "humanoid", "hit_points": 7, "armor_class": 15, "ruleset_version": "2014" },
+-  { "id": "kobold", "name": "Kobold", "cr": "1/8", "type": "humanoid", "hit_points": 5, "armor_class": 12, "ruleset_version": "2014" },
+-  { "id": "wolf", "name": "Wolf", "cr": "1/4", "type": "beast", "hit_points": 11, "armor_class": 13, "ruleset_version": "2014" },
+-  { "id": "giant-spider", "name": "Giant Spider", "cr": "1", "type": "beast", "hit_points": 26, "armor_class": 14, "ruleset_version": "2014" },
+-  { "id": "skeleton", "name": "Skeleton", "cr": "1/4", "type": "undead", "hit_points": 13, "armor_class": 13, "ruleset_version": "2014" },
+-  { "id": "zombie", "name": "Zombie", "cr": "1/4", "type": "undead", "hit_points": 22, "armor_class": 8, "ruleset_version": "2014" },
+-  { "id": "ghoul", "name": "Ghoul", "cr": "1", "type": "undead", "hit_points": 22, "armor_class": 12, "ruleset_version": "2014" },
+-  { "id": "hobgoblin", "name": "Hobgoblin", "cr": "1/2", "type": "humanoid", "hit_points": 11, "armor_class": 18, "ruleset_version": "2014" },
+-  { "id": "orc", "name": "Orc", "cr": "1/2", "type": "humanoid", "hit_points": 15, "armor_class": 13, "ruleset_version": "2014" },
+-  { "id": "ogre", "name": "Ogre", "cr": "2", "type": "giant", "hit_points": 59, "armor_class": 11, "ruleset_version": "2014" },
+-  { "id": "troll", "name": "Troll", "cr": "5", "type": "giant", "hit_points": 84, "armor_class": 15, "ruleset_version": "2014" },
+-  { "id": "black-dragon-wyrmling", "name": "Black Dragon Wyrmling", "cr": "2", "type": "dragon", "hit_points": 33, "armor_class": 17, "ruleset_version": "2014" },
+-  { "id": "owlbear", "name": "Owlbear", "cr": "3", "type": "monstrosity", "hit_points": 59, "armor_class": 13, "ruleset_version": "2014" }
++  {
++    "id": "bandit",
++    "name": "Bandit",
++    "cr": "1/8",
++    "type": "humanoid",
++    "hit_points": 11,
++    "armor_class": 12,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "any non-lawful alignment",
++    "hp_formula": "2d8+2",
++    "speed": { "walk": "30 ft." },
++    "str": 11,
++    "dex": 12,
++    "con": 12,
++    "int": 10,
++    "wis": 10,
++    "cha": 10,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "passive Perception 10",
++    "languages": "any one language (usually Common)",
++    "xp": 25,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Scimitar", "desc": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6+1) slashing damage.", "attack_bonus": 3 },
++      { "name": "Light Crossbow", "desc": "Ranged Weapon Attack: +3 to hit, range 80/320 ft., one target. Hit: 5 (1d8+1) piercing damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "cultist",
++    "name": "Cultist",
++    "cr": "1/8",
++    "type": "humanoid",
++    "hit_points": 9,
++    "armor_class": 12,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "any non-good alignment",
++    "hp_formula": "2d8",
++    "speed": { "walk": "30 ft." },
++    "str": 11,
++    "dex": 12,
++    "con": 10,
++    "int": 10,
++    "wis": 11,
++    "cha": 10,
++    "saving_throws": null,
++    "skills": { "deception": 2, "religion": 2 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "passive Perception 10",
++    "languages": "any one language (usually Common)",
++    "xp": 25,
++    "special_abilities": [
++      { "name": "Dark Devotion", "desc": "The cultist has advantage on saving throws against being charmed or frightened." }
++    ],
++    "actions": [
++      { "name": "Scimitar", "desc": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6+1) slashing damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "goblin",
++    "name": "Goblin",
++    "cr": "1/4",
++    "type": "humanoid",
++    "hit_points": 7,
++    "armor_class": 15,
++    "ruleset_version": "2014",
++    "size": "Small",
++    "alignment": "neutral evil",
++    "hp_formula": "2d6",
++    "speed": { "walk": "30 ft." },
++    "str": 8,
++    "dex": 14,
++    "con": 10,
++    "int": 10,
++    "wis": 8,
++    "cha": 8,
++    "saving_throws": null,
++    "skills": { "stealth": 6 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 9",
++    "languages": "Common, Goblin",
++    "xp": 50,
++    "special_abilities": [
++      { "name": "Nimble Escape", "desc": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns." }
++    ],
++    "actions": [
++      { "name": "Scimitar", "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6+2) slashing damage.", "attack_bonus": 4 },
++      { "name": "Shortbow", "desc": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6+2) piercing damage.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "kobold",
++    "name": "Kobold",
++    "cr": "1/8",
++    "type": "humanoid",
++    "hit_points": 5,
++    "armor_class": 12,
++    "ruleset_version": "2014",
++    "size": "Small",
++    "alignment": "lawful evil",
++    "hp_formula": "2d6-2",
++    "speed": { "walk": "30 ft." },
++    "str": 7,
++    "dex": 15,
++    "con": 9,
++    "int": 8,
++    "wis": 7,
++    "cha": 8,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 8",
++    "languages": "Common, Draconic",
++    "xp": 25,
++    "special_abilities": [
++      { "name": "Sunlight Sensitivity", "desc": "While in sunlight, the kobold has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight." },
++      { "name": "Pack Tactics", "desc": "The kobold has advantage on an attack roll against a creature if at least one of the kobold's allies is adjacent to the creature and the ally isn't incapacitated." }
++    ],
++    "actions": [
++      { "name": "Dagger", "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4+2) piercing damage.", "attack_bonus": 4 },
++      { "name": "Sling", "desc": "Ranged Weapon Attack: +4 to hit, range 30/120 ft., one target. Hit: 4 (1d4+2) bludgeoning damage.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "wolf",
++    "name": "Wolf",
++    "cr": "1/4",
++    "type": "beast",
++    "hit_points": 11,
++    "armor_class": 13,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": null,
++    "hp_formula": "2d8+2",
++    "speed": { "walk": "40 ft." },
++    "str": 12,
++    "dex": 15,
++    "con": 12,
++    "int": 3,
++    "wis": 12,
++    "cha": 6,
++    "saving_throws": null,
++    "skills": { "perception": 3, "stealth": 4 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "passive Perception 13",
++    "languages": null,
++    "xp": 50,
++    "special_abilities": [
++      { "name": "Keen Hearing and Smell", "desc": "The wolf has advantage on Wisdom (Perception) checks that rely on hearing or smell." },
++      { "name": "Pack Tactics", "desc": "The wolf has advantage on an attack roll against a creature if at least one of the wolf's allies is adjacent to the creature and the ally isn't incapacitated." }
++    ],
++    "actions": [
++      { "name": "Bite", "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 7 (2d4+2) piercing damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or be knocked prone.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "giant-spider",
++    "name": "Giant Spider",
++    "cr": "1",
++    "type": "beast",
++    "hit_points": 26,
++    "armor_class": 14,
++    "ruleset_version": "2014",
++    "size": "Large",
++    "alignment": null,
++    "hp_formula": "4d10+4",
++    "speed": { "walk": "30 ft.", "climb": "30 ft." },
++    "str": 14,
++    "dex": 16,
++    "con": 12,
++    "int": 2,
++    "wis": 11,
++    "cha": 4,
++    "saving_throws": null,
++    "skills": { "stealth": 7 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "blindsight 10 ft., darkvision 60 ft., passive Perception 10",
++    "languages": null,
++    "xp": 200,
++    "special_abilities": [
++      { "name": "Spider Climb", "desc": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check." },
++      { "name": "Web Sense", "desc": "While in contact with a web, the spider knows the exact location of any other creature in contact with the same web." },
++      { "name": "Web Walker", "desc": "The spider ignores movement restrictions caused by webbing." }
++    ],
++    "actions": [
++      { "name": "Bite", "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit: 7 (1d8+3) piercing damage, and the target must make a DC 11 Constitution saving throw, taking 9 (2d8) poison damage on a failed save, or half as much on a successful one. If the poison damage reduces the target to 0 hit points, the target is stable but poisoned for 1 hour, even after regaining hit points, and is paralyzed while poisoned in this way.", "attack_bonus": 5 },
++      { "name": "Web (Recharge 5–6)", "desc": "Ranged Weapon Attack: +5 to hit, range 30/60 ft., one creature. Hit: The target is restrained by webbing. As an action, the restrained target can make a DC 12 Strength check, bursting the webbing on a success. The webbing can also be attacked and destroyed (AC 10; hp 5; vulnerability to fire damage; immunity to bludgeoning, poison, and psychic damage)." }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "skeleton",
++    "name": "Skeleton",
++    "cr": "1/4",
++    "type": "undead",
++    "hit_points": 13,
++    "armor_class": 13,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "lawful evil",
++    "hp_formula": "2d8+4",
++    "speed": { "walk": "30 ft." },
++    "str": 10,
++    "dex": 14,
++    "con": 15,
++    "int": 6,
++    "wis": 8,
++    "cha": 5,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": "bludgeoning",
++    "damage_resistances": null,
++    "damage_immunities": "poison",
++    "condition_immunities": "exhaustion, poisoned",
++    "senses": "darkvision 60 ft., passive Perception 9",
++    "languages": "understands all languages it knew in life but can't speak",
++    "xp": 50,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Shortsword", "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6+2) piercing damage.", "attack_bonus": 4 },
++      { "name": "Shortbow", "desc": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6+2) piercing damage.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "zombie",
++    "name": "Zombie",
++    "cr": "1/4",
++    "type": "undead",
++    "hit_points": 22,
++    "armor_class": 8,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "neutral evil",
++    "hp_formula": "3d8+9",
++    "speed": { "walk": "20 ft." },
++    "str": 13,
++    "dex": 6,
++    "con": 16,
++    "int": 3,
++    "wis": 6,
++    "cha": 5,
++    "saving_throws": { "wis": 0 },
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": "poison",
++    "condition_immunities": "poisoned",
++    "senses": "darkvision 60 ft., passive Perception 8",
++    "languages": "understands all languages it knew in life but can't speak",
++    "xp": 50,
++    "special_abilities": [
++      { "name": "Undead Fortitude", "desc": "If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5+the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead." }
++    ],
++    "actions": [
++      { "name": "Slam", "desc": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6+1) bludgeoning damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "ghoul",
++    "name": "Ghoul",
++    "cr": "1",
++    "type": "undead",
++    "hit_points": 22,
++    "armor_class": 12,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "chaotic evil",
++    "hp_formula": "5d8",
++    "speed": { "walk": "30 ft." },
++    "str": 13,
++    "dex": 15,
++    "con": 10,
++    "int": 7,
++    "wis": 10,
++    "cha": 6,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": "poison",
++    "condition_immunities": "charmed, exhaustion, poisoned",
++    "senses": "darkvision 60 ft., passive Perception 10",
++    "languages": "Common",
++    "xp": 200,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Bite", "desc": "Melee Weapon Attack: +2 to hit, reach 5 ft., one creature. Hit: 9 (2d6+2) piercing damage.", "attack_bonus": 2 },
++      { "name": "Claws", "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 7 (2d4+2) slashing damage. If the target is a creature other than an undead, it must succeed on a DC 10 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "hobgoblin",
++    "name": "Hobgoblin",
++    "cr": "1/2",
++    "type": "humanoid",
++    "hit_points": 11,
++    "armor_class": 18,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "lawful evil",
++    "hp_formula": "2d8+2",
++    "speed": { "walk": "30 ft." },
++    "str": 13,
++    "dex": 12,
++    "con": 12,
++    "int": 10,
++    "wis": 10,
++    "cha": 9,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 10",
++    "languages": "Common, Goblin",
++    "xp": 100,
++    "special_abilities": [
++      { "name": "Martial Advantage", "desc": "Once per turn, the hobgoblin can deal an extra 7 (2d6) damage to a creature it hits with a weapon attack if that creature is adjacent to an ally of the hobgoblin that isn't incapacitated." }
++    ],
++    "actions": [
++      { "name": "Longsword", "desc": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 5 (1d8+1) slashing damage, or 6 (1d10+1) slashing damage if used with two hands.", "attack_bonus": 3 },
++      { "name": "Longbow", "desc": "Ranged Weapon Attack: +3 to hit, range 150/600 ft., one target. Hit: 5 (1d8+1) piercing damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "orc",
++    "name": "Orc",
++    "cr": "1/2",
++    "type": "humanoid",
++    "hit_points": 15,
++    "armor_class": 13,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "chaotic evil",
++    "hp_formula": "2d8+6",
++    "speed": { "walk": "30 ft." },
++    "str": 16,
++    "dex": 12,
++    "con": 16,
++    "int": 7,
++    "wis": 11,
++    "cha": 10,
++    "saving_throws": null,
++    "skills": { "intimidation": 2 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 10",
++    "languages": "Common, Orc",
++    "xp": 100,
++    "special_abilities": [
++      { "name": "Aggressive", "desc": "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see." }
++    ],
++    "actions": [
++      { "name": "Greataxe", "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 9 (1d12+3) slashing damage.", "attack_bonus": 5 },
++      { "name": "Javelin", "desc": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6+3) piercing damage.", "attack_bonus": 5 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "ogre",
++    "name": "Ogre",
++    "cr": "2",
++    "type": "giant",
++    "hit_points": 59,
++    "armor_class": 11,
++    "ruleset_version": "2014",
++    "size": "Large",
++    "alignment": "chaotic evil",
++    "hp_formula": "7d10+21",
++    "speed": { "walk": "40 ft." },
++    "str": 19,
++    "dex": 8,
++    "con": 16,
++    "int": 5,
++    "wis": 7,
++    "cha": 7,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 8",
++    "languages": "Common, Giant",
++    "xp": 450,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Greatclub", "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 13 (2d8+4) bludgeoning damage.", "attack_bonus": 6 },
++      { "name": "Javelin", "desc": "Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 11 (2d6+4) piercing damage.", "attack_bonus": 6 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "troll",
++    "name": "Troll",
++    "cr": "5",
++    "type": "giant",
++    "hit_points": 84,
++    "armor_class": 15,
++    "ruleset_version": "2014",
++    "size": "Large",
++    "alignment": "chaotic evil",
++    "hp_formula": "8d10+40",
++    "speed": { "walk": "30 ft." },
++    "str": 18,
++    "dex": 13,
++    "con": 20,
++    "int": 7,
++    "wis": 9,
++    "cha": 7,
++    "saving_throws": null,
++    "skills": { "perception": 2 },
++    "damage_vulnerabilities": "acid, fire",
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 12",
++    "languages": "Giant",
++    "xp": 1800,
++    "special_abilities": [
++      { "name": "Keen Smell", "desc": "The troll has advantage on Wisdom (Perception) checks that rely on smell." },
++      { "name": "Regeneration", "desc": "The troll regains 10 hit points at the start of its turn. If the troll takes acid or fire damage, this trait doesn't function at the start of the troll's next turn. The troll dies only if it starts its turn with 0 hit points and doesn't regenerate." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The troll makes three attacks: one with its bite and two with its claws." },
++      { "name": "Bite", "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 7 (1d6+4) piercing damage.", "attack_bonus": 7 },
++      { "name": "Claw", "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6+4) slashing damage.", "attack_bonus": 7 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "black-dragon-wyrmling",
++    "name": "Black Dragon Wyrmling",
++    "cr": "2",
++    "type": "dragon",
++    "hit_points": 33,
++    "armor_class": 17,
++    "ruleset_version": "2014",
++    "size": "Medium",
++    "alignment": "chaotic evil",
++    "hp_formula": "6d8+6",
++    "speed": { "walk": "30 ft.", "fly": "60 ft.", "swim": "30 ft." },
++    "str": 15,
++    "dex": 14,
++    "con": 13,
++    "int": 10,
++    "wis": 11,
++    "cha": 13,
++    "saving_throws": { "dex": 4, "con": 3, "wis": 2, "cha": 3 },
++    "skills": { "perception": 4, "stealth": 4 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": "acid",
++    "condition_immunities": null,
++    "senses": "blindsight 10 ft., darkvision 60 ft., passive Perception 14",
++    "languages": "Draconic",
++    "xp": 450,
++    "special_abilities": [
++      { "name": "Amphibious", "desc": "The dragon can breathe air and water." }
++    ],
++    "actions": [
++      { "name": "Bite", "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 7 (1d10+2) piercing damage plus 2 (1d4) acid damage.", "attack_bonus": 4 },
++      { "name": "Acid Breath (Recharge 5–6)", "desc": "The dragon exhales acid in a 15-foot line that is 5 feet wide. Each creature in that line must make a DC 11 Dexterity saving throw, taking 22 (5d8) acid damage on a failed save, or half as much damage on a successful one." }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "owlbear",
++    "name": "Owlbear",
++    "cr": "3",
++    "type": "monstrosity",
++    "hit_points": 59,
++    "armor_class": 13,
++    "ruleset_version": "2014",
++    "size": "Large",
++    "alignment": null,
++    "hp_formula": "7d10+21",
++    "speed": { "walk": "40 ft." },
++    "str": 20,
++    "dex": 12,
++    "con": 17,
++    "int": 3,
++    "wis": 12,
++    "cha": 7,
++    "saving_throws": null,
++    "skills": { "perception": 3 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 13",
++    "languages": null,
++    "xp": 700,
++    "special_abilities": [
++      { "name": "Keen Sight and Smell", "desc": "The owlbear has advantage on Wisdom (Perception) checks that rely on sight or smell." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The owlbear makes two attacks: one with its beak and one with its claws." },
++      { "name": "Beak", "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one creature. Hit: 10 (1d10+5) piercing damage.", "attack_bonus": 7 },
++      { "name": "Claws", "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 14 (2d8+5) slashing damage.", "attack_bonus": 7 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  }
+ ]
+diff --git a/public/srd/monsters-2024.json b/public/srd/monsters-2024.json
+index 9ffd765..82527b4 100644
+--- a/public/srd/monsters-2024.json
++++ b/public/srd/monsters-2024.json
+@@ -1,17 +1,557 @@
+ [
+-  { "id": "bandit-2024", "name": "Bandit", "cr": "1/8", "type": "humanoid", "hit_points": 11, "armor_class": 12, "ruleset_version": "2024" },
+-  { "id": "cultist-2024", "name": "Cultist", "cr": "1/8", "type": "humanoid", "hit_points": 9, "armor_class": 12, "ruleset_version": "2024" },
+-  { "id": "goblin-2024", "name": "Goblin", "cr": "1/4", "type": "humanoid", "hit_points": 10, "armor_class": 15, "ruleset_version": "2024" },
+-  { "id": "kobold-2024", "name": "Kobold", "cr": "1/8", "type": "humanoid", "hit_points": 5, "armor_class": 12, "ruleset_version": "2024" },
+-  { "id": "wolf-2024", "name": "Wolf", "cr": "1/4", "type": "beast", "hit_points": 11, "armor_class": 13, "ruleset_version": "2024" },
+-  { "id": "giant-spider-2024", "name": "Giant Spider", "cr": "1", "type": "beast", "hit_points": 26, "armor_class": 14, "ruleset_version": "2024" },
+-  { "id": "skeleton-2024", "name": "Skeleton", "cr": "1/4", "type": "undead", "hit_points": 13, "armor_class": 13, "ruleset_version": "2024" },
+-  { "id": "zombie-2024", "name": "Zombie", "cr": "1/4", "type": "undead", "hit_points": 22, "armor_class": 8, "ruleset_version": "2024" },
+-  { "id": "ghoul-2024", "name": "Ghoul", "cr": "1", "type": "undead", "hit_points": 22, "armor_class": 12, "ruleset_version": "2024" },
+-  { "id": "hobgoblin-2024", "name": "Hobgoblin", "cr": "1/2", "type": "humanoid", "hit_points": 11, "armor_class": 18, "ruleset_version": "2024" },
+-  { "id": "orc-2024", "name": "Orc", "cr": "1", "type": "humanoid", "hit_points": 42, "armor_class": 13, "ruleset_version": "2024" },
+-  { "id": "ogre-2024", "name": "Ogre", "cr": "2", "type": "giant", "hit_points": 59, "armor_class": 11, "ruleset_version": "2024" },
+-  { "id": "troll-2024", "name": "Troll", "cr": "5", "type": "giant", "hit_points": 84, "armor_class": 15, "ruleset_version": "2024" },
+-  { "id": "black-dragon-wyrmling-2024", "name": "Black Dragon Wyrmling", "cr": "2", "type": "dragon", "hit_points": 33, "armor_class": 17, "ruleset_version": "2024" },
+-  { "id": "owlbear-2024", "name": "Owlbear", "cr": "3", "type": "monstrosity", "hit_points": 59, "armor_class": 13, "ruleset_version": "2024" }
++  {
++    "id": "bandit-2024",
++    "name": "Bandit",
++    "cr": "1/8",
++    "type": "humanoid",
++    "hit_points": 11,
++    "armor_class": 12,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "any non-lawful alignment",
++    "hp_formula": "2d8+2",
++    "speed": { "walk": "30 ft." },
++    "str": 11,
++    "dex": 12,
++    "con": 12,
++    "int": 10,
++    "wis": 10,
++    "cha": 10,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "passive Perception 10",
++    "languages": "any one language (usually Common)",
++    "xp": 25,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Multiattack", "desc": "The bandit makes two Scimitar attacks." },
++      { "name": "Scimitar", "desc": "Melee Attack Roll: +3, reach 5 ft. Hit: 4 (1d6+1) Slashing damage.", "attack_bonus": 3 },
++      { "name": "Light Crossbow", "desc": "Ranged Attack Roll: +3, range 80/320 ft. Hit: 5 (1d8+1) Piercing damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "cultist-2024",
++    "name": "Cultist",
++    "cr": "1/8",
++    "type": "humanoid",
++    "hit_points": 9,
++    "armor_class": 12,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "any non-good alignment",
++    "hp_formula": "2d8",
++    "speed": { "walk": "30 ft." },
++    "str": 11,
++    "dex": 12,
++    "con": 10,
++    "int": 10,
++    "wis": 11,
++    "cha": 10,
++    "saving_throws": null,
++    "skills": { "deception": 2, "religion": 2 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "passive Perception 10",
++    "languages": "any one language (usually Common)",
++    "xp": 25,
++    "special_abilities": [
++      { "name": "Dark Devotion", "desc": "The cultist has Advantage on saving throws against the Charmed and Frightened conditions." }
++    ],
++    "actions": [
++      { "name": "Scimitar", "desc": "Melee Attack Roll: +3, reach 5 ft. Hit: 4 (1d6+1) Slashing damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "goblin-2024",
++    "name": "Goblin",
++    "cr": "1/4",
++    "type": "humanoid",
++    "hit_points": 10,
++    "armor_class": 15,
++    "ruleset_version": "2024",
++    "size": "Small",
++    "alignment": "neutral evil",
++    "hp_formula": "3d6",
++    "speed": { "walk": "30 ft." },
++    "str": 8,
++    "dex": 14,
++    "con": 10,
++    "int": 10,
++    "wis": 8,
++    "cha": 8,
++    "saving_throws": null,
++    "skills": { "stealth": 6 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 9",
++    "languages": "Common, Goblin",
++    "xp": 50,
++    "special_abilities": [
++      { "name": "Nimble Escape", "desc": "The goblin can take the Disengage or Hide action as a Bonus Action." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The goblin makes two Scimitar attacks." },
++      { "name": "Scimitar", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 5 (1d6+2) Slashing damage.", "attack_bonus": 4 },
++      { "name": "Shortbow", "desc": "Ranged Attack Roll: +4, range 80/320 ft. Hit: 5 (1d6+2) Piercing damage.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "kobold-2024",
++    "name": "Kobold",
++    "cr": "1/8",
++    "type": "humanoid",
++    "hit_points": 5,
++    "armor_class": 12,
++    "ruleset_version": "2024",
++    "size": "Small",
++    "alignment": "lawful evil",
++    "hp_formula": "2d6-2",
++    "speed": { "walk": "30 ft." },
++    "str": 7,
++    "dex": 15,
++    "con": 9,
++    "int": 8,
++    "wis": 7,
++    "cha": 8,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 8",
++    "languages": "Common, Draconic",
++    "xp": 25,
++    "special_abilities": [
++      { "name": "Pack Tactics", "desc": "The kobold has Advantage on an attack roll against a creature if at least one of the kobold's allies is adjacent to the creature and the ally doesn't have the Incapacitated condition." },
++      { "name": "Sunlight Sensitivity", "desc": "While in sunlight, the kobold has Disadvantage on attack rolls and Wisdom (Perception) checks that rely on sight." }
++    ],
++    "actions": [
++      { "name": "Dagger", "desc": "Melee or Ranged Attack Roll: +4, reach 5 ft. or range 20/60 ft. Hit: 4 (1d4+2) Piercing damage.", "attack_bonus": 4 },
++      { "name": "Sling", "desc": "Ranged Attack Roll: +4, range 30/120 ft. Hit: 4 (1d4+2) Bludgeoning damage.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "wolf-2024",
++    "name": "Wolf",
++    "cr": "1/4",
++    "type": "beast",
++    "hit_points": 11,
++    "armor_class": 13,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": null,
++    "hp_formula": "2d8+2",
++    "speed": { "walk": "40 ft." },
++    "str": 12,
++    "dex": 15,
++    "con": 12,
++    "int": 3,
++    "wis": 12,
++    "cha": 6,
++    "saving_throws": null,
++    "skills": { "perception": 3, "stealth": 4 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "passive Perception 13",
++    "languages": null,
++    "xp": 50,
++    "special_abilities": [
++      { "name": "Pack Tactics", "desc": "The wolf has Advantage on an attack roll against a creature if at least one of the wolf's allies is adjacent to the creature and the ally doesn't have the Incapacitated condition." }
++    ],
++    "actions": [
++      { "name": "Bite", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 7 (2d4+2) Piercing damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or have the Prone condition.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "giant-spider-2024",
++    "name": "Giant Spider",
++    "cr": "1",
++    "type": "beast",
++    "hit_points": 26,
++    "armor_class": 14,
++    "ruleset_version": "2024",
++    "size": "Large",
++    "alignment": null,
++    "hp_formula": "4d10+4",
++    "speed": { "walk": "30 ft.", "climb": "30 ft." },
++    "str": 14,
++    "dex": 16,
++    "con": 12,
++    "int": 2,
++    "wis": 11,
++    "cha": 4,
++    "saving_throws": null,
++    "skills": { "stealth": 7 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "blindsight 10 ft., darkvision 60 ft., passive Perception 10",
++    "languages": null,
++    "xp": 200,
++    "special_abilities": [
++      { "name": "Spider Climb", "desc": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check." },
++      { "name": "Web Walker", "desc": "The spider ignores movement restrictions caused by webbing." }
++    ],
++    "actions": [
++      { "name": "Bite", "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 7 (1d8+3) Piercing damage plus 9 (2d8) Poison damage. The target must succeed on a DC 11 Constitution saving throw or have the Poisoned condition for 1 hour. While poisoned in this way, the target is also Paralyzed.", "attack_bonus": 5 },
++      { "name": "Web (Recharge 5–6)", "desc": "Ranged Attack Roll: +5, range 30/60 ft. Hit: The target has the Restrained condition until the web is destroyed (AC 10; HP 5; Vulnerability to Fire damage; Immunity to Bludgeoning, Poison, and Psychic damage)." }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "skeleton-2024",
++    "name": "Skeleton",
++    "cr": "1/4",
++    "type": "undead",
++    "hit_points": 13,
++    "armor_class": 13,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "lawful evil",
++    "hp_formula": "2d8+4",
++    "speed": { "walk": "30 ft." },
++    "str": 10,
++    "dex": 14,
++    "con": 15,
++    "int": 6,
++    "wis": 8,
++    "cha": 5,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": "bludgeoning",
++    "damage_resistances": null,
++    "damage_immunities": "poison",
++    "condition_immunities": "exhaustion, poisoned",
++    "senses": "darkvision 60 ft., passive Perception 9",
++    "languages": "understands the languages it knew in life",
++    "xp": 50,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Multiattack", "desc": "The skeleton makes two Shortsword or Shortbow attacks." },
++      { "name": "Shortsword", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 5 (1d6+2) Piercing damage.", "attack_bonus": 4 },
++      { "name": "Shortbow", "desc": "Ranged Attack Roll: +4, range 80/320 ft. Hit: 5 (1d6+2) Piercing damage.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "zombie-2024",
++    "name": "Zombie",
++    "cr": "1/4",
++    "type": "undead",
++    "hit_points": 22,
++    "armor_class": 8,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "neutral evil",
++    "hp_formula": "3d8+9",
++    "speed": { "walk": "20 ft." },
++    "str": 13,
++    "dex": 6,
++    "con": 16,
++    "int": 3,
++    "wis": 6,
++    "cha": 5,
++    "saving_throws": { "wis": 0 },
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": "poison",
++    "condition_immunities": "poisoned",
++    "senses": "darkvision 60 ft., passive Perception 8",
++    "languages": "understands the languages it knew in life",
++    "xp": 50,
++    "special_abilities": [
++      { "name": "Undead Fortitude", "desc": "If damage reduces the zombie to 0 Hit Points, it makes a Constitution saving throw (DC 5 plus the damage taken) unless the damage is Radiant or from a Critical Hit. On a successful save, the zombie drops to 1 Hit Point instead." }
++    ],
++    "actions": [
++      { "name": "Slam", "desc": "Melee Attack Roll: +3, reach 5 ft. Hit: 4 (1d6+1) Bludgeoning damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "ghoul-2024",
++    "name": "Ghoul",
++    "cr": "1",
++    "type": "undead",
++    "hit_points": 22,
++    "armor_class": 12,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "chaotic evil",
++    "hp_formula": "5d8",
++    "speed": { "walk": "30 ft." },
++    "str": 13,
++    "dex": 15,
++    "con": 10,
++    "int": 7,
++    "wis": 10,
++    "cha": 6,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": "poison",
++    "condition_immunities": "charmed, exhaustion, poisoned",
++    "senses": "darkvision 60 ft., passive Perception 10",
++    "languages": "Common",
++    "xp": 200,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Bite", "desc": "Melee Attack Roll: +2, reach 5 ft. Hit: 9 (2d6+2) Piercing damage.", "attack_bonus": 2 },
++      { "name": "Claws", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 7 (2d4+2) Slashing damage. If the target is a creature that isn't Undead, it must succeed on a DC 10 Constitution saving throw or have the Paralyzed condition for 1 minute. The target can repeat the save at the end of each of its turns, ending the effect on itself on a success.", "attack_bonus": 4 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "hobgoblin-2024",
++    "name": "Hobgoblin",
++    "cr": "1/2",
++    "type": "humanoid",
++    "hit_points": 11,
++    "armor_class": 18,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "lawful evil",
++    "hp_formula": "2d8+2",
++    "speed": { "walk": "30 ft." },
++    "str": 13,
++    "dex": 12,
++    "con": 12,
++    "int": 10,
++    "wis": 10,
++    "cha": 9,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 10",
++    "languages": "Common, Goblin",
++    "xp": 100,
++    "special_abilities": [
++      { "name": "Martial Advantage", "desc": "Once per turn, the hobgoblin can deal an extra 7 (2d6) damage to a creature it hits with a weapon attack if that creature is within 5 feet of an ally of the hobgoblin that doesn't have the Incapacitated condition." }
++    ],
++    "actions": [
++      { "name": "Longsword", "desc": "Melee Attack Roll: +3, reach 5 ft. Hit: 5 (1d8+1) Slashing damage, or 6 (1d10+1) Slashing damage if used with two hands.", "attack_bonus": 3 },
++      { "name": "Longbow", "desc": "Ranged Attack Roll: +3, range 150/600 ft. Hit: 5 (1d8+1) Piercing damage.", "attack_bonus": 3 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "orc-2024",
++    "name": "Orc",
++    "cr": "1",
++    "type": "humanoid",
++    "hit_points": 42,
++    "armor_class": 13,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "chaotic evil",
++    "hp_formula": "5d8+20",
++    "speed": { "walk": "30 ft." },
++    "str": 16,
++    "dex": 12,
++    "con": 18,
++    "int": 7,
++    "wis": 11,
++    "cha": 10,
++    "saving_throws": null,
++    "skills": { "intimidation": 2 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 10",
++    "languages": "Common, Orc",
++    "xp": 200,
++    "special_abilities": [
++      { "name": "Aggressive", "desc": "As a Bonus Action, the orc can move up to its Speed toward a hostile creature it can see." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The orc makes two Greataxe attacks." },
++      { "name": "Greataxe", "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 9 (1d12+3) Slashing damage.", "attack_bonus": 5 },
++      { "name": "Javelin", "desc": "Melee or Ranged Attack Roll: +5, reach 5 ft. or range 30/120 ft. Hit: 6 (1d6+3) Piercing damage.", "attack_bonus": 5 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "ogre-2024",
++    "name": "Ogre",
++    "cr": "2",
++    "type": "giant",
++    "hit_points": 59,
++    "armor_class": 11,
++    "ruleset_version": "2024",
++    "size": "Large",
++    "alignment": "chaotic evil",
++    "hp_formula": "7d10+21",
++    "speed": { "walk": "40 ft." },
++    "str": 19,
++    "dex": 8,
++    "con": 16,
++    "int": 5,
++    "wis": 7,
++    "cha": 7,
++    "saving_throws": null,
++    "skills": null,
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 8",
++    "languages": "Common, Giant",
++    "xp": 450,
++    "special_abilities": null,
++    "actions": [
++      { "name": "Multiattack", "desc": "The ogre makes two Greatclub attacks." },
++      { "name": "Greatclub", "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 13 (2d8+4) Bludgeoning damage.", "attack_bonus": 6 },
++      { "name": "Javelin", "desc": "Melee or Ranged Attack Roll: +6, reach 5 ft. or range 30/120 ft. Hit: 11 (2d6+4) Piercing damage.", "attack_bonus": 6 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "troll-2024",
++    "name": "Troll",
++    "cr": "5",
++    "type": "giant",
++    "hit_points": 84,
++    "armor_class": 15,
++    "ruleset_version": "2024",
++    "size": "Large",
++    "alignment": "chaotic evil",
++    "hp_formula": "8d10+40",
++    "speed": { "walk": "30 ft." },
++    "str": 18,
++    "dex": 13,
++    "con": 20,
++    "int": 7,
++    "wis": 9,
++    "cha": 7,
++    "saving_throws": null,
++    "skills": { "perception": 2 },
++    "damage_vulnerabilities": "acid, fire",
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 12",
++    "languages": "Giant",
++    "xp": 1800,
++    "special_abilities": [
++      { "name": "Keen Smell", "desc": "The troll has Advantage on Perception checks that rely on smell." },
++      { "name": "Regeneration", "desc": "The troll regains 10 Hit Points at the start of its turn. If the troll takes Acid or Fire damage, this trait doesn't function at the start of the troll's next turn. The troll dies only if it starts its turn with 0 Hit Points and doesn't regenerate." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The troll makes one Bite attack and two Claw attacks." },
++      { "name": "Bite", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 7 (1d6+4) Piercing damage.", "attack_bonus": 7 },
++      { "name": "Claw", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 11 (2d6+4) Slashing damage.", "attack_bonus": 7 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "black-dragon-wyrmling-2024",
++    "name": "Black Dragon Wyrmling",
++    "cr": "2",
++    "type": "dragon",
++    "hit_points": 33,
++    "armor_class": 17,
++    "ruleset_version": "2024",
++    "size": "Medium",
++    "alignment": "chaotic evil",
++    "hp_formula": "6d8+6",
++    "speed": { "walk": "30 ft.", "fly": "60 ft.", "swim": "30 ft." },
++    "str": 15,
++    "dex": 14,
++    "con": 13,
++    "int": 10,
++    "wis": 11,
++    "cha": 13,
++    "saving_throws": { "dex": 4, "con": 3, "wis": 2, "cha": 3 },
++    "skills": { "perception": 4, "stealth": 4 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": "acid",
++    "condition_immunities": null,
++    "senses": "blindsight 10 ft., darkvision 60 ft., passive Perception 14",
++    "languages": "Draconic",
++    "xp": 450,
++    "special_abilities": [
++      { "name": "Amphibious", "desc": "The dragon can breathe air and water." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The dragon makes one Bite attack." },
++      { "name": "Bite", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 7 (1d10+2) Piercing damage plus 2 (1d4) Acid damage.", "attack_bonus": 4 },
++      { "name": "Acid Breath (Recharge 5–6)", "desc": "Dexterity Saving Throw: DC 11, each creature in a 15-foot line that is 5 feet wide. Failure: 22 (5d8) Acid damage. Success: Half damage." }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  },
++  {
++    "id": "owlbear-2024",
++    "name": "Owlbear",
++    "cr": "3",
++    "type": "monstrosity",
++    "hit_points": 59,
++    "armor_class": 13,
++    "ruleset_version": "2024",
++    "size": "Large",
++    "alignment": null,
++    "hp_formula": "7d10+21",
++    "speed": { "walk": "40 ft." },
++    "str": 20,
++    "dex": 12,
++    "con": 17,
++    "int": 3,
++    "wis": 12,
++    "cha": 7,
++    "saving_throws": null,
++    "skills": { "perception": 3 },
++    "damage_vulnerabilities": null,
++    "damage_resistances": null,
++    "damage_immunities": null,
++    "condition_immunities": null,
++    "senses": "darkvision 60 ft., passive Perception 13",
++    "languages": null,
++    "xp": 700,
++    "special_abilities": [
++      { "name": "Keen Sight and Smell", "desc": "The owlbear has Advantage on Perception checks that rely on sight or smell." }
++    ],
++    "actions": [
++      { "name": "Multiattack", "desc": "The owlbear makes one Beak attack and one Claws attack." },
++      { "name": "Beak", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 10 (1d10+5) Piercing damage.", "attack_bonus": 7 },
++      { "name": "Claws", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 14 (2d8+5) Slashing damage.", "attack_bonus": 7 }
++    ],
++    "legendary_actions": null,
++    "reactions": null
++  }
+ ]
+warning: in the working copy of 'components/oracle/MonsterStatBlock.tsx', LF will be replaced by CRLF the next time Git touches it
+diff --git a/components/oracle/MonsterStatBlock.tsx b/components/oracle/MonsterStatBlock.tsx
+new file mode 100644
+index 0000000..c6e96d6
+--- /dev/null
++++ b/components/oracle/MonsterStatBlock.tsx
+@@ -0,0 +1,211 @@
++"use client";
++
++import type { SrdMonster } from "@/lib/srd/srd-loader";
++import { VersionBadge } from "@/components/session/RulesetSelector";
++
++interface MonsterStatBlockProps {
++  monster: SrdMonster;
++}
++
++function abilityMod(score: number): string {
++  const mod = Math.floor((score - 10) / 2);
++  return mod >= 0 ? `+${mod}` : `${mod}`;
++}
++
++function AbilityScore({ label, score }: { label: string; score: number }) {
++  return (
++    <div className="flex flex-col items-center">
++      <span className="text-white/60 text-xs uppercase font-medium">{label}</span>
++      <span className="text-white font-mono text-sm">{score}</span>
++      <span className="text-white/60 font-mono text-xs">({abilityMod(score)})</span>
++    </div>
++  );
++}
++
++function Divider() {
++  return <hr className="border-t border-white/10 my-2" />;
++}
++
++function PropRow({ label, value }: { label: string; value: string }) {
++  return (
++    <p className="text-sm">
++      <span className="text-white font-medium">{label} </span>
++      <span className="text-white/70">{value}</span>
++    </p>
++  );
++}
++
++export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
++  const speedStr = monster.speed
++    ? Object.entries(monster.speed)
++        .map(([k, v]) => (k === "walk" ? String(v) : `${k} ${v}`))
++        .join(", ")
++    : null;
++
++  const savingThrowsStr = monster.saving_throws
++    ? Object.entries(monster.saving_throws)
++        .map(([k, v]) => `${k.toUpperCase()} ${v >= 0 ? "+" : ""}${v}`)
++        .join(", ")
++    : null;
++
++  const skillsStr = monster.skills
++    ? Object.entries(monster.skills)
++        .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} ${v >= 0 ? "+" : ""}${v}`)
++        .join(", ")
++    : null;
++
++  return (
++    <section
++      className="bg-[#16213e] border border-white/10 rounded-md p-4 text-sm"
++      aria-label={`${monster.name} stat block`}
++    >
++      {/* Header */}
++      <div className="flex items-start justify-between gap-2 mb-1">
++        <div>
++          <h3 className="text-white font-semibold text-base">{monster.name}</h3>
++          <p className="text-white/60 text-xs">
++            {monster.size} {monster.type}
++            {monster.alignment ? `, ${monster.alignment}` : ""}
++          </p>
++        </div>
++        <VersionBadge version={monster.ruleset_version} />
++      </div>
++
++      <Divider />
++
++      {/* Core stats */}
++      <div className="space-y-1">
++        <PropRow
++          label="Armor Class"
++          value={String(monster.armor_class)}
++        />
++        <PropRow
++          label="Hit Points"
++          value={
++            monster.hp_formula
++              ? `${monster.hit_points} (${monster.hp_formula})`
++              : String(monster.hit_points)
++          }
++        />
++        {speedStr && <PropRow label="Speed" value={speedStr} />}
++      </div>
++
++      {/* Ability scores — only when data is present */}
++      {monster.str !== undefined && (
++        <>
++          <Divider />
++          <div className="grid grid-cols-6 gap-1 py-1" role="table" aria-label="Ability scores">
++            <AbilityScore label="STR" score={monster.str!} />
++            <AbilityScore label="DEX" score={monster.dex!} />
++            <AbilityScore label="CON" score={monster.con!} />
++            <AbilityScore label="INT" score={monster.int!} />
++            <AbilityScore label="WIS" score={monster.wis!} />
++            <AbilityScore label="CHA" score={monster.cha!} />
++          </div>
++        </>
++      )}
++
++      {/* Properties */}
++      {(savingThrowsStr || skillsStr || monster.damage_vulnerabilities ||
++        monster.damage_resistances || monster.damage_immunities ||
++        monster.condition_immunities || monster.senses || monster.languages) && (
++        <Divider />
++      )}
++      <div className="space-y-1">
++        {savingThrowsStr && (
++          <PropRow label="Saving Throws" value={savingThrowsStr} />
++        )}
++        {skillsStr && <PropRow label="Skills" value={skillsStr} />}
++        {monster.damage_vulnerabilities && (
++          <PropRow label="Damage Vulnerabilities" value={monster.damage_vulnerabilities} />
++        )}
++        {monster.damage_resistances && (
++          <PropRow label="Damage Resistances" value={monster.damage_resistances} />
++        )}
++        {monster.damage_immunities && (
++          <PropRow label="Damage Immunities" value={monster.damage_immunities} />
++        )}
++        {monster.condition_immunities && (
++          <PropRow label="Condition Immunities" value={monster.condition_immunities} />
++        )}
++        {monster.senses && <PropRow label="Senses" value={monster.senses} />}
++        {monster.languages && (
++          <PropRow label="Languages" value={monster.languages} />
++        )}
++        <PropRow
++          label="Challenge"
++          value={monster.xp ? `${monster.cr} (${monster.xp.toLocaleString()} XP)` : monster.cr}
++        />
++      </div>
++
++      {/* Special Abilities */}
++      {monster.special_abilities && monster.special_abilities.length > 0 && (
++        <>
++          <Divider />
++          <div className="space-y-2">
++            {monster.special_abilities.map((ability, i) => (
++              <p key={i} className="text-white/80 text-sm">
++                <span className="font-semibold text-white">{ability.name}. </span>
++                {ability.desc}
++              </p>
++            ))}
++          </div>
++        </>
++      )}
++
++      {/* Actions */}
++      {monster.actions && monster.actions.length > 0 && (
++        <>
++          <Divider />
++          <h4 className="text-white font-semibold text-sm uppercase tracking-wide mb-2">
++            Actions
++          </h4>
++          <div className="space-y-2">
++            {monster.actions.map((action, i) => (
++              <p key={i} className="text-white/80 text-sm">
++                <span className="font-semibold text-white">{action.name}. </span>
++                {action.desc}
++              </p>
++            ))}
++          </div>
++        </>
++      )}
++
++      {/* Reactions */}
++      {monster.reactions && monster.reactions.length > 0 && (
++        <>
++          <Divider />
++          <h4 className="text-white font-semibold text-sm uppercase tracking-wide mb-2">
++            Reactions
++          </h4>
++          <div className="space-y-2">
++            {monster.reactions.map((reaction, i) => (
++              <p key={i} className="text-white/80 text-sm">
++                <span className="font-semibold text-white">{reaction.name}. </span>
++                {reaction.desc}
++              </p>
++            ))}
++          </div>
++        </>
++      )}
++
++      {/* Legendary Actions */}
++      {monster.legendary_actions && monster.legendary_actions.length > 0 && (
++        <>
++          <Divider />
++          <h4 className="text-white font-semibold text-sm uppercase tracking-wide mb-2">
++            Legendary Actions
++          </h4>
++          <div className="space-y-2">
++            {monster.legendary_actions.map((la, i) => (
++              <p key={i} className="text-white/80 text-sm">
++                <span className="font-semibold text-white">{la.name}. </span>
++                {la.desc}
++              </p>
++            ))}
++          </div>
++        </>
++      )}
++    </section>
++  );
++}
+warning: in the working copy of 'components/oracle/MonsterStatBlock.test.tsx', LF will be replaced by CRLF the next time Git touches it
+diff --git a/components/oracle/MonsterStatBlock.test.tsx b/components/oracle/MonsterStatBlock.test.tsx
+new file mode 100644
+index 0000000..64b3a25
+--- /dev/null
++++ b/components/oracle/MonsterStatBlock.test.tsx
+@@ -0,0 +1,223 @@
++/**
++ * @jest-environment jsdom
++ */
++import React from "react";
++import { render, screen } from "@testing-library/react";
++import { MonsterStatBlock } from "./MonsterStatBlock";
++import type { SrdMonster } from "@/lib/srd/srd-loader";
++
++const GOBLIN: SrdMonster = {
++  id: "goblin",
++  name: "Goblin",
++  cr: "1/4",
++  type: "humanoid",
++  hit_points: 7,
++  armor_class: 15,
++  ruleset_version: "2014",
++  size: "Small",
++  alignment: "neutral evil",
++  hp_formula: "2d6",
++  speed: { walk: "30 ft." },
++  str: 8,
++  dex: 14,
++  con: 10,
++  int: 10,
++  wis: 8,
++  cha: 8,
++  saving_throws: null,
++  skills: { stealth: 6 },
++  damage_vulnerabilities: null,
++  damage_resistances: null,
++  damage_immunities: null,
++  condition_immunities: null,
++  senses: "darkvision 60 ft., passive Perception 9",
++  languages: "Common, Goblin",
++  xp: 50,
++  special_abilities: [
++    { name: "Nimble Escape", desc: "The goblin can take the Disengage or Hide action as a bonus action." },
++  ],
++  actions: [
++    { name: "Scimitar", desc: "Melee Weapon Attack: +4 to hit. Hit: 5 (1d6+2) slashing damage.", attack_bonus: 4 },
++    { name: "Shortbow", desc: "Ranged Weapon Attack: +4 to hit. Hit: 5 (1d6+2) piercing damage.", attack_bonus: 4 },
++  ],
++  legendary_actions: null,
++  reactions: null,
++};
++
++const DRAGON: SrdMonster = {
++  id: "ancient-red-dragon",
++  name: "Ancient Red Dragon",
++  cr: "24",
++  type: "dragon",
++  hit_points: 546,
++  armor_class: 22,
++  ruleset_version: "2014",
++  size: "Gargantuan",
++  alignment: "chaotic evil",
++  hp_formula: "28d20+252",
++  speed: { walk: "40 ft.", climb: "40 ft.", fly: "80 ft." },
++  str: 30,
++  dex: 10,
++  con: 29,
++  int: 18,
++  wis: 15,
++  cha: 23,
++  saving_throws: { dex: 7, con: 16, wis: 9, cha: 13 },
++  skills: { perception: 16, stealth: 7 },
++  damage_vulnerabilities: null,
++  damage_resistances: null,
++  damage_immunities: "fire",
++  condition_immunities: null,
++  senses: "blindsight 60 ft., darkvision 120 ft., passive Perception 26",
++  languages: "Common, Draconic",
++  xp: 62000,
++  special_abilities: null,
++  actions: [
++    { name: "Multiattack", desc: "The dragon makes three attacks: one with its bite and two with its claws." },
++  ],
++  legendary_actions: [
++    { name: "Detect", desc: "The dragon makes a Wisdom (Perception) check." },
++    { name: "Tail Attack", desc: "The dragon makes a tail attack.", attack_bonus: 17 },
++  ],
++  reactions: [
++    { name: "Tail Attack", desc: "When a creature the dragon can see within 10 ft. attacks it, it can use its tail." },
++  ],
++};
++
++describe("MonsterStatBlock", () => {
++  it("renders monster name", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText("Goblin")).toBeInTheDocument();
++  });
++
++  it("renders size and type", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/Small humanoid/)).toBeInTheDocument();
++  });
++
++  it("renders alignment when present", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/neutral evil/)).toBeInTheDocument();
++  });
++
++  it("renders version badge", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText("2014")).toBeInTheDocument();
++  });
++
++  it("renders HP with formula", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/7 \(2d6\)/)).toBeInTheDocument();
++  });
++
++  it("renders HP without formula when hp_formula is undefined", () => {
++    const lean: SrdMonster = { ...GOBLIN, hp_formula: undefined };
++    render(<MonsterStatBlock monster={lean} />);
++    expect(screen.getByText("7")).toBeInTheDocument();
++  });
++
++  it("renders AC", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText("15")).toBeInTheDocument();
++  });
++
++  it("renders speed", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText("30 ft.")).toBeInTheDocument();
++  });
++
++  it("renders ability scores when present", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    // STR/WIS/CHA are all 8 → modifier -1 (multiple occurrences expected)
++    expect(screen.getAllByText("8").length).toBeGreaterThanOrEqual(3);
++    expect(screen.getAllByText("(-1)").length).toBeGreaterThanOrEqual(1);
++    // DEX is 14 → modifier +2
++    expect(screen.getByText("14")).toBeInTheDocument();
++    expect(screen.getByText("(+2)")).toBeInTheDocument();
++  });
++
++  it("does NOT render ability score section when str is not provided", () => {
++    const lean: SrdMonster = { ...GOBLIN, str: undefined };
++    render(<MonsterStatBlock monster={lean} />);
++    expect(screen.queryByRole("table", { name: "Ability scores" })).not.toBeInTheDocument();
++  });
++
++  it("renders saving throws when present", () => {
++    render(<MonsterStatBlock monster={DRAGON} />);
++    expect(screen.getByText(/Saving Throws/)).toBeInTheDocument();
++  });
++
++  it("renders skills when present", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/Skills/)).toBeInTheDocument();
++    expect(screen.getByText(/Stealth/)).toBeInTheDocument();
++  });
++
++  it("renders damage immunities when present", () => {
++    render(<MonsterStatBlock monster={DRAGON} />);
++    expect(screen.getByText(/Damage Immunities/)).toBeInTheDocument();
++    expect(screen.getByText(/fire/)).toBeInTheDocument();
++  });
++
++  it("renders senses", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/darkvision 60 ft/)).toBeInTheDocument();
++  });
++
++  it("renders languages", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/Common, Goblin/)).toBeInTheDocument();
++  });
++
++  it("renders CR and XP", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText(/1\/4 \(50 XP\)/)).toBeInTheDocument();
++  });
++
++  it("renders special abilities when present", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText("Nimble Escape.")).toBeInTheDocument();
++  });
++
++  it("renders actions section when present", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.getByText("Actions")).toBeInTheDocument();
++    expect(screen.getByText("Scimitar.")).toBeInTheDocument();
++  });
++
++  it("does NOT render legendary actions section when legendary_actions is null", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(screen.queryByText("Legendary Actions")).not.toBeInTheDocument();
++  });
++
++  it("renders legendary actions when present", () => {
++    render(<MonsterStatBlock monster={DRAGON} />);
++    expect(screen.getByText("Legendary Actions")).toBeInTheDocument();
++    expect(screen.getByText("Detect.")).toBeInTheDocument();
++  });
++
++  it("renders reactions when present", () => {
++    render(<MonsterStatBlock monster={DRAGON} />);
++    expect(screen.getByText("Reactions")).toBeInTheDocument();
++  });
++
++  it("has correct ARIA label on section", () => {
++    render(<MonsterStatBlock monster={GOBLIN} />);
++    expect(
++      screen.getByRole("region", { name: "Goblin stat block" })
++    ).toBeInTheDocument();
++  });
++
++  it("calculates ability modifiers correctly: +0 for score 10", () => {
++    const monster: SrdMonster = { ...GOBLIN, str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
++    render(<MonsterStatBlock monster={monster} />);
++    const zeroMods = screen.getAllByText("(+0)");
++    expect(zeroMods.length).toBe(6);
++  });
++
++  it("calculates positive modifier: +5 for score 20", () => {
++    const monster: SrdMonster = { ...GOBLIN, str: 20 };
++    render(<MonsterStatBlock monster={monster} />);
++    expect(screen.getByText("(+5)")).toBeInTheDocument();
++  });
++});
+warning: in the working copy of 'components/oracle/MonsterSearch.tsx', LF will be replaced by CRLF the next time Git touches it
+diff --git a/components/oracle/MonsterSearch.tsx b/components/oracle/MonsterSearch.tsx
+new file mode 100644
+index 0000000..d16a72d
+--- /dev/null
++++ b/components/oracle/MonsterSearch.tsx
+@@ -0,0 +1,140 @@
++"use client";
++
++import { useState, useEffect, useCallback } from "react";
++import { searchMonsters } from "@/lib/srd/srd-search";
++import { VersionBadge } from "@/components/session/RulesetSelector";
++import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
++import type { SrdMonster } from "@/lib/srd/srd-loader";
++import type { RulesetVersion } from "@/lib/types/database";
++
++const DEBOUNCE_MS = 150;
++const MAX_RESULTS = 10;
++
++interface MonsterSearchProps {
++  defaultVersion?: RulesetVersion;
++  onAddToCombat?: (monster: SrdMonster) => void;
++}
++
++export function MonsterSearch({
++  defaultVersion,
++  onAddToCombat,
++}: MonsterSearchProps) {
++  const [query, setQuery] = useState("");
++  const [results, setResults] = useState<SrdMonster[]>([]);
++  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
++
++  // Debounced search
++  useEffect(() => {
++    if (!query.trim()) {
++      setResults([]);
++      return;
++    }
++    const timer = setTimeout(() => {
++      const found = searchMonsters(query, defaultVersion)
++        .map((r) => r.item)
++        .slice(0, MAX_RESULTS);
++      setResults(found);
++    }, DEBOUNCE_MS);
++    return () => clearTimeout(timer);
++  }, [query, defaultVersion]);
++
++  const toggleExpand = useCallback((monsterId: string) => {
++    setExpandedIds((prev) => {
++      const next = new Set(prev);
++      if (next.has(monsterId)) {
++        next.delete(monsterId);
++      } else {
++        next.add(monsterId);
++      }
++      return next;
++    });
++  }, []);
++
++  return (
++    <div className="space-y-3" data-testid="monster-search">
++      <input
++        type="search"
++        value={query}
++        onChange={(e) => setQuery(e.target.value)}
++        placeholder="Search monsters by name, CR, or type…"
++        className="w-full bg-[#1a1a2e] border border-white/10 rounded-md px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
++        aria-label="Monster search"
++        data-testid="monster-search-input"
++      />
++
++      {results.length > 0 && (
++        <ul
++          className="space-y-1"
++          role="list"
++          aria-label="Monster search results"
++          data-testid="monster-search-results"
++        >
++          {results.map((monster) => {
++            const isExpanded = expandedIds.has(monster.id);
++            return (
++              <li key={monster.id} className="bg-[#16213e] border border-white/10 rounded-md overflow-hidden">
++                {/* Result row */}
++                <div className="flex items-center gap-2 px-3 py-2">
++                  <button
++                    type="button"
++                    onClick={() => toggleExpand(monster.id)}
++                    className="flex-1 flex items-center gap-2 text-left hover:text-[#e94560] transition-colors"
++                    aria-expanded={isExpanded}
++                    aria-controls={`stat-block-${monster.id}`}
++                    data-testid={`monster-row-${monster.id}`}
++                  >
++                    <span className="text-white text-sm font-medium flex-1">
++                      {monster.name}
++                    </span>
++                    <span className="text-white/50 text-xs font-mono">
++                      CR {monster.cr}
++                    </span>
++                    <span className="text-white/50 text-xs capitalize">
++                      {monster.type}
++                    </span>
++                    <VersionBadge version={monster.ruleset_version} />
++                    <span
++                      className="text-white/40 text-xs ml-1"
++                      aria-hidden="true"
++                    >
++                      {isExpanded ? "▲" : "▼"}
++                    </span>
++                  </button>
++
++                  {onAddToCombat && (
++                    <button
++                      type="button"
++                      onClick={() => onAddToCombat(monster)}
++                      className="px-2 py-1 text-xs text-[#e94560] border border-[#e94560]/40 rounded hover:bg-[#e94560]/10 transition-colors shrink-0"
++                      aria-label={`Add ${monster.name} to combat`}
++                      data-testid={`add-monster-${monster.id}`}
++                    >
++                      + Add
++                    </button>
++                  )}
++                </div>
++
++                {/* Inline stat block expansion */}
++                {isExpanded && (
++                  <div
++                    id={`stat-block-${monster.id}`}
++                    className="border-t border-white/10 p-3"
++                    data-testid={`stat-block-${monster.id}`}
++                  >
++                    <MonsterStatBlock monster={monster} />
++                  </div>
++                )}
++              </li>
++            );
++          })}
++        </ul>
++      )}
++
++      {query.trim() && results.length === 0 && (
++        <p className="text-white/40 text-sm text-center py-2" data-testid="monster-search-empty">
++          No monsters found for &quot;{query}&quot;
++        </p>
++      )}
++    </div>
++  );
++}
+warning: in the working copy of 'components/oracle/MonsterSearch.test.tsx', LF will be replaced by CRLF the next time Git touches it
+diff --git a/components/oracle/MonsterSearch.test.tsx b/components/oracle/MonsterSearch.test.tsx
+new file mode 100644
+index 0000000..9b3373a
+--- /dev/null
++++ b/components/oracle/MonsterSearch.test.tsx
+@@ -0,0 +1,203 @@
++/**
++ * @jest-environment jsdom
++ */
++import React from "react";
++import { render, screen, waitFor } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { MonsterSearch } from "./MonsterSearch";
++import * as srdSearch from "@/lib/srd/srd-search";
++import type { SrdMonster } from "@/lib/srd/srd-loader";
++import type { FuseResult } from "fuse.js";
++
++jest.mock("@/lib/srd/srd-search", () => ({
++  searchMonsters: jest.fn(),
++}));
++
++// MonsterStatBlock renders inline — mock it to keep tests fast
++jest.mock("@/components/oracle/MonsterStatBlock", () => ({
++  MonsterStatBlock: ({ monster }: { monster: SrdMonster }) => (
++    <div data-testid={`stat-block-mock-${monster.id}`}>{monster.name} stat block</div>
++  ),
++}));
++
++const GOBLIN_2014: SrdMonster = {
++  id: "goblin",
++  name: "Goblin",
++  cr: "1/4",
++  type: "humanoid",
++  hit_points: 7,
++  armor_class: 15,
++  ruleset_version: "2014",
++};
++
++const ORC_2014: SrdMonster = {
++  id: "orc",
++  name: "Orc",
++  cr: "1/2",
++  type: "humanoid",
++  hit_points: 15,
++  armor_class: 13,
++  ruleset_version: "2014",
++};
++
++function makeFuseResult(item: SrdMonster): FuseResult<SrdMonster> {
++  return { item, refIndex: 0, score: 0 };
++}
++
++const mockSearch = srdSearch.searchMonsters as jest.Mock;
++
++beforeEach(() => {
++  jest.clearAllMocks();
++  mockSearch.mockReturnValue([]);
++});
++
++describe("MonsterSearch", () => {
++  it("renders the search input", () => {
++    render(<MonsterSearch />);
++    expect(screen.getByRole("searchbox", { name: "Monster search" })).toBeInTheDocument();
++  });
++
++  it("shows no results when query is empty", () => {
++    render(<MonsterSearch />);
++    expect(screen.queryByTestId("monster-search-results")).not.toBeInTheDocument();
++  });
++
++  it("shows results after typing a query", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014), makeFuseResult(ORC_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => {
++      expect(screen.getByTestId("monster-search-results")).toBeInTheDocument();
++    });
++    expect(screen.getByTestId("monster-row-goblin")).toBeInTheDocument();
++    expect(screen.getByTestId("monster-row-orc")).toBeInTheDocument();
++  });
++
++  it("displays monster name, CR, type, and version badge in results", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => {
++      expect(screen.getByText("Goblin")).toBeInTheDocument();
++    });
++    expect(screen.getByText("CR 1/4")).toBeInTheDocument();
++    expect(screen.getByText("humanoid")).toBeInTheDocument();
++    expect(screen.getByText("2014")).toBeInTheDocument();
++  });
++
++  it("clicking a result expands inline stat block", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => screen.getByTestId("monster-row-goblin"));
++    await user.click(screen.getByTestId("monster-row-goblin"));
++
++    expect(screen.getByTestId("stat-block-goblin")).toBeInTheDocument();
++    expect(screen.getByTestId("stat-block-mock-goblin")).toBeInTheDocument();
++  });
++
++  it("clicking expanded result collapses stat block", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => screen.getByTestId("monster-row-goblin"));
++
++    // expand
++    await user.click(screen.getByTestId("monster-row-goblin"));
++    expect(screen.getByTestId("stat-block-goblin")).toBeInTheDocument();
++
++    // collapse
++    await user.click(screen.getByTestId("monster-row-goblin"));
++    expect(screen.queryByTestId("stat-block-goblin")).not.toBeInTheDocument();
++  });
++
++  it("multiple monsters can be expanded independently", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014), makeFuseResult(ORC_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "hum");
++
++    await waitFor(() => screen.getByTestId("monster-row-goblin"));
++
++    await user.click(screen.getByTestId("monster-row-goblin"));
++    await user.click(screen.getByTestId("monster-row-orc"));
++
++    expect(screen.getByTestId("stat-block-goblin")).toBeInTheDocument();
++    expect(screen.getByTestId("stat-block-orc")).toBeInTheDocument();
++  });
++
++  it("does NOT render Add button when onAddToCombat is not provided", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => screen.getByTestId("monster-row-goblin"));
++    expect(screen.queryByTestId("add-monster-goblin")).not.toBeInTheDocument();
++  });
++
++  it("renders Add button when onAddToCombat is provided", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++    const onAdd = jest.fn();
++
++    render(<MonsterSearch onAddToCombat={onAdd} />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => screen.getByTestId("add-monster-goblin"));
++    expect(screen.getByTestId("add-monster-goblin")).toBeInTheDocument();
++  });
++
++  it("calls onAddToCombat with the correct monster when Add is clicked", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++    const onAdd = jest.fn();
++
++    render(<MonsterSearch onAddToCombat={onAdd} />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => screen.getByTestId("add-monster-goblin"));
++    await user.click(screen.getByTestId("add-monster-goblin"));
++
++    expect(onAdd).toHaveBeenCalledTimes(1);
++    expect(onAdd).toHaveBeenCalledWith(GOBLIN_2014);
++  });
++
++  it("shows empty state message when query has no matches", async () => {
++    mockSearch.mockReturnValue([]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch />);
++    await user.type(screen.getByRole("searchbox"), "xyzzy");
++
++    await waitFor(() => {
++      expect(screen.getByTestId("monster-search-empty")).toBeInTheDocument();
++    });
++  });
++
++  it("passes defaultVersion filter to searchMonsters", async () => {
++    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
++    const user = userEvent.setup();
++
++    render(<MonsterSearch defaultVersion="2014" />);
++    await user.type(screen.getByRole("searchbox"), "gob");
++
++    await waitFor(() => {
++      expect(mockSearch).toHaveBeenCalledWith("gob", "2014");
++    });
++  });
++});
+warning: in the working copy of 'components/combat/CombatantRow.test.tsx', LF will be replaced by CRLF the next time Git touches it
+diff --git a/components/combat/CombatantRow.test.tsx b/components/combat/CombatantRow.test.tsx
+new file mode 100644
+index 0000000..c12fc59
+--- /dev/null
++++ b/components/combat/CombatantRow.test.tsx
+@@ -0,0 +1,235 @@
++/**
++ * @jest-environment jsdom
++ */
++import React from "react";
++import { render, screen } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { CombatantRow } from "./CombatantRow";
++import * as srdSearch from "@/lib/srd/srd-search";
++import type { Combatant } from "@/lib/types/combat";
++import type { SrdMonster } from "@/lib/srd/srd-loader";
++
++jest.mock("@/lib/srd/srd-search", () => ({
++  getMonsterById: jest.fn(),
++}));
++
++jest.mock("@/components/oracle/MonsterStatBlock", () => ({
++  MonsterStatBlock: ({ monster }: { monster: SrdMonster }) => (
++    <div data-testid="monster-stat-block-mock">{monster.name} stat block</div>
++  ),
++}));
++
++const mockGetMonsterById = srdSearch.getMonsterById as jest.Mock;
++
++const BASE_PLAYER: Combatant = {
++  id: "c1",
++  name: "Aragorn",
++  current_hp: 40,
++  max_hp: 40,
++  temp_hp: 0,
++  ac: 18,
++  spell_save_dc: 14,
++  initiative: 15,
++  initiative_order: 0,
++  conditions: [],
++  ruleset_version: null,
++  is_defeated: false,
++  is_player: true,
++  monster_id: null,
++};
++
++const MONSTER_COMBATANT: Combatant = {
++  id: "m1",
++  name: "Goblin",
++  current_hp: 7,
++  max_hp: 7,
++  temp_hp: 0,
++  ac: 15,
++  spell_save_dc: null,
++  initiative: 12,
++  initiative_order: 1,
++  conditions: [],
++  ruleset_version: "2014",
++  is_defeated: false,
++  is_player: false,
++  monster_id: "goblin",
++};
++
++const GOBLIN_FULL: SrdMonster = {
++  id: "goblin",
++  name: "Goblin",
++  cr: "1/4",
++  type: "humanoid",
++  hit_points: 7,
++  armor_class: 15,
++  ruleset_version: "2014",
++  str: 8,
++  dex: 14,
++  con: 10,
++  int: 10,
++  wis: 8,
++  cha: 8,
++};
++
++beforeEach(() => {
++  jest.clearAllMocks();
++  mockGetMonsterById.mockReturnValue(undefined);
++});
++
++describe("CombatantRow", () => {
++  describe("zero-tap tier (always visible)", () => {
++    it("renders combatant name", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      expect(screen.getByTestId("combatant-name-c1")).toHaveTextContent("Aragorn");
++    });
++
++    it("renders HP display", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      expect(screen.getByTestId("hp-display-c1")).toHaveTextContent("40 / 40");
++    });
++
++    it("renders HP bar as progressbar ARIA role", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      const bar = screen.getByRole("progressbar", { name: "Aragorn hit points" });
++      expect(bar).toBeInTheDocument();
++      expect(bar).toHaveAttribute("aria-valuenow", "40");
++      expect(bar).toHaveAttribute("aria-valuemax", "40");
++    });
++
++    it("shows turn indicator when isCurrentTurn is true", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={true} />);
++      expect(screen.getByTestId("current-turn-indicator")).toBeInTheDocument();
++    });
++
++    it("does NOT show turn indicator when isCurrentTurn is false", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      expect(screen.queryByTestId("current-turn-indicator")).not.toBeInTheDocument();
++    });
++
++    it("sets aria-current on li when isCurrentTurn is true", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={true} />);
++      expect(screen.getByTestId("combatant-row-c1")).toHaveAttribute("aria-current", "true");
++    });
++
++    it("does NOT set aria-current when isCurrentTurn is false", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      expect(screen.getByTestId("combatant-row-c1")).not.toHaveAttribute("aria-current");
++    });
++
++    it("renders condition badges when conditions are present", () => {
++      const c: Combatant = { ...BASE_PLAYER, conditions: ["Stunned", "Poisoned"] };
++      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
++      const condContainer = screen.getByTestId("conditions-c1");
++      expect(condContainer).toBeInTheDocument();
++      expect(screen.getByText("Stunned")).toBeInTheDocument();
++      expect(screen.getByText("Poisoned")).toBeInTheDocument();
++    });
++
++    it("does NOT render conditions container when conditions array is empty", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      expect(screen.queryByTestId("conditions-c1")).not.toBeInTheDocument();
++    });
++
++    it("shows temp HP when temp_hp > 0", () => {
++      const c: Combatant = { ...BASE_PLAYER, temp_hp: 5 };
++      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
++      expect(screen.getByTestId("temp-hp-c1")).toHaveTextContent("+5 temp");
++    });
++
++    it("does NOT show temp HP when temp_hp is 0", () => {
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      expect(screen.queryByTestId("temp-hp-c1")).not.toBeInTheDocument();
++    });
++
++    it("shows defeated badge when is_defeated is true", () => {
++      const c: Combatant = { ...BASE_PLAYER, is_defeated: true };
++      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
++      expect(screen.getByTestId("defeated-badge")).toBeInTheDocument();
++    });
++  });
++
++  describe("HP bar color", () => {
++    it("is green when HP is > 50%", () => {
++      const c: Combatant = { ...BASE_PLAYER, current_hp: 30, max_hp: 40 };
++      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
++      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-green-500");
++    });
++
++    it("is amber when HP is 25–50%", () => {
++      const c: Combatant = { ...BASE_PLAYER, current_hp: 15, max_hp: 40 };
++      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
++      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-amber-400");
++    });
++
++    it("is red when HP is < 25%", () => {
++      const c: Combatant = { ...BASE_PLAYER, current_hp: 5, max_hp: 40 };
++      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
++      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-red-500");
++    });
++  });
++
++  describe("stat block expansion (one-tap tier)", () => {
++    it("does NOT show stat block by default", () => {
++      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
++      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
++      expect(screen.queryByTestId("expanded-stat-block-m1")).not.toBeInTheDocument();
++    });
++
++    it("shows stat block after clicking monster name", async () => {
++      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
++      const user = userEvent.setup();
++
++      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
++      await user.click(screen.getByTestId("combatant-name-m1"));
++
++      expect(screen.getByTestId("expanded-stat-block-m1")).toBeInTheDocument();
++      expect(screen.getByTestId("monster-stat-block-mock")).toBeInTheDocument();
++    });
++
++    it("collapses stat block on second click", async () => {
++      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
++      const user = userEvent.setup();
++
++      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
++      await user.click(screen.getByTestId("combatant-name-m1"));
++      expect(screen.getByTestId("expanded-stat-block-m1")).toBeInTheDocument();
++
++      await user.click(screen.getByTestId("combatant-name-m1"));
++      expect(screen.queryByTestId("expanded-stat-block-m1")).not.toBeInTheDocument();
++    });
++
++    it("does NOT show expand controls for non-monster combatants", () => {
++      mockGetMonsterById.mockReturnValue(undefined);
++      render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
++      // Button is disabled (no expand functionality)
++      const nameBtn = screen.getByTestId("combatant-name-c1");
++      expect(nameBtn).toBeDisabled();
++    });
++
++    it("shows AC and DC in expanded tier", async () => {
++      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
++      const user = userEvent.setup();
++
++      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
++      await user.click(screen.getByTestId("combatant-name-m1"));
++
++      expect(screen.getByText(/AC/)).toBeInTheDocument();
++      expect(screen.getByText("15")).toBeInTheDocument();
++    });
++
++    it("calls getMonsterById with correct id and version", async () => {
++      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
++      const user = userEvent.setup();
++
++      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
++      // getMonsterById is called on render to determine canExpand
++      expect(mockGetMonsterById).toHaveBeenCalledWith("goblin", "2014");
++    });
++
++    it("version badge is shown for monster combatants", () => {
++      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
++      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
++      expect(screen.getByText("2014")).toBeInTheDocument();
++    });
++  });
++});
