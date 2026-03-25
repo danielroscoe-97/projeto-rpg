@@ -30,9 +30,11 @@ export default function TryLayout({ children }: { children: React.ReactNode }) {
       />
       <SrdInitializer />
       <FloatingCardContainer />
-      <GuestBanner />
-      <main className="flex-1 pt-[72px] p-6">
-        {children}
+      <main className="flex-1 pt-[72px]">
+        <GuestBanner />
+        <div className="p-6">
+          {children}
+        </div>
       </main>
     </div>
   );
