@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import {
@@ -63,6 +63,7 @@ export function CombatSessionClient({
   const router = useRouter();
   const t = useTranslations("combat");
   const [turnPending, setTurnPending] = useState(false);
+  const turnPendingRef = useRef(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
@@ -136,25 +137,37 @@ export function CombatSessionClient({
   };
 
   const handleAdvanceTurn = async () => {
-    if (turnPending) return;
+    // Synchronous ref guard prevents double-advance from rapid keypresses
+    if (turnPendingRef.current) return;
+    turnPendingRef.current = true;
+    setTurnPending(true);
+
     const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } =
       useCombatStore.getState();
-    if (!encounter_id) return;
+    if (!encounter_id) {
+      turnPendingRef.current = false;
+      setTurnPending(false);
+      return;
+    }
 
     advanceTurn();
     const { current_turn_index: nextIdx, round_number: nextRound } =
       useCombatStore.getState();
-    if (nextIdx === prevIdx && nextRound === prevRound) return;
+    if (nextIdx === prevIdx && nextRound === prevRound) {
+      turnPendingRef.current = false;
+      setTurnPending(false);
+      return;
+    }
 
     broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound });
 
-    setTurnPending(true);
     try {
       await persistTurnAdvance(encounter_id, nextIdx, nextRound);
     } catch (err) {
       useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
       setError(err instanceof Error ? err.message : t("error_save_turn"));
     } finally {
+      turnPendingRef.current = false;
       setTurnPending(false);
     }
   };
@@ -237,6 +250,7 @@ export function CombatSessionClient({
   // --- Add Combatant Mid-Combat (Story 3-7) ---
   const handleAddCombatant = useCallback((newCombatant: Omit<Combatant, "id">) => {
     const store = useCombatStore.getState();
+    const existingIds = new Set(store.combatants.map((c) => c.id));
     store.addCombatant(newCombatant);
 
     // Re-sort and re-assign initiative order
@@ -244,9 +258,9 @@ export function CombatSessionClient({
     const sorted = assignInitiativeOrder(sortByInitiative(allCombatants));
     useCombatStore.getState().hydrateCombatants(sorted);
 
-    // Persist the new combatant
+    // Find the newly added combatant by ID (the only one not in the previous snapshot)
     const added = useCombatStore.getState().combatants.find(
-      (c) => c.name === (newCombatant.name) && !store.combatants.some((old) => old.id === c.id)
+      (c) => !existingIds.has(c.id)
     );
     if (added && store.encounter_id) {
       broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });

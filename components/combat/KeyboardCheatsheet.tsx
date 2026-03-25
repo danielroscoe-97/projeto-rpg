@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 
 interface KeyboardCheatsheetProps {
@@ -20,6 +21,29 @@ const SHORTCUTS = [
 
 export function KeyboardCheatsheet({ open, onClose }: KeyboardCheatsheetProps) {
   const t = useTranslations("combat");
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap: focus the panel on open, return focus on close
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.activeElement as HTMLElement | null;
+    panelRef.current?.focus();
+    return () => { prev?.focus(); };
+  }, [open]);
+
+  // Close on Escape within the dialog
+  useEffect(() => {
+    if (!open) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    }
+    window.addEventListener("keydown", handleKey, true);
+    return () => window.removeEventListener("keydown", handleKey, true);
+  }, [open, onClose]);
 
   if (!open) return null;
 
@@ -30,7 +54,14 @@ export function KeyboardCheatsheet({ open, onClose }: KeyboardCheatsheetProps) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[320px] rounded-xl border border-white/[0.10] bg-[#1a1a28] p-5 shadow-2xl animate-in zoom-in-95 fade-in-0 duration-150">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("shortcut_title")}
+        tabIndex={-1}
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[320px] rounded-xl border border-white/[0.10] bg-[#1a1a28] p-5 shadow-2xl animate-in zoom-in-95 fade-in-0 duration-150 outline-none"
+      >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">{t("shortcut_title")}</h3>
           <button

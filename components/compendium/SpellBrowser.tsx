@@ -33,10 +33,10 @@ const CLASSES = [
   "Ranger", "Sorcerer", "Warlock", "Wizard",
 ];
 
-function formatSpellLevel(level: number): string {
-  if (level === 0) return "Cantrip";
-  const suffixes: Record<number, string> = { 1: "st", 2: "nd", 3: "rd" };
-  return `${level}${suffixes[level] ?? "th"}-level`;
+/** Localized spell level label — resolved inside component via `t()` callback */
+function formatSpellLevel(level: number, t: ReturnType<typeof import("next-intl").useTranslations>): string {
+  if (level === 0) return t("cantrip");
+  return t("spell_level_format", { level });
 }
 
 /** Color intensity by spell level for left accent border */
@@ -215,7 +215,7 @@ export function SpellBrowser() {
                   {spell.name}
                 </span>
                 <span className="text-xs text-muted-foreground whitespace-nowrap">
-                  {formatSpellLevel(spell.level)} · {spell.school}
+                  {formatSpellLevel(spell.level, t)} · {spell.school}
                 </span>
                 <span className="text-xs text-muted-foreground whitespace-nowrap hidden md:inline">
                   {spell.casting_time}

@@ -448,7 +448,9 @@
     "casting_time": "Tempo de Conjuração",
     "range": "Alcance",
     "components": "Componentes",
-    "duration": "Duração"
+    "duration": "Duração",
+    "cantrip": "Truque",
+    "spell_level_format": "{level}º nível"
   },
   "command_palette": {
     "label": "Busca Oracle",

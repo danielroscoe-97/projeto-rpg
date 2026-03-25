@@ -84,6 +84,9 @@ export function useCombatKeyboardShortcuts({
 
       const opts = optionsRef.current;
 
+      // Don't process combat shortcuts while the cheatsheet is open (except Escape to close it)
+      if (opts.cheatsheetOpen && e.key !== "Escape") return;
+
       switch (e.key) {
         case " ": // Space = Next Turn
           e.preventDefault();
