@@ -138,7 +138,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
       temp_hp: 0,
       ac,
       spell_save_dc: null,
-      initiative: initVal !== null && !isNaN(initVal) ? Math.min(30, Math.max(-5, initVal)) : null,
+      initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
       initiative_order: null,
       conditions: [],
       ruleset_version: null,
@@ -378,7 +378,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           onChange={(e) => setAddRow((f) => ({ ...f, initiative: e.target.value }))}
           placeholder={t("setup_col_init")}
           min={-5}
-          max={30}
+          max={50}
           className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />

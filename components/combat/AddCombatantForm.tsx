@@ -90,7 +90,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
           <input
             type="number"
             min="-5"
-            max="30"
+            max="50"
             value={initiative}
             onChange={(e) => setInitiative(e.target.value)}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

@@ -180,8 +180,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         .insert({ owner_id: userId, name: campaignName })
         .select("id")
         .single();
-      if (campaignErr || !campaign)
+      if (campaignErr || !campaign) {
+        console.error("[Onboarding] Campaign insert failed:", campaignErr);
         throw new Error(t("error_campaign"));
+      }
 
       // 2. Insert PlayerCharacters
       const characters = state.players.map((p) => ({
@@ -195,8 +197,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       const { error: pcErr } = await supabase
         .from("player_characters")
         .insert(characters);
-      if (pcErr)
+      if (pcErr) {
+        console.error("[Onboarding] Player characters insert failed:", pcErr);
         throw new Error(t("error_players"));
+      }
 
       // 3. Create Session
       const { data: session, error: sessionErr } = await supabase
@@ -206,12 +210,13 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           owner_id: userId,
           name: `${campaignName} - Session 1`,
           ruleset_version: "2014" as const,
-          is_active: true,
         })
         .select("id")
         .single();
-      if (sessionErr || !session)
+      if (sessionErr || !session) {
+        console.error("[Onboarding] Session insert failed:", sessionErr);
         throw new Error(t("error_session"));
+      }
 
       // 4. Create Encounter (named by DM in Step 3)
       const { error: encErr } = await supabase.from("encounters").insert({
@@ -219,16 +224,20 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         name: encounterName,
         is_active: true,
       });
-      if (encErr)
+      if (encErr) {
+        console.error("[Onboarding] Encounter insert failed:", encErr);
         throw new Error(t("error_encounter"));
+      }
 
       // 5. Generate Session Token
       const token = crypto.randomUUID();
       const { error: tokenErr } = await supabase
         .from("session_tokens")
         .insert({ session_id: session.id, token, is_active: true });
-      if (tokenErr)
+      if (tokenErr) {
+        console.error("[Onboarding] Session token insert failed:", tokenErr);
         throw new Error(t("error_link"));
+      }
 
       setState((s) => ({
         ...s,

@@ -56,12 +56,12 @@ export function CombatantSetupRow({
           }
           const val = Number(raw);
           if (!isNaN(val)) {
-            onInitiativeChange(combatant.id, Math.min(30, Math.max(-5, val)));
+            onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
           }
         }}
         placeholder={t("setup_init_placeholder")}
         min={-5}
-        max={30}
+        max={50}
         className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         aria-label={t("setup_init_aria", { name: combatant.name })}
         data-testid={`setup-init-${combatant.id}`}

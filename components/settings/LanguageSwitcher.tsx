@@ -27,7 +27,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="mb-8">
+    <div>
       <h2 className="text-lg font-semibold text-foreground mb-1">
         {t("language_title")}
       </h2>
