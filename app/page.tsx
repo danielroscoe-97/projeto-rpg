@@ -271,6 +271,7 @@ function StepCircle({ number }: { number: string }) {
   return (
     <div className="relative w-14 h-14 shrink-0">
       <svg width="56" height="56" viewBox="0 0 56 56" className="overflow-visible" aria-hidden="true">
+        <circle cx="28" cy="28" r="26" fill="#161622" />
         <circle cx="28" cy="28" r="26" fill="rgba(212,168,83,0.07)" stroke="rgba(212,168,83,0.3)" strokeWidth="1.5" />
         <circle
           cx="28" cy="28" r="26"
@@ -517,7 +518,7 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
   const iconColor = highlight ? "#D4A853" : "rgba(255,255,255,0.16)";
   const textClass = highlight && val.type === "check"
     ? "text-white font-medium text-sm leading-snug"
-    : "text-white/25 text-sm leading-snug";
+    : "text-white/45 text-sm leading-snug";
 
   return (
     <div className="flex items-center gap-2.5 py-[18px]">
@@ -529,14 +530,14 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
       )}
       {val.type === "cross" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
-          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       {val.type === "partial" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
-          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       <span className={textClass}>{val.label}</span>
@@ -622,12 +623,12 @@ function ComparisonSection() {
           <div className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr]">
             <div className="px-7 py-5 border-b border-white/[0.06]" />
             <div className="px-6 py-5 text-center border-b border-l border-white/[0.06]">
-              <span className="text-[11px] font-semibold text-white/20 uppercase tracking-widest">
+              <span className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">
                 Roll20 / Foundry
               </span>
             </div>
             <div className="px-6 py-5 text-center border-b border-l border-white/[0.06]">
-              <span className="text-[11px] font-semibold text-white/20 uppercase tracking-widest">
+              <span className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">
                 D&amp;D Beyond
               </span>
             </div>
