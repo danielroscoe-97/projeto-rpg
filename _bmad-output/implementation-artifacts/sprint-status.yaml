@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-24T20:00:00Z
+last_updated: 2026-03-24T23:00:00Z
 project: projeto-rpg
 
 project_key: NOKEY
@@ -95,18 +95,18 @@ development_status:
   epic-5-retrospective: optional
 
   # Epic 6: Admin Panel & Content Management
-  epic-6: backlog
-  6-1-admin-authentication-and-layout-guard: backlog
-  6-2-usage-metrics-dashboard: backlog
-  6-3-srd-content-editing-and-live-propagation: backlog
-  6-4-user-account-management: backlog
+  epic-6: done
+  6-1-admin-authentication-and-layout-guard: done
+  6-2-usage-metrics-dashboard: done
+  6-3-srd-content-editing-and-live-propagation: done
+  6-4-user-account-management: done
   epic-6-retrospective: optional
 
   # Epic 7: Performance, Accessibility & Production Hardening
   epic-7: in-progress
   7-1-performance-optimization-and-web-vitals: done
-  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: review
+  7-2-accessibility-audit-and-wcag-2-1-aa-compliance: done
   7-3-load-testing-and-scalability-validation: backlog
-  7-4-error-tracking-and-monitoring-setup: backlog
-  7-5-security-hardening-and-input-validation: backlog
+  7-4-error-tracking-and-monitoring-setup: done
+  7-5-security-hardening-and-input-validation: done
   epic-7-retrospective: optional

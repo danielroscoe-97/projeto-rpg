@@ -393,7 +393,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-[#e94560] hover:bg-[#c73652] text-white"
+                        className="bg-[#e94560] hover:bg-[#c73652] text-white min-h-[44px]"
                         disabled={isSaveDisabled(editForm) || isLoading}
                         onClick={handleEdit}
                       >
@@ -418,6 +418,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     <Button
                       size="sm"
                       variant="destructive"
+                      className="min-h-[44px]"
                       disabled={isLoading}
                       onClick={handleRemove}
                     >
@@ -426,7 +427,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-white/50 hover:text-white"
+                      className="text-white/50 hover:text-white min-h-[44px]"
                       onClick={() => setRemoveTargetId(null)}
                     >
                       Cancel

@@ -17,14 +17,17 @@ describe("next.config — headers()", () => {
     expect(cacheHeader.value).toBe("public, max-age=31536000, immutable");
   });
 
-  it("does not add catch-all headers to non-SRD routes", async () => {
+  it("includes security headers on all routes", async () => {
     const headers = await nextConfig.headers!();
 
-    // Verify no header rule uses a wildcard that would accidentally cover all routes.
-    // Individual route-specific rules (e.g., /api/*) are allowed in future stories.
-    const catchAllRule = headers.find(
-      (rule) => rule.source === "/(.*)" || rule.source === "/:path*"
-    );
-    expect(catchAllRule).toBeUndefined();
+    const globalRule = headers.find((rule) => rule.source === "/(.*)");
+    expect(globalRule).toBeDefined();
+
+    const headerKeys = globalRule!.headers.map((h) => h.key);
+    expect(headerKeys).toContain("Strict-Transport-Security");
+    expect(headerKeys).toContain("X-Content-Type-Options");
+    expect(headerKeys).toContain("X-Frame-Options");
+    expect(headerKeys).toContain("Referrer-Policy");
+    expect(headerKeys).toContain("Permissions-Policy");
   });
 });

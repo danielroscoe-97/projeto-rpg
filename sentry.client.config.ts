@@ -1,12 +1,12 @@
-// Sentry client-side configuration
-// TODO: Install @sentry/nextjs and configure DSN before production launch
-// import * as Sentry from "@sentry/nextjs";
-//
-// Sentry.init({
-//   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-//   tracesSampleRate: 1.0,
-//   replaysSessionSampleRate: 0.1,
-//   replaysOnErrorSampleRate: 1.0,
-// });
+import * as Sentry from "@sentry/nextjs";
 
-export {};
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  enabled: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  integrations: [
+    Sentry.replayIntegration(),
+  ],
+});
