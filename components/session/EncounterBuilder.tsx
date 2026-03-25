@@ -209,8 +209,8 @@ export function EncounterBuilder() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">New Encounter</h1>
-        <p className="text-white/50 text-sm mt-1">
+        <h1 className="text-2xl font-semibold text-foreground">New Encounter</h1>
+        <p className="text-muted-foreground text-sm mt-1">
           Search monsters or add custom NPCs to build your encounter.
         </p>
       </div>
@@ -220,7 +220,7 @@ export function EncounterBuilder() {
 
       {/* Monster search */}
       <div className="space-y-2">
-        <label className="text-white/80 text-sm font-medium block">
+        <label className="text-foreground/80 text-sm font-medium block">
           Search Monsters (SRD {rulesetVersion})
         </label>
         <input
@@ -228,38 +228,38 @@ export function EncounterBuilder() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Type a monster name or type…"
-          className="w-full bg-[#16213e] border border-white/10 rounded-md px-3 py-2 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+          className="w-full bg-card border border-border rounded-md px-3 py-2 text-foreground placeholder-muted-foreground/60 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
           data-testid="monster-search-input"
         />
         {isSearching && (
-          <p className="text-white/30 text-xs">Searching…</p>
+          <p className="text-muted-foreground/60 text-xs">Searching…</p>
         )}
         {searchError && (
           <p className="text-red-400 text-xs" role="alert">{searchError}</p>
         )}
         {results.length > 0 && (
           <ul
-            className="bg-[#16213e] border border-white/10 rounded-md divide-y divide-white/5 overflow-hidden"
+            className="bg-card border border-border rounded-md divide-y divide-white/[0.04] overflow-hidden"
             data-testid="monster-results"
           >
             {results.map((monster) => (
               <li
                 key={monster.id}
-                className="flex items-center justify-between px-4 py-2 hover:bg-white/5"
+                className="flex items-center justify-between px-4 py-2 hover:bg-white/[0.04]"
               >
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-white text-sm font-medium">
+                  <span className="text-foreground text-sm font-medium">
                     {monster.name}
                   </span>
                   <VersionBadge version={monster.ruleset_version} />
-                  <span className="text-white/40 text-xs">
+                  <span className="text-muted-foreground text-xs">
                     CR {monster.cr} · {monster.type} · HP {monster.hit_points} · AC{" "}
                     {monster.armor_class}
                   </span>
                 </div>
                 <button
                   onClick={() => handleAddMonster(monster)}
-                  className="text-xs px-2 py-1 bg-[#e94560]/20 text-[#e94560] rounded hover:bg-[#e94560]/40 transition-colors"
+                  className="text-xs px-2 py-1 bg-gold/20 text-gold rounded hover:bg-gold/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                   data-testid={`add-monster-${monster.id}`}
                 >
                   Add
@@ -276,7 +276,7 @@ export function EncounterBuilder() {
           {!showCustomForm && (
             <button
               onClick={() => setShowCustomForm(true)}
-              className="text-sm text-white/50 hover:text-white/80 underline transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground/80 underline transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               data-testid="show-custom-npc-btn"
             >
               + Add Custom NPC
@@ -286,10 +286,10 @@ export function EncounterBuilder() {
         </div>
         {showCustomForm ? (
           <div
-            className="bg-[#16213e] border border-white/10 rounded-md p-4 space-y-3"
+            className="bg-card border border-border rounded-md p-4 space-y-3"
             data-testid="custom-npc-form"
           >
-            <h3 className="text-white/80 text-sm font-medium">Custom NPC</h3>
+            <h3 className="text-foreground/80 text-sm font-medium">Custom NPC</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
                 <input
@@ -299,7 +299,7 @@ export function EncounterBuilder() {
                     setNpcForm((f) => ({ ...f, name: e.target.value }))
                   }
                   placeholder="Name"
-                  className="w-full bg-[#1a1a2e] border border-white/10 rounded px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
                   data-testid="npc-name-input"
                 />
                 {npcErrors.name && (
@@ -315,7 +315,7 @@ export function EncounterBuilder() {
                   }
                   placeholder="Max HP"
                   min={1}
-                  className="w-full bg-[#1a1a2e] border border-white/10 rounded px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
                   data-testid="npc-hp-input"
                 />
                 {npcErrors.max_hp && (
@@ -331,7 +331,7 @@ export function EncounterBuilder() {
                   }
                   placeholder="AC"
                   min={1}
-                  className="w-full bg-[#1a1a2e] border border-white/10 rounded px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
                   data-testid="npc-ac-input"
                 />
                 {npcErrors.ac && (
@@ -350,7 +350,7 @@ export function EncounterBuilder() {
                   }
                   placeholder="Spell Save DC (optional)"
                   min={1}
-                  className="w-full bg-[#1a1a2e] border border-white/10 rounded px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
                   data-testid="npc-dc-input"
                 />
                 {npcErrors.spell_save_dc && (
@@ -363,7 +363,7 @@ export function EncounterBuilder() {
             <div className="flex gap-2">
               <button
                 onClick={handleAddNpc}
-                className="px-3 py-1 bg-[#e94560] text-white text-sm rounded hover:bg-[#c73652] transition-colors"
+                className="px-3 py-1 bg-gold text-foreground text-sm rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 data-testid="add-npc-btn"
               >
                 Add NPC
@@ -374,7 +374,7 @@ export function EncounterBuilder() {
                   setNpcForm(EMPTY_NPC);
                   setNpcErrors({});
                 }}
-                className="px-3 py-1 bg-white/10 text-white/60 text-sm rounded hover:bg-white/20 transition-colors"
+                className="px-3 py-1 bg-white/[0.06] text-muted-foreground text-sm rounded hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               >
                 Cancel
               </button>
@@ -386,7 +386,7 @@ export function EncounterBuilder() {
       {/* Combatant list */}
       {combatants.length > 0 && (
         <div>
-          <h2 className="text-white/80 text-sm font-medium mb-2">
+          <h2 className="text-foreground/80 text-sm font-medium mb-2">
             Combatants ({combatants.length})
           </h2>
           <ul
@@ -398,12 +398,12 @@ export function EncounterBuilder() {
             {combatants.map((c: Combatant) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between bg-[#16213e] border border-white/5 rounded px-4 py-2"
+                className="flex items-center justify-between bg-card border border-white/[0.04] rounded px-4 py-2"
                 data-testid={`combatant-row-${c.id}`}
               >
                 <div>
-                  <span className="text-white text-sm font-medium">{c.name}</span>
-                  <span className="text-white/40 text-xs ml-2">
+                  <span className="text-foreground text-sm font-medium">{c.name}</span>
+                  <span className="text-muted-foreground text-xs ml-2">
                     HP {c.current_hp}/{c.max_hp} · AC {c.ac}
                     {c.spell_save_dc ? ` · DC ${c.spell_save_dc}` : ""}
                     {c.ruleset_version ? ` · ${c.ruleset_version}` : ""}
@@ -411,7 +411,7 @@ export function EncounterBuilder() {
                 </div>
                 <button
                   onClick={() => removeCombatant(c.id)}
-                  className="text-white/30 hover:text-red-400 text-xs transition-colors"
+                  className="text-muted-foreground/60 hover:text-red-400 text-xs transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                   aria-label={`Remove ${c.name}`}
                   data-testid={`remove-combatant-${c.id}`}
                 >
@@ -435,7 +435,7 @@ export function EncounterBuilder() {
         <button
           onClick={handleStartCombat}
           disabled={isPending}
-          className="px-5 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed"
           data-testid="start-combat-btn"
         >
           {isPending ? "Creating…" : "Start Combat"}

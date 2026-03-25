@@ -254,16 +254,16 @@ export function CombatSessionClient({
   return (
     <div className="max-w-2xl mx-auto space-y-4" data-testid="active-combat">
       <div className="flex items-center justify-between">
-        <h2 className="text-white font-semibold">
-          Round <span className="font-mono text-[#e94560]">{round_number}</span>
+        <h2 className="text-foreground font-semibold">
+          Round <span className="font-mono text-gold">{round_number}</span>
         </h2>
         <div className="flex items-center gap-3 flex-wrap">
           <ShareSessionButton sessionId={sessionId} />
-          <span className="text-white/40 text-xs">{combatants.length} combatants</span>
+          <span className="text-muted-foreground text-xs">{combatants.length} combatants</span>
           <button
             type="button"
             onClick={handleEndEncounter}
-            className="px-3 py-2 bg-white/10 text-red-400 font-medium rounded-md hover:bg-red-900/30 transition-colors text-sm min-h-[44px]"
+            className="px-3 py-2 bg-white/[0.06] text-red-400 font-medium rounded-md hover:bg-red-900/30 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
             aria-label="End encounter"
             data-testid="end-encounter-btn"
           >
@@ -272,7 +272,7 @@ export function CombatSessionClient({
           <button
             type="button"
             onClick={() => setShowAddForm((prev) => !prev)}
-            className="px-3 py-2 bg-white/10 text-white/70 font-medium rounded-md hover:bg-white/20 transition-colors text-sm min-h-[44px]"
+            className="px-3 py-2 bg-white/[0.06] text-muted-foreground font-medium rounded-md hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
             aria-label="Add combatant"
             data-testid="add-combatant-btn"
           >
@@ -282,7 +282,7 @@ export function CombatSessionClient({
             type="button"
             onClick={handleAdvanceTurn}
             disabled={turnPending}
-            className="px-4 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Advance to next turn"
             data-testid="next-turn-btn"
           >

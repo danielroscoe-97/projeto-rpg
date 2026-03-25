@@ -67,8 +67,8 @@ export function PlayerInitiativeBoard({
         return (
           <li
             key={combatant.id}
-            className={`bg-[#16213e] border rounded-md px-4 py-3 transition-colors ${
-              isCurrentTurn ? "border-[#e94560]" : "border-white/10"
+            className={`bg-card border rounded-md px-4 py-3 transition-colors ${
+              isCurrentTurn ? "border-gold" : "border-border"
             } ${combatant.is_defeated ? "opacity-50" : ""}`}
             role="listitem"
             aria-current={isCurrentTurn ? true : undefined}
@@ -78,13 +78,13 @@ export function PlayerInitiativeBoard({
             <div className="flex items-center gap-2 mb-2">
               {isCurrentTurn && (
                 <span
-                  className="text-[#e94560] shrink-0 text-xs leading-none select-none"
+                  className="text-gold shrink-0 text-xs leading-none select-none"
                   aria-label="Current turn"
                 >
                   ▶
                 </span>
               )}
-              <span className="text-white text-sm font-medium flex-1">
+              <span className="text-foreground text-sm font-medium flex-1">
                 {combatant.name}
               </span>
               {combatant.is_defeated && (
@@ -97,11 +97,11 @@ export function PlayerInitiativeBoard({
             {/* HP bar */}
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-white/50 text-xs">HP</span>
-                <span className="text-white/70 text-xs font-mono">
+                <span className="text-muted-foreground text-xs">HP</span>
+                <span className="text-muted-foreground text-xs font-mono">
                   {combatant.current_hp} / {combatant.max_hp}
                   {hpThresholdLabel && (
-                    <span className="text-xs font-mono ml-1 text-white/50">
+                    <span className="text-xs font-mono ml-1 text-muted-foreground">
                       {hpThresholdLabel}
                     </span>
                   )}
@@ -113,7 +113,7 @@ export function PlayerInitiativeBoard({
                 </span>
               </div>
               <div
-                className="h-2 bg-white/10 rounded-full overflow-hidden"
+                className="h-2 bg-white/[0.06] rounded-full overflow-hidden"
                 role="progressbar"
                 aria-valuenow={combatant.current_hp}
                 aria-valuemin={0}

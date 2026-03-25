@@ -149,11 +149,11 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Campaigns</h2>
+        <h2 className="text-lg font-semibold text-foreground">Campaigns</h2>
         {!showCreate && (
           <Button
             size="sm"
-            className="bg-[#e94560] hover:bg-[#c73652] text-white"
+            variant="gold"
             disabled={isLoading}
             onClick={() => {
               setShowCreate(true);
@@ -176,19 +176,19 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
 
       {/* Create Form */}
       {showCreate && (
-        <div className="flex items-center gap-2 p-3 bg-[#16213e] rounded-lg">
+        <div className="flex items-center gap-2 p-3 bg-card rounded-lg">
           <Input
             placeholder="Campaign name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-            className="bg-[#1a1a2e] border-white/10 text-white placeholder:text-white/30 flex-1"
+            className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 flex-1"
             maxLength={50}
             autoFocus
           />
           <Button
             size="sm"
-            className="bg-[#e94560] hover:bg-[#c73652] text-white"
+            variant="gold"
             disabled={!newName.trim() || isLoading}
             onClick={handleCreate}
           >
@@ -197,7 +197,6 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
           <Button
             size="sm"
             variant="ghost"
-            className="text-white/50 hover:text-white"
             onClick={() => {
               setShowCreate(false);
               setNewName("");
@@ -211,7 +210,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
 
       {/* Empty state */}
       {campaigns.length === 0 && !showCreate && (
-        <p className="text-white/40 text-sm text-center py-8">
+        <p className="text-muted-foreground text-sm text-center py-8">
           No campaigns yet. Create your first campaign above.
         </p>
       )}
@@ -219,7 +218,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
       {/* Campaign List */}
       <div className="space-y-2">
         {campaigns.map((campaign) => (
-          <div key={campaign.id} className="bg-[#16213e] rounded-lg p-4">
+          <div key={campaign.id} className="bg-card rounded-lg p-4">
             {editingId === campaign.id ? (
               /* Edit row */
               <div className="flex items-center gap-2">
@@ -227,13 +226,13 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleUpdate()}
-                  className="bg-[#1a1a2e] border-white/10 text-white flex-1"
+                  className="bg-background border-border text-foreground flex-1"
                   maxLength={50}
                   autoFocus
                 />
                 <Button
                   size="sm"
-                  className="bg-[#e94560] hover:bg-[#c73652] text-white"
+                  variant="gold"
                   disabled={!editName.trim() || isLoading}
                   onClick={handleUpdate}
                 >
@@ -242,7 +241,6 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-white/50 hover:text-white"
                   onClick={() => {
                     setEditingId(null);
                     setEditName("");
@@ -256,8 +254,8 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
               /* Normal row */
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white font-medium">{campaign.name}</p>
-                  <p className="text-white/50 text-xs mt-0.5">
+                  <p className="text-foreground font-medium">{campaign.name}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     {campaign.player_count}{" "}
                     {campaign.player_count !== 1 ? "players" : "player"}
                   </p>
@@ -266,14 +264,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                   <Link
                     href={`/app/campaigns/${campaign.id}`}
                     aria-label={`Manage players for ${campaign.name}`}
-                    className="text-[#e94560] text-xs hover:underline"
+                    className="text-gold text-xs hover:underline"
                   >
                     Manage Players
                   </Link>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="text-white/50 hover:text-white text-xs h-7 px-2"
+                    className="text-xs h-7 px-2"
                     onClick={() => {
                       setEditingId(campaign.id);
                       setEditName(campaign.name);
@@ -295,25 +293,25 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                         Delete
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-[#16213e] border-white/10">
+                    <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="text-white">
+                        <AlertDialogTitle className="text-foreground">
                           Delete Campaign
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="text-white/70">
+                        <AlertDialogDescription className="text-muted-foreground">
                           Are you sure you want to delete{" "}
-                          <span className="text-white font-medium">
+                          <span className="text-foreground font-medium">
                             {campaign.name}
                           </span>
                           ? This will also remove all player characters.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="border-white/20 text-white/70 hover:text-white bg-transparent hover:bg-white/10">
+                        <AlertDialogCancel className="border-border text-muted-foreground hover:text-foreground bg-transparent hover:bg-white/[0.1]">
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700 text-white"
+                          className="bg-red-600 hover:bg-red-700 text-foreground"
                           disabled={isLoading}
                           onClick={() => handleDelete(campaign.id)}
                         >

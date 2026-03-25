@@ -35,52 +35,52 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
 
   return (
     <div
-      className="mt-2 p-3 bg-white/5 rounded-md space-y-2"
+      className="mt-2 p-3 bg-white/[0.04] rounded-md space-y-2"
       data-testid="stats-editor"
       onKeyDown={handleKeyDown}
     >
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="text-xs text-white/50 block mb-1">Name</label>
+          <label className="text-xs text-muted-foreground block mb-1">Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm min-h-[32px]"
+            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]"
             data-testid="stats-name-input"
           />
         </div>
         <div>
-          <label className="text-xs text-white/50 block mb-1">Max HP</label>
+          <label className="text-xs text-muted-foreground block mb-1">Max HP</label>
           <input
             type="number"
             min="1"
             value={maxHp}
             onChange={(e) => setMaxHp(e.target.value)}
-            className="w-full px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="stats-maxhp-input"
           />
         </div>
         <div>
-          <label className="text-xs text-white/50 block mb-1">AC</label>
+          <label className="text-xs text-muted-foreground block mb-1">AC</label>
           <input
             type="number"
             min="0"
             value={ac}
             onChange={(e) => setAc(e.target.value)}
-            className="w-full px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="stats-ac-input"
           />
         </div>
         <div>
-          <label className="text-xs text-white/50 block mb-1">Spell DC</label>
+          <label className="text-xs text-muted-foreground block mb-1">Spell DC</label>
           <input
             type="number"
             min="0"
             value={dc}
             onChange={(e) => setDc(e.target.value)}
             placeholder="—"
-            className="w-full px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="stats-dc-input"
           />
         </div>
@@ -89,7 +89,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
         <button
           type="button"
           onClick={onClose}
-          className="px-3 py-1 text-white/40 hover:text-white/70 text-xs min-h-[32px]"
+          className="px-3 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
           data-testid="stats-cancel-btn"
         >
           Cancel
@@ -97,7 +97,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
         <button
           type="button"
           onClick={handleSave}
-          className="px-3 py-1 bg-[#e94560] text-white text-xs font-medium rounded hover:bg-[#c73652] transition-colors min-h-[32px]"
+          className="px-3 py-1 bg-gold text-foreground text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px]"
           data-testid="stats-save-btn"
         >
           Save

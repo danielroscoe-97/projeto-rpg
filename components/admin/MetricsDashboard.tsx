@@ -13,9 +13,9 @@ interface Metrics {
 
 function MetricCard({ label, value, suffix }: { label: string; value: number | string; suffix?: string }) {
   return (
-    <div className="bg-[#16213e] border border-white/10 rounded-md p-4" data-testid={`metric-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-      <p className="text-white/50 text-xs mb-1">{label}</p>
-      <p className="text-white text-2xl font-mono font-bold">
+    <div className="bg-card border border-border rounded-md p-4" data-testid={`metric-${label.toLowerCase().replace(/\s+/g, "-")}`}>
+      <p className="text-muted-foreground text-xs mb-1">{label}</p>
+      <p className="text-foreground text-2xl font-mono font-bold">
         {value}{suffix}
       </p>
     </div>
@@ -41,7 +41,7 @@ export function MetricsDashboard() {
   }
 
   if (!metrics) {
-    return <p className="text-white/40 text-sm">Loading metrics...</p>;
+    return <p className="text-muted-foreground text-sm">Loading metrics...</p>;
   }
 
   return (

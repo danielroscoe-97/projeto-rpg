@@ -2,36 +2,55 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#13131e] py-8 px-6">
-      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/50">
-        <p>© {new Date().getFullYear()} Taverna do Mestre</p>
-        <nav aria-label="Legal pages" className="flex gap-6">
-          <Link
-            href="/legal/attribution"
-            className="hover:text-white transition-colors min-h-[44px] inline-flex items-center"
-          >
-            Attribution
-          </Link>
-          <Link
-            href="/legal/privacy"
-            className="hover:text-white transition-colors min-h-[44px] inline-flex items-center"
-          >
-            Privacy Policy
-          </Link>
-        </nav>
-      </div>
-      <div className="max-w-4xl mx-auto mt-4 text-xs text-white/30 text-center">
-        This product uses the System Reference Document 5.1 and 5.2, available
-        under the{" "}
-        <a
-          href="https://creativecommons.org/licenses/by/4.0/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-2 hover:text-white/50"
-        >
-          Creative Commons Attribution 4.0 International License
-        </a>
-        .
+    <footer className="border-t border-border bg-surface-primary py-10 px-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          {/* Brand */}
+          <div>
+            <span className="font-display text-gold text-lg">Taverna do Mestre</span>
+            <p className="text-muted-foreground text-xs mt-1">
+              Combat tracker para mestres de D&D 5e
+            </p>
+          </div>
+
+          {/* Links */}
+          <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <Link
+              href="/auth/sign-up"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              Criar Conta
+            </Link>
+            <Link
+              href="/legal/attribution"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              Attribution
+            </Link>
+            <Link
+              href="/legal/privacy"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              Privacidade
+            </Link>
+          </nav>
+        </div>
+
+        {/* Attribution + copyright */}
+        <div className="mt-8 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground/60">
+          <p>&copy; {new Date().getFullYear()} Taverna do Mestre</p>
+          <p>
+            Uses the System Reference Document 5.1 and 5.2 under the{" "}
+            <a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-muted-foreground transition-colors"
+            >
+              CC-BY-4.0 License
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

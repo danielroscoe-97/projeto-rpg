@@ -16,16 +16,16 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="bg-[#1a1a2e] text-white min-h-screen flex items-center justify-center p-4">
+      <body className="bg-background text-foreground min-h-screen flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-md">
           <h1 className="text-xl font-semibold">Something went wrong</h1>
-          <p className="text-white/60 text-sm">
+          <p className="text-muted-foreground text-sm">
             An unexpected error occurred. The error has been reported automatically.
           </p>
           <button
             type="button"
             onClick={reset}
-            className="px-4 py-2 bg-[#e94560] text-white rounded-md hover:bg-[#c73652] transition-colors text-sm min-h-[44px]"
+            className="px-4 py-2 bg-gold text-foreground rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
           >
             Try again
           </button>

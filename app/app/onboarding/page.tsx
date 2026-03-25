@@ -23,7 +23,7 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <OnboardingWizard userId={user.id} />
     </div>
   );

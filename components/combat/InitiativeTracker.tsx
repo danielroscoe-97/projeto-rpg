@@ -37,7 +37,7 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
   return (
     <div className="space-y-4" data-testid="initiative-tracker">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Set Initiative</h2>
+        <h2 className="text-lg font-semibold text-foreground">Set Initiative</h2>
         {ties.size > 0 && (
           <span className="text-amber-400 text-xs">
             <span role="img" aria-label="Warning">⚠</span> Ties detected — drag to resolve
@@ -52,12 +52,12 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
           return (
             <li
               key={c.id}
-              className={`flex items-center gap-3 bg-[#16213e] border rounded-md px-4 py-2 transition-colors ${
-                isTied ? "border-amber-400/50" : "border-white/10"
+              className={`flex items-center gap-3 bg-card border rounded-md px-4 py-2 transition-colors ${
+                isTied ? "border-amber-400/50" : "border-border"
               }`}
               data-testid={`initiative-row-${c.id}`}
             >
-              <span className="flex-1 text-sm text-white font-medium">
+              <span className="flex-1 text-sm text-foreground font-medium">
                 {c.name}
               </span>
               {isTied && (
@@ -81,7 +81,7 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
                 placeholder="Init"
                 min={-5}
                 max={30}
-                className="w-16 bg-[#1a1a2e] border border-white/10 rounded px-2 py-1 text-white text-sm text-center font-mono focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+                className="w-16 bg-background border border-border rounded px-2 py-1 text-foreground text-sm text-center font-mono focus:outline-none focus:ring-1 focus:ring-ring"
                 aria-label={`Initiative for ${c.name}`}
                 data-testid={`initiative-input-${c.id}`}
               />
@@ -109,7 +109,7 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
 
       {/* Start Combat */}
       <div className="flex items-center justify-between pt-2">
-        <p className="text-white/40 text-xs">
+        <p className="text-muted-foreground text-xs">
           {allSet
             ? "All initiatives set. Ready to start."
             : `${combatants.filter((c) => c.initiative === null).length} remaining`}
@@ -118,7 +118,7 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
           type="button"
           onClick={handleStartCombat}
           disabled={!allSet || isPending || is_loading}
-          className="px-5 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           data-testid="start-combat-btn"
         >
           {isPending || is_loading ? "Starting…" : "Start Combat →"}

@@ -253,7 +253,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   const stepLabels = ["Campaign", "Players", "Encounter", "Launch"];
 
   return (
-    <Card className="max-w-lg w-full bg-[#16213e] border-white/10 text-white">
+    <Card className="max-w-lg w-full">
       <CardHeader>
         <div className="flex gap-2 mb-2" aria-label="Onboarding progress">
           {stepLabels.map((label, i) => {
@@ -268,36 +268,36 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 <span
                   className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                     isDone
-                      ? "bg-green-700 text-white"
+                      ? "bg-green-700 text-foreground"
                       : isActive
-                        ? "bg-[#e94560] text-white"
-                        : "bg-white/10 text-white/50"
+                        ? "bg-gold text-foreground"
+                        : "bg-white/[0.06] text-muted-foreground"
                   }`}
                 >
                   {num}
                 </span>
                 <span
                   className={`text-xs ${
-                    isActive ? "text-[#e94560] font-medium" : "text-white/50"
+                    isActive ? "text-gold font-medium" : "text-muted-foreground"
                   }`}
                 >
                   {label}
                 </span>
                 {i < stepLabels.length - 1 && (
-                  <span className="text-white/20 mx-1">›</span>
+                  <span className="text-muted-foreground/60 mx-1">›</span>
                 )}
               </div>
             );
           })}
         </div>
-        <CardTitle className="text-white">
+        <CardTitle className="text-foreground">
           {state.step === 1 && "Name your campaign"}
           {state.step === 2 && "Add your players"}
           {state.step === 3 && "Set up your first encounter"}
           {state.step === 4 && "Ready to launch"}
           {state.step === "done" && "You're all set!"}
         </CardTitle>
-        <CardDescription className="text-white/60">
+        <CardDescription className="text-muted-foreground">
           {state.step === 1 &&
             "Give your group a name — you can change it later."}
           {state.step === 2 &&
@@ -312,7 +312,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {/* ── Step 1: Campaign Name ── */}
         {state.step === 1 && (
           <div className="space-y-2">
-            <Label htmlFor="campaign-name" className="text-white">
+            <Label htmlFor="campaign-name" className="text-foreground">
               Campaign name
             </Label>
             <Input
@@ -321,10 +321,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               value={state.campaignName}
               onChange={(e) => handleCampaignNameChange(e.target.value)}
               maxLength={50}
-              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
+              className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === "Enter" && handleStep1Next()}
             />
-            <p className="text-xs text-white/40 text-right">
+            <p className="text-xs text-muted-foreground text-right">
               {state.campaignName.length}/50
             </p>
           </div>
@@ -336,10 +336,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             {state.players.map((player, index) => (
               <div
                 key={player._id}
-                className="p-3 rounded-lg bg-white/5 border border-white/10 space-y-3"
+                className="p-3 rounded-lg bg-white/[0.04] border border-border space-y-3"
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-white/70">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Player {index + 1}
                   </span>
                   {state.players.length > 1 && (
@@ -356,7 +356,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                   <div className="col-span-2 space-y-1">
                     <Label
                       htmlFor={`player-name-${player._id}`}
-                      className="text-white text-xs"
+                      className="text-foreground text-xs"
                     >
                       Character name *
                     </Label>
@@ -368,13 +368,13 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       onChange={(e) =>
                         handlePlayerChange(index, "name", e.target.value)
                       }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
+                      className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm"
                     />
                   </div>
                   <div className="space-y-1">
                     <Label
                       htmlFor={`player-hp-${player._id}`}
-                      className="text-white text-xs"
+                      className="text-foreground text-xs"
                     >
                       Max HP *
                     </Label>
@@ -387,13 +387,13 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       onChange={(e) =>
                         handlePlayerChange(index, "max_hp", e.target.value)
                       }
-                      className="bg-white/5 border-white/20 text-white h-8 text-sm"
+                      className="bg-white/[0.04] border-border text-foreground h-8 text-sm"
                     />
                   </div>
                   <div className="space-y-1">
                     <Label
                       htmlFor={`player-ac-${player._id}`}
-                      className="text-white text-xs"
+                      className="text-foreground text-xs"
                     >
                       AC *
                     </Label>
@@ -406,16 +406,16 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       onChange={(e) =>
                         handlePlayerChange(index, "ac", e.target.value)
                       }
-                      className="bg-white/5 border-white/20 text-white h-8 text-sm"
+                      className="bg-white/[0.04] border-border text-foreground h-8 text-sm"
                     />
                   </div>
                   <div className="col-span-2 space-y-1">
                     <Label
                       htmlFor={`player-dc-${player._id}`}
-                      className="text-white text-xs"
+                      className="text-foreground text-xs"
                     >
                       Spell save DC{" "}
-                      <span className="text-white/40">(optional)</span>
+                      <span className="text-muted-foreground">(optional)</span>
                     </Label>
                     <Input
                       id={`player-dc-${player._id}`}
@@ -431,7 +431,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                           e.target.value
                         )
                       }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
+                      className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm"
                     />
                   </div>
                 </div>
@@ -443,7 +443,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleAddPlayer}
-                className="w-full border-white/20 text-white/70 hover:text-white hover:bg-white/10"
+                className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
               >
                 + Add another player
               </Button>
@@ -454,7 +454,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {/* ── Step 3: Encounter Name ── */}
         {state.step === 3 && (
           <div className="space-y-2">
-            <Label htmlFor="encounter-name" className="text-white">
+            <Label htmlFor="encounter-name" className="text-foreground">
               Encounter name
             </Label>
             <Input
@@ -463,10 +463,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               value={state.encounterName}
               onChange={(e) => handleEncounterNameChange(e.target.value)}
               maxLength={50}
-              className="bg-white/5 border-white/20 text-white placeholder:text-white/30"
+              className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === "Enter" && handleStep3Next()}
             />
-            <p className="text-xs text-white/40 text-right">
+            <p className="text-xs text-muted-foreground text-right">
               {state.encounterName.length}/50
             </p>
           </div>
@@ -475,30 +475,30 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {/* ── Step 4: Confirm ── */}
         {state.step === 4 && (
           <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
+            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                 Campaign
               </p>
-              <p className="text-white font-medium">{state.campaignName}</p>
+              <p className="text-foreground font-medium">{state.campaignName}</p>
             </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-xs text-white/50 uppercase tracking-wide mb-2">
+            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                 Players ({state.players.length})
               </p>
               <ul className="space-y-1">
                 {state.players.map((p) => (
-                  <li key={p._id} className="text-sm text-white/80">
+                  <li key={p._id} className="text-sm text-foreground/80">
                     {p.name} — HP {p.max_hp} · AC {p.ac}
                     {p.spell_save_dc !== null ? ` · DC ${p.spell_save_dc}` : ""}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
+            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                 First Encounter
               </p>
-              <p className="text-white font-medium">{state.encounterName}</p>
+              <p className="text-foreground font-medium">{state.encounterName}</p>
             </div>
           </div>
         )}
@@ -506,11 +506,11 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {/* ── Done: Session Link ── */}
         {state.step === "done" && state.sessionLink && (
           <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-xs text-white/50 uppercase tracking-wide mb-2">
+            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                 Session link
               </p>
-              <p className="text-sm font-mono text-[#e94560] break-all">
+              <p className="text-sm font-mono text-gold break-all">
                 {state.sessionLink}
               </p>
             </div>
@@ -519,14 +519,14 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               variant="outline"
               size="sm"
               onClick={handleCopyLink}
-              className="w-full border-white/20 text-white/70 hover:text-white hover:bg-white/10"
+              className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
             >
               Copy link
             </Button>
             {state.copyError && (
               <p className="text-xs text-red-400">{state.copyError}</p>
             )}
-            <p className="text-xs text-white/40 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Share this link with players — they&apos;ll be able to join once
               the player view is ready.
             </p>
@@ -546,7 +546,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           <Button
             onClick={handleStep1Next}
             disabled={!state.campaignName.trim()}
-            className="bg-[#e94560] hover:bg-[#c73652] text-white"
+            variant="gold"
           >
             Next
           </Button>
@@ -554,16 +554,15 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {state.step === 2 && (
           <>
             <Button
-              variant="outline"
+              variant="goldOutline"
               onClick={() => setState((s) => ({ ...s, step: 1, error: null }))}
-              className="border-white/20 text-white/70 hover:text-white hover:bg-white/10"
             >
               Back
             </Button>
             <Button
               onClick={handleStep2Next}
               disabled={state.players.length === 0}
-              className="bg-[#e94560] hover:bg-[#c73652] text-white"
+              variant="gold"
             >
               Next
             </Button>
@@ -572,16 +571,15 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {state.step === 3 && (
           <>
             <Button
-              variant="outline"
+              variant="goldOutline"
               onClick={() => setState((s) => ({ ...s, step: 2, error: null }))}
-              className="border-white/20 text-white/70 hover:text-white hover:bg-white/10"
             >
               Back
             </Button>
             <Button
               onClick={handleStep3Next}
               disabled={!state.encounterName.trim()}
-              className="bg-[#e94560] hover:bg-[#c73652] text-white"
+              variant="gold"
             >
               Next
             </Button>
@@ -590,16 +588,15 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {state.step === 4 && (
           <>
             <Button
-              variant="outline"
+              variant="goldOutline"
               onClick={() => setState((s) => ({ ...s, step: 3, error: null }))}
-              className="border-white/20 text-white/70 hover:text-white hover:bg-white/10"
             >
               Back
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={state.isSubmitting}
-              className="bg-[#e94560] hover:bg-[#c73652] text-white"
+              variant="gold"
             >
               {state.isSubmitting ? "Creating…" : "Create & Get Session Link"}
             </Button>
@@ -608,7 +605,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {state.step === "done" && (
           <Button
             onClick={() => router.push("/app/dashboard")}
-            className="bg-[#e94560] hover:bg-[#c73652] text-white"
+            variant="gold"
           >
             Go to Dashboard
           </Button>

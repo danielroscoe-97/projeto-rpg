@@ -49,10 +49,10 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="bg-[#16213e] border-white/10">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-white">Login</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-2xl text-foreground">Login</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
@@ -60,7 +60,7 @@ export function LoginForm({
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-white/80">Email</Label>
+                <Label htmlFor="email" className="text-foreground/80">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -70,15 +70,15 @@ export function LoginForm({
                   aria-describedby={error ? "login-error" : undefined}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password" className="text-white/80">Password</Label>
+                  <Label htmlFor="password" className="text-foreground/80">Password</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm text-[#e94560] underline-offset-4 hover:underline min-h-[44px] inline-flex items-center"
+                    className="ml-auto inline-block text-sm text-gold underline-offset-4 hover:underline min-h-[44px] inline-flex items-center"
                   >
                     Forgot your password?
                   </Link>
@@ -91,27 +91,28 @@ export function LoginForm({
                   aria-describedby={error ? "login-error" : undefined}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
                 />
               </div>
               {error && (
-                <p id="login-error" className="text-sm text-[#e94560]" role="alert" aria-live="polite">
+                <p id="login-error" className="text-sm text-gold" role="alert" aria-live="polite">
                   {error}
                 </p>
               )}
               <Button
                 type="submit"
-                className="w-full min-h-[44px] bg-[#e94560] hover:bg-[#e94560]/90 text-white"
+                variant="gold"
+                className="w-full min-h-[44px]"
                 disabled={isLoading}
               >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm text-white/60">
+            <div className="mt-4 text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/sign-up"
-                className="text-[#e94560] underline underline-offset-4"
+                className="text-gold underline underline-offset-4"
               >
                 Sign up
               </Link>

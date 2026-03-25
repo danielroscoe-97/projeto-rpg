@@ -10,6 +10,11 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["var(--font-cinzel)", "Cinzel", "serif"],
+        sans: ["var(--font-jakarta)", "Plus Jakarta Sans", "sans-serif"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -44,6 +49,18 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        gold: {
+          DEFAULT: "#D4A853",
+          light: "#E8C87A",
+          dark: "#B8903D",
+        },
+        warm: "#E8593C",
+        cool: "#5B8DEF",
+        surface: {
+          primary: "#13131E",
+          secondary: "#1A1A28",
+          tertiary: "#222234",
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -56,6 +73,14 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        card: "0 4px 32px rgba(0, 0, 0, 0.4)",
+        "gold-glow": "0 0 15px rgba(212, 168, 83, 0.4)",
+        "gold-glow-lg": "0 0 25px rgba(212, 168, 83, 0.5)",
+      },
+      transitionTimingFunction: {
+        theme: "cubic-bezier(0.4, 0, 0.2, 1)",
       },
     },
   },

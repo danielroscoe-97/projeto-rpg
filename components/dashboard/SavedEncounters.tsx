@@ -20,22 +20,22 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
 
   return (
     <div className="mt-8" data-testid="saved-encounters">
-      <h2 className="text-lg font-semibold text-white mb-3">Active Encounters</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-3">Active Encounters</h2>
       <div className="space-y-2">
         {encounters.map((enc) => (
           <Link
             key={enc.session_id}
             href={`/app/session/${enc.session_id}`}
-            className="block bg-[#16213e] border border-white/10 rounded-md p-4 hover:border-[#e94560]/50 transition-colors"
+            className="block bg-card border border-border rounded-md p-4 hover:border-gold/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
             data-testid={`encounter-link-${enc.session_id}`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-white font-medium text-sm">{enc.encounter_name}</span>
-                <span className="text-white/40 text-xs ml-2">{enc.session_name}</span>
+                <span className="text-foreground font-medium text-sm">{enc.encounter_name}</span>
+                <span className="text-muted-foreground text-xs ml-2">{enc.session_name}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-white/50 text-xs font-mono">
+                <span className="text-muted-foreground text-xs font-mono">
                   Round {enc.round_number}
                 </span>
                 {enc.is_active && (

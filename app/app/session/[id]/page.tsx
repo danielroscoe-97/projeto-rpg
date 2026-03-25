@@ -71,16 +71,16 @@ export default async function SessionPage({ params }: SessionPageProps) {
       {/* Session header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-white">
+          <h1 className="text-xl font-semibold text-foreground">
             {encounter?.name ?? "Encounter"}
           </h1>
-          <p className="text-white/50 text-sm mt-0.5">
+          <p className="text-muted-foreground text-sm mt-0.5">
             {session.name} · Ruleset {session.ruleset_version}
           </p>
         </div>
         <Link
           href="/app/dashboard"
-          className="text-sm text-white/40 hover:text-white/70 transition-colors min-h-[44px] inline-flex items-center"
+          className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
           aria-label="Back to Dashboard"
         >
           ← Dashboard
@@ -98,7 +98,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
           currentTurnIndex={encounter.current_turn_index ?? 0}
         />
       ) : (
-        <p className="text-white/40 text-sm text-center mt-12">
+        <p className="text-muted-foreground text-sm text-center mt-12">
           No encounter found for this session.
         </p>
       )}

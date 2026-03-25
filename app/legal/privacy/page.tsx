@@ -7,41 +7,41 @@ export default function PrivacyPage() {
   return (
     <div className="py-16 px-4">
       <article className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Política de Privacidade
         </h1>
-        <p className="text-white/50 text-sm mb-8">
+        <p className="text-muted-foreground text-sm mb-8">
           Última atualização: março de 2026
         </p>
 
-        <div className="space-y-8 text-white/80 leading-relaxed">
+        <div className="space-y-8 text-foreground/80 leading-relaxed">
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               1. Quais dados coletamos
             </h2>
             <p>
               Coletamos apenas os dados necessários para o funcionamento do
               serviço:
             </p>
-            <ul className="mt-2 space-y-1 list-disc list-inside text-white/70">
+            <ul className="mt-2 space-y-1 list-disc list-inside text-muted-foreground">
               <li>
-                <strong className="text-white">Endereço de e-mail</strong> —
+                <strong className="text-foreground">Endereço de e-mail</strong> —
                 usado para autenticação e comunicação
               </li>
               <li>
-                <strong className="text-white">Dados de campanha</strong> —
+                <strong className="text-foreground">Dados de campanha</strong> —
                 nomes de personagens, pontos de vida, classe de armadura e dados
                 de combat tracker que você inserir
               </li>
               <li>
-                <strong className="text-white">Dados de sessão</strong> —
+                <strong className="text-foreground">Dados de sessão</strong> —
                 endereço IP e timestamps de acesso para segurança e diagnóstico
               </li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               2. Como usamos os dados
             </h2>
             <p>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               3. Retenção de dados
             </h2>
             <p>
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               4. Jogadores anônimos
             </h2>
             <p>
@@ -79,14 +79,14 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               5. Seus direitos (LGPD / GDPR)
             </h2>
             <p>
               De acordo com a Lei Geral de Proteção de Dados (LGPD) e o GDPR,
               você tem direito a:
             </p>
-            <ul className="mt-2 space-y-1 list-disc list-inside text-white/70">
+            <ul className="mt-2 space-y-1 list-disc list-inside text-muted-foreground">
               <li>Acessar os dados que temos sobre você</li>
               <li>Corrigir dados incorretos</li>
               <li>Solicitar a exclusão de todos os seus dados</li>
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
               e-mail:{" "}
               <a
                 href="mailto:privacidade@tavernadomestre.com.br"
-                className="text-[#e94560] underline underline-offset-4"
+                className="text-gold underline underline-offset-4"
               >
                 privacidade@tavernadomestre.com.br
               </a>
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               6. Segurança
             </h2>
             <p>
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               7. Alterações nesta política
             </h2>
             <p>

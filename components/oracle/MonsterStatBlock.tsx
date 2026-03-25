@@ -15,22 +15,22 @@ function abilityMod(score: number): string {
 function AbilityScore({ label, score }: { label: string; score: number }) {
   return (
     <div className="flex flex-col items-center">
-      <span className="text-white/60 text-xs uppercase font-medium">{label}</span>
-      <span className="text-white font-mono text-sm">{score}</span>
-      <span className="text-white/60 font-mono text-xs">({abilityMod(score)})</span>
+      <span className="text-muted-foreground text-xs uppercase font-medium">{label}</span>
+      <span className="text-foreground font-mono text-sm">{score}</span>
+      <span className="text-muted-foreground font-mono text-xs">({abilityMod(score)})</span>
     </div>
   );
 }
 
 function Divider() {
-  return <hr className="border-t border-white/10 my-2" />;
+  return <hr className="border-t border-border my-2" />;
 }
 
 function PropRow({ label, value }: { label: string; value: string }) {
   return (
     <p className="text-sm">
-      <span className="text-white font-medium">{label} </span>
-      <span className="text-white/70">{value}</span>
+      <span className="text-foreground font-medium">{label} </span>
+      <span className="text-muted-foreground">{value}</span>
     </p>
   );
 }
@@ -56,14 +56,14 @@ export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
 
   return (
     <section
-      className="bg-[#16213e] border border-white/10 rounded-md p-4 text-sm"
+      className="bg-card border border-border rounded-md p-4 text-sm"
       aria-label={`${monster.name} stat block`}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-1">
         <div>
-          <h3 className="text-white font-semibold text-base">{monster.name}</h3>
-          <p className="text-white/60 text-xs">
+          <h3 className="text-foreground font-semibold text-base">{monster.name}</h3>
+          <p className="text-muted-foreground text-xs">
             {monster.size} {monster.type}
             {monster.alignment ? `, ${monster.alignment}` : ""}
           </p>
@@ -149,8 +149,8 @@ export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
           <Divider />
           <div className="space-y-2">
             {monster.special_abilities.map((ability, i) => (
-              <p key={i} className="text-white/80 text-sm">
-                <span className="font-semibold text-white">{ability.name}. </span>
+              <p key={i} className="text-foreground/80 text-sm">
+                <span className="font-semibold text-foreground">{ability.name}. </span>
                 {ability.desc}
               </p>
             ))}
@@ -162,13 +162,13 @@ export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
       {monster.actions && monster.actions.length > 0 && (
         <>
           <Divider />
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wide mb-2">
+          <h4 className="text-foreground font-semibold text-sm uppercase tracking-wide mb-2">
             Actions
           </h4>
           <div className="space-y-2">
             {monster.actions.map((action, i) => (
-              <p key={i} className="text-white/80 text-sm">
-                <span className="font-semibold text-white">{action.name}. </span>
+              <p key={i} className="text-foreground/80 text-sm">
+                <span className="font-semibold text-foreground">{action.name}. </span>
                 {action.desc}
               </p>
             ))}
@@ -180,13 +180,13 @@ export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
       {monster.reactions && monster.reactions.length > 0 && (
         <>
           <Divider />
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wide mb-2">
+          <h4 className="text-foreground font-semibold text-sm uppercase tracking-wide mb-2">
             Reactions
           </h4>
           <div className="space-y-2">
             {monster.reactions.map((reaction, i) => (
-              <p key={i} className="text-white/80 text-sm">
-                <span className="font-semibold text-white">{reaction.name}. </span>
+              <p key={i} className="text-foreground/80 text-sm">
+                <span className="font-semibold text-foreground">{reaction.name}. </span>
                 {reaction.desc}
               </p>
             ))}
@@ -198,13 +198,13 @@ export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
       {monster.legendary_actions && monster.legendary_actions.length > 0 && (
         <>
           <Divider />
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wide mb-2">
+          <h4 className="text-foreground font-semibold text-sm uppercase tracking-wide mb-2">
             Legendary Actions
           </h4>
           <div className="space-y-2">
             {monster.legendary_actions.map((la, i) => (
-              <p key={i} className="text-white/80 text-sm">
-                <span className="font-semibold text-white">{la.name}. </span>
+              <p key={i} className="text-foreground/80 text-sm">
+                <span className="font-semibold text-foreground">{la.name}. </span>
                 {la.desc}
               </p>
             ))}

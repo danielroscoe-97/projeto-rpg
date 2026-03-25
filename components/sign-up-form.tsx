@@ -58,16 +58,16 @@ export function SignUpForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="bg-[#16213e] border-white/10">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-white">Sign up</CardTitle>
-          <CardDescription className="text-white/60">Create a new account</CardDescription>
+          <CardTitle className="text-2xl text-foreground">Sign up</CardTitle>
+          <CardDescription className="text-muted-foreground">Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-white/80">Email</Label>
+                <Label htmlFor="email" className="text-foreground/80">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -77,11 +77,11 @@ export function SignUpForm({
                   aria-describedby={error ? "signup-error" : undefined}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-white/80">Password</Label>
+                <Label htmlFor="password" className="text-foreground/80">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -90,11 +90,11 @@ export function SignUpForm({
                   aria-describedby={error ? "signup-error" : undefined}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="repeat-password" className="text-white/80">Repeat Password</Label>
+                <Label htmlFor="repeat-password" className="text-foreground/80">Repeat Password</Label>
                 <Input
                   id="repeat-password"
                   type="password"
@@ -103,25 +103,26 @@ export function SignUpForm({
                   aria-describedby={error ? "signup-error" : undefined}
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
                 />
               </div>
               {error && (
-                <p id="signup-error" className="text-sm text-[#e94560]" role="alert" aria-live="polite">
+                <p id="signup-error" className="text-sm text-gold" role="alert" aria-live="polite">
                   {error}
                 </p>
               )}
               <Button
                 type="submit"
-                className="w-full min-h-[44px] bg-[#e94560] hover:bg-[#e94560]/90 text-white"
+                variant="gold"
+                className="w-full min-h-[44px]"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm text-white/60">
+            <div className="mt-4 text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-[#e94560] underline underline-offset-4">
+              <Link href="/auth/login" className="text-gold underline underline-offset-4">
                 Login
               </Link>
             </div>

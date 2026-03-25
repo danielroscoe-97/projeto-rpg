@@ -55,7 +55,7 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search spells by name, class, or school..."
-        className="w-full bg-[#1a1a2e] border border-white/10 rounded-md px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+        className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-gold"
         aria-label="Spell search"
         data-testid="spell-search-input"
       />
@@ -72,22 +72,22 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
             return (
               <li
                 key={rowKey}
-                className="bg-[#16213e] border border-white/10 rounded-md overflow-hidden"
+                className="bg-card border border-border rounded-md overflow-hidden"
               >
                 <button
                   type="button"
                   onClick={() => setSelectedSpell(spell)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:text-[#e94560] transition-colors min-h-[44px]"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:text-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
                   aria-label={`View ${spell.name} details`}
                   data-testid={`spell-row-${spell.id}`}
                 >
-                  <span className="text-white text-sm font-medium flex-1">
+                  <span className="text-foreground text-sm font-medium flex-1">
                     {spell.name}
                   </span>
-                  <span className="text-white/50 text-xs font-mono">
+                  <span className="text-muted-foreground text-xs font-mono">
                     {levelLabel(spell.level)}
                   </span>
-                  <span className="text-white/50 text-xs capitalize">
+                  <span className="text-muted-foreground text-xs capitalize">
                     {spell.school}
                   </span>
                   <VersionBadge version={spell.ruleset_version} />
@@ -100,7 +100,7 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
 
       {query.trim() && results.length === 0 && (
         <p
-          className="text-white/40 text-sm text-center py-2"
+          className="text-muted-foreground text-sm text-center py-2"
           data-testid="spell-search-empty"
         >
           No spells found for &quot;{query}&quot;

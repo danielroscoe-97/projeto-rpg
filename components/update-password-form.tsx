@@ -44,10 +44,10 @@ export function UpdatePasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="bg-[#16213e] border-white/10">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-white">Reset Your Password</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-2xl text-foreground">Reset Your Password</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Please enter your new password below.
           </CardDescription>
         </CardHeader>
@@ -55,7 +55,7 @@ export function UpdatePasswordForm({
           <form onSubmit={handleForgotPassword}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-white/80">New password</Label>
+                <Label htmlFor="password" className="text-foreground/80">New password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -66,17 +66,18 @@ export function UpdatePasswordForm({
                   aria-describedby={error ? "update-pw-error" : undefined}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
                 />
               </div>
               {error && (
-                <p id="update-pw-error" className="text-sm text-[#e94560]" role="alert" aria-live="polite">
+                <p id="update-pw-error" className="text-sm text-gold" role="alert" aria-live="polite">
                   {error}
                 </p>
               )}
               <Button
                 type="submit"
-                className="w-full min-h-[44px] bg-[#e94560] hover:bg-[#e94560]/90 text-white"
+                variant="gold"
+                className="w-full min-h-[44px]"
                 disabled={isLoading}
               >
                 {isLoading ? "Saving..." : "Save new password"}

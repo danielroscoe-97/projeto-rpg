@@ -24,7 +24,7 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
   return (
     <div className="flex items-center gap-1.5" data-testid="sync-indicator">
       <span className={`w-2 h-2 rounded-full ${color}`} aria-hidden="true" />
-      <span className="text-white/50 text-xs">{label}</span>
+      <span className="text-muted-foreground text-xs">{label}</span>
     </div>
   );
 }

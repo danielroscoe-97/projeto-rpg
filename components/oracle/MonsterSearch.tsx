@@ -69,7 +69,7 @@ export function MonsterSearch({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search monsters by name, CR, or type…"
-        className="w-full bg-[#1a1a2e] border border-white/10 rounded-md px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e94560]"
+        className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-gold"
         aria-label="Monster search"
         data-testid="monster-search-input"
       />
@@ -85,29 +85,29 @@ export function MonsterSearch({
             const rowKey = `${monster.id}:${monster.ruleset_version}`;
             const isExpanded = expandedIds.has(rowKey);
             return (
-              <li key={rowKey} className="bg-[#16213e] border border-white/10 rounded-md overflow-hidden">
+              <li key={rowKey} className="bg-card border border-border rounded-md overflow-hidden">
                 {/* Result row */}
                 <div className="flex items-center gap-2 px-3 py-2">
                   <button
                     type="button"
                     onClick={() => toggleExpand(rowKey)}
-                    className="flex-1 flex items-center gap-2 text-left hover:text-[#e94560] transition-colors min-h-[44px]"
+                    className="flex-1 flex items-center gap-2 text-left hover:text-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
                     aria-expanded={isExpanded}
                     aria-controls={`stat-block-${rowKey}`}
                     data-testid={`monster-row-${monster.id}`}
                   >
-                    <span className="text-white text-sm font-medium flex-1">
+                    <span className="text-foreground text-sm font-medium flex-1">
                       {monster.name}
                     </span>
-                    <span className="text-white/50 text-xs font-mono">
+                    <span className="text-muted-foreground text-xs font-mono">
                       CR {monster.cr}
                     </span>
-                    <span className="text-white/50 text-xs capitalize">
+                    <span className="text-muted-foreground text-xs capitalize">
                       {monster.type}
                     </span>
                     <VersionBadge version={monster.ruleset_version} />
                     <span
-                      className="text-white/40 text-xs ml-1"
+                      className="text-muted-foreground text-xs ml-1"
                       aria-hidden="true"
                     >
                       {isExpanded ? "▲" : "▼"}
@@ -118,7 +118,7 @@ export function MonsterSearch({
                     <button
                       type="button"
                       onClick={() => onAddToCombat(monster)}
-                      className="px-2 py-1 text-xs text-[#e94560] border border-[#e94560]/40 rounded hover:bg-[#e94560]/10 transition-colors shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                      className="px-2 py-1 text-xs text-gold border border-gold/40 rounded hover:bg-gold/10 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
                       aria-label={`Add ${monster.name} to combat`}
                       data-testid={`add-monster-${monster.id}`}
                     >
@@ -131,7 +131,7 @@ export function MonsterSearch({
                 {isExpanded && (
                   <div
                     id={`stat-block-${rowKey}`}
-                    className="border-t border-white/10 p-3"
+                    className="border-t border-border p-3"
                     data-testid={`stat-block-${monster.id}`}
                   >
                     <MonsterStatBlock monster={monster} />
@@ -144,7 +144,7 @@ export function MonsterSearch({
       )}
 
       {query.trim() && results.length === 0 && (
-        <p className="text-white/40 text-sm text-center py-2" data-testid="monster-search-empty">
+        <p className="text-muted-foreground text-sm text-center py-2" data-testid="monster-search-empty">
           No monsters found for &quot;{query}&quot;
         </p>
       )}

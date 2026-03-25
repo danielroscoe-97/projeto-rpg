@@ -20,7 +20,7 @@ export function RulesetSelector({
   return (
     <div className="flex items-center gap-3">
       {label && (
-        <span className="text-white/60 text-sm shrink-0">{label}</span>
+        <span className="text-muted-foreground text-sm shrink-0">{label}</span>
       )}
       <div className="flex gap-1" role="group" aria-label="Ruleset version">
         {VERSIONS.map((v) => (
@@ -30,10 +30,10 @@ export function RulesetSelector({
             onClick={() => onChange(v)}
             disabled={disabled}
             aria-pressed={value === v}
-            className={`px-3 py-1 rounded text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+            className={`px-3 py-1 rounded text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:cursor-not-allowed disabled:opacity-50 ${
               value === v
-                ? "bg-[#e94560] text-white"
-                : "bg-white/10 text-white/60 hover:bg-white/20"
+                ? "bg-gold text-surface-primary"
+                : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
             }`}
             data-testid={`ruleset-btn-${v}`}
           >
@@ -49,7 +49,7 @@ export function RulesetSelector({
 export function VersionBadge({ version }: { version: RulesetVersion }) {
   return (
     <span
-      className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-white/10 text-white/50"
+      className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-white/[0.06] text-muted-foreground"
       aria-label={`Ruleset ${version}`}
     >
       {version}

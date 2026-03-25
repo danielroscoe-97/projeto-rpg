@@ -94,8 +94,8 @@ export function CombatantRow({
 
   return (
     <li
-      className={`bg-[#16213e] border rounded-md overflow-hidden transition-colors ${
-        isCurrentTurn ? "border-[#e94560]" : "border-white/10"
+      className={`bg-card border rounded-md overflow-hidden transition-colors ${
+        isCurrentTurn ? "border-gold" : "border-border"
       } ${combatant.is_defeated ? "opacity-50" : ""}`}
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
@@ -108,7 +108,7 @@ export function CombatantRow({
           {/* Turn indicator — shape glyph (▶) satisfies NFR21: color is not the sole indicator */}
           {isCurrentTurn && (
             <span
-              className="text-[#e94560] shrink-0 text-xs leading-none select-none"
+              className="text-gold shrink-0 text-xs leading-none select-none"
               aria-label="Current turn"
               data-testid="current-turn-indicator"
             >
@@ -120,10 +120,10 @@ export function CombatantRow({
           <button
             type="button"
             onClick={handleToggle}
-            className={`flex-1 flex items-center text-left text-sm font-medium transition-colors min-h-[44px] ${
+            className={`flex-1 flex items-center text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] ${
               canExpand
-                ? "text-white hover:text-[#e94560] cursor-pointer"
-                : "text-white cursor-default"
+                ? "text-foreground hover:text-gold cursor-pointer"
+                : "text-foreground cursor-default"
             }`}
             aria-expanded={canExpand ? isExpanded : undefined}
             aria-controls={canExpand ? `stat-block-combatant-${combatant.id}` : undefined}
@@ -132,7 +132,7 @@ export function CombatantRow({
           >
             {combatant.name}
             {canExpand && (
-              <span className="text-white/30 text-xs ml-1" aria-hidden="true">
+              <span className="text-muted-foreground/60 text-xs ml-1" aria-hidden="true">
                 {isExpanded ? " ▲" : " ▼"}
               </span>
             )}
@@ -154,13 +154,13 @@ export function CombatantRow({
         {/* HP bar */}
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-white/50 text-xs">HP</span>
-            <span className="text-white/70 text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
+            <span className="text-muted-foreground text-xs">HP</span>
+            <span className="text-muted-foreground text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
               {combatant.current_hp} / {combatant.max_hp}
               {/* HP threshold text label — satisfies NFR21 for sighted color-blind users */}
               {hpThresholdLabel && (
                 <span
-                  className="text-xs font-mono ml-1 text-white/50"
+                  className="text-xs font-mono ml-1 text-muted-foreground"
                   data-testid={`hp-threshold-${combatant.id}`}
                 >
                   {hpThresholdLabel}
@@ -174,7 +174,7 @@ export function CombatantRow({
             </span>
           </div>
           <div
-            className="h-2 bg-white/10 rounded-full overflow-hidden"
+            className="h-2 bg-white/[0.06] rounded-full overflow-hidden"
             role="progressbar"
             aria-valuenow={combatant.current_hp}
             aria-valuemin={0}
@@ -209,8 +209,8 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("hp")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
-                openPanel === "hp" ? "bg-[#e94560] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                openPanel === "hp" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label="Adjust HP"
               data-testid={`hp-btn-${combatant.id}`}
@@ -220,8 +220,8 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("conditions")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
-                openPanel === "conditions" ? "bg-[#e94560] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                openPanel === "conditions" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label="Manage conditions"
               data-testid={`conditions-btn-${combatant.id}`}
@@ -231,7 +231,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => onSetDefeated?.(combatant.id, !combatant.is_defeated)}
-              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/10 text-white/60 hover:bg-white/20 transition-colors"
+              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               aria-label={combatant.is_defeated ? "Revive combatant" : "Mark as defeated"}
               data-testid={`defeat-btn-${combatant.id}`}
             >
@@ -240,8 +240,8 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("edit")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
-                openPanel === "edit" ? "bg-[#e94560] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                openPanel === "edit" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label="Edit stats"
               data-testid={`edit-btn-${combatant.id}`}
@@ -252,7 +252,7 @@ export function CombatantRow({
               <button
                 type="button"
                 onClick={() => onSwitchVersion?.(combatant.id, otherVersion)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/10 text-white/60 hover:bg-white/20 transition-colors"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 aria-label={`Switch to ${otherVersion} ruleset`}
                 data-testid={`version-btn-${combatant.id}`}
               >
@@ -262,7 +262,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => onRemoveCombatant?.(combatant.id)}
-              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/10 text-red-400 hover:bg-red-900/30 transition-colors"
+              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-red-400 hover:bg-red-900/30 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               aria-label="Remove combatant"
               data-testid={`remove-btn-${combatant.id}`}
             >
@@ -302,17 +302,17 @@ export function CombatantRow({
       {isExpanded && fullMonster && (
         <div
           id={`stat-block-combatant-${combatant.id}`}
-          className="border-t border-white/10 px-4 pb-4"
+          className="border-t border-border px-4 pb-4"
           data-testid={`expanded-stat-block-${combatant.id}`}
         >
           {/* Quick stats row */}
           <div className="flex gap-4 py-2 text-sm">
-            <span className="text-white/60">
-              AC <span className="text-white font-mono">{combatant.ac}</span>
+            <span className="text-muted-foreground">
+              AC <span className="text-foreground font-mono">{combatant.ac}</span>
             </span>
             {combatant.spell_save_dc !== null && (
-              <span className="text-white/60">
-                DC <span className="text-white font-mono">{combatant.spell_save_dc}</span>
+              <span className="text-muted-foreground">
+                DC <span className="text-foreground font-mono">{combatant.spell_save_dc}</span>
               </span>
             )}
           </div>

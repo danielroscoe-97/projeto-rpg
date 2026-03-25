@@ -33,7 +33,7 @@ export function ConditionSelector({
 
   return (
     <div
-      className="mt-2 p-2 bg-white/5 rounded-md"
+      className="mt-2 p-2 bg-white/[0.04] rounded-md"
       data-testid="condition-selector"
       onKeyDown={handleKeyDown}
     >
@@ -45,10 +45,10 @@ export function ConditionSelector({
               key={condition}
               type="button"
               onClick={() => onToggle(condition)}
-              className={`px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-colors ${
+              className={`px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 isActive
-                  ? "bg-[#e94560] text-white"
-                  : "bg-white/10 text-white/60 hover:bg-white/20"
+                  ? "bg-gold text-surface-primary"
+                  : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-pressed={isActive}
               data-testid={`condition-toggle-${condition.toLowerCase()}`}
@@ -61,7 +61,7 @@ export function ConditionSelector({
       <button
         type="button"
         onClick={onClose}
-        className="mt-2 px-2 py-1 text-white/40 hover:text-white/70 text-xs min-h-[32px]"
+        className="mt-2 px-2 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
         aria-label="Close condition selector"
         data-testid="condition-close-btn"
       >

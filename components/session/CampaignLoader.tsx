@@ -92,7 +92,7 @@ export function CampaignLoader({ onLoad }: Props) {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="text-sm text-white/50 hover:text-white/80 underline transition-colors min-h-[44px] inline-flex items-center"
+          className="text-sm text-muted-foreground hover:text-foreground/80 underline transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
           data-testid="load-campaign-btn"
         >
           Load Campaign
@@ -101,7 +101,7 @@ export function CampaignLoader({ onLoad }: Props) {
 
       {/* DialogContent handles: focus trap, Escape key close, aria-modal, scroll lock */}
       <DialogContent
-        className="bg-[#16213e] border border-white/10 max-w-md mx-4"
+        className="bg-card border border-border max-w-md mx-4"
         data-testid="campaign-loader-dialog"
       >
         <DialogHeader>
@@ -116,11 +116,11 @@ export function CampaignLoader({ onLoad }: Props) {
         )}
 
         {isLoading ? (
-          <p className="text-white/40 text-sm" data-testid="campaigns-loading">
+          <p className="text-muted-foreground text-sm" data-testid="campaigns-loading">
             Loading campaigns…
           </p>
         ) : !fetchError && campaigns.length === 0 ? (
-          <p className="text-white/40 text-sm" data-testid="no-campaigns-msg">
+          <p className="text-muted-foreground text-sm" data-testid="no-campaigns-msg">
             No campaigns found.
           </p>
         ) : (
@@ -128,21 +128,21 @@ export function CampaignLoader({ onLoad }: Props) {
             {campaigns.map((campaign) => (
               <li
                 key={campaign.id}
-                className="flex items-center justify-between bg-[#1a1a2e] border border-white/5 rounded px-4 py-3"
+                className="flex items-center justify-between bg-background border border-white/[0.04] rounded px-4 py-3"
                 data-testid={`campaign-row-${campaign.id}`}
               >
                 <div>
-                  <span className="text-white text-sm font-medium">
+                  <span className="text-foreground text-sm font-medium">
                     {campaign.name}
                   </span>
-                  <span className="text-white/40 text-xs ml-2">
+                  <span className="text-muted-foreground text-xs ml-2">
                     {campaign.player_count}{" "}
                     {campaign.player_count === 1 ? "player" : "players"}
                   </span>
                 </div>
                 {campaign.player_count === 0 ? (
                   <span
-                    className="text-white/40 text-xs"
+                    className="text-muted-foreground text-xs"
                     data-testid={`empty-campaign-msg-${campaign.id}`}
                   >
                     This campaign has no players yet.
@@ -152,7 +152,7 @@ export function CampaignLoader({ onLoad }: Props) {
                     type="button"
                     onClick={() => handleLoad(campaign.id)}
                     disabled={!!loadingCampaignId}
-                    className="text-xs px-3 py-1 text-[#e94560] hover:bg-white/5 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                    className="text-xs px-3 py-1 text-gold hover:bg-white/[0.04] rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                     aria-label={`Load ${campaign.name} into encounter`}
                     data-testid={`load-campaign-${campaign.id}`}
                   >

@@ -17,7 +17,7 @@ export function LogoutButton() {
     <Button
       onClick={logout}
       variant="ghost"
-      className="min-h-[44px] text-white/70 hover:text-white hover:bg-white/10"
+      className="min-h-[44px]"
     >
       Logout
     </Button>

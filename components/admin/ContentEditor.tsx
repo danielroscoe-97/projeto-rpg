@@ -108,13 +108,13 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={`Search ${entityType} by name...`}
-          className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm min-h-[44px]"
+          className="flex-1 px-3 py-2 bg-white/[0.06] border border-border rounded-md text-foreground text-sm min-h-[44px]"
           data-testid="content-search-input"
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors text-sm min-h-[44px] disabled:opacity-50"
+          className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50"
           data-testid="content-search-btn"
         >
           Search
@@ -125,7 +125,7 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
       {success && <p className="text-green-400 text-sm mb-4">{success}</p>}
 
       {loading ? (
-        <p className="text-white/40 text-sm">Searching...</p>
+        <p className="text-muted-foreground text-sm">Searching...</p>
       ) : (
         <div className="space-y-2 mb-6">
           {results.map((entity) => (
@@ -133,40 +133,40 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
               key={entity.id as string}
               type="button"
               onClick={() => startEdit(entity)}
-              className={`w-full text-left bg-[#16213e] border rounded-md px-4 py-3 text-sm transition-colors ${
+              className={`w-full text-left bg-card border rounded-md px-4 py-3 text-sm transition-colors ${
                 editing?.id === entity.id
-                  ? "border-[#e94560]"
-                  : "border-white/10 hover:border-white/30"
+                  ? "border-gold"
+                  : "border-border hover:border-white/30"
               }`}
               data-testid={`content-row-${entity.id}`}
             >
-              <span className="text-white font-medium">{String(entity.name ?? "")}</span>
+              <span className="text-foreground font-medium">{String(entity.name ?? "")}</span>
               {entity.ruleset_version != null && (
-                <span className="text-white/40 text-xs ml-2">{String(entity.ruleset_version)}</span>
+                <span className="text-muted-foreground text-xs ml-2">{String(entity.ruleset_version)}</span>
               )}
               {entity.challenge_rating != null && (
-                <span className="text-white/40 text-xs ml-2">CR {String(entity.challenge_rating)}</span>
+                <span className="text-muted-foreground text-xs ml-2">CR {String(entity.challenge_rating)}</span>
               )}
               {entity.level != null && (
-                <span className="text-white/40 text-xs ml-2">Level {String(entity.level)}</span>
+                <span className="text-muted-foreground text-xs ml-2">Level {String(entity.level)}</span>
               )}
             </button>
           ))}
           {results.length === 0 && !loading && search && (
-            <p className="text-white/40 text-sm">No results found.</p>
+            <p className="text-muted-foreground text-sm">No results found.</p>
           )}
         </div>
       )}
 
       {editing && (
-        <div className="bg-[#16213e] border border-white/10 rounded-md p-4 space-y-3" data-testid="content-edit-form">
-          <h3 className="text-white font-medium text-sm mb-3">
+        <div className="bg-card border border-border rounded-md p-4 space-y-3" data-testid="content-edit-form">
+          <h3 className="text-foreground font-medium text-sm mb-3">
             Edit: {String(editing.name ?? "")}
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {editableKeys.map((key) => (
               <div key={key} className={key === "description" ? "col-span-2" : ""}>
-                <label className="text-xs text-white/50 block mb-1 capitalize">
+                <label className="text-xs text-muted-foreground block mb-1 capitalize">
                   {key.replace(/_/g, " ")}
                 </label>
                 {key === "description" ? (
@@ -174,7 +174,7 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
                     value={editFields[key] ?? ""}
                     onChange={(e) => setEditFields((f) => ({ ...f, [key]: e.target.value }))}
                     rows={4}
-                    className="w-full px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm min-h-[80px]"
+                    className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[80px]"
                     data-testid={`edit-${key}`}
                   />
                 ) : (
@@ -182,7 +182,7 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
                     type="text"
                     value={editFields[key] ?? ""}
                     onChange={(e) => setEditFields((f) => ({ ...f, [key]: e.target.value }))}
-                    className="w-full px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm min-h-[32px]"
+                    className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]"
                     data-testid={`edit-${key}`}
                   />
                 )}
@@ -193,7 +193,7 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
             <button
               type="button"
               onClick={() => setEditing(null)}
-              className="px-3 py-1 text-white/40 hover:text-white/70 text-xs min-h-[32px]"
+              className="px-3 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
             >
               Cancel
             </button>
@@ -201,7 +201,7 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-1 bg-[#e94560] text-white text-xs font-medium rounded hover:bg-[#c73652] transition-colors min-h-[32px] disabled:opacity-50"
+              className="px-4 py-1 bg-gold text-foreground text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] disabled:opacity-50"
               data-testid="content-save-btn"
             >
               {saving ? "Saving..." : "Save & Propagate"}

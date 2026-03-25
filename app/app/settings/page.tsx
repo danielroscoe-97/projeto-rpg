@@ -11,10 +11,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-semibold text-white mb-2">
+      <h1 className="text-2xl font-semibold text-foreground mb-2">
         Account Settings
       </h1>
-      <p className="text-white/50 text-sm mb-8">
+      <p className="text-muted-foreground text-sm mb-8">
         Manage your account preferences and data.
       </p>
       <AccountDeletion />

@@ -247,10 +247,10 @@ export function PlayerJoinClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <h1 className="text-white text-xl font-semibold">Connection Error</h1>
-          <p className="text-white/60 text-sm">{error}</p>
+          <h1 className="text-foreground text-xl font-semibold">Connection Error</h1>
+          <p className="text-muted-foreground text-sm">{error}</p>
         </div>
       </div>
     );
@@ -258,8 +258,8 @@ export function PlayerJoinClient({
 
   if (!authReady) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-4">
-        <p className="text-white/60 text-sm" data-testid="player-loading">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <p className="text-muted-foreground text-sm" data-testid="player-loading">
           Connecting to session...
         </p>
       </div>
@@ -268,10 +268,10 @@ export function PlayerJoinClient({
 
   if (!active || !encounterId) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <h1 className="text-white text-xl font-semibold">{sessionName}</h1>
-          <p className="text-white/60 text-sm">
+          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
+          <p className="text-muted-foreground text-sm">
             Waiting for the DM to start combat...
           </p>
         </div>
@@ -280,14 +280,14 @@ export function PlayerJoinClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] p-4" data-testid="player-view">
+    <div className="min-h-screen bg-background p-4" data-testid="player-view">
       <div className="max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-white text-lg font-semibold">{sessionName}</h1>
-            <span className="text-white/50 text-xs">
-              Round <span className="font-mono text-[#e94560]">{round}</span>
+            <h1 className="text-foreground text-lg font-semibold">{sessionName}</h1>
+            <span className="text-muted-foreground text-xs">
+              Round <span className="font-mono text-gold">{round}</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ export function PlayerJoinClient({
             <button
               type="button"
               onClick={() => setShowOracle((p) => !p)}
-              className="px-3 py-2 bg-[#e94560] text-white text-xs font-medium rounded-full hover:bg-[#c73652] transition-colors min-h-[44px] min-w-[44px]"
+              className="px-3 py-2 bg-gold text-foreground text-xs font-medium rounded-full transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] min-w-[44px]"
               aria-label="Open spell oracle"
               data-testid="player-oracle-btn"
             >
@@ -306,19 +306,19 @@ export function PlayerJoinClient({
 
         {/* Spell Oracle (Story 5-4) */}
         {showOracle && (
-          <div className="bg-[#16213e] border border-white/10 rounded-md p-4" data-testid="player-oracle">
+          <div className="bg-card border border-border rounded-md p-4" data-testid="player-oracle">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-white text-sm font-medium">Spell Oracle</h3>
+              <h3 className="text-foreground text-sm font-medium">Spell Oracle</h3>
               <button
                 type="button"
                 onClick={() => setShowOracle(false)}
-                className="text-white/40 hover:text-white/70 text-sm min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-muted-foreground hover:text-foreground/80 text-sm min-h-[44px] min-w-[44px] flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 aria-label="Close spell oracle"
               >
                 ✕
               </button>
             </div>
-            <Suspense fallback={<p className="text-white/40 text-xs">Loading spells...</p>}>
+            <Suspense fallback={<p className="text-muted-foreground text-xs">Loading spells...</p>}>
               <SpellSearch />
             </Suspense>
           </div>

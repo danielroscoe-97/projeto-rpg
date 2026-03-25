@@ -13,9 +13,9 @@ export function ConditionLookup() {
   return (
     <div className="space-y-3" data-testid="condition-lookup">
       <div className="flex items-center gap-2">
-        <h3 className="text-white text-sm font-medium">Conditions</h3>
+        <h3 className="text-foreground text-sm font-medium">Conditions</h3>
         <span
-          className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-white/10 text-white/50"
+          className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-white/[0.06] text-muted-foreground"
           aria-label="Applies to all ruleset versions"
           data-testid="conditions-version-label"
         >
@@ -35,20 +35,20 @@ export function ConditionLookup() {
               <button
                 type="button"
                 onClick={() => setSelectedCondition(condition)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left bg-[#16213e] border border-white/10 rounded-md hover:text-[#e94560] transition-colors min-h-[44px]"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left bg-card border border-border rounded-md hover:text-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
                 aria-label={`View ${condition.name} rules`}
                 data-testid={`condition-row-${condition.id}`}
               >
-                <span className="text-white text-sm font-medium flex-1">
+                <span className="text-foreground text-sm font-medium flex-1">
                   {condition.name}
                 </span>
-                <span className="text-white/30 text-xs">View rules</span>
+                <span className="text-muted-foreground/60 text-xs">View rules</span>
               </button>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-white/40 text-sm" data-testid="condition-lookup-empty">
+        <p className="text-muted-foreground text-sm" data-testid="condition-lookup-empty">
           No conditions loaded.
         </p>
       )}

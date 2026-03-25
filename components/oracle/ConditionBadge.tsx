@@ -27,7 +27,7 @@ interface ConditionBadgeProps {
 
 export function ConditionBadge({ condition }: ConditionBadgeProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const colorClass = CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/20";
+  const colorClass = CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]";
   const conditionData = findCondition(condition);
 
   return (

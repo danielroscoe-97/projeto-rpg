@@ -44,9 +44,9 @@ export function AccountDeletion() {
   };
 
   return (
-    <div className="mt-8 p-6 bg-[#16213e] rounded-lg border border-red-900/30">
-      <h2 className="text-white font-semibold mb-2">Danger Zone</h2>
-      <p className="text-white/50 text-sm mb-4">
+    <div className="mt-8 p-6 bg-card rounded-lg border border-red-900/30">
+      <h2 className="text-foreground font-semibold mb-2">Danger Zone</h2>
+      <p className="text-muted-foreground text-sm mb-4">
         Permanently delete your account and all associated data. This cannot be
         undone.
       </p>
@@ -61,27 +61,27 @@ export function AccountDeletion() {
             {isDeleting ? "Deleting..." : "Delete Account"}
           </Button>
         </AlertDialogTrigger>
-        <AlertDialogContent className="bg-[#16213e] border-white/10">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
+            <AlertDialogTitle className="text-foreground">
               Delete Account?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
+            <AlertDialogDescription className="text-muted-foreground">
               This will permanently delete your account and all your campaigns,
               player characters, encounters, combatants, and session history.{" "}
-              <strong className="text-white">This cannot be undone.</strong>
+              <strong className="text-foreground">This cannot be undone.</strong>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="bg-white/10 text-white border-white/10 hover:bg-white/20"
+              className="bg-white/[0.06] text-foreground border-border hover:bg-white/[0.1]"
               disabled={isDeleting}
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
               disabled={isDeleting}
             >
               {isDeleting ? "Deleting..." : "Yes, delete everything"}

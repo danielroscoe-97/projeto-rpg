@@ -19,10 +19,10 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   if (tokenError || !tokenRow) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <h1 className="text-white text-xl font-semibold">Session Not Found</h1>
-          <p className="text-white/60 text-sm">
+          <h1 className="text-foreground text-xl font-semibold">Session Not Found</h1>
+          <p className="text-muted-foreground text-sm">
             Session not found or has ended. Ask your DM for a new link.
           </p>
         </div>
@@ -40,10 +40,10 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <h1 className="text-white text-xl font-semibold">Session Ended</h1>
-          <p className="text-white/60 text-sm">
+          <h1 className="text-foreground text-xl font-semibold">Session Ended</h1>
+          <p className="text-muted-foreground text-sm">
             This session has ended. Ask your DM for a new link.
           </p>
         </div>

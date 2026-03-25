@@ -58,8 +58,8 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-        <p className="text-white/50 mt-1 text-sm">
+        <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
           Manage your campaigns and player groups.
         </p>
       </div>

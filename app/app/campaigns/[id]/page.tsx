@@ -27,11 +27,11 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
   return (
     <div>
       <div className="mb-6">
-        <Link href="/app/dashboard" className="text-white/50 text-sm hover:text-white">
+        <Link href="/app/dashboard" className="text-muted-foreground text-sm hover:text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]">
           ← Back to Dashboard
         </Link>
-        <h1 className="text-2xl font-semibold text-white mt-2">{campaign.name}</h1>
-        <p className="text-white/50 text-sm mt-1">Manage player characters for this campaign.</p>
+        <h1 className="text-2xl font-semibold text-foreground mt-2">{campaign.name}</h1>
+        <p className="text-muted-foreground text-sm mt-1">Manage player characters for this campaign.</p>
       </div>
       <PlayerCharacterManager
         initialCharacters={characters ?? []}
