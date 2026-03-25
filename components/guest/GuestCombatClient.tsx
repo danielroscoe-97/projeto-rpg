@@ -228,7 +228,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
         <span className="flex-1 min-w-0">{t("setup_col_notes")}</span>
-        <span className="w-14 flex-shrink-0" />
+        <span className="w-[140px] flex-shrink-0" /> {/* actions spacer (Ver Ficha + Remover / Adicionar) */}
       </div>
 
       {/* Combatant list */}
@@ -322,7 +322,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="basis-auto shrink-0 grow-0 px-4 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center whitespace-nowrap"
+          className="w-[140px] flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}
