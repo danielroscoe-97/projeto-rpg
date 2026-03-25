@@ -356,11 +356,11 @@ function HowItWorksSection() {
           >
             <defs>
               <linearGradient id="flow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#D4A853" stopOpacity="0.05" />
-                <stop offset="12%" stopColor="#D4A853" stopOpacity="0.35" />
-                <stop offset="50%" stopColor="#D4A853" stopOpacity="0.5" />
-                <stop offset="88%" stopColor="#D4A853" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#D4A853" stopOpacity="0.05" />
+                <stop offset="0%" stopColor="#D4A853" stopOpacity="0.08" />
+                <stop offset="12%" stopColor="#D4A853" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#D4A853" stopOpacity="0.65" />
+                <stop offset="88%" stopColor="#D4A853" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#D4A853" stopOpacity="0.08" />
               </linearGradient>
               <filter id="particle-glow">
                 <feGaussianBlur stdDeviation="3" result="blur" />
@@ -382,7 +382,7 @@ function HowItWorksSection() {
             {/* Background path — faint static guide */}
             <path
               d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              stroke="rgba(212,168,83,0.1)"
+              stroke="rgba(212,168,83,0.15)"
               strokeWidth="2"
             />
 
@@ -399,8 +399,8 @@ function HowItWorksSection() {
             {/* Glow trail — wider, softer duplicate for ambient glow */}
             <path
               d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              stroke="rgba(212,168,83,0.06)"
-              strokeWidth="8"
+              stroke="rgba(212,168,83,0.1)"
+              strokeWidth="10"
               strokeLinecap="round"
               filter="url(#trail-glow)"
             />
@@ -449,7 +449,7 @@ function HowItWorksSection() {
           </svg>
 
           {/* Step cards */}
-          <div className="flex items-start gap-0">
+          <div className="relative z-20 flex items-start gap-0">
             {steps.map((s, i) => (
               <div
                 key={s.number}
