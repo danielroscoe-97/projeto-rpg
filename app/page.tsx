@@ -153,14 +153,7 @@ function HeroSection() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 animate-fade-in pointer-events-none" style={{ animationDelay: "1.4s" }} aria-hidden="true">
-          <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground/30">scroll</span>
-          <svg width="14" height="22" viewBox="0 0 14 22" fill="none" className="text-muted-foreground/25">
-            <rect x="1" y="1" width="12" height="20" rx="6" stroke="currentColor" strokeWidth="1" />
-            <circle cx="7" cy="7" r="1.5" fill="currentColor" className="animate-bounce" style={{ animationDuration: "2s" }} />
-          </svg>
-        </div>
+
       </div>
     </section>
   );
