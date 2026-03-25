@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scroll + offset for fixed navbar */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 @layer base {
   /* ===================================================================
      RPG Combat Tracker — Dark RPG Theme

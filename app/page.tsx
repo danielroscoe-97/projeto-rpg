@@ -45,32 +45,6 @@ function D20Icon({ className }: { className?: string }) {
   );
 }
 
-function CheckMark() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 mt-0.5">
-      <circle cx="9" cy="9" r="8.25" stroke="#D4A853" strokeWidth="1.5"/>
-      <path d="M5.5 9l2.5 2.5 4.5-5" stroke="#D4A853" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-
-function CrossMark() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 mt-0.5">
-      <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
-      <path d="M6 6l6 6M12 6l-6 6" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  );
-}
-
-function PartialMark() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 mt-0.5">
-      <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
-      <path d="M5.5 9h7" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  );
-}
 
 export const metadata = {
   title: "Taverna do Mestre — D&D 5e Combat Tracker",
@@ -336,7 +310,7 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section className="py-24 px-6 bg-surface-secondary/50 relative overflow-hidden">
+    <section id="como-funciona" className="py-24 px-6 bg-surface-secondary/50 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cool/[0.04] rounded-full blur-[100px]" />
         {/* Subtle grid pattern */}
@@ -438,21 +412,33 @@ type CellValue =
   | { type: "cross"; label: string }
   | { type: "partial"; label: string };
 
-function Cell({ val }: { val: CellValue }) {
+function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
+  const iconColor = highlight ? "#D4A853" : "rgba(255,255,255,0.16)";
+  const textClass = highlight && val.type === "check"
+    ? "text-white font-medium text-sm leading-snug"
+    : "text-white/25 text-sm leading-snug";
+
   return (
-    <div className="flex items-start gap-2 py-3">
-      {val.type === "check" && <CheckMark />}
-      {val.type === "cross" && <CrossMark />}
-      {val.type === "partial" && <PartialMark />}
-      <span
-        className={
-          val.type === "check"
-            ? "text-foreground text-sm leading-snug"
-            : "text-muted-foreground/60 text-sm leading-snug line-through-none"
-        }
-      >
-        {val.label}
-      </span>
+    <div className="flex items-center gap-2.5 py-[18px]">
+      {val.type === "check" && (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
+          <circle cx="9" cy="9" r="8.25" stroke={iconColor} strokeWidth="1.5"/>
+          <path d="M5.5 9l2.5 2.5 4.5-5" stroke={iconColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )}
+      {val.type === "cross" && (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5"/>
+          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      )}
+      {val.type === "partial" && (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5"/>
+          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      )}
+      <span className={textClass}>{val.label}</span>
     </div>
   );
 }
@@ -503,78 +489,99 @@ function ComparisonSection() {
   ];
 
   return (
-    <section className="py-24 px-6 relative overflow-hidden">
+    // Darker "stage" bg — breaks visual monotony from the rest of the page
+    <section id="comparativo" className="py-24 px-6 relative overflow-hidden bg-[#0c0c16]">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gold/[0.03] rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/[0.025] rounded-full blur-[140px]" />
       </div>
 
       <div className="relative max-w-4xl mx-auto">
-        <div className="text-center mb-4 animate-fade-in">
-          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-3">
+        <div className="text-center mb-14 animate-fade-in">
+          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
             Por que nao usar o que ja existe?
           </h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
+          <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
             Roll20 e Foundry sao VTTs poderosos. D&amp;D Beyond e uma enciclopedia digital.
-            Nenhum foi feito para a <span className="text-foreground">mesa fisica</span>.
+            Nenhum foi feito para a{" "}
+            <span className="text-foreground font-medium">mesa fisica</span>.
           </p>
         </div>
 
-        <div className="mt-12 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          {/* Table header */}
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-0 mb-0">
-            <div className="pb-3 pr-4" />
-            <div className="pb-3 px-4 text-center">
-              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">
+        {/* Table card — its own surface, contrasting with the section bg */}
+        <div
+          className="overflow-hidden rounded-2xl animate-fade-in-up"
+          style={{
+            background: "#13131f",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 0 0 1px rgba(212,168,83,0.05), 0 32px 80px rgba(0,0,0,0.6)",
+            animationDelay: "0.1s",
+          }}
+        >
+          {/* Column headers */}
+          <div className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr]">
+            <div className="px-7 py-5 border-b border-white/[0.06]" />
+            <div className="px-6 py-5 text-center border-b border-l border-white/[0.06]">
+              <span className="text-[11px] font-semibold text-white/20 uppercase tracking-widest">
                 Roll20 / Foundry
               </span>
             </div>
-            <div className="pb-3 px-4 text-center">
-              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">
+            <div className="px-6 py-5 text-center border-b border-l border-white/[0.06]">
+              <span className="text-[11px] font-semibold text-white/20 uppercase tracking-widest">
                 D&amp;D Beyond
               </span>
             </div>
-            {/* TdM header — gold accent */}
-            <div className="pb-3 px-4 text-center bg-gold/[0.04] border-t-2 border-gold/50 rounded-t-lg">
-              <span className="text-xs font-semibold text-gold uppercase tracking-wider flex items-center justify-center gap-1.5">
-                <span>🏆</span> Taverna do Mestre
+            {/* TdM header: 3 signals — top border gradient + tinted bg + badge */}
+            <div
+              className="px-6 py-4 text-center border-b border-l border-l-gold/20 border-b-gold/15 flex flex-col items-center gap-2"
+              style={{
+                background: "rgba(212,168,83,0.09)",
+                borderTop: "2px solid rgba(212,168,83,0.65)",
+              }}
+            >
+              <span className="text-[11px] font-bold text-gold uppercase tracking-widest">
+                🏆 Taverna do Mestre
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gold/15 text-gold/80 border border-gold/25">
+                Recomendado
               </span>
             </div>
           </div>
 
-          {/* Table rows */}
-          {rows.map((row, i) => (
-            <div
-              key={row.feature}
-              className={`grid grid-cols-[1fr_1fr_1fr_1fr] gap-0 border-t border-white/[0.05] ${
-                i === rows.length - 1 ? "rounded-b-lg" : ""
-              }`}
-            >
-              {/* Feature label */}
-              <div className="pr-4 py-3 flex items-start gap-2">
-                <span className="text-base leading-none mt-0.5">{row.icon}</span>
-                <span className="text-sm text-foreground font-medium">{row.feature}</span>
+          {/* Data rows */}
+          {rows.map((row, i) => {
+            const isLast = i === rows.length - 1;
+            const isEven = i % 2 === 0;
+            return (
+              <div
+                key={row.feature}
+                className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-colors duration-150"
+                style={{ background: isEven ? "transparent" : "rgba(255,255,255,0.016)" }}
+              >
+                <div className={`px-7 flex items-center gap-3 group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b border-white/[0.04]"}`}>
+                  <span className="text-xl leading-none shrink-0">{row.icon}</span>
+                  <span className="text-sm font-semibold text-white/70">{row.feature}</span>
+                </div>
+                <div className={`px-6 border-l border-white/[0.04] group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b"}`}>
+                  <CompCell val={row.roll20} />
+                </div>
+                <div className={`px-6 border-l border-white/[0.04] group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b"}`}>
+                  <CompCell val={row.beyond} />
+                </div>
+                <div
+                  className={`px-6 border-l border-l-gold/15 group-hover:brightness-110 transition-all duration-150 ${isLast ? "" : "border-b border-b-gold/10"}`}
+                  style={{ background: "rgba(212,168,83,0.07)" }}
+                >
+                  <CompCell val={row.taverna} highlight />
+                </div>
               </div>
-              {/* Roll20 */}
-              <div className="px-4 border-l border-white/[0.04]">
-                <Cell val={row.roll20} />
-              </div>
-              {/* D&D Beyond */}
-              <div className="px-4 border-l border-white/[0.04]">
-                <Cell val={row.beyond} />
-              </div>
-              {/* Taverna — highlighted column */}
-              <div className="px-4 bg-gold/[0.04] border-l border-gold/[0.15]">
-                <Cell val={row.taverna} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
+        </div>
 
-          {/* Footer note */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-muted-foreground/60 italic">
-              Construido para mestres de mesa fisica. Nao precisamos competir com VTTs — somos outra coisa.
-            </p>
-          </div>
+        <div className="mt-7 text-center">
+          <p className="text-xs text-white/20 italic">
+            Construido para mestres de mesa fisica. Nao precisamos competir com VTTs — somos outra coisa.
+          </p>
         </div>
       </div>
     </section>
@@ -647,7 +654,11 @@ export default function LandingPage() {
       <Navbar
         brand="Taverna do Mestre"
         brandHref="/"
-        links={[{ href: "#features", label: "Features" }]}
+        links={[
+          { href: "#features", label: "Features" },
+          { href: "#como-funciona", label: "Como Funciona" },
+          { href: "#comparativo", label: "Comparativo" },
+        ]}
         rightSlot={
           <>
             <Link
