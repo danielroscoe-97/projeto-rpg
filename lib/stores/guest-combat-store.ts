@@ -1,0 +1,216 @@
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { Combatant } from "@/lib/types/combat";
+import type { RulesetVersion } from "@/lib/types/database";
+import { sortByInitiative, assignInitiativeOrder } from "@/lib/utils/initiative";
+
+export type GuestCombatPhase = "setup" | "combat" | "ended";
+
+interface GuestCombatState {
+  phase: GuestCombatPhase;
+  combatants: Combatant[];
+  currentTurnIndex: number;
+  roundNumber: number;
+}
+
+interface GuestCombatActions {
+  addCombatant: (combatant: Omit<Combatant, "id">) => void;
+  removeCombatant: (id: string) => void;
+  setInitiative: (id: string, value: number | null) => void;
+  reorderCombatants: (newOrder: Combatant[]) => void;
+  updateCombatantStats: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  updatePlayerNotes: (id: string, notes: string) => void;
+  updateDmNotes: (id: string, notes: string) => void;
+  startCombat: () => void;
+  advanceTurn: () => void;
+  applyDamage: (id: string, amount: number) => void;
+  applyHealing: (id: string, amount: number) => void;
+  setTempHp: (id: string, value: number) => void;
+  toggleCondition: (id: string, condition: string) => void;
+  setDefeated: (id: string, isDefeated: boolean) => void;
+  setRulesetVersion: (id: string, version: RulesetVersion) => void;
+  resetCombat: () => void;
+  initializeWithSample: (combatants: Omit<Combatant, "id">[]) => void;
+  hydrateCombatants: (combatants: Combatant[]) => void;
+}
+
+type GuestCombatStore = GuestCombatState & GuestCombatActions;
+
+const initialState: GuestCombatState = {
+  phase: "setup",
+  combatants: [],
+  currentTurnIndex: 0,
+  roundNumber: 1,
+};
+
+export const useGuestCombatStore = create<GuestCombatStore>()(
+  persist(
+    (set) => ({
+      ...initialState,
+
+      addCombatant: (combatant) =>
+        set((state) => ({
+          combatants: [...state.combatants, { ...combatant, id: crypto.randomUUID() }],
+        })),
+
+      removeCombatant: (id) =>
+        set((state) => ({
+          combatants: state.combatants.filter((c) => c.id !== id),
+        })),
+
+      setInitiative: (id, value) =>
+        set((state) => {
+          const updated = state.combatants.map((c) =>
+            c.id === id ? { ...c, initiative: value } : c
+          );
+          const sorted = assignInitiativeOrder(sortByInitiative(updated));
+          return { combatants: sorted };
+        }),
+
+      reorderCombatants: (newOrder) =>
+        set({ combatants: assignInitiativeOrder(newOrder) }),
+
+      updateCombatantStats: (id, stats) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            const updated = { ...c, ...stats };
+            if (stats.max_hp !== undefined && updated.current_hp > updated.max_hp) {
+              updated.current_hp = updated.max_hp;
+            }
+            return updated;
+          }),
+        })),
+
+      updatePlayerNotes: (id, notes) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, player_notes: notes } : c
+          ),
+        })),
+
+      updateDmNotes: (id, notes) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, dm_notes: notes } : c
+          ),
+        })),
+
+      startCombat: () =>
+        set((state) => {
+          const sorted = assignInitiativeOrder(sortByInitiative(state.combatants));
+          return { phase: "combat", combatants: sorted, currentTurnIndex: 0, roundNumber: 1 };
+        }),
+
+      advanceTurn: () =>
+        set((state) => {
+          const { combatants, currentTurnIndex, roundNumber } = state;
+          if (combatants.length === 0) return state;
+          let next = currentTurnIndex;
+          let roundBumped = false;
+          for (let i = 0; i < combatants.length; i++) {
+            next = (next + 1) % combatants.length;
+            if (next === 0) roundBumped = true;
+            if (!combatants[next].is_defeated) break;
+          }
+          if (combatants[next].is_defeated) return state;
+          return {
+            currentTurnIndex: next,
+            roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
+          };
+        }),
+
+      applyDamage: (id, amount) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            let remaining = amount;
+            let newTempHp = c.temp_hp;
+            if (newTempHp > 0) {
+              const absorbed = Math.min(newTempHp, remaining);
+              newTempHp -= absorbed;
+              remaining -= absorbed;
+            }
+            return { ...c, current_hp: Math.max(0, c.current_hp - remaining), temp_hp: newTempHp };
+          }),
+        })),
+
+      applyHealing: (id, amount) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, current_hp: Math.min(c.max_hp, c.current_hp + amount) } : c
+          ),
+        })),
+
+      setTempHp: (id, value) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, temp_hp: Math.max(c.temp_hp, value) } : c
+          ),
+        })),
+
+      toggleCondition: (id, condition) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            const has = c.conditions.includes(condition);
+            return {
+              ...c,
+              conditions: has
+                ? c.conditions.filter((cond) => cond !== condition)
+                : [...c.conditions, condition],
+            };
+          }),
+        })),
+
+      setDefeated: (id, isDefeated) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, is_defeated: isDefeated } : c
+          ),
+        })),
+
+      setRulesetVersion: (id, version) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, ruleset_version: version } : c
+          ),
+        })),
+
+      resetCombat: () => set(initialState),
+
+      initializeWithSample: (sampleCombatants) =>
+        set({
+          ...initialState,
+          combatants: sampleCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
+        }),
+
+      hydrateCombatants: (combatants) => set({ combatants }),
+    }),
+    {
+      name: "guest-combat-v1",
+      storage: createJSONStorage(() =>
+        typeof window !== "undefined"
+          ? sessionStorage
+          : { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+      ),
+    }
+  )
+);
+
+/** Auto-number combatants with the same base name.
+ *  e.g. adding two "Goblin" monsters produces ["Goblin 1", "Goblin 2"].
+ */
+export function getGuestNumberedName(
+  baseName: string,
+  existingCombatants: Combatant[]
+): string {
+  const sameBase = existingCombatants.filter((c) =>
+    c.name.match(new RegExp(`^${escapeRegex(baseName)} \\d+$`))
+  );
+  return `${baseName} ${sameBase.length + 1}`;
+}
+
+function escapeRegex(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
