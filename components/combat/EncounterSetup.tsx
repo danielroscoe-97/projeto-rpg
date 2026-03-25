@@ -306,18 +306,16 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
         )}
       </div>
 
-      {/* Column headers */}
-      {combatants.length > 0 && (
-        <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
-          <span className="w-5" /> {/* drag handle spacer */}
-          <span className="w-14 text-center">Init</span>
-          <span className="flex-1">Name</span>
-          <span className="w-16 text-center">HP</span>
-          <span className="w-14 text-center">AC</span>
-          <span className="flex-1">Notes</span>
-          <span className="w-6" /> {/* remove spacer */}
-        </div>
-      )}
+      {/* Column headers — always visible so add-row columns are identifiable */}
+      <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
+        <span className="w-5" /> {/* drag handle spacer */}
+        <span className="w-14 text-center">Init</span>
+        <span className="flex-1">Name</span>
+        <span className="w-16 text-center">HP</span>
+        <span className="w-14 text-center">AC</span>
+        <span className="flex-1">Notes</span>
+        <span className="w-6" /> {/* remove/add btn spacer */}
+      </div>
 
       {/* Combatant list (insertion order, drag-reorderable) */}
       <div className="space-y-1" data-testid="setup-combatant-list" role="list" aria-label="Combatants">
