@@ -40,6 +40,17 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // RPG art assets — pixel art icons, decorations, sprites.
+        // Static assets that rarely change. Immutable CDN caching.
+        source: "/art/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
     ];
   },
 };

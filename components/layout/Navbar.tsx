@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface NavLink {
   href: string;
@@ -40,8 +41,9 @@ export function Navbar({ brand, brandHref, links = [], rightSlot }: NavbarProps)
           {/* Brand */}
           <Link
             href={brandHref}
-            className="font-display text-xl text-gold tracking-tight min-h-[44px] inline-flex items-center hover:drop-shadow-[0_0_8px_rgba(212,168,83,0.4)] transition-all duration-[250ms]"
+            className="font-display text-xl text-gold tracking-tight min-h-[44px] inline-flex items-center gap-2 hover:drop-shadow-[0_0_8px_rgba(212,168,83,0.4)] transition-all duration-[250ms]"
           >
+            <Image src="/art/icons/pet-poring.png" alt="" width={28} height={28} className="pixel-art" aria-hidden="true" unoptimized />
             {brand}
           </Link>
 

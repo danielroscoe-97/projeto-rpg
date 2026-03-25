@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -7,7 +8,10 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           {/* Brand */}
           <div>
-            <span className="font-display text-gold text-lg">Taverna do Mestre</span>
+            <div className="flex items-center gap-2">
+              <Image src="/art/icons/pet-poring.png" alt="" width={22} height={22} className="pixel-art opacity-60" aria-hidden="true" unoptimized />
+              <span className="font-display text-gold text-lg">Taverna do Mestre</span>
+            </div>
             <p className="text-muted-foreground text-xs mt-1">
               Combat tracker para mestres de D&D 5e
             </p>

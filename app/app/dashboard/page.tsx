@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
@@ -58,7 +59,10 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-start justify-between gap-4">
+      <div className="mb-8 flex items-start justify-between gap-4 relative">
+        <div className="absolute -right-2 -top-2 hidden sm:block" aria-hidden="true">
+          <Image src="/art/icons/pet-deviruchi.png" alt="" width={48} height={48} className="pixel-art opacity-20 float-gentle" unoptimized />
+        </div>
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1 text-sm">

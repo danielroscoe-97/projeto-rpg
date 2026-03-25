@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -212,9 +213,10 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
 
       {/* Empty state */}
       {campaigns.length === 0 && !showCreate && (
-        <p className="text-muted-foreground text-sm text-center py-8">
-          No campaigns yet. Create your first campaign above.
-        </p>
+        <div className="flex flex-col items-center gap-3 py-12 text-center">
+          <Image src="/art/icons/pet-cat.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
+          <p className="text-muted-foreground text-sm">No campaigns yet. Create your first campaign above.</p>
+        </div>
       )}
 
       {/* Campaign List */}

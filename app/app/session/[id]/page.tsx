@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
 import type { Combatant } from "@/lib/types/combat";
 
@@ -69,7 +70,12 @@ export default async function SessionPage({ params }: SessionPageProps) {
   }));
 
   return (
-    <div>
+    <div className="relative">
+      {/* Subtle RPG watermark */}
+      <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
+        <Image src="/art/decorations/hero-swordsman.png" alt="" width={200} height={300} className="pixel-art opacity-[0.03]" unoptimized />
+      </div>
+
       {/* Session header */}
       <div className="flex items-center justify-between mb-6">
         <div>

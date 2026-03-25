@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 
@@ -15,6 +16,26 @@ function HeroSection() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/[0.07] rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cool/[0.05] rounded-full blur-[100px]" />
+      </div>
+
+      {/* RPG Hero Art — subtle character silhouettes */}
+      <div className="absolute inset-0 pointer-events-none hidden sm:flex items-end justify-between px-12 pb-12 opacity-[0.08]" aria-hidden="true">
+        <Image
+          src="/art/decorations/hero-knight.png"
+          alt=""
+          width={200}
+          height={300}
+          className="pixel-art select-none"
+          unoptimized
+        />
+        <Image
+          src="/art/decorations/hero-alchemist.png"
+          alt=""
+          width={180}
+          height={280}
+          className="pixel-art select-none"
+          unoptimized
+        />
       </div>
 
       <div className="relative max-w-3xl mx-auto text-center space-y-8">
@@ -63,40 +84,57 @@ function HeroSection() {
   );
 }
 
+function SectionDivider() {
+  return (
+    <div className="flex justify-center items-center gap-4 py-4" aria-hidden="true">
+      <div className="h-px w-16 bg-gradient-to-r from-transparent to-gold/20" />
+      <Image
+        src="/art/icons/mvp-crown.png"
+        alt=""
+        width={24}
+        height={24}
+        className="pixel-art opacity-30"
+        unoptimized
+      />
+      <div className="h-px w-16 bg-gradient-to-l from-transparent to-gold/20" />
+    </div>
+  );
+}
+
 function FeaturesSection() {
   const features = [
     {
-      icon: "⚔️",
+      icon: "/art/icons/chibi-knight.png",
       title: "Combat Tracker Completo",
       description:
         "Iniciativa automatica, HP com temp HP, 13 condicoes D&D, derrota, adicionar/remover combatentes no meio do combate.",
     },
     {
-      icon: "📱",
+      icon: "/art/icons/chibi-mage.png",
       title: "Player View em Tempo Real",
       description:
         "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem friccao. Tudo atualiza ao vivo.",
     },
     {
-      icon: "📖",
+      icon: "/art/icons/chibi-archer.png",
       title: "Oraculo de Magias & Monstros",
       description:
         "Busca instantanea no SRD 5.1 e 5.2. Stat blocks inline, descricoes de magia em modal. Funciona offline.",
     },
     {
-      icon: "🔄",
+      icon: "/art/icons/chibi-priest.png",
       title: "2014 & 2024 Side-by-Side",
       description:
         "Troque a versao de regras por monstro, no meio do combate. Sem reiniciar o encontro.",
     },
     {
-      icon: "💾",
+      icon: "/art/icons/potion.png",
       title: "Salvar & Retomar",
       description:
         "Fechou o navegador? Sem problema. O encontro persiste automaticamente. Retome de onde parou.",
     },
     {
-      icon: "🌙",
+      icon: "/art/icons/shield.png",
       title: "Dark Mode RPG",
       description:
         "Interface escura com toques dourados. Feita para sessoes noturnas sem cansar a vista.",
@@ -122,9 +160,15 @@ function FeaturesSection() {
               key={f.title}
               className="bg-card border border-border rounded-xl p-6 hover:border-gold/30 hover:shadow-card transition-all duration-[250ms] group"
             >
-              <span className="text-3xl mb-4 block group-hover:scale-110 transition-transform duration-[250ms]">
-                {f.icon}
-              </span>
+              <Image
+                src={f.icon}
+                alt=""
+                width={56}
+                height={56}
+                className="pixel-art mb-4 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(212,168,83,0.5)] transition-transform duration-[250ms]"
+                aria-hidden="true"
+                unoptimized
+              />
               <h3 className="font-display text-foreground text-lg mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
             </div>
@@ -139,21 +183,25 @@ function HowItWorksSection() {
   const steps = [
     {
       number: "01",
+      icon: "/art/icons/carta.png",
       title: "Crie o Encontro",
       description: "Busque monstros do SRD, adicione NPCs custom, carregue sua campanha salva.",
     },
     {
       number: "02",
+      icon: "/art/icons/poring.png",
       title: "Role Iniciativa",
       description: "Insira os valores, ordene automaticamente, resolva empates com drag-and-drop.",
     },
     {
       number: "03",
+      icon: "/art/icons/mora-bird.png",
       title: "Compartilhe o Link",
       description: "Gere o link da sessao. Jogadores abrem no celular — sem conta necessaria.",
     },
     {
       number: "04",
+      icon: "/art/icons/mvp-crown.png",
       title: "Mestre o Combate",
       description: "Avance turnos, aplique dano/cura, adicione condicoes. Jogadores veem tudo ao vivo.",
     },
@@ -171,10 +219,21 @@ function HowItWorksSection() {
 
         <div className="grid sm:grid-cols-2 gap-8">
           {steps.map((s) => (
-            <div key={s.number} className="flex gap-4">
-              <span className="text-gold font-mono text-2xl font-bold shrink-0 opacity-40">
-                {s.number}
-              </span>
+            <div key={s.number} className="flex gap-4 items-start">
+              <div className="shrink-0 flex flex-col items-center gap-1">
+                <Image
+                  src={s.icon}
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="pixel-art opacity-70"
+                  aria-hidden="true"
+                  unoptimized
+                />
+                <span className="text-gold font-mono text-xs font-bold opacity-40">
+                  {s.number}
+                </span>
+              </div>
               <div>
                 <h3 className="font-display text-foreground text-lg mb-1">{s.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
@@ -248,8 +307,20 @@ function ComparisonSection() {
 
 function FinalCtaSection() {
   return (
-    <section className="py-24 px-6">
-      <div className="max-w-2xl mx-auto text-center space-y-6">
+    <section className="py-24 px-6 relative overflow-hidden">
+      {/* Decorative chibi */}
+      <div className="absolute right-8 bottom-8 hidden lg:block opacity-10" aria-hidden="true">
+        <Image
+          src="/art/decorations/chibi-rogue.png"
+          alt=""
+          width={120}
+          height={160}
+          className="pixel-art"
+          unoptimized
+        />
+      </div>
+
+      <div className="relative max-w-2xl mx-auto text-center space-y-6">
         <h2 className="text-3xl sm:text-4xl font-display text-foreground">
           Pronto para mestrar{" "}
           <span className="text-gold">melhor</span>?
@@ -296,8 +367,11 @@ export default function LandingPage() {
       />
 
       <HeroSection />
+      <SectionDivider />
       <FeaturesSection />
+      <SectionDivider />
       <HowItWorksSection />
+      <SectionDivider />
       <ComparisonSection />
       <FinalCtaSection />
 

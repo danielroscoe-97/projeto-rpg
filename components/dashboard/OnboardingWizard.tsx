@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,13 @@ import {
 } from "@/components/ui/card";
 
 const MAX_PLAYERS = 8;
+
+const STEP_ICONS: Record<number, string> = {
+  1: "/art/icons/carta.png",          // Create campaign = unfurling a scroll
+  2: "/art/icons/team-chibi-1.png",   // Add players = the party assembles
+  3: "/art/icons/potion.png",         // Build encounter = prepare for battle
+  4: "/art/icons/mvp-crown.png",      // Share link = you're the MVP
+};
 
 let _playerIdCounter = 0;
 function newPlayer(): PlayerInput {
@@ -290,6 +298,17 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             );
           })}
         </div>
+        {typeof state.step === "number" && STEP_ICONS[state.step] && (
+          <Image
+            src={STEP_ICONS[state.step]}
+            alt=""
+            width={48}
+            height={48}
+            className="pixel-art mx-auto mb-2 opacity-60"
+            aria-hidden="true"
+            unoptimized
+          />
+        )}
         <CardTitle className="text-foreground">
           {state.step === 1 && "Name your campaign"}
           {state.step === 2 && "Add your players"}

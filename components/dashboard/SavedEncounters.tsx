@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export interface SavedEncounterRow {
   session_id: string;
@@ -16,7 +17,17 @@ interface SavedEncountersProps {
 }
 
 export function SavedEncounters({ encounters }: SavedEncountersProps) {
-  if (encounters.length === 0) return null;
+  if (encounters.length === 0) {
+    return (
+      <div className="mt-8" data-testid="saved-encounters">
+        <h2 className="text-lg font-semibold text-foreground mb-3">Active Encounters</h2>
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <Image src="/art/icons/pet-lunatic.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
+          <p className="text-muted-foreground text-sm">No active encounters. Start a new combat session!</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8" data-testid="saved-encounters">

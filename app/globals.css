@@ -89,6 +89,12 @@
     font-weight: 600;
     letter-spacing: 0.02em;
   }
+
+  /* Pixel art rendering — prevents blur when scaling up */
+  .pixel-art {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
 }
 
 @layer components {
@@ -96,5 +102,25 @@
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     background: rgba(19, 19, 30, 0.85);
+  }
+
+  /* Floating animation for decorative elements */
+  .float-gentle {
+    animation: float-gentle 4s ease-in-out infinite;
+  }
+
+  @keyframes float-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* Subtle pulse glow for RPG elements */
+  .glow-pulse {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(212, 168, 83, 0.2)); }
+    50% { filter: drop-shadow(0 0 12px rgba(212, 168, 83, 0.5)); }
   }
 }
