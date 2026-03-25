@@ -248,7 +248,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
     "bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px]";
 
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
+    <div className="w-full max-w-6xl mx-auto space-y-4 px-2">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-foreground">New Encounter</h1>

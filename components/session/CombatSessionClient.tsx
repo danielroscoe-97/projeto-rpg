@@ -303,7 +303,7 @@ export function CombatSessionClient({
 
   // Active combat view
   return (
-    <div className="max-w-2xl mx-auto space-y-4" data-testid="active-combat">
+    <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
       <div className="flex items-center justify-between">
         <h2 className="text-foreground font-semibold">
           Round <span className="font-mono text-gold">{round_number}</span>
