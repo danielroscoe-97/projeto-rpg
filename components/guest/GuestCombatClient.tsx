@@ -210,8 +210,8 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         onMonsterAdded={handleMonsterAdded}
       />
 
-      {/* Column headers */}
-      <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
+      {/* Column headers — Sticky for usability in long lists */}
+      <div className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-wider border-b border-border/50 mb-1">
         <span className="w-5 flex-shrink-0" />
         <span className="w-14 flex-shrink-0 text-center">{t("setup_col_init")}</span>
         <span className="flex-1 min-w-0">{t("setup_col_name")}</span>

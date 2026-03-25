@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
@@ -75,6 +75,18 @@ export function CombatantRow({
   const [editingDmNotes, setEditingDmNotes] = useState(false);
   const [playerNotesValue, setPlayerNotesValue] = useState(combatant.player_notes);
   const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
+  const [flash, setFlash] = useState(false);
+  const prevHp = useRef(combatant.current_hp);
+
+  // Trigger red flash when current HP decreases
+  useEffect(() => {
+    if (combatant.current_hp < prevHp.current) {
+      setFlash(true);
+      const timer = setTimeout(() => setFlash(false), 800);
+      return () => clearTimeout(timer);
+    }
+    prevHp.current = combatant.current_hp;
+  }, [combatant.current_hp]);
 
   const hpPct = combatant.max_hp > 0
     ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
@@ -116,7 +128,7 @@ export function CombatantRow({
     <li
       className={`bg-card border rounded-md overflow-hidden transition-colors ${
         isCurrentTurn ? "border-gold" : "border-border"
-      } ${combatant.is_defeated ? "opacity-50" : ""}`}
+      } ${combatant.is_defeated ? "opacity-50" : ""} ${flash ? "animate-flash-red" : ""}`}
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
       data-testid={`combatant-row-${combatant.id}`}

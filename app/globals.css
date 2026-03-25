@@ -195,4 +195,15 @@ html {
       animation: none;
     }
   }
+
+  /* Damage flash — subtle red pulse on row */
+  @keyframes flash-red {
+    0%   { background-color: transparent; }
+    15%  { background-color: rgba(220, 38, 38, 0.25); }
+    100% { background-color: transparent; }
+  }
+
+  .animate-flash-red {
+    animation: flash-red 0.8s ease-out both;
+  }
 }
