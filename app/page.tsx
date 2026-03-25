@@ -679,17 +679,7 @@ function FinalCtaSection() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/[0.06] rounded-full blur-[100px]" />
       </div>
 
-      {/* Decorative chibi */}
-      <div className="absolute right-8 bottom-8 hidden lg:block opacity-10" aria-hidden="true">
-        <Image
-          src="/art/decorations/chibi-rogue.png"
-          alt=""
-          width={120}
-          height={160}
-          className="pixel-art"
-          unoptimized
-        />
-      </div>
+
 
       <div className="relative max-w-2xl mx-auto text-center space-y-6 animate-fade-in-up">
         {/* Ornament */}

@@ -200,6 +200,15 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     persistPlayerNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError]);
 
+  const handleSetInitiative = useCallback((id: string, value: number | null) => {
+    useCombatStore.getState().setInitiative(id, value);
+    const store = useCombatStore.getState();
+    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: store.combatants });
+    persistInitiativeOrder(
+      store.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+    ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError]);
+
   const handleEndEncounter = useCallback(async () => {
     const { encounter_id } = useCombatStore.getState();
     if (!encounter_id) return;
@@ -231,6 +240,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     handleRemoveCombatant,
     handleAddCombatant,
     handleUpdateStats,
+    handleSetInitiative,
     handleSwitchVersion,
     handleUpdateDmNotes,
     handleUpdatePlayerNotes,

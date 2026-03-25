@@ -82,7 +82,20 @@ export function CombatantRow({
   const [versionConfirmOpen, setVersionConfirmOpen] = useState(false);
   const [inlineEditTarget, setInlineEditTarget] = useState<"current" | "max" | "initiative" | null>(null);
   const [inlineHpValue, setInlineHpValue] = useState("");
+  const inlineEditRef = useRef<"current" | "max" | "initiative" | null>(null);
   const prevHp = useRef(combatant.current_hp);
+
+  /** Safely open an inline editor — clears stale value and tracks target via ref for blur guards. */
+  const openInlineEdit = (target: "current" | "max" | "initiative", initialValue: string) => {
+    inlineEditRef.current = target;
+    setInlineEditTarget(target);
+    setInlineHpValue(initialValue);
+  };
+  const closeInlineEdit = () => {
+    inlineEditRef.current = null;
+    setInlineEditTarget(null);
+    setInlineHpValue("");
+  };
 
   // Trigger red flash when current HP decreases
   useEffect(() => {
@@ -175,25 +188,26 @@ export function CombatantRow({
                 value={inlineHpValue}
                 onChange={(e) => setInlineHpValue(e.target.value)}
                 onBlur={() => {
+                  if (inlineEditRef.current !== "initiative") return;
                   const val = parseInt(inlineHpValue, 10);
                   if (!isNaN(val)) onSetInitiative?.(combatant.id, Math.min(50, Math.max(-5, val)));
-                  setInlineEditTarget(null);
-                  setInlineHpValue("");
+                  closeInlineEdit();
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                  if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); }
+                  if (e.key === "Escape") closeInlineEdit();
                 }}
                 className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-gold text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 autoFocus
+                aria-label={t("edit_initiative_aria", { name: combatant.name })}
                 data-testid={`inline-init-input-${combatant.id}`}
               />
             ) : (
               <button
                 type="button"
-                onClick={() => { setInlineEditTarget("initiative"); setInlineHpValue(combatant.initiative !== null ? String(combatant.initiative) : ""); }}
+                onClick={() => openInlineEdit("initiative", combatant.initiative !== null ? String(combatant.initiative) : "")}
                 className="flex-shrink-0 px-1.5 py-0.5 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors"
-                title="Editar iniciativa"
+                title={t("edit_initiative_title")}
                 data-testid={`initiative-badge-${combatant.id}`}
               >
                 Init. {combatant.initiative ?? "—"}
@@ -260,29 +274,30 @@ export function CombatantRow({
                   value={inlineHpValue}
                   onChange={(e) => setInlineHpValue(e.target.value)}
                   onBlur={() => {
+                    if (inlineEditRef.current !== "current") return;
                     const desired = parseInt(inlineHpValue, 10);
                     if (!isNaN(desired) && desired >= 0) {
                       const delta = desired - combatant.current_hp;
                       if (delta < 0) onApplyDamage?.(combatant.id, Math.abs(delta));
                       else if (delta > 0) onApplyHealing?.(combatant.id, delta);
                     }
-                    setInlineEditTarget(null);
-                    setInlineHpValue("");
+                    closeInlineEdit();
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                    if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); }
+                    if (e.key === "Escape") closeInlineEdit();
                   }}
                   className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   autoFocus
+                  aria-label={t("edit_current_hp_aria", { name: combatant.name })}
                   data-testid={`inline-current-hp-input-${combatant.id}`}
                 />
               ) : (
                 <button
                   type="button"
-                  onClick={() => { if (showActions) { setInlineEditTarget("current"); setInlineHpValue(String(combatant.current_hp)); } }}
+                  onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
                   className={`text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
-                  title={showActions ? "Editar HP atual" : undefined}
+                  title={showActions ? t("edit_current_hp_title") : undefined}
                   data-testid={`current-hp-btn-${combatant.id}`}
                 >
                   {combatant.current_hp}
@@ -296,25 +311,26 @@ export function CombatantRow({
                   value={inlineHpValue}
                   onChange={(e) => setInlineHpValue(e.target.value)}
                   onBlur={() => {
+                    if (inlineEditRef.current !== "max") return;
                     const val = parseInt(inlineHpValue, 10);
                     if (!isNaN(val) && val >= 1) onUpdateStats?.(combatant.id, { max_hp: val });
-                    setInlineEditTarget(null);
-                    setInlineHpValue("");
+                    closeInlineEdit();
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                    if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); }
+                    if (e.key === "Escape") closeInlineEdit();
                   }}
                   className="w-14 bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   autoFocus
+                  aria-label={t("edit_max_hp_aria", { name: combatant.name })}
                   data-testid={`inline-max-hp-input-${combatant.id}`}
                 />
               ) : (
                 <button
                   type="button"
-                  onClick={() => { if (showActions) { setInlineEditTarget("max"); setInlineHpValue(String(combatant.max_hp)); } }}
+                  onClick={() => { if (showActions) openInlineEdit("max", String(combatant.max_hp)); }}
                   className={`text-muted-foreground/60 ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
-                  title={showActions ? "Editar HP máximo" : undefined}
+                  title={showActions ? t("edit_max_hp_title") : undefined}
                   data-testid={`max-hp-btn-${combatant.id}`}
                 >
                   {combatant.max_hp}
