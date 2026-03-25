@@ -252,6 +252,7 @@
     "setup_add": "Add",
     "error_no_combatants": "Add at least one combatant before starting.",
     "error_add_row_missing": "Fill in Name, HP and AC to add a combatant.",
+    "error_add_row_name": "Fill in the combatant name.",
     "error_missing_init": "{count} combatant(s) still need initiative values.",
     "error_start_combat": "Failed to start combat.",
     "combatants_count": "{count} combatant",

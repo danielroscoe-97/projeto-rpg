@@ -106,12 +106,12 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
 
   const handleAddFromRow = useCallback(() => {
     const name = addRow.name.trim();
-    const hp = parseInt(addRow.hp, 10);
-    const ac = parseInt(addRow.ac, 10);
-    if (!name || isNaN(hp) || hp < 1 || isNaN(ac) || ac < 1) {
-      setSubmitError(t("error_add_row_missing"));
+    if (!name) {
+      setSubmitError(t("error_add_row_name"));
       return;
     }
+    const hp = addRow.hp.trim() ? parseInt(addRow.hp, 10) : 0;
+    const ac = addRow.ac.trim() ? parseInt(addRow.ac, 10) : 0;
 
     const initVal = addRow.initiative.trim()
       ? parseInt(addRow.initiative, 10)
@@ -120,10 +120,10 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     const sel = lastSelectedMonster.current;
     addCombatant({
       name,
-      current_hp: hp,
-      max_hp: hp,
+      current_hp: isNaN(hp) || hp < 0 ? 0 : hp,
+      max_hp: isNaN(hp) || hp < 0 ? 0 : hp,
       temp_hp: 0,
-      ac,
+      ac: isNaN(ac) || ac < 0 ? 0 : ac,
       spell_save_dc: null,
       initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
       initiative_order: null,
@@ -313,7 +313,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-14 flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
+          className="flex-shrink-0 px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center whitespace-nowrap"
           data-testid="add-row-btn"
         >
           {t("setup_add")}

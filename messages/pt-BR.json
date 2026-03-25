@@ -253,6 +253,7 @@
     "setup_add": "Adicionar",
     "error_no_combatants": "Adicione pelo menos um combatente antes de iniciar.",
     "error_add_row_missing": "Preencha Nome, HP e CA para adicionar um combatente.",
+    "error_add_row_name": "Preencha o nome do combatente.",
     "error_missing_init": "{count} combatente(s) ainda precisam de valores de iniciativa.",
     "error_start_combat": "Falha ao iniciar combate.",
     "combatants_count": "{count} combatente",
