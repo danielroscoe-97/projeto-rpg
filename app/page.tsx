@@ -10,7 +10,7 @@ import { HeroParticles } from "@/components/marketing/HeroParticles";
 function ArrowRight({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -18,8 +18,8 @@ function ArrowRight({ className }: { className?: string }) {
 function UserIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
-      <path d="M2.5 13.5c0-2.485 2.462-4.5 5.5-4.5s5.5 2.015 5.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M2.5 13.5c0-2.485 2.462-4.5 5.5-4.5s5.5 2.015 5.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -27,7 +27,7 @@ function UserIcon({ className }: { className?: string }) {
 function SparkleIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      <path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5L12 2Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+      <path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5L12 2Z" stroke="currentColor" strokeWidth="1.5" fill="none" />
     </svg>
   );
 }
@@ -35,13 +35,13 @@ function SparkleIcon({ className, style }: { className?: string; style?: React.C
 function D20Icon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <polygon points="32,4 60,20 60,44 32,60 4,44 4,20" stroke="currentColor" strokeWidth="2" fill="none" opacity="0.6"/>
-      <polygon points="32,4 60,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
-      <polygon points="32,4 4,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
-      <polygon points="60,20 60,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
-      <polygon points="4,20 4,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
-      <polygon points="60,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
-      <polygon points="4,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <polygon points="32,4 60,20 60,44 32,60 4,44 4,20" stroke="currentColor" strokeWidth="2" fill="none" opacity="0.6" />
+      <polygon points="32,4 60,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+      <polygon points="32,4 4,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+      <polygon points="60,20 60,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+      <polygon points="4,20 4,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+      <polygon points="60,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+      <polygon points="4,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
       <text x="32" y="37" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="700" fontFamily="monospace" opacity="0.8">20</text>
     </svg>
   );
@@ -173,8 +173,8 @@ function SectionDivider() {
       <div className="h-px w-24 bg-gradient-to-r from-transparent via-gold/20 to-gold/20" />
       {/* SVG d6 diamond ornament */}
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-gold/30">
-        <path d="M8 1L15 8L8 15L1 8L8 1Z" stroke="currentColor" strokeWidth="1" fill="rgba(212,168,83,0.08)"/>
-        <circle cx="8" cy="8" r="1.5" fill="currentColor" opacity="0.6"/>
+        <path d="M8 1L15 8L8 15L1 8L8 1Z" stroke="currentColor" strokeWidth="1" fill="rgba(212,168,83,0.08)" />
+        <circle cx="8" cy="8" r="1.5" fill="currentColor" opacity="0.6" />
       </svg>
       <div className="h-px w-24 bg-gradient-to-l from-transparent via-gold/20 to-gold/20" />
     </div>
@@ -278,7 +278,7 @@ function StepCircle({ number }: { number: string }) {
   return (
     <div className="relative w-14 h-14 shrink-0">
       <svg width="56" height="56" viewBox="0 0 56 56" className="overflow-visible" aria-hidden="true">
-        <circle cx="28" cy="28" r="26" fill="rgba(212,168,83,0.07)" stroke="rgba(212,168,83,0.3)" strokeWidth="1.5"/>
+        <circle cx="28" cy="28" r="26" fill="rgba(212,168,83,0.07)" stroke="rgba(212,168,83,0.3)" strokeWidth="1.5" />
         <circle
           cx="28" cy="28" r="26"
           fill="none"
@@ -442,20 +442,20 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
     <div className="flex items-center gap-2.5 py-[18px]">
       {val.type === "check" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke={iconColor} strokeWidth="1.5"/>
-          <path d="M5.5 9l2.5 2.5 4.5-5" stroke={iconColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="9" cy="9" r="8.25" stroke={iconColor} strokeWidth="1.5" />
+          <path d="M5.5 9l2.5 2.5 4.5-5" stroke={iconColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )}
       {val.type === "cross" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5"/>
-          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       {val.type === "partial" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5"/>
-          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       <span className={textClass}>{val.label}</span>
@@ -471,42 +471,42 @@ function ComparisonSection() {
     beyond: CellValue;
     taverna: CellValue;
   }[] = [
-    {
-      icon: "⚔️",
-      feature: "Combat tracker",
-      roll20: { type: "partial", label: "VTT completo, mas pesado" },
-      beyond: { type: "partial", label: "Básico, limitado" },
-      taverna: { type: "check", label: "Otimizado para mestrar" },
-    },
-    {
-      icon: "📱",
-      feature: "Player view no celular",
-      roll20: { type: "cross", label: "App obrigatorio + conta" },
-      beyond: { type: "cross", label: "Nao disponivel" },
-      taverna: { type: "check", label: "Link direto, zero conta" },
-    },
-    {
-      icon: "🎯",
-      feature: "Foco na Mesa Física",
-      roll20: { type: "cross", label: "Feito para o jogo online" },
-      beyond: { type: "cross", label: "Digital-first" },
-      taverna: { type: "check", label: "O foco principal" },
-    },
-    {
-      icon: "📚",
-      feature: "SRD 2014 + 2024",
-      roll20: { type: "partial", label: "Depende de módulo pago" },
-      beyond: { type: "partial", label: "Disponível (pago)" },
-      taverna: { type: "check", label: "Grátis, sempre" },
-    },
-    {
-      icon: "💰",
-      feature: "Preço",
-      roll20: { type: "cross", label: "$5–50/mês" },
-      beyond: { type: "cross", label: "$6/mês" },
-      taverna: { type: "check", label: "Grátis para sempre" },
-    },
-  ];
+      {
+        icon: "⚔️",
+        feature: "Combat tracker",
+        roll20: { type: "partial", label: "VTT completo, mas pesado" },
+        beyond: { type: "partial", label: "Básico, limitado" },
+        taverna: { type: "check", label: "Otimizado para mestrar" },
+      },
+      {
+        icon: "📱",
+        feature: "Player view no celular",
+        roll20: { type: "cross", label: "App obrigatorio + conta" },
+        beyond: { type: "cross", label: "Nao disponivel" },
+        taverna: { type: "check", label: "Link direto, zero conta" },
+      },
+      {
+        icon: "🎯",
+        feature: "Foco na Mesa Física",
+        roll20: { type: "cross", label: "Feito para o jogo online" },
+        beyond: { type: "cross", label: "Digital-first" },
+        taverna: { type: "check", label: "O foco principal" },
+      },
+      {
+        icon: "📚",
+        feature: "SRD 2014 + 2024",
+        roll20: { type: "partial", label: "Depende de módulo pago" },
+        beyond: { type: "partial", label: "Disponível (pago)" },
+        taverna: { type: "check", label: "Grátis, sempre" },
+      },
+      {
+        icon: "💰",
+        feature: "Preço",
+        roll20: { type: "cross", label: "$5–50/mês" },
+        beyond: { type: "cross", label: "$6/mês" },
+        taverna: { type: "check", label: "Grátis para sempre" },
+      },
+    ];
 
   return (
     // Darker "stage" bg — breaks visual monotony from the rest of the page
@@ -685,7 +685,7 @@ function FinalCtaSection() {
         {/* Ornament */}
         <div className="flex justify-center mb-2">
           <svg width="48" height="24" viewBox="0 0 48 24" fill="none" aria-hidden="true">
-            <path d="M4 12h40M20 4l4 8-4 8M28 4l4 8-4 8" stroke="rgba(212,168,83,0.3)" strokeWidth="1" strokeLinecap="round"/>
+            <path d="M4 12h40M20 4l4 8-4 8M28 4l4 8-4 8" stroke="rgba(212,168,83,0.3)" strokeWidth="1" strokeLinecap="round" />
           </svg>
         </div>
 
