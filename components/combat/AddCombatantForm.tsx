@@ -17,13 +17,22 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
   const [ac, setAc] = useState("");
   const [initiative, setInitiative] = useState("");
   const [dc, setDc] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const parsedMaxHp = parseInt(maxHp, 10);
     const parsedAc = parseInt(ac, 10);
     const parsedInit = parseInt(initiative, 10);
-    if (!name.trim() || isNaN(parsedMaxHp) || isNaN(parsedAc)) return;
+    const errors = new Set<string>();
+    if (!name.trim()) errors.add("name");
+    if (isNaN(parsedMaxHp) || parsedMaxHp < 1) errors.add("hp");
+    if (isNaN(parsedAc) || parsedAc < 0) errors.add("ac");
+    if (errors.size > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors(new Set());
 
     onAdd({
       name: name.trim(),
@@ -56,8 +65,9 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]"
+            onChange={(e) => { setName(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("name"); return n; }); }}
+            className={`w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]${fieldErrors.has("name") ? " field-error" : ""}`}
+            aria-invalid={fieldErrors.has("name") || undefined}
             placeholder={t("add_name_placeholder")}
             data-testid="add-name-input"
             autoFocus
@@ -69,9 +79,10 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             type="number"
             min="1"
             value={maxHp}
-            onChange={(e) => setMaxHp(e.target.value)}
+            onChange={(e) => { setMaxHp(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("hp"); return n; }); }}
             onFocus={(e) => e.target.select()}
-            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className={`w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${fieldErrors.has("hp") ? " field-error" : ""}`}
+            aria-invalid={fieldErrors.has("hp") || undefined}
             data-testid="add-hp-input"
           />
         </div>
@@ -81,9 +92,10 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             type="number"
             min="0"
             value={ac}
-            onChange={(e) => setAc(e.target.value)}
+            onChange={(e) => { setAc(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("ac"); return n; }); }}
             onFocus={(e) => e.target.select()}
-            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className={`w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${fieldErrors.has("ac") ? " field-error" : ""}`}
+            aria-invalid={fieldErrors.has("ac") || undefined}
             data-testid="add-ac-input"
           />
         </div>

@@ -42,6 +42,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
   const [editName, setEditName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldError, setFieldError] = useState(false);
 
   const supabase = createClient();
 
@@ -49,11 +50,16 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
 
   const handleCreate = async () => {
     const name = newName.trim();
-    if (!name) return;
-    if (name.length > 50) {
-      setError(t("campaigns_name_max"));
+    if (!name) {
+      setFieldError(true);
       return;
     }
+    if (name.length > 50) {
+      setError(t("campaigns_name_max"));
+      setFieldError(true);
+      return;
+    }
+    setFieldError(false);
     setIsLoading(true);
     setError(null);
     try {
@@ -93,11 +99,16 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
   const handleUpdate = async () => {
     if (!editingId) return;
     const name = editName.trim();
-    if (!name) return;
-    if (name.length > 50) {
-      setError(t("campaigns_name_max"));
+    if (!name) {
+      setFieldError(true);
       return;
     }
+    if (name.length > 50) {
+      setError(t("campaigns_name_max"));
+      setFieldError(true);
+      return;
+    }
+    setFieldError(false);
     setIsLoading(true);
     setError(null);
     try {
@@ -186,9 +197,10 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
           <Input
             placeholder={t("campaigns_name_label")}
             value={newName}
-            onChange={(e) => setNewName(e.target.value)}
+            onChange={(e) => { setNewName(e.target.value); setFieldError(false); }}
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-            className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 flex-1"
+            className={`bg-background border-border text-foreground placeholder:text-muted-foreground/60 flex-1${fieldError ? " field-error" : ""}`}
+            aria-invalid={fieldError || undefined}
             maxLength={50}
             autoFocus
           />
@@ -231,9 +243,10 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
               <div className="flex items-center gap-2">
                 <Input
                   value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
+                  onChange={(e) => { setEditName(e.target.value); setFieldError(false); }}
                   onKeyDown={(e) => e.key === "Enter" && handleUpdate()}
-                  className="bg-background border-border text-foreground flex-1"
+                  className={`bg-background border-border text-foreground flex-1${fieldError ? " field-error" : ""}`}
+                  aria-invalid={fieldError || undefined}
                   maxLength={50}
                   autoFocus
                 />

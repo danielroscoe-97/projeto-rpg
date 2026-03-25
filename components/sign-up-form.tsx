@@ -20,6 +20,7 @@ export function SignUpForm({
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -30,9 +31,11 @@ export function SignUpForm({
 
     if (password !== repeatPassword) {
       setError(t("passwords_mismatch"));
+      setPasswordMismatch(true);
       setIsLoading(false);
       return;
     }
+    setPasswordMismatch(false);
 
     try {
       const { error } = await supabase.auth.signUp({
@@ -111,9 +114,10 @@ export function SignUpForm({
               aria-required="true"
               placeholder="Min. 6 caracteres"
               aria-describedby={error ? "signup-error" : undefined}
+              aria-invalid={passwordMismatch || undefined}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputClass}
+              onChange={(e) => { setPassword(e.target.value); setPasswordMismatch(false); }}
+              className={`${inputClass}${passwordMismatch ? " field-error" : ""}`}
             />
           </div>
           <div className="space-y-1.5">
@@ -130,9 +134,10 @@ export function SignUpForm({
               aria-required="true"
               placeholder="Repita"
               aria-describedby={error ? "signup-error" : undefined}
+              aria-invalid={passwordMismatch || undefined}
               value={repeatPassword}
-              onChange={(e) => setRepeatPassword(e.target.value)}
-              className={inputClass}
+              onChange={(e) => { setRepeatPassword(e.target.value); setPasswordMismatch(false); }}
+              className={`${inputClass}${passwordMismatch ? " field-error" : ""}`}
             />
           </div>
         </div>

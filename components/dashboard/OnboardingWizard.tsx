@@ -50,6 +50,7 @@ interface WizardState {
   isSubmitting: boolean;
   error: string | null;
   copyError: string | null;
+  fieldErrors: Set<string>;
 }
 
 interface OnboardingWizardProps {
@@ -69,24 +70,29 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     isSubmitting: false,
     error: null,
     copyError: null,
+    fieldErrors: new Set<string>(),
   });
 
   // ── Step 1 ────────────────────────────────────────────────────────
   function handleCampaignNameChange(value: string) {
-    setState((s) => ({ ...s, campaignName: value, error: null }));
+    setState((s) => {
+      const fe = new Set(s.fieldErrors);
+      fe.delete("campaign-name");
+      return { ...s, campaignName: value, error: null, fieldErrors: fe };
+    });
   }
 
   function handleStep1Next() {
     const trimmed = state.campaignName.trim();
     if (!trimmed) {
-      setState((s) => ({ ...s, error: t("campaign_name_required") }));
+      setState((s) => ({ ...s, error: t("campaign_name_required"), fieldErrors: new Set(["campaign-name"]) }));
       return;
     }
     if (trimmed.length > 50) {
-      setState((s) => ({ ...s, error: t("campaign_name_max") }));
+      setState((s) => ({ ...s, error: t("campaign_name_max"), fieldErrors: new Set(["campaign-name"]) }));
       return;
     }
-    setState((s) => ({ ...s, step: 2, error: null }));
+    setState((s) => ({ ...s, step: 2, error: null, fieldErrors: new Set() }));
   }
 
   // ── Step 2 ────────────────────────────────────────────────────────
@@ -103,7 +109,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           return { ...p, spell_save_dc: value === "" ? null : parseInt(value, 10) };
         return { ...p, [field]: parseInt(value, 10) };
       });
-      return { ...s, players: updated, error: null };
+      const fe = new Set(s.fieldErrors);
+      const player = s.players[index];
+      fe.delete(`player-${field}-${player._id}`);
+      return { ...s, players: updated, error: null, fieldErrors: fe };
     });
   }
 
@@ -120,49 +129,48 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   }
 
   function handleStep2Next() {
+    const errors = new Set<string>();
     for (const p of state.players) {
-      if (!p.name.trim()) {
-        setState((s) => ({ ...s, error: t("players_validation") }));
-        return;
-      }
-      if (!p.max_hp || isNaN(p.max_hp) || p.max_hp <= 0 || p.max_hp > 9999) {
-        setState((s) => ({ ...s, error: t("players_validation") }));
-        return;
-      }
-      if (!p.ac || isNaN(p.ac) || p.ac <= 0 || p.ac > 99) {
-        setState((s) => ({ ...s, error: t("players_validation") }));
-        return;
-      }
+      if (!p.name.trim()) errors.add(`player-name-${p._id}`);
+      if (!p.max_hp || isNaN(p.max_hp) || p.max_hp <= 0 || p.max_hp > 9999) errors.add(`player-hp-${p._id}`);
+      if (!p.ac || isNaN(p.ac) || p.ac <= 0 || p.ac > 99) errors.add(`player-ac-${p._id}`);
       if (
         p.spell_save_dc !== null &&
         (isNaN(p.spell_save_dc) || p.spell_save_dc <= 0 || p.spell_save_dc > 99)
-      ) {
-        setState((s) => ({
-          ...s,
-          error: t("players_spell_dc_validation"),
-        }));
-        return;
-      }
+      ) errors.add(`player-dc-${p._id}`);
     }
-    setState((s) => ({ ...s, step: 3, error: null }));
+    if (errors.size > 0) {
+      const hasDcError = [...errors].some((e) => e.startsWith("player-dc-"));
+      setState((s) => ({
+        ...s,
+        error: hasDcError ? t("players_spell_dc_validation") : t("players_validation"),
+        fieldErrors: errors,
+      }));
+      return;
+    }
+    setState((s) => ({ ...s, step: 3, error: null, fieldErrors: new Set() }));
   }
 
   // ── Step 3 ────────────────────────────────────────────────────────
   function handleEncounterNameChange(value: string) {
-    setState((s) => ({ ...s, encounterName: value, error: null }));
+    setState((s) => {
+      const fe = new Set(s.fieldErrors);
+      fe.delete("encounter-name");
+      return { ...s, encounterName: value, error: null, fieldErrors: fe };
+    });
   }
 
   function handleStep3Next() {
     const trimmed = state.encounterName.trim();
     if (!trimmed) {
-      setState((s) => ({ ...s, error: "Encounter name is required." }));
+      setState((s) => ({ ...s, error: "Encounter name is required.", fieldErrors: new Set(["encounter-name"]) }));
       return;
     }
     if (trimmed.length > 50) {
-      setState((s) => ({ ...s, error: "Encounter name must be 50 characters or fewer." }));
+      setState((s) => ({ ...s, error: "Encounter name must be 50 characters or fewer.", fieldErrors: new Set(["encounter-name"]) }));
       return;
     }
-    setState((s) => ({ ...s, step: 4, error: null }));
+    setState((s) => ({ ...s, step: 4, error: null, fieldErrors: new Set() }));
   }
 
   // ── Step 4 submit ─────────────────────────────────────────────────
@@ -429,7 +437,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               value={state.campaignName}
               onChange={(e) => handleCampaignNameChange(e.target.value)}
               maxLength={50}
-              className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60"
+              className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60${state.fieldErrors.has("campaign-name") ? " field-error" : ""}`}
+              aria-invalid={state.fieldErrors.has("campaign-name") || undefined}
               onKeyDown={(e) => e.key === "Enter" && handleStep1Next()}
             />
             <p className="text-xs text-muted-foreground text-right">
@@ -476,7 +485,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       onChange={(e) =>
                         handlePlayerChange(index, "name", e.target.value)
                       }
-                      className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm"
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${state.fieldErrors.has(`player-name-${player._id}`) ? " field-error" : ""}`}
+                      aria-invalid={state.fieldErrors.has(`player-name-${player._id}`) || undefined}
                     />
                   </div>
                   <div className="space-y-1">
@@ -495,7 +505,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       onChange={(e) =>
                         handlePlayerChange(index, "max_hp", e.target.value)
                       }
-                      className="bg-white/[0.04] border-border text-foreground h-8 text-sm"
+                      className={`bg-white/[0.04] border-border text-foreground h-8 text-sm${state.fieldErrors.has(`player-hp-${player._id}`) ? " field-error" : ""}`}
+                      aria-invalid={state.fieldErrors.has(`player-hp-${player._id}`) || undefined}
                     />
                   </div>
                   <div className="space-y-1">
@@ -514,7 +525,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       onChange={(e) =>
                         handlePlayerChange(index, "ac", e.target.value)
                       }
-                      className="bg-white/[0.04] border-border text-foreground h-8 text-sm"
+                      className={`bg-white/[0.04] border-border text-foreground h-8 text-sm${state.fieldErrors.has(`player-ac-${player._id}`) ? " field-error" : ""}`}
+                      aria-invalid={state.fieldErrors.has(`player-ac-${player._id}`) || undefined}
                     />
                   </div>
                   <div className="col-span-2 space-y-1">
@@ -539,7 +551,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                           e.target.value
                         )
                       }
-                      className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm"
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${state.fieldErrors.has(`player-dc-${player._id}`) ? " field-error" : ""}`}
+                      aria-invalid={state.fieldErrors.has(`player-dc-${player._id}`) || undefined}
                     />
                   </div>
                 </div>
@@ -571,7 +584,8 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               value={state.encounterName}
               onChange={(e) => handleEncounterNameChange(e.target.value)}
               maxLength={50}
-              className="bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60"
+              className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60${state.fieldErrors.has("encounter-name") ? " field-error" : ""}`}
+              aria-invalid={state.fieldErrors.has("encounter-name") || undefined}
               onKeyDown={(e) => e.key === "Enter" && handleStep3Next()}
             />
             <p className="text-xs text-muted-foreground text-right">

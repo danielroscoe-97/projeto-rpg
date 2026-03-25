@@ -42,6 +42,20 @@ function validateForm(form: PlayerCharacterForm): string | null {
   return null;
 }
 
+function getFieldErrors(form: PlayerCharacterForm, prefix: string): Set<string> {
+  const errors = new Set<string>();
+  if (!form.name.trim()) errors.add(`${prefix}-name`);
+  const hp = Number(form.max_hp);
+  if (!form.max_hp || isNaN(hp) || !Number.isInteger(hp) || hp < 1) errors.add(`${prefix}-hp`);
+  const ac = Number(form.ac);
+  if (!form.ac || isNaN(ac) || !Number.isInteger(ac) || ac < 1) errors.add(`${prefix}-ac`);
+  if (form.spell_save_dc !== "") {
+    const dc = Number(form.spell_save_dc);
+    if (isNaN(dc) || !Number.isInteger(dc) || dc < 1) errors.add(`${prefix}-dc`);
+  }
+  return errors;
+}
+
 function isSaveDisabled(form: PlayerCharacterForm): boolean {
   if (!form.name.trim()) return true;
   const hp = Number(form.max_hp);
@@ -71,6 +85,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
   const [removeTargetId, setRemoveTargetId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
 
   const supabase = createClient();
 
@@ -80,8 +95,10 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
     const validationError = validateForm(addForm);
     if (validationError) {
       setError(validationError);
+      setFieldErrors(getFieldErrors(addForm, "add"));
       return;
     }
+    setFieldErrors(new Set());
     setIsLoading(true);
     setError(null);
     try {
@@ -117,8 +134,10 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
     const validationError = validateForm(editForm);
     if (validationError) {
       setError(validationError);
+      setFieldErrors(getFieldErrors(editForm, `edit-${editingId}`));
       return;
     }
+    setFieldErrors(new Set());
     setIsLoading(true);
     setError(null);
     try {
@@ -215,8 +234,9 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
             id={`${idPrefix}-name`}
             placeholder={t("pc_name_placeholder")}
             value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+            onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setFieldErrors((prev) => { const n = new Set(prev); n.delete(`${idPrefix}-name`); return n; }); }}
+            className={`bg-background border-border text-foreground placeholder:text-muted-foreground/40${fieldErrors.has(`${idPrefix}-name`) ? " field-error" : ""}`}
+            aria-invalid={fieldErrors.has(`${idPrefix}-name`) || undefined}
           />
         </div>
         <div className="grid grid-cols-3 gap-3">
@@ -230,8 +250,9 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
               min={1}
               placeholder={t("pc_hp_placeholder")}
               value={form.max_hp}
-              onChange={(e) => setForm((f) => ({ ...f, max_hp: e.target.value }))}
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+              onChange={(e) => { setForm((f) => ({ ...f, max_hp: e.target.value })); setFieldErrors((prev) => { const n = new Set(prev); n.delete(`${idPrefix}-hp`); return n; }); }}
+              className={`bg-background border-border text-foreground placeholder:text-muted-foreground/40${fieldErrors.has(`${idPrefix}-hp`) ? " field-error" : ""}`}
+              aria-invalid={fieldErrors.has(`${idPrefix}-hp`) || undefined}
             />
           </div>
           <div className="space-y-1.5">
@@ -244,8 +265,9 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
               min={1}
               placeholder={t("pc_ac_placeholder")}
               value={form.ac}
-              onChange={(e) => setForm((f) => ({ ...f, ac: e.target.value }))}
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+              onChange={(e) => { setForm((f) => ({ ...f, ac: e.target.value })); setFieldErrors((prev) => { const n = new Set(prev); n.delete(`${idPrefix}-ac`); return n; }); }}
+              className={`bg-background border-border text-foreground placeholder:text-muted-foreground/40${fieldErrors.has(`${idPrefix}-ac`) ? " field-error" : ""}`}
+              aria-invalid={fieldErrors.has(`${idPrefix}-ac`) || undefined}
             />
           </div>
           <div className="space-y-1.5">
@@ -258,8 +280,9 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
               min={1}
               placeholder={tc("dash")}
               value={form.spell_save_dc}
-              onChange={(e) => setForm((f) => ({ ...f, spell_save_dc: e.target.value }))}
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+              onChange={(e) => { setForm((f) => ({ ...f, spell_save_dc: e.target.value })); setFieldErrors((prev) => { const n = new Set(prev); n.delete(`${idPrefix}-dc`); return n; }); }}
+              className={`bg-background border-border text-foreground placeholder:text-muted-foreground/40${fieldErrors.has(`${idPrefix}-dc`) ? " field-error" : ""}`}
+              aria-invalid={fieldErrors.has(`${idPrefix}-dc`) || undefined}
             />
           </div>
         </div>

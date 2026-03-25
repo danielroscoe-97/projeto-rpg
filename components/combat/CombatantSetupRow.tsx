@@ -15,6 +15,8 @@ interface CombatantSetupRowProps {
   onRemove: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
+  /** Highlight the initiative field as invalid */
+  highlightInit?: boolean;
 }
 
 export function CombatantSetupRow({
@@ -26,6 +28,7 @@ export function CombatantSetupRow({
   onNotesChange,
   onRemove,
   dragHandleProps,
+  highlightInit,
 }: CombatantSetupRowProps) {
   const t = useTranslations("combat");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
@@ -67,8 +70,9 @@ export function CombatantSetupRow({
         placeholder={t("setup_init_placeholder")}
         min={-5}
         max={50}
-        className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${highlightInit ? " field-error" : ""}`}
         aria-label={t("setup_init_aria", { name: combatant.name })}
+        aria-invalid={highlightInit || undefined}
         data-testid={`setup-init-${combatant.id}`}
       />
 
