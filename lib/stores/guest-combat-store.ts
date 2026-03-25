@@ -30,7 +30,6 @@ interface GuestCombatActions {
   setDefeated: (id: string, isDefeated: boolean) => void;
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
   resetCombat: () => void;
-  initializeWithSample: (combatants: Omit<Combatant, "id">[]) => void;
   hydrateCombatants: (combatants: Combatant[]) => void;
 }
 
@@ -178,15 +177,6 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
         })),
 
       resetCombat: () => set(initialState),
-
-      initializeWithSample: (sampleCombatants) =>
-        set((state) => {
-          if (state.phase !== "setup") return state;
-          return {
-            ...initialState,
-            combatants: sampleCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
-          };
-        }),
 
       hydrateCombatants: (combatants) => set({ combatants }),
     }),

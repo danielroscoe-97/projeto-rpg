@@ -77,10 +77,10 @@ html {
     z-index: 0;
   }
 
-  /* Ensure content sits above pseudo-elements */
+  /* Ensure content sits above body pseudo-elements (noise + gradient).
+     Excludes <nav> — the fixed Navbar manages its own z-index via Tailwind. */
   #__next,
   body > div,
-  nav,
   main,
   footer,
   header,
@@ -168,5 +168,23 @@ html {
 
   .animate-draw-dash {
     animation: draw-dash 1.2s ease-out both;
+  }
+
+  /* Monster search — golden glow confirmation flash */
+  @keyframes glow-gold {
+    0%   { box-shadow: none; border-color: transparent; }
+    20%  { box-shadow: 0 0 0 2px #f5a623, 0 0 12px 2px rgba(245,166,35,0.35); border-color: #f5a623; }
+    80%  { box-shadow: 0 0 0 2px #f5a623, 0 0 12px 2px rgba(245,166,35,0.35); border-color: #f5a623; }
+    100% { box-shadow: none; border-color: transparent; }
+  }
+
+  .glow-gold-flash {
+    animation: glow-gold 1.5s ease-in-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glow-gold-flash {
+      animation: none;
+    }
   }
 }

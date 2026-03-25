@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { Combatant } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 
 interface CombatantSetupRowProps {
   combatant: Combatant;
@@ -27,8 +28,11 @@ export function CombatantSetupRow({
   dragHandleProps,
 }: CombatantSetupRowProps) {
   const t = useTranslations("combat");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const inputClass =
     "bg-transparent border border-transparent hover:border-border focus:border-ring focus:outline-none rounded px-1.5 py-1 text-foreground text-sm transition-colors min-h-[32px]";
+
+  const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
   return (
     <div
@@ -59,6 +63,7 @@ export function CombatantSetupRow({
             onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
           }
         }}
+        onFocus={selectOnFocus}
         placeholder={t("setup_init_placeholder")}
         min={-5}
         max={50}
@@ -100,6 +105,7 @@ export function CombatantSetupRow({
             onHpChange(combatant.id, val);
           }
         }}
+        onFocus={selectOnFocus}
         placeholder={t("setup_hp_placeholder")}
         min={1}
         className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
@@ -117,6 +123,7 @@ export function CombatantSetupRow({
             onAcChange(combatant.id, val);
           }
         }}
+        onFocus={selectOnFocus}
         placeholder={t("setup_ac_placeholder")}
         min={1}
         className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
@@ -134,6 +141,20 @@ export function CombatantSetupRow({
         aria-label={t("setup_notes_aria", { name: combatant.name })}
         data-testid={`setup-notes-${combatant.id}`}
       />
+
+      {/* Ver Ficha — only for monsters with monster_id */}
+      {combatant.monster_id && combatant.ruleset_version && (
+        <button
+          type="button"
+          onClick={() => pinCard("monster", combatant.monster_id!, combatant.ruleset_version!)}
+          className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30 opacity-0 group-hover:opacity-100 focus:opacity-100"
+          aria-label={`Ver ficha de ${combatant.name}`}
+          data-testid={`ver-ficha-setup-${combatant.id}`}
+        >
+          <span aria-hidden>📖</span>
+          <span>Ver Ficha</span>
+        </button>
+      )}
 
       {/* Remove */}
       <button

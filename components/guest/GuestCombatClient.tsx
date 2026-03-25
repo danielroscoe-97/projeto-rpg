@@ -1,25 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
-import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
-import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
-import { loadMonsters } from "@/lib/srd/srd-loader";
-import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { RulesetSelector, VersionBadge } from "@/components/session/RulesetSelector";
+import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
-import { SAMPLE_ENCOUNTER } from "@/constants/sample-encounter";
+import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
+import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
-
-const DEBOUNCE_MS = 150;
 
 interface AddRowForm {
   initiative: string;
@@ -41,7 +36,6 @@ const EMPTY_ADD_ROW: AddRowForm = {
 
 function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   const t = useTranslations("combat");
-  const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
   const {
     combatants,
@@ -56,67 +50,42 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
 
   const [rulesetVersion, setRulesetVersion] = useState<RulesetVersion>("2014");
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
-  const [srdQuery, setSrdQuery] = useState("");
-  const [srdResults, setSrdResults] = useState<SrdMonster[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [addRowGlow, setAddRowGlow] = useState(false);
+  const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setIsSearching(true);
-    setSearchError(null);
-    loadMonsters(rulesetVersion)
-      .then((monsters) => {
-        if (!cancelled) {
-          buildMonsterIndex(monsters);
-          setIsSearching(false);
-          if (srdQuery.trim()) {
-            setSrdResults(
-              searchMonsters(srdQuery, rulesetVersion).map((r) => r.item).slice(0, 6)
-            );
-          }
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setIsSearching(false);
-          setSearchError(t("search_monsters_error"));
-        }
-      });
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rulesetVersion]);
+  const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
+  // Bug #2: Clear stale validation error when combatants change (e.g. initiative filled)
   useEffect(() => {
-    if (isSearching) return;
-    const timer = setTimeout(() => {
-      setSrdResults(
-        srdQuery.trim()
-          ? searchMonsters(srdQuery, rulesetVersion).map((r) => r.item).slice(0, 6)
-          : []
-      );
-    }, DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [srdQuery, rulesetVersion, isSearching]);
+    if (submitError) setSubmitError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [combatants]);
 
   const handleSelectMonster = useCallback(
     (monster: SrdMonster) => {
       const numberedName = getGuestNumberedName(monster.name, useGuestCombatStore.getState().combatants);
+      lastSelectedMonster.current = { id: monster.id, version: monster.ruleset_version };
       setAddRow((prev) => ({
         ...prev,
         name: numberedName,
         hp: String(monster.hit_points),
         ac: String(monster.armor_class),
       }));
-      setSrdQuery("");
-      setSrdResults([]);
       initInputRef.current?.focus();
     },
     []
   );
+
+  const handleMonsterAdded = useCallback(() => {
+    setAddRowGlow(false);
+    requestAnimationFrame(() => {
+      setAddRowGlow(true);
+      setTimeout(() => setAddRowGlow(false), 1500);
+    });
+  }, []);
 
   const handleAddFromRow = useCallback(() => {
     const name = addRow.name.trim();
@@ -128,6 +97,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
       ? parseInt(addRow.initiative, 10)
       : null;
 
+    const sel = lastSelectedMonster.current;
     addCombatant({
       name,
       current_hp: hp,
@@ -138,14 +108,15 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
       initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
       initiative_order: null,
       conditions: [],
-      ruleset_version: null,
+      ruleset_version: sel?.version ?? null,
       is_defeated: false,
       is_player: false,
-      monster_id: null,
+      monster_id: sel?.id ?? null,
       dm_notes: "",
       player_notes: addRow.notes.trim(),
     });
 
+    lastSelectedMonster.current = null;
     setAddRow(EMPTY_ADD_ROW);
     setSubmitError(null);
     initInputRef.current?.focus();
@@ -217,56 +188,11 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
       </div>
 
       {/* SRD Monster Search */}
-      <div className="space-y-1">
-        <label className="text-foreground/80 text-xs font-medium block">
-          {t("search_monsters")}
-        </label>
-        <input
-          type="text"
-          value={srdQuery}
-          onChange={(e) => setSrdQuery(e.target.value)}
-          placeholder={t("search_monsters_placeholder")}
-          className={`${inputClass} w-full`}
-          data-testid="srd-search-input"
-        />
-        {searchError && (
-          <p className="text-red-400 text-xs" role="alert">{searchError}</p>
-        )}
-        {srdResults.length > 0 && (
-          <ul
-            className="bg-card border border-border rounded-md divide-y divide-white/[0.04] overflow-hidden"
-            data-testid="srd-results"
-          >
-            {srdResults.map((monster) => (
-              <li
-                key={monster.id}
-                className="flex items-center justify-between px-3 py-1.5 hover:bg-white/[0.04]"
-              >
-                <button
-                  type="button"
-                  className="flex-1 flex items-center gap-2 flex-wrap text-left cursor-pointer"
-                  onClick={() => handleSelectMonster(monster)}
-                >
-                  <span className="text-foreground text-sm font-medium">{monster.name}</span>
-                  <VersionBadge version={monster.ruleset_version} />
-                  <span className="text-muted-foreground text-xs">
-                    {t("monster_stats", { cr: monster.cr, hp: monster.hit_points, ac: monster.armor_class })}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => pinCard("monster", monster.id, monster.ruleset_version)}
-                  className="px-2 py-1 text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                  aria-label={`Pin ${monster.name} stat block`}
-                  title="Pin stat block"
-                >
-                  📌
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <MonsterSearchPanel
+        rulesetVersion={rulesetVersion}
+        onSelectMonster={handleSelectMonster}
+        onMonsterAdded={handleMonsterAdded}
+      />
 
       {/* Column headers */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
@@ -308,7 +234,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
 
       {/* Add row */}
       <div
-        className="flex items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5"
+        className={`flex items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
         data-testid="add-row"
         onKeyDown={addRowKeyDown}
       >
@@ -318,6 +244,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
           type="number"
           value={addRow.initiative}
           onChange={(e) => setAddRow((f) => ({ ...f, initiative: e.target.value }))}
+          onFocus={selectOnFocus}
           placeholder={t("setup_col_init")}
           min={-5}
           max={50}
@@ -327,7 +254,10 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <input
           type="text"
           value={addRow.name}
-          onChange={(e) => setAddRow((f) => ({ ...f, name: e.target.value }))}
+          onChange={(e) => {
+            lastSelectedMonster.current = null;
+            setAddRow((f) => ({ ...f, name: e.target.value }));
+          }}
           placeholder={t("setup_col_name")}
           className={`${inputClass} flex-1 min-w-0`}
           data-testid="add-row-name"
@@ -336,6 +266,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
           type="number"
           value={addRow.hp}
           onChange={(e) => setAddRow((f) => ({ ...f, hp: e.target.value }))}
+          onFocus={selectOnFocus}
           placeholder={t("setup_col_hp")}
           min={1}
           className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
@@ -345,6 +276,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
           type="number"
           value={addRow.ac}
           onChange={(e) => setAddRow((f) => ({ ...f, ac: e.target.value }))}
+          onFocus={selectOnFocus}
           placeholder={t("setup_col_ac")}
           min={1}
           className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
@@ -374,13 +306,17 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
 
       {/* Footer controls */}
       <div className="flex items-center justify-between pt-2">
-        <button
-          type="button"
-          onClick={() => resetCombat()}
-          className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-        >
-          Limpar tudo
-        </button>
+        {combatants.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => { resetCombat(); setAddRow(EMPTY_ADD_ROW); setSubmitError(null); lastSelectedMonster.current = null; }}
+            className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+          >
+            Limpar tudo
+          </button>
+        ) : (
+          <span />
+        )}
         <div className="flex items-center gap-4">
           <p className="text-muted-foreground text-xs">
             {combatants.length > 0
@@ -429,17 +365,8 @@ export function GuestCombatClient() {
     updateDmNotes,
     updatePlayerNotes,
     hydrateCombatants,
-    initializeWithSample,
     resetCombat,
   } = useGuestCombatStore();
-
-  // On first load: if no session state, seed with sample encounter
-  useEffect(() => {
-    const store = useGuestCombatStore.getState();
-    if (store.phase === "setup" && store.combatants.length === 0) {
-      initializeWithSample(SAMPLE_ENCOUNTER);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openUpsell = useCallback((trigger: UpsellTrigger) => {
     setUpsellTrigger(trigger);

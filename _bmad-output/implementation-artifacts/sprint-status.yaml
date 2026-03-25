@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-24T23:30:00Z
+last_updated: 2026-03-25
 project: projeto-rpg
 
 project_key: NOKEY
@@ -122,3 +122,47 @@ development_status:
   8-7-routing-navigation-cleanup: done
   8-8-qa-regression-e2e-validation: done
   epic-8-retrospective: optional
+
+  # Epic 9: 5e.tools-Style Pinnable Monster & Spell Cards
+  epic-9: done
+  9-1-pinned-cards-state-management: done
+  9-2-5etools-dark-fantasy-visual-theme: done
+  9-3-refactored-monster-stat-block: done
+  9-4-spell-card-component: done
+  9-5-floating-card-container-and-drag-system: done
+  9-6-spell-and-condition-cross-reference-links: done
+  9-7-condition-card-component: done
+  9-8-integration-pin-from-combat-and-search: done
+  9-9-keyboard-shortcuts-and-accessibility: done
+  9-10-comprehensive-srd-data-validation-and-enrichment: done
+  epic-9-retrospective: optional
+
+  # Epic 10: Freemium — Combat Tracker
+  epic-10: done
+  10-1-landing-page-testar-gratis-cta: done
+  10-2-guest-route-try-page-shell: done
+  10-3-ephemeral-combat-state-guest-zustand-store: done
+  10-4-pre-populated-sample-encounter: done
+  10-5-guest-mode-ui-banner: done
+  10-6-full-combat-flow-parity-in-guest-mode: done
+  10-7-oracle-access-in-guest-mode: done
+  10-8-upgrade-nudge-save-intercept-upsell-modal: done
+  epic-10-retrospective: optional
+
+  # Epic 11: Monster Search & Combat Setup Overhaul
+  epic-11: done
+  11-1-clean-initial-state: done
+  11-2-monster-search-panel-redesign: done
+  11-3-creature-type-svg-silhouettes: done
+  11-4-golden-glow-feedback-on-monster-selection: done
+  11-5-ver-ficha-labelled-button: done
+  epic-11-retrospective: optional
+
+  # Epic 12: Bug Fix Sprint — Combat Setup & UI Polish
+  epic-12: done
+  12-1-input-auto-select-on-focus: done
+  12-2-limpar-tudo-full-reset: done
+  12-3-validation-state-sync: done
+  12-4-condition-panel-auto-close-on-defeat: done
+  12-5-navbar-click-reliability: done
+  epic-12-retrospective: optional

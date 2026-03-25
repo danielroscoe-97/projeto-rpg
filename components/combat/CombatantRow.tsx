@@ -95,6 +95,11 @@ export function CombatantRow({
     if (!canExpand) setIsExpanded(false);
   }, [canExpand]);
 
+  // Close any open panel when combatant is defeated
+  useEffect(() => {
+    if (combatant.is_defeated) setOpenPanel(null);
+  }, [combatant.is_defeated]);
+
   const handleToggle = () => {
     if (canExpand) setIsExpanded((prev) => !prev);
   };
