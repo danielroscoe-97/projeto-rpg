@@ -11,8 +11,11 @@ interface GuestUpsellModalProps {
   trigger: UpsellTrigger;
 }
 
+const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Focus trap: focus the close button when modal opens
   useEffect(() => {
@@ -21,11 +24,33 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
     }
   }, [isOpen]);
 
-  // ESC to close
+  // ESC to close + Tab cycling focus trap
   useEffect(() => {
     if (!isOpen) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = Array.from(
+          modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
@@ -48,7 +73,7 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
       />
 
       {/* Modal */}
-      <div className="relative bg-card border border-border rounded-xl shadow-2xl max-w-md w-full p-6 space-y-5">
+      <div ref={modalRef} className="relative bg-card border border-border rounded-xl shadow-2xl max-w-md w-full p-6 space-y-5">
         {/* Close */}
         <button
           ref={closeButtonRef}

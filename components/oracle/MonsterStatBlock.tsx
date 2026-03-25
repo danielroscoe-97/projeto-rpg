@@ -204,7 +204,6 @@ export function MonsterStatBlock({
   renderDesc: renderDescProp,
 }: MonsterStatBlockProps) {
   const pb = calculateProficiencyBonus(monster.cr);
-  const xp = monster.xp ?? XP_BY_CR[monster.cr] ?? null;
   const dexMod = monster.dex !== undefined ? abilityModNum(monster.dex) : null;
 
   const speedStr = monster.speed
@@ -341,7 +340,7 @@ export function MonsterStatBlock({
           <CardDivider />
           <h4 className="section-header">Legendary Actions</h4>
           <p className="trait-desc" style={{ marginBottom: "0.5em" }}>
-            {`The ${monster.name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The ${monster.name} regains spent legendary actions at the start of its turn.`}
+            {`The ${monster.name} can take legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The ${monster.name} regains spent legendary actions at the start of its turn.`}
           </p>
           <div>
             {monster.legendary_actions.map((item) => (

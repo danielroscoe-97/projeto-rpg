@@ -58,8 +58,7 @@ function DraggableCard({
     <div
       ref={setNodeRef}
       style={style}
-      role="dialog"
-      aria-modal="false"
+      role="region"
       aria-label={`Pinned ${card.type} card`}
       tabIndex={-1}
       {...attributes}
@@ -253,6 +252,7 @@ function PinnedConditionCard({
 export function FloatingCardContainer() {
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [confirmingUnpinAll, setConfirmingUnpinAll] = useState(false);
 
   const cards = usePinnedCardsStore((s) => s.cards);
   const moveCard = usePinnedCardsStore((s) => s.moveCard);
@@ -283,10 +283,15 @@ export function FloatingCardContainer() {
       if (e.key !== "Escape" || cards.length === 0) return;
       if (e.shiftKey) {
         if (cards.length >= 3) {
-          if (!window.confirm(`Close all ${cards.length} pinned cards?`)) return;
+          setConfirmingUnpinAll(true);
+        } else {
+          unpinAll();
         }
-        unpinAll();
       } else {
+        if (confirmingUnpinAll) {
+          setConfirmingUnpinAll(false);
+          return;
+        }
         const visible = cards.filter((c) => !c.isMinimized);
         if (visible.length === 0) return;
         const topmost = [...visible].sort((a, b) => b.zIndex - a.zIndex)[0];
@@ -295,7 +300,7 @@ export function FloatingCardContainer() {
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cards, unpinCard, unpinAll]);
+  }, [cards, unpinCard, unpinAll, confirmingUnpinAll]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -415,30 +420,70 @@ export function FloatingCardContainer() {
           />
         ))}
 
-        {/* Unpin All button */}
+        {/* Unpin All button / inline confirm */}
         {cards.length >= 2 && (
-          <button
-            type="button"
-            onClick={unpinAll}
-            style={{
-              position: "fixed",
-              bottom: 12,
-              left: 12,
-              pointerEvents: "auto",
-              background: "rgba(26,26,30,0.9)",
-              color: "#e8e4d0",
-              border: "1px solid rgba(232,228,208,0.2)",
-              borderRadius: 4,
-              padding: "6px 12px",
-              cursor: "pointer",
-              fontSize: 12,
-              zIndex: 10000,
-            }}
-            aria-label="Unpin all cards"
-            data-testid="unpin-all-btn"
-          >
-            Unpin All
-          </button>
+          confirmingUnpinAll ? (
+            <div
+              style={{
+                position: "fixed",
+                bottom: 12,
+                left: 12,
+                pointerEvents: "auto",
+                background: "rgba(26,26,30,0.95)",
+                color: "#e8e4d0",
+                border: "1px solid rgba(146,38,16,0.6)",
+                borderRadius: 4,
+                padding: "8px 12px",
+                fontSize: 12,
+                zIndex: 10000,
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+              }}
+              role="alertdialog"
+              aria-label={`Close all ${cards.length} pinned cards?`}
+            >
+              <span>Close all {cards.length} cards?</span>
+              <button
+                type="button"
+                onClick={() => { unpinAll(); setConfirmingUnpinAll(false); }}
+                style={{ cursor: "pointer", color: "#922610", background: "none", border: "none", font: "inherit", fontSize: 12 }}
+                autoFocus
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingUnpinAll(false)}
+                style={{ cursor: "pointer", color: "#e8e4d0", background: "none", border: "none", font: "inherit", fontSize: 12 }}
+              >
+                No
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={unpinAll}
+              style={{
+                position: "fixed",
+                bottom: 12,
+                left: 12,
+                pointerEvents: "auto",
+                background: "rgba(26,26,30,0.9)",
+                color: "#e8e4d0",
+                border: "1px solid rgba(232,228,208,0.2)",
+                borderRadius: 4,
+                padding: "6px 12px",
+                cursor: "pointer",
+                fontSize: 12,
+                zIndex: 10000,
+              }}
+              aria-label="Unpin all cards"
+              data-testid="unpin-all-btn"
+            >
+              Unpin All
+            </button>
+          )
         )}
       </div>
     </DndContext>,

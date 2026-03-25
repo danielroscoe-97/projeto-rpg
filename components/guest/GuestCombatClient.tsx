@@ -466,16 +466,18 @@ export function GuestCombatClient() {
       const store = useGuestCombatStore.getState();
       const idx = store.combatants.findIndex((c) => c.id === id);
       const wasCurrentTurn = idx === store.currentTurnIndex;
+      const wasBeforeCurrent = idx < store.currentTurnIndex;
 
       removeCombatant(id);
 
       const updated = useGuestCombatStore.getState().combatants;
-      if (wasCurrentTurn && updated.length > 0) {
-        const clampedIdx = Math.min(
-          useGuestCombatStore.getState().currentTurnIndex,
-          updated.length - 1
-        );
+      if (updated.length === 0) {
+        useGuestCombatStore.setState({ currentTurnIndex: 0 });
+      } else if (wasCurrentTurn) {
+        const clampedIdx = Math.min(store.currentTurnIndex, updated.length - 1);
         useGuestCombatStore.setState({ currentTurnIndex: clampedIdx });
+      } else if (wasBeforeCurrent) {
+        useGuestCombatStore.setState({ currentTurnIndex: store.currentTurnIndex - 1 });
       }
 
       const reordered = assignInitiativeOrder(updated);

@@ -145,7 +145,7 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       setTempHp: (id, value) =>
         set((state) => ({
           combatants: state.combatants.map((c) =>
-            c.id === id ? { ...c, temp_hp: Math.max(c.temp_hp, value) } : c
+            c.id === id ? { ...c, temp_hp: Math.max(0, value) } : c
           ),
         })),
 
@@ -180,9 +180,12 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       resetCombat: () => set(initialState),
 
       initializeWithSample: (sampleCombatants) =>
-        set({
-          ...initialState,
-          combatants: sampleCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
+        set((state) => {
+          if (state.phase !== "setup") return state;
+          return {
+            ...initialState,
+            combatants: sampleCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
+          };
         }),
 
       hydrateCombatants: (combatants) => set({ combatants }),

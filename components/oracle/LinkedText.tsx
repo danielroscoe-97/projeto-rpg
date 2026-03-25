@@ -131,8 +131,9 @@ export function LinkedText({ text, rulesetVersion }: LinkedTextProps) {
 
   const showTooltip = (e: React.SyntheticEvent<HTMLButtonElement>, content: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    const rect = e.currentTarget.getBoundingClientRect();
+    const target = e.currentTarget;
     timerRef.current = setTimeout(() => {
+      const rect = target.getBoundingClientRect();
       setTooltip(content);
       setTooltipAnchor({ x: rect.left, y: rect.bottom + 6 });
     }, 300);

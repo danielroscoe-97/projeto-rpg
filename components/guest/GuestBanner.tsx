@@ -9,12 +9,20 @@ export function GuestBanner() {
   const [dismissed, setDismissed] = useState(true); // start hidden to avoid SSR flash
 
   useEffect(() => {
-    const wasDismissed = localStorage.getItem(DISMISSED_KEY) === "true";
-    if (!wasDismissed) setDismissed(false);
+    try {
+      const wasDismissed = localStorage.getItem(DISMISSED_KEY) === "true";
+      if (!wasDismissed) setDismissed(false);
+    } catch {
+      setDismissed(false);
+    }
   }, []);
 
   const handleDismiss = () => {
-    localStorage.setItem(DISMISSED_KEY, "true");
+    try {
+      localStorage.setItem(DISMISSED_KEY, "true");
+    } catch {
+      // storage unavailable — banner will reappear on next load
+    }
     setDismissed(true);
   };
 

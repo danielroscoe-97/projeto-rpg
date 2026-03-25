@@ -13,8 +13,18 @@ export interface SpellCardProps {
 
 export function formatSpellLevel(level: number, school: string): string {
   if (level === 0) return `${school} Cantrip`;
+  const lastTwo = level % 100;
+  const lastOne = level % 10;
   const suffix =
-    level === 1 ? "st" : level === 2 ? "nd" : level === 3 ? "rd" : "th";
+    lastTwo >= 11 && lastTwo <= 13
+      ? "th"
+      : lastOne === 1
+        ? "st"
+        : lastOne === 2
+          ? "nd"
+          : lastOne === 3
+            ? "rd"
+            : "th";
   return `${level}${suffix}-level ${school}`;
 }
 
