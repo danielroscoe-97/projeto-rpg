@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { HpAdjuster } from "./HpAdjuster";
@@ -67,6 +68,7 @@ export function CombatantRow({
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const [isExpanded, setIsExpanded] = useState(false);
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
   const [editingPlayerNotes, setEditingPlayerNotes] = useState(false);
@@ -140,27 +142,39 @@ export function CombatantRow({
             </span>
           )}
 
-          {/* Name — clickable to expand if monster; min-h-[44px] satisfies NFR24 */}
+          {/* Name — clickable to open pinned card if monster; min-h-[44px] satisfies NFR24 */}
           <button
             type="button"
-            onClick={handleToggle}
-            className={`flex-1 flex items-center text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] ${
+            onClick={() => {
+              if (canExpand && fullMonster) {
+                pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+              }
+            }}
+            className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] flex items-center ${
               canExpand
                 ? "text-foreground hover:text-gold cursor-pointer"
                 : "text-foreground cursor-default"
             }`}
-            aria-expanded={canExpand ? isExpanded : undefined}
-            aria-controls={canExpand ? `stat-block-combatant-${combatant.id}` : undefined}
             disabled={!canExpand}
             data-testid={`combatant-name-${combatant.id}`}
           >
             {combatant.name}
-            {canExpand && (
-              <span className="text-muted-foreground/60 text-xs ml-1" aria-hidden="true">
-                {isExpanded ? " ▲" : " ▼"}
-              </span>
-            )}
           </button>
+
+          {/* Inline expand toggle (separate from name) */}
+          {canExpand && (
+            <button
+              type="button"
+              onClick={handleToggle}
+              className="text-muted-foreground/60 text-xs hover:text-muted-foreground transition-colors px-1 min-h-[44px] flex items-center"
+              aria-expanded={isExpanded}
+              aria-controls={`stat-block-combatant-${combatant.id}`}
+              aria-label={isExpanded ? "Collapse stat block" : "Expand stat block"}
+              data-testid={`expand-toggle-${combatant.id}`}
+            >
+              {isExpanded ? "▲" : "▼"}
+            </button>
+          )}
 
           {/* Version badge for monsters */}
           {combatant.ruleset_version && combatant.monster_id && (
@@ -222,7 +236,7 @@ export function CombatantRow({
             data-testid={`conditions-${combatant.id}`}
           >
             {combatant.conditions.map((condition) => (
-              <ConditionBadge key={condition} condition={condition} />
+              <ConditionBadge key={condition} condition={condition} rulesetVersion={combatant.ruleset_version ?? "2014"} />
             ))}
           </div>
         )}
@@ -315,6 +329,18 @@ export function CombatantRow({
         {/* === ACTION BUTTONS (only during active combat) === */}
         {showActions && (
           <div className="flex flex-wrap gap-1 mt-2" data-testid={`action-buttons-${combatant.id}`}>
+            {/* Pin stat block (monsters only) */}
+            {canExpand && fullMonster && (
+              <button
+                type="button"
+                onClick={() => pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014")}
+                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                aria-label={`Pin ${combatant.name} stat block`}
+                data-testid={`pin-btn-${combatant.id}`}
+              >
+                📌
+              </button>
+            )}
             <button
               type="button"
               onClick={() => togglePanel("hp")}

@@ -133,7 +133,7 @@ export function PlayerInitiativeBoard({
             {combatant.conditions.length > 0 && (
               <div className="flex flex-wrap gap-1" role="list" aria-label={`${combatant.name} conditions`}>
                 {combatant.conditions.map((condition) => (
-                  <ConditionBadge key={condition} condition={condition} />
+                  <ConditionBadge key={condition} condition={condition} rulesetVersion={(combatant.ruleset_version as RulesetVersion) ?? "2014"} />
                 ))}
               </div>
             )}

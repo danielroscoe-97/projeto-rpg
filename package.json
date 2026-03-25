@@ -8,7 +8,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "generate-srd": "ts-node scripts/generate-srd-bundles.ts",
-    "fetch-srd": "ts-node scripts/fetch-srd-data.ts"
+    "fetch-srd": "ts-node scripts/fetch-srd-data.ts",
+    "validate:srd": "npx tsx scripts/validate-srd-crossrefs.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

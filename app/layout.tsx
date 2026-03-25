@@ -61,6 +61,7 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
         <Analytics />
+        <div id="floating-cards-root" />
       </body>
     </html>
   );

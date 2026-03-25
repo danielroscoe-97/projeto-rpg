@@ -14,8 +14,10 @@ jest.mock("@/lib/srd/srd-search", () => ({
   findCondition: jest.fn(),
 }));
 
-jest.mock("@/components/oracle/ConditionRulesModal", () => ({
-  ConditionRulesModal: () => null,
+const mockPinCard = jest.fn();
+jest.mock("@/lib/stores/pinned-cards-store", () => ({
+  usePinnedCardsStore: (selector: (s: { pinCard: typeof mockPinCard }) => unknown) =>
+    selector({ pinCard: mockPinCard }),
 }));
 
 jest.mock("@/components/oracle/ConditionBadge", () => ({
@@ -192,26 +194,36 @@ describe("CombatantRow", () => {
       expect(screen.queryByTestId("expanded-stat-block-m1")).not.toBeInTheDocument();
     });
 
-    it("shows stat block after clicking monster name", async () => {
+    it("shows stat block after clicking expand toggle", async () => {
       mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
       const user = userEvent.setup();
 
       render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
-      await user.click(screen.getByTestId("combatant-name-m1"));
+      await user.click(screen.getByTestId("expand-toggle-m1"));
 
       expect(screen.getByTestId("expanded-stat-block-m1")).toBeInTheDocument();
       expect(screen.getByTestId("monster-stat-block-mock")).toBeInTheDocument();
     });
 
-    it("collapses stat block on second click", async () => {
+    it("clicking monster name calls pinCard", async () => {
       mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
       const user = userEvent.setup();
 
       render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
       await user.click(screen.getByTestId("combatant-name-m1"));
+
+      expect(mockPinCard).toHaveBeenCalledWith("monster", "goblin", "2014");
+    });
+
+    it("collapses stat block on second expand toggle click", async () => {
+      mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
+      const user = userEvent.setup();
+
+      render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
+      await user.click(screen.getByTestId("expand-toggle-m1"));
       expect(screen.getByTestId("expanded-stat-block-m1")).toBeInTheDocument();
 
-      await user.click(screen.getByTestId("combatant-name-m1"));
+      await user.click(screen.getByTestId("expand-toggle-m1"));
       expect(screen.queryByTestId("expanded-stat-block-m1")).not.toBeInTheDocument();
     });
 
@@ -228,7 +240,7 @@ describe("CombatantRow", () => {
       const user = userEvent.setup();
 
       render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
-      await user.click(screen.getByTestId("combatant-name-m1"));
+      await user.click(screen.getByTestId("expand-toggle-m1"));
 
       expect(screen.getByText(/combat\.ac_label/)).toBeInTheDocument();
       expect(screen.getByText("15")).toBeInTheDocument();
@@ -249,18 +261,18 @@ describe("CombatantRow", () => {
       expect(screen.getByText("2014")).toBeInTheDocument();
     });
 
-    it("name button has aria-expanded=false when collapsed", () => {
+    it("expand toggle has aria-expanded=false when collapsed", () => {
       mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
       render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
-      expect(screen.getByTestId("combatant-name-m1")).toHaveAttribute("aria-expanded", "false");
+      expect(screen.getByTestId("expand-toggle-m1")).toHaveAttribute("aria-expanded", "false");
     });
 
-    it("name button has aria-expanded=true after expanding", async () => {
+    it("expand toggle has aria-expanded=true after expanding", async () => {
       mockGetMonsterById.mockReturnValue(GOBLIN_FULL);
       const user = userEvent.setup();
       render(<CombatantRow combatant={MONSTER_COMBATANT} isCurrentTurn={false} />);
-      await user.click(screen.getByTestId("combatant-name-m1"));
-      expect(screen.getByTestId("combatant-name-m1")).toHaveAttribute("aria-expanded", "true");
+      await user.click(screen.getByTestId("expand-toggle-m1"));
+      expect(screen.getByTestId("expand-toggle-m1")).toHaveAttribute("aria-expanded", "true");
     });
   });
 

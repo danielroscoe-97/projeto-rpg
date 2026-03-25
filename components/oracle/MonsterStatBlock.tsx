@@ -1,50 +1,215 @@
 "use client";
 
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { VersionBadge } from "@/components/session/RulesetSelector";
+import type { RulesetVersion } from "@/lib/types/database";
+import { LinkedText } from "./LinkedText";
+import "@/styles/stat-card-5e.css";
 
-interface MonsterStatBlockProps {
-  monster: SrdMonster;
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Parse CR string handling fractions: "1/8"→0.125, "1/4"→0.25, "1/2"→0.5 */
+export function parseCR(cr: string): number {
+  if (!cr) return 0;
+  if (cr.includes("/")) {
+    const [num, den] = cr.split("/");
+    const result = Number(num) / Number(den);
+    return Number.isFinite(result) ? result : 0;
+  }
+  return Number(cr) || 0;
 }
 
-function abilityMod(score: number): string {
-  const mod = Math.floor((score - 10) / 2);
-  return mod >= 0 ? `+${mod}` : `${mod}`;
+/** Standard D&D 5e proficiency bonus from CR. */
+export function calculateProficiencyBonus(cr: string): number {
+  return Math.max(2, Math.floor((parseCR(cr) - 1) / 4) + 2);
 }
 
-function AbilityScore({ label, score }: { label: string; score: number }) {
+/** Ability modifier from score. */
+function abilityModNum(score: number): number {
+  return Math.floor((score - 10) / 2);
+}
+
+function signedStr(n: number): string {
+  return n >= 0 ? `+${n}` : `${n}`;
+}
+
+/** Calculate save modifier; returns signed string. */
+export function calculateSave(
+  abilityScore: number,
+  hasProficiency: boolean,
+  pb: number,
+): string {
+  const mod = abilityModNum(abilityScore);
+  return signedStr(hasProficiency ? mod + pb : mod);
+}
+
+// XP table by CR string
+const XP_BY_CR: Record<string, number> = {
+  "0": 10,
+  "1/8": 25,
+  "1/4": 50,
+  "1/2": 100,
+  "1": 200,
+  "2": 450,
+  "3": 700,
+  "4": 1100,
+  "5": 1800,
+  "6": 2300,
+  "7": 2900,
+  "8": 3900,
+  "9": 5000,
+  "10": 5900,
+  "11": 7200,
+  "12": 8400,
+  "13": 10000,
+  "14": 11500,
+  "15": 13000,
+  "16": 15000,
+  "17": 18000,
+  "18": 20000,
+  "19": 22000,
+  "20": 25000,
+  "21": 33000,
+  "22": 41000,
+  "23": 50000,
+  "24": 62000,
+  "25": 75000,
+  "26": 90000,
+  "27": 105000,
+  "28": 120000,
+  "29": 135000,
+  "30": 155000,
+};
+
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+function CardDivider() {
+  return <hr className="card-divider" />;
+}
+
+function PropLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center">
-      <span className="text-muted-foreground text-xs uppercase font-medium">{label}</span>
-      <span className="text-foreground font-mono text-sm">{score}</span>
-      <span className="text-muted-foreground font-mono text-xs">({abilityMod(score)})</span>
-    </div>
-  );
-}
-
-function Divider() {
-  return <hr className="border-t border-border my-2" />;
-}
-
-function PropRow({ label, value }: { label: string; value: string }) {
-  return (
-    <p className="text-sm">
-      <span className="text-foreground font-medium">{label} </span>
-      <span className="text-muted-foreground">{value}</span>
+    <p className="prop-line">
+      <span className="prop-label">{label} </span>
+      <span className="prop-value">{value}</span>
     </p>
   );
 }
 
-export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
+const ABILITY_KEYS = ["str", "dex", "con", "int", "wis", "cha"] as const;
+const ABILITY_LABELS = ["STR", "DEX", "CON", "INT", "WIS", "CHA"] as const;
+
+function AbilityTable({
+  monster,
+  pb,
+}: {
+  monster: SrdMonster;
+  pb: number;
+}) {
+  const scores = ABILITY_KEYS.map((k) => monster[k] as number | null | undefined);
+  if (scores.some((s) => s == null)) return null;
+
+  // Build saving throw proficiency set (lowercase keys from monster.saving_throws)
+  const saveProfSet = new Set<string>();
+  if (monster.saving_throws) {
+    for (const key of Object.keys(monster.saving_throws)) {
+      saveProfSet.add(key.toLowerCase());
+    }
+  }
+
+  return (
+    <div className="ability-table" role="table" aria-label="Ability scores">
+      {/* Header row */}
+      {ABILITY_LABELS.map((label) => (
+        <div key={label} className="ability-header">{label}</div>
+      ))}
+      {/* Score row */}
+      {ABILITY_KEYS.map((key, i) => (
+        <div key={`score-${key}`} className="ability-score ability-row-even">
+          {scores[i]}
+        </div>
+      ))}
+      {/* Mod row */}
+      {ABILITY_KEYS.map((key, i) => (
+        <div key={`mod-${key}`} className="ability-mod">
+          {signedStr(abilityModNum(scores[i]!))}
+        </div>
+      ))}
+      {/* Save row */}
+      {ABILITY_KEYS.map((key, i) => {
+        const hasProf = saveProfSet.has(key);
+        const saveStr = calculateSave(scores[i]!, hasProf, pb);
+        return (
+          <div
+            key={`save-${key}`}
+            className={hasProf ? "ability-save-prof ability-row-even" : "ability-save ability-row-even"}
+          >
+            {saveStr}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SectionBlock({
+  title,
+  items,
+  renderDesc,
+}: {
+  title: string;
+  items: { name: string; desc: string }[];
+  renderDesc: (desc: string) => React.ReactNode;
+}) {
+  if (!items || items.length === 0) return null;
+  return (
+    <>
+      <CardDivider />
+      <h4 className="section-header">{title}</h4>
+      <div>
+        {items.map((item) => (
+          <p key={item.name} className="trait-block">
+            <span className="trait-name">{item.name}. </span>
+            <span className="trait-desc">{renderDesc(item.desc)}</span>
+          </p>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main Component
+// ---------------------------------------------------------------------------
+
+export interface MonsterStatBlockProps {
+  monster: SrdMonster;
+  variant?: "inline" | "card";
+  onPin?: () => void;
+  onMinimize?: () => void;
+  onClose?: () => void;
+  /** Override description renderer — used by LinkedText integration */
+  renderDesc?: (text: string, rulesetVersion: RulesetVersion) => React.ReactNode;
+}
+
+export function MonsterStatBlock({
+  monster,
+  variant = "inline",
+  onPin,
+  onMinimize,
+  onClose,
+  renderDesc: renderDescProp,
+}: MonsterStatBlockProps) {
+  const pb = calculateProficiencyBonus(monster.cr);
+  const xp = monster.xp ?? XP_BY_CR[monster.cr] ?? null;
+  const dexMod = monster.dex !== undefined ? abilityModNum(monster.dex) : null;
+
   const speedStr = monster.speed
     ? Object.entries(monster.speed)
         .map(([k, v]) => (k === "walk" ? String(v) : `${k} ${v}`))
-        .join(", ")
-    : null;
-
-  const savingThrowsStr = monster.saving_throws
-    ? Object.entries(monster.saving_throws)
-        .map(([k, v]) => `${k.toUpperCase()} ${v >= 0 ? "+" : ""}${v}`)
         .join(", ")
     : null;
 
@@ -54,158 +219,135 @@ export function MonsterStatBlock({ monster }: MonsterStatBlockProps) {
         .join(", ")
     : null;
 
+  // CR line: "CR {cr} (XP {xp}; PB +{pb})"
+  const resolvedXp = monster.xp ?? XP_BY_CR[monster.cr] ?? null;
+  let crDisplay: string;
+  if (resolvedXp !== null) {
+    crDisplay = `${monster.cr} (XP ${resolvedXp.toLocaleString()}; PB +${pb})`;
+  } else {
+    crDisplay = `${monster.cr} (PB +${pb})`;
+  }
+
+  // Description renderer — default uses LinkedText for spell/condition cross-references
+  const renderDesc = renderDescProp
+    ? (text: string) => renderDescProp(text, monster.ruleset_version)
+    : (text: string) => (
+        <LinkedText text={text} rulesetVersion={monster.ruleset_version} />
+      );
+
+  const isCard = variant === "card";
+  const outerClassName = isCard
+    ? "stat-card-5e"
+    : "stat-card-5e stat-card-5e-inline";
+
   return (
     <section
-      className="bg-card border border-border rounded-md p-4 text-sm"
+      className={outerClassName}
       aria-label={`${monster.name} stat block`}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2 mb-1">
-        <div>
-          <h3 className="text-foreground font-semibold text-base">{monster.name}</h3>
-          <p className="text-muted-foreground text-xs">
-            {monster.size} {monster.type}
-            {monster.alignment ? `, ${monster.alignment}` : ""}
-          </p>
+      {/* Card toolbar (only for card variant) */}
+      {isCard && (
+        <div className="card-toolbar">
+          {onPin && (
+            <button type="button" onClick={onPin} aria-label="Pin card" title="Pin">
+              📌
+            </button>
+          )}
+          {onMinimize && (
+            <button type="button" onClick={onMinimize} aria-label="Minimize card" title="Minimize">
+              −
+            </button>
+          )}
+          {onClose && (
+            <button type="button" onClick={onClose} aria-label="Close card" title="Close">
+              ×
+            </button>
+          )}
         </div>
-        <VersionBadge version={monster.ruleset_version} />
+      )}
+
+      {/* Header */}
+      <div className="card-name">{monster.name}</div>
+      <div className="card-subtitle">
+        {monster.size} {monster.type}
+        {monster.alignment ? `, ${monster.alignment}` : ""}
       </div>
 
-      <Divider />
+      <CardDivider />
 
       {/* Core stats */}
-      <div className="space-y-1">
-        <PropRow
-          label="Armor Class"
-          value={String(monster.armor_class)}
+      <PropLine label="AC" value={String(monster.armor_class)} />
+      <PropLine
+        label="HP"
+        value={
+          monster.hp_formula
+            ? `${monster.hit_points} (${monster.hp_formula})`
+            : String(monster.hit_points)
+        }
+      />
+      {dexMod !== null && (
+        <PropLine
+          label="Initiative"
+          value={`${signedStr(dexMod)} (${10 + dexMod})`}
         />
-        <PropRow
-          label="Hit Points"
-          value={
-            monster.hp_formula
-              ? `${monster.hit_points} (${monster.hp_formula})`
-              : String(monster.hit_points)
-          }
-        />
-        {speedStr && <PropRow label="Speed" value={speedStr} />}
-      </div>
+      )}
+      {speedStr && <PropLine label="Speed" value={speedStr} />}
 
-      {/* Ability scores — only when all six values are present */}
-      {monster.str !== undefined &&
-        monster.dex !== undefined &&
-        monster.con !== undefined &&
-        monster.int !== undefined &&
-        monster.wis !== undefined &&
-        monster.cha !== undefined && (
+      {/* Ability scores table — divider only when table will render */}
+      {ABILITY_KEYS.every((k) => monster[k] != null) && (
         <>
-          <Divider />
-          <div className="grid grid-cols-6 gap-1 py-1" role="table" aria-label="Ability scores">
-            <AbilityScore label="STR" score={monster.str} />
-            <AbilityScore label="DEX" score={monster.dex} />
-            <AbilityScore label="CON" score={monster.con} />
-            <AbilityScore label="INT" score={monster.int} />
-            <AbilityScore label="WIS" score={monster.wis} />
-            <AbilityScore label="CHA" score={monster.cha} />
-          </div>
+          <CardDivider />
+          <AbilityTable monster={monster} pb={pb} />
         </>
       )}
 
       {/* Properties */}
-      {(savingThrowsStr || skillsStr || monster.damage_vulnerabilities ||
-        monster.damage_resistances || monster.damage_immunities ||
-        monster.condition_immunities || monster.senses || monster.languages) && (
-        <Divider />
+      <CardDivider />
+      {skillsStr && <PropLine label="Skills" value={skillsStr} />}
+      {monster.damage_vulnerabilities && (
+        <PropLine label="Damage Vulnerabilities" value={monster.damage_vulnerabilities} />
       )}
-      <div className="space-y-1">
-        {savingThrowsStr && (
-          <PropRow label="Saving Throws" value={savingThrowsStr} />
-        )}
-        {skillsStr && <PropRow label="Skills" value={skillsStr} />}
-        {monster.damage_vulnerabilities && (
-          <PropRow label="Damage Vulnerabilities" value={monster.damage_vulnerabilities} />
-        )}
-        {monster.damage_resistances && (
-          <PropRow label="Damage Resistances" value={monster.damage_resistances} />
-        )}
-        {monster.damage_immunities && (
-          <PropRow label="Damage Immunities" value={monster.damage_immunities} />
-        )}
-        {monster.condition_immunities && (
-          <PropRow label="Condition Immunities" value={monster.condition_immunities} />
-        )}
-        {monster.senses && <PropRow label="Senses" value={monster.senses} />}
-        {monster.languages && (
-          <PropRow label="Languages" value={monster.languages} />
-        )}
-        <PropRow
-          label="Challenge"
-          value={monster.xp ? `${monster.cr} (${monster.xp.toLocaleString()} XP)` : monster.cr}
-        />
-      </div>
-
-      {/* Special Abilities */}
-      {monster.special_abilities && monster.special_abilities.length > 0 && (
-        <>
-          <Divider />
-          <div className="space-y-2">
-            {monster.special_abilities.map((ability, i) => (
-              <p key={i} className="text-foreground/80 text-sm">
-                <span className="font-semibold text-foreground">{ability.name}. </span>
-                {ability.desc}
-              </p>
-            ))}
-          </div>
-        </>
+      {monster.damage_resistances && (
+        <PropLine label="Damage Resistances" value={monster.damage_resistances} />
       )}
-
-      {/* Actions */}
-      {monster.actions && monster.actions.length > 0 && (
-        <>
-          <Divider />
-          <h4 className="text-foreground font-semibold text-sm uppercase tracking-wide mb-2">
-            Actions
-          </h4>
-          <div className="space-y-2">
-            {monster.actions.map((action, i) => (
-              <p key={i} className="text-foreground/80 text-sm">
-                <span className="font-semibold text-foreground">{action.name}. </span>
-                {action.desc}
-              </p>
-            ))}
-          </div>
-        </>
+      {monster.damage_immunities && (
+        <PropLine label="Damage Immunities" value={monster.damage_immunities} />
       )}
-
-      {/* Reactions */}
-      {monster.reactions && monster.reactions.length > 0 && (
-        <>
-          <Divider />
-          <h4 className="text-foreground font-semibold text-sm uppercase tracking-wide mb-2">
-            Reactions
-          </h4>
-          <div className="space-y-2">
-            {monster.reactions.map((reaction, i) => (
-              <p key={i} className="text-foreground/80 text-sm">
-                <span className="font-semibold text-foreground">{reaction.name}. </span>
-                {reaction.desc}
-              </p>
-            ))}
-          </div>
-        </>
+      {monster.condition_immunities && (
+        <PropLine label="Condition Immunities" value={monster.condition_immunities} />
       )}
+      {monster.senses && <PropLine label="Senses" value={monster.senses} />}
+      {monster.languages && <PropLine label="Languages" value={monster.languages} />}
+      <PropLine label="CR" value={crDisplay} />
 
-      {/* Legendary Actions */}
+      {/* Sections */}
+      <SectionBlock
+        title="Traits"
+        items={monster.special_abilities ?? []}
+        renderDesc={renderDesc}
+      />
+      <SectionBlock
+        title="Actions"
+        items={monster.actions ?? []}
+        renderDesc={renderDesc}
+      />
+      <SectionBlock
+        title="Reactions"
+        items={monster.reactions ?? []}
+        renderDesc={renderDesc}
+      />
       {monster.legendary_actions && monster.legendary_actions.length > 0 && (
         <>
-          <Divider />
-          <h4 className="text-foreground font-semibold text-sm uppercase tracking-wide mb-2">
-            Legendary Actions
-          </h4>
-          <div className="space-y-2">
-            {monster.legendary_actions.map((la, i) => (
-              <p key={i} className="text-foreground/80 text-sm">
-                <span className="font-semibold text-foreground">{la.name}. </span>
-                {la.desc}
+          <CardDivider />
+          <h4 className="section-header">Legendary Actions</h4>
+          <p className="trait-desc" style={{ marginBottom: "0.5em" }}>
+            {`The ${monster.name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The ${monster.name} regains spent legendary actions at the start of its turn.`}
+          </p>
+          <div>
+            {monster.legendary_actions.map((item) => (
+              <p key={item.name} className="trait-block">
+                <span className="trait-name">{item.name}. </span>
+                <span className="trait-desc">{renderDesc(item.desc)}</span>
               </p>
             ))}
           </div>

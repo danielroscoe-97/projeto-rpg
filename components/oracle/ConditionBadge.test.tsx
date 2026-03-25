@@ -5,37 +5,16 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConditionBadge } from "./ConditionBadge";
-import * as srdSearch from "@/lib/srd/srd-search";
-import type { SrdCondition } from "@/lib/srd/srd-loader";
 
-jest.mock("@/lib/srd/srd-search", () => ({
-  findCondition: jest.fn(),
+// Mock the pinned cards store
+const mockPinCard = jest.fn();
+jest.mock("@/lib/stores/pinned-cards-store", () => ({
+  usePinnedCardsStore: (selector: (s: { pinCard: typeof mockPinCard }) => unknown) =>
+    selector({ pinCard: mockPinCard }),
 }));
-
-jest.mock("@/components/oracle/ConditionRulesModal", () => ({
-  ConditionRulesModal: ({
-    condition,
-    open,
-  }: {
-    condition: SrdCondition | null;
-    open: boolean;
-  }) =>
-    open && condition ? (
-      <div data-testid="condition-modal-mock">{condition.name} rules</div>
-    ) : null,
-}));
-
-const STUNNED_DATA: SrdCondition = {
-  id: "stunned",
-  name: "Stunned",
-  description: "A stunned creature is incapacitated...",
-};
-
-const mockFindCondition = srdSearch.findCondition as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockFindCondition.mockReturnValue(STUNNED_DATA);
 });
 
 describe("ConditionBadge", () => {
@@ -46,29 +25,34 @@ describe("ConditionBadge", () => {
 
   it("has correct aria-label", () => {
     render(<ConditionBadge condition="Stunned" />);
-    expect(
-      screen.getByLabelText("View Stunned rules")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("View Stunned rules")).toBeInTheDocument();
   });
 
-  it("opens condition rules modal on click", async () => {
+  it("calls pinCard with condition id on click (defaults to 2014)", async () => {
     const user = userEvent.setup();
     render(<ConditionBadge condition="Stunned" />);
 
     await user.click(screen.getByText("Stunned"));
 
-    expect(screen.getByTestId("condition-modal-mock")).toBeInTheDocument();
-    expect(screen.getByText("Stunned rules")).toBeInTheDocument();
+    expect(mockPinCard).toHaveBeenCalledWith("condition", "stunned", "2014");
   });
 
-  it("does NOT open modal when findCondition returns undefined", async () => {
-    mockFindCondition.mockReturnValue(undefined);
+  it("calls pinCard with provided rulesetVersion", async () => {
     const user = userEvent.setup();
-    render(<ConditionBadge condition="Unknown" />);
+    render(<ConditionBadge condition="Stunned" rulesetVersion="2024" />);
 
-    await user.click(screen.getByText("Unknown"));
+    await user.click(screen.getByText("Stunned"));
 
-    expect(screen.queryByTestId("condition-modal-mock")).not.toBeInTheDocument();
+    expect(mockPinCard).toHaveBeenCalledWith("condition", "stunned", "2024");
+  });
+
+  it("lowercases condition name as entityId", async () => {
+    const user = userEvent.setup();
+    render(<ConditionBadge condition="Blinded" />);
+
+    await user.click(screen.getByText("Blinded"));
+
+    expect(mockPinCard).toHaveBeenCalledWith("condition", "blinded", "2014");
   });
 
   it("uses correct test ID", () => {

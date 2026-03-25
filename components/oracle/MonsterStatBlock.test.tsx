@@ -6,6 +6,33 @@ import { render, screen } from "@testing-library/react";
 import { MonsterStatBlock } from "./MonsterStatBlock";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 
+// ---------------------------------------------------------------------------
+// Mock LinkedText so MonsterStatBlock tests stay unit-level
+// (LinkedText has its own test suite)
+// ---------------------------------------------------------------------------
+jest.mock("./LinkedText", () => ({
+  LinkedText: ({ text }: { text: string }) => <span>{text}</span>,
+}));
+
+// ---------------------------------------------------------------------------
+// Mock srd-search singletons (empty by default — no links rendered)
+// ---------------------------------------------------------------------------
+jest.mock("@/lib/srd/srd-search", () => ({
+  getAllSpells: jest.fn(() => []),
+  getAllConditions: jest.fn(() => []),
+}));
+
+// ---------------------------------------------------------------------------
+// Mock pinned-cards-store
+// ---------------------------------------------------------------------------
+jest.mock("@/lib/stores/pinned-cards-store", () => ({
+  usePinnedCardsStore: jest.fn(() => jest.fn()),
+}));
+
+// ---------------------------------------------------------------------------
+// Fixtures
+// ---------------------------------------------------------------------------
+
 const GOBLIN: SrdMonster = {
   id: "goblin",
   name: "Goblin",
@@ -84,6 +111,10 @@ const DRAGON: SrdMonster = {
   ],
 };
 
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
 describe("MonsterStatBlock", () => {
   it("renders monster name", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
@@ -98,11 +129,6 @@ describe("MonsterStatBlock", () => {
   it("renders alignment when present", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
     expect(screen.getByText(/neutral evil/)).toBeInTheDocument();
-  });
-
-  it("renders version badge", () => {
-    render(<MonsterStatBlock monster={GOBLIN} />);
-    expect(screen.getByText("2014")).toBeInTheDocument();
   });
 
   it("renders HP with formula", () => {
@@ -121,6 +147,12 @@ describe("MonsterStatBlock", () => {
     expect(screen.getByText("15")).toBeInTheDocument();
   });
 
+  it("renders initiative line", () => {
+    // Goblin DEX=14 → mod=+2, 10+2=12
+    render(<MonsterStatBlock monster={GOBLIN} />);
+    expect(screen.getByText(/\+2 \(12\)/)).toBeInTheDocument();
+  });
+
   it("renders speed", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
     expect(screen.getByText("30 ft.")).toBeInTheDocument();
@@ -128,12 +160,14 @@ describe("MonsterStatBlock", () => {
 
   it("renders ability scores when present", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
-    // STR/WIS/CHA are all 8 → modifier -1 (multiple occurrences expected)
+    // STR/WIS/CHA are all 8 — scores appear
     expect(screen.getAllByText("8").length).toBeGreaterThanOrEqual(3);
-    expect(screen.getAllByText("(-1)").length).toBeGreaterThanOrEqual(1);
-    // DEX is 14 → modifier +2
+    // DEX is 14 — score appears
     expect(screen.getByText("14")).toBeInTheDocument();
-    expect(screen.getByText("(+2)")).toBeInTheDocument();
+    // DEX mod is +2 (ability table uses signed strings without parens)
+    expect(screen.getAllByText("+2").length).toBeGreaterThanOrEqual(1);
+    // STR mod is -1
+    expect(screen.getAllByText("-1").length).toBeGreaterThanOrEqual(1);
   });
 
   it("does NOT render ability score section when str is not provided", () => {
@@ -142,9 +176,13 @@ describe("MonsterStatBlock", () => {
     expect(screen.queryByRole("table", { name: "Ability scores" })).not.toBeInTheDocument();
   });
 
-  it("renders saving throws when present", () => {
+  it("renders saving throw proficiency in ability table for dragon", () => {
     render(<MonsterStatBlock monster={DRAGON} />);
-    expect(screen.getByText(/Saving Throws/)).toBeInTheDocument();
+    // Dragon CON=29 → mod=+9, PB for CR24 = 7 → save = +16
+    // Dragon DEX=10 → mod=+0, PB=7, but dex save is listed at 7 → +7
+    // The table should contain proficient save values
+    const allPlusSevens = screen.getAllByText("+7");
+    expect(allPlusSevens.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders skills when present", () => {
@@ -169,20 +207,23 @@ describe("MonsterStatBlock", () => {
     expect(screen.getByText(/Common, Goblin/)).toBeInTheDocument();
   });
 
-  it("renders CR and XP", () => {
+  it("renders CR with XP and PB in 5e.tools format", () => {
+    // Goblin CR=1/4 → PB=2, XP=50
     render(<MonsterStatBlock monster={GOBLIN} />);
-    expect(screen.getByText(/1\/4 \(50 XP\)/)).toBeInTheDocument();
+    expect(screen.getByText(/1\/4 \(XP 50; PB \+2\)/)).toBeInTheDocument();
   });
 
-  it("renders special abilities when present", () => {
+  it("renders special abilities section with Traits header", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
-    expect(screen.getByText("Nimble Escape.")).toBeInTheDocument();
+    expect(screen.getByText("Traits")).toBeInTheDocument();
+    // trait-name span has trailing ". "
+    expect(screen.getByText(/Nimble Escape/)).toBeInTheDocument();
   });
 
   it("renders actions section when present", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
     expect(screen.getByText("Actions")).toBeInTheDocument();
-    expect(screen.getByText("Scimitar.")).toBeInTheDocument();
+    expect(screen.getByText(/Scimitar/)).toBeInTheDocument();
   });
 
   it("does NOT render legendary actions section when legendary_actions is null", () => {
@@ -193,7 +234,7 @@ describe("MonsterStatBlock", () => {
   it("renders legendary actions when present", () => {
     render(<MonsterStatBlock monster={DRAGON} />);
     expect(screen.getByText("Legendary Actions")).toBeInTheDocument();
-    expect(screen.getByText("Detect.")).toBeInTheDocument();
+    expect(screen.getByText(/Detect/)).toBeInTheDocument();
   });
 
   it("renders reactions when present", () => {
@@ -204,20 +245,83 @@ describe("MonsterStatBlock", () => {
   it("has correct ARIA label on section", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
     expect(
-      screen.getByRole("region", { name: "Goblin stat block" })
+      screen.getByRole("region", { name: "Goblin stat block" }),
     ).toBeInTheDocument();
   });
 
   it("calculates ability modifiers correctly: +0 for score 10", () => {
-    const monster: SrdMonster = { ...GOBLIN, str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+    const monster: SrdMonster = {
+      ...GOBLIN,
+      str: 10,
+      dex: 10,
+      con: 10,
+      int: 10,
+      wis: 10,
+      cha: 10,
+    };
     render(<MonsterStatBlock monster={monster} />);
-    const zeroMods = screen.getAllByText("(+0)");
-    expect(zeroMods.length).toBe(6);
+    // 6 mod cells (+0) + 6 save cells (+0) = 12 occurrences total
+    const zeroMods = screen.getAllByText("+0");
+    expect(zeroMods.length).toBeGreaterThanOrEqual(6);
   });
 
   it("calculates positive modifier: +5 for score 20", () => {
     const monster: SrdMonster = { ...GOBLIN, str: 20 };
     render(<MonsterStatBlock monster={monster} />);
-    expect(screen.getByText("(+5)")).toBeInTheDocument();
+    // Mod cell shows +5 (no parens in new format)
+    expect(screen.getAllByText("+5").length).toBeGreaterThanOrEqual(1);
+  });
+
+  describe("variant prop", () => {
+    it("renders inline variant by default (no toolbar)", () => {
+      render(<MonsterStatBlock monster={GOBLIN} />);
+      // No toolbar buttons unless onPin/onMinimize/onClose provided
+      expect(screen.queryByRole("button", { name: "Pin card" })).not.toBeInTheDocument();
+    });
+
+    it("renders card variant toolbar buttons when callbacks are provided", () => {
+      const onPin = jest.fn();
+      const onMinimize = jest.fn();
+      const onClose = jest.fn();
+      render(
+        <MonsterStatBlock
+          monster={GOBLIN}
+          variant="card"
+          onPin={onPin}
+          onMinimize={onMinimize}
+          onClose={onClose}
+        />,
+      );
+      expect(screen.getByRole("button", { name: "Pin card" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Minimize card" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Close card" })).toBeInTheDocument();
+    });
+
+    it("inline variant applies stat-card-5e-inline CSS class", () => {
+      const { container } = render(<MonsterStatBlock monster={GOBLIN} />);
+      const section = container.querySelector("section");
+      expect(section?.className).toContain("stat-card-5e-inline");
+    });
+
+    it("card variant does NOT apply stat-card-5e-inline CSS class", () => {
+      const { container } = render(
+        <MonsterStatBlock monster={GOBLIN} variant="card" />,
+      );
+      const section = container.querySelector("section");
+      expect(section?.className).not.toContain("stat-card-5e-inline");
+    });
+  });
+
+  describe("proficiency bonus calculation", () => {
+    it("PB is 2 for CR 1/4 (Goblin)", () => {
+      render(<MonsterStatBlock monster={GOBLIN} />);
+      expect(screen.getByText(/PB \+2/)).toBeInTheDocument();
+    });
+
+    it("PB is 7 for CR 24 (Ancient Red Dragon)", () => {
+      // Math.max(2, floor((24-1)/4) + 2) = Math.max(2, floor(5.75) + 2) = Math.max(2, 7) = 7
+      render(<MonsterStatBlock monster={DRAGON} />);
+      expect(screen.getByText(/PB \+7/)).toBeInTheDocument();
+    });
   });
 });

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { LogoutButton } from "@/components/logout-button";
 import { SrdInitializer } from "@/components/srd/SrdInitializer";
+import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 
 export default async function AppLayout({
   children,
@@ -40,6 +41,7 @@ export default async function AppLayout({
         rightSlot={<LogoutButton />}
       />
       <SrdInitializer />
+      <FloatingCardContainer />
       <main id="main-content" className="flex-1 pt-[72px] p-6">
         {children}
       </main>

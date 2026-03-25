@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { searchSpells } from "@/lib/srd/srd-search";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -17,6 +18,7 @@ interface SpellSearchProps {
 
 export function SpellSearch({ defaultVersion }: SpellSearchProps) {
   const t = useTranslations("oracle");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SrdSpell[]>([]);
   const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
@@ -69,12 +71,12 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
             return (
               <li
                 key={rowKey}
-                className="bg-card border border-border rounded-md overflow-hidden"
+                className="bg-card border border-border rounded-md overflow-hidden flex items-center"
               >
                 <button
                   type="button"
                   onClick={() => setSelectedSpell(spell)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:text-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
+                  className="flex-1 flex items-center gap-2 px-3 py-2 text-left hover:text-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
                   aria-label={t("spell_view_aria", { name: spell.name })}
                   data-testid={`spell-row-${spell.id}`}
                 >
@@ -88,6 +90,16 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
                     {spell.school}
                   </span>
                   <VersionBadge version={spell.ruleset_version} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => pinCard("spell", spell.id, spell.ruleset_version)}
+                  className="px-2 py-1 text-muted-foreground hover:text-foreground transition-colors shrink-0 min-h-[44px] min-w-[36px] flex items-center justify-center"
+                  aria-label={`Pin ${spell.name} card`}
+                  data-testid={`pin-spell-${spell.id}`}
+                  title="Pin spell card"
+                >
+                  📌
                 </button>
               </li>
             );
@@ -110,6 +122,14 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
         onOpenChange={(open) => {
           if (!open) setSelectedSpell(null);
         }}
+        onPin={
+          selectedSpell
+            ? () => {
+                pinCard("spell", selectedSpell.id, selectedSpell.ruleset_version);
+                setSelectedSpell(null);
+              }
+            : undefined
+        }
       />
     </div>
   );

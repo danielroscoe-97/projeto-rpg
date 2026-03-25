@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { findCondition } from "@/lib/srd/srd-search";
-import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import type { RulesetVersion } from "@/lib/types/database";
 
 /** Condition badge color mapping (UX-DR5) */
 const CONDITION_COLORS: Record<string, string> = {
@@ -23,32 +22,23 @@ const CONDITION_COLORS: Record<string, string> = {
 
 interface ConditionBadgeProps {
   condition: string;
+  rulesetVersion?: RulesetVersion;
 }
 
-export function ConditionBadge({ condition }: ConditionBadgeProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function ConditionBadge({ condition, rulesetVersion = "2014" }: ConditionBadgeProps) {
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const colorClass = CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]";
-  const conditionData = findCondition(condition);
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className={`px-2 py-0.5 rounded-full text-xs text-white font-medium ${colorClass} hover:opacity-80 transition-opacity cursor-pointer`}
-        aria-label={`View ${condition} rules`}
-        data-testid={`condition-badge-${condition.toLowerCase()}`}
-      >
-        {condition}
-      </button>
-      {conditionData && (
-        <ConditionRulesModal
-          condition={conditionData}
-          open={isOpen}
-          onOpenChange={setIsOpen}
-        />
-      )}
-    </>
+    <button
+      type="button"
+      onClick={() => pinCard("condition", condition.toLowerCase(), rulesetVersion)}
+      className={`px-2 py-0.5 rounded-full text-xs text-white font-medium ${colorClass} hover:opacity-80 transition-opacity cursor-pointer`}
+      aria-label={`View ${condition} rules`}
+      data-testid={`condition-badge-${condition.toLowerCase()}`}
+    >
+      {condition}
+    </button>
   );
 }
 

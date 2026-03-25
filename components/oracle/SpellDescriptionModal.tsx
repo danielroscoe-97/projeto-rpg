@@ -13,6 +13,7 @@ interface SpellDescriptionModalProps {
   spell: SrdSpell | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onPin?: () => void;
 }
 
 function spellLevelLabel(level: number, school: string): string {
@@ -26,6 +27,7 @@ export function SpellDescriptionModal({
   spell,
   open,
   onOpenChange,
+  onPin,
 }: SpellDescriptionModalProps) {
   if (!spell) return null;
 
@@ -40,6 +42,17 @@ export function SpellDescriptionModal({
           <div className="flex items-center gap-2">
             <DialogTitle>{spell.name}</DialogTitle>
             <VersionBadge version={spell.ruleset_version} />
+            {onPin && (
+              <button
+                type="button"
+                onClick={onPin}
+                className="ml-auto px-2 py-0.5 text-xs text-muted-foreground border border-border rounded hover:text-foreground hover:border-gold/40 transition-colors"
+                aria-label={`Pin ${spell.name} card`}
+                data-testid="spell-modal-pin-btn"
+              >
+                📌 Pin
+              </button>
+            )}
           </div>
           <p className="text-sm text-white/60 italic" data-testid="spell-level-school">
             {spellLevelLabel(spell.level, spell.school)}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { searchMonsters } from "@/lib/srd/srd-search";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -21,6 +22,7 @@ export function MonsterSearch({
   onAddToCombat,
 }: MonsterSearchProps) {
   const t = useTranslations("oracle");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SrdMonster[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -114,6 +116,18 @@ export function MonsterSearch({
                     >
                       {isExpanded ? "▲" : "▼"}
                     </span>
+                  </button>
+
+                  {/* Pin button — always available for monsters */}
+                  <button
+                    type="button"
+                    onClick={() => pinCard("monster", monster.id, monster.ruleset_version)}
+                    className="px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:text-foreground hover:border-gold/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label={`Pin ${monster.name} card`}
+                    data-testid={`pin-monster-${monster.id}`}
+                    title="Pin stat block"
+                  >
+                    📌
                   </button>
 
                   {onAddToCombat && (

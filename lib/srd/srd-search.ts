@@ -95,6 +95,11 @@ export function getMonsterById(
   return monsterMap.get(`${id}:${version}`);
 }
 
+/** Returns all loaded spells (both versions). Used by LinkedText for cross-referencing. */
+export function getAllSpells(): SrdSpell[] {
+  return Array.from(spellMap.values());
+}
+
 /** Resets singleton indexes — for testing only. */
 export function resetSrdIndexes(): void {
   monsterIndex = null;

@@ -1,0 +1,83 @@
+sprint:
+  name: "Freemium — Combat Tracker"
+  epic: "Epic 10"
+  created: "2026-03-25"
+  total_sp: 22
+
+stories:
+  - id: "10.2"
+    title: "Guest route /try shell"
+    priority: P0
+    estimate: 3
+    status: todo
+    phase: Foundation
+    blocker_for: [10.3]
+
+  - id: "10.3"
+    title: "Ephemeral guest Zustand store"
+    priority: P0
+    estimate: 5
+    status: todo
+    phase: Foundation
+    depends_on: [10.2]
+    blocker_for: [10.4, 10.6]
+
+  - id: "10.6"
+    title: "Full combat flow parity in guest mode"
+    priority: P0
+    estimate: 5
+    status: todo
+    phase: Core
+    depends_on: [10.3]
+    blocker_for: [10.7, 10.8]
+
+  - id: "10.4"
+    title: "Pre-populated sample encounter"
+    priority: P1
+    estimate: 2
+    status: todo
+    phase: UX
+    depends_on: [10.3]
+
+  - id: "10.5"
+    title: "Guest mode UI banner"
+    priority: P1
+    estimate: 1
+    status: todo
+    phase: UX
+    depends_on: [10.2]
+
+  - id: "10.7"
+    title: "Oracle access validation in guest mode"
+    priority: P1
+    estimate: 1
+    status: todo
+    phase: Value
+    depends_on: [10.6]
+
+  - id: "10.8"
+    title: "Upsell modal — save intercept"
+    priority: P1
+    estimate: 3
+    status: todo
+    phase: Conversion
+    depends_on: [10.6]
+
+  - id: "10.1"
+    title: "LP 'Testar Gratis' CTA"
+    priority: P1
+    estimate: 2
+    status: todo
+    phase: Entry
+    depends_on: []
+    note: "Independent — can ship in parallel or last"
+
+implementation_order:
+  - 10.2
+  - 10.3
+  - 10.6
+  - 10.4
+  - 10.5
+  - 10.7
+  - 10.8
+  - 10.1

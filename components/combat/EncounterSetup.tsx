@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
 import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { loadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { RulesetSelector, VersionBadge } from "@/components/session/RulesetSelector";
@@ -37,6 +38,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
 
 export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
   const t = useTranslations("combat");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const {
     combatants,
     addCombatant,
@@ -289,11 +291,14 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
             {srdResults.map((monster) => (
               <li
                 key={monster.id}
-                className="flex items-center justify-between px-3 py-1.5 hover:bg-white/[0.04] cursor-pointer"
-                onClick={() => handleSelectMonster(monster)}
+                className="flex items-center justify-between px-3 py-1.5 hover:bg-white/[0.04]"
                 data-testid={`srd-result-${monster.id}`}
               >
-                <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  className="flex-1 flex items-center gap-2 flex-wrap text-left cursor-pointer"
+                  onClick={() => handleSelectMonster(monster)}
+                >
                   <span className="text-foreground text-sm font-medium">
                     {monster.name}
                   </span>
@@ -301,7 +306,17 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
                   <span className="text-muted-foreground text-xs">
                     {t("monster_stats", { cr: monster.cr, hp: monster.hit_points, ac: monster.armor_class })}
                   </span>
-                </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => pinCard("monster", monster.id, monster.ruleset_version)}
+                  className="px-2 py-1 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                  aria-label={`Pin ${monster.name} stat block`}
+                  data-testid={`pin-srd-${monster.id}`}
+                  title="Pin stat block"
+                >
+                  📌
+                </button>
               </li>
             ))}
           </ul>

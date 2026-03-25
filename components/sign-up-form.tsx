@@ -47,11 +47,11 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/app/dashboard`,
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      router.push(`/auth/sign-up-success?email=${encodeURIComponent(email)}`);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : tc("error_generic"));
     } finally {

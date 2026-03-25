@@ -66,7 +66,14 @@
     "new_password_label": "Nova senha",
     "new_password_placeholder": "Nova senha",
     "save_password": "Salvar nova senha",
-    "save_password_saving": "Salvando..."
+    "save_password_saving": "Salvando...",
+    "signup_success_title": "Obrigado por se cadastrar!",
+    "signup_success_subtitle": "Verifique seu email para confirmar",
+    "signup_success_description": "Você se cadastrou com sucesso. Por favor, verifique seu email para confirmar sua conta antes de fazer login.",
+    "resend_email": "Reenviar email de confirmação",
+    "resending": "Enviando...",
+    "resend_success": "Email enviado!",
+    "resend_error": "Falha ao reenviar email. Tente novamente."
   },
   "dashboard": {
     "title": "Dashboard",

@@ -66,7 +66,14 @@
     "new_password_label": "New password",
     "new_password_placeholder": "New password",
     "save_password": "Save new password",
-    "save_password_saving": "Saving..."
+    "save_password_saving": "Saving...",
+    "signup_success_title": "Thank you for signing up!",
+    "signup_success_subtitle": "Check your email to confirm",
+    "signup_success_description": "You've successfully signed up. Please check your email to confirm your account before signing in.",
+    "resend_email": "Resend confirmation email",
+    "resending": "Sending...",
+    "resend_success": "Email sent!",
+    "resend_error": "Failed to resend email. Please try again."
   },
   "dashboard": {
     "title": "Dashboard",
