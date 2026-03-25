@@ -123,4 +123,44 @@
     0%, 100% { filter: drop-shadow(0 0 4px rgba(212, 168, 83, 0.2)); }
     50% { filter: drop-shadow(0 0 12px rgba(212, 168, 83, 0.5)); }
   }
+
+  /* Fade in up — for LP sections */
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.65s ease-out both;
+  }
+
+  /* Fade in — for headings */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out both;
+  }
+
+  /* Spin slow — for decorative SVG ring */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 12s linear infinite;
+  }
+
+  /* Draw dashed ring — for step circles */
+  @keyframes draw-dash {
+    from { stroke-dashoffset: 164; }
+    to   { stroke-dashoffset: 0; }
+  }
+
+  .animate-draw-dash {
+    animation: draw-dash 1.2s ease-out both;
+  }
 }

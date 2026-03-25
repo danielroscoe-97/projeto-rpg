@@ -1,7 +1,32 @@
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
+
+// ── Inline SVG icons ────────────────────────────────────────────────────────
+function D20Icon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <polygon points="32,4 60,20 60,44 32,60 4,44 4,20" stroke="currentColor" strokeWidth="2" fill="none" opacity="0.6"/>
+      <polygon points="32,4 60,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <polygon points="32,4 4,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <polygon points="60,20 60,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <polygon points="4,20 4,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <polygon points="60,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <polygon points="4,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+      <text x="32" y="37" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="700" fontFamily="monospace" opacity="0.8">20</text>
+    </svg>
+  );
+}
+
+function SparkleIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5L12 2Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+    </svg>
+  );
+}
 
 export const metadata = {
   title: "Taverna do Mestre — D&D 5e Combat Tracker",
@@ -98,37 +123,37 @@ function SectionDivider() {
 function FeaturesSection() {
   const features = [
     {
-      icon: "/art/icons/chibi-knight.png",
+      emoji: "⚔️",
       title: "Combat Tracker Completo",
       description:
         "Iniciativa automatica, HP com temp HP, 13 condicoes D&D, derrota, adicionar/remover combatentes no meio do combate.",
     },
     {
-      icon: "/art/icons/chibi-mage.png",
+      emoji: "📱",
       title: "Player View em Tempo Real",
       description:
         "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem friccao. Tudo atualiza ao vivo.",
     },
     {
-      icon: "/art/icons/chibi-archer.png",
+      emoji: "🔮",
       title: "Oraculo de Magias & Monstros",
       description:
         "Busca instantanea no SRD 5.1 e 5.2. Stat blocks inline, descricoes de magia em modal. Funciona offline.",
     },
     {
-      icon: "/art/icons/chibi-priest.png",
+      emoji: "📖",
       title: "2014 & 2024 Side-by-Side",
       description:
         "Troque a versao de regras por monstro, no meio do combate. Sem reiniciar o encontro.",
     },
     {
-      icon: "/art/icons/potion.png",
+      emoji: "💾",
       title: "Salvar & Retomar",
       description:
         "Fechou o navegador? Sem problema. O encontro persiste automaticamente. Retome de onde parou.",
     },
     {
-      icon: "/art/icons/shield.png",
+      emoji: "🌙",
       title: "Dark Mode RPG",
       description:
         "Interface escura com toques dourados. Feita para sessoes noturnas sem cansar a vista.",
@@ -136,9 +161,17 @@ function FeaturesSection() {
   ];
 
   return (
-    <section className="py-24 px-6" id="features">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
+    <section className="py-24 px-6 relative overflow-hidden" id="features">
+      {/* Decorative background SVG blobs */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-gold/[0.04] rounded-full blur-[120px]" />
+        <D20Icon className="absolute top-12 right-12 w-32 h-32 text-gold/[0.06] animate-spin-slow" />
+        <SparkleIcon className="absolute bottom-16 left-16 w-10 h-10 text-gold/[0.12] float-gentle" />
+        <SparkleIcon className="absolute top-24 left-1/3 w-6 h-6 text-gold/[0.08] float-gentle" style={{ animationDelay: "1.5s" }} />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto">
+        <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
             Tudo que o Mestre precisa
           </h2>
@@ -149,20 +182,16 @@ function FeaturesSection() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f) => (
+          {features.map((f, i) => (
             <div
               key={f.title}
-              className="bg-card border border-border rounded-xl p-6 hover:border-gold/30 hover:shadow-card transition-all duration-[250ms] group"
+              className="bg-card border border-border rounded-xl p-6 hover:border-gold/30 hover:shadow-card transition-all duration-[250ms] group animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.08}s` }}
             >
-              <Image
-                src={f.icon}
-                alt=""
-                width={56}
-                height={56}
-                className="pixel-art mb-4 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(212,168,83,0.5)] transition-transform duration-[250ms]"
-                aria-hidden="true"
-                unoptimized
-              />
+              {/* Emoji icon in styled container */}
+              <div className="w-14 h-14 mb-4 rounded-xl bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-2xl group-hover:border-gold/45 group-hover:from-gold/25 group-hover:scale-110 transition-all duration-[250ms]">
+                {f.emoji}
+              </div>
               <h3 className="font-display text-foreground text-lg mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
             </div>
@@ -173,63 +202,90 @@ function FeaturesSection() {
   );
 }
 
+function StepCircle({ number, delay }: { number: string; delay: number }) {
+  return (
+    <div className="shrink-0 relative w-14 h-14" style={{ animationDelay: `${delay}s` }}>
+      <svg width="56" height="56" viewBox="0 0 56 56" className="overflow-visible" aria-hidden="true">
+        {/* Solid ring */}
+        <circle cx="28" cy="28" r="26" fill="rgba(212,168,83,0.07)" stroke="rgba(212,168,83,0.25)" strokeWidth="1.5" />
+        {/* Animated dashed ring */}
+        <circle
+          cx="28" cy="28" r="26"
+          fill="none"
+          stroke="rgba(212,168,83,0.18)"
+          strokeWidth="1"
+          strokeDasharray="6 8"
+          className="animate-spin-slow"
+          style={{ transformOrigin: "28px 28px" }}
+        />
+        {/* Number */}
+        <text
+          x="28" y="35"
+          textAnchor="middle"
+          fill="#D4A853"
+          fontSize="15"
+          fontFamily="'Courier New', monospace"
+          fontWeight="700"
+        >
+          {number}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 function HowItWorksSection() {
   const steps = [
     {
       number: "01",
-      icon: "/art/icons/carta.png",
       title: "Crie o Encontro",
       description: "Busque monstros do SRD, adicione NPCs custom, carregue sua campanha salva.",
     },
     {
       number: "02",
-      icon: "/art/icons/poring.png",
       title: "Role Iniciativa",
       description: "Insira os valores, ordene automaticamente, resolva empates com drag-and-drop.",
     },
     {
       number: "03",
-      icon: "/art/icons/mora-bird.png",
       title: "Compartilhe o Link",
       description: "Gere o link da sessao. Jogadores abrem no celular — sem conta necessaria.",
     },
     {
       number: "04",
-      icon: "/art/icons/mvp-crown.png",
       title: "Mestre o Combate",
       description: "Avance turnos, aplique dano/cura, adicione condicoes. Jogadores veem tudo ao vivo.",
     },
   ];
 
   return (
-    <section className="py-24 px-6 bg-surface-secondary/50">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16">
+    <section className="py-24 px-6 bg-surface-secondary/50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cool/[0.04] rounded-full blur-[100px]" />
+        <SparkleIcon className="absolute bottom-12 right-1/4 w-8 h-8 text-gold/[0.10] float-gentle" style={{ animationDelay: "0.8s" }} />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto">
+        <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
             Como funciona
           </h2>
           <p className="text-muted-foreground">4 passos. 3 minutos. Zero setup.</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-8">
-          {steps.map((s) => (
-            <div key={s.number} className="flex gap-4 items-start">
-              <div className="shrink-0 flex flex-col items-center gap-1">
-                <Image
-                  src={s.icon}
-                  alt=""
-                  width={28}
-                  height={28}
-                  className="pixel-art opacity-70"
-                  aria-hidden="true"
-                  unoptimized
-                />
-                <span className="text-gold font-mono text-xs font-bold opacity-40">
-                  {s.number}
-                </span>
-              </div>
-              <div>
-                <h3 className="font-display text-foreground text-lg mb-1">{s.title}</h3>
+        <div className="grid sm:grid-cols-2 gap-x-12 gap-y-10">
+          {steps.map((s, i) => (
+            <div
+              key={s.number}
+              className="flex gap-5 group animate-fade-in-up"
+              style={{ animationDelay: `${0.1 + i * 0.12}s` }}
+            >
+              <StepCircle number={s.number} delay={i * 0.15} />
+              <div className="pt-2">
+                <h3 className="font-display text-foreground text-lg mb-1 group-hover:text-gold transition-colors duration-[250ms]">
+                  {s.title}
+                </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
               </div>
             </div>
