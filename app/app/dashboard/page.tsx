@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,6 +10,7 @@ import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 
 export default async function DashboardPage() {
+  const t = await getTranslations("dashboard");
   const supabase = await createClient();
   const {
     data: { user },
@@ -64,16 +66,16 @@ export default async function DashboardPage() {
           <Image src="/art/icons/pet-deviruchi.png" alt="" width={48} height={48} className="pixel-art opacity-20 float-gentle" unoptimized />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Manage your campaigns and start combat encounters.
+            {t("description")}
           </p>
         </div>
         <Link
           href="/app/session/new"
           className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg text-sm shadow-card hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] shrink-0"
         >
-          <span aria-hidden="true">⚔</span> New Combat Session
+          <span aria-hidden="true">⚔</span> {t("new_session")}
         </Link>
       </div>
       <SavedEncounters encounters={savedEncounters} />

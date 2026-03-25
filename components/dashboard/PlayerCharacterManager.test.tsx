@@ -100,12 +100,12 @@ describe("PlayerCharacterManager", () => {
     expect(screen.getByText("16")).toBeInTheDocument();
     expect(screen.getByText("14")).toBeInTheDocument();
     // Gandalf has no spell_save_dc → "—"
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("common.dash")).toBeInTheDocument();
   });
 
   it("renders 'Add Player' button", () => {
     render(<PlayerCharacterManager {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /add player/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /dashboard\.pc_add/i })).toBeInTheDocument();
   });
 
   it("renders empty state when no characters", () => {
@@ -116,37 +116,37 @@ describe("PlayerCharacterManager", () => {
         campaignName="Test"
       />
     );
-    expect(screen.getByText(/no player characters yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/dashboard\.pc_empty/i)).toBeInTheDocument();
   });
 
   // ── Add Player ─────────────────────────────────────────────────────────────
 
   it("'Add Player' button shows inline form", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /add player/i }));
-    expect(screen.getByLabelText(/character name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/max hp/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^ac/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^save$/i })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
+    expect(screen.getByLabelText(/dashboard\.pc_name_label/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/dashboard\.pc_hp_label/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/dashboard\.pc_ac_label/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^common\.save$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
   it("Save disabled when required fields are empty", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /add player/i }));
-    expect(screen.getByRole("button", { name: /^save$/i })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
+    expect(screen.getByRole("button", { name: /^common\.save$/i })).toBeDisabled();
   });
 
   it("valid add form calls supabase insert", async () => {
     setupInsertSuccess({ ...baseCharacter, id: "char-new", name: "Aragorn" });
     render(<PlayerCharacterManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /add player/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
 
-    await userEvent.type(screen.getByLabelText(/character name/i), "Aragorn");
-    await userEvent.type(screen.getByLabelText(/max hp/i), "55");
-    await userEvent.type(screen.getByLabelText(/^ac/i), "18");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_name_label/i), "Aragorn");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_hp_label/i), "55");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_ac_label/i), "18");
 
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(mockFrom).toHaveBeenCalledWith("player_characters");
@@ -172,13 +172,13 @@ describe("PlayerCharacterManager", () => {
       spell_save_dc: null,
     });
     render(<PlayerCharacterManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /add player/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
 
-    await userEvent.type(screen.getByLabelText(/character name/i), "Aragorn");
-    await userEvent.type(screen.getByLabelText(/max hp/i), "55");
-    await userEvent.type(screen.getByLabelText(/^ac/i), "18");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_name_label/i), "Aragorn");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_hp_label/i), "55");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_ac_label/i), "18");
 
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(screen.getByText("Aragorn")).toBeInTheDocument();
@@ -189,7 +189,7 @@ describe("PlayerCharacterManager", () => {
 
   it("Edit button shows form pre-filled with character data", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^edit$/i });
+    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editButtons[0]);
 
     expect(screen.getByDisplayValue("Thorin")).toBeInTheDocument();
@@ -201,14 +201,14 @@ describe("PlayerCharacterManager", () => {
   it("update calls supabase update with correct payload", async () => {
     setupUpdateSuccess();
     render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^edit$/i });
+    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editButtons[0]);
 
     const nameInput = screen.getByDisplayValue("Thorin");
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, "Thorin Oakenshield");
 
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(mockChain.update).toHaveBeenCalledWith(
@@ -221,14 +221,14 @@ describe("PlayerCharacterManager", () => {
   it("updated name appears in list after edit save", async () => {
     setupUpdateSuccess();
     render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^edit$/i });
+    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editButtons[0]);
 
     const nameInput = screen.getByDisplayValue("Thorin");
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, "Thorin Oakenshield");
 
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(screen.getByText("Thorin Oakenshield")).toBeInTheDocument();
@@ -237,7 +237,7 @@ describe("PlayerCharacterManager", () => {
 
   it("Cancel on edit discards changes", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^edit$/i });
+    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editButtons[0]);
 
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
@@ -254,7 +254,7 @@ describe("PlayerCharacterManager", () => {
     await userEvent.click(removeButtons[0]);
 
     expect(screen.getByRole("button", { name: /confirm/i })).toBeInTheDocument();
-    expect(screen.getByText(/this cannot be undone/i)).toBeInTheDocument();
+    expect(screen.getByText(/dashboard\.pc_remove_confirm_suffix/i)).toBeInTheDocument();
   });
 
   it("confirm remove calls supabase delete and removes character from list", async () => {
@@ -288,13 +288,13 @@ describe("PlayerCharacterManager", () => {
   it("shows error when insert fails", async () => {
     setupInsertError("Failed to add");
     render(<PlayerCharacterManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /add player/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
 
-    await userEvent.type(screen.getByLabelText(/character name/i), "Legolas");
-    await userEvent.type(screen.getByLabelText(/max hp/i), "40");
-    await userEvent.type(screen.getByLabelText(/^ac/i), "15");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_name_label/i), "Legolas");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_hp_label/i), "40");
+    await userEvent.type(screen.getByLabelText(/dashboard\.pc_ac_label/i), "15");
 
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();

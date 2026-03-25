@@ -71,7 +71,7 @@ describe("CampaignLoader", () => {
   it("renders the Load Campaign button", () => {
     render(<CampaignLoader onLoad={jest.fn()} />);
     expect(screen.getByTestId("load-campaign-btn")).toBeInTheDocument();
-    expect(screen.getByText("Load Campaign")).toBeInTheDocument();
+    expect(screen.getByText("session.load_campaign")).toBeInTheDocument();
   });
 
   it("dialog opens when 'Load Campaign' button is clicked", async () => {
@@ -90,9 +90,9 @@ describe("CampaignLoader", () => {
     );
 
     expect(screen.getByText("The Lost Mine")).toBeInTheDocument();
-    expect(screen.getByText("3 players")).toBeInTheDocument();
+    expect(screen.getByText("3 session.campaign_players_plural")).toBeInTheDocument();
     expect(screen.getByText("Empty Campaign")).toBeInTheDocument();
-    expect(screen.getByText("0 players")).toBeInTheDocument();
+    expect(screen.getByText("0 session.campaign_players_plural")).toBeInTheDocument();
   });
 
   it("Load button calls onLoad with correct player characters", async () => {
@@ -121,7 +121,7 @@ describe("CampaignLoader", () => {
     expect(
       screen.getByTestId("empty-campaign-msg-camp-2")
     ).toBeInTheDocument();
-    expect(screen.getByText("This campaign has no players yet.")).toBeInTheDocument();
+    expect(screen.getByText("session.campaign_no_players")).toBeInTheDocument();
     expect(
       screen.queryByTestId("load-campaign-camp-2")
     ).not.toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("CampaignLoader", () => {
     it("dialog has accessible title 'Load Player Group'", async () => {
       render(<CampaignLoader onLoad={jest.fn()} />);
       await userEvent.click(screen.getByTestId("load-campaign-btn"));
-      expect(screen.getByRole("dialog", { name: "Load Player Group" })).toBeInTheDocument();
+      expect(screen.getByRole("dialog", { name: "session.load_campaign_title" })).toBeInTheDocument();
     });
 
     it("Load button has aria-label including campaign name", async () => {
@@ -160,7 +160,7 @@ describe("CampaignLoader", () => {
       );
 
       expect(
-        screen.getByRole("button", { name: "Load The Lost Mine into encounter" })
+        screen.getByRole("button", { name: "session.load_into_encounter" })
       ).toBeInTheDocument();
     });
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 const ALL_CONDITIONS = [
   "Blinded",
   "Charmed",
@@ -27,6 +29,8 @@ export function ConditionSelector({
   onToggle,
   onClose,
 }: ConditionSelectorProps) {
+  const t = useTranslations("conditions");
+  const tc = useTranslations("common");
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") onClose();
   };
@@ -53,7 +57,7 @@ export function ConditionSelector({
               aria-pressed={isActive}
               data-testid={`condition-toggle-${condition.toLowerCase()}`}
             >
-              {condition}
+              {t(condition.toLowerCase())}
             </button>
           );
         })}
@@ -65,7 +69,7 @@ export function ConditionSelector({
         aria-label="Close condition selector"
         data-testid="condition-close-btn"
       >
-        Done
+        {tc("done")}
       </button>
     </div>
   );

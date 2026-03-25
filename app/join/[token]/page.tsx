@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";
 
 interface JoinPageProps {
@@ -7,6 +8,7 @@ interface JoinPageProps {
 
 export default async function JoinPage({ params }: JoinPageProps) {
   const { token } = await params;
+  const t = await getTranslations("player");
   const supabase = await createClient();
 
   // Validate token
@@ -21,9 +23,9 @@ export default async function JoinPage({ params }: JoinPageProps) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <h1 className="text-foreground text-xl font-semibold">Session Not Found</h1>
+          <h1 className="text-foreground text-xl font-semibold">{t("session_not_found")}</h1>
           <p className="text-muted-foreground text-sm">
-            Session not found or has ended. Ask your DM for a new link.
+            {t("session_not_found_detail")}
           </p>
         </div>
       </div>
@@ -42,9 +44,9 @@ export default async function JoinPage({ params }: JoinPageProps) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
-          <h1 className="text-foreground text-xl font-semibold">Session Ended</h1>
+          <h1 className="text-foreground text-xl font-semibold">{t("session_ended")}</h1>
           <p className="text-muted-foreground text-sm">
-            This session has ended. Ask your DM for a new link.
+            {t("session_ended_detail")}
           </p>
         </div>
       </div>

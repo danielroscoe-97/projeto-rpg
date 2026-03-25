@@ -126,7 +126,7 @@ describe("PlayerInitiativeBoard", () => {
         rulesetVersion="2014"
       />
     );
-    expect(screen.getByText("Defeated")).toBeInTheDocument();
+    expect(screen.getByText("player.defeated")).toBeInTheDocument();
   });
 
   it("applies opacity to defeated combatants", () => {
@@ -150,6 +150,6 @@ describe("PlayerInitiativeBoard", () => {
         rulesetVersion="2014"
       />
     );
-    expect(screen.getByRole("list", { name: "Initiative order" })).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "player.initiative_order" })).toBeInTheDocument();
   });
 });

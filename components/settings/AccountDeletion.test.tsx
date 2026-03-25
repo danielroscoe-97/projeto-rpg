@@ -39,7 +39,7 @@ function setupFetchFailure(errorMessage = "Failed to delete account") {
 async function openDialog() {
   const user = userEvent.setup();
   render(<AccountDeletion />);
-  await user.click(screen.getByRole("button", { name: /delete account/i }));
+  await user.click(screen.getByRole("button", { name: /settings\.delete_button/i }));
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ describe("AccountDeletion", () => {
   it("renders the Delete Account button", () => {
     render(<AccountDeletion />);
     expect(
-      screen.getByRole("button", { name: /delete account/i })
+      screen.getByRole("button", { name: /settings\.delete_button/i })
     ).toBeInTheDocument();
   });
 
@@ -65,8 +65,8 @@ describe("AccountDeletion", () => {
   it("shows the warning text in the confirmation dialog", async () => {
     await openDialog();
     const dialog = screen.getByRole("alertdialog");
-    expect(within(dialog).getByText(/permanently delete your account/i)).toBeInTheDocument();
-    expect(within(dialog).getByText(/this cannot be undone/i)).toBeInTheDocument();
+    expect(within(dialog).getByText(/settings\.delete_confirm_description/i)).toBeInTheDocument();
+    expect(within(dialog).getByText(/settings\.delete_confirm_warning/i)).toBeInTheDocument();
   });
 
   it("closes the dialog and does NOT call the API when Cancel is clicked", async () => {
@@ -84,7 +84,7 @@ describe("AccountDeletion", () => {
     const user = userEvent.setup();
     await openDialog();
     await user.click(
-      screen.getByRole("button", { name: /yes, delete everything/i })
+      screen.getByRole("button", { name: /settings\.delete_confirm_button/i })
     );
     await waitFor(() => expect(mockFetch).toHaveBeenCalledWith(
       "/api/account/delete",
@@ -100,11 +100,11 @@ describe("AccountDeletion", () => {
     const user = userEvent.setup();
     await openDialog();
     await user.click(
-      screen.getByRole("button", { name: /yes, delete everything/i })
+      screen.getByRole("button", { name: /settings\.delete_confirm_button/i })
     );
     await waitFor(() =>
       expect(
-        screen.getByRole("button", { name: /deleting\.\.\./i })
+        screen.getByRole("button", { name: /settings\.delete_deleting/i })
       ).toBeDisabled()
     );
   });
@@ -114,7 +114,7 @@ describe("AccountDeletion", () => {
     const user = userEvent.setup();
     await openDialog();
     await user.click(
-      screen.getByRole("button", { name: /yes, delete everything/i })
+      screen.getByRole("button", { name: /settings\.delete_confirm_button/i })
     );
     await waitFor(() =>
       expect(screen.getByRole("alert")).toHaveTextContent("Server error")

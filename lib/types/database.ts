@@ -20,6 +20,7 @@ export interface Database {
           email: string;
           display_name: string | null;
           is_admin: boolean;
+          preferred_language: string;
           created_at: string;
           updated_at: string;
         };
@@ -28,6 +29,7 @@ export interface Database {
           email: string;
           display_name?: string | null;
           is_admin?: boolean;
+          preferred_language?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -36,6 +38,7 @@ export interface Database {
           email?: string;
           display_name?: string | null;
           is_admin?: boolean;
+          preferred_language?: string;
           updated_at?: string;
         };
       };

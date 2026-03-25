@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Combatant } from "@/lib/types/combat";
 
 interface StatsEditorProps {
@@ -10,6 +11,8 @@ interface StatsEditorProps {
 }
 
 export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
+  const t = useTranslations("combat");
+  const tc = useTranslations("common");
   const [name, setName] = useState(combatant.name);
   const [maxHp, setMaxHp] = useState(String(combatant.max_hp));
   const [ac, setAc] = useState(String(combatant.ac));
@@ -41,7 +44,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
     >
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Name</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("stats_name_label")}</label>
           <input
             type="text"
             value={name}
@@ -51,7 +54,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Max HP</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("stats_max_hp_label")}</label>
           <input
             type="number"
             min="1"
@@ -62,7 +65,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">AC</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("stats_ac_label")}</label>
           <input
             type="number"
             min="0"
@@ -73,13 +76,13 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Spell DC</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("stats_spell_dc_label")}</label>
           <input
             type="number"
             min="0"
             value={dc}
             onChange={(e) => setDc(e.target.value)}
-            placeholder="—"
+            placeholder={tc("dash")}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="stats-dc-input"
           />
@@ -92,7 +95,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
           className="px-3 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
           data-testid="stats-cancel-btn"
         >
-          Cancel
+          {tc("cancel")}
         </button>
         <button
           type="button"
@@ -100,7 +103,7 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
           className="px-3 py-1 bg-gold text-foreground text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px]"
           data-testid="stats-save-btn"
         >
-          Save
+          {tc("save")}
         </button>
       </div>
     </div>

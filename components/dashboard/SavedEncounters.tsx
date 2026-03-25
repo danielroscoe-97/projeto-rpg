@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -17,13 +18,14 @@ interface SavedEncountersProps {
 }
 
 export function SavedEncounters({ encounters }: SavedEncountersProps) {
+  const t = useTranslations("dashboard");
   if (encounters.length === 0) {
     return (
       <div className="mt-8" data-testid="saved-encounters">
-        <h2 className="text-lg font-semibold text-foreground mb-3">Active Encounters</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3">{t("encounters_title")}</h2>
         <div className="flex flex-col items-center gap-3 py-8 text-center">
           <Image src="/art/icons/pet-lunatic.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
-          <p className="text-muted-foreground text-sm">No active encounters. Start a new combat session!</p>
+          <p className="text-muted-foreground text-sm">{t("encounters_empty")}</p>
         </div>
       </div>
     );
@@ -31,7 +33,7 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
 
   return (
     <div className="mt-8" data-testid="saved-encounters">
-      <h2 className="text-lg font-semibold text-foreground mb-3">Active Encounters</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-3">{t("encounters_title")}</h2>
       <div className="space-y-2">
         {encounters.map((enc) => (
           <Link
@@ -47,10 +49,10 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-xs font-mono">
-                  Round {enc.round_number}
+                  {t("encounters_round")} {enc.round_number}
                 </span>
                 {enc.is_active && (
-                  <span className="text-xs text-green-400 font-medium">In Progress</span>
+                  <span className="text-xs text-green-400 font-medium">{t("encounters_in_progress")}</span>
                 )}
               </div>
             </div>

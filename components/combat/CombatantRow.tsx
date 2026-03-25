@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { VersionBadge } from "@/components/session/RulesetSelector";
@@ -65,6 +66,7 @@ export function CombatantRow({
   onUpdatePlayerNotes,
   dragHandleProps,
 }: CombatantRowProps) {
+  const t = useTranslations("combat");
   const [isExpanded, setIsExpanded] = useState(false);
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
   const [editingPlayerNotes, setEditingPlayerNotes] = useState(false);
@@ -120,7 +122,7 @@ export function CombatantRow({
           {dragHandleProps && (
             <span
               className="text-muted-foreground/40 hover:text-muted-foreground cursor-grab active:cursor-grabbing select-none text-sm flex-shrink-0"
-              aria-label="Drag to reorder"
+              aria-label={t("drag_to_reorder")}
               {...dragHandleProps}
             >
               ⠿
@@ -131,7 +133,7 @@ export function CombatantRow({
           {isCurrentTurn && (
             <span
               className="text-gold shrink-0 text-xs leading-none select-none"
-              aria-label="Current turn"
+              aria-label={t("current_turn")}
               data-testid="current-turn-indicator"
             >
               ▶
@@ -168,7 +170,7 @@ export function CombatantRow({
           {/* Defeated badge */}
           {combatant.is_defeated && (
             <span className="text-xs text-red-400 font-medium" data-testid="defeated-badge">
-              Defeated
+              {t("defeated")}
             </span>
           )}
         </div>
@@ -176,7 +178,7 @@ export function CombatantRow({
         {/* HP bar */}
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-muted-foreground text-xs">HP</span>
+            <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
             <span className="text-muted-foreground text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
               {combatant.current_hp} / {combatant.max_hp}
               {/* HP threshold text label — satisfies NFR21 for sighted color-blind users */}
@@ -185,12 +187,12 @@ export function CombatantRow({
                   className="text-xs font-mono ml-1 text-muted-foreground"
                   data-testid={`hp-threshold-${combatant.id}`}
                 >
-                  {hpThresholdLabel}
+                  {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
                 </span>
               )}
               {hasTempHp && (
                 <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
-                  +{combatant.temp_hp} temp
+                  {t("temp_hp", { value: combatant.temp_hp })}
                 </span>
               )}
             </span>
@@ -201,7 +203,7 @@ export function CombatantRow({
             aria-valuenow={combatant.current_hp}
             aria-valuemin={0}
             aria-valuemax={combatant.max_hp}
-            aria-label={`${combatant.name} hit points${hpThresholdLabel ? ` — ${hpThresholdLabel}` : ""}`}
+            aria-label={t("hp_aria", { name: combatant.name })}
           >
             <div
               className={`h-full rounded-full transition-all ${hpBarColor}`}
@@ -231,7 +233,7 @@ export function CombatantRow({
             {/* Player notes */}
             {editingPlayerNotes ? (
               <div className="flex items-center gap-1 flex-1 min-w-0">
-                <span className="text-muted-foreground/60 flex-shrink-0" title="Player-visible notes">📝</span>
+                <span className="text-muted-foreground/60 flex-shrink-0" title={t("player_notes_title")}>📝</span>
                 <input
                   type="text"
                   value={playerNotesValue}
@@ -260,7 +262,7 @@ export function CombatantRow({
                 type="button"
                 onClick={() => { setPlayerNotesValue(combatant.player_notes); setEditingPlayerNotes(true); }}
                 className="flex items-center gap-1 text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-                title="Player-visible notes (click to edit)"
+                title={t("player_notes_hint")}
                 data-testid={`player-notes-${combatant.id}`}
               >
                 <span>📝</span>
@@ -271,7 +273,7 @@ export function CombatantRow({
             {/* DM notes */}
             {editingDmNotes ? (
               <div className="flex items-center gap-1 flex-1 min-w-0">
-                <span className="text-muted-foreground/60 flex-shrink-0" title="DM-only notes">🔒</span>
+                <span className="text-muted-foreground/60 flex-shrink-0" title={t("dm_notes_title")}>🔒</span>
                 <input
                   type="text"
                   value={dmNotesValue}
@@ -300,7 +302,7 @@ export function CombatantRow({
                 type="button"
                 onClick={() => { setDmNotesValue(combatant.dm_notes); setEditingDmNotes(true); }}
                 className="flex items-center gap-1 text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-                title="DM-only notes (click to edit)"
+                title={t("dm_notes_hint")}
                 data-testid={`dm-notes-${combatant.id}`}
               >
                 <span>🔒</span>
@@ -319,10 +321,10 @@ export function CombatantRow({
               className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "hp" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
-              aria-label="Adjust HP"
+              aria-label={t("adjust_hp")}
               data-testid={`hp-btn-${combatant.id}`}
             >
-              HP
+              {t("hp_button")}
             </button>
             <button
               type="button"
@@ -330,19 +332,19 @@ export function CombatantRow({
               className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "conditions" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
-              aria-label="Manage conditions"
+              aria-label={t("manage_conditions")}
               data-testid={`conditions-btn-${combatant.id}`}
             >
-              Cond
+              {t("cond_button")}
             </button>
             <button
               type="button"
               onClick={() => onSetDefeated?.(combatant.id, !combatant.is_defeated)}
               className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-              aria-label={combatant.is_defeated ? "Revive combatant" : "Mark as defeated"}
+              aria-label={combatant.is_defeated ? t("revive_aria") : t("defeat_aria")}
               data-testid={`defeat-btn-${combatant.id}`}
             >
-              {combatant.is_defeated ? "Revive" : "Defeat"}
+              {combatant.is_defeated ? t("revive") : t("defeat")}
             </button>
             <button
               type="button"
@@ -350,30 +352,30 @@ export function CombatantRow({
               className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "edit" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
-              aria-label="Edit stats"
+              aria-label={t("edit_stats")}
               data-testid={`edit-btn-${combatant.id}`}
             >
-              Edit
+              {t("edit_button")}
             </button>
             {canSwitchVersion && (
               <button
                 type="button"
                 onClick={() => onSwitchVersion?.(combatant.id, otherVersion)}
                 className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                aria-label={`Switch to ${otherVersion} ruleset`}
+                aria-label={t("switch_version", { version: otherVersion })}
                 data-testid={`version-btn-${combatant.id}`}
               >
-                → {otherVersion}
+                {otherVersion === "2014" ? t("switch_2014") : t("switch_2024")}
               </button>
             )}
             <button
               type="button"
               onClick={() => onRemoveCombatant?.(combatant.id)}
               className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-red-400 hover:bg-red-900/30 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-              aria-label="Remove combatant"
+              aria-label={t("remove_aria")}
               data-testid={`remove-btn-${combatant.id}`}
             >
-              Remove
+              {t("remove_button")}
             </button>
           </div>
         )}
@@ -415,11 +417,11 @@ export function CombatantRow({
           {/* Quick stats row */}
           <div className="flex gap-4 py-2 text-sm">
             <span className="text-muted-foreground">
-              AC <span className="text-foreground font-mono">{combatant.ac}</span>
+              {t("ac_label")} <span className="text-foreground font-mono">{combatant.ac}</span>
             </span>
             {combatant.spell_save_dc !== null && (
               <span className="text-muted-foreground">
-                DC <span className="text-foreground font-mono">{combatant.spell_save_dc}</span>
+                {t("dc_label")} <span className="text-foreground font-mono">{combatant.spell_save_dc}</span>
               </span>
             )}
           </div>

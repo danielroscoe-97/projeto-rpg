@@ -14,12 +14,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -38,10 +41,19 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
+      // Sync language preference from DB to cookie
+      try {
+        const res = await fetch("/api/user/language");
+        const { locale } = await res.json();
+        if (locale) {
+          document.cookie = `NEXT_LOCALE=${locale};path=/;max-age=31536000;SameSite=Lax`;
+        }
+      } catch {
+        // Non-critical — middleware fallback handles locale
+      }
       router.push("/app/dashboard");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }
@@ -51,20 +63,20 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-foreground">Login</CardTitle>
+          <CardTitle className="text-2xl text-foreground">{t("login_title")}</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Enter your email below to login to your account
+            {t("login_description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-foreground/80">Email</Label>
+                <Label htmlFor="email" className="text-foreground/80">{t("email_label")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("email_placeholder")}
                   required
                   aria-required="true"
                   aria-describedby={error ? "login-error" : undefined}
@@ -75,12 +87,12 @@ export function LoginForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password" className="text-foreground/80">Password</Label>
+                  <Label htmlFor="password" className="text-foreground/80">{t("password_label")}</Label>
                   <Link
                     href="/auth/forgot-password"
                     className="ml-auto inline-block text-sm text-gold underline-offset-4 hover:underline min-h-[44px] inline-flex items-center"
                   >
-                    Forgot your password?
+                    {t("forgot_password")}
                   </Link>
                 </div>
                 <Input
@@ -105,16 +117,16 @@ export function LoginForm({
                 className="w-full min-h-[44px]"
                 disabled={isLoading}
               >
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? t("login_submitting") : t("login_submit")}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
+              {t("no_account")}{" "}
               <Link
                 href="/auth/sign-up"
                 className="text-gold underline underline-offset-4"
               >
-                Sign up
+                {t("signup_link")}
               </Link>
             </div>
           </form>

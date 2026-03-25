@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,8 @@ function isSaveDisabled(form: PlayerCharacterForm): boolean {
 }
 
 export function PlayerCharacterManager({ initialCharacters, campaignId }: Props) {
+  const t = useTranslations("dashboard");
+  const tc = useTranslations("common");
   const [characters, setCharacters] = useState<PlayerCharacter[]>(initialCharacters);
   const [showAdd, setShowAdd] = useState(false);
   const [addForm, setAddForm] = useState<PlayerCharacterForm>(EMPTY_FORM);
@@ -189,7 +192,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Player Characters</h2>
+        <h2 className="text-lg font-semibold text-white">{t("pc_title")}</h2>
         {!showAdd && (
           <Button
             size="sm"
@@ -199,7 +202,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
               setError(null);
             }}
           >
-            + Add Player
+            {t("pc_add")}
           </Button>
         )}
       </div>
@@ -214,15 +217,15 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       {/* Add Form */}
       {showAdd && (
         <div className="p-4 bg-[#16213e] rounded-lg border border-white/10 space-y-3">
-          <p className="text-sm font-medium text-white">New Player Character</p>
+          <p className="text-sm font-medium text-white">{t("pc_new")}</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2 space-y-1">
               <Label htmlFor="add-name" className="text-white text-xs">
-                Character name *
+                {t("pc_name_label")}
               </Label>
               <Input
                 id="add-name"
-                placeholder="e.g. Thorin"
+                placeholder={t("pc_name_placeholder")}
                 value={addForm.name}
                 onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
                 className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
@@ -230,13 +233,13 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
             </div>
             <div className="space-y-1">
               <Label htmlFor="add-max-hp" className="text-white text-xs">
-                Max HP *
+                {t("pc_hp_label")}
               </Label>
               <Input
                 id="add-max-hp"
                 type="number"
                 min={1}
-                placeholder="e.g. 45"
+                placeholder={t("pc_hp_placeholder")}
                 value={addForm.max_hp}
                 onChange={(e) => setAddForm((f) => ({ ...f, max_hp: e.target.value }))}
                 className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
@@ -244,13 +247,13 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
             </div>
             <div className="space-y-1">
               <Label htmlFor="add-ac" className="text-white text-xs">
-                AC *
+                {t("pc_ac_label")}
               </Label>
               <Input
                 id="add-ac"
                 type="number"
                 min={1}
-                placeholder="e.g. 16"
+                placeholder={t("pc_ac_placeholder")}
                 value={addForm.ac}
                 onChange={(e) => setAddForm((f) => ({ ...f, ac: e.target.value }))}
                 className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
@@ -258,13 +261,13 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
             </div>
             <div className="col-span-2 space-y-1">
               <Label htmlFor="add-spell-dc" className="text-white text-xs">
-                Spell save DC <span className="text-white/40">(optional)</span>
+                {t("pc_spell_dc_label")} <span className="text-white/40">({tc("optional")})</span>
               </Label>
               <Input
                 id="add-spell-dc"
                 type="number"
                 min={1}
-                placeholder="—"
+                placeholder={tc("dash")}
                 value={addForm.spell_save_dc}
                 onChange={(e) => setAddForm((f) => ({ ...f, spell_save_dc: e.target.value }))}
                 className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
@@ -282,7 +285,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                 setError(null);
               }}
             >
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button
               size="sm"
@@ -290,7 +293,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
               disabled={isSaveDisabled(addForm) || isLoading}
               onClick={handleAdd}
             >
-              {isLoading ? "Saving…" : "Save"}
+              {isLoading ? tc("saving") : tc("save")}
             </Button>
           </div>
         </div>
@@ -299,7 +302,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       {/* Character List */}
       {characters.length === 0 && !showAdd && (
         <p className="text-white/40 text-sm text-center py-8">
-          No player characters yet. Add your first player above.
+          {t("pc_empty")}
         </p>
       )}
 
@@ -307,11 +310,11 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
         <div>
           {/* Column headers */}
           <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-3 px-4 pb-2 text-white/50 text-xs uppercase tracking-wider">
-            <span>Name</span>
-            <span className="w-14 text-right">Max HP</span>
-            <span className="w-14 text-right">Cur HP</span>
-            <span className="w-10 text-right">AC</span>
-            <span className="w-14 text-right">Spell DC</span>
+            <span>{t("pc_col_name")}</span>
+            <span className="w-14 text-right">{t("pc_col_max_hp")}</span>
+            <span className="w-14 text-right">{t("pc_col_cur_hp")}</span>
+            <span className="w-10 text-right">{t("pc_col_ac")}</span>
+            <span className="w-14 text-right">{t("pc_col_spell_dc")}</span>
             <span className="w-20" />
           </div>
 
@@ -326,7 +329,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     <div className="grid grid-cols-2 gap-3">
                       <div className="col-span-2 space-y-1">
                         <Label htmlFor={`edit-name-${character.id}`} className="text-white text-xs">
-                          Character name *
+                          {t("pc_name_label")}
                         </Label>
                         <Input
                           id={`edit-name-${character.id}`}
@@ -337,7 +340,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       </div>
                       <div className="space-y-1">
                         <Label htmlFor={`edit-hp-${character.id}`} className="text-white text-xs">
-                          Max HP *
+                          {t("pc_hp_label")}
                         </Label>
                         <Input
                           id={`edit-hp-${character.id}`}
@@ -350,7 +353,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       </div>
                       <div className="space-y-1">
                         <Label htmlFor={`edit-ac-${character.id}`} className="text-white text-xs">
-                          AC *
+                          {t("pc_ac_label")}
                         </Label>
                         <Input
                           id={`edit-ac-${character.id}`}
@@ -363,13 +366,13 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       </div>
                       <div className="col-span-2 space-y-1">
                         <Label htmlFor={`edit-dc-${character.id}`} className="text-white text-xs">
-                          Spell save DC <span className="text-white/40">(optional)</span>
+                          {t("pc_spell_dc_label")} <span className="text-white/40">({tc("optional")})</span>
                         </Label>
                         <Input
                           id={`edit-dc-${character.id}`}
                           type="number"
                           min={1}
-                          placeholder="—"
+                          placeholder={tc("dash")}
                           value={editForm.spell_save_dc}
                           onChange={(e) =>
                             setEditForm((f) => ({ ...f, spell_save_dc: e.target.value }))
@@ -389,7 +392,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                           setError(null);
                         }}
                       >
-                        Cancel
+                        {tc("cancel")}
                       </Button>
                       <Button
                         size="sm"
@@ -397,7 +400,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                         disabled={isSaveDisabled(editForm) || isLoading}
                         onClick={handleEdit}
                       >
-                        {isLoading ? "Saving…" : "Save"}
+                        {isLoading ? tc("saving") : tc("save")}
                       </Button>
                     </div>
                   </div>
@@ -413,7 +416,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     <p className="text-white/70 text-sm flex-1">
                       Remove{" "}
                       <span className="text-white font-medium">{character.name}</span>
-                      ? This cannot be undone.
+                      {t("pc_remove_confirm_suffix")}
                     </p>
                     <Button
                       size="sm"
@@ -422,7 +425,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       disabled={isLoading}
                       onClick={handleRemove}
                     >
-                      {isLoading ? "Removing…" : "Confirm"}
+                      {isLoading ? tc("saving") : tc("confirm")}
                     </Button>
                     <Button
                       size="sm"
@@ -430,7 +433,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       className="text-white/50 hover:text-white min-h-[44px]"
                       onClick={() => setRemoveTargetId(null)}
                     >
-                      Cancel
+                      {tc("cancel")}
                     </Button>
                   </div>
                 );
@@ -446,7 +449,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                   <span className="w-14 text-right text-white/70 text-sm">{character.current_hp}</span>
                   <span className="w-10 text-right text-white/70 text-sm">{character.ac}</span>
                   <span className="w-14 text-right text-white/70 text-sm">
-                    {character.spell_save_dc ?? "—"}
+                    {character.spell_save_dc ?? tc("dash")}
                   </span>
                   <div className="w-20 flex items-center gap-1 justify-end">
                     <Button
@@ -466,7 +469,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                         setError(null);
                       }}
                     >
-                      Edit
+                      {tc("edit")}
                     </Button>
                     <Button
                       size="sm"
@@ -477,7 +480,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                         setError(null);
                       }}
                     >
-                      Remove
+                      {tc("remove")}
                     </Button>
                   </div>
                 </div>

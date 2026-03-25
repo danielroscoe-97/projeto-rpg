@@ -66,14 +66,13 @@ describe("ConditionLookup", () => {
   it("shows 'All Versions' label for conditions", () => {
     render(<ConditionLookup />);
     expect(screen.getByTestId("conditions-version-label")).toHaveTextContent(
-      "All Versions"
+      "oracle.conditions_all_versions"
     );
   });
 
   it("has accessible labels on condition buttons", () => {
     render(<ConditionLookup />);
-    expect(
-      screen.getByRole("button", { name: "View Blinded rules" })
-    ).toBeInTheDocument();
+    const buttons = screen.getAllByRole("button", { name: "oracle.conditions_view_aria" });
+    expect(buttons.length).toBeGreaterThan(0);
   });
 });

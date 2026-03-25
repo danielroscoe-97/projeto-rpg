@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,8 @@ import {
 
 export function AccountDeletion() {
   const router = useRouter();
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,10 +48,9 @@ export function AccountDeletion() {
 
   return (
     <div className="mt-8 p-6 bg-card rounded-lg border border-red-900/30">
-      <h2 className="text-foreground font-semibold mb-2">Danger Zone</h2>
+      <h2 className="text-foreground font-semibold mb-2">{t("danger_zone")}</h2>
       <p className="text-muted-foreground text-sm mb-4">
-        Permanently delete your account and all associated data. This cannot be
-        undone.
+        {t("delete_description")}
       </p>
       {error && (
         <p className="text-red-400 text-sm mb-4" role="alert">
@@ -58,18 +60,17 @@ export function AccountDeletion() {
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="destructive" disabled={isDeleting}>
-            {isDeleting ? "Deleting..." : "Delete Account"}
+            {isDeleting ? t("delete_deleting") : t("delete_button")}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">
-              Delete Account?
+              {t("delete_confirm_title")}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
-              This will permanently delete your account and all your campaigns,
-              player characters, encounters, combatants, and session history.{" "}
-              <strong className="text-foreground">This cannot be undone.</strong>
+              {t("delete_confirm_description")}{" "}
+              <strong className="text-foreground">{t("delete_confirm_warning")}</strong>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -77,14 +78,14 @@ export function AccountDeletion() {
               className="bg-white/[0.06] text-foreground border-border hover:bg-white/[0.1]"
               disabled={isDeleting}
             >
-              Cancel
+              {tc("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700 text-foreground"
               disabled={isDeleting}
             >
-              {isDeleting ? "Deleting..." : "Yes, delete everything"}
+              {isDeleting ? t("delete_deleting") : t("delete_confirm_button")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

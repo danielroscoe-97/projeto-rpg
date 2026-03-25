@@ -49,7 +49,7 @@ describe("EncounterSetup", () => {
     expect(screen.getByTestId("add-row")).toBeInTheDocument();
     expect(screen.getByTestId("start-combat-btn")).toBeInTheDocument();
     expect(screen.getByTestId("start-combat-btn")).toBeDisabled();
-    expect(screen.getByText(/Add combatants to build your encounter/)).toBeInTheDocument();
+    expect(screen.getByText("combat.setup_empty")).toBeInTheDocument();
   });
 
   it("adds a combatant via the add-row", async () => {
@@ -141,7 +141,7 @@ describe("EncounterSetup", () => {
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
     await userEvent.click(screen.getByTestId("start-combat-btn"));
-    expect(screen.getByText(/need initiative values/)).toBeInTheDocument();
+    expect(screen.getByText(/combat\.error_missing_init/)).toBeInTheDocument();
     expect(mockOnStartCombat).not.toHaveBeenCalled();
   });
 });

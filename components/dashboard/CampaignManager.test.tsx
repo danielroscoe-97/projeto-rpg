@@ -185,61 +185,61 @@ describe("CampaignManager", () => {
     render(<CampaignManager {...defaultProps} />);
     expect(screen.getByText("The Lost Mines")).toBeInTheDocument();
     expect(screen.getByText("Curse of Strahd")).toBeInTheDocument();
-    expect(screen.getByText("4 players")).toBeInTheDocument();
-    expect(screen.getByText("0 players")).toBeInTheDocument();
+    expect(screen.getByText("4 dashboard.campaigns_players_plural")).toBeInTheDocument();
+    expect(screen.getByText("0 dashboard.campaigns_players_plural")).toBeInTheDocument();
   });
 
   it("renders 'New Campaign' button", () => {
     render(<CampaignManager {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /new campaign/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /dashboard\.campaigns_new/i })).toBeInTheDocument();
   });
 
   it("renders empty state when no campaigns", () => {
     render(<CampaignManager initialCampaigns={[]} userId="user-123" />);
-    expect(screen.getByText(/no campaigns yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/dashboard\.campaigns_empty/i)).toBeInTheDocument();
   });
 
   // ── Create Campaign ────────────────────────────────────────────────────────
 
   it("shows create form when 'New Campaign' is clicked", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    expect(screen.getByPlaceholderText(/campaign name/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^save$/i })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    expect(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^common\.save$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
   it("opening New Campaign closes any open edit row", async () => {
     render(<CampaignManager {...defaultProps} />);
     // open edit first
-    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    const editBtns = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editBtns[0]);
     expect(screen.getByDisplayValue("The Lost Mines")).toBeInTheDocument();
     // open create — edit should disappear
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
     expect(screen.queryByDisplayValue("The Lost Mines")).not.toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/campaign name/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i)).toBeInTheDocument();
   });
 
   it("keeps Save disabled when campaign name is empty", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    expect(screen.getByRole("button", { name: /^save$/i })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    expect(screen.getByRole("button", { name: /^common\.save$/i })).toBeDisabled();
   });
 
   it("enables Save when campaign name is entered", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Dragon Campaign");
-    expect(screen.getByRole("button", { name: /^save$/i })).not.toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    await userEvent.type(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i), "Dragon Campaign");
+    expect(screen.getByRole("button", { name: /^common\.save$/i })).not.toBeDisabled();
   });
 
   it("calls supabase insert on save and adds campaign to list", async () => {
     setupInsertSuccess("new-id", "Dragon Campaign");
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Dragon Campaign");
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    await userEvent.type(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i), "Dragon Campaign");
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(mockFrom).toHaveBeenCalledWith("campaigns");
@@ -255,9 +255,9 @@ describe("CampaignManager", () => {
   it("shows error when insert fails", async () => {
     setupInsertError("Failed to create campaign");
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Bad Campaign");
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    await userEvent.type(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i), "Bad Campaign");
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -266,44 +266,44 @@ describe("CampaignManager", () => {
 
   it("cancels create form without inserting and clears error", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    await userEvent.type(screen.getByPlaceholderText(/campaign name/i), "Temp");
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    await userEvent.type(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i), "Temp");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
     expect(mockChain.insert).not.toHaveBeenCalled();
-    expect(screen.queryByPlaceholderText(/campaign name/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/dashboard\.campaigns_name_label/i)).not.toBeInTheDocument();
   });
 
   // ── Edit Campaign ──────────────────────────────────────────────────────────
 
   it("shows edit form pre-filled with campaign name on Edit click", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    const editBtns = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editBtns[0]);
     expect(screen.getByDisplayValue("The Lost Mines")).toBeInTheDocument();
   });
 
   it("opening Edit closes the create form", async () => {
     render(<CampaignManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /new campaign/i }));
-    expect(screen.getByPlaceholderText(/campaign name/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_new/i }));
+    expect(screen.getByPlaceholderText(/dashboard\.campaigns_name_label/i)).toBeInTheDocument();
 
-    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    const editBtns = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editBtns[0]);
-    expect(screen.queryByPlaceholderText(/campaign name/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/dashboard\.campaigns_name_label/i)).not.toBeInTheDocument();
     expect(screen.getByDisplayValue("The Lost Mines")).toBeInTheDocument();
   });
 
   it("calls supabase update with owner_id filter on edit save", async () => {
     setupUpdateSuccess();
     render(<CampaignManager {...defaultProps} />);
-    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    const editBtns = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editBtns[0]);
 
     const input = screen.getByDisplayValue("The Lost Mines");
     await userEvent.clear(input);
     await userEvent.type(input, "Renamed Campaign");
-    await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
 
     await waitFor(() => {
       expect(mockChain.update).toHaveBeenCalledWith({ name: "Renamed Campaign" });
@@ -315,7 +315,7 @@ describe("CampaignManager", () => {
 
   it("cancels edit without updating", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const editBtns = screen.getAllByRole("button", { name: /^edit$/i });
+    const editBtns = screen.getAllByRole("button", { name: /^common\.edit$/i });
     await userEvent.click(editBtns[0]);
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
@@ -327,20 +327,20 @@ describe("CampaignManager", () => {
 
   it("shows confirmation dialog when Delete is clicked", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const deleteBtns = screen.getAllByRole("button", { name: /^delete$/i });
+    const deleteBtns = screen.getAllByRole("button", { name: /^common\.delete$/i });
     await userEvent.click(deleteBtns[0]);
 
-    expect(screen.getByText(/are you sure/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /confirm delete/i })).toBeInTheDocument();
+    expect(screen.getByText(/dashboard\.campaigns_delete_confirm/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /dashboard\.campaigns_delete_button/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
   it("calls supabase delete with owner_id filter on confirm and removes from list", async () => {
     setupDeleteSuccess();
     render(<CampaignManager {...defaultProps} />);
-    const deleteBtns = screen.getAllByRole("button", { name: /^delete$/i });
+    const deleteBtns = screen.getAllByRole("button", { name: /^common\.delete$/i });
     await userEvent.click(deleteBtns[0]);
-    await userEvent.click(screen.getByRole("button", { name: /confirm delete/i }));
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.campaigns_delete_button/i }));
 
     await waitFor(() => {
       expect(mockChain.delete).toHaveBeenCalled();
@@ -352,7 +352,7 @@ describe("CampaignManager", () => {
 
   it("does NOT call delete on cancel", async () => {
     render(<CampaignManager {...defaultProps} />);
-    const deleteBtns = screen.getAllByRole("button", { name: /^delete$/i });
+    const deleteBtns = screen.getAllByRole("button", { name: /^common\.delete$/i });
     await userEvent.click(deleteBtns[0]);
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 

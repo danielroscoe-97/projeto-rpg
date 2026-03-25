@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations("nav");
   return (
     <footer className="border-t border-border bg-surface-primary py-10 px-6">
       <div className="max-w-5xl mx-auto">
@@ -10,10 +12,10 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2">
               <Image src="/art/icons/pet-poring.png" alt="" width={22} height={22} className="pixel-art opacity-60" aria-hidden="true" unoptimized />
-              <span className="font-display text-gold text-lg">Taverna do Mestre</span>
+              <span className="font-display text-gold text-lg">{t("footer_brand")}</span>
             </div>
             <p className="text-muted-foreground text-xs mt-1">
-              Combat tracker para mestres de D&D 5e
+              {t("footer_subtitle")}
             </p>
           </div>
 
@@ -23,35 +25,35 @@ export function Footer() {
               href="/auth/sign-up"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
             >
-              Criar Conta
+              {t("footer_signup")}
             </Link>
             <Link
               href="/legal/attribution"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
             >
-              Attribution
+              {t("attribution")}
             </Link>
             <Link
               href="/legal/privacy"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
             >
-              Privacidade
+              {t("privacy")}
             </Link>
           </nav>
         </div>
 
         {/* Attribution + copyright */}
         <div className="mt-8 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground/60">
-          <p>&copy; {new Date().getFullYear()} Taverna do Mestre</p>
+          <p>&copy; {new Date().getFullYear()} {t("footer_brand")}</p>
           <p>
-            Uses the System Reference Document 5.1 and 5.2 under the{" "}
+            {t("footer_srd_notice")}{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               target="_blank"
               rel="noopener noreferrer"
               className="underline underline-offset-2 hover:text-muted-foreground transition-colors"
             >
-              CC-BY-4.0 License
+              {t("footer_srd_license")}
             </a>
           </p>
         </div>

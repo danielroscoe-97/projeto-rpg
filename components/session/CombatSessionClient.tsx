@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import {
   persistInitiativeAndStartCombat,
@@ -51,6 +52,7 @@ export function CombatSessionClient({
   rulesetVersion = "2014",
 }: CombatSessionClientProps) {
   const router = useRouter();
+  const t = useTranslations("combat");
   const [turnPending, setTurnPending] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -97,7 +99,7 @@ export function CombatSessionClient({
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to start combat.");
+        setError(err instanceof Error ? err.message : t("error_start_combat"));
       }
       return;
     }
@@ -117,7 +119,7 @@ export function CombatSessionClient({
       // Update URL for reload resilience (no visible navigation)
       router.replace(`/app/session/${session_id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to start combat.");
+      setError(err instanceof Error ? err.message : t("error_start_combat"));
     }
   };
 
@@ -139,7 +141,7 @@ export function CombatSessionClient({
       await persistTurnAdvance(encounter_id, nextIdx, nextRound);
     } catch (err) {
       useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
-      setError(err instanceof Error ? err.message : "Failed to save turn.");
+      setError(err instanceof Error ? err.message : t("error_save_turn"));
     } finally {
       setTurnPending(false);
     }
@@ -306,11 +308,11 @@ export function CombatSessionClient({
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
       <div className="flex items-center justify-between">
         <h2 className="text-foreground font-semibold">
-          Round <span className="font-mono text-gold">{round_number}</span>
+          {t("round")} <span className="font-mono text-gold">{round_number}</span>
         </h2>
         <div className="flex items-center gap-3 flex-wrap">
           <ShareSessionButton sessionId={getSessionId()} />
-          <span className="text-muted-foreground text-xs">{combatants.length} combatants</span>
+          <span className="text-muted-foreground text-xs">{combatants.length} {combatants.length === 1 ? t("combatant") : t("combatants")}</span>
           <button
             type="button"
             onClick={handleEndEncounter}
@@ -318,7 +320,7 @@ export function CombatSessionClient({
             aria-label="End encounter"
             data-testid="end-encounter-btn"
           >
-            End
+            {t("end_session")}
           </button>
           <button
             type="button"
@@ -327,7 +329,7 @@ export function CombatSessionClient({
             aria-label="Add combatant"
             data-testid="add-combatant-btn"
           >
-            + Add
+            {t("add_mid_combat")}
           </button>
           <button
             type="button"
@@ -337,7 +339,7 @@ export function CombatSessionClient({
             aria-label="Advance to next turn"
             data-testid="next-turn-btn"
           >
-            {turnPending ? "Saving\u2026" : "Next Turn \u2192"}
+            {turnPending ? t("next_turn_saving") : t("next_turn")}
           </button>
         </div>
       </div>
@@ -352,7 +354,7 @@ export function CombatSessionClient({
       <ul
         className="space-y-2"
         role="list"
-        aria-label="Initiative order"
+        aria-label={t("initiative_order")}
         data-testid="initiative-list"
       >
         {combatants.map((c, index) => (

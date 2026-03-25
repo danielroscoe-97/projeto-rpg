@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { searchMonsters } from "@/lib/srd/srd-search";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
@@ -19,6 +20,7 @@ export function MonsterSearch({
   defaultVersion,
   onAddToCombat,
 }: MonsterSearchProps) {
+  const t = useTranslations("oracle");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SrdMonster[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -68,9 +70,9 @@ export function MonsterSearch({
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search monsters by name, CR, or type…"
+        placeholder={t("monster_search_placeholder")}
         className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-gold"
-        aria-label="Monster search"
+        aria-label={t("monster_search_label")}
         data-testid="monster-search-input"
       />
 
@@ -78,7 +80,7 @@ export function MonsterSearch({
         <ul
           className="space-y-1"
           role="list"
-          aria-label="Monster search results"
+          aria-label={t("monster_results_aria")}
           data-testid="monster-search-results"
         >
           {results.map((monster) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
 import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
 import { loadMonsters } from "@/lib/srd/srd-loader";
@@ -35,6 +36,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
 };
 
 export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
+  const t = useTranslations("combat");
   const {
     combatants,
     addCombatant,
@@ -78,7 +80,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
       .catch(() => {
         if (!cancelled) {
           setIsSearching(false);
-          setSearchError("Failed to load monsters. Please refresh.");
+          setSearchError(t("search_monsters_error"));
         }
       });
     return () => { cancelled = true; };
@@ -216,12 +218,12 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
   // Start combat
   const handleStartCombat = async () => {
     if (combatants.length === 0) {
-      setSubmitError("Add at least one combatant before starting.");
+      setSubmitError(t("error_no_combatants"));
       return;
     }
     const missingInit = combatants.filter((c) => c.initiative === null);
     if (missingInit.length > 0) {
-      setSubmitError(`${missingInit.length} combatant(s) still need initiative values.`);
+      setSubmitError(t("error_missing_init", { count: missingInit.length }));
       return;
     }
     setSubmitError(null);
@@ -230,7 +232,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
       await onStartCombat();
     } catch (err) {
       setSubmitError(
-        err instanceof Error ? err.message : "Failed to start combat."
+        err instanceof Error ? err.message : t("error_start_combat")
       );
     } finally {
       setIsPending(false);
@@ -251,9 +253,9 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">New Encounter</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Add combatants, set initiative, then start combat.
+          {t("encounter_description")}
         </p>
       </div>
 
@@ -266,13 +268,13 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
       {/* SRD Monster Search */}
       <div className="space-y-1">
         <label className="text-foreground/80 text-xs font-medium block">
-          Search SRD Monsters
+          {t("search_monsters")}
         </label>
         <input
           type="text"
           value={srdQuery}
           onChange={(e) => setSrdQuery(e.target.value)}
-          placeholder="Type monster name to auto-fill..."
+          placeholder={t("search_monsters_placeholder")}
           className={`${inputClass} w-full`}
           data-testid="srd-search-input"
         />
@@ -297,7 +299,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
                   </span>
                   <VersionBadge version={monster.ruleset_version} />
                   <span className="text-muted-foreground text-xs">
-                    CR {monster.cr} · HP {monster.hit_points} · AC {monster.armor_class}
+                    {t("monster_stats", { cr: monster.cr, hp: monster.hit_points, ac: monster.armor_class })}
                   </span>
                 </div>
               </li>
@@ -309,11 +311,11 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
       {/* Column headers — always visible, aligned with both rows and add-row */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
         <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
-        <span className="w-14 flex-shrink-0 text-center">Init</span>
-        <span className="flex-1 min-w-0">Name</span>
-        <span className="w-16 flex-shrink-0 text-center">HP</span>
-        <span className="w-14 flex-shrink-0 text-center">AC</span>
-        <span className="flex-1 min-w-0">Notes</span>
+        <span className="w-14 flex-shrink-0 text-center">{t("setup_col_init")}</span>
+        <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
+        <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
+        <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
+        <span className="flex-1 min-w-0">{t("setup_col_notes")}</span>
         <span className="w-14 flex-shrink-0" /> {/* remove btn / Add btn spacer */}
       </div>
 
@@ -339,9 +341,9 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
         {/* Empty state */}
         {combatants.length === 0 && (
           <div className="text-center py-8 text-muted-foreground/60 text-sm">
-            Add combatants to build your encounter.
+            {t("setup_empty")}
             <br />
-            <span className="text-xs">Search SRD monsters above or type below.</span>
+            <span className="text-xs">{t("setup_empty_hint")}</span>
           </div>
         )}
       </div>
@@ -359,7 +361,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           type="number"
           value={addRow.initiative}
           onChange={(e) => setAddRow((f) => ({ ...f, initiative: e.target.value }))}
-          placeholder="Init"
+          placeholder={t("setup_col_init")}
           min={-5}
           max={30}
           className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
@@ -369,7 +371,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           type="text"
           value={addRow.name}
           onChange={(e) => setAddRow((f) => ({ ...f, name: e.target.value }))}
-          placeholder="Name"
+          placeholder={t("setup_col_name")}
           className={`${inputClass} flex-1 min-w-0`}
           data-testid="add-row-name"
         />
@@ -377,7 +379,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           type="number"
           value={addRow.hp}
           onChange={(e) => setAddRow((f) => ({ ...f, hp: e.target.value }))}
-          placeholder="HP"
+          placeholder={t("setup_col_hp")}
           min={1}
           className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-hp"
@@ -386,7 +388,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           type="number"
           value={addRow.ac}
           onChange={(e) => setAddRow((f) => ({ ...f, ac: e.target.value }))}
-          placeholder="AC"
+          placeholder={t("setup_col_ac")}
           min={1}
           className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-ac"
@@ -395,7 +397,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           type="text"
           value={addRow.notes}
           onChange={(e) => setAddRow((f) => ({ ...f, notes: e.target.value }))}
-          placeholder="Notes"
+          placeholder={t("setup_col_notes")}
           className={`${inputClass} flex-1 min-w-0 text-muted-foreground`}
           data-testid="add-row-notes"
         />
@@ -405,7 +407,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           className="w-14 flex-shrink-0 py-1.5 bg-gold/20 text-gold text-sm font-medium rounded hover:bg-gold/40 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
-          Add
+          {t("setup_add")}
         </button>
       </div>
 
@@ -430,7 +432,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
           className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           data-testid="start-combat-btn"
         >
-          {isPending ? "Starting\u2026" : "Start Combat \u2192"}
+          {isPending ? t("starting") : t("start_combat")}
         </button>
       </div>
     </div>

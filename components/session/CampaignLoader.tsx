@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import {
   Dialog,
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function CampaignLoader({ onLoad }: Props) {
+  const t = useTranslations("session");
   const [open, setOpen] = useState(false);
   const [campaigns, setCampaigns] = useState<CampaignWithCount[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +41,7 @@ export function CampaignLoader({ onLoad }: Props) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      setFetchError("Failed to load campaigns. Please try again.");
+      setFetchError(t("load_campaigns_error"));
     } else {
       setCampaigns(
         data?.map((c) => ({
@@ -74,7 +76,7 @@ export function CampaignLoader({ onLoad }: Props) {
       .order("created_at", { ascending: true });
 
     if (error) {
-      setLoadError("Failed to load players. Please try again.");
+      setLoadError(t("load_players_error"));
       setLoadingCampaignId(null);
       return;
     }
@@ -95,7 +97,7 @@ export function CampaignLoader({ onLoad }: Props) {
           className="text-sm text-muted-foreground hover:text-foreground/80 underline transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
           data-testid="load-campaign-btn"
         >
-          Load Campaign
+          {t("load_campaign")}
         </button>
       </DialogTrigger>
 
@@ -105,7 +107,7 @@ export function CampaignLoader({ onLoad }: Props) {
         data-testid="campaign-loader-dialog"
       >
         <DialogHeader>
-          <DialogTitle>Load Player Group</DialogTitle>
+          <DialogTitle>{t("load_campaign_title")}</DialogTitle>
         </DialogHeader>
 
         {fetchError && (
@@ -117,11 +119,11 @@ export function CampaignLoader({ onLoad }: Props) {
 
         {isLoading ? (
           <p className="text-muted-foreground text-sm" data-testid="campaigns-loading">
-            Loading campaigns…
+            {t("loading_campaigns")}
           </p>
         ) : !fetchError && campaigns.length === 0 ? (
           <p className="text-muted-foreground text-sm" data-testid="no-campaigns-msg">
-            No campaigns found.
+            {t("no_campaigns")}
           </p>
         ) : (
           <ul className="space-y-2" data-testid="campaign-list">
@@ -137,7 +139,7 @@ export function CampaignLoader({ onLoad }: Props) {
                   </span>
                   <span className="text-muted-foreground text-xs ml-2">
                     {campaign.player_count}{" "}
-                    {campaign.player_count === 1 ? "player" : "players"}
+                    {campaign.player_count === 1 ? t("campaign_players_singular") : t("campaign_players_plural")}
                   </span>
                 </div>
                 {campaign.player_count === 0 ? (
@@ -145,7 +147,7 @@ export function CampaignLoader({ onLoad }: Props) {
                     className="text-muted-foreground text-xs"
                     data-testid={`empty-campaign-msg-${campaign.id}`}
                   >
-                    This campaign has no players yet.
+                    {t("campaign_no_players")}
                   </span>
                 ) : (
                   <button
@@ -153,10 +155,10 @@ export function CampaignLoader({ onLoad }: Props) {
                     onClick={() => handleLoad(campaign.id)}
                     disabled={!!loadingCampaignId}
                     className="text-xs px-3 py-1 text-gold hover:bg-white/[0.04] rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
-                    aria-label={`Load ${campaign.name} into encounter`}
+                    aria-label={t("load_into_encounter", { name: campaign.name })}
                     data-testid={`load-campaign-${campaign.id}`}
                   >
-                    {loadingCampaignId === campaign.id ? "Loading…" : "Load"}
+                    {loadingCampaignId === campaign.id ? t("load_button_loading") : t("load_button")}
                   </button>
                 )}
               </li>

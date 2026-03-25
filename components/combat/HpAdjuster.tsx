@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type HpMode = "damage" | "heal" | "temp";
 
@@ -17,6 +18,7 @@ export function HpAdjuster({
   onSetTempHp,
   onClose,
 }: HpAdjusterProps) {
+  const t = useTranslations("combat");
   const [mode, setMode] = useState<HpMode>("damage");
   const [value, setValue] = useState("");
 
@@ -57,7 +59,7 @@ export function HpAdjuster({
             }`}
             data-testid={`hp-mode-${m}`}
           >
-            {m === "damage" ? "Dmg" : m === "heal" ? "Heal" : "Temp"}
+            {m === "damage" ? t("hp_mode_damage") : m === "heal" ? t("hp_mode_heal") : t("hp_mode_temp")}
           </button>
         ))}
       </div>
@@ -69,7 +71,7 @@ export function HpAdjuster({
         onKeyDown={handleKeyDown}
         placeholder="0"
         className="w-16 px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono text-center min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        aria-label={`${mode === "damage" ? "Damage" : mode === "heal" ? "Healing" : "Temporary HP"} amount`}
+        aria-label={t("hp_amount_aria", { mode: mode === "damage" ? t("hp_mode_damage") : mode === "heal" ? t("hp_mode_heal") : t("hp_mode_temp") })}
         data-testid="hp-amount-input"
         autoFocus
       />
@@ -79,13 +81,13 @@ export function HpAdjuster({
         className="px-3 py-1 bg-gold text-foreground text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px]"
         data-testid="hp-apply-btn"
       >
-        Apply
+        {t("hp_apply")}
       </button>
       <button
         type="button"
         onClick={onClose}
         className="px-2 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
-        aria-label="Close HP adjuster"
+        aria-label={t("hp_close")}
         data-testid="hp-close-btn"
       >
         ✕

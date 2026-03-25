@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -17,6 +18,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ brand, brandHref, links = [], rightSlot }: NavbarProps) {
+  const t = useTranslations("nav");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -70,7 +72,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot }: NavbarProps)
             type="button"
             className="md:hidden ml-auto flex flex-col gap-[5px] p-2 min-h-[44px] min-w-[44px] items-center justify-center"
             onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t("close_menu") : t("open_menu")}
             aria-expanded={mobileOpen}
           >
             <span

@@ -76,7 +76,7 @@ describe("SpellSearch", () => {
   it("renders the search input", () => {
     render(<SpellSearch />);
     expect(
-      screen.getByRole("searchbox", { name: "Spell search" })
+      screen.getByRole("searchbox", { name: "oracle.spell_search_label" })
     ).toBeInTheDocument();
   });
 
@@ -114,7 +114,7 @@ describe("SpellSearch", () => {
     await waitFor(() => {
       expect(screen.getByText("Fireball")).toBeInTheDocument();
     });
-    expect(screen.getByText("Lvl 3")).toBeInTheDocument();
+    expect(screen.getByText("oracle.spell_level")).toBeInTheDocument();
     expect(screen.getByText("Evocation")).toBeInTheDocument();
     expect(screen.getByText("2014")).toBeInTheDocument();
   });
@@ -181,7 +181,7 @@ describe("SpellSearch", () => {
 
     await waitFor(() => screen.getByTestId("spell-row-fireball"));
     expect(
-      screen.getByRole("button", { name: "View Fireball details" })
+      screen.getByRole("button", { name: "oracle.spell_view_aria" })
     ).toBeInTheDocument();
   });
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { Combatant } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 
@@ -25,6 +26,7 @@ export function CombatantSetupRow({
   onRemove,
   dragHandleProps,
 }: CombatantSetupRowProps) {
+  const t = useTranslations("combat");
   const inputClass =
     "bg-transparent border border-transparent hover:border-border focus:border-ring focus:outline-none rounded px-1.5 py-1 text-foreground text-sm transition-colors min-h-[32px]";
 
@@ -36,7 +38,7 @@ export function CombatantSetupRow({
       {/* Drag handle */}
       <span
         className="text-muted-foreground/40 hover:text-muted-foreground cursor-grab active:cursor-grabbing select-none text-sm w-5 text-center flex-shrink-0"
-        aria-label="Drag to reorder"
+        aria-label={t("drag_to_reorder")}
         {...dragHandleProps}
       >
         ⠿
@@ -57,11 +59,11 @@ export function CombatantSetupRow({
             onInitiativeChange(combatant.id, Math.min(30, Math.max(-5, val)));
           }
         }}
-        placeholder="Init"
+        placeholder={t("setup_init_placeholder")}
         min={-5}
         max={30}
         className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-        aria-label={`Initiative for ${combatant.name}`}
+        aria-label={t("setup_init_aria", { name: combatant.name })}
         data-testid={`setup-init-${combatant.id}`}
       />
 
@@ -71,14 +73,14 @@ export function CombatantSetupRow({
           type="text"
           value={combatant.name}
           onChange={(e) => onNameChange(combatant.id, e.target.value)}
-          placeholder="Name"
+          placeholder={t("setup_name_placeholder")}
           className={`${inputClass} flex-1 min-w-0`}
-          aria-label={`Name for combatant`}
+          aria-label={t("setup_name_aria")}
           data-testid={`setup-name-${combatant.id}`}
         />
         {combatant.is_player && (
           <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider flex-shrink-0">
-            Player
+            {t("setup_player_badge")}
           </span>
         )}
         {combatant.ruleset_version && (
@@ -98,10 +100,10 @@ export function CombatantSetupRow({
             onHpChange(combatant.id, val);
           }
         }}
-        placeholder="HP"
+        placeholder={t("setup_hp_placeholder")}
         min={1}
         className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-        aria-label={`HP for ${combatant.name}`}
+        aria-label={t("setup_hp_aria", { name: combatant.name })}
         data-testid={`setup-hp-${combatant.id}`}
       />
 
@@ -115,10 +117,10 @@ export function CombatantSetupRow({
             onAcChange(combatant.id, val);
           }
         }}
-        placeholder="AC"
+        placeholder={t("setup_ac_placeholder")}
         min={1}
         className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-        aria-label={`AC for ${combatant.name}`}
+        aria-label={t("setup_ac_aria", { name: combatant.name })}
         data-testid={`setup-ac-${combatant.id}`}
       />
 
@@ -127,9 +129,9 @@ export function CombatantSetupRow({
         type="text"
         value={combatant.player_notes}
         onChange={(e) => onNotesChange(combatant.id, e.target.value)}
-        placeholder="Notes"
+        placeholder={t("setup_notes_placeholder")}
         className={`${inputClass} flex-1 min-w-0 text-muted-foreground`}
-        aria-label={`Notes for ${combatant.name}`}
+        aria-label={t("setup_notes_aria", { name: combatant.name })}
         data-testid={`setup-notes-${combatant.id}`}
       />
 
@@ -138,10 +140,10 @@ export function CombatantSetupRow({
         type="button"
         onClick={() => onRemove(combatant.id)}
         className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs w-14 flex-shrink-0 text-center opacity-0 group-hover:opacity-100 focus:opacity-100 min-h-[32px]"
-        aria-label={`Remove ${combatant.name}`}
+        aria-label={t("setup_remove_aria", { name: combatant.name })}
         data-testid={`setup-remove-${combatant.id}`}
       >
-        Remove
+        {t("setup_remove")}
       </button>
     </div>
   );

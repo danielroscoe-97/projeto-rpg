@@ -107,7 +107,7 @@ describe("CombatantSetupRow", () => {
 
   it("shows Player badge for player combatants", () => {
     renderRow({ is_player: true });
-    expect(screen.getByText("Player")).toBeInTheDocument();
+    expect(screen.getByText("combat.setup_player_badge")).toBeInTheDocument();
   });
 
   it("shows version badge for SRD monsters", () => {

@@ -54,7 +54,7 @@ beforeEach(() => {
 describe("MonsterSearch", () => {
   it("renders the search input", () => {
     render(<MonsterSearch />);
-    expect(screen.getByRole("searchbox", { name: "Monster search" })).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "oracle.monster_search_label" })).toBeInTheDocument();
   });
 
   it("shows no results when query is empty", () => {

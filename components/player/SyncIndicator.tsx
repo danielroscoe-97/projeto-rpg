@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ConnectionStatus } from "@/lib/realtime/use-realtime-channel";
 
 interface SyncIndicatorProps {
@@ -7,6 +8,7 @@ interface SyncIndicatorProps {
 }
 
 export function SyncIndicator({ status }: SyncIndicatorProps) {
+  const t = useTranslations("player");
   const color =
     status === "connected"
       ? "bg-green-400"
@@ -16,10 +18,10 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
 
   const label =
     status === "connected"
-      ? "Connected"
+      ? t("sync_connected")
       : status === "connecting"
-        ? "Connecting..."
-        : "Reconnecting...";
+        ? t("sync_connecting")
+        : t("sync_reconnecting");
 
   return (
     <div className="flex items-center gap-1.5" data-testid="sync-indicator">

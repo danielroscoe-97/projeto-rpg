@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { LogoutButton } from "@/components/logout-button";
 
@@ -24,17 +25,19 @@ export default async function AdminLayout({
 
   if (!userRow?.is_admin) redirect("/app/dashboard");
 
+  const t = await getTranslations("admin");
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar
-        brand="Admin Panel"
+        brand={t("panel_title")}
         brandHref="/admin"
         links={[
-          { href: "/admin", label: "Metrics" },
-          { href: "/admin/users", label: "Users" },
-          { href: "/admin/content/monsters", label: "Monsters" },
-          { href: "/admin/content/spells", label: "Spells" },
-          { href: "/app/dashboard", label: "← App" },
+          { href: "/admin", label: t("nav_metrics") },
+          { href: "/admin/users", label: t("nav_users") },
+          { href: "/admin/content/monsters", label: t("nav_monsters") },
+          { href: "/admin/content/spells", label: t("nav_spells") },
+          { href: "/app/dashboard", label: t("nav_back") },
         ]}
         rightSlot={<LogoutButton />}
       />

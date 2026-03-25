@@ -13,12 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function ForgotPasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -38,7 +41,7 @@ export function ForgotPasswordForm({
       if (error) throw error;
       setSuccess(true);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }
@@ -49,34 +52,32 @@ export function ForgotPasswordForm({
       {success ? (
         <Card className="">
           <CardHeader>
-            <CardTitle className="text-2xl text-foreground">Check Your Email</CardTitle>
-            <CardDescription className="text-muted-foreground">Password reset instructions sent</CardDescription>
+            <CardTitle className="text-2xl text-foreground">{t("check_email")}</CardTitle>
+            <CardDescription className="text-muted-foreground">{t("reset_sent")}</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
+              {t("reset_sent_description")}
             </p>
           </CardContent>
         </Card>
       ) : (
         <Card className="">
           <CardHeader>
-            <CardTitle className="text-2xl text-foreground">Reset Your Password</CardTitle>
+            <CardTitle className="text-2xl text-foreground">{t("reset_title")}</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Type in your email and we&apos;ll send you a link to reset your
-              password
+              {t("reset_description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleForgotPassword}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-foreground/80">Email</Label>
+                  <Label htmlFor="email" className="text-foreground/80">{t("email_label")}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder={t("email_placeholder")}
                     required
                     aria-required="true"
                     aria-describedby={error ? "forgot-error" : undefined}
@@ -96,16 +97,16 @@ export function ForgotPasswordForm({
                   className="w-full min-h-[44px]"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Sending..." : "Send reset email"}
+                  {isLoading ? t("sending") : t("send_reset")}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
+                {t("already_have_account")}{" "}
                 <Link
                   href="/auth/login"
                   className="text-gold underline underline-offset-4"
                 >
-                  Login
+                  {t("login_link")}
                 </Link>
               </div>
             </form>

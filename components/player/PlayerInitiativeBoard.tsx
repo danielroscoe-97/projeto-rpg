@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -26,12 +27,12 @@ function getHpBarColor(current: number, max: number): string {
   return "bg-red-500";
 }
 
-function getHpThresholdLabel(current: number, max: number): string {
-  if (max === 0) return "";
+function getHpThresholdKey(current: number, max: number): string | null {
+  if (max === 0) return null;
   const pct = current / max;
-  if (pct > 0.5) return "OK";
-  if (pct > 0.25) return "LOW";
-  return "CRIT";
+  if (pct > 0.5) return "hp_ok";
+  if (pct > 0.25) return "hp_low";
+  return "hp_crit";
 }
 
 interface PlayerInitiativeBoardProps {
@@ -44,11 +45,12 @@ export function PlayerInitiativeBoard({
   combatants,
   currentTurnIndex,
 }: PlayerInitiativeBoardProps) {
+  const t = useTranslations("player");
   return (
     <ul
       className="space-y-2"
       role="list"
-      aria-label="Initiative order"
+      aria-label={t("initiative_order")}
       data-testid="player-initiative-board"
     >
       {combatants.map((combatant, index) => {
@@ -58,7 +60,7 @@ export function PlayerInitiativeBoard({
             ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
             : 0;
         const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
-        const hpThresholdLabel = getHpThresholdLabel(
+        const hpThresholdKey = getHpThresholdKey(
           combatant.current_hp,
           combatant.max_hp
         );
@@ -79,7 +81,7 @@ export function PlayerInitiativeBoard({
               {isCurrentTurn && (
                 <span
                   className="text-gold shrink-0 text-xs leading-none select-none"
-                  aria-label="Current turn"
+                  aria-label={t("current_turn")}
                 >
                   ▶
                 </span>
@@ -89,7 +91,7 @@ export function PlayerInitiativeBoard({
               </span>
               {combatant.is_defeated && (
                 <span className="text-xs text-red-400 font-medium">
-                  Defeated
+                  {t("defeated")}
                 </span>
               )}
             </div>
@@ -97,17 +99,17 @@ export function PlayerInitiativeBoard({
             {/* HP bar */}
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-muted-foreground text-xs">HP</span>
+                <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
                 <span className="text-muted-foreground text-xs font-mono">
                   {combatant.current_hp} / {combatant.max_hp}
-                  {hpThresholdLabel && (
+                  {hpThresholdKey && (
                     <span className="text-xs font-mono ml-1 text-muted-foreground">
-                      {hpThresholdLabel}
+                      {t(hpThresholdKey)}
                     </span>
                   )}
                   {hasTempHp && (
                     <span className="text-[#9f7aea] ml-1">
-                      +{combatant.temp_hp} temp
+                      {t("temp_hp", { value: combatant.temp_hp })}
                     </span>
                   )}
                 </span>
@@ -118,7 +120,7 @@ export function PlayerInitiativeBoard({
                 aria-valuenow={combatant.current_hp}
                 aria-valuemin={0}
                 aria-valuemax={combatant.max_hp}
-                aria-label={`${combatant.name} hit points${hpThresholdLabel ? ` — ${hpThresholdLabel}` : ""}`}
+                aria-label={t("hp_aria", { name: combatant.name }) + (hpThresholdKey ? ` — ${t(hpThresholdKey)}` : "")}
               >
                 <div
                   className={`h-full rounded-full transition-all ${hpBarColor}`}

@@ -13,12 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function UpdatePasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +39,7 @@ export function UpdatePasswordForm({
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/app/dashboard");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }
@@ -46,20 +49,20 @@ export function UpdatePasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-foreground">Reset Your Password</CardTitle>
+          <CardTitle className="text-2xl text-foreground">{t("update_password_title")}</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Please enter your new password below.
+            {t("update_password_description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleForgotPassword}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-foreground/80">New password</Label>
+                <Label htmlFor="password" className="text-foreground/80">{t("new_password_label")}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="New password"
+                  placeholder={t("new_password_placeholder")}
                   required
                   minLength={6}
                   aria-required="true"
@@ -80,7 +83,7 @@ export function UpdatePasswordForm({
                 className="w-full min-h-[44px]"
                 disabled={isLoading}
               >
-                {isLoading ? "Saving..." : "Save new password"}
+                {isLoading ? t("save_password_saving") : t("save_password")}
               </Button>
             </div>
           </form>

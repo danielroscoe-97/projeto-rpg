@@ -14,12 +14,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -34,7 +37,7 @@ export function SignUpForm({
     setError(null);
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError(t("passwords_mismatch"));
       setIsLoading(false);
       return;
     }
@@ -50,7 +53,7 @@ export function SignUpForm({
       if (error) throw error;
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }
@@ -60,18 +63,18 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-foreground">Sign up</CardTitle>
-          <CardDescription className="text-muted-foreground">Create a new account</CardDescription>
+          <CardTitle className="text-2xl text-foreground">{t("signup_title")}</CardTitle>
+          <CardDescription className="text-muted-foreground">{t("signup_description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-foreground/80">Email</Label>
+                <Label htmlFor="email" className="text-foreground/80">{t("email_label")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("email_placeholder")}
                   required
                   aria-required="true"
                   aria-describedby={error ? "signup-error" : undefined}
@@ -81,7 +84,7 @@ export function SignUpForm({
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-foreground/80">Password</Label>
+                <Label htmlFor="password" className="text-foreground/80">{t("password_label")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -94,7 +97,7 @@ export function SignUpForm({
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="repeat-password" className="text-foreground/80">Repeat Password</Label>
+                <Label htmlFor="repeat-password" className="text-foreground/80">{t("repeat_password")}</Label>
                 <Input
                   id="repeat-password"
                   type="password"
@@ -117,13 +120,13 @@ export function SignUpForm({
                 className="w-full min-h-[44px]"
                 disabled={isLoading}
               >
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? t("signup_submitting") : t("signup_submit")}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
+              {t("have_account")}{" "}
               <Link href="/auth/login" className="text-gold underline underline-offset-4">
-                Login
+                {t("login_link")}
               </Link>
             </div>
           </form>

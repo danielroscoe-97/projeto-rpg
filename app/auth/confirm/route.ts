@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { getUserLanguagePreference } from "@/lib/supabase/user";
 import { type EmailOtpType } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { type NextRequest } from "next/server";
 
@@ -17,6 +19,14 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
+      // Sync user's language preference to cookie
+      const locale = await getUserLanguagePreference();
+      const cookieStore = await cookies();
+      cookieStore.set("NEXT_LOCALE", locale, {
+        path: "/",
+        maxAge: 31536000,
+        sameSite: "lax",
+      });
       // redirect user to specified redirect URL or root of app
       redirect(next);
     } else {

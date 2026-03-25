@@ -27,7 +27,7 @@ describe("ShareSessionButton", () => {
   it("renders the generate button initially", () => {
     render(<ShareSessionButton sessionId="s1" />);
     expect(screen.getByTestId("share-session-generate")).toBeInTheDocument();
-    expect(screen.getByText("Share Session")).toBeInTheDocument();
+    expect(screen.getByText("session.share_button")).toBeInTheDocument();
   });
 
   it("generates a link and shows URL + copy button on click", async () => {
@@ -60,7 +60,7 @@ describe("ShareSessionButton", () => {
     await user.click(screen.getByTestId("share-session-generate"));
 
     await waitFor(() => {
-      expect(screen.getByText("Copied!")).toBeInTheDocument();
+      expect(screen.getByText("common.copied")).toBeInTheDocument();
     });
   });
 

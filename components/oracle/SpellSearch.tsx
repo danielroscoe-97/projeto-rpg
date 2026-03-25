@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { searchSpells } from "@/lib/srd/srd-search";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal";
@@ -14,12 +15,8 @@ interface SpellSearchProps {
   defaultVersion?: RulesetVersion;
 }
 
-function levelLabel(level: number): string {
-  if (level === 0) return "Cantrip";
-  return `Lvl ${level}`;
-}
-
 export function SpellSearch({ defaultVersion }: SpellSearchProps) {
+  const t = useTranslations("oracle");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SrdSpell[]>([]);
   const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
@@ -54,9 +51,9 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search spells by name, class, or school..."
+        placeholder={t("spell_search_placeholder")}
         className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-gold"
-        aria-label="Spell search"
+        aria-label={t("spell_search_label")}
         data-testid="spell-search-input"
       />
 
@@ -64,7 +61,7 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
         <ul
           className="space-y-1"
           role="list"
-          aria-label="Spell search results"
+          aria-label={t("spell_results_aria")}
           data-testid="spell-search-results"
         >
           {results.map((spell) => {
@@ -78,14 +75,14 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
                   type="button"
                   onClick={() => setSelectedSpell(spell)}
                   className="w-full flex items-center gap-2 px-3 py-2 text-left hover:text-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
-                  aria-label={`View ${spell.name} details`}
+                  aria-label={t("spell_view_aria", { name: spell.name })}
                   data-testid={`spell-row-${spell.id}`}
                 >
                   <span className="text-foreground text-sm font-medium flex-1">
                     {spell.name}
                   </span>
                   <span className="text-muted-foreground text-xs font-mono">
-                    {levelLabel(spell.level)}
+                    {spell.level === 0 ? t("spell_cantrip") : t("spell_level", { level: spell.level })}
                   </span>
                   <span className="text-muted-foreground text-xs capitalize">
                     {spell.school}

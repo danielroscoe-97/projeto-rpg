@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { RulesetVersion } from "@/lib/types/database";
 
 interface RulesetSelectorProps {
@@ -14,13 +15,15 @@ const VERSIONS: RulesetVersion[] = ["2014", "2024"];
 export function RulesetSelector({
   value,
   onChange,
-  label = "Ruleset:",
+  label,
   disabled = false,
 }: RulesetSelectorProps) {
+  const t = useTranslations("session");
+  const resolvedLabel = label ?? t("ruleset_label");
   return (
     <div className="flex items-center gap-3">
-      {label && (
-        <span className="text-muted-foreground text-sm shrink-0">{label}</span>
+      {resolvedLabel && (
+        <span className="text-muted-foreground text-sm shrink-0">{resolvedLabel}</span>
       )}
       <div className="flex gap-1" role="group" aria-label="Ruleset version">
         {VERSIONS.map((v) => (

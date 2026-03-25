@@ -1,3 +1,8 @@
+// Mock next-intl/plugin to avoid CJS module loading issues in Jest
+jest.mock("next-intl/plugin", () => {
+  return () => (config: Record<string, unknown>) => config;
+});
+
 import nextConfig from "./next.config";
 
 describe("next.config — headers()", () => {

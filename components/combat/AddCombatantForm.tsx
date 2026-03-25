@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Combatant } from "@/lib/types/combat";
 
 interface AddCombatantFormProps {
@@ -9,6 +10,8 @@ interface AddCombatantFormProps {
 }
 
 export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
+  const t = useTranslations("combat");
+  const tc = useTranslations("common");
   const [name, setName] = useState("");
   const [maxHp, setMaxHp] = useState("");
   const [ac, setAc] = useState("");
@@ -49,19 +52,19 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
     >
       <div className="grid grid-cols-2 gap-2">
         <div className="col-span-2">
-          <label className="text-xs text-muted-foreground block mb-1">Name</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("add_name_label")}</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]"
-            placeholder="Combatant name"
+            placeholder={t("add_name_placeholder")}
             data-testid="add-name-input"
             autoFocus
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">HP</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("add_hp_label")}</label>
           <input
             type="number"
             min="1"
@@ -72,7 +75,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">AC</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("add_ac_label")}</label>
           <input
             type="number"
             min="0"
@@ -83,7 +86,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Initiative</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("add_init_label")}</label>
           <input
             type="number"
             min="-5"
@@ -95,13 +98,13 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
           />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Spell DC</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t("add_spell_dc_label")}</label>
           <input
             type="number"
             min="0"
             value={dc}
             onChange={(e) => setDc(e.target.value)}
-            placeholder="—"
+            placeholder={tc("dash")}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="add-dc-input"
           />
@@ -114,14 +117,14 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
           className="px-3 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
           data-testid="add-cancel-btn"
         >
-          Cancel
+          {tc("cancel")}
         </button>
         <button
           type="submit"
           className="px-3 py-1 bg-gold text-foreground text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px]"
           data-testid="add-submit-btn"
         >
-          Add to Combat
+          {t("add_to_combat")}
         </button>
       </div>
     </form>

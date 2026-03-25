@@ -76,27 +76,27 @@ function renderWizard() {
 }
 
 async function fillStep1(campaignName = "Curse of Strahd") {
-  const input = screen.getByLabelText(/campaign name/i);
+  const input = screen.getByLabelText(/onboarding\.campaign_name_label/i);
   await userEvent.clear(input);
   await userEvent.type(input, campaignName);
-  fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+  fireEvent.click(screen.getByRole("button", { name: /^common\.next$/i }));
 }
 
 async function fillStep2(playerName = "Thorin") {
-  const nameInput = screen.getByLabelText(/character name/i);
+  const nameInput = screen.getByLabelText(/onboarding\.players_name_label/i);
   await userEvent.clear(nameInput);
   await userEvent.type(nameInput, playerName);
-  fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+  fireEvent.click(screen.getByRole("button", { name: /^common\.next$/i }));
 }
 
 // Advances from Step 3 (encounter) to Step 4. Accepts the pre-filled default if no arg given.
 async function fillStep3(encounterName?: string) {
   if (encounterName !== undefined) {
-    const input = screen.getByLabelText(/encounter name/i);
+    const input = screen.getByLabelText(/onboarding\.encounter_name_label/i);
     await userEvent.clear(input);
     await userEvent.type(input, encounterName);
   }
-  fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+  fireEvent.click(screen.getByRole("button", { name: /^common\.next$/i }));
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -110,25 +110,25 @@ describe("OnboardingWizard", () => {
 
   it("renders Step 1 by default", () => {
     renderWizard();
-    expect(screen.getByText(/name your campaign/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/campaign name/i)).toBeInTheDocument();
+    expect(screen.getByText(/onboarding\.campaign_name_title/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/onboarding\.campaign_name_label/i)).toBeInTheDocument();
   });
 
   it("Next button is disabled when campaign name is empty", () => {
     renderWizard();
-    expect(screen.getByRole("button", { name: /^next$/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^common\.next$/i })).toBeDisabled();
   });
 
   it("Next button becomes enabled when campaign name is filled", async () => {
     renderWizard();
-    await userEvent.type(screen.getByLabelText(/campaign name/i), "My Campaign");
-    expect(screen.getByRole("button", { name: /^next$/i })).not.toBeDisabled();
+    await userEvent.type(screen.getByLabelText(/onboarding\.campaign_name_label/i), "My Campaign");
+    expect(screen.getByRole("button", { name: /^common\.next$/i })).not.toBeDisabled();
   });
 
   it("Next button remains disabled when campaign name is whitespace-only", async () => {
     renderWizard();
-    await userEvent.type(screen.getByLabelText(/campaign name/i), "   ");
-    expect(screen.getByRole("button", { name: /^next$/i })).toBeDisabled();
+    await userEvent.type(screen.getByLabelText(/onboarding\.campaign_name_label/i), "   ");
+    expect(screen.getByRole("button", { name: /^common\.next$/i })).toBeDisabled();
   });
 
   // ── Step 2: Players ────────────────────────────────────────────────────────
@@ -136,36 +136,36 @@ describe("OnboardingWizard", () => {
   it("advances to Step 2 after valid campaign name", async () => {
     renderWizard();
     await fillStep1();
-    expect(screen.getByLabelText(/character name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/onboarding\.players_name_label/i)).toBeInTheDocument();
   });
 
   it("Back button on Step 2 returns to Step 1", async () => {
     renderWizard();
     await fillStep1();
     fireEvent.click(screen.getByRole("button", { name: /back/i }));
-    expect(screen.getByText(/name your campaign/i)).toBeInTheDocument();
+    expect(screen.getByText(/onboarding\.campaign_name_title/i)).toBeInTheDocument();
   });
 
   it("Next on Step 2 is not disabled when at least 1 player exists", async () => {
     renderWizard();
     await fillStep1();
-    expect(screen.getByRole("button", { name: /^next$/i })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /^common\.next$/i })).not.toBeDisabled();
   });
 
   it("shows error when advancing from Step 2 with empty player name", async () => {
     renderWizard();
     await fillStep1();
-    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^common\.next$/i }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      /all players need a name/i
+      /onboarding\.players_validation/i
     );
   });
 
   it("can add a second player", async () => {
     renderWizard();
     await fillStep1();
-    fireEvent.click(screen.getByRole("button", { name: /add another player/i }));
-    expect(screen.getAllByLabelText(/character name/i)).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: /onboarding\.players_add_another/i }));
+    expect(screen.getAllByLabelText(/onboarding\.players_name_label/i)).toHaveLength(2);
   });
 
   // ── Step 3: Encounter ──────────────────────────────────────────────────────
@@ -174,15 +174,15 @@ describe("OnboardingWizard", () => {
     renderWizard();
     await fillStep1();
     await fillStep2();
-    expect(screen.getByLabelText(/encounter name/i)).toBeInTheDocument();
-    expect(screen.getByText(/set up your first encounter/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/onboarding\.encounter_name_label/i)).toBeInTheDocument();
+    expect(screen.getByText(/onboarding\.encounter_description/i)).toBeInTheDocument();
   });
 
   it("encounter name is pre-filled with default", async () => {
     renderWizard();
     await fillStep1();
     await fillStep2();
-    expect(screen.getByLabelText(/encounter name/i)).toHaveValue(
+    expect(screen.getByLabelText(/onboarding\.encounter_name_label/i)).toHaveValue(
       "First Encounter"
     );
   });
@@ -191,8 +191,8 @@ describe("OnboardingWizard", () => {
     renderWizard();
     await fillStep1();
     await fillStep2();
-    await userEvent.clear(screen.getByLabelText(/encounter name/i));
-    expect(screen.getByRole("button", { name: /^next$/i })).toBeDisabled();
+    await userEvent.clear(screen.getByLabelText(/onboarding\.encounter_name_label/i));
+    expect(screen.getByRole("button", { name: /^common\.next$/i })).toBeDisabled();
   });
 
   it("Back button on Step 3 returns to Step 2", async () => {
@@ -200,7 +200,7 @@ describe("OnboardingWizard", () => {
     await fillStep1();
     await fillStep2();
     fireEvent.click(screen.getByRole("button", { name: /back/i }));
-    expect(screen.getByLabelText(/character name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/onboarding\.players_name_label/i)).toBeInTheDocument();
   });
 
   it("advances to Step 4 after setting encounter name", async () => {
@@ -208,7 +208,7 @@ describe("OnboardingWizard", () => {
     await fillStep1();
     await fillStep2();
     await fillStep3("Goblin Ambush");
-    expect(screen.getByText(/ready to launch/i)).toBeInTheDocument();
+    expect(screen.getByText(/onboarding\.launch_title/i)).toBeInTheDocument();
   });
 
   // ── Step 4: Confirm ────────────────────────────────────────────────────────
@@ -229,7 +229,7 @@ describe("OnboardingWizard", () => {
     await fillStep2();
     await fillStep3();
     fireEvent.click(screen.getByRole("button", { name: /back/i }));
-    expect(screen.getByLabelText(/encounter name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/onboarding\.encounter_name_label/i)).toBeInTheDocument();
   });
 
   it("calls supabase inserts for all 5 tables on final submit", async () => {
@@ -264,7 +264,7 @@ describe("OnboardingWizard", () => {
     await fillStep3("Dragon Fight");
 
     fireEvent.click(
-      screen.getByRole("button", { name: /create & get session link/i })
+      screen.getByRole("button", { name: /onboarding\.create_button/i })
     );
 
     await waitFor(() =>
@@ -292,11 +292,11 @@ describe("OnboardingWizard", () => {
     await fillStep2("Warrior");
     await fillStep3();
     fireEvent.click(
-      screen.getByRole("button", { name: /create & get session link/i })
+      screen.getByRole("button", { name: /onboarding\.create_button/i })
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/you're all set/i)).toBeInTheDocument();
+      expect(screen.getByText(/onboarding\.launch_ready/i)).toBeInTheDocument();
     });
 
     expect(screen.getByText(/\/join\/test-token-uuid/i)).toBeInTheDocument();
@@ -310,12 +310,12 @@ describe("OnboardingWizard", () => {
     await fillStep2("Player");
     await fillStep3();
     fireEvent.click(
-      screen.getByRole("button", { name: /create & get session link/i })
+      screen.getByRole("button", { name: /onboarding\.create_button/i })
     );
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(
-        /failed to create campaign/i
+        /onboarding\.error_campaign/i
       );
     });
   });
@@ -343,7 +343,7 @@ describe("OnboardingWizard", () => {
     await fillStep3();
 
     const submitBtn = screen.getByRole("button", {
-      name: /create & get session link/i,
+      name: /onboarding\.create_button/i,
     });
     fireEvent.click(submitBtn);
 
@@ -369,14 +369,14 @@ describe("OnboardingWizard", () => {
     await fillStep2("Player");
     await fillStep3();
     fireEvent.click(
-      screen.getByRole("button", { name: /create & get session link/i })
+      screen.getByRole("button", { name: /onboarding\.create_button/i })
     );
 
     await waitFor(() =>
-      screen.getByRole("button", { name: /go to dashboard/i })
+      screen.getByRole("button", { name: /onboarding\.go_to_dashboard/i })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /go to dashboard/i }));
+    fireEvent.click(screen.getByRole("button", { name: /onboarding\.go_to_dashboard/i }));
     expect(mockPush).toHaveBeenCalledWith("/app/dashboard");
   });
 });
