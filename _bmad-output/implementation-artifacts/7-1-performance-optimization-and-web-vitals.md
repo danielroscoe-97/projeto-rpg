@@ -1,6 +1,6 @@
 # Story 7.1: Performance Optimization & Web Vitals
 
-Status: review
+Status: done
 
 ## Story
 

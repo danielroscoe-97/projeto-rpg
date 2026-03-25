@@ -1,6 +1,6 @@
 # Story 4.1: SRD Client-Side Search Index & IndexedDB Cache
 
-Status: review
+Status: done
 
 ## Story
 

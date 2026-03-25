@@ -2,7 +2,7 @@
 story_key: 3-1-create-encounter-and-add-monsters
 epic: 3
 story_id: 3.1
-status: review
+status: done
 created: 2026-03-24
 updated: 2026-03-24
 ---

@@ -115,9 +115,10 @@ export function InitiativeTracker({ onStartCombat }: InitiativeTrackerProps) {
             : `${combatants.filter((c) => c.initiative === null).length} remaining`}
         </p>
         <button
+          type="button"
           onClick={handleStartCombat}
           disabled={!allSet || isPending || is_loading}
-          className="px-5 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-5 py-2 bg-[#e94560] text-white font-medium rounded-md hover:bg-[#c73652] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           data-testid="start-combat-btn"
         >
           {isPending || is_loading ? "Starting…" : "Start Combat →"}

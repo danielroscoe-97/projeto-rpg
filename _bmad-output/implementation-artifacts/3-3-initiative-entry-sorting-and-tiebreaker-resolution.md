@@ -2,7 +2,7 @@
 story_key: 3-3-initiative-entry-sorting-and-tiebreaker-resolution
 epic: 3
 story_id: 3.3
-status: review
+status: done
 created: 2026-03-24
 updated: 2026-03-24
 ---

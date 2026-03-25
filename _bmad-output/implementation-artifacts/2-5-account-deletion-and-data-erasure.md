@@ -1,6 +1,6 @@
 # Story 2.5: Account Deletion & Data Erasure
 
-Status: review
+Status: done
 
 ## Story
 

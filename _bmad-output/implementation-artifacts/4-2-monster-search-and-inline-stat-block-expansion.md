@@ -1,6 +1,6 @@
 # Story 4.2: Monster Search & Inline Stat Block Expansion
 
-Status: review
+Status: done
 
 ## Story
 

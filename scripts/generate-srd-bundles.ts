@@ -24,12 +24,28 @@ const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const OUTPUT_DIR = join(process.cwd(), "public", "srd");
 
-async function fetchAll<T>(
+// ── DB → Client field mapping ──────────────────────────────────────
+// The DB uses: hp, ac, challenge_rating
+// The client (SrdMonster) expects: hit_points, armor_class, cr
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapMonster(row: any) {
+  const { hp, ac, challenge_rating, ...rest } = row;
+  return {
+    ...rest,
+    hit_points: hp,
+    armor_class: ac,
+    cr: String(challenge_rating),
+  };
+}
+
+async function fetchAll(
   tableName: "monsters" | "spells",
   version: "2014" | "2024"
-): Promise<T[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any[]> {
   const PAGE_SIZE = 1000;
-  const rows: T[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows: any[] = [];
   let from = 0;
 
   while (true) {
@@ -43,7 +59,7 @@ async function fetchAll<T>(
     if (error) throw new Error(`${tableName} v${version}: ${error.message}`);
     if (!data || data.length === 0) break;
 
-    rows.push(...(data as T[]));
+    rows.push(...data);
     if (data.length < PAGE_SIZE) break;
     from += PAGE_SIZE;
   }
@@ -54,37 +70,24 @@ async function fetchAll<T>(
 async function main() {
   mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  console.log("Fetching monsters (2014)...");
-  const monsters2014 = await fetchAll("monsters", "2014");
-  writeFileSync(
-    join(OUTPUT_DIR, "monsters-2014.json"),
-    JSON.stringify(monsters2014, null, 2)
-  );
-  console.log(`  ${monsters2014.length} monsters written`);
+  for (const version of ["2014", "2024"] as const) {
+    console.log(`Fetching monsters (${version})...`);
+    const rawMonsters = await fetchAll("monsters", version);
+    const monsters = rawMonsters.map(mapMonster);
+    writeFileSync(
+      join(OUTPUT_DIR, `monsters-${version}.json`),
+      JSON.stringify(monsters, null, 2)
+    );
+    console.log(`  ${monsters.length} monsters written`);
 
-  console.log("Fetching monsters (2024)...");
-  const monsters2024 = await fetchAll("monsters", "2024");
-  writeFileSync(
-    join(OUTPUT_DIR, "monsters-2024.json"),
-    JSON.stringify(monsters2024, null, 2)
-  );
-  console.log(`  ${monsters2024.length} monsters written`);
-
-  console.log("Fetching spells (2014)...");
-  const spells2014 = await fetchAll("spells", "2014");
-  writeFileSync(
-    join(OUTPUT_DIR, "spells-2014.json"),
-    JSON.stringify(spells2014, null, 2)
-  );
-  console.log(`  ${spells2014.length} spells written`);
-
-  console.log("Fetching spells (2024)...");
-  const spells2024 = await fetchAll("spells", "2024");
-  writeFileSync(
-    join(OUTPUT_DIR, "spells-2024.json"),
-    JSON.stringify(spells2024, null, 2)
-  );
-  console.log(`  ${spells2024.length} spells written`);
+    console.log(`Fetching spells (${version})...`);
+    const spells = await fetchAll("spells", version);
+    writeFileSync(
+      join(OUTPUT_DIR, `spells-${version}.json`),
+      JSON.stringify(spells, null, 2)
+    );
+    console.log(`  ${spells.length} spells written`);
+  }
 
   console.log("Fetching conditions...");
   const { data: conditions, error: condErr } = await supabase

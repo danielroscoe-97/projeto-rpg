@@ -2,7 +2,7 @@
 story_key: 3-2-ruleset-version-selection-per-session
 epic: 3
 story_id: 3.2
-status: review
+status: done
 created: 2026-03-24
 updated: 2026-03-24
 ---

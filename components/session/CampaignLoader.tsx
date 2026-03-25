@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import type { PlayerCharacter } from "@/lib/types/database";
 
@@ -54,7 +55,11 @@ export function CampaignLoader({ onLoad }: Props) {
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
-    if (nextOpen) fetchCampaigns();
+    if (nextOpen) {
+      fetchCampaigns();
+    } else {
+      setLoadingCampaignId(null);
+    }
   };
 
   const handleLoad = async (campaignId: string) => {
@@ -83,15 +88,16 @@ export function CampaignLoader({ onLoad }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      {/* Trigger — type="button" prevents accidental form submission */}
-      <button
-        type="button"
-        onClick={() => handleOpenChange(true)}
-        className="text-sm text-white/50 hover:text-white/80 underline transition-colors min-h-[44px] inline-flex items-center"
-        data-testid="load-campaign-btn"
-      >
-        Load Campaign
-      </button>
+      {/* Trigger — wrapped in DialogTrigger so Radix can track focus return on close */}
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          className="text-sm text-white/50 hover:text-white/80 underline transition-colors min-h-[44px] inline-flex items-center"
+          data-testid="load-campaign-btn"
+        >
+          Load Campaign
+        </button>
+      </DialogTrigger>
 
       {/* DialogContent handles: focus trap, Escape key close, aria-modal, scroll lock */}
       <DialogContent

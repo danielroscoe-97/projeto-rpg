@@ -1,6 +1,6 @@
 # Story 7.2: Accessibility Audit & WCAG 2.1 AA Compliance
 
-Status: review
+Status: done
 
 ## Story
 
