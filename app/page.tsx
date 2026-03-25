@@ -11,31 +11,25 @@ export const metadata = {
 
 function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center px-6 pt-[72px] overflow-hidden">
-      {/* Decorative radials */}
+    <section className="relative min-h-dvh flex items-center justify-center px-6 pt-[72px] overflow-hidden">
+      {/* Full-bleed RPG hero photo background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <Image
+          src="/art/decorations/hero-figurines-map.jpg"
+          alt=""
+          fill
+          className="object-cover object-center opacity-[0.18]"
+          priority
+          unoptimized
+        />
+        {/* Dark gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+      </div>
+
+      {/* Decorative radials on top of hero image */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/[0.07] rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cool/[0.05] rounded-full blur-[100px]" />
-      </div>
-
-      {/* RPG Hero Art — subtle character silhouettes */}
-      <div className="absolute inset-0 pointer-events-none hidden sm:flex items-end justify-between px-12 pb-12 opacity-[0.08]" aria-hidden="true">
-        <Image
-          src="/art/decorations/hero-knight.png"
-          alt=""
-          width={200}
-          height={300}
-          className="pixel-art select-none"
-          unoptimized
-        />
-        <Image
-          src="/art/decorations/hero-alchemist.png"
-          alt=""
-          width={180}
-          height={280}
-          className="pixel-art select-none"
-          unoptimized
-        />
       </div>
 
       <div className="relative max-w-3xl mx-auto text-center space-y-8">
