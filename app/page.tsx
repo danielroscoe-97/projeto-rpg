@@ -345,10 +345,114 @@ function HowItWorksSection() {
         </div>
 
         {/* Desktop: horizontal flow */}
-        <div className="hidden md:flex items-start gap-0">
-          {steps.map((s, i) => (
-            <React.Fragment key={s.number}>
+        <div className="hidden md:block relative">
+          {/* ── Flowing SVG connector between all steps ── */}
+          <svg
+            className="absolute top-0 left-0 w-full h-14 pointer-events-none z-10"
+            viewBox="0 0 1000 56"
+            preserveAspectRatio="none"
+            fill="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="flow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#D4A853" stopOpacity="0.05" />
+                <stop offset="12%" stopColor="#D4A853" stopOpacity="0.35" />
+                <stop offset="50%" stopColor="#D4A853" stopOpacity="0.5" />
+                <stop offset="88%" stopColor="#D4A853" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#D4A853" stopOpacity="0.05" />
+              </linearGradient>
+              <filter id="particle-glow">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="trail-glow">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Background path — faint static guide */}
+            <path
+              d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
+              stroke="rgba(212,168,83,0.1)"
+              strokeWidth="2"
+            />
+
+            {/* Animated dashed path — flowing energy */}
+            <path
+              d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
+              stroke="url(#flow-grad)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray="14 14"
+              className="animate-flow-dash"
+            />
+
+            {/* Glow trail — wider, softer duplicate for ambient glow */}
+            <path
+              d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
+              stroke="rgba(212,168,83,0.06)"
+              strokeWidth="8"
+              strokeLinecap="round"
+              filter="url(#trail-glow)"
+            />
+
+            {/* Particle 1 — large, bright */}
+            <circle r="4" fill="#D4A853" opacity="0.9" filter="url(#particle-glow)">
+              <animateMotion
+                dur="3s"
+                repeatCount="indefinite"
+                path="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
+              />
+            </circle>
+
+            {/* Particle 2 — medium, offset */}
+            <circle r="3" fill="#D4A853" opacity="0.65" filter="url(#particle-glow)">
+              <animateMotion
+                dur="3s"
+                begin="1s"
+                repeatCount="indefinite"
+                path="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
+              />
+            </circle>
+
+            {/* Particle 3 — small, subtle */}
+            <circle r="2.5" fill="#D4A853" opacity="0.45" filter="url(#particle-glow)">
+              <animateMotion
+                dur="3s"
+                begin="2s"
+                repeatCount="indefinite"
+                path="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
+              />
+            </circle>
+
+            {/* Arrow chevrons at each destination step */}
+            {[375, 625, 875].map((x) => (
+              <path
+                key={x}
+                d={`M ${x - 8},22 L ${x},28 L ${x - 8},34`}
+                stroke="rgba(212,168,83,0.3)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            ))}
+          </svg>
+
+          {/* Step cards */}
+          <div className="flex items-start gap-0">
+            {steps.map((s, i) => (
               <div
+                key={s.number}
                 className="flex-1 flex flex-col items-center text-center group animate-fade-in-up px-4"
                 style={{ animationDelay: `${i * 0.12}s` }}
               >
@@ -368,24 +472,8 @@ function HowItWorksSection() {
                   {s.description}
                 </p>
               </div>
-
-              {/* Arrow connector between steps */}
-              {i < steps.length - 1 && (
-                <div className="flex items-start pt-6 shrink-0" aria-hidden="true">
-                  <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
-                    <path
-                      d="M2 10 Q10 10 20 10 Q30 10 36 10M32 6l4 4-4 4"
-                      stroke="rgba(212,168,83,0.25)"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeDasharray="4 3"
-                    />
-                  </svg>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Mobile: vertical cards */}

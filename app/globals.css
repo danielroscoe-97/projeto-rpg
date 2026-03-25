@@ -168,6 +168,16 @@ html {
     animation: spin-slow 12s linear infinite;
   }
 
+  /* Flow connector — animated dash travel between steps */
+  @keyframes flow-dash {
+    from { stroke-dashoffset: 28; }
+    to   { stroke-dashoffset: 0; }
+  }
+
+  .animate-flow-dash {
+    animation: flow-dash 1.2s linear infinite;
+  }
+
   /* Draw dashed ring — for step circles */
   @keyframes draw-dash {
     from { stroke-dashoffset: 164; }
@@ -300,5 +310,23 @@ html {
 
   .animate-flash-red {
     animation: flash-red 0.8s ease-out both;
+  }
+
+  /* ─── Field validation error highlight ─── */
+  @keyframes field-error-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+    40%  { box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+  }
+
+  .field-error {
+    border-color: rgba(220, 38, 38, 0.7) !important;
+    animation: field-error-pulse 0.6s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-error {
+      animation: none;
+    }
   }
 }
