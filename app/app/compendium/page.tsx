@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSrdStore } from "@/lib/stores/srd-store";
@@ -17,10 +17,9 @@ function CompendiumContent() {
   const isLoading = useSrdStore((s) => s.is_loading);
 
   const tabParam = searchParams.get("tab") as Tab | null;
-  const [activeTab, setActiveTab] = useState<Tab>(tabParam ?? "monsters");
+  const activeTab: Tab = (tabParam && ["monsters", "spells", "conditions"].includes(tabParam)) ? tabParam : "monsters";
 
   function handleTabChange(tab: Tab) {
-    setActiveTab(tab);
     router.replace(`/app/compendium?tab=${tab}`, { scroll: false });
   }
 
@@ -31,7 +30,7 @@ function CompendiumContent() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold text-gold tracking-wide">

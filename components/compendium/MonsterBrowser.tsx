@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { List as VirtualList, type RowComponentProps } from "react-window";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
-const PAGE_SIZE = 20;
+const ROW_HEIGHT = 44;
 
 const CR_RANGES = [
   { label: "0–1", min: 0, max: 1 },
@@ -43,6 +44,55 @@ function formatCR(cr: string): string {
   return cr;
 }
 
+const rowKey = (m: SrdMonster) => `${m.id}:${m.ruleset_version}`;
+
+/* ---- Row props passed via VirtualList rowProps ---- */
+interface MonsterRowProps {
+  items: SrdMonster[];
+  selectedKey: string | null;
+  onSelect: (m: SrdMonster) => void;
+}
+
+/* ---- Virtualized row component (react-window v2 API) ---- */
+function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
+  const { index, style, items, selectedKey, onSelect, ariaAttributes } = props;
+  const m = items[index];
+  if (!m) return null;
+  const key = rowKey(m);
+  const isSelected = key === selectedKey;
+
+  return (
+    <button
+      type="button"
+      style={style}
+      {...ariaAttributes}
+      onClick={() => onSelect(m)}
+      className={`w-full flex items-center gap-2 px-3 text-left transition-colors duration-150 border-b border-white/[0.04] ${
+        isSelected
+          ? "bg-gold/10 text-gold"
+          : "text-foreground hover:bg-white/[0.06]"
+      }`}
+    >
+      <span className="font-medium text-sm flex-1 min-w-0 truncate">
+        {m.name}
+      </span>
+      <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">
+        {m.type.split("(")[0].trim()}
+      </span>
+      <span className="text-[11px] text-muted-foreground whitespace-nowrap tabular-nums w-8 text-right">
+        {formatCR(m.cr)}
+      </span>
+      <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${
+        m.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
+      }`}>
+        {m.ruleset_version}
+      </span>
+    </button>
+  );
+}
+
+/* ---- Main component ---- */
+
 export function MonsterBrowser() {
   const t = useTranslations("compendium");
   const monsters = useSrdStore((s) => s.monsters);
@@ -54,17 +104,39 @@ export function MonsterBrowser() {
   const [types, setTypes] = useState<Set<string>>(new Set());
   const [sizes, setSizes] = useState<Set<string>>(new Set());
   const [versionFilter, setVersionFilter] = useState<RulesetVersion | "all">("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Pagination & expansion
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  // Selection (split-panel)
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  // Mobile: show detail view (only used on mobile screens)
+  const [mobileDetail, setMobileDetail] = useState(false);
+
+  // List container sizing — read initial height synchronously to avoid 600px flash
+  const listContainerRef = useRef<HTMLDivElement>(null);
+  const [listHeight, setListHeight] = useState(() => {
+    // SSR-safe default; will be corrected by ResizeObserver on mount
+    return typeof window !== "undefined" ? window.innerHeight - 300 : 600;
+  });
+
+  useEffect(() => {
+    const el = listContainerRef.current;
+    if (!el) return;
+    // Read initial height immediately, before any resize events
+    setListHeight(el.getBoundingClientRect().height || window.innerHeight - 300);
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setListHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const toggleSet = useCallback((set: Set<string>, value: string, setter: (s: Set<string>) => void) => {
     const next = new Set(set);
     if (next.has(value)) next.delete(value);
     else next.add(value);
     setter(next);
-    setVisibleCount(PAGE_SIZE);
   }, []);
 
   const filtered = useMemo(() => {
@@ -89,7 +161,6 @@ export function MonsterBrowser() {
 
     if (types.size > 0) {
       result = result.filter((m) => {
-        // Extract base type before any parenthetical subtypes (e.g. "humanoid (any race)" → "Humanoid")
         const baseType = m.type.split("(")[0].trim();
         const normalized = baseType.charAt(0).toUpperCase() + baseType.slice(1).toLowerCase();
         return types.has(normalized);
@@ -100,38 +171,104 @@ export function MonsterBrowser() {
       result = result.filter((m) => m.size && sizes.has(m.size));
     }
 
-    // Sort by name (spread to avoid mutating the store array)
     return [...result].sort((a, b) => a.name.localeCompare(b.name));
   }, [monsters, nameFilter, versionFilter, crRanges, types, sizes]);
 
-  const visible = filtered.slice(0, visibleCount);
-  const rowKey = (m: SrdMonster) => `${m.id}:${m.ruleset_version}`;
+  // Derive selected monster; clear selectedKey if filtered out
+  const selectedMonster = useMemo(() => {
+    if (!selectedKey) return null;
+    return filtered.find((m) => rowKey(m) === selectedKey) ?? null;
+  }, [filtered, selectedKey]);
 
-  return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <div className="sticky top-[72px] z-10 bg-[#13131e]/95 backdrop-blur-sm border-b border-white/[0.08] -mx-6 px-6 py-3 space-y-3">
-        {/* Search */}
+  // F5: Clear selectedKey when monster is filtered out of the list
+  useEffect(() => {
+    if (selectedKey && !selectedMonster) {
+      setSelectedKey(null);
+      setMobileDetail(false);
+    }
+  }, [selectedKey, selectedMonster]);
+
+  // Keyboard navigation (desktop list panel)
+  const handleListKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "j" || e.key === "ArrowDown") {
+      e.preventDefault();
+      const idx = selectedKey ? filtered.findIndex((m) => rowKey(m) === selectedKey) : -1;
+      const next = Math.min(idx + 1, filtered.length - 1);
+      if (filtered[next]) setSelectedKey(rowKey(filtered[next]));
+    } else if (e.key === "k" || e.key === "ArrowUp") {
+      e.preventDefault();
+      // F2: was `: 1`, must be `: -1` to match ArrowDown symmetry
+      const idx = selectedKey ? filtered.findIndex((m) => rowKey(m) === selectedKey) : -1;
+      const prev = Math.max(idx - 1, 0);
+      if (filtered[prev]) setSelectedKey(rowKey(filtered[prev]));
+    }
+  }, [filtered, selectedKey]);
+
+  // F1: Separate handlers — desktop never sets mobileDetail
+  const handleDesktopSelect = useCallback((m: SrdMonster) => {
+    setSelectedKey(rowKey(m));
+  }, []);
+
+  const handleMobileSelect = useCallback((m: SrdMonster) => {
+    setSelectedKey(rowKey(m));
+    setMobileDetail(true);
+  }, []);
+
+  // Stable rowProps for desktop and mobile (separate to avoid cross-contamination)
+  const desktopRowProps = useMemo<MonsterRowProps>(() => ({
+    items: filtered,
+    selectedKey,
+    onSelect: handleDesktopSelect,
+  }), [filtered, selectedKey, handleDesktopSelect]);
+
+  const mobileRowProps = useMemo<MonsterRowProps>(() => ({
+    items: filtered,
+    selectedKey,
+    onSelect: handleMobileSelect,
+  }), [filtered, selectedKey, handleMobileSelect]);
+
+  // ---- Filter bar ----
+  const filterBar = (
+    <div className="space-y-2">
+      {/* Search */}
+      <div className="relative">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
         <input
           type="text"
           value={nameFilter}
-          onChange={(e) => { setNameFilter(e.target.value); setVisibleCount(PAGE_SIZE); }}
+          onChange={(e) => setNameFilter(e.target.value)}
           placeholder={t("search_placeholder")}
-          className="w-full h-10 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors"
+          className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors"
         />
+      </div>
 
-        {/* Filter chips */}
-        <div className="flex flex-wrap gap-2">
-          {/* Version toggle */}
+      {/* Toggle filters — F4: use i18n key */}
+      <button
+        type="button"
+        onClick={() => setFiltersOpen((o) => !o)}
+        className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <svg className={`w-3 h-3 transition-transform ${filtersOpen ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+        {t("filters")}
+        {(crRanges.size > 0 || types.size > 0 || sizes.size > 0 || versionFilter !== "all") && (
+          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+        )}
+      </button>
+
+      {filtersOpen && (
+        <div className="space-y-2 pl-1">
           <FilterGroup label={t("filter_version")}>
             {(["all", "2014", "2024"] as const).map((v) => (
-              <Chip key={v} active={versionFilter === v} onClick={() => { setVersionFilter(v); setVisibleCount(PAGE_SIZE); }}>
+              <Chip key={v} active={versionFilter === v} onClick={() => setVersionFilter(v)}>
                 {v === "all" ? t("filter_version_all") : v}
               </Chip>
             ))}
           </FilterGroup>
 
-          {/* CR ranges */}
           <FilterGroup label={t("filter_cr")}>
             {CR_RANGES.map((r) => (
               <Chip key={r.label} active={crRanges.has(r.label)} onClick={() => toggleSet(crRanges, r.label, setCrRanges)}>
@@ -140,7 +277,6 @@ export function MonsterBrowser() {
             ))}
           </FilterGroup>
 
-          {/* Type */}
           <FilterGroup label={t("filter_type")}>
             {CREATURE_TYPES.map((type) => (
               <Chip key={type} active={types.has(type)} onClick={() => toggleSet(types, type, setTypes)}>
@@ -149,7 +285,6 @@ export function MonsterBrowser() {
             ))}
           </FilterGroup>
 
-          {/* Size */}
           <FilterGroup label={t("filter_size")}>
             {SIZES.map((s) => (
               <Chip key={s} active={sizes.has(s)} onClick={() => toggleSet(sizes, s, setSizes)}>
@@ -158,82 +293,121 @@ export function MonsterBrowser() {
             ))}
           </FilterGroup>
         </div>
+      )}
 
-        {/* Result count */}
-        <div className="text-xs text-muted-foreground">
-          {t("showing_results", { count: visible.length, total: filtered.length })}
+      <div className="text-[11px] text-muted-foreground">
+        {t("showing_results", { count: filtered.length, total: monsters.length })}
+      </div>
+    </div>
+  );
+
+  // ---- MOBILE: detail view (only rendered on mobile screens) ----
+  // F1: This early-return is only shown on mobile (<md). Desktop always falls through to the split-panel below.
+  if (mobileDetail && selectedMonster) {
+    return (
+      <div className="md:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileDetail(false)}
+          className="flex items-center gap-1.5 text-sm text-gold mb-4 min-h-[44px]"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+          {t("back_to_list")}
+        </button>
+        <div className="flex items-center gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => pinCard("monster", selectedMonster.id, selectedMonster.ruleset_version)}
+            className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
+          >
+            📌 {t("pin_card")}
+          </button>
+        </div>
+        <MonsterStatBlock monster={selectedMonster} variant="inline" />
+      </div>
+    );
+  }
+
+  // ---- MAIN LAYOUT ----
+  return (
+    <div>
+      {/* Mobile: list view */}
+      <div className="md:hidden">
+        {filterBar}
+        <div className="mt-3">
+          {filtered.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
+          ) : (
+            <VirtualList
+              rowComponent={MonsterRow}
+              rowCount={filtered.length}
+              rowHeight={ROW_HEIGHT}
+              rowProps={mobileRowProps}
+              style={{ height: Math.min(filtered.length * ROW_HEIGHT, 500) }}
+            />
+          )}
         </div>
       </div>
 
-      {/* Results */}
-      {filtered.length === 0 ? (
-        <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
-      ) : (
-        <div className="space-y-1">
-          {visible.map((m) => {
-            const key = rowKey(m);
-            const isOpen = expandedId === key;
-            return (
-              <div key={key} className="rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-colors">
-                {/* Row header */}
+      {/* Desktop: split panel (always visible on md+, mobileDetail state is irrelevant here) */}
+      <div className="hidden md:grid md:grid-cols-[minmax(320px,2fr)_3fr] gap-0 h-[calc(100vh-180px)] border border-white/[0.06] rounded-xl overflow-hidden">
+        {/* LEFT: List panel */}
+        <div className="flex flex-col border-r border-white/[0.06] bg-[#13131e]/60">
+          <div className="p-3 border-b border-white/[0.06] bg-[#13131e]/95 backdrop-blur-sm">
+            {filterBar}
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] text-muted-foreground uppercase tracking-wider border-b border-white/[0.04] bg-white/[0.02]">
+            <span className="flex-1">{t("sort_name")}</span>
+            <span className="hidden lg:inline w-20">{t("filter_type")}</span>
+            <span className="w-8 text-right">{t("cr_label")}</span>
+            <span className="w-10" />
+          </div>
+
+          <div ref={listContainerRef} className="flex-1 min-h-0" onKeyDown={handleListKeyDown} tabIndex={0} role="listbox" aria-label={t("tab_monsters")}>
+            {filtered.length === 0 ? (
+              <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
+            ) : (
+              <VirtualList
+                rowComponent={MonsterRow}
+                rowCount={filtered.length}
+                rowHeight={ROW_HEIGHT}
+                rowProps={desktopRowProps}
+                style={{ height: listHeight }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: Detail panel */}
+        <div className="overflow-y-auto bg-[#0e0e18]/80">
+          {selectedMonster ? (
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-4">
                 <button
                   type="button"
-                  onClick={() => setExpandedId(isOpen ? null : key)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left min-h-[52px]"
+                  onClick={() => pinCard("monster", selectedMonster.id, selectedMonster.ruleset_version)}
+                  className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
                 >
-                  <span className="font-medium text-sm text-foreground flex-1 min-w-0 truncate">
-                    {m.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {t("cr_label")} {formatCR(m.cr)}
-                  </span>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap hidden md:inline">
-                    {m.type}{m.size ? ` · ${m.size}` : ""}
-                  </span>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {t("hp_label")} {m.hit_points}
-                  </span>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {t("ac_label")} {m.armor_class}
-                  </span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                    m.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-                  }`}>
-                    {m.ruleset_version}
-                  </span>
+                  📌 {t("pin_card")}
                 </button>
-
-                {/* Expanded stat block */}
-                {isOpen && (
-                  <div className="border-t border-white/[0.06] px-4 py-3">
-                    <div className="flex items-center gap-2 mb-3">
-                      <button
-                        type="button"
-                        onClick={() => pinCard("monster", m.id, m.ruleset_version)}
-                        className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
-                      >
-                        📌 {t("pin_card")}
-                      </button>
-                    </div>
-                    <MonsterStatBlock monster={m} variant="inline" />
-                  </div>
-                )}
               </div>
-            );
-          })}
-
-          {/* Load More */}
-          {visibleCount < filtered.length && (
-            <button
-              type="button"
-              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-              className="w-full py-3 text-sm text-gold hover:text-gold/80 transition-colors"
-            >
-              {t("load_more")} ({filtered.length - visibleCount} {t("tab_monsters").toLowerCase()})
-            </button>
+              <MonsterStatBlock monster={selectedMonster} variant="inline" />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+              <div className="text-center space-y-3">
+                <svg className="w-12 h-12 mx-auto text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg>
+                <p>{t("select_monster")}</p>
+              </div>
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

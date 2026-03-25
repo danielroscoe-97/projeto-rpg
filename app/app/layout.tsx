@@ -8,6 +8,7 @@ import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer
 import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 export default async function AppLayout({
   children,
@@ -39,17 +40,23 @@ export default async function AppLayout({
         brandHref="/app/dashboard"
         links={[
           { href: "/app/dashboard", label: t("dashboard") },
-          { href: "/app/compendium", label: `📖 ${t("compendium")}` },
+          { href: "/app/compendium?tab=monsters", label: <><span aria-hidden="true">🐉</span> {t("monsters")}</> },
+          { href: "/app/compendium?tab=spells", label: <><span aria-hidden="true">✨</span> {t("spells")}</> },
+          { href: "/app/compendium?tab=conditions", label: <><span aria-hidden="true">⚡</span> {t("conditions")}</> },
           { href: "/app/settings", label: t("settings") },
         ]}
         rightSlot={<><OracleSearchTrigger /><LogoutButton /></>}
       />
       <SrdInitializer />
-      <FloatingCardContainer />
-      <CommandPalette />
-      <OracleFAB />
+      <ErrorBoundary name="Oracle">
+        <FloatingCardContainer />
+        <CommandPalette />
+        <OracleFAB />
+      </ErrorBoundary>
       <main id="main-content" className="flex-1 pt-[72px] p-6">
-        {children}
+        <ErrorBoundary name="MainContent">
+          {children}
+        </ErrorBoundary>
       </main>
       <footer className="border-t border-white/[0.08] px-6 py-3 flex items-center gap-4 text-xs text-muted-foreground shrink-0">
         <a href="/legal/attribution" className="hover:text-foreground transition-colors">{t("attribution")}</a>

@@ -8,7 +8,7 @@ import { useDmChannelStatus } from "@/lib/realtime/use-dm-channel-status";
 interface NavbarWithSyncProps {
   brand: string;
   brandHref: string;
-  links?: { href: string; label: string }[];
+  links?: { href: string; label: React.ReactNode }[];
   rightSlot?: React.ReactNode;
 }
 

@@ -7,7 +7,7 @@ import Image from "next/image";
 
 interface NavLink {
   href: string;
-  label: string;
+  label: React.ReactNode;
 }
 
 interface NavbarProps {
