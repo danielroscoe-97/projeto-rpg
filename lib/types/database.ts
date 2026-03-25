@@ -174,6 +174,8 @@ export interface Database {
           is_player: boolean;
           monster_id: string | null;
           player_character_id: string | null;
+          dm_notes: string;
+          player_notes: string;
           created_at: string;
           updated_at: string;
         };
@@ -194,6 +196,8 @@ export interface Database {
           is_player?: boolean;
           monster_id?: string | null;
           player_character_id?: string | null;
+          dm_notes?: string;
+          player_notes?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -213,6 +217,8 @@ export interface Database {
           is_player?: boolean;
           monster_id?: string | null;
           player_character_id?: string | null;
+          dm_notes?: string;
+          player_notes?: string;
           updated_at?: string;
         };
       };

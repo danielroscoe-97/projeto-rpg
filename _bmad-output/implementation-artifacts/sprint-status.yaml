@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-24T23:00:00Z
+last_updated: 2026-03-24T23:30:00Z
 project: projeto-rpg
 
 project_key: NOKEY
@@ -110,3 +110,15 @@ development_status:
   7-4-error-tracking-and-monitoring-setup: done
   7-5-security-hardening-and-input-validation: done
   epic-7-retrospective: optional
+
+  # Epic 8: Combat Tracker UX Refactor — "Kastark Simplicity"
+  epic-8: done
+  8-1-schema-store-notes-and-universal-reorder: done
+  8-2-combatant-setup-row-inline-editable: done
+  8-3-encounter-setup-unified-precombat-view: done
+  8-4-universal-drag-reorder: done
+  8-5-seamless-combat-transition: done
+  8-6-combatant-row-compact-card-inline-edit: done
+  8-7-routing-navigation-cleanup: done
+  8-8-qa-regression-e2e-validation: done
+  epic-8-retrospective: optional

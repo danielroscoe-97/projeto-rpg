@@ -1109,3 +1109,182 @@ So that the app is safe for production use.
 **Given** the target uptime
 **When** measured monthly
 **Then** uptime is ≥99.5% (NFR10)
+
+## Epic 8: Combat Tracker UX Refactor — "Kastark Simplicity"
+
+Merge the multi-step combat setup (EncounterBuilder → InitiativeTracker → Active Combat) into a single-page, list-first experience with inline editing, universal drag reorder, and dual notes — matching the fluid simplicity of the Kastark encounter tracker while preserving all power features and real-time infrastructure.
+
+**Reference:** [Kastark Encounter Tracker](https://kastark.co.uk/rpgs/encounter-tracker/)
+
+**Key Design Decisions:**
+- Single-page experience — setup and combat on the same screen, no navigation
+- Spreadsheet-style pre-combat rows (Init | Name | HP | AC | Notes) with bottom add-row
+- No auto-sort during entry — insertion/drag order until "Start Combat"
+- Universal drag reorder (any row, anytime) replaces tie-specific TiebreakerDragList
+- Seamless in-place transition from setup to active combat
+- Compact card layout in active combat with click-to-edit and overflow menu
+- Dual notes: DM-only notes (🔒 private) + player-visible notes (📝 broadcast)
+
+### Story 8.1: Schema & Store — Dual Notes Fields + Universal Reorder
+
+As a **DM**,
+I want combatants to have separate DM-only and player-visible notes fields,
+So that I can track private tactical info alongside public info that players can see.
+
+**Acceptance Criteria:**
+
+**Given** the combatants table
+**When** the migration is applied
+**Then** two new columns exist: `dm_notes TEXT DEFAULT ''` and `player_notes TEXT DEFAULT ''`
+
+**Given** the combat store
+**When** `updateDmNotes(id, notes)` or `updatePlayerNotes(id, notes)` is called
+**Then** the respective notes field is updated in the store and persisted to DB
+
+**Given** a `player_notes` change
+**When** broadcast
+**Then** the player board receives the update; `dm_notes` is NEVER broadcast
+
+### Story 8.2: CombatantSetupRow — Inline Editable Spreadsheet Row
+
+As a **DM**,
+I want each combatant in the pre-combat list to be an inline editable row (Init, Name, HP, AC, Notes),
+So that I can rapidly build an encounter by tabbing through fields like a spreadsheet.
+
+**Acceptance Criteria:**
+
+**Given** a combatant in pre-combat mode
+**When** displayed
+**Then** it renders as: `[DragHandle] [Init] [Name] [HP] [AC] [Notes] [✕]` with all fields editable inline
+
+**Given** the DM tabbing through fields
+**When** Tab is pressed
+**Then** focus moves left-to-right through Init → Name → HP → AC → Notes
+
+### Story 8.3: EncounterSetup — Unified Pre-Combat View
+
+As a **DM**,
+I want a single-page view with combatant list, bottom add-row, SRD search, and campaign loader,
+So that encounter setup is as fast and fluid as the Kastark tracker.
+
+**Acceptance Criteria:**
+
+**Given** the encounter page
+**When** loaded
+**Then** a single view shows: combatant list, always-visible bottom add-row, SRD search, campaign loader, and "Start Combat" button
+
+**Given** the bottom add-row
+**When** the DM fills fields and presses Enter
+**Then** a new combatant is added to the list and fields are cleared
+
+**Given** SRD search
+**When** a monster is selected
+**Then** the add-row is auto-filled with the monster's stats
+
+**Given** the list
+**When** combatants are added
+**Then** they appear in insertion order (NOT sorted by initiative)
+
+### Story 8.4: Universal Drag Reorder with @dnd-kit
+
+As a **DM**,
+I want to drag any combatant row to reorder it freely in both setup and active combat,
+So that I have full control over initiative order without being limited to tie-resolution.
+
+**Acceptance Criteria:**
+
+**Given** any combatant row in either mode
+**When** the DM drags it by the handle
+**Then** the row moves to the new position and order is updated
+
+**Given** a reorder during active combat
+**When** completed
+**Then** `initiative_order` is reassigned, persisted, and broadcast
+
+**Given** the `TiebreakerDragList` component
+**When** this story is complete
+**Then** it is deleted and replaced by universal drag
+
+### Story 8.5: Seamless Combat Transition — Start Combat In-Place
+
+As a **DM**,
+I want "Start Combat" to sort by initiative, persist to Supabase, and transform the list into active combat mode on the same page,
+So that the transition is instant with no navigation.
+
+**Acceptance Criteria:**
+
+**Given** the pre-combat view with all initiatives set
+**When** "Start Combat" is clicked
+**Then** combatants are sorted by initiative descending, encounter is persisted to DB, and the view transforms to active combat in-place
+
+**Given** a persist failure
+**When** it occurs
+**Then** the view stays in pre-combat mode with an error message
+
+**Given** the URL
+**When** combat starts successfully
+**Then** it updates to `/app/session/[id]` via `router.replace()` for reload resilience
+
+### Story 8.6: CombatantRow Refactor — Compact Card + Inline Edit + Dual Notes
+
+As a **DM**,
+I want each active combat combatant as a compact card with click-to-edit, visible dual notes, and an overflow action menu,
+So that I can manage combat at a glance.
+
+**Acceptance Criteria:**
+
+**Given** an active combatant
+**When** displayed
+**Then** it renders as a compact card with HP bar, action buttons, and a second line with 📝 player notes, 🔒 DM notes, and condition badges
+
+**Given** any field (Name, HP, AC)
+**When** clicked
+**Then** it transforms to an inline input for editing
+
+**Given** the `[···]` overflow menu
+**When** opened
+**Then** it shows: Temp HP, Conditions, Defeat, Edit DC, Remove, Version Switch
+
+**Given** the player board
+**When** rendering combatants
+**Then** it shows `player_notes` but NEVER `dm_notes`
+
+### Story 8.7: Routing, Navigation & Cleanup
+
+As a **DM**,
+I want all entry points to lead to the unified combat experience with no dead routes,
+So that navigation is clean and consistent.
+
+**Acceptance Criteria:**
+
+**Given** the dashboard
+**When** "New Combat Session" is clicked
+**Then** the unified encounter page loads in pre-combat mode
+
+**Given** the old components (EncounterBuilder, InitiativeTracker, TiebreakerDragList)
+**When** this story completes
+**Then** they are deleted with zero dead imports
+
+**Given** `next build`
+**When** run
+**Then** it succeeds with zero TypeScript errors
+
+### Story 8.8: QA Regression & E2E Validation
+
+As the **QA team**,
+I want comprehensive regression testing of the refactored combat tracker,
+So that all existing features work correctly in the new unified flow.
+
+**Acceptance Criteria:**
+
+**Given** the refactored flow
+**When** all test suites run
+**Then** all existing combat features pass: HP, conditions, defeat, add/remove, turns, rounds, realtime sync
+
+**Given** the new features
+**When** tested
+**Then** inline editing, drag reorder, dual notes, and seamless transition all work correctly
+
+**Given** DM notes
+**When** tested against the player board
+**Then** they are confirmed as NEVER visible to players

@@ -71,6 +71,8 @@ export async function createEncounterWithCombatants(
     is_defeated: c.is_defeated,
     is_player: c.is_player,
     monster_id: c.monster_id,
+    dm_notes: c.dm_notes ?? '',
+    player_notes: c.player_notes ?? '',
   }));
 
   const { error: combatantsError } = await supabase
@@ -102,5 +104,7 @@ export function monsterToCombatant(
     is_defeated: false,
     is_player: false,
     monster_id: monster.id,
+    dm_notes: '',
+    player_notes: '',
   };
 }

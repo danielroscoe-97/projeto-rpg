@@ -14,8 +14,10 @@ import {
   persistRemoveCombatant,
   persistInitiativeOrder,
   persistEndEncounter,
+  persistDmNotes,
+  persistPlayerNotes,
 } from "@/lib/supabase/session";
-import { InitiativeTracker } from "@/components/combat/InitiativeTracker";
+import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import type { Combatant } from "@/lib/types/combat";
@@ -23,15 +25,20 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
+import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { useRouter } from "next/navigation";
 
 interface CombatSessionClientProps {
-  sessionId: string;
-  encounterId: string;
+  /** Session ID — null for fresh encounters not yet persisted */
+  sessionId: string | null;
+  /** Encounter ID — null for fresh encounters not yet persisted */
+  encounterId: string | null;
   initialCombatants: Combatant[];
   isActive: boolean;
   roundNumber: number;
   currentTurnIndex: number;
+  /** Ruleset version for SRD search (used in fresh encounter setup) */
+  rulesetVersion?: RulesetVersion;
 }
 
 export function CombatSessionClient({
@@ -41,39 +48,74 @@ export function CombatSessionClient({
   isActive,
   roundNumber,
   currentTurnIndex,
+  rulesetVersion = "2014",
 }: CombatSessionClientProps) {
   const router = useRouter();
   const [turnPending, setTurnPending] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+
+  /** Get sessionId for broadcasts — always available during active combat */
+  const getSessionId = (): string => {
+    return useCombatStore.getState().session_id ?? sessionId ?? "";
+  };
   const { combatants, startCombat, setEncounterId, is_active, setError, advanceTurn } =
     useCombatStore();
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
   const round_number = useCombatStore((s) => s.round_number);
 
-  // Hydrate the store from server-fetched data.
+  // Hydrate the store from server-fetched data (skip for fresh encounters).
   useEffect(() => {
     const store = useCombatStore.getState();
-    store.clearEncounter();
-    store.setEncounterId(encounterId, sessionId);
-    store.hydrateCombatants(initialCombatants);
-    if (isActive) {
-      const clampedIndex =
-        initialCombatants.length > 0
-          ? Math.max(0, Math.min(currentTurnIndex, initialCombatants.length - 1))
-          : 0;
-      store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
+    if (encounterId && sessionId) {
+      store.clearEncounter();
+      store.setEncounterId(encounterId, sessionId);
+      store.hydrateCombatants(initialCombatants);
+      if (isActive) {
+        const clampedIndex =
+          initialCombatants.length > 0
+            ? Math.max(0, Math.min(currentTurnIndex, initialCombatants.length - 1))
+            : 0;
+        store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
+      }
+    } else {
+      // Fresh encounter — just clear for a blank slate
+      store.clearEncounter();
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
 
   const handleStartCombat = async () => {
-    const { combatants: current, encounter_id } = useCombatStore.getState();
-    if (!encounter_id) {
-      setError("Encounter ID missing.");
+    const store = useCombatStore.getState();
+    const current = store.combatants;
+
+    // Sort by initiative and assign order
+    const sorted = assignInitiativeOrder(sortByInitiative(current));
+    store.hydrateCombatants(sorted);
+
+    // If we already have an encounter (resumed session), use the existing persist flow
+    if (store.encounter_id) {
+      try {
+        await persistInitiativeAndStartCombat(store.encounter_id, sorted);
+        store.startCombat();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to start combat.");
+      }
       return;
     }
+
+    // Fresh encounter — create session + encounter + combatants in one shot
     try {
-      await persistInitiativeAndStartCombat(encounter_id, current);
-      startCombat();
+      const { session_id, encounter_id } = await createEncounterWithCombatants(
+        sorted,
+        rulesetVersion
+      );
+      store.setEncounterId(encounter_id, session_id);
+
+      // Mark encounter as active in DB
+      await persistInitiativeAndStartCombat(encounter_id, sorted);
+      store.startCombat();
+
+      // Update URL for reload resilience (no visible navigation)
+      router.replace(`/app/session/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start combat.");
     }
@@ -90,7 +132,7 @@ export function CombatSessionClient({
       useCombatStore.getState();
     if (nextIdx === prevIdx && nextRound === prevRound) return;
 
-    broadcastEvent(sessionId, { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound });
+    broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound });
 
     setTurnPending(true);
     try {
@@ -108,45 +150,45 @@ export function CombatSessionClient({
     useCombatStore.getState().applyDamage(id, amount);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(sessionId, { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
       persistHpChange(id, c.current_hp, c.temp_hp).catch(() => {});
     }
-  }, [sessionId]);
+  }, [getSessionId]);
 
   const handleApplyHealing = useCallback((id: string, amount: number) => {
     useCombatStore.getState().applyHealing(id, amount);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(sessionId, { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
       persistHpChange(id, c.current_hp, c.temp_hp).catch(() => {});
     }
-  }, [sessionId]);
+  }, [getSessionId]);
 
   const handleSetTempHp = useCallback((id: string, value: number) => {
     useCombatStore.getState().setTempHp(id, value);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(sessionId, { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
       persistHpChange(id, c.current_hp, c.temp_hp).catch(() => {});
     }
-  }, [sessionId]);
+  }, [getSessionId]);
 
   // --- Conditions (Story 3-6) ---
   const handleToggleCondition = useCallback((id: string, condition: string) => {
     useCombatStore.getState().toggleCondition(id, condition);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(sessionId, { type: "combat:condition_change", combatant_id: id, conditions: c.conditions });
+      broadcastEvent(getSessionId(), { type: "combat:condition_change", combatant_id: id, conditions: c.conditions });
       persistConditions(id, c.conditions).catch(() => {});
     }
-  }, [sessionId]);
+  }, [getSessionId]);
 
   // --- Defeat (Story 3-7) ---
   const handleSetDefeated = useCallback((id: string, isDefeated: boolean) => {
     useCombatStore.getState().setDefeated(id, isDefeated);
-    broadcastEvent(sessionId, { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
+    broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
     persistDefeated(id, isDefeated).catch(() => {});
-  }, [sessionId]);
+  }, [getSessionId]);
 
   // --- Remove Combatant (Story 3-7) ---
   const handleRemoveCombatant = useCallback((id: string) => {
@@ -171,7 +213,7 @@ export function CombatSessionClient({
     const reordered = assignInitiativeOrder(updated);
     useCombatStore.getState().hydrateCombatants(reordered);
 
-    broadcastEvent(sessionId, { type: "combat:combatant_remove", combatant_id: id });
+    broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
     persistRemoveCombatant(id).catch(() => {});
     if (updated.length > 0) {
       persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch(() => {});
@@ -193,7 +235,7 @@ export function CombatSessionClient({
       (c) => c.name === (newCombatant.name) && !store.combatants.some((old) => old.id === c.id)
     );
     if (added && store.encounter_id) {
-      broadcastEvent(sessionId, { type: "combat:combatant_add", combatant: added });
+      broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
       persistNewCombatant(store.encounter_id, added).catch(() => {});
       persistInitiativeOrder(
         useCombatStore.getState().combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
@@ -201,7 +243,7 @@ export function CombatSessionClient({
     }
 
     setShowAddForm(false);
-  }, [sessionId]);
+  }, [getSessionId]);
 
   // --- Edit Stats (Story 3-8) ---
   const handleUpdateStats = useCallback((id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
@@ -216,17 +258,30 @@ export function CombatSessionClient({
       }
       if (stats.ac !== undefined) dbStats.ac = stats.ac;
       if (stats.spell_save_dc !== undefined) dbStats.spell_save_dc = stats.spell_save_dc;
-      broadcastEvent(sessionId, { type: "combat:stats_update", combatant_id: id, ...stats });
+      broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
       persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch(() => {});
     }
-  }, [sessionId]);
+  }, [getSessionId]);
 
   // --- Version Switch (Story 3-9) ---
   const handleSwitchVersion = useCallback((id: string, version: RulesetVersion) => {
     useCombatStore.getState().setRulesetVersion(id, version);
-    broadcastEvent(sessionId, { type: "combat:version_switch", combatant_id: id, ruleset_version: version });
+    broadcastEvent(getSessionId(), { type: "combat:version_switch", combatant_id: id, ruleset_version: version });
     persistRulesetVersion(id, version).catch(() => {});
-  }, [sessionId]);
+  }, [getSessionId]);
+
+  // --- Notes (Story 8-6) ---
+  const handleUpdateDmNotes = useCallback((id: string, notes: string) => {
+    useCombatStore.getState().updateDmNotes(id, notes);
+    // DM notes are NEVER broadcast — persist directly
+    persistDmNotes(id, notes).catch(() => {});
+  }, []);
+
+  const handleUpdatePlayerNotes = useCallback((id: string, notes: string) => {
+    useCombatStore.getState().updatePlayerNotes(id, notes);
+    broadcastEvent(getSessionId(), { type: "combat:player_notes_update", combatant_id: id, player_notes: notes });
+    persistPlayerNotes(id, notes).catch(() => {});
+  }, [getSessionId]);
 
   // --- End Encounter (Story 3-10) ---
   const handleEndEncounter = useCallback(async () => {
@@ -241,13 +296,9 @@ export function CombatSessionClient({
     }
   }, [router, setError]);
 
-  // Show initiative setup if not yet active
+  // Show unified setup if not yet active
   if (!is_active) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <InitiativeTracker onStartCombat={handleStartCombat} />
-      </div>
-    );
+    return <EncounterSetup onStartCombat={handleStartCombat} />;
   }
 
   // Active combat view
@@ -258,7 +309,7 @@ export function CombatSessionClient({
           Round <span className="font-mono text-gold">{round_number}</span>
         </h2>
         <div className="flex items-center gap-3 flex-wrap">
-          <ShareSessionButton sessionId={sessionId} />
+          <ShareSessionButton sessionId={getSessionId()} />
           <span className="text-muted-foreground text-xs">{combatants.length} combatants</span>
           <button
             type="button"
@@ -318,6 +369,8 @@ export function CombatSessionClient({
             onRemoveCombatant={handleRemoveCombatant}
             onUpdateStats={handleUpdateStats}
             onSwitchVersion={handleSwitchVersion}
+            onUpdateDmNotes={handleUpdateDmNotes}
+            onUpdatePlayerNotes={handleUpdatePlayerNotes}
           />
         ))}
       </ul>

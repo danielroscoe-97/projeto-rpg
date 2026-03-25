@@ -17,6 +17,10 @@ export interface Combatant {
   is_player: boolean;
   /** SRD monster id (from public/srd/*.json), null for custom NPCs and players */
   monster_id: string | null;
+  /** Private DM notes — never broadcast to players */
+  dm_notes: string;
+  /** Player-visible notes — broadcast via realtime */
+  player_notes: string;
 }
 
 export interface EncounterState {
@@ -63,4 +67,8 @@ export interface CombatActions {
   updateCombatantStats: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   /** Switch a combatant's ruleset version. */
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
+  /** Update DM-only notes for a combatant. */
+  updateDmNotes: (id: string, notes: string) => void;
+  /** Update player-visible notes for a combatant. */
+  updatePlayerNotes: (id: string, notes: string) => void;
 }

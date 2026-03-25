@@ -114,6 +114,8 @@ export async function persistNewCombatant(
     is_defeated: boolean;
     is_player: boolean;
     monster_id: string | null;
+    dm_notes?: string;
+    player_notes?: string;
   }
 ): Promise<void> {
   const supabase = createClient();
@@ -135,6 +137,8 @@ export async function persistNewCombatant(
       is_defeated: combatant.is_defeated,
       is_player: combatant.is_player,
       monster_id: combatant.monster_id,
+      dm_notes: combatant.dm_notes ?? '',
+      player_notes: combatant.player_notes ?? '',
     });
   if (error) throw new Error(error.message);
 }
@@ -175,6 +179,32 @@ export async function persistEndEncounter(
     .from("encounters")
     .update({ is_active: false })
     .eq("id", encounterId);
+  if (error) throw new Error(error.message);
+}
+
+/** Persists DM-only notes for a combatant (never broadcast). */
+export async function persistDmNotes(
+  combatantId: string,
+  dmNotes: string
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("combatants")
+    .update({ dm_notes: dmNotes })
+    .eq("id", combatantId);
+  if (error) throw new Error(error.message);
+}
+
+/** Persists player-visible notes for a combatant. */
+export async function persistPlayerNotes(
+  combatantId: string,
+  playerNotes: string
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("combatants")
+    .update({ player_notes: playerNotes })
+    .eq("id", combatantId);
   if (error) throw new Error(error.message);
 }
 

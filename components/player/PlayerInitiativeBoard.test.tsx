@@ -27,6 +27,8 @@ const COMBATANTS = [
     is_player: true,
     monster_id: null,
     ruleset_version: null,
+    dm_notes: "",
+    player_notes: "",
   },
   {
     id: "c2",
@@ -41,6 +43,8 @@ const COMBATANTS = [
     is_player: false,
     monster_id: "goblin",
     ruleset_version: "2014",
+    dm_notes: "",
+    player_notes: "",
   },
   {
     id: "c3",
@@ -55,6 +59,8 @@ const COMBATANTS = [
     is_player: false,
     monster_id: "orc",
     ruleset_version: "2014",
+    dm_notes: "",
+    player_notes: "",
   },
 ];
 

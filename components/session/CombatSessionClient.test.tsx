@@ -17,8 +17,12 @@ jest.mock("next/navigation", () => ({
 // Mock DB persistence — tests exercise UI + store only
 const mockPersistTurnAdvance = jest.fn();
 
+jest.mock("@/lib/supabase/encounter", () => ({
+  createEncounterWithCombatants: jest.fn().mockResolvedValue({ session_id: "s1", encounter_id: "e1" }),
+}));
+
 jest.mock("@/lib/supabase/session", () => ({
-  persistInitiativeAndStartCombat: jest.fn(),
+  persistInitiativeAndStartCombat: jest.fn().mockResolvedValue(undefined),
   persistTurnAdvance: (...args: unknown[]) => mockPersistTurnAdvance(...args),
   persistHpChange: jest.fn().mockResolvedValue(undefined),
   persistConditions: jest.fn().mockResolvedValue(undefined),
@@ -62,9 +66,9 @@ jest.mock("@/components/session/ShareSessionButton", () => ({
   ShareSessionButton: () => <div data-testid="share-session-mock" />,
 }));
 
-jest.mock("@/components/combat/InitiativeTracker", () => ({
-  InitiativeTracker: ({ onStartCombat }: { onStartCombat: () => void }) => (
-    <button onClick={onStartCombat} data-testid="initiative-tracker">
+jest.mock("@/components/combat/EncounterSetup", () => ({
+  EncounterSetup: ({ onStartCombat }: { onStartCombat: () => void }) => (
+    <button onClick={onStartCombat} data-testid="encounter-setup">
       Start Combat
     </button>
   ),
@@ -85,6 +89,8 @@ const makeC = (id: string, name: string): Combatant => ({
   is_defeated: false,
   is_player: false,
   monster_id: null,
+  dm_notes: "",
+  player_notes: "",
 });
 
 const TWO_COMBATANTS = [makeC("c1", "Goblin"), makeC("c2", "Orc")];

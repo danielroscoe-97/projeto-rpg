@@ -49,6 +49,8 @@ const BASE_PLAYER: Combatant = {
   is_defeated: false,
   is_player: true,
   monster_id: null,
+  dm_notes: "",
+  player_notes: "",
 };
 
 const MONSTER_COMBATANT: Combatant = {
@@ -66,6 +68,8 @@ const MONSTER_COMBATANT: Combatant = {
   is_defeated: false,
   is_player: false,
   monster_id: "goblin",
+  dm_notes: "",
+  player_notes: "",
 };
 
 const GOBLIN_FULL: SrdMonster = {

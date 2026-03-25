@@ -41,6 +41,10 @@ export interface CombatantRowProps {
   onRemoveCombatant?: (id: string) => void;
   onUpdateStats?: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   onSwitchVersion?: (id: string, version: RulesetVersion) => void;
+  onUpdateDmNotes?: (id: string, notes: string) => void;
+  onUpdatePlayerNotes?: (id: string, notes: string) => void;
+  /** Props from @dnd-kit useSortable — spread on drag handle */
+  dragHandleProps?: Record<string, unknown>;
 }
 
 type OpenPanel = "hp" | "conditions" | "edit" | null;
@@ -57,9 +61,16 @@ export function CombatantRow({
   onRemoveCombatant,
   onUpdateStats,
   onSwitchVersion,
+  onUpdateDmNotes,
+  onUpdatePlayerNotes,
+  dragHandleProps,
 }: CombatantRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
+  const [editingPlayerNotes, setEditingPlayerNotes] = useState(false);
+  const [editingDmNotes, setEditingDmNotes] = useState(false);
+  const [playerNotesValue, setPlayerNotesValue] = useState(combatant.player_notes);
+  const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
 
   const hpPct = combatant.max_hp > 0
     ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
@@ -105,6 +116,17 @@ export function CombatantRow({
       <div className="px-4 py-3">
         {/* Name row */}
         <div className="flex items-center gap-2 mb-2">
+          {/* Drag handle */}
+          {dragHandleProps && (
+            <span
+              className="text-muted-foreground/40 hover:text-muted-foreground cursor-grab active:cursor-grabbing select-none text-sm flex-shrink-0"
+              aria-label="Drag to reorder"
+              {...dragHandleProps}
+            >
+              ⠿
+            </span>
+          )}
+
           {/* Turn indicator — shape glyph (▶) satisfies NFR21: color is not the sole indicator */}
           {isCurrentTurn && (
             <span
@@ -200,6 +222,91 @@ export function CombatantRow({
             {combatant.conditions.map((condition) => (
               <ConditionBadge key={condition} condition={condition} />
             ))}
+          </div>
+        )}
+
+        {/* === NOTES (player-visible + DM-only) === */}
+        {showActions && (
+          <div className="flex flex-wrap gap-3 mt-1 text-xs" data-testid={`notes-${combatant.id}`}>
+            {/* Player notes */}
+            {editingPlayerNotes ? (
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <span className="text-muted-foreground/60 flex-shrink-0" title="Player-visible notes">📝</span>
+                <input
+                  type="text"
+                  value={playerNotesValue}
+                  onChange={(e) => setPlayerNotesValue(e.target.value)}
+                  onBlur={() => {
+                    setEditingPlayerNotes(false);
+                    onUpdatePlayerNotes?.(combatant.id, playerNotesValue);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setEditingPlayerNotes(false);
+                      onUpdatePlayerNotes?.(combatant.id, playerNotesValue);
+                    }
+                    if (e.key === "Escape") {
+                      setEditingPlayerNotes(false);
+                      setPlayerNotesValue(combatant.player_notes);
+                    }
+                  }}
+                  className="bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs flex-1 min-w-0 focus:outline-none focus:ring-1 focus:ring-ring"
+                  autoFocus
+                  data-testid={`player-notes-input-${combatant.id}`}
+                />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setPlayerNotesValue(combatant.player_notes); setEditingPlayerNotes(true); }}
+                className="flex items-center gap-1 text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                title="Player-visible notes (click to edit)"
+                data-testid={`player-notes-${combatant.id}`}
+              >
+                <span>📝</span>
+                <span>{combatant.player_notes || "—"}</span>
+              </button>
+            )}
+
+            {/* DM notes */}
+            {editingDmNotes ? (
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <span className="text-muted-foreground/60 flex-shrink-0" title="DM-only notes">🔒</span>
+                <input
+                  type="text"
+                  value={dmNotesValue}
+                  onChange={(e) => setDmNotesValue(e.target.value)}
+                  onBlur={() => {
+                    setEditingDmNotes(false);
+                    onUpdateDmNotes?.(combatant.id, dmNotesValue);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setEditingDmNotes(false);
+                      onUpdateDmNotes?.(combatant.id, dmNotesValue);
+                    }
+                    if (e.key === "Escape") {
+                      setEditingDmNotes(false);
+                      setDmNotesValue(combatant.dm_notes);
+                    }
+                  }}
+                  className="bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs flex-1 min-w-0 focus:outline-none focus:ring-1 focus:ring-ring"
+                  autoFocus
+                  data-testid={`dm-notes-input-${combatant.id}`}
+                />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setDmNotesValue(combatant.dm_notes); setEditingDmNotes(true); }}
+                className="flex items-center gap-1 text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                title="DM-only notes (click to edit)"
+                data-testid={`dm-notes-${combatant.id}`}
+              >
+                <span>🔒</span>
+                <span>{combatant.dm_notes || "—"}</span>
+              </button>
+            )}
           </div>
         )}
 

@@ -17,6 +17,8 @@ const base: Omit<Combatant, "id" | "name" | "initiative"> = {
   is_defeated: false,
   is_player: false,
   monster_id: null,
+  dm_notes: "",
+  player_notes: "",
 };
 
 function make(

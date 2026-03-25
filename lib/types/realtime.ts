@@ -11,6 +11,7 @@ export type RealtimeEventType =
   | "combat:version_switch"
   | "combat:defeated_change"
   | "combat:stats_update"
+  | "combat:player_notes_update"
   | "session:state_sync";
 
 export interface RealtimeHpUpdate {
@@ -69,6 +70,12 @@ export interface RealtimeStatsUpdate {
   spell_save_dc?: number | null;
 }
 
+export interface RealtimePlayerNotesUpdate {
+  type: "combat:player_notes_update";
+  combatant_id: string;
+  player_notes: string;
+}
+
 export interface RealtimeStateSync {
   type: "session:state_sync";
   combatants: Combatant[];
@@ -86,4 +93,5 @@ export type RealtimeEvent =
   | RealtimeVersionSwitch
   | RealtimeDefeatedChange
   | RealtimeStatsUpdate
+  | RealtimePlayerNotesUpdate
   | RealtimeStateSync;

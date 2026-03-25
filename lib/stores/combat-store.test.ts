@@ -20,6 +20,8 @@ const baseCombatant: Omit<Combatant, "id"> = {
   is_defeated: false,
   is_player: false,
   monster_id: "goblin",
+  dm_notes: "",
+  player_notes: "",
 };
 
 describe("useCombatStore – addCombatant", () => {
@@ -392,6 +394,68 @@ describe("useCombatStore – updateCombatantStats", () => {
     const id = useCombatStore.getState().combatants[0].id;
     useCombatStore.getState().updateCombatantStats(id, { ac: 20 });
     expect(useCombatStore.getState().combatants[0].ac).toBe(20);
+  });
+});
+
+// === Story 8-1: Dual Notes ===
+describe("useCombatStore – updateDmNotes", () => {
+  it("sets DM notes for a combatant", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updateDmNotes(id, "secretly cursed");
+    expect(useCombatStore.getState().combatants[0].dm_notes).toBe("secretly cursed");
+  });
+
+  it("does not affect other combatants", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Orc" });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updateDmNotes(id, "has key");
+    expect(useCombatStore.getState().combatants[1].dm_notes).toBe("");
+  });
+});
+
+describe("useCombatStore – updatePlayerNotes", () => {
+  it("sets player-visible notes for a combatant", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updatePlayerNotes(id, "concentrating on Bless");
+    expect(useCombatStore.getState().combatants[0].player_notes).toBe("concentrating on Bless");
+  });
+
+  it("does not affect other combatants", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Orc" });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updatePlayerNotes(id, "flying");
+    expect(useCombatStore.getState().combatants[1].player_notes).toBe("");
+  });
+});
+
+describe("useCombatStore – addCombatant notes defaults", () => {
+  it("new combatants have empty notes by default", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const c = useCombatStore.getState().combatants[0];
+    expect(c.dm_notes).toBe("");
+    expect(c.player_notes).toBe("");
+  });
+});
+
+describe("useCombatStore – reorderCombatants (universal)", () => {
+  it("works for any arbitrary reorder, not just ties", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "A", initiative: 20 });
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "B", initiative: 15 });
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "C", initiative: 10 });
+    const original = useCombatStore.getState().combatants;
+    // Move C to first, A to second, B to third
+    useCombatStore.getState().reorderCombatants([original[2], original[0], original[1]]);
+    const { combatants } = useCombatStore.getState();
+    expect(combatants[0].name).toBe("C");
+    expect(combatants[1].name).toBe("A");
+    expect(combatants[2].name).toBe("B");
+    expect(combatants[0].initiative_order).toBe(0);
+    expect(combatants[1].initiative_order).toBe(1);
+    expect(combatants[2].initiative_order).toBe(2);
   });
 });
 

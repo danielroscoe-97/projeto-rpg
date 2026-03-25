@@ -155,6 +155,20 @@ export const useCombatStore = create<CombatStore>((set) => ({
         c.id === id ? { ...c, ruleset_version: version } : c
       ),
     })),
+
+  updateDmNotes: (id, notes) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, dm_notes: notes } : c
+      ),
+    })),
+
+  updatePlayerNotes: (id, notes) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, player_notes: notes } : c
+      ),
+    })),
 }));
 
 /** Auto-number combatants with the same base name.
