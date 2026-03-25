@@ -146,30 +146,30 @@ export function CombatantSetupRow({
         data-testid={`setup-notes-${combatant.id}`}
       />
 
-      {/* Ver Ficha — only for monsters with monster_id */}
-      {combatant.monster_id && combatant.ruleset_version && (
+      {/* Actions — fixed width so columns stay aligned regardless of Ver Ficha */}
+      <div className="w-[140px] flex-shrink-0 flex items-center justify-end gap-1">
+        {combatant.monster_id && combatant.ruleset_version && (
+          <button
+            type="button"
+            onClick={() => pinCard("monster", combatant.monster_id!, combatant.ruleset_version!)}
+            className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30"
+            aria-label={`Ver ficha de ${combatant.name}`}
+            data-testid={`ver-ficha-setup-${combatant.id}`}
+          >
+            <span aria-hidden>📖</span>
+            <span>Ver Ficha</span>
+          </button>
+        )}
         <button
           type="button"
-          onClick={() => pinCard("monster", combatant.monster_id!, combatant.ruleset_version!)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30"
-          aria-label={`Ver ficha de ${combatant.name}`}
-          data-testid={`ver-ficha-setup-${combatant.id}`}
+          onClick={() => onRemove(combatant.id)}
+          className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs flex-1 text-center min-h-[32px]"
+          aria-label={t("setup_remove_aria", { name: combatant.name })}
+          data-testid={`setup-remove-${combatant.id}`}
         >
-          <span aria-hidden>📖</span>
-          <span>Ver Ficha</span>
+          {t("setup_remove")}
         </button>
-      )}
-
-      {/* Remove */}
-      <button
-        type="button"
-        onClick={() => onRemove(combatant.id)}
-        className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs w-14 flex-shrink-0 text-center min-h-[32px]"
-        aria-label={t("setup_remove_aria", { name: combatant.name })}
-        data-testid={`setup-remove-${combatant.id}`}
-      >
-        {t("setup_remove")}
-      </button>
+      </div>
     </div>
   );
 }
