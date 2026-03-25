@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-24
+last_updated: 2026-03-24T20:00:00Z
 project: projeto-rpg
 
 project_key: NOKEY
@@ -44,12 +44,12 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Project Foundation & DM Authentication
-  epic-1: backlog
+  epic-1: in-progress
   1-1-initialize-project-with-starter-template: done
   1-2-database-schema-and-rls-policies: done
-  1-3-srd-content-seeding-and-static-bundle-generation: backlog
-  1-4-dm-registration-and-login: backlog
-  1-5-legal-pages-attribution-and-privacy-policy: backlog
+  1-3-srd-content-seeding-and-static-bundle-generation: review
+  1-4-dm-registration-and-login: review
+  1-5-legal-pages-attribution-and-privacy-policy: review
   epic-1-retrospective: optional
 
   # Epic 2: Campaign & Player Group Management
@@ -62,36 +62,36 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3: Combat Tracker Core
-  epic-3: in-progress
+  epic-3: done
   3-1-create-encounter-and-add-monsters: done
   3-2-ruleset-version-selection-per-session: done
   3-3-initiative-entry-sorting-and-tiebreaker-resolution: done
   3-4-turn-advancement-and-combat-flow: done
-  3-5-hp-management-damage-healing-and-temporary-hp: backlog
-  3-6-conditions-apply-display-and-remove: backlog
-  3-7-defeat-remove-and-add-combatants-mid-combat: backlog
-  3-8-edit-combatant-stats-mid-combat: backlog
-  3-9-in-combat-ruleset-version-switching: backlog
-  3-10-save-and-resume-encounter: backlog
+  3-5-hp-management-damage-healing-and-temporary-hp: done
+  3-6-conditions-apply-display-and-remove: done
+  3-7-defeat-remove-and-add-combatants-mid-combat: done
+  3-8-edit-combatant-stats-mid-combat: done
+  3-9-in-combat-ruleset-version-switching: done
+  3-10-save-and-resume-encounter: done
   epic-3-retrospective: optional
 
   # Epic 4: Rules Oracle (Spells, Monsters, Conditions)
-  epic-4: in-progress
+  epic-4: done
   4-1-srd-client-side-search-index-and-indexeddb-cache: done
   4-2-monster-search-and-inline-stat-block-expansion: done
-  4-3-spell-search-and-description-modal-overlay: backlog
-  4-4-condition-rules-lookup: backlog
-  4-5-dual-version-content-labeling: backlog
+  4-3-spell-search-and-description-modal-overlay: done
+  4-4-condition-rules-lookup: done
+  4-5-dual-version-content-labeling: done
   epic-4-retrospective: optional
 
   # Epic 5: Real-Time Player View & Session Sharing
-  epic-5: backlog
-  5-1-session-link-generation-and-player-anonymous-auth: backlog
-  5-2-player-view-live-initiative-board-and-turn-indicator: backlog
-  5-3-player-view-live-hp-display: backlog
-  5-4-player-spell-oracle-access: backlog
-  5-5-realtime-dual-write-and-channel-subscription: backlog
-  5-6-connection-resilience-and-state-reconnect: backlog
+  epic-5: done
+  5-1-session-link-generation-and-player-anonymous-auth: done
+  5-2-player-view-live-initiative-board-and-turn-indicator: done
+  5-3-player-view-live-hp-display: done
+  5-4-player-spell-oracle-access: done
+  5-5-realtime-dual-write-and-channel-subscription: done
+  5-6-connection-resilience-and-state-reconnect: done
   epic-5-retrospective: optional
 
   # Epic 6: Admin Panel & Content Management

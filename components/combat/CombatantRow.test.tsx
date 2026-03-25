@@ -11,6 +11,19 @@ import type { SrdMonster } from "@/lib/srd/srd-loader";
 
 jest.mock("@/lib/srd/srd-search", () => ({
   getMonsterById: jest.fn(),
+  findCondition: jest.fn(),
+}));
+
+jest.mock("@/components/oracle/ConditionRulesModal", () => ({
+  ConditionRulesModal: () => null,
+}));
+
+jest.mock("@/components/oracle/ConditionBadge", () => ({
+  ConditionBadge: ({ condition }: { condition: string }) => (
+    <span role="listitem" data-testid={`condition-badge-${condition.toLowerCase()}`}>
+      {condition}
+    </span>
+  ),
 }));
 
 jest.mock("@/components/oracle/MonsterStatBlock", () => ({

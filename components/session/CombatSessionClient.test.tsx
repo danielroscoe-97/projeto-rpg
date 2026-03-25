@@ -8,12 +8,27 @@ import { CombatSessionClient } from "./CombatSessionClient";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import type { Combatant } from "@/lib/types/combat";
 
+// Mock next/navigation
+const mockPush = jest.fn();
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 // Mock DB persistence — tests exercise UI + store only
 const mockPersistTurnAdvance = jest.fn();
 
 jest.mock("@/lib/supabase/session", () => ({
   persistInitiativeAndStartCombat: jest.fn(),
   persistTurnAdvance: (...args: unknown[]) => mockPersistTurnAdvance(...args),
+  persistHpChange: jest.fn().mockResolvedValue(undefined),
+  persistConditions: jest.fn().mockResolvedValue(undefined),
+  persistDefeated: jest.fn().mockResolvedValue(undefined),
+  persistCombatantStats: jest.fn().mockResolvedValue(undefined),
+  persistRulesetVersion: jest.fn().mockResolvedValue(undefined),
+  persistNewCombatant: jest.fn().mockResolvedValue(undefined),
+  persistRemoveCombatant: jest.fn().mockResolvedValue(undefined),
+  persistInitiativeOrder: jest.fn().mockResolvedValue(undefined),
+  persistEndEncounter: jest.fn().mockResolvedValue(undefined),
 }));
 
 // Stub child components that are covered by their own test suites
@@ -32,6 +47,19 @@ jest.mock("@/components/combat/CombatantRow", () => ({
       {combatant.name}
     </li>
   ),
+}));
+
+jest.mock("@/components/combat/AddCombatantForm", () => ({
+  AddCombatantForm: () => <div data-testid="add-combatant-form-mock" />,
+}));
+
+jest.mock("@/lib/realtime/broadcast", () => ({
+  broadcastEvent: jest.fn(),
+  cleanupDmChannel: jest.fn(),
+}));
+
+jest.mock("@/components/session/ShareSessionButton", () => ({
+  ShareSessionButton: () => <div data-testid="share-session-mock" />,
 }));
 
 jest.mock("@/components/combat/InitiativeTracker", () => ({

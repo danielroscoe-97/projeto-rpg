@@ -31,8 +31,17 @@ export function MonsterSearch({
       return;
     }
     const timer = setTimeout(() => {
-      const found = searchMonsters(query, defaultVersion)
+      // Search all versions, then sort default version first (FR20 / Story 4-5)
+      const found = searchMonsters(query)
         .map((r) => r.item)
+        .sort((a, b) => {
+          if (defaultVersion) {
+            const aMatch = a.ruleset_version === defaultVersion ? 0 : 1;
+            const bMatch = b.ruleset_version === defaultVersion ? 0 : 1;
+            if (aMatch !== bMatch) return aMatch - bMatch;
+          }
+          return 0;
+        })
         .slice(0, MAX_RESULTS);
       setResults(found);
       setExpandedIds(new Set());

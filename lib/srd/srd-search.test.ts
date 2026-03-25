@@ -7,6 +7,7 @@ import {
   findCondition,
   getAllConditions,
   getMonsterById,
+  getSpellById,
   resetSrdIndexes,
 } from "./srd-search";
 import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
@@ -245,5 +246,44 @@ describe("getMonsterById", () => {
     resetSrdIndexes();
     const m = getMonsterById("goblin", "2014");
     expect(m).toBeUndefined();
+  });
+});
+
+// --- Spell map lookup ---
+
+describe("getSpellById", () => {
+  beforeEach(() => {
+    resetSrdIndexes();
+    buildSpellIndex(SPELLS);
+  });
+
+  it("returns the correct spell by id and version", () => {
+    const s = getSpellById("fireball", "2014");
+    expect(s).toBeDefined();
+    expect(s?.name).toBe("Fireball");
+    expect(s?.ruleset_version).toBe("2014");
+  });
+
+  it("returns the 2024 variant when version is 2024", () => {
+    const s = getSpellById("fireball-2024", "2024");
+    expect(s).toBeDefined();
+    expect(s?.id).toBe("fireball-2024");
+    expect(s?.ruleset_version).toBe("2024");
+  });
+
+  it("returns undefined for an unknown id", () => {
+    const s = getSpellById("wish", "2014");
+    expect(s).toBeUndefined();
+  });
+
+  it("returns undefined for wrong version", () => {
+    const s = getSpellById("fireball", "2024");
+    expect(s).toBeUndefined();
+  });
+
+  it("returns undefined after resetSrdIndexes clears the map", () => {
+    resetSrdIndexes();
+    const s = getSpellById("fireball", "2014");
+    expect(s).toBeUndefined();
   });
 });

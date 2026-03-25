@@ -4,24 +4,12 @@ import { useState, useEffect } from "react";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { VersionBadge } from "@/components/session/RulesetSelector";
+import { ConditionBadge } from "@/components/oracle/ConditionBadge";
+import { HpAdjuster } from "./HpAdjuster";
+import { ConditionSelector } from "./ConditionSelector";
+import { StatsEditor } from "./StatsEditor";
 import type { Combatant } from "@/lib/types/combat";
-
-/** Condition badge color mapping (UX-DR5) */
-const CONDITION_COLORS: Record<string, string> = {
-  blinded: "bg-gray-600",
-  charmed: "bg-pink-700",
-  frightened: "bg-orange-700",
-  grappled: "bg-yellow-700",
-  incapacitated: "bg-red-800",
-  invisible: "bg-blue-800",
-  paralyzed: "bg-purple-700",
-  petrified: "bg-stone-600",
-  poisoned: "bg-green-800",
-  prone: "bg-amber-800",
-  restrained: "bg-cyan-800",
-  stunned: "bg-violet-700",
-  unconscious: "bg-slate-700",
-};
+import type { RulesetVersion } from "@/lib/types/database";
 
 function getHpBarColor(current: number, max: number): string {
   if (max === 0) return "bg-gray-500";
@@ -40,13 +28,38 @@ function getHpThresholdLabel(current: number, max: number): string {
   return "CRIT";
 }
 
-interface CombatantRowProps {
+export interface CombatantRowProps {
   combatant: Combatant;
   isCurrentTurn: boolean;
+  /** When true, show action buttons (HP, conditions, defeat, edit, version). Only in active combat. */
+  showActions?: boolean;
+  onApplyDamage?: (id: string, amount: number) => void;
+  onApplyHealing?: (id: string, amount: number) => void;
+  onSetTempHp?: (id: string, value: number) => void;
+  onToggleCondition?: (id: string, condition: string) => void;
+  onSetDefeated?: (id: string, isDefeated: boolean) => void;
+  onRemoveCombatant?: (id: string) => void;
+  onUpdateStats?: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  onSwitchVersion?: (id: string, version: RulesetVersion) => void;
 }
 
-export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
+type OpenPanel = "hp" | "conditions" | "edit" | null;
+
+export function CombatantRow({
+  combatant,
+  isCurrentTurn,
+  showActions = false,
+  onApplyDamage,
+  onApplyHealing,
+  onSetTempHp,
+  onToggleCondition,
+  onSetDefeated,
+  onRemoveCombatant,
+  onUpdateStats,
+  onSwitchVersion,
+}: CombatantRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
 
   const hpPct = combatant.max_hp > 0
     ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
@@ -70,6 +83,14 @@ export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
   const handleToggle = () => {
     if (canExpand) setIsExpanded((prev) => !prev);
   };
+
+  const togglePanel = (panel: OpenPanel) => {
+    setOpenPanel((prev) => (prev === panel ? null : panel));
+  };
+
+  const isMonster = !!combatant.monster_id;
+  const canSwitchVersion = isMonster && combatant.ruleset_version !== null;
+  const otherVersion: RulesetVersion = combatant.ruleset_version === "2024" ? "2014" : "2024";
 
   return (
     <li
@@ -176,20 +197,104 @@ export function CombatantRow({ combatant, isCurrentTurn }: CombatantRowProps) {
             aria-label={`${combatant.name} conditions`}
             data-testid={`conditions-${combatant.id}`}
           >
-            {combatant.conditions.map((condition) => {
-              const colorClass =
-                CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/20";
-              return (
-                <span
-                  key={condition}
-                  role="listitem"
-                  className={`px-2 py-0.5 rounded-full text-xs text-white font-medium ${colorClass}`}
-                >
-                  {condition}
-                </span>
-              );
-            })}
+            {combatant.conditions.map((condition) => (
+              <ConditionBadge key={condition} condition={condition} />
+            ))}
           </div>
+        )}
+
+        {/* === ACTION BUTTONS (only during active combat) === */}
+        {showActions && (
+          <div className="flex flex-wrap gap-1 mt-2" data-testid={`action-buttons-${combatant.id}`}>
+            <button
+              type="button"
+              onClick={() => togglePanel("hp")}
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
+                openPanel === "hp" ? "bg-[#e94560] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+              }`}
+              aria-label="Adjust HP"
+              data-testid={`hp-btn-${combatant.id}`}
+            >
+              HP
+            </button>
+            <button
+              type="button"
+              onClick={() => togglePanel("conditions")}
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
+                openPanel === "conditions" ? "bg-[#e94560] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+              }`}
+              aria-label="Manage conditions"
+              data-testid={`conditions-btn-${combatant.id}`}
+            >
+              Cond
+            </button>
+            <button
+              type="button"
+              onClick={() => onSetDefeated?.(combatant.id, !combatant.is_defeated)}
+              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/10 text-white/60 hover:bg-white/20 transition-colors"
+              aria-label={combatant.is_defeated ? "Revive combatant" : "Mark as defeated"}
+              data-testid={`defeat-btn-${combatant.id}`}
+            >
+              {combatant.is_defeated ? "Revive" : "Defeat"}
+            </button>
+            <button
+              type="button"
+              onClick={() => togglePanel("edit")}
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
+                openPanel === "edit" ? "bg-[#e94560] text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+              }`}
+              aria-label="Edit stats"
+              data-testid={`edit-btn-${combatant.id}`}
+            >
+              Edit
+            </button>
+            {canSwitchVersion && (
+              <button
+                type="button"
+                onClick={() => onSwitchVersion?.(combatant.id, otherVersion)}
+                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/10 text-white/60 hover:bg-white/20 transition-colors"
+                aria-label={`Switch to ${otherVersion} ruleset`}
+                data-testid={`version-btn-${combatant.id}`}
+              >
+                → {otherVersion}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => onRemoveCombatant?.(combatant.id)}
+              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/10 text-red-400 hover:bg-red-900/30 transition-colors"
+              aria-label="Remove combatant"
+              data-testid={`remove-btn-${combatant.id}`}
+            >
+              Remove
+            </button>
+          </div>
+        )}
+
+        {/* === INLINE PANELS === */}
+        {openPanel === "hp" && (
+          <HpAdjuster
+            onApplyDamage={(amount) => onApplyDamage?.(combatant.id, amount)}
+            onApplyHealing={(amount) => onApplyHealing?.(combatant.id, amount)}
+            onSetTempHp={(value) => onSetTempHp?.(combatant.id, value)}
+            onClose={() => setOpenPanel(null)}
+          />
+        )}
+
+        {openPanel === "conditions" && (
+          <ConditionSelector
+            activeConditions={combatant.conditions}
+            onToggle={(condition) => onToggleCondition?.(combatant.id, condition)}
+            onClose={() => setOpenPanel(null)}
+          />
+        )}
+
+        {openPanel === "edit" && (
+          <StatsEditor
+            combatant={combatant}
+            onSave={(stats) => onUpdateStats?.(combatant.id, stats)}
+            onClose={() => setOpenPanel(null)}
+          />
         )}
       </div>
 

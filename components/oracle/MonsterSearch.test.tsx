@@ -189,15 +189,30 @@ describe("MonsterSearch", () => {
     });
   });
 
-  it("passes defaultVersion filter to searchMonsters", async () => {
-    mockSearch.mockReturnValue([makeFuseResult(GOBLIN_2014)]);
+  it("searches all versions and sorts defaultVersion first", async () => {
+    const GOBLIN_2024: SrdMonster = {
+      ...GOBLIN_2014,
+      id: "goblin-2024",
+      ruleset_version: "2024",
+    };
+    mockSearch.mockReturnValue([
+      makeFuseResult(GOBLIN_2024),
+      makeFuseResult(GOBLIN_2014),
+    ]);
     const user = userEvent.setup();
 
     render(<MonsterSearch defaultVersion="2014" />);
     await user.type(screen.getByRole("searchbox"), "gob");
 
     await waitFor(() => {
-      expect(mockSearch).toHaveBeenCalledWith("gob", "2014");
+      // Should search without version filter
+      expect(mockSearch).toHaveBeenCalledWith("gob");
+    });
+
+    // Both versions should appear
+    await waitFor(() => {
+      expect(screen.getByTestId("monster-row-goblin")).toBeInTheDocument();
+      expect(screen.getByTestId("monster-row-goblin-2024")).toBeInTheDocument();
     });
   });
 
