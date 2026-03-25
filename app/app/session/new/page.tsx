@@ -1,16 +1,169 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/supabase/client";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
+import type { PlayerCharacter } from "@/lib/types/database";
+
+interface CampaignOption {
+  id: string;
+  name: string;
+  player_count: number;
+}
 
 export default function NewEncounterPage() {
+  const t = useTranslations("session");
+
+  const [campaigns, setCampaigns] = useState<CampaignOption[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // Once a choice is made, store it here
+  const [chosen, setChosen] = useState<{
+    campaignId: string | null;
+    preloadedPlayers: PlayerCharacter[];
+  } | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("campaigns")
+        .select("id, name, player_characters(count)")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        setFetchError(t("pick_error"));
+        // If fetch fails, skip picker and go straight to quick combat
+        setChosen({ campaignId: null, preloadedPlayers: [] });
+      } else {
+        const mapped = (data ?? []).map((c) => ({
+          id: c.id,
+          name: c.name,
+          player_count:
+            (c.player_characters as { count: number }[])[0]?.count ?? 0,
+        }));
+        // If no campaigns, skip picker
+        if (mapped.length === 0) {
+          setChosen({ campaignId: null, preloadedPlayers: [] });
+        } else {
+          setCampaigns(mapped);
+        }
+      }
+      setIsLoading(false);
+    };
+    load();
+  }, [t]);
+
+  const handlePickCampaign = async (campaignId: string) => {
+    setIsLoading(true);
+    const supabase = createClient();
+    const { data: players } = await supabase
+      .from("player_characters")
+      .select("*")
+      .eq("campaign_id", campaignId)
+      .order("created_at", { ascending: true });
+
+    setChosen({
+      campaignId,
+      preloadedPlayers: (players as PlayerCharacter[]) ?? [],
+    });
+    setIsLoading(false);
+  };
+
+  const handlePickQuickCombat = () => {
+    setChosen({ campaignId: null, preloadedPlayers: [] });
+  };
+
+  // Once chosen, render the combat client
+  if (chosen) {
+    return (
+      <CombatSessionClient
+        sessionId={null}
+        encounterId={null}
+        initialCombatants={[]}
+        isActive={false}
+        roundNumber={1}
+        currentTurnIndex={0}
+        campaignId={chosen.campaignId}
+        preloadedPlayers={chosen.preloadedPlayers}
+      />
+    );
+  }
+
+  // Campaign picker
   return (
-    <CombatSessionClient
-      sessionId={null}
-      encounterId={null}
-      initialCombatants={[]}
-      isActive={false}
-      roundNumber={1}
-      currentTurnIndex={0}
-    />
+    <div className="w-full max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">
+          {t("pick_campaign_title")}
+        </h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          {t("pick_campaign_description")}
+        </p>
+      </div>
+
+      {fetchError && (
+        <p className="text-red-400 text-sm" role="alert">
+          {fetchError}
+        </p>
+      )}
+
+      {isLoading ? (
+        <p className="text-muted-foreground text-sm">{t("pick_loading")}</p>
+      ) : (
+        <div className="space-y-3">
+          {/* Quick Combat option */}
+          <button
+            type="button"
+            onClick={handlePickQuickCombat}
+            className="w-full text-left p-4 bg-card border border-dashed border-border rounded-lg hover:border-gold/50 hover:bg-gold/5 transition-all duration-200 group"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-foreground font-medium group-hover:text-gold transition-colors">
+                  {t("pick_quick_combat")}
+                </span>
+                <p className="text-muted-foreground text-sm mt-0.5">
+                  {t("pick_quick_combat_description")}
+                </p>
+              </div>
+              <span className="text-muted-foreground/40 text-xl group-hover:text-gold transition-colors">
+                &rarr;
+              </span>
+            </div>
+          </button>
+
+          {/* Campaign options */}
+          {campaigns.map((campaign) => (
+            <button
+              key={campaign.id}
+              type="button"
+              onClick={() => handlePickCampaign(campaign.id)}
+              className="w-full text-left p-4 bg-card border border-border rounded-lg hover:border-gold/50 hover:bg-gold/5 transition-all duration-200 group"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-foreground font-medium group-hover:text-gold transition-colors">
+                    {campaign.name}
+                  </span>
+                  <p className="text-muted-foreground text-sm mt-0.5">
+                    {campaign.player_count === 1
+                      ? t("pick_campaign_players_one")
+                      : t("pick_campaign_players", {
+                          count: campaign.player_count,
+                        })}
+                  </p>
+                </div>
+                <span className="text-muted-foreground/40 text-xl group-hover:text-gold transition-colors">
+                  &rarr;
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

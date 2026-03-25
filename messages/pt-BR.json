@@ -298,7 +298,15 @@
     "load_into_encounter": "Carregar {name} no encontro",
     "load_button": "Carregar",
     "load_button_loading": "Carregando…",
-    "ruleset_label": "Ruleset:"
+    "ruleset_label": "Ruleset:",
+    "pick_campaign_title": "Iniciar Sessão de Combate",
+    "pick_campaign_description": "Escolha uma campanha para vincular a esta sessão, ou inicie um combate rápido.",
+    "pick_quick_combat": "Combate Rápido",
+    "pick_quick_combat_description": "Sem campanha — adicione combatentes na hora.",
+    "pick_campaign_players": "{count} jogadores",
+    "pick_campaign_players_one": "1 jogador",
+    "pick_loading": "Carregando campanhas…",
+    "pick_error": "Falha ao carregar campanhas."
   },
   "player": {
     "connecting": "Conectando à sessão...",

@@ -298,7 +298,15 @@
     "load_into_encounter": "Load {name} into encounter",
     "load_button": "Load",
     "load_button_loading": "Loading…",
-    "ruleset_label": "Ruleset:"
+    "ruleset_label": "Ruleset:",
+    "pick_campaign_title": "Start a Combat Session",
+    "pick_campaign_description": "Choose a campaign to link this session to, or start a quick combat.",
+    "pick_quick_combat": "Quick Combat",
+    "pick_quick_combat_description": "No campaign — add combatants on the fly.",
+    "pick_campaign_players": "{count} players",
+    "pick_campaign_players_one": "1 player",
+    "pick_loading": "Loading campaigns…",
+    "pick_error": "Failed to load campaigns."
   },
   "player": {
     "connecting": "Connecting to session...",

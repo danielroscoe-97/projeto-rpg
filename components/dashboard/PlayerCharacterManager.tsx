@@ -30,14 +30,14 @@ function validateForm(form: PlayerCharacterForm): string | null {
   if (!form.name.trim()) return "Character name is required.";
   const hp = Number(form.max_hp);
   if (!form.max_hp || isNaN(hp) || !Number.isInteger(hp) || hp < 1)
-    return "Max HP must be an integer ≥ 1.";
+    return "Max HP must be an integer >= 1.";
   const ac = Number(form.ac);
   if (!form.ac || isNaN(ac) || !Number.isInteger(ac) || ac < 1)
-    return "AC must be an integer ≥ 1.";
+    return "AC must be an integer >= 1.";
   if (form.spell_save_dc !== "") {
     const dc = Number(form.spell_save_dc);
     if (isNaN(dc) || !Number.isInteger(dc) || dc < 1)
-      return "Spell save DC must be an integer ≥ 1.";
+      return "Spell save DC must be an integer >= 1.";
   }
   return null;
 }
@@ -49,6 +49,15 @@ function isSaveDisabled(form: PlayerCharacterForm): boolean {
   const ac = Number(form.ac);
   if (!form.ac || isNaN(ac) || !Number.isInteger(ac) || ac < 1) return true;
   return false;
+}
+
+function StatBadge({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex flex-col items-center px-3 py-2 bg-background rounded-md border border-border min-w-[56px]">
+      <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{label}</span>
+      <span className="text-foreground font-semibold text-sm">{value}</span>
+    </div>
+  );
 }
 
 export function PlayerCharacterManager({ initialCharacters, campaignId }: Props) {
@@ -123,7 +132,6 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
         ac: Number(editForm.ac),
         spell_save_dc: editForm.spell_save_dc ? Number(editForm.spell_save_dc) : null,
       };
-      // Sync current_hp when: character is at full health (keep in sync), or current_hp exceeds new max (clamp)
       if (character.current_hp === character.max_hp || character.current_hp > newMaxHp) {
         updatePayload.current_hp = newMaxHp;
       }
@@ -186,17 +194,108 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
     }
   };
 
+  // ── Character Form (shared between add and edit) ───────────────────────────
+
+  const renderForm = (
+    form: PlayerCharacterForm,
+    setForm: React.Dispatch<React.SetStateAction<PlayerCharacterForm>>,
+    onSubmit: () => void,
+    onCancel: () => void,
+    title: string,
+    idPrefix: string
+  ) => (
+    <div className="p-4 bg-card rounded-lg border border-border space-y-4">
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-name`} className="text-foreground text-xs">
+            {t("pc_name_label")}
+          </Label>
+          <Input
+            id={`${idPrefix}-name`}
+            placeholder={t("pc_name_placeholder")}
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+          />
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor={`${idPrefix}-hp`} className="text-foreground text-xs">
+              {t("pc_hp_label")}
+            </Label>
+            <Input
+              id={`${idPrefix}-hp`}
+              type="number"
+              min={1}
+              placeholder={t("pc_hp_placeholder")}
+              value={form.max_hp}
+              onChange={(e) => setForm((f) => ({ ...f, max_hp: e.target.value }))}
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`${idPrefix}-ac`} className="text-foreground text-xs">
+              {t("pc_ac_label")}
+            </Label>
+            <Input
+              id={`${idPrefix}-ac`}
+              type="number"
+              min={1}
+              placeholder={t("pc_ac_placeholder")}
+              value={form.ac}
+              onChange={(e) => setForm((f) => ({ ...f, ac: e.target.value }))}
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`${idPrefix}-dc`} className="text-foreground text-xs">
+              {t("pc_spell_dc_label")} <span className="text-muted-foreground/50">({tc("optional")})</span>
+            </Label>
+            <Input
+              id={`${idPrefix}-dc`}
+              type="number"
+              min={1}
+              placeholder={tc("dash")}
+              value={form.spell_save_dc}
+              onChange={(e) => setForm((f) => ({ ...f, spell_save_dc: e.target.value }))}
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground/40"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex gap-2 justify-end">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-muted-foreground hover:text-foreground min-h-[44px]"
+          onClick={onCancel}
+        >
+          {tc("cancel")}
+        </Button>
+        <Button
+          size="sm"
+          className="bg-gold hover:bg-gold/80 text-foreground min-h-[44px]"
+          disabled={isSaveDisabled(form) || isLoading}
+          onClick={onSubmit}
+        >
+          {isLoading ? tc("saving") : tc("save")}
+        </Button>
+      </div>
+    </div>
+  );
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">{t("pc_title")}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("pc_title")}</h2>
         {!showAdd && (
           <Button
             size="sm"
-            className="bg-[#e94560] hover:bg-[#c73652] text-white min-h-[44px]"
+            className="bg-gold hover:bg-gold/80 text-foreground min-h-[44px]"
             onClick={() => {
               setShowAdd(true);
               setError(null);
@@ -215,247 +314,99 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       )}
 
       {/* Add Form */}
-      {showAdd && (
-        <div className="p-4 bg-[#16213e] rounded-lg border border-white/10 space-y-3">
-          <p className="text-sm font-medium text-white">{t("pc_new")}</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2 space-y-1">
-              <Label htmlFor="add-name" className="text-white text-xs">
-                {t("pc_name_label")}
-              </Label>
-              <Input
-                id="add-name"
-                placeholder={t("pc_name_placeholder")}
-                value={addForm.name}
-                onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="add-max-hp" className="text-white text-xs">
-                {t("pc_hp_label")}
-              </Label>
-              <Input
-                id="add-max-hp"
-                type="number"
-                min={1}
-                placeholder={t("pc_hp_placeholder")}
-                value={addForm.max_hp}
-                onChange={(e) => setAddForm((f) => ({ ...f, max_hp: e.target.value }))}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="add-ac" className="text-white text-xs">
-                {t("pc_ac_label")}
-              </Label>
-              <Input
-                id="add-ac"
-                type="number"
-                min={1}
-                placeholder={t("pc_ac_placeholder")}
-                value={addForm.ac}
-                onChange={(e) => setAddForm((f) => ({ ...f, ac: e.target.value }))}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
-              />
-            </div>
-            <div className="col-span-2 space-y-1">
-              <Label htmlFor="add-spell-dc" className="text-white text-xs">
-                {t("pc_spell_dc_label")} <span className="text-white/40">({tc("optional")})</span>
-              </Label>
-              <Input
-                id="add-spell-dc"
-                type="number"
-                min={1}
-                placeholder={tc("dash")}
-                value={addForm.spell_save_dc}
-                onChange={(e) => setAddForm((f) => ({ ...f, spell_save_dc: e.target.value }))}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-white/50 hover:text-white min-h-[44px]"
-              onClick={() => {
-                setShowAdd(false);
-                setAddForm(EMPTY_FORM);
-                setError(null);
-              }}
-            >
-              {tc("cancel")}
-            </Button>
-            <Button
-              size="sm"
-              className="bg-[#e94560] hover:bg-[#c73652] text-white min-h-[44px]"
-              disabled={isSaveDisabled(addForm) || isLoading}
-              onClick={handleAdd}
-            >
-              {isLoading ? tc("saving") : tc("save")}
-            </Button>
-          </div>
+      {showAdd &&
+        renderForm(
+          addForm,
+          setAddForm,
+          handleAdd,
+          () => {
+            setShowAdd(false);
+            setAddForm(EMPTY_FORM);
+            setError(null);
+          },
+          t("pc_new"),
+          "add"
+        )}
+
+      {/* Empty state */}
+      {characters.length === 0 && !showAdd && (
+        <div className="text-center py-12 border border-dashed border-border rounded-lg">
+          <p className="text-muted-foreground text-sm">{t("pc_empty")}</p>
         </div>
       )}
 
-      {/* Character List */}
-      {characters.length === 0 && !showAdd && (
-        <p className="text-white/40 text-sm text-center py-8">
-          {t("pc_empty")}
-        </p>
-      )}
-
+      {/* Character Cards */}
       {characters.length > 0 && (
-        <div>
-          {/* Column headers */}
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-3 px-4 pb-2 text-white/50 text-xs uppercase tracking-wider">
-            <span>{t("pc_col_name")}</span>
-            <span className="w-14 text-right">{t("pc_col_max_hp")}</span>
-            <span className="w-14 text-right">{t("pc_col_cur_hp")}</span>
-            <span className="w-10 text-right">{t("pc_col_ac")}</span>
-            <span className="w-14 text-right">{t("pc_col_spell_dc")}</span>
-            <span className="w-20" />
-          </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {characters.map((character) => {
+            // Edit mode
+            if (editingId === character.id) {
+              return (
+                <div key={character.id} className="sm:col-span-2">
+                  {renderForm(
+                    editForm,
+                    setEditForm,
+                    handleEdit,
+                    () => {
+                      setEditingId(null);
+                      setEditForm(EMPTY_FORM);
+                      setError(null);
+                    },
+                    character.name,
+                    `edit-${character.id}`
+                  )}
+                </div>
+              );
+            }
 
-          <div className="space-y-2">
-            {characters.map((character) => {
-              if (editingId === character.id) {
-                return (
-                  <div
-                    key={character.id}
-                    className="p-4 bg-[#16213e] rounded-lg border border-white/10 space-y-3"
-                  >
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="col-span-2 space-y-1">
-                        <Label htmlFor={`edit-name-${character.id}`} className="text-white text-xs">
-                          {t("pc_name_label")}
-                        </Label>
-                        <Input
-                          id={`edit-name-${character.id}`}
-                          value={editForm.name}
-                          onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
-                          className="bg-white/5 border-white/20 text-white h-8 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor={`edit-hp-${character.id}`} className="text-white text-xs">
-                          {t("pc_hp_label")}
-                        </Label>
-                        <Input
-                          id={`edit-hp-${character.id}`}
-                          type="number"
-                          min={1}
-                          value={editForm.max_hp}
-                          onChange={(e) => setEditForm((f) => ({ ...f, max_hp: e.target.value }))}
-                          className="bg-white/5 border-white/20 text-white h-8 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor={`edit-ac-${character.id}`} className="text-white text-xs">
-                          {t("pc_ac_label")}
-                        </Label>
-                        <Input
-                          id={`edit-ac-${character.id}`}
-                          type="number"
-                          min={1}
-                          value={editForm.ac}
-                          onChange={(e) => setEditForm((f) => ({ ...f, ac: e.target.value }))}
-                          className="bg-white/5 border-white/20 text-white h-8 text-sm"
-                        />
-                      </div>
-                      <div className="col-span-2 space-y-1">
-                        <Label htmlFor={`edit-dc-${character.id}`} className="text-white text-xs">
-                          {t("pc_spell_dc_label")} <span className="text-white/40">({tc("optional")})</span>
-                        </Label>
-                        <Input
-                          id={`edit-dc-${character.id}`}
-                          type="number"
-                          min={1}
-                          placeholder={tc("dash")}
-                          value={editForm.spell_save_dc}
-                          onChange={(e) =>
-                            setEditForm((f) => ({ ...f, spell_save_dc: e.target.value }))
-                          }
-                          className="bg-white/5 border-white/20 text-white placeholder:text-white/30 h-8 text-sm"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex gap-2 justify-end">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white/50 hover:text-white min-h-[44px]"
-                        onClick={() => {
-                          setEditingId(null);
-                          setEditForm(EMPTY_FORM);
-                          setError(null);
-                        }}
-                      >
-                        {tc("cancel")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-[#e94560] hover:bg-[#c73652] text-white min-h-[44px]"
-                        disabled={isSaveDisabled(editForm) || isLoading}
-                        onClick={handleEdit}
-                      >
-                        {isLoading ? tc("saving") : tc("save")}
-                      </Button>
-                    </div>
-                  </div>
-                );
-              }
-
-              if (removeTargetId === character.id) {
-                return (
-                  <div
-                    key={character.id}
-                    className="flex items-center gap-3 p-4 bg-[#16213e] rounded-lg border border-white/10"
-                  >
-                    <p className="text-white/70 text-sm flex-1">
-                      Remove{" "}
-                      <span className="text-white font-medium">{character.name}</span>
-                      {t("pc_remove_confirm_suffix")}
-                    </p>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="min-h-[44px]"
-                      disabled={isLoading}
-                      onClick={handleRemove}
-                    >
-                      {isLoading ? tc("saving") : tc("confirm")}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white/50 hover:text-white min-h-[44px]"
-                      onClick={() => setRemoveTargetId(null)}
-                    >
-                      {tc("cancel")}
-                    </Button>
-                  </div>
-                );
-              }
-
+            // Remove confirmation
+            if (removeTargetId === character.id) {
               return (
                 <div
                   key={character.id}
-                  className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-3 items-center px-4 py-3 bg-[#16213e] rounded-lg"
+                  className="flex items-center gap-3 p-4 bg-card rounded-lg border border-red-500/30 sm:col-span-2"
                 >
-                  <span className="text-white font-medium truncate">{character.name}</span>
-                  <span className="w-14 text-right text-white/70 text-sm">{character.max_hp}</span>
-                  <span className="w-14 text-right text-white/70 text-sm">{character.current_hp}</span>
-                  <span className="w-10 text-right text-white/70 text-sm">{character.ac}</span>
-                  <span className="w-14 text-right text-white/70 text-sm">
-                    {character.spell_save_dc ?? tc("dash")}
-                  </span>
-                  <div className="w-20 flex items-center gap-1 justify-end">
+                  <p className="text-muted-foreground text-sm flex-1">
+                    Remove{" "}
+                    <span className="text-foreground font-medium">{character.name}</span>
+                    {t("pc_remove_confirm_suffix")}
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="min-h-[44px]"
+                    disabled={isLoading}
+                    onClick={handleRemove}
+                  >
+                    {isLoading ? tc("saving") : tc("confirm")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-muted-foreground hover:text-foreground min-h-[44px]"
+                    onClick={() => setRemoveTargetId(null)}
+                  >
+                    {tc("cancel")}
+                  </Button>
+                </div>
+              );
+            }
+
+            // Character card
+            return (
+              <div
+                key={character.id}
+                className="p-4 bg-card rounded-lg border border-border hover:border-border/80 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-foreground font-medium text-sm truncate pr-2">
+                    {character.name}
+                  </h3>
+                  <div className="flex items-center gap-1 flex-shrink-0">
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-white/50 hover:text-white text-xs px-2 min-h-[44px]"
+                      className="text-muted-foreground hover:text-foreground text-xs px-2 h-7"
                       onClick={() => {
                         setEditingId(character.id);
                         setEditForm({
@@ -474,7 +425,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-red-400 hover:text-red-300 text-xs px-2 min-h-[44px]"
+                      className="text-red-400 hover:text-red-300 text-xs px-2 h-7"
                       onClick={() => {
                         setRemoveTargetId(character.id);
                         setError(null);
@@ -484,9 +435,17 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     </Button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <StatBadge label={t("pc_col_max_hp")} value={character.max_hp} />
+                  <StatBadge label={t("pc_col_cur_hp")} value={character.current_hp} />
+                  <StatBadge label={t("pc_col_ac")} value={character.ac} />
+                  {character.spell_save_dc && (
+                    <StatBadge label={t("pc_col_spell_dc")} value={character.spell_save_dc} />
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

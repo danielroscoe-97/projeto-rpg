@@ -14,6 +14,8 @@ import type { Combatant } from "@/lib/types/combat";
 
 interface EncounterSetupProps {
   onStartCombat: () => Promise<void>;
+  campaignId?: string | null;
+  preloadedPlayers?: PlayerCharacter[];
 }
 
 interface AddRowForm {
@@ -32,7 +34,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
   notes: "",
 };
 
-export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
+export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: EncounterSetupProps) {
   const t = useTranslations("combat");
   const {
     combatants,
@@ -60,6 +62,36 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
     if (submitError) setSubmitError(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combatants]);
+
+  // Auto-load preloaded players from campaign selection (runs once on mount)
+  const hasPreloaded = useRef(false);
+  useEffect(() => {
+    if (hasPreloaded.current || !preloadedPlayers || preloadedPlayers.length === 0) return;
+    hasPreloaded.current = true;
+    const currentCombatants = [...useCombatStore.getState().combatants];
+    preloadedPlayers.forEach((pc) => {
+      const numberedName = getNumberedName(pc.name, currentCombatants);
+      const newCombatant: Omit<Combatant, "id"> = {
+        name: numberedName,
+        current_hp: pc.max_hp,
+        max_hp: pc.max_hp,
+        temp_hp: 0,
+        ac: pc.ac,
+        spell_save_dc: pc.spell_save_dc,
+        initiative: null,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: null,
+        is_defeated: false,
+        is_player: true,
+        monster_id: null,
+        dm_notes: "",
+        player_notes: "",
+      };
+      addCombatant(newCombatant);
+      currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
+    });
+  }, [preloadedPlayers, addCombatant]);
 
   // Fill add row from monster search selection
   const handleSelectMonster = useCallback(
@@ -344,7 +376,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-14 flex-shrink-0 py-1.5 bg-gold/20 text-gold text-sm font-medium rounded hover:bg-gold/40 transition-colors min-h-[32px] text-center"
+          className="w-14 flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}
