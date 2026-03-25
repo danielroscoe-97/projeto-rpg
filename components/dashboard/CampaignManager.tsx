@@ -59,8 +59,10 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
         .select("id, name, created_at")
         .single();
 
-      if (dbError || !data)
-        throw new Error("Failed to create campaign. Please try again.");
+      if (dbError || !data) {
+        console.error("Campaign create error:", dbError);
+        throw new Error(dbError?.message ?? "Failed to create campaign. Please try again.");
+      }
 
       setCampaigns((prev) => [
         {

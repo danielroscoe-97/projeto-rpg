@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
@@ -57,11 +58,19 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          Manage your campaigns and player groups.
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Manage your campaigns and start combat encounters.
+          </p>
+        </div>
+        <Link
+          href="/app/session/new"
+          className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg text-sm shadow-card hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] shrink-0"
+        >
+          <span aria-hidden="true">⚔</span> New Combat Session
+        </Link>
       </div>
       <SavedEncounters encounters={savedEncounters} />
       <CampaignManager initialCampaigns={campaigns} userId={user.id} />
