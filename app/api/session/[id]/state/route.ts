@@ -53,10 +53,19 @@ export async function GET(
     .eq("encounter_id", encounter.id)
     .order("initiative_order", { ascending: true });
 
+  // Strip exact HP values from monsters — players see status label only (OK/LOW/CRIT)
+  const playerCombatants = (combatants ?? []).map((c) => {
+    if (c.is_player) return c;
+    const pct = c.max_hp > 0 ? c.current_hp / c.max_hp : 0;
+    const hpStatus = pct > 0.5 ? "OK" : pct > 0.25 ? "LOW" : "CRIT";
+    const { current_hp, max_hp, temp_hp, ...rest } = c;
+    return { ...rest, hp_status: hpStatus };
+  });
+
   return NextResponse.json({
     data: {
       encounter,
-      combatants: combatants ?? [],
+      combatants: playerCombatants,
     },
   });
 }

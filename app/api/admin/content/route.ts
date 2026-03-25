@@ -51,23 +51,45 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
+  // Validate entity_id is a UUID to prevent schema leakage via DB error messages
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(entity_id)) {
+    return NextResponse.json({ error: "Invalid entity_id" }, { status: 400 });
+  }
+
+  // Whitelist editable fields — prevent mass-assignment of id, created_at, etc.
+  const MONSTER_EDITABLE = ["name", "hp", "ac", "cr", "type", "size", "alignment", "speed", "str", "dex", "con", "int", "wis", "cha", "saves", "skills", "resistances", "immunities", "senses", "languages", "traits", "actions", "legendary_actions", "description", "ruleset_version"] as const;
+  const SPELL_EDITABLE = ["name", "level", "school", "casting_time", "range", "components", "duration", "description", "higher_levels", "classes", "ritual", "concentration", "ruleset_version"] as const;
+
   const table = entity_type === "spells" ? "spells" : "monsters";
-  const { error } = await adminClient.from(table).update(updates).eq("id", entity_id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const allowedFields = entity_type === "spells" ? SPELL_EDITABLE : MONSTER_EDITABLE;
+  const safeUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([key]) => (allowedFields as readonly string[]).includes(key))
+  );
+
+  if (Object.keys(safeUpdates).length === 0) {
+    return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+  }
+
+  const { error } = await adminClient.from(table).update(safeUpdates).eq("id", entity_id);
+  if (error) return NextResponse.json({ error: "Update failed" }, { status: 500 });
 
   // Broadcast content update via Realtime (NFR28)
   const channel = adminClient.channel("content:update");
-  await channel.subscribe();
-  await channel.send({
-    type: "broadcast",
-    event: "content:update",
-    payload: {
-      entity_type,
-      entity_id,
-      ruleset_version: updates.ruleset_version ?? null,
-    },
-  });
-  adminClient.removeChannel(channel);
+  try {
+    await channel.subscribe();
+    await channel.send({
+      type: "broadcast",
+      event: "content:update",
+      payload: {
+        entity_type,
+        entity_id,
+        ruleset_version: safeUpdates.ruleset_version ?? null,
+      },
+    });
+  } finally {
+    adminClient.removeChannel(channel);
+  }
 
   return NextResponse.json({ success: true });
 }

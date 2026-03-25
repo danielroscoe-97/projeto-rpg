@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
   }
 
   const { data: users, error } = await query;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Query failed" }, { status: 500 });
 
   const result = (users ?? []).map((u) => ({
     id: u.id,

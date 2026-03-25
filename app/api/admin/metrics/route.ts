@@ -39,62 +39,59 @@ export async function GET() {
     .select("id", { count: "exact", head: true })
     .gte("created_at", thirtyDaysAgo);
 
-  // Day-1 activation: users who created a session within 24h of signup
-  const { data: allUsers } = await admin
+  // Day-1 activation: % of users who created a session within 24h of signup
+  // Uses SQL aggregation via COUNT to avoid loading all rows into memory
+  const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
+  const { count: activatedCount } = await admin
     .from("users")
-    .select("id, created_at");
-  const { data: allSessions } = await admin
-    .from("sessions")
-    .select("owner_id, created_at");
+    .select("id", { count: "exact", head: true })
+    .filter(
+      "id",
+      "in",
+      `(select owner_id from sessions where created_at <= users.created_at + interval '1 day')`
+    )
+    .lt("created_at", oneDayAgo); // Only users old enough to have a day-1 window
 
-  let activatedCount = 0;
-  const userCount = allUsers?.length ?? 0;
-  if (allUsers && allSessions) {
-    for (const u of allUsers) {
-      const userCreated = new Date(u.created_at).getTime();
-      const hasSession = allSessions.some(
-        (s) =>
-          s.owner_id === u.id &&
-          new Date(s.created_at).getTime() - userCreated <= 86400000
-      );
-      if (hasSession) activatedCount++;
-    }
-  }
-  const day1Activation = userCount > 0 ? Math.round((activatedCount / userCount) * 100) : 0;
+  const day1Activation =
+    (totalUsers ?? 0) > 0
+      ? Math.round(((activatedCount ?? 0) / (totalUsers ?? 1)) * 100)
+      : 0;
 
-  // Week-2 retention: users who created a session >7 days after signup
-  let retainedCount = 0;
-  if (allUsers && allSessions) {
-    for (const u of allUsers) {
-      const userCreated = new Date(u.created_at).getTime();
-      const hasLateSession = allSessions.some(
-        (s) =>
-          s.owner_id === u.id &&
-          new Date(s.created_at).getTime() - userCreated >= 7 * 86400000 &&
-          new Date(s.created_at).getTime() - userCreated <= 14 * 86400000
-      );
-      if (hasLateSession) retainedCount++;
-    }
-  }
-  const week2Retention = userCount > 0 ? Math.round((retainedCount / userCount) * 100) : 0;
+  // Week-2 retention: % of users who had a session between day 7 and day 14 after signup
+  const { count: retainedCount } = await admin
+    .from("users")
+    .select("id", { count: "exact", head: true })
+    .filter(
+      "id",
+      "in",
+      `(select owner_id from sessions where created_at >= users.created_at + interval '7 days' and created_at <= users.created_at + interval '14 days')`
+    )
+    .lt("created_at", new Date(Date.now() - 14 * 86400000).toISOString());
 
-  // Average players per DM
+  const week2Retention =
+    (totalUsers ?? 0) > 0
+      ? Math.round(((retainedCount ?? 0) / (totalUsers ?? 1)) * 100)
+      : 0;
+
+  // Average players per DM: count unique player tokens (anon_user_id) per DM's sessions
   const { data: tokenCounts } = await admin
     .from("session_tokens")
-    .select("session_id, sessions!inner(owner_id)");
+    .select("anon_user_id, sessions!inner(owner_id)")
+    .not("anon_user_id", "is", null);
   const dmPlayers = new Map<string, Set<string>>();
   if (tokenCounts) {
     for (const t of tokenCounts) {
       const ownerId = (t.sessions as unknown as { owner_id: string })?.owner_id;
-      if (ownerId) {
+      if (ownerId && t.anon_user_id) {
         if (!dmPlayers.has(ownerId)) dmPlayers.set(ownerId, new Set());
-        dmPlayers.get(ownerId)!.add(t.session_id);
+        // Count unique players (anon_user_id), not sessions
+        dmPlayers.get(ownerId)!.add(t.anon_user_id);
       }
     }
   }
   const dmCount = dmPlayers.size;
-  const totalPlayers = Array.from(dmPlayers.values()).reduce((sum, s) => sum + s.size, 0);
-  const avgPlayersPerDm = dmCount > 0 ? Math.round((totalPlayers / dmCount) * 10) / 10 : 0;
+  const totalPlayerCount = Array.from(dmPlayers.values()).reduce((sum, s) => sum + s.size, 0);
+  const avgPlayersPerDm = dmCount > 0 ? Math.round((totalPlayerCount / dmCount) * 10) / 10 : 0;
 
   return NextResponse.json({
     data: {

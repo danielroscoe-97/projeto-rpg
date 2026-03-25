@@ -64,6 +64,7 @@ export function PlayerJoinClient({
   const [showOracle, setShowOracle] = useState(false);
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Anonymous auth + link to token
   useEffect(() => {
@@ -199,8 +200,10 @@ export function PlayerJoinClient({
           if (!disconnectedAtRef.current) {
             disconnectedAtRef.current = Date.now();
           }
-          // Start polling fallback after 3s (NFR9)
-          setTimeout(() => {
+          // Start polling fallback after 3s (NFR9) — track so we can cancel on unmount
+          if (pollFallbackTimerRef.current) clearTimeout(pollFallbackTimerRef.current);
+          pollFallbackTimerRef.current = setTimeout(() => {
+            pollFallbackTimerRef.current = null;
             if (disconnectedAtRef.current && Date.now() - disconnectedAtRef.current >= 3000 && encounterId) {
               startPolling(encounterId);
             }
@@ -212,6 +215,10 @@ export function PlayerJoinClient({
 
     return () => {
       supabase.removeChannel(channel);
+      if (pollFallbackTimerRef.current) {
+        clearTimeout(pollFallbackTimerRef.current);
+        pollFallbackTimerRef.current = null;
+      }
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;

@@ -26,6 +26,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
+import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { useRouter } from "next/navigation";
 
@@ -153,7 +154,7 @@ export function CombatSessionClient({
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
       broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch(() => {});
+      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [getSessionId]);
 
@@ -162,7 +163,7 @@ export function CombatSessionClient({
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
       broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch(() => {});
+      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [getSessionId]);
 
@@ -171,7 +172,7 @@ export function CombatSessionClient({
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
       broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch(() => {});
+      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [getSessionId]);
 
@@ -181,7 +182,7 @@ export function CombatSessionClient({
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
       broadcastEvent(getSessionId(), { type: "combat:condition_change", combatant_id: id, conditions: c.conditions });
-      persistConditions(id, c.conditions).catch(() => {});
+      persistConditions(id, c.conditions).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [getSessionId]);
 
@@ -189,7 +190,7 @@ export function CombatSessionClient({
   const handleSetDefeated = useCallback((id: string, isDefeated: boolean) => {
     useCombatStore.getState().setDefeated(id, isDefeated);
     broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
-    persistDefeated(id, isDefeated).catch(() => {});
+    persistDefeated(id, isDefeated).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [getSessionId]);
 
   // --- Remove Combatant (Story 3-7) ---
@@ -216,9 +217,9 @@ export function CombatSessionClient({
     useCombatStore.getState().hydrateCombatants(reordered);
 
     broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
-    persistRemoveCombatant(id).catch(() => {});
+    persistRemoveCombatant(id).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     if (updated.length > 0) {
-      persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch(() => {});
+      persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, []);
 
@@ -238,10 +239,10 @@ export function CombatSessionClient({
     );
     if (added && store.encounter_id) {
       broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
-      persistNewCombatant(store.encounter_id, added).catch(() => {});
+      persistNewCombatant(store.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
       persistInitiativeOrder(
         useCombatStore.getState().combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
-      ).catch(() => {});
+      ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
 
     setShowAddForm(false);
@@ -261,7 +262,7 @@ export function CombatSessionClient({
       if (stats.ac !== undefined) dbStats.ac = stats.ac;
       if (stats.spell_save_dc !== undefined) dbStats.spell_save_dc = stats.spell_save_dc;
       broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
-      persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch(() => {});
+      persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [getSessionId]);
 
@@ -269,34 +270,44 @@ export function CombatSessionClient({
   const handleSwitchVersion = useCallback((id: string, version: RulesetVersion) => {
     useCombatStore.getState().setRulesetVersion(id, version);
     broadcastEvent(getSessionId(), { type: "combat:version_switch", combatant_id: id, ruleset_version: version });
-    persistRulesetVersion(id, version).catch(() => {});
+    persistRulesetVersion(id, version).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [getSessionId]);
 
   // --- Notes (Story 8-6) ---
   const handleUpdateDmNotes = useCallback((id: string, notes: string) => {
     useCombatStore.getState().updateDmNotes(id, notes);
     // DM notes are NEVER broadcast — persist directly
-    persistDmNotes(id, notes).catch(() => {});
+    persistDmNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, []);
 
   const handleUpdatePlayerNotes = useCallback((id: string, notes: string) => {
     useCombatStore.getState().updatePlayerNotes(id, notes);
     broadcastEvent(getSessionId(), { type: "combat:player_notes_update", combatant_id: id, player_notes: notes });
-    persistPlayerNotes(id, notes).catch(() => {});
+    persistPlayerNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [getSessionId]);
 
   // --- End Encounter (Story 3-10) ---
   const handleEndEncounter = useCallback(async () => {
     const { encounter_id } = useCombatStore.getState();
     if (!encounter_id) return;
+    const sessionId = getSessionId();
     try {
       await persistEndEncounter(encounter_id);
+      // Notify players that the session has ended before cleaning up the channel
+      broadcastEvent(sessionId, {
+        type: "session:state_sync",
+        combatants: [],
+        current_turn_index: -1,
+        round_number: 0,
+      });
+      // Expire all player tokens so stale join links become invalid
+      await expireSessionTokens(sessionId);
       cleanupDmChannel();
       router.push("/app/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to end encounter.");
     }
-  }, [router, setError]);
+  }, [router, setError, getSessionId]);
 
   // Show unified setup if not yet active
   if (!is_active) {

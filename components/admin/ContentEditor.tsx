@@ -57,9 +57,15 @@ export function ContentEditor({ entityType }: ContentEditorProps) {
       for (const [key, value] of Object.entries(editFields)) {
         const original = String(editing[key] ?? "");
         if (value !== original) {
-          // Parse numbers for numeric fields
+          // Parse numbers for numeric fields — reject NaN to prevent null writes
           if (["hp", "ac", "level"].includes(key)) {
-            updates[key] = parseInt(value, 10);
+            const parsed = parseInt(value, 10);
+            if (isNaN(parsed)) {
+              setError(`"${key}" must be a valid number.`);
+              setSaving(false);
+              return;
+            }
+            updates[key] = parsed;
           } else {
             updates[key] = value;
           }

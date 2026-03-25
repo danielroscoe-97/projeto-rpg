@@ -9,20 +9,32 @@ function generateToken(): string {
     .slice(0, 32);
 }
 
-/** Creates a session token and returns the shareable join URL. */
+/** Creates a session token and returns the shareable join URL.
+ *  Returns the existing active token if one already exists for the session. */
 export async function createSessionToken(
   sessionId: string
 ): Promise<{ token: string; joinUrl: string }> {
   const supabase = createClient();
-  const token = generateToken();
 
-  const { error } = await supabase.from("session_tokens").insert({
-    session_id: sessionId,
-    token,
-    is_active: true,
-  });
+  // Reuse existing active token to prevent unbounded accumulation
+  const { data: existing } = await supabase
+    .from("session_tokens")
+    .select("token")
+    .eq("session_id", sessionId)
+    .eq("is_active", true)
+    .limit(1)
+    .single();
 
-  if (error) throw new Error(`Failed to create session token: ${error.message}`);
+  const token = existing?.token ?? generateToken();
+
+  if (!existing) {
+    const { error } = await supabase.from("session_tokens").insert({
+      session_id: sessionId,
+      token,
+      is_active: true,
+    });
+    if (error) throw new Error(`Failed to create session token: ${error.message}`);
+  }
 
   const joinUrl = `${window.location.origin}/join/${token}`;
   return { token, joinUrl };
@@ -57,11 +69,12 @@ export async function validateSessionToken(token: string): Promise<{
 
   if (sessionError || !session) return null;
 
-  // Find active encounter
+  // Find active encounter — must be is_active to avoid returning ended encounters
   const { data: encounter } = await supabase
     .from("encounters")
     .select("id")
     .eq("session_id", session.id)
+    .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
@@ -74,7 +87,8 @@ export async function validateSessionToken(token: string): Promise<{
   };
 }
 
-/** Links the anonymous user's auth.uid to the session token. */
+/** Links the anonymous user's auth.uid to the session token.
+ *  Only links if the token hasn't already been claimed by another user. */
 export async function linkAnonymousUser(
   tokenId: string,
   anonUserId: string
@@ -86,7 +100,8 @@ export async function linkAnonymousUser(
       anon_user_id: anonUserId,
       last_seen_at: new Date().toISOString(),
     })
-    .eq("id", tokenId);
+    .eq("id", tokenId)
+    .is("anon_user_id", null); // Only claim unclaimed tokens
 
   if (error) throw new Error(`Failed to link anonymous user: ${error.message}`);
 }
