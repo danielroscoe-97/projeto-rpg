@@ -58,6 +58,10 @@ export default async function AppLayout({
       </nav>
       <SrdInitializer />
       <main id="main-content" className="flex-1 p-6">{children}</main>
+      <footer className="border-t border-white/10 px-6 py-3 flex items-center gap-4 text-xs text-white/30 shrink-0">
+        <Link href="/legal/attribution" className="hover:text-white/50 transition-colors">Attribution</Link>
+        <Link href="/legal/privacy" className="hover:text-white/50 transition-colors">Privacy</Link>
+      </footer>
     </div>
   );
 }

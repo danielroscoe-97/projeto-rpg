@@ -5,7 +5,7 @@ export const metadata = {
 
 export default function AttributionPage() {
   return (
-    <main className="min-h-screen bg-[#1a1a2e] py-16 px-4">
+    <div className="py-16 px-4">
       <article className="max-w-2xl mx-auto prose prose-invert">
         <h1 className="text-3xl font-bold text-white mb-2">Attribution</h1>
         <p className="text-white/50 text-sm mb-8">Content Licensing</p>
@@ -62,6 +62,6 @@ export default function AttributionPage() {
           </p>
         </section>
       </article>
-    </main>
+    </div>
   );
 }

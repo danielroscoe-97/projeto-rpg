@@ -34,7 +34,7 @@ export function UpdatePasswordForm({
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      router.push("/app/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -44,10 +44,10 @@ export function UpdatePasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="bg-[#16213e] border-white/10">
         <CardHeader>
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl text-white">Reset Your Password</CardTitle>
+          <CardDescription className="text-white/60">
             Please enter your new password below.
           </CardDescription>
         </CardHeader>
@@ -55,18 +55,30 @@ export function UpdatePasswordForm({
           <form onSubmit={handleForgotPassword}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="password">New password</Label>
+                <Label htmlFor="password" className="text-white/80">New password</Label>
                 <Input
                   id="password"
                   type="password"
                   placeholder="New password"
                   required
+                  minLength={6}
+                  aria-required="true"
+                  aria-describedby={error ? "update-pw-error" : undefined}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              {error && (
+                <p id="update-pw-error" className="text-sm text-[#e94560]" role="alert" aria-live="polite">
+                  {error}
+                </p>
+              )}
+              <Button
+                type="submit"
+                className="w-full min-h-[44px] bg-[#e94560] hover:bg-[#e94560]/90 text-white"
+                disabled={isLoading}
+              >
                 {isLoading ? "Saving..." : "Save new password"}
               </Button>
             </div>

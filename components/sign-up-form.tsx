@@ -58,57 +58,70 @@ export function SignUpForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="bg-[#16213e] border-white/10">
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardTitle className="text-2xl text-white">Sign up</CardTitle>
+          <CardDescription className="text-white/60">Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-white/80">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
                   required
+                  aria-required="true"
+                  aria-describedby={error ? "signup-error" : undefined}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
+                <Label htmlFor="password" className="text-white/80">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   required
+                  aria-required="true"
+                  aria-describedby={error ? "signup-error" : undefined}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
-                </div>
+                <Label htmlFor="repeat-password" className="text-white/80">Repeat Password</Label>
                 <Input
                   id="repeat-password"
                   type="password"
                   required
+                  aria-required="true"
+                  aria-describedby={error ? "signup-error" : undefined}
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
+                  className="bg-[#1a1a2e] border-white/20 text-white placeholder:text-white/30 min-h-[44px]"
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              {error && (
+                <p id="signup-error" className="text-sm text-[#e94560]" role="alert" aria-live="polite">
+                  {error}
+                </p>
+              )}
+              <Button
+                type="submit"
+                className="w-full min-h-[44px] bg-[#e94560] hover:bg-[#e94560]/90 text-white"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-sm text-white/60">
               Already have an account?{" "}
-              <Link href="/auth/login" className="underline underline-offset-4">
+              <Link href="/auth/login" className="text-[#e94560] underline underline-offset-4">
                 Login
               </Link>
             </div>

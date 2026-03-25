@@ -10,8 +10,16 @@ export function LogoutButton() {
   const logout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/auth/login");
+    router.push("/");
   };
 
-  return <Button onClick={logout}>Logout</Button>;
+  return (
+    <Button
+      onClick={logout}
+      variant="ghost"
+      className="min-h-[44px] text-white/70 hover:text-white hover:bg-white/10"
+    >
+      Logout
+    </Button>
+  );
 }
