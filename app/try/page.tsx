@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { GuestCombatClient } from "@/components/guest/GuestCombatClient";
 
 export const metadata: Metadata = {
-  title: "Taverna do Mestre — Combat Tracker (Modo Visitante)",
+  title: "Taverna do Mestre — Modo Visitante",
   description:
-    "Experimente o combat tracker D&D 5e sem criar uma conta. Iniciativa, HP, condições e oráculo — tudo grátis.",
+    "Experimente o combat tracker D&D 5e sem criar conta. Iniciativa, HP, condições e magias em tempo real.",
 };
 
 export default function TryPage() {

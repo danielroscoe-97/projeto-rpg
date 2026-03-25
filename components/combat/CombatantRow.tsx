@@ -252,63 +252,85 @@ export function CombatantRow({
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-            {showActions && inlineEditTarget === "current" ? (
-              <form
-                className="flex items-center gap-1"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const val = inlineHpValue.trim();
-                  if (!val) { setInlineEditTarget(null); return; }
-                  const num = parseInt(val, 10);
-                  if (isNaN(num)) { setInlineEditTarget(null); return; }
-                  // Negative = damage, positive = healing
-                  if (num < 0) {
-                    onApplyDamage?.(combatant.id, Math.abs(num));
-                  } else {
-                    onApplyHealing?.(combatant.id, num);
-                  }
-                  setInlineEditTarget(null);
-                  setInlineHpValue("");
-                }}
-              >
+            <div className="flex items-center gap-0.5 text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
+              {/* Current HP — click to set directly */}
+              {showActions && inlineEditTarget === "current" ? (
                 <input
-                  type="text"
-                  inputMode="numeric"
+                  type="number"
                   value={inlineHpValue}
                   onChange={(e) => setInlineHpValue(e.target.value)}
-                  onBlur={() => { setInlineEditTarget(null); setInlineHpValue(""); }}
-                  onKeyDown={(e) => { if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); } }}
-                  className="w-16 bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs font-mono text-right focus:outline-none focus:ring-1 focus:ring-gold"
+                  onBlur={() => {
+                    const desired = parseInt(inlineHpValue, 10);
+                    if (!isNaN(desired) && desired >= 0) {
+                      const delta = desired - combatant.current_hp;
+                      if (delta < 0) onApplyDamage?.(combatant.id, Math.abs(delta));
+                      else if (delta > 0) onApplyHealing?.(combatant.id, delta);
+                    }
+                    setInlineEditTarget(null);
+                    setInlineHpValue("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                    if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); }
+                  }}
+                  className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   autoFocus
-                  placeholder="-5 / +3"
-                  data-testid={`inline-hp-input-${combatant.id}`}
+                  data-testid={`inline-current-hp-input-${combatant.id}`}
                 />
-              </form>
-            ) : (
-              <button
-                type="button"
-                onClick={() => { if (showActions) { setInlineEditTarget("current"); setInlineHpValue(""); } }}
-                className={`text-muted-foreground text-xs font-mono ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
-                data-testid={`hp-display-${combatant.id}`}
-                title={showActions ? t("inline_hp_hint") : undefined}
-              >
-                {combatant.current_hp} / {combatant.max_hp}
-                {/* HP threshold text label — satisfies NFR21 for sighted color-blind users */}
-                {hpThresholdLabel && (
-                  <span
-                    className="text-xs font-mono ml-1 text-muted-foreground"
-                    data-testid={`hp-threshold-${combatant.id}`}
-                  >
-                    {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
-                  </span>
-                )}
-                {hasTempHp && (
-                  <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
-                    {t("temp_hp", { value: combatant.temp_hp })}
-                  </span>
-                )}
-              </button>
-            )}
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { if (showActions) { setInlineEditTarget("current"); setInlineHpValue(String(combatant.current_hp)); } }}
+                  className={`text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                  title={showActions ? "Editar HP atual" : undefined}
+                  data-testid={`current-hp-btn-${combatant.id}`}
+                >
+                  {combatant.current_hp}
+                </button>
+              )}
+              <span className="text-muted-foreground/40 mx-0.5">/</span>
+              {/* Max HP — click to set directly */}
+              {showActions && inlineEditTarget === "max" ? (
+                <input
+                  type="number"
+                  value={inlineHpValue}
+                  onChange={(e) => setInlineHpValue(e.target.value)}
+                  onBlur={() => {
+                    const val = parseInt(inlineHpValue, 10);
+                    if (!isNaN(val) && val >= 1) onUpdateStats?.(combatant.id, { max_hp: val });
+                    setInlineEditTarget(null);
+                    setInlineHpValue("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                    if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); }
+                  }}
+                  className="w-14 bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  autoFocus
+                  data-testid={`inline-max-hp-input-${combatant.id}`}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { if (showActions) { setInlineEditTarget("max"); setInlineHpValue(String(combatant.max_hp)); } }}
+                  className={`text-muted-foreground/60 ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                  title={showActions ? "Editar HP máximo" : undefined}
+                  data-testid={`max-hp-btn-${combatant.id}`}
+                >
+                  {combatant.max_hp}
+                </button>
+              )}
+              {hpThresholdLabel && (
+                <span className="text-xs font-mono ml-1 text-muted-foreground" data-testid={`hp-threshold-${combatant.id}`}>
+                  — {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
+                </span>
+              )}
+              {hasTempHp && (
+                <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
+                  {t("temp_hp", { value: combatant.temp_hp })}
+                </span>
+              )}
+            </div>
           </div>
           <div
             className="h-2 bg-white/[0.06] rounded-full overflow-hidden"

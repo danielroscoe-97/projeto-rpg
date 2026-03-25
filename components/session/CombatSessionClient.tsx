@@ -241,6 +241,7 @@ export function CombatSessionClient({
               onSetDefeated={handleSetDefeated}
               onRemoveCombatant={handleRemoveCombatant}
               onUpdateStats={handleUpdateStats}
+              onSetInitiative={(id, value) => useCombatStore.setState(s => ({ combatants: s.combatants.map(c => c.id === id ? { ...c, initiative: value } : c) }))}
               onSwitchVersion={handleSwitchVersion}
               onUpdateDmNotes={handleUpdateDmNotes}
               onUpdatePlayerNotes={handleUpdatePlayerNotes}

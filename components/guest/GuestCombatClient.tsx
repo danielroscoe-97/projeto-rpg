@@ -36,6 +36,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
 
 function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   const t = useTranslations("combat");
+  const tCommon = useTranslations("common");
 
   const {
     combatants,
@@ -331,7 +332,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
             onClick={() => { resetCombat(); setAddRow(EMPTY_ADD_ROW); setSubmitError(null); lastSelectedMonster.current = null; }}
             className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           >
-            Limpar tudo
+            {tCommon("clear_all")}
           </button>
         ) : (
           <span />
@@ -339,7 +340,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <div className="flex items-center gap-4">
           <p className="text-muted-foreground text-xs">
             {combatants.length > 0
-              ? `${combatants.length} combatant${combatants.length !== 1 ? "s" : ""}`
+              ? t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })
               : ""}
           </p>
           <button
@@ -361,6 +362,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
 
 export function GuestCombatClient() {
   const t = useTranslations("combat");
+  const tCommon = useTranslations("common");
   const [showAddForm, setShowAddForm] = useState(false);
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
@@ -457,6 +459,12 @@ export function GuestCombatClient() {
       updateCombatantStats(id, stats),
     [updateCombatantStats]
   );
+  const handleSetInitiative = useCallback(
+    (id: string, value: number | null) => {
+      useGuestCombatStore.getState().setInitiative(id, value);
+    },
+    []
+  );
   const handleSwitchVersion = useCallback(
     (id: string, version: RulesetVersion) => setRulesetVersion(id, version),
     [setRulesetVersion]
@@ -514,11 +522,11 @@ export function GuestCombatClient() {
               className="px-3 py-2 bg-white/[0.06] text-muted-foreground font-medium rounded-md hover:bg-white/[0.1] transition-all duration-[250ms] text-sm min-h-[44px]"
               data-testid="save-btn"
             >
-              Salvar
+              {tCommon("save")}
             </button>
 
             <span className="text-muted-foreground text-xs">
-              {combatants.length} {combatants.length === 1 ? t("combatant") : t("combatants")}
+              {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
             </span>
 
             <button
@@ -569,6 +577,7 @@ export function GuestCombatClient() {
               onSetDefeated={handleSetDefeated}
               onRemoveCombatant={handleRemoveCombatant}
               onUpdateStats={handleUpdateStats}
+              onSetInitiative={handleSetInitiative}
               onSwitchVersion={handleSwitchVersion}
               onUpdateDmNotes={handleUpdateDmNotes}
               onUpdatePlayerNotes={handleUpdatePlayerNotes}
@@ -578,13 +587,13 @@ export function GuestCombatClient() {
 
         {/* Footer nudge */}
         <div className="pt-6 text-center text-sm text-muted-foreground/60">
-          Gostou?{" "}
+          Curtiu a Taverna?{" "}
           <button
             type="button"
             onClick={() => openUpsell("save")}
             className="text-gold hover:underline underline-offset-2 transition-colors"
           >
-            Salve suas campanhas →
+            Crie sua conta e salve suas campanhas →
           </button>
         </div>
       </div>

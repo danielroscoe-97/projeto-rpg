@@ -94,11 +94,10 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
             id="upsell-modal-title"
             className="font-display text-xl text-foreground"
           >
-            Seu combate merece ser lembrado.
+            Leve seu combate para o próximo nível.
           </h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Crie uma conta gratuita para salvar encontros, carregar grupos de
-            jogadores e gerar links para seus jogadores.
+            Crie sua conta em segundos para salvar seus encontros, organizar suas campanhas e muito mais. É grátis e sempre será.
           </p>
         </div>
 
@@ -106,16 +105,16 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
         <div className="flex flex-col gap-3 pt-1">
           <Link
             href="/auth/sign-up"
-            className="w-full text-center px-6 py-3 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] min-h-[48px] flex items-center justify-center"
+            className="w-full text-center px-6 py-3 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] min-h-[48px] flex items-center justify-center btn-shimmer"
           >
-            Criar Conta Grátis
+            Criar Minha Conta Grátis
           </Link>
           <button
             type="button"
             onClick={onClose}
             className="w-full text-center px-6 py-3 bg-white/[0.06] text-muted-foreground rounded-lg hover:bg-white/[0.1] transition-all duration-[250ms] min-h-[48px] text-sm"
           >
-            Continuar sem salvar
+            Vou decidir mais tarde
           </button>
         </div>
       </div>

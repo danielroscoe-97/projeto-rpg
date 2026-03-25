@@ -15,7 +15,8 @@
     "copy": "Copiar",
     "copied": "Copiado!",
     "close": "Fechar",
-    "error_generic": "Ocorreu um erro",
+    "clear_all": "Limpar tudo",
+    "error_generic": "Ocorreu um erro inesperado.",
     "optional": "(opcional)",
     "dash": "—"
   },
@@ -35,8 +36,8 @@
     "footer_brand": "Taverna do Mestre",
     "footer_subtitle": "Combat tracker para mestres de D&D 5e",
     "footer_signup": "Criar Conta",
-    "footer_srd_notice": "Uses the System Reference Document 5.1 and 5.2 under the",
-    "footer_srd_license": "CC-BY-4.0 License"
+    "footer_srd_notice": "Utiliza o System Reference Document 5.1 e 5.2 sob a",
+    "footer_srd_license": "Licença CC-BY-4.0"
   },
   "auth": {
     "page_heading_prefix": "Acesse sua",
@@ -130,8 +131,8 @@
     "choose_campaign_description": "Crie uma campanha com jogadores pré-definidos, encontros e link de sessão para compartilhar.",
     "choose_campaign_cta": "Configurar campanha →",
     "choose_combat_title": "Combate Rápido",
-    "choose_combat_description": "Pule a configuração e vá direto para o rastreador de combate. Adicione combatentes na hora.",
-    "choose_combat_cta": "Ir para o combate →",
+    "choose_combat_description": "Pule a configuração e vá direto para o combat tracker. Adicione combatentes e monstros na hora.",
+    "choose_combat_cta": "Combate Rápido →",
     "step_campaign": "Campanha",
     "step_players": "Jogadores",
     "step_encounter": "Encontro",
@@ -149,7 +150,7 @@
     "players_name_placeholder": "ex: Thorin",
     "players_hp_label": "HP Máximo *",
     "players_ac_label": "CA *",
-    "players_spell_dc_label": "CD de Resistência",
+    "players_spell_dc_label": "CD de Magia",
     "players_add_another": "+ Adicionar outro jogador",
     "players_validation": "Todos os jogadores precisam de nome, HP e AC.",
     "players_spell_dc_validation": "Spell save DC deve estar entre 1 e 99 se fornecido.",
@@ -183,8 +184,8 @@
     "current_turn": "Turno atual",
     "defeated": "Derrotado",
     "hp_label": "HP",
-    "hp_crit": "— CRIT",
-    "hp_low": "— LOW",
+    "hp_crit": "— CRÍTICO",
+    "hp_low": "— BAIXO",
     "hp_ok": "— OK",
     "temp_hp": "+{value} temp",
     "hp_aria": "{name} pontos de vida",
@@ -261,7 +262,7 @@
     "hp_mode_damage_aria": "Quantidade de {mode}",
     "hp_mode_damage": "Dano",
     "hp_mode_heal": "Curar",
-    "hp_mode_temp": "Temp",
+    "hp_mode_temp": "Temp PV",
     "hp_apply": "Aplicar",
     "hp_close": "Fechar ajustador de HP",
     "inline_hp_hint": "Clique para editar HP rápido (negativo = dano, positivo = cura)",
@@ -284,7 +285,7 @@
     "shortcut_conditions": "Condições",
     "shortcut_search": "Busca Oracle",
     "shortcut_close": "Fechar painel",
-    "shortcut_help": "Atalhos"
+    "shortcut_help": "Ajuda"
   },
   "conditions": {
     "blinded": "Cego",
@@ -349,8 +350,8 @@
     "initiative_order": "Ordem de iniciativa",
     "current_turn": "Turno atual",
     "hp_label": "HP",
-    "hp_crit": "— CRIT",
-    "hp_low": "— LOW",
+    "hp_crit": "— CRÍTICO",
+    "hp_low": "— BAIXO",
     "hp_ok": "— OK",
     "temp_hp": "+{value} temp",
     "hp_aria": "{name} pontos de vida",
@@ -397,7 +398,7 @@
     "language_title": "Idioma",
     "language_description": "Escolha o idioma da interface do aplicativo.",
     "wiki_title": "Referência SRD",
-    "wiki_description": "Consulte magias, monstros e condições do D&D 5e System Reference Document.",
+    "wiki_description": "Consulte o Compêndio de magias, monstros e condições baseados no D&D 5e System Reference Document.",
     "wiki_spells": "Magias",
     "wiki_monsters": "Monstros",
     "wiki_conditions": "Condições",
@@ -431,7 +432,7 @@
   },
   "compendium": {
     "title": "Compêndio",
-    "subtitle": "Referência SRD 5e",
+    "subtitle": "Guia de Referência SRD 5e",
     "tab_monsters": "Monstros",
     "tab_spells": "Magias",
     "tab_conditions": "Condições",
@@ -458,7 +459,7 @@
     "filters": "Filtros",
     "select_monster": "Selecione um monstro da lista para ver sua ficha",
     "back_to_list": "Voltar para lista",
-    "hp_label": "PV",
+    "hp_label": "Vida (PV)",
     "ac_label": "CA",
     "cr_label": "ND",
     "casting_time": "Tempo de Conjuração",
@@ -469,8 +470,8 @@
     "spell_level_format": "{level}º nível"
   },
   "guest": {
-    "guest_notice": "Modo visitante — seu combate não será salvo.",
-    "time_warning": "Restam apenas {minutes} min! Crie sua conta para salvar.",
+    "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",
+    "time_warning": "Restam apenas {minutes} min! Crie sua conta para não perder nada.",
     "signup_cta": "Criar conta grátis →",
     "dismiss": "Fechar aviso"
   },

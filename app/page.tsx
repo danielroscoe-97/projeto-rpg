@@ -51,7 +51,7 @@ function D20Icon({ className }: { className?: string }) {
 export const metadata = {
   title: "Taverna do Mestre — D&D 5e Combat Tracker",
   description:
-    "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP, condições, oráculo de magias — tudo em tempo real com seus jogadores. Grátis.",
+    "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias — tudo em tempo real para você e seus jogadores. Grátis.",
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
@@ -97,8 +97,7 @@ function HeroSection() {
 
         {/* Subheading */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          Tracker de combate D&amp;D 5e com iniciativa, HP, condições e oráculo de
-          magias — tudo em tempo real no celular dos seus jogadores.
+          O combat tracker definitivo para D&D 5e. Iniciativa, HP e condições em tempo real — tudo no celular dos seus jogadores.
         </p>
 
         {/* CTAs */}
@@ -108,7 +107,7 @@ function HeroSection() {
             href="/try"
             className="group relative overflow-hidden w-full py-3 bg-white/[0.06] text-foreground font-medium text-base rounded-lg border border-white/[0.10] hover:bg-white/[0.10] hover:border-gold/30 hover:text-gold transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
-            Experimentar agora (Grátis)
+            Começar Agora (Grátis)
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
 
@@ -209,9 +208,9 @@ function FeaturesSection() {
     {
       emoji: "📖",
       tag: "Único",
-      title: "2014 & 2024 Side-by-Side",
+      title: "Regras 2014 & 2024",
       description:
-        "Troque a versão de regras por monstro, no meio do combate. Sem reiniciar o encontro.",
+        "Alterne entre as versões de regras por monstro instantaneamente, no meio do combate, sem reiniciar o encontro.",
     },
     {
       emoji: "💾",
@@ -241,11 +240,11 @@ function FeaturesSection() {
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
-            Tudo que o Mestre precisa
+            Tudo o que o Mestre precisa
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            De iniciativa a temp HP, de condições a oráculo de magias.
-            Uma ferramenta, zero distração.
+            De iniciativa a pontos de vida, de condições a oráculo de magias.
+            Uma ferramenta focada no que importa.
           </p>
         </div>
 
@@ -324,7 +323,8 @@ function HowItWorksSection() {
       number: "04",
       emoji: "⚔️",
       title: "Mestre o Combate",
-      description: "Avance turnos, aplique dano/cura, adicione condições. Jogadores veem tudo ao vivo.",
+      description:
+        "Avance turnos, aplique dano e gerencie condições. Seus jogadores veem as atualizações ao vivo.",
       time: "ao vivo",
     },
   ];
@@ -487,10 +487,10 @@ function ComparisonSection() {
     },
     {
       icon: "🎯",
-      feature: "Mesa fisica first",
-      roll20: { type: "cross", label: "Feito para VTT online" },
-      beyond: { type: "cross", label: "Digital first" },
-      taverna: { type: "check", label: "E o foco principal" },
+      feature: "Foco na Mesa Física",
+      roll20: { type: "cross", label: "Feito para o jogo online" },
+      beyond: { type: "cross", label: "Digital-first" },
+      taverna: { type: "check", label: "O foco principal" },
     },
     {
       icon: "📚",
@@ -600,7 +600,7 @@ function ComparisonSection() {
 
         <div className="mt-7 text-center">
           <p className="text-xs text-white/20 italic">
-            Construído para mestres de mesa física. Não precisamos competir com VTTs — somos outra coisa.
+            Desenvolvido por mestres para mestres. Não viemos para substituir o seu VTT, mas para libertar sua mesa.
           </p>
         </div>
       </div>
@@ -612,8 +612,8 @@ function ComparisonSection() {
 function SocialProofSection() {
   const testimonials = [
     {
-      quote: "Finalmente algo feito pra quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
-      author: "Mestre de 8 anos",
+      quote: "Finalmente algo feito para quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
+      author: "Mestre há 8 anos",
       role: "Campanha semanal, 5 jogadores",
     },
     {
@@ -704,7 +704,7 @@ function FinalCtaSection() {
           <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">melhor</span>?
         </h2>
         <p className="text-muted-foreground text-lg">
-          Crie sua conta em 30 segundos. Seu próximo combate vai ser diferente.
+          Crie sua conta em segundos e transforme sua próxima sessão.
         </p>
 
         <div className="flex flex-col items-center gap-3 pt-2">

@@ -11,6 +11,6 @@ project_knowledge: "{project-root}/docs"
 
 # Core Configuration Values
 user_name: Dani_
-communication_language: English
-document_output_language: English
+communication_language: Brazilian Portuguese
+document_output_language: Brazilian Portuguese
 output_folder: _bmad-output
