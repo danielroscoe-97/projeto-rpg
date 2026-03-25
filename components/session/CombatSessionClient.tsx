@@ -29,6 +29,8 @@ import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { useRouter } from "next/navigation";
+import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
+import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 
 interface CombatSessionClientProps {
   /** Session ID — null for fresh encounters not yet persisted */
@@ -62,6 +64,8 @@ export function CombatSessionClient({
   const t = useTranslations("combat");
   const [turnPending, setTurnPending] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
 
   /** Get sessionId for broadcasts — always available during active combat */
   const getSessionId = (): string => {
@@ -316,6 +320,44 @@ export function CombatSessionClient({
     }
   }, [router, setError, getSessionId]);
 
+  // Keyboard shortcuts for DM combat view (NFR25)
+  // The hook is called unconditionally; `enabled` controls whether listeners attach.
+  useCombatKeyboardShortcuts({
+    enabled: is_active,
+    onNextTurn: handleAdvanceTurn,
+    combatantCount: combatants.length,
+    focusedIndex,
+    onFocusChange: (idx) => {
+      setFocusedIndex(idx);
+      // Scroll the focused combatant into view
+      const el = document.querySelector(`[data-testid="initiative-list"] > :nth-child(${idx + 1})`);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    },
+    onToggleExpand: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        const btn = document.querySelector(`[data-testid="expand-toggle-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    onOpenHp: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        const btn = document.querySelector(`[data-testid="hp-btn-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    onOpenConditions: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        const btn = document.querySelector(`[data-testid="conditions-btn-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    cheatsheetOpen,
+    onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
+  });
+
   // Show unified setup if not yet active
   if (!is_active) {
     return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} />;
@@ -353,11 +395,21 @@ export function CombatSessionClient({
             type="button"
             onClick={handleAdvanceTurn}
             disabled={turnPending}
-            className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
             aria-label="Advance to next turn"
             data-testid="next-turn-btn"
           >
             {turnPending ? t("next_turn_saving") : t("next_turn")}
+            <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCheatsheetOpen((v) => !v)}
+            className="px-2 py-2 text-muted-foreground hover:text-foreground transition-colors text-sm min-h-[44px] min-w-[44px] hidden md:inline-flex items-center justify-center"
+            aria-label={t("shortcut_title")}
+            title={t("shortcut_title")}
+          >
+            <kbd className="text-[11px] font-mono px-1.5 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">?</kbd>
           </button>
         </div>
       </div>
@@ -376,24 +428,27 @@ export function CombatSessionClient({
         data-testid="initiative-list"
       >
         {combatants.map((c, index) => (
-          <CombatantRow
-            key={c.id}
-            combatant={c}
-            isCurrentTurn={index === current_turn_index}
-            showActions
-            onApplyDamage={handleApplyDamage}
-            onApplyHealing={handleApplyHealing}
-            onSetTempHp={handleSetTempHp}
-            onToggleCondition={handleToggleCondition}
-            onSetDefeated={handleSetDefeated}
-            onRemoveCombatant={handleRemoveCombatant}
-            onUpdateStats={handleUpdateStats}
-            onSwitchVersion={handleSwitchVersion}
-            onUpdateDmNotes={handleUpdateDmNotes}
-            onUpdatePlayerNotes={handleUpdatePlayerNotes}
-          />
+          <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+            <CombatantRow
+              combatant={c}
+              isCurrentTurn={index === current_turn_index}
+              showActions
+              onApplyDamage={handleApplyDamage}
+              onApplyHealing={handleApplyHealing}
+              onSetTempHp={handleSetTempHp}
+              onToggleCondition={handleToggleCondition}
+              onSetDefeated={handleSetDefeated}
+              onRemoveCombatant={handleRemoveCombatant}
+              onUpdateStats={handleUpdateStats}
+              onSwitchVersion={handleSwitchVersion}
+              onUpdateDmNotes={handleUpdateDmNotes}
+              onUpdatePlayerNotes={handleUpdatePlayerNotes}
+            />
+          </div>
         ))}
       </ul>
+
+      <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
     </div>
   );
 }

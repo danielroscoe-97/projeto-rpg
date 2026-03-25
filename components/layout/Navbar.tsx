@@ -15,9 +15,11 @@ interface NavbarProps {
   brandHref: string;
   links?: NavLink[];
   rightSlot?: React.ReactNode;
+  /** Optional sync status dot — rendered next to brand text */
+  syncSlot?: React.ReactNode;
 }
 
-export function Navbar({ brand, brandHref, links = [], rightSlot }: NavbarProps) {
+export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: NavbarProps) {
   const t = useTranslations("nav");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,6 +49,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot }: NavbarProps)
           >
             <Image src="/art/icons/pet-poring.png" alt="" width={28} height={28} className="pixel-art" aria-hidden="true" unoptimized />
             {brand}
+            {syncSlot}
           </Link>
 
           {/* Desktop links */}

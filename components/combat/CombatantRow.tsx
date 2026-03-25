@@ -10,6 +10,7 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { HpAdjuster } from "./HpAdjuster";
 import { ConditionSelector } from "./ConditionSelector";
 import { StatsEditor } from "./StatsEditor";
+import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -76,6 +77,7 @@ export function CombatantRow({
   const [playerNotesValue, setPlayerNotesValue] = useState(combatant.player_notes);
   const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
   const [flash, setFlash] = useState(false);
+  const [versionConfirmOpen, setVersionConfirmOpen] = useState(false);
   const prevHp = useRef(combatant.current_hp);
 
   // Trigger red flash when current HP decreases
@@ -405,15 +407,31 @@ export function CombatantRow({
               {t("edit_button")}
             </button>
             {canSwitchVersion && (
-              <button
-                type="button"
-                onClick={() => onSwitchVersion?.(combatant.id, otherVersion)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                aria-label={t("switch_version", { version: otherVersion })}
-                data-testid={`version-btn-${combatant.id}`}
-              >
-                {otherVersion === "2014" ? t("switch_2014") : t("switch_2024")}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setVersionConfirmOpen(true)}
+                  className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  aria-label={t("switch_version", { version: otherVersion })}
+                  data-testid={`version-btn-${combatant.id}`}
+                >
+                  {otherVersion === "2014" ? t("switch_2014") : t("switch_2024")}
+                </button>
+                <VersionSwitchConfirm
+                  open={versionConfirmOpen}
+                  onOpenChange={setVersionConfirmOpen}
+                  combatantName={combatant.name}
+                  fromVersion={combatant.ruleset_version ?? "2014"}
+                  toVersion={otherVersion}
+                  currentHp={combatant.current_hp}
+                  newMaxHp={
+                    combatant.monster_id
+                      ? getMonsterById(combatant.monster_id, otherVersion)?.hit_points
+                      : undefined
+                  }
+                  onConfirm={() => onSwitchVersion?.(combatant.id, otherVersion)}
+                />
+              </>
             )}
             <button
               type="button"

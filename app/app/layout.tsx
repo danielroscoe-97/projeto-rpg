@@ -1,10 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Navbar } from "@/components/layout/Navbar";
+import { NavbarWithSync } from "@/components/layout/NavbarWithSync";
 import { LogoutButton } from "@/components/logout-button";
 import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
+import { CommandPalette } from "@/components/oracle/CommandPalette";
+import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
+import { OracleFAB } from "@/components/oracle/OracleFAB";
 
 export default async function AppLayout({
   children,
@@ -31,17 +34,20 @@ export default async function AppLayout({
         {t("skip_content")}
       </a>
 
-      <Navbar
+      <NavbarWithSync
         brand={t("brand")}
         brandHref="/app/dashboard"
         links={[
           { href: "/app/dashboard", label: t("dashboard") },
+          { href: "/app/compendium", label: `📖 ${t("compendium")}` },
           { href: "/app/settings", label: t("settings") },
         ]}
-        rightSlot={<LogoutButton />}
+        rightSlot={<><OracleSearchTrigger /><LogoutButton /></>}
       />
       <SrdInitializer />
       <FloatingCardContainer />
+      <CommandPalette />
+      <OracleFAB />
       <main id="main-content" className="flex-1 pt-[72px] p-6">
         {children}
       </main>
