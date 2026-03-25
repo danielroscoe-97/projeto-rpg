@@ -313,7 +313,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="flex-shrink-0 px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center whitespace-nowrap"
+          className="basis-auto shrink-0 grow-0 px-4 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center whitespace-nowrap"
           data-testid="add-row-btn"
         >
           {t("setup_add")}
