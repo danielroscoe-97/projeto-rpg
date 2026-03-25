@@ -296,5 +296,17 @@ describe("CombatantRow", () => {
       render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={true} />);
       expect(screen.getByTestId("combatant-row-c1")).toHaveAttribute("aria-current", "true");
     });
+
+    it("does NOT show HP threshold label when max_hp === 0", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 0, max_hp: 0 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.queryByTestId("hp-threshold-c1")).not.toBeInTheDocument();
+    });
+
+    it("shows HP threshold label OK at exactly 50% HP (boundary, NFR21)", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 20, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("OK");
+    });
   });
 });

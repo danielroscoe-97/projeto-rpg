@@ -80,6 +80,81 @@ export const useCombatStore = create<CombatStore>((set) => ({
 
   hydrateActiveState: (currentTurnIndex, roundNumber) =>
     set({ is_active: true, current_turn_index: currentTurnIndex, round_number: roundNumber }),
+
+  applyDamage: (id, amount) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        let remaining = amount;
+        let newTempHp = c.temp_hp;
+        if (newTempHp > 0) {
+          const absorbed = Math.min(newTempHp, remaining);
+          newTempHp -= absorbed;
+          remaining -= absorbed;
+        }
+        const newCurrentHp = Math.max(0, c.current_hp - remaining);
+        return { ...c, current_hp: newCurrentHp, temp_hp: newTempHp };
+      }),
+    })),
+
+  applyHealing: (id, amount) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id
+          ? { ...c, current_hp: Math.min(c.max_hp, c.current_hp + amount) }
+          : c
+      ),
+    })),
+
+  setTempHp: (id, value) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id
+          ? { ...c, temp_hp: Math.max(c.temp_hp, value) }
+          : c
+      ),
+    })),
+
+  toggleCondition: (id, condition) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        const has = c.conditions.includes(condition);
+        return {
+          ...c,
+          conditions: has
+            ? c.conditions.filter((cond) => cond !== condition)
+            : [...c.conditions, condition],
+        };
+      }),
+    })),
+
+  setDefeated: (id, is_defeated) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, is_defeated } : c
+      ),
+    })),
+
+  updateCombatantStats: (id, stats) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        const updated = { ...c, ...stats };
+        // Cap current HP to new max HP if max_hp was reduced
+        if (stats.max_hp !== undefined && updated.current_hp > updated.max_hp) {
+          updated.current_hp = updated.max_hp;
+        }
+        return updated;
+      }),
+    })),
+
+  setRulesetVersion: (id, version) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, ruleset_version: version } : c
+      ),
+    })),
 }));
 
 /** Auto-number combatants with the same base name.

@@ -250,3 +250,165 @@ describe("useCombatStore – advanceTurn", () => {
     expect(state.round_number).toBe(2); // round incremented because we crossed index 0
   });
 });
+
+// === Story 3-5: HP Management ===
+describe("useCombatStore – applyDamage", () => {
+  it("reduces current_hp by damage amount", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 10, max_hp: 10 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 3);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+  });
+
+  it("does not reduce HP below 0", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 5, max_hp: 10 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 20);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(0);
+  });
+
+  it("temp HP absorbs damage first", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 10, max_hp: 10, temp_hp: 5 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 8);
+    const c = useCombatStore.getState().combatants[0];
+    expect(c.temp_hp).toBe(0);
+    expect(c.current_hp).toBe(7); // 8 damage - 5 temp = 3 to current, 10-3=7
+  });
+
+  it("temp HP partially absorbs damage", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 10, max_hp: 10, temp_hp: 3 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 2);
+    const c = useCombatStore.getState().combatants[0];
+    expect(c.temp_hp).toBe(1);
+    expect(c.current_hp).toBe(10);
+  });
+});
+
+describe("useCombatStore – applyHealing", () => {
+  it("increases current_hp", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 3, max_hp: 10 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyHealing(id, 4);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+  });
+
+  it("does not exceed max_hp", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 8, max_hp: 10 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyHealing(id, 5);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(10);
+  });
+});
+
+describe("useCombatStore – setTempHp", () => {
+  it("sets temp HP when higher than current", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, temp_hp: 0 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setTempHp(id, 5);
+    expect(useCombatStore.getState().combatants[0].temp_hp).toBe(5);
+  });
+
+  it("does not replace with a lower value", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, temp_hp: 8 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setTempHp(id, 3);
+    expect(useCombatStore.getState().combatants[0].temp_hp).toBe(8);
+  });
+});
+
+// === Story 3-6: Conditions ===
+describe("useCombatStore – toggleCondition", () => {
+  it("adds a condition", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().toggleCondition(id, "Stunned");
+    expect(useCombatStore.getState().combatants[0].conditions).toContain("Stunned");
+  });
+
+  it("removes an existing condition", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, conditions: ["Stunned"] });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().toggleCondition(id, "Stunned");
+    expect(useCombatStore.getState().combatants[0].conditions).not.toContain("Stunned");
+  });
+
+  it("supports multiple conditions", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().toggleCondition(id, "Stunned");
+    useCombatStore.getState().toggleCondition(id, "Poisoned");
+    expect(useCombatStore.getState().combatants[0].conditions).toEqual(["Stunned", "Poisoned"]);
+  });
+});
+
+// === Story 3-7: Defeat ===
+describe("useCombatStore – setDefeated", () => {
+  it("marks a combatant as defeated", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setDefeated(id, true);
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(true);
+  });
+
+  it("un-defeats a combatant", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, is_defeated: true });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setDefeated(id, false);
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(false);
+  });
+});
+
+// === Story 3-8: Edit Stats ===
+describe("useCombatStore – updateCombatantStats", () => {
+  it("updates name", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updateCombatantStats(id, { name: "Dragon" });
+    expect(useCombatStore.getState().combatants[0].name).toBe("Dragon");
+  });
+
+  it("caps current HP when max HP is reduced below current", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 7, max_hp: 7 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updateCombatantStats(id, { max_hp: 5 });
+    const c = useCombatStore.getState().combatants[0];
+    expect(c.max_hp).toBe(5);
+    expect(c.current_hp).toBe(5);
+  });
+
+  it("does not change current HP when max HP is increased", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 7, max_hp: 7 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updateCombatantStats(id, { max_hp: 20 });
+    const c = useCombatStore.getState().combatants[0];
+    expect(c.max_hp).toBe(20);
+    expect(c.current_hp).toBe(7);
+  });
+
+  it("updates AC", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().updateCombatantStats(id, { ac: 20 });
+    expect(useCombatStore.getState().combatants[0].ac).toBe(20);
+  });
+});
+
+// === Story 3-9: Ruleset Version Switching ===
+describe("useCombatStore – setRulesetVersion", () => {
+  it("switches version from 2014 to 2024", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setRulesetVersion(id, "2024");
+    expect(useCombatStore.getState().combatants[0].ruleset_version).toBe("2024");
+  });
+
+  it("does not affect other combatants", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Orc" });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setRulesetVersion(id, "2024");
+    expect(useCombatStore.getState().combatants[1].ruleset_version).toBe("2014");
+  });
+});

@@ -23,7 +23,7 @@ function getHpBarColor(current: number, max: number): string {
 function getHpThresholdLabel(current: number, max: number): string {
   if (max === 0) return "";
   const pct = current / max;
-  if (pct > 0.5) return "OK";
+  if (pct >= 0.5) return "OK";
   if (pct > 0.25) return "LOW";
   return "CRIT";
 }

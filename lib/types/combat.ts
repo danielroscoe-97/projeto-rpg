@@ -49,4 +49,18 @@ export interface CombatActions {
   advanceTurn: () => void;
   /** Hydrate active combat state from server on page load (preserves real turn/round, avoids startCombat resetting to 0). */
   hydrateActiveState: (currentTurnIndex: number, roundNumber: number) => void;
+  /** Apply damage to a combatant. Temp HP absorbs first, then current HP (min 0). */
+  applyDamage: (id: string, amount: number) => void;
+  /** Apply healing to a combatant. Cannot exceed max HP. Does not affect temp HP. */
+  applyHealing: (id: string, amount: number) => void;
+  /** Set temporary HP for a combatant. Only replaces if new value is higher than current temp HP. */
+  setTempHp: (id: string, value: number) => void;
+  /** Toggle a condition on a combatant (add if missing, remove if present). */
+  toggleCondition: (id: string, condition: string) => void;
+  /** Mark a combatant as defeated (or un-defeat). */
+  setDefeated: (id: string, is_defeated: boolean) => void;
+  /** Update a combatant's editable stats (name, max_hp, ac, spell_save_dc). Caps current_hp to new max_hp. */
+  updateCombatantStats: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  /** Switch a combatant's ruleset version. */
+  setRulesetVersion: (id: string, version: RulesetVersion) => void;
 }
