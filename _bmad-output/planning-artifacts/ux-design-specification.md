@@ -1,8 +1,8 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 status: complete
-lastRevision: 2026-03-24
-revisionNotes: "Visual system enriched from ro-modern (Liberty RO) reference: gold accent (#d4a853) replaces pink-red, Cinzel display font added, background noise+depth gradient, box-shadow glow system, pixel sprite rendering rules, ornamental dividers, ghost render atmospheric backgrounds."
+lastRevision: 2026-03-25
+revisionNotes: "Action Color Semantics overhaul: strict semantic color budget (gold=primary CTA, green=constructive, red=destructive, purple=magical, neutral=chrome). Contextual HP Apply button. Standardized 3-level opacity scale. Inspired by Kastark and 5e.tools reference patterns."
 inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md", "_bmad-output/planning-artifacts/architecture.md", "_bmad-output/planning-artifacts/epics.md", "referencia visual/ro-modern/css/theme.css", "referencia visual/ro-modern/preview.html", "referencia visual/ro-modern/header.php"]
 ---
 
@@ -355,6 +355,8 @@ projeto-rpg does not invent new interaction paradigms. Every pattern is proven:
 
 ## Visual Design Foundation
 
+> **IMPORTANT — Deprecation notice for old stories:** Many implementation artifacts (stories 1.x–7.x) reference `#e94560` (old pink-red accent) and `bg-[#16213e]` (hardcoded surface color). These are **superseded** by this specification. The actual codebase already uses gold (`#D4A853`) and theme tokens (`bg-card`, `bg-background`). When implementing or reviewing any story, **always follow the color rules in this document**, not the hardcoded hex values in older stories. Use Tailwind theme tokens (`bg-card`, `text-foreground`, `bg-background`) — never hardcoded hex colors.
+
 ### Color System
 
 **Base palette (dark mode default — not a toggle, the default):**
@@ -389,6 +391,49 @@ The original `#e94560` accent came from a cyberpunk/anime register. For a D&D co
 **Condition badge palette (color + text label always paired):**
 Blinded (gray), Charmed (pink), Frightened (purple), Grappled (orange), Incapacitated (`#e8593c` red), Invisible (blue-gray), Paralyzed (dark red), Petrified (stone gray), Poisoned (green), Prone (brown), Restrained (teal), Stunned (`#d4a853` yellow-gold), Unconscious (black with white text).
 
+### Action Color Semantics (Button Rules)
+
+**Principle: Form follows function. Every color must carry semantic meaning. Never use color for decoration.**
+
+Inspired by [Kastark Encounter Tracker](https://kastark.co.uk/rpgs/encounter-tracker/) (single green accent for the only constructive action) and [5e.tools Bestiary](https://5e.tools/bestiary.html) (blue=include, red=exclude filter semantics).
+
+**Color budget — strict semantic mapping:**
+
+| Color | Semantic | Tailwind | When to use |
+|-------|----------|----------|-------------|
+| **Gold** (`#D4A853`) | Primary CTA — the single most important action per screen | `bg-gold` | Start Combat, Next Turn. Max ONE gold button per viewport. |
+| **Emerald/Green** | Constructive/additive | `bg-emerald-600` (solid) or `bg-emerald-900/30 text-emerald-400` (subtle) | Add combatant, Heal mode, Revive. Any action that creates or restores. |
+| **Red** | Destructive/dangerous | `bg-red-600` (solid) or `bg-red-900/20 text-red-400` (subtle) | Remove, Damage mode, End encounter, Defeat. Any action that destroys or ends. |
+| **Purple** | Special/magical | `bg-purple-600` (solid) | Temp HP mode. Reserved for supernatural/temporary states. |
+| **Neutral** | Secondary/chrome | `bg-white/[0.06] hover:bg-white/[0.10]` | Panel toggles (HP, Conditions, Edit), version switch, pin. Actions that open panels, not direct state changes. |
+
+**Solid vs Subtle variants:**
+- **Solid** (`bg-emerald-600`, `bg-red-600`): For primary actions within a context — the Apply button in HP Adjuster, the Add button in setup row.
+- **Subtle** (`bg-emerald-900/30 text-emerald-400`): For secondary actions in toolbars — Add mid-combat, End encounter, Defeat toggle.
+
+**Contextual Apply button (HP Adjuster):**
+The Apply button in the HP Adjuster panel must match the active mode:
+- Damage mode → `bg-red-600` (red = destructive)
+- Heal mode → `bg-emerald-600` (green = constructive)
+- Temp HP mode → `bg-purple-600` (purple = magical)
+
+This provides instant visual confirmation that the user is about to apply the correct type of HP change.
+
+**Defeat/Revive toggle:**
+- Defeat (active combatant → defeated) → red subtle (`bg-red-900/20 text-red-400`)
+- Revive (defeated → active) → green subtle (`bg-emerald-900/30 text-emerald-400`)
+
+**Opacity scale (standardized):**
+Only three levels allowed for `white/` opacity backgrounds:
+- `white/[0.04]` — subtle dividers, row borders, barely-there separators
+- `white/[0.06]` — neutral button/element backgrounds
+- `white/[0.10]` — hover states, active/selected list items
+
+**Anti-patterns (NEVER do this):**
+- ❌ Red button for "Add" anything — red = destroy, not create
+- ❌ Gold button for "Add combatant" — gold is reserved for the single most important CTA
+- ❌ Same neutral gray for both destructive and constructive actions — user must see intent at a glance
+- ❌ Using `white/[0.07]`, `white/[0.08]`, or other off-scale opacities — stick to the 3-level scale
 
 ### Typography System
 

@@ -44,6 +44,13 @@ So that I can track health status accurately throughout combat.
 - 3.2 Number input + apply button
 - 3.3 Integrate into CombatantRow
 
+**Design constraint (Action Color Semantics):** The Apply button color must be contextual to the active mode:
+- Damage → `bg-red-600` (red = destructive)
+- Heal → `bg-emerald-600` (green = constructive)
+- Temp HP → `bg-purple-600` (purple = magical)
+
+Mode toggle buttons also use semantic colors when active: red-600 for damage, green-600 for heal, purple-600 for temp HP. Inactive mode buttons are neutral (`bg-white/[0.06]`).
+
 ### Task 4: Wire optimistic UI + persistence in CombatSessionClient
 
 - 4.1 Pass HP callbacks through to CombatantRow

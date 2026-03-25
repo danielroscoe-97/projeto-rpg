@@ -220,12 +220,17 @@ const EMPTY_FORM: PlayerCharacterForm = { name: '', max_hp: '', ac: '', spell_sa
 - `Label` — `@/components/ui/label`
 - `Dialog` or `AlertDialog` — for remove confirmation
 
-### Dark Theme
+### Dark Theme & Action Color Semantics
 
-- Page surface: `bg-[#16213e]` for character list rows
-- Accent: `text-[#e94560]` / `bg-[#e94560]` for primary actions (Add Player, Save)
-- Stats display: `text-white` (name), `text-white/70` (stat values)
-- Column headers: `text-white/50 text-xs uppercase tracking-wider`
+> **Reference:** `_bmad-output/planning-artifacts/ux-design-specification.md` — "Action Color Semantics" section
+
+- Page surface: `bg-card` (use theme token, not hardcoded hex)
+- **"Add Player" / "Save" buttons**: green (`bg-emerald-600 text-white`) — constructive actions
+- **"Remove" button**: red subtle (`bg-red-900/20 text-red-400`) — destructive action
+- **"Edit" / secondary actions**: neutral (`bg-white/[0.06]`)
+- Stats display: `text-foreground` (name), `text-muted-foreground` (stat values)
+- Column headers: `text-muted-foreground/60 text-xs uppercase tracking-wider`
+- ~~`bg-[#e94560]`~~ — DEPRECATED: old pink-red accent. Use theme tokens only.
 
 ### Dashboard Link Back
 

@@ -3,15 +3,7 @@
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -59,79 +51,126 @@ export function SignUpForm({
     }
   };
 
+  const inputClass =
+    "bg-surface-tertiary border-white/[0.06] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/40 focus:ring-gold/30";
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl text-foreground">{t("signup_title")}</CardTitle>
-          <CardDescription className="text-muted-foreground">{t("signup_description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-foreground/80">{t("email_label")}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t("email_placeholder")}
-                  required
-                  aria-required="true"
-                  aria-describedby={error ? "signup-error" : undefined}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password" className="text-foreground/80">{t("password_label")}</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  aria-required="true"
-                  aria-describedby={error ? "signup-error" : undefined}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="repeat-password" className="text-foreground/80">{t("repeat_password")}</Label>
-                <Input
-                  id="repeat-password"
-                  type="password"
-                  required
-                  aria-required="true"
-                  aria-describedby={error ? "signup-error" : undefined}
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="bg-background border-border text-foreground placeholder:text-muted-foreground/60 min-h-[44px]"
-                />
-              </div>
-              {error && (
-                <p id="signup-error" className="text-sm text-gold" role="alert" aria-live="polite">
-                  {error}
-                </p>
-              )}
-              <Button
-                type="submit"
-                variant="gold"
-                className="w-full min-h-[44px]"
-                disabled={isLoading}
-              >
-                {isLoading ? t("signup_submitting") : t("signup_submit")}
-              </Button>
-            </div>
-            <div className="mt-4 text-center text-sm text-muted-foreground">
-              {t("have_account")}{" "}
-              <Link href="/auth/login" className="text-gold underline underline-offset-4">
-                {t("login_link")}
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+    <div className={cn("flex flex-col", className)} {...props}>
+      {/* Icon circle */}
+      <div className="flex justify-center mb-5">
+        <div className="w-14 h-14 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+          <svg className="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Title */}
+      <h2 className="font-display text-2xl text-center text-foreground tracking-wide mb-1">
+        {t("signup_title")}
+      </h2>
+      <p className="text-center text-muted-foreground text-sm mb-6">
+        {t("signup_description")}
+      </p>
+
+      <form onSubmit={handleSignUp} className="space-y-5">
+        {/* Email */}
+        <div className="space-y-1.5">
+          <label htmlFor="signup-email" className="flex items-center gap-1.5 text-[11px] text-gold/80 uppercase tracking-widest font-medium">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+            {t("email_label")}
+          </label>
+          <Input
+            id="signup-email"
+            type="email"
+            placeholder={t("email_placeholder")}
+            required
+            aria-required="true"
+            aria-describedby={error ? "signup-error" : undefined}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        {/* Password row — side by side like Liberty RO */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label htmlFor="signup-password" className="flex items-center gap-1.5 text-[11px] text-gold/80 uppercase tracking-widest font-medium">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+              {t("password_label")}
+            </label>
+            <Input
+              id="signup-password"
+              type="password"
+              required
+              aria-required="true"
+              placeholder="Min. 6 caracteres"
+              aria-describedby={error ? "signup-error" : undefined}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="signup-repeat-password" className="flex items-center gap-1.5 text-[11px] text-gold/80 uppercase tracking-widest font-medium">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+              {t("repeat_password")}
+            </label>
+            <Input
+              id="signup-repeat-password"
+              type="password"
+              required
+              aria-required="true"
+              placeholder="Repita"
+              aria-describedby={error ? "signup-error" : undefined}
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p id="signup-error" className="text-sm text-red-400" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
+
+        {/* Submit */}
+        <Button
+          type="submit"
+          variant="gold"
+          className="w-full min-h-[44px] text-sm"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            t("signup_submitting")
+          ) : (
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+              </svg>
+              {t("signup_submit")}
+            </span>
+          )}
+        </Button>
+      </form>
+
+      {/* Footer link */}
+      <p className="mt-5 text-center text-sm text-muted-foreground/60">
+        {t("have_account")}{" "}
+        <Link href="/auth/login" className="text-gold hover:underline underline-offset-4">
+          {t("login_link")}
+        </Link>
+      </p>
     </div>
   );
 }

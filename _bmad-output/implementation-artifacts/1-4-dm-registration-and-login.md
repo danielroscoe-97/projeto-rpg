@@ -112,13 +112,17 @@ app/
 - **DO NOT move auth pages** from `/auth/` to `/(marketing)/` — they're already working at current routes
 
 ### Design Tokens for Auth Pages
-- Background: `#1a1a2e`
-- Surface/Card: `#16213e`
-- Accent/CTA: `#e94560`
-- Text primary: white
-- Text secondary: `white/70`
-- Font: Inter (body), 16px minimum
-- Input focus ring: accent color
+
+> **Updated 2026-03-25** — See `_bmad-output/planning-artifacts/ux-design-specification.md` for the canonical color system.
+
+- Background: `bg-background` (theme token — resolves to `#13131e`)
+- Surface/Card: `bg-card` (theme token — resolves to `hsl(233 22% 13%)`)
+- Primary CTA: `bg-gold` (gold `#D4A853`) — login/sign-up submit buttons
+- Text primary: `text-foreground`
+- Text secondary: `text-muted-foreground`
+- Font: Plus Jakarta Sans (body), Cinzel (headings), 16px minimum
+- Input focus ring: `ring-ring` (gold)
+- ~~`#e94560`~~ — DEPRECATED: old pink-red accent. Use gold (`bg-gold`) for CTA buttons.
 
 ### Testing
 - Manual testing of auth flows is sufficient for V1

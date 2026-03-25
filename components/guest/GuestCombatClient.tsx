@@ -67,16 +67,32 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   const handleSelectMonster = useCallback(
     (monster: SrdMonster) => {
       const numberedName = getGuestNumberedName(monster.name, useGuestCombatStore.getState().combatants);
-      lastSelectedMonster.current = { id: monster.id, version: monster.ruleset_version };
-      setAddRow((prev) => ({
-        ...prev,
+      
+      // Add directly to combatants
+      addCombatant({
         name: numberedName,
-        hp: String(monster.hit_points),
-        ac: String(monster.armor_class),
-      }));
-      initInputRef.current?.focus();
+        current_hp: monster.hit_points,
+        max_hp: monster.hit_points,
+        temp_hp: 0,
+        ac: monster.armor_class,
+        spell_save_dc: null,
+        initiative: null,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: monster.ruleset_version,
+        is_defeated: false,
+        is_player: false,
+        monster_id: monster.id,
+        dm_notes: "",
+        player_notes: "",
+      });
+
+      // We still clear the add row to ensure a clean state
+      setAddRow(EMPTY_ADD_ROW);
+      lastSelectedMonster.current = null;
+      setSubmitError(null);
     },
-    []
+    [addCombatant]
   );
 
   const handleMonsterAdded = useCallback(() => {
@@ -293,7 +309,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-14 flex-shrink-0 py-1.5 bg-gold/20 text-gold text-sm font-medium rounded hover:bg-gold/40 transition-colors min-h-[32px] text-center"
+          className="w-14 flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}
@@ -481,7 +497,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={handleEndEncounter}
-              className="px-3 py-2 bg-white/[0.06] text-red-400 font-medium rounded-md hover:bg-red-900/30 transition-all duration-[250ms] text-sm min-h-[44px]"
+              className="px-3 py-2 bg-red-900/20 text-red-400 font-medium rounded-md hover:bg-red-900/40 transition-all duration-[250ms] text-sm min-h-[44px]"
               aria-label="End encounter"
               data-testid="end-encounter-btn"
             >
@@ -505,7 +521,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => setShowAddForm((prev) => !prev)}
-              className="px-3 py-2 bg-white/[0.06] text-muted-foreground font-medium rounded-md hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
+              className="px-3 py-2 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
               aria-label="Add combatant"
               data-testid="add-combatant-btn"
             >

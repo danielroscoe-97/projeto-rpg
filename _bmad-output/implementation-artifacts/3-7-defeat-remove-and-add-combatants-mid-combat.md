@@ -22,3 +22,9 @@ So that I can handle dynamic combat scenarios.
 - `AddCombatantForm` component for adding custom NPCs mid-combat with name, HP, AC, initiative, DC
 - New combatants inserted at correct initiative position via sort + re-assign order
 - All changes persisted via helpers: `persistDefeated`, `persistRemoveCombatant`, `persistNewCombatant`, `persistInitiativeOrder`
+
+**Design constraints (Action Color Semantics — see UX Design Specification):**
+- "Add mid-combat" toolbar button: green subtle (`bg-emerald-900/30 text-emerald-400`)
+- "Remove" button on combatant row: red subtle (`bg-red-900/20 text-red-400`)
+- "Defeat" toggle: red subtle when marking defeated, green subtle when reviving
+- "End encounter" button: red subtle (`bg-red-900/20 text-red-400`)

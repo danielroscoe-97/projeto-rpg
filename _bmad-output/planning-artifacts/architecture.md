@@ -66,7 +66,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 - **Architecture must not prescribe UI implementation patterns**: Whether the
   spell overlay is a modal, slide-over panel, or inline expansion is a UX design
   decision. Architecture exposes fast lookup endpoints and data contracts only
-- **No UX spec yet**: UI/UX design is post-architecture
+- **UX Design Specification available**: See `_bmad-output/planning-artifacts/ux-design-specification.md` for the complete visual system, Action Color Semantics, typography, spacing, and atmospheric design rules
 - **Solo developer target**: Architecture must minimize operational complexity —
   managed services only, no custom infrastructure
 - **SRD data source**: open5e API or 5e-database JSON (MIT license) for seeding;

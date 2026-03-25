@@ -84,15 +84,15 @@ function HeroSection() {
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-display text-foreground leading-[1.1] tracking-tight animate-fade-in-up">
-          Mestre seu combate.{" "}
+          Domine o combate.{" "}
           <span className="text-gold drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]">
-            Nao o papel.
+            Abandone o papel.
           </span>
         </h1>
 
         {/* Subheading */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          Tracker de combate D&amp;D 5e com iniciativa, HP, condicoes e oraculo de
+          Tracker de combate D&amp;D 5e com iniciativa, HP, condições e oráculo de
           magias — tudo em tempo real no celular dos seus jogadores.
         </p>
 
@@ -103,7 +103,7 @@ function HeroSection() {
             href="/try"
             className="group w-full py-3 bg-white/[0.06] text-foreground font-medium text-base rounded-lg border border-white/[0.10] hover:bg-white/[0.10] hover:border-gold/30 hover:text-gold transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2"
           >
-            Testar sem cadastro
+            Experimentar agora (Grátis)
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
 
@@ -114,14 +114,14 @@ function HeroSection() {
               className="group flex-1 px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5"
             >
               <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-              Criar Conta Gratis
+              Salvar minhas campanhas
             </Link>
             <Link
               href="/auth/login"
               className="group px-6 py-3 bg-white/[0.04] text-muted-foreground font-medium text-sm rounded-lg border border-white/[0.07] hover:bg-white/[0.08] hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5"
             >
               <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
-              Ja tenho conta
+              Já tenho conta
             </Link>
           </div>
         </div>
@@ -170,28 +170,28 @@ function FeaturesSection() {
       tag: null,
       title: "Combat Tracker Completo",
       description:
-        "Iniciativa automatica, HP com temp HP, 13 condicoes D&D, derrota, adicionar/remover combatentes no meio do combate.",
+        "Iniciativa automática, HP com temp HP, 13 condições D&D, derrota, adicionar/remover combatentes no meio do combate.",
     },
     {
       emoji: "📱",
       tag: "Popular",
       title: "Player View em Tempo Real",
       description:
-        "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem friccao. Tudo atualiza ao vivo.",
+        "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem fricção. Tudo atualiza ao vivo.",
     },
     {
       emoji: "🔮",
       tag: null,
-      title: "Oraculo de Magias & Monstros",
+      title: "Oráculo de Magias & Monstros",
       description:
-        "Busca instantanea no SRD 5.1 e 5.2. Stat blocks inline, descricoes de magia em modal. Funciona offline.",
+        "Busca instantânea no SRD 5.1 e 5.2. Stat blocks inline, descrições de magia em modal. Funciona offline.",
     },
     {
       emoji: "📖",
-      tag: "Unico",
+      tag: "Único",
       title: "2014 & 2024 Side-by-Side",
       description:
-        "Troque a versao de regras por monstro, no meio do combate. Sem reiniciar o encontro.",
+        "Troque a versão de regras por monstro, no meio do combate. Sem reiniciar o encontro.",
     },
     {
       emoji: "💾",
@@ -205,7 +205,7 @@ function FeaturesSection() {
       tag: null,
       title: "Dark Mode RPG",
       description:
-        "Interface escura com toques dourados. Feita para sessoes noturnas sem cansar a vista.",
+        "Interface escura com toques dourados. Feita para sessões noturnas sem cansar a vista.",
     },
   ];
 
@@ -224,8 +224,8 @@ function FeaturesSection() {
             Tudo que o Mestre precisa
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            De iniciativa a temp HP, de condicoes a oraculo de magias.
-            Uma ferramenta, zero distracao.
+            De iniciativa a temp HP, de condições a oráculo de magias.
+            Uma ferramenta, zero distração.
           </p>
         </div>
 
@@ -290,21 +290,21 @@ function HowItWorksSection() {
       number: "02",
       emoji: "🎲",
       title: "Role Iniciativa",
-      description: "Insira os valores, ordene automaticamente, resolva empates com drag-and-drop.",
+      description: "Insira os valores, ordene automaticamente, resolva empates com dragndrop.",
       time: "~30 seg",
     },
     {
       number: "03",
       emoji: "🔗",
       title: "Compartilhe o Link",
-      description: "Gere o link da sessao. Jogadores abrem no celular — sem conta necessaria.",
+      description: "Gere o link da sessão. Jogadores abrem no celular — sem conta necessária.",
       time: "~10 seg",
     },
     {
       number: "04",
       emoji: "⚔️",
       title: "Mestre o Combate",
-      description: "Avance turnos, aplique dano/cura, adicione condicoes. Jogadores veem tudo ao vivo.",
+      description: "Avance turnos, aplique dano/cura, adicione condições. Jogadores veem tudo ao vivo.",
       time: "ao vivo",
     },
   ];
@@ -455,7 +455,7 @@ function ComparisonSection() {
       icon: "⚔️",
       feature: "Combat tracker",
       roll20: { type: "partial", label: "VTT completo, mas pesado" },
-      beyond: { type: "partial", label: "Basico, limitado" },
+      beyond: { type: "partial", label: "Básico, limitado" },
       taverna: { type: "check", label: "Otimizado para mestrar" },
     },
     {
@@ -475,16 +475,16 @@ function ComparisonSection() {
     {
       icon: "📚",
       feature: "SRD 2014 + 2024",
-      roll20: { type: "partial", label: "Depende de modulo pago" },
-      beyond: { type: "partial", label: "Disponivel (pago)" },
-      taverna: { type: "check", label: "Gratis, sempre" },
+      roll20: { type: "partial", label: "Depende de módulo pago" },
+      beyond: { type: "partial", label: "Disponível (pago)" },
+      taverna: { type: "check", label: "Grátis, sempre" },
     },
     {
       icon: "💰",
-      feature: "Preco",
-      roll20: { type: "cross", label: "$5–50/mes" },
-      beyond: { type: "cross", label: "$6/mes" },
-      taverna: { type: "check", label: "Gratis para sempre" },
+      feature: "Preço",
+      roll20: { type: "cross", label: "$5–50/mês" },
+      beyond: { type: "cross", label: "$6/mês" },
+      taverna: { type: "check", label: "Grátis para sempre" },
     },
   ];
 
@@ -498,12 +498,12 @@ function ComparisonSection() {
       <div className="relative max-w-4xl mx-auto">
         <div className="text-center mb-14 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
-            Por que nao usar o que ja existe?
+            Por que não usar o que já existe?
           </h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-            Roll20 e Foundry sao VTTs poderosos. D&amp;D Beyond e uma enciclopedia digital.
+            Roll20 e Foundry são VTTs poderosos. D&amp;D Beyond é uma enciclopédia digital.
             Nenhum foi feito para a{" "}
-            <span className="text-foreground font-medium">mesa fisica</span>.
+            <span className="text-foreground font-medium">mesa física</span>.
           </p>
         </div>
 
@@ -580,7 +580,7 @@ function ComparisonSection() {
 
         <div className="mt-7 text-center">
           <p className="text-xs text-white/20 italic">
-            Construido para mestres de mesa fisica. Nao precisamos competir com VTTs — somos outra coisa.
+            Construído para mestres de mesa física. Não precisamos competir com VTTs — somos outra coisa.
           </p>
         </div>
       </div>
@@ -622,7 +622,7 @@ function FinalCtaSection() {
           <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">melhor</span>?
         </h2>
         <p className="text-muted-foreground text-lg">
-          Crie sua conta em 30 segundos. Seu proximo combate vai ser diferente.
+          Crie sua conta em 30 segundos. Seu próximo combate vai ser diferente.
         </p>
 
         <div className="flex flex-col items-center gap-3 pt-2">
@@ -631,7 +631,7 @@ function FinalCtaSection() {
             className="group inline-flex items-center gap-2.5 px-10 py-4 bg-gold text-surface-primary font-semibold text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[52px]"
           >
             <SparkleIcon className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-            Comecar Agora — e Gratis
+            Começar Agora — é Grátis
             <ArrowRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
           <Link

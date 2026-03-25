@@ -35,6 +35,14 @@ html {
     --ring: 39 56% 67%;
     --radius: 0.75rem;
 
+    /* Semantic action colors */
+    --success: 152 60% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 217 72% 64%;
+    --info-foreground: 0 0% 100%;
+
     /* Extended palette */
     --accent-gold: #D4A853;
     --accent-warm: #E8593C;

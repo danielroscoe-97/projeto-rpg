@@ -69,6 +69,7 @@ export function HpAdjuster({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
+        onFocus={(e) => e.target.select()}
         placeholder="0"
         className="w-16 px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono text-center min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         aria-label={t("hp_amount_aria", { mode: mode === "damage" ? t("hp_mode_damage") : mode === "heal" ? t("hp_mode_heal") : t("hp_mode_temp") })}
@@ -78,7 +79,13 @@ export function HpAdjuster({
       <button
         type="button"
         onClick={handleApply}
-        className="px-3 py-1 bg-gold text-foreground text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px]"
+        className={`px-3 py-1 text-white text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] ${
+          mode === "damage"
+            ? "bg-red-600 hover:bg-red-500"
+            : mode === "heal"
+              ? "bg-emerald-600 hover:bg-emerald-500"
+              : "bg-purple-600 hover:bg-purple-500"
+        }`}
         data-testid="hp-apply-btn"
       >
         {t("hp_apply")}

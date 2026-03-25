@@ -398,7 +398,7 @@ export function MonsterSearchPanel({
                 aria-selected={idx === activeIndex}
                 className={`flex items-center gap-3 px-3 py-2 transition-colors cursor-pointer ${
                   idx === activeIndex
-                    ? "bg-white/[0.07]"
+                    ? "bg-white/[0.10]"
                     : "hover:bg-white/[0.04]"
                 }`}
                 data-testid={`srd-result-${monster.id}`}

@@ -48,7 +48,11 @@ export function ConditionSelector({
             <button
               key={condition}
               type="button"
-              onClick={() => onToggle(condition)}
+              onClick={() => {
+                onToggle(condition);
+                // Close after a short delay to give visual feedback but satisfy the auto-close request
+                setTimeout(onClose, 300);
+              }}
               className={`px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 isActive
                   ? "bg-gold text-surface-primary"

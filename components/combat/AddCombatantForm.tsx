@@ -70,6 +70,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             min="1"
             value={maxHp}
             onChange={(e) => setMaxHp(e.target.value)}
+            onFocus={(e) => e.target.select()}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="add-hp-input"
           />
@@ -81,6 +82,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             min="0"
             value={ac}
             onChange={(e) => setAc(e.target.value)}
+            onFocus={(e) => e.target.select()}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="add-ac-input"
           />
@@ -93,6 +95,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             max="50"
             value={initiative}
             onChange={(e) => setInitiative(e.target.value)}
+            onFocus={(e) => e.target.select()}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="add-initiative-input"
           />
@@ -104,6 +107,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             min="0"
             value={dc}
             onChange={(e) => setDc(e.target.value)}
+            onFocus={(e) => e.target.select()}
             placeholder={tc("dash")}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="add-dc-input"

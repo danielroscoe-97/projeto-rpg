@@ -50,6 +50,7 @@ So that I can rapidly build an encounter by tabbing through fields like a spread
 - [ ] 3.3 Player badge: small "Player" text in muted color
 - [ ] 3.4 Version badge: reuse `VersionBadge` component from `RulesetSelector`
 - [ ] 3.5 Input styling: minimal borders, transparent background, focus ring on focus
+- [ ] 3.6 Remove button: red subtle (`text-red-400 hover:text-red-400`) per Action Color Semantics — never use gold or green for destructive actions
 
 ### Task 4: Tests
 - [ ] 4.1 Render test: all fields visible with correct values

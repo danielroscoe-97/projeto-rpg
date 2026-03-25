@@ -114,3 +114,11 @@
 - All fixes are component-level — no store or API changes needed
 - Fixes apply to both Guest (free) and Auth (logged-in) combat flows
 - No new dependencies required
+
+## Design System Reference
+
+All UI polish in this epic must conform to the **Action Color Semantics** from `_bmad-output/planning-artifacts/ux-design-specification.md`. Key rules:
+- Green (`bg-emerald-600`) for constructive actions (Add)
+- Red subtle (`bg-red-900/20 text-red-400`) for destructive actions (Remove, End, Defeat)
+- Gold for primary CTA only (Start Combat, Next Turn) — max ONE per viewport
+- Opacity scale: `white/[0.04]`, `white/[0.06]`, `white/[0.10]` only

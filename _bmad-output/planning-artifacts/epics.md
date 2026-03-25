@@ -120,8 +120,8 @@ Source: `ux-design-specification.md` (complete, 14 steps)
 - UX-DR3: SpellModal (Dialog) opens as overlay with dimmed backdrop; combat view remains visible behind
 - UX-DR4: HP displayed as horizontal progress bar with green→yellow→red gradient + text values; temp HP uses #9f7aea overlay
 - UX-DR5: Condition badges as colored pills with text labels (never color-only); 13 conditions with defined palette
-- UX-DR6: Color system: 15 design tokens defined — background #1a1a2e, surface #16213e, accent #e94560, accent-warm #f5a623, HP states, condition palette
-- UX-DR7: Typography: Inter (primary) + JetBrains Mono (numbers), 7-step scale from 12px to 30px, 16px minimum body (NFR23)
+- UX-DR6: Color system: theme tokens in `globals.css` — background `#13131e`, surface `bg-card`, accent gold `#D4A853`, HP states (green/amber/red), condition palette. **Action Color Semantics**: gold=primary CTA (1/screen), green=constructive, red=destructive, purple=magical, neutral=chrome. See UX Design Specification for full rules. ~~Old `#e94560` pink-red accent is deprecated.~~
+- UX-DR7: Typography: Plus Jakarta Sans (primary) + Cinzel (display headings) + JetBrains Mono (numbers), 7-step scale from 12px to 30px, 16px minimum body (NFR23)
 - UX-DR8: DM view keyboard shortcuts: Cmd+K (oracle), Space (next turn), ↑/↓ (navigate rows), Enter (expand), H (HP adjust), C (conditions), Escape (close)
 - UX-DR9: Player view is purpose-built mobile layout: own character card prominent at top, initiative board below, floating oracle button
 - UX-DR10: Monster HP is DM-only — players see combatant names and initiative position but NOT monster HP

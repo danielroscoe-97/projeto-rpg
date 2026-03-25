@@ -82,3 +82,12 @@ So that encounter setup is as fast and fluid as the Kastark tracker.
 - Pre-combat notes in the add-row map to `player_notes`. DM notes (`dm_notes`) are only editable during active combat.
 - The combatant list is in **insertion order**. `initiative_order` is NOT assigned until "Start Combat" sorts and assigns it.
 - Auto-numbering reuses the existing `getNumberedName()` helper.
+
+## Design System Reference
+
+Follow **Action Color Semantics** from `_bmad-output/planning-artifacts/ux-design-specification.md`:
+- **"Add" button** in add-row: green solid (`bg-emerald-600 text-white hover:bg-emerald-500`)
+- **"Start Combat" button**: gold (`bg-gold`) — the single primary CTA on this screen
+- **"Remove" button** on rows: red text (`text-red-400`), appears on hover
+- **"Limpar tudo"**: neutral text link (`text-muted-foreground`)
+- **Opacity scale**: `white/[0.04]` (dividers), `white/[0.06]` (backgrounds), `white/[0.10]` (hover)

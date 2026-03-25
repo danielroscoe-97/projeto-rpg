@@ -29,6 +29,16 @@ Transform the encounter setup experience — replacing the minimal text-only mon
 - Sorting results by anything beyond name
 - Infinite scroll / pagination (SRD list is small enough for full load)
 
+## Design System Reference
+
+All UI work in this epic must follow the **Action Color Semantics** defined in `_bmad-output/planning-artifacts/ux-design-specification.md`:
+
+- **Add button** (add-row): green solid (`bg-emerald-600 text-white`)
+- **Remove button**: red subtle (`bg-red-900/20 text-red-400`)
+- **Neutral actions** (filter toggles, Ver Ficha, panel openers): `bg-white/[0.06] hover:bg-white/[0.10]`
+- **Active filter badge**: gold accent for active filters (existing pattern is correct)
+- **Opacity scale**: only `white/[0.04]`, `white/[0.06]`, `white/[0.10]` — no other values
+
 ## Architecture Decisions
 
 1. **`MonsterSearchPanel` component** — replaces the existing inline input in `EncounterSetup`; self-contained with local filter state

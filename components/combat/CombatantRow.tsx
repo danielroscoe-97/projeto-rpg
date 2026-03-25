@@ -371,7 +371,11 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => onSetDefeated?.(combatant.id, !combatant.is_defeated)}
-              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                combatant.is_defeated
+                  ? "bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/50"
+                  : "bg-red-900/20 text-red-400 hover:bg-red-900/40"
+              }`}
               aria-label={combatant.is_defeated ? t("revive_aria") : t("defeat_aria")}
               data-testid={`defeat-btn-${combatant.id}`}
             >
@@ -402,7 +406,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => onRemoveCombatant?.(combatant.id)}
-              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-red-400 hover:bg-red-900/30 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               aria-label={t("remove_aria")}
               data-testid={`remove-btn-${combatant.id}`}
             >

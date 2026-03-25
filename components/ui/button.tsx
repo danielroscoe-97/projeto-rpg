@@ -25,6 +25,12 @@ const buttonVariants = cva(
           "bg-gold text-surface-primary font-semibold shadow-card hover:shadow-gold-glow hover:-translate-y-[1px] hover:brightness-110",
         goldOutline:
           "border border-white/15 bg-transparent text-gold hover:border-gold hover:shadow-gold-glow hover:-translate-y-[1px]",
+        success:
+          "bg-success text-success-foreground font-semibold shadow-sm hover:bg-success/90",
+        successSubtle:
+          "bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/50",
+        destructiveSubtle:
+          "bg-red-900/20 text-red-400 hover:bg-red-900/40",
       },
       size: {
         default: "h-10 px-4 py-2",

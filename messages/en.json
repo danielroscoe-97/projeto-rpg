@@ -35,8 +35,10 @@
     "footer_srd_license": "CC-BY-4.0 License"
   },
   "auth": {
+    "page_heading_prefix": "Access your",
+    "page_heading_accent": "Account",
     "login_title": "Login",
-    "login_description": "Enter your email below to login to your account",
+    "login_description": "Access your account to manage combats",
     "email_label": "Email",
     "email_placeholder": "m@example.com",
     "password_label": "Password",

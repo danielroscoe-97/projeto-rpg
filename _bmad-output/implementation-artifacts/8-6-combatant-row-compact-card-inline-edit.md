@@ -63,12 +63,16 @@ So that I can manage combat quickly without opening separate editors.
   - Switch Version (for SRD monsters only)
 - [ ] 4.3 Reuse existing handler functions from CombatSessionClient
 
-### Task 5: Visual Polish
+### Task 5: Visual Polish (Action Color Semantics — see UX Design Spec)
 - [ ] 5.1 Current turn: gold `▶` glyph + `border-l-2 border-gold` + subtle gold background tint
 - [ ] 5.2 Defeated: `opacity-50`, `line-through` on name, "Defeated" badge
-- [ ] 5.3 HP bar: thin bar below HP numbers, color-coded
+- [ ] 5.3 HP bar: thin bar below HP numbers, color-coded (green/amber/red)
 - [ ] 5.4 Condition badges: compact, colored (reuse existing color scheme from ConditionSelector)
 - [ ] 5.5 Overflow menu: dark dropdown matching theme
+- [ ] 5.6 **Defeat toggle**: red subtle (`bg-red-900/20 text-red-400`) when marking defeated; green subtle (`bg-emerald-900/30 text-emerald-400`) when reviving
+- [ ] 5.7 **Remove button**: red subtle (`bg-red-900/20 text-red-400`) — never neutral
+- [ ] 5.8 **Panel toggle buttons** (HP, Conditions, Edit): neutral (`bg-white/[0.06]`), gold when active (`bg-gold text-surface-primary`)
+- [ ] 5.9 **HP Adjuster Apply button**: contextual — red for Damage, green for Heal, purple for Temp HP
 
 ### Task 6: Player Board Update
 - [ ] 6.1 Update `PlayerInitiativeBoard.tsx` to display `player_notes` for each combatant

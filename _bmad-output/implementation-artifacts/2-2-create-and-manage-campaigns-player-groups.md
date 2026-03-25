@@ -259,13 +259,17 @@ import type { Campaign, PlayerCharacter } from '@/lib/types/database'
 
 Check which are already installed: `ls components/ui/`. If AlertDialog is not installed, use a simple confirmation Dialog.
 
-### Dark Theme
+### Dark Theme & Action Color Semantics
 
-- Background: `bg-[#1a1a2e]` (page — already on layout)
-- Surface/card: `bg-[#16213e]` (campaign list items)
-- Accent: `bg-[#e94560]` for primary action buttons (New Campaign, Save)
-- Destructive: standard red for Delete button (`variant="destructive"` on shadcn/ui Button)
-- Text: `text-white` (primary), `text-white/50` (secondary/count)
+> **Reference:** `_bmad-output/planning-artifacts/ux-design-specification.md` — "Action Color Semantics" section
+
+- Background: `bg-background` (use theme token, not hardcoded hex)
+- Surface/card: `bg-card` (use theme token)
+- **"New Campaign" / "Save" buttons**: green (`bg-emerald-600 text-white`) — these are constructive/additive actions
+- **"Delete" button**: red (`variant="destructive"` on shadcn/ui Button, or `bg-red-900/20 text-red-400` for subtle variant)
+- **"Edit" / secondary actions**: neutral (`bg-white/[0.06] hover:bg-white/[0.10]`)
+- Text: `text-foreground` (primary), `text-muted-foreground` (secondary)
+- ~~`bg-[#e94560]`~~ — DEPRECATED: the old pink-red accent. Never use hardcoded hex colors; use theme tokens.
 
 ### Navigation to Campaign Detail
 
