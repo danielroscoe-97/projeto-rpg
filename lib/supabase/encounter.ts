@@ -14,7 +14,8 @@ export interface CreateEncounterResult {
  */
 export async function createEncounterWithCombatants(
   combatants: Combatant[],
-  ruleset_version: RulesetVersion
+  ruleset_version: RulesetVersion,
+  campaignId?: string | null
 ): Promise<CreateEncounterResult> {
   const supabase = createClient();
 
@@ -31,7 +32,7 @@ export async function createEncounterWithCombatants(
   const { data: session, error: sessionError } = await supabase
     .from("sessions")
     .insert({
-      campaign_id: null,
+      campaign_id: campaignId ?? null,
       owner_id: user.id,
       name: "Quick Encounter",
       ruleset_version,
