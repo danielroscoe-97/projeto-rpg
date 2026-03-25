@@ -1,33 +1,28 @@
-import createIntlMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./i18n/config";
+import { locales, defaultLocale, type Locale } from "./i18n/config";
 import { updateSession } from "@/lib/supabase/proxy";
 import { type NextRequest } from "next/server";
 
-const intlMiddleware = createIntlMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: "never",
-  localeDetection: true,
-});
-
 export async function middleware(request: NextRequest) {
   // Run Supabase session refresh + auth guards first
-  const supabaseResponse = await updateSession(request);
+  const response = await updateSession(request);
 
-  // If Supabase returned a redirect or error, use that
-  if (supabaseResponse.status !== 200) {
-    return supabaseResponse;
+  // If no NEXT_LOCALE cookie, detect from Accept-Language and set it
+  if (!request.cookies.get("NEXT_LOCALE")?.value) {
+    const acceptLang = request.headers.get("accept-language") || "";
+    const detected = acceptLang
+      .split(",")
+      .map((part) => part.split(";")[0].trim())
+      .find((lang) => locales.includes(lang as Locale));
+
+    const locale = detected || defaultLocale;
+    response.cookies.set("NEXT_LOCALE", locale, {
+      path: "/",
+      maxAge: 31536000,
+      sameSite: "lax",
+    });
   }
 
-  // Then run i18n middleware for locale detection
-  const intlResponse = intlMiddleware(request);
-
-  // Merge Supabase cookies into the intl response
-  supabaseResponse.cookies.getAll().forEach((cookie) => {
-    intlResponse.cookies.set(cookie.name, cookie.value);
-  });
-
-  return intlResponse;
+  return response;
 }
 
 export const config = {
