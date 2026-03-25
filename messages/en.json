@@ -118,6 +118,14 @@
     "pc_char_count": "/50"
   },
   "onboarding": {
+    "choose_title": "How do you want to start?",
+    "choose_description": "Pick the path that fits your table.",
+    "choose_campaign_title": "Set Up Campaign",
+    "choose_campaign_description": "Create a campaign with pre-defined players, encounters, and a session link to share.",
+    "choose_campaign_cta": "Set up campaign →",
+    "choose_combat_title": "Quick Combat",
+    "choose_combat_description": "Skip the setup and jump straight into the combat tracker. Add combatants on the fly.",
+    "choose_combat_cta": "Go to combat →",
     "step_campaign": "Campaign",
     "step_players": "Players",
     "step_encounter": "Encounter",

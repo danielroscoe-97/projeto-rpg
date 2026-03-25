@@ -20,10 +20,10 @@ import {
 const MAX_PLAYERS = 8;
 
 const STEP_ICONS: Record<number, string> = {
-  1: "/art/icons/carta.png",          // Create campaign = unfurling a scroll
-  2: "/art/icons/team-chibi-1.png",   // Add players = the party assembles
-  3: "/art/icons/potion.png",         // Build encounter = prepare for battle
-  4: "/art/icons/mvp-crown.png",      // Share link = you're the MVP
+  1: "/art/icons/carta.png",
+  2: "/art/icons/team-chibi-1.png",
+  3: "/art/icons/potion.png",
+  4: "/art/icons/mvp-crown.png",
 };
 
 let _playerIdCounter = 0;
@@ -39,7 +39,7 @@ interface PlayerInput {
   spell_save_dc: number | null;
 }
 
-type WizardStep = 1 | 2 | 3 | 4 | "done";
+type WizardStep = "choose" | 1 | 2 | 3 | 4 | "done";
 
 interface WizardState {
   step: WizardStep;
@@ -61,7 +61,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   const t = useTranslations("onboarding");
   const tc = useTranslations("common");
   const [state, setState] = useState<WizardState>({
-    step: 1,
+    step: "choose",
     campaignName: "",
     players: [newPlayer()],
     encounterName: "First Encounter",
@@ -269,7 +269,86 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────
+  // ── Choose Path (step 0) ─────────────────────────────────────────
+  if (state.step === "choose") {
+    return (
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <Image
+            src="/art/icons/edenhat.png"
+            alt=""
+            width={56}
+            height={56}
+            className="pixel-art mx-auto mb-3 opacity-80"
+            aria-hidden="true"
+            unoptimized
+          />
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            {t("choose_title")}
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            {t("choose_description")}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Campaign Path */}
+          <button
+            type="button"
+            onClick={() => setState((s) => ({ ...s, step: 1 }))}
+            className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-border bg-white/[0.03] hover:bg-white/[0.07] hover:border-gold/40 transition-all duration-200 cursor-pointer"
+          >
+            <Image
+              src="/art/icons/carta.png"
+              alt=""
+              width={48}
+              height={48}
+              className="pixel-art mb-4 opacity-70 group-hover:opacity-100 transition-opacity"
+              aria-hidden="true"
+              unoptimized
+            />
+            <h2 className="text-lg font-semibold text-foreground mb-2">
+              {t("choose_campaign_title")}
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t("choose_campaign_description")}
+            </p>
+            <span className="mt-4 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
+              {t("choose_campaign_cta")}
+            </span>
+          </button>
+
+          {/* Quick Combat Path */}
+          <button
+            type="button"
+            onClick={() => router.push("/app/session/new")}
+            className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-border bg-white/[0.03] hover:bg-white/[0.07] hover:border-gold/40 transition-all duration-200 cursor-pointer"
+          >
+            <Image
+              src="/art/icons/potion.png"
+              alt=""
+              width={48}
+              height={48}
+              className="pixel-art mb-4 opacity-70 group-hover:opacity-100 transition-opacity"
+              aria-hidden="true"
+              unoptimized
+            />
+            <h2 className="text-lg font-semibold text-foreground mb-2">
+              {t("choose_combat_title")}
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t("choose_combat_description")}
+            </p>
+            <span className="mt-4 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
+              {t("choose_combat_cta")}
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Render Campaign Wizard (steps 1-4 + done) ───────────────────
   const stepLabels = [t("step_campaign"), t("step_players"), t("step_encounter"), t("step_launch")];
 
   return (
@@ -571,13 +650,21 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
 
       <CardFooter className="flex gap-3 justify-end">
         {state.step === 1 && (
-          <Button
-            onClick={handleStep1Next}
-            disabled={!state.campaignName.trim()}
-            variant="gold"
-          >
-            {tc("next")}
-          </Button>
+          <>
+            <Button
+              variant="goldOutline"
+              onClick={() => setState((s) => ({ ...s, step: "choose", error: null }))}
+            >
+              {tc("back")}
+            </Button>
+            <Button
+              onClick={handleStep1Next}
+              disabled={!state.campaignName.trim()}
+              variant="gold"
+            >
+              {tc("next")}
+            </Button>
+          </>
         )}
         {state.step === 2 && (
           <>

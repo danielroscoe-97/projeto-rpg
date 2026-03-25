@@ -118,6 +118,14 @@
     "pc_char_count": "/50"
   },
   "onboarding": {
+    "choose_title": "Como você quer começar?",
+    "choose_description": "Escolha o caminho ideal para sua mesa.",
+    "choose_campaign_title": "Configurar Campanha",
+    "choose_campaign_description": "Crie uma campanha com jogadores pré-definidos, encontros e link de sessão para compartilhar.",
+    "choose_campaign_cta": "Configurar campanha →",
+    "choose_combat_title": "Combate Rápido",
+    "choose_combat_description": "Pule a configuração e vá direto para o rastreador de combate. Adicione combatentes na hora.",
+    "choose_combat_cta": "Ir para o combate →",
     "step_campaign": "Campanha",
     "step_players": "Jogadores",
     "step_encounter": "Encontro",
