@@ -3,6 +3,14 @@
 
 export type RulesetVersion = "2014" | "2024";
 
+export interface MonsterPresetEntry {
+  monster_id: string;
+  name: string;
+  quantity: number;
+  hp: number;
+  ac: number;
+}
+
 export type Json =
   | string
   | number
@@ -393,6 +401,32 @@ export interface Database {
           description?: string;
         };
       };
+      monster_presets: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          monsters: MonsterPresetEntry[];
+          ruleset_version: RulesetVersion;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          monsters: MonsterPresetEntry[];
+          ruleset_version?: RulesetVersion;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          monsters?: MonsterPresetEntry[];
+          ruleset_version?: RulesetVersion;
+          updated_at?: string;
+        };
+      };
       session_tokens: {
         Row: {
           id: string;
@@ -441,3 +475,4 @@ export type Monster = Database["public"]["Tables"]["monsters"]["Row"];
 export type Spell = Database["public"]["Tables"]["spells"]["Row"];
 export type ConditionType = Database["public"]["Tables"]["condition_types"]["Row"];
 export type SessionToken = Database["public"]["Tables"]["session_tokens"]["Row"];
+export type MonsterPreset = Database["public"]["Tables"]["monster_presets"]["Row"];

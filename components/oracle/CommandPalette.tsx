@@ -10,6 +10,7 @@ import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal
 import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import type { SrdMonster, SrdSpell } from "@/lib/srd/srd-loader";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
+import { Skull, Sparkles, HeartPulse } from "lucide-react";
 
 const MAX_RESULTS_PER_GROUP = 5;
 const DEBOUNCE_MS = 150;
@@ -187,7 +188,7 @@ export function CommandPalette() {
             {monsterResults.length > 0 && (
               <Command.Group heading={t("group_monsters")}>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  🐉 {t("group_monsters")}
+                  <Skull className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_monsters")}
                 </div>
                 {monsterResults.map((r) => (
                   <Command.Item
@@ -216,7 +217,7 @@ export function CommandPalette() {
             {spellResults.length > 0 && (
               <Command.Group heading={t("group_spells")}>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  ✨ {t("group_spells")}
+                  <Sparkles className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_spells")}
                 </div>
                 {spellResults.map((r) => (
                   <Command.Item
@@ -253,7 +254,7 @@ export function CommandPalette() {
             {conditionResults.length > 0 && (
               <Command.Group heading={t("group_conditions")}>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  ⚡ {t("group_conditions")}
+                  <HeartPulse className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_conditions")}
                 </div>
                 {conditionResults.map((c) => (
                   <Command.Item

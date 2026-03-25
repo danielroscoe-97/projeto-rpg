@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
+import { Swords, Package } from "lucide-react";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 
 export default async function DashboardPage() {
@@ -50,6 +51,12 @@ export default async function DashboardPage() {
     .order("updated_at", { ascending: false })
     .limit(10);
 
+  // Fetch preset count for quick-access card
+  const { count: presetCount } = await supabase
+    .from("monster_presets")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
   const savedEncounters: SavedEncounterRow[] = (rawEncounters ?? []).map((e) => ({
     session_id: e.session_id as string,
     encounter_name: (e.name ?? "Encounter") as string,
@@ -75,10 +82,28 @@ export default async function DashboardPage() {
           href="/app/session/new"
           className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg text-sm shadow-card hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] shrink-0"
         >
-          <span aria-hidden="true">⚔</span> {t("new_session")}
+          <Swords className="inline-block w-4 h-4" aria-hidden="true" /> {t("new_session")}
         </Link>
       </div>
       <SavedEncounters encounters={savedEncounters} />
+
+      {/* Presets quick-access */}
+      <div className="mb-6">
+        <Link
+          href="/app/presets"
+          className="flex items-center gap-3 bg-card border border-border rounded-lg px-4 py-3 hover:border-white/20 transition-colors group"
+        >
+          <Package className="w-5 h-5 text-muted-foreground group-hover:text-gold transition-colors" />
+          <div className="flex-1 min-w-0">
+            <span className="text-sm font-medium text-foreground">{t("presets_title")}</span>
+            <span className="text-xs text-muted-foreground ml-2">
+              {presetCount ?? 0} {t("presets_count")}
+            </span>
+          </div>
+          <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{t("presets_manage")}</span>
+        </Link>
+      </div>
+
       <CampaignManager initialCampaigns={campaigns} userId={user.id} />
     </div>
   );

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import type { RulesetVersion } from "@/lib/types/database";
+import { Swords } from "lucide-react";
 
 interface PlayerCombatant {
   id: string;
@@ -128,7 +129,7 @@ export function PlayerInitiativeBoard({
                 data-testid={`own-character-${pc.id}`}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-gold text-sm select-none">⚔️</span>
+                  <Swords className="w-4 h-4 text-gold select-none" aria-hidden="true" />
                   <span className="text-foreground text-lg font-semibold truncate flex-1">
                     {pc.name}
                   </span>

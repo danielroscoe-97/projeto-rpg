@@ -5,11 +5,12 @@ import { useTranslations } from "next-intl";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CampaignLoader } from "@/components/session/CampaignLoader";
+import { PresetLoader } from "@/components/presets/PresetLoader";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
+import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 
 interface EncounterSetupProps {
@@ -51,6 +52,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [addRowGlow, setAddRowGlow] = useState(false);
+  const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
+  const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +63,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
   // Bug #2: Clear stale validation error when combatants change
   useEffect(() => {
     if (submitError) setSubmitError(null);
+    if (invalidInitIds.size > 0) setInvalidInitIds(new Set());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combatants]);
 
@@ -123,7 +127,15 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     const name = addRow.name.trim();
     const hp = parseInt(addRow.hp, 10);
     const ac = parseInt(addRow.ac, 10);
-    if (!name || isNaN(hp) || hp < 1 || isNaN(ac) || ac < 1) return;
+    const errors = new Set<string>();
+    if (!name) errors.add("name");
+    if (isNaN(hp) || hp < 1) errors.add("hp");
+    if (isNaN(ac) || ac < 1) errors.add("ac");
+    if (errors.size > 0) {
+      setAddRowErrors(errors);
+      return;
+    }
+    setAddRowErrors(new Set());
 
     const initVal = addRow.initiative.trim()
       ? parseInt(addRow.initiative, 10)
@@ -184,6 +196,38 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     [addCombatant]
   );
 
+  // Load monsters from a preset
+  const handleLoadPreset = useCallback(
+    (presetMonsters: MonsterPresetEntry[]) => {
+      const currentCombatants = [...useCombatStore.getState().combatants];
+      presetMonsters.forEach((pm) => {
+        for (let i = 0; i < pm.quantity; i++) {
+          const numberedName = getNumberedName(pm.name, currentCombatants);
+          const newCombatant: Omit<Combatant, "id"> = {
+            name: numberedName,
+            current_hp: pm.hp,
+            max_hp: pm.hp,
+            temp_hp: 0,
+            ac: pm.ac,
+            spell_save_dc: null,
+            initiative: null,
+            initiative_order: null,
+            conditions: [],
+            ruleset_version: rulesetVersion,
+            is_defeated: false,
+            is_player: false,
+            monster_id: pm.monster_id,
+            dm_notes: "",
+            player_notes: "",
+          };
+          addCombatant(newCombatant);
+          currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
+        }
+      });
+    },
+    [addCombatant, rulesetVersion]
+  );
+
   // Row edit handlers
   const handleRowInitChange = useCallback(
     (id: string, value: number | null) => setInitiative(id, value),
@@ -226,6 +270,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     const missingInit = combatants.filter((c) => c.initiative === null);
     if (missingInit.length > 0) {
       setSubmitError(t("error_missing_init", { count: missingInit.length }));
+      setInvalidInitIds(new Set(missingInit.map((c) => c.id)));
       return;
     }
     setSubmitError(null);
@@ -261,10 +306,11 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         </p>
       </div>
 
-      {/* Toolbar: Ruleset + SRD Search + Campaign Loader */}
+      {/* Toolbar: Ruleset + SRD Search + Campaign Loader + Preset Loader */}
       <div className="flex items-end gap-3 flex-wrap">
         <RulesetSelector value={rulesetVersion} onChange={setRulesetVersion} />
         <CampaignLoader onLoad={handleLoadCampaign} />
+        <PresetLoader onLoad={handleLoadPreset} />
       </div>
 
       {/* SRD Monster Search */}
@@ -300,6 +346,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               dragHandleProps={dragHandleProps}
+              highlightInit={invalidInitIds.has(c.id)}
             />
           )}
         />
@@ -310,6 +357,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
             {t("setup_empty")}
             <br />
             <span className="text-xs">{t("setup_empty_hint")}</span>
+            <br />
+            <span className="text-xs">{t("setup_empty_preset_hint")}</span>
           </div>
         )}
       </div>
@@ -340,29 +389,39 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           onChange={(e) => {
             lastSelectedMonster.current = null;
             setAddRow((f) => ({ ...f, name: e.target.value }));
+            if (addRowErrors.has("name")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("name"); return n; });
           }}
           placeholder={t("setup_col_name")}
-          className={`${inputClass} flex-1 min-w-0`}
+          className={`${inputClass} flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
+          aria-invalid={addRowErrors.has("name") || undefined}
           data-testid="add-row-name"
         />
         <input
           type="number"
           value={addRow.hp}
-          onChange={(e) => setAddRow((f) => ({ ...f, hp: e.target.value }))}
+          onChange={(e) => {
+            setAddRow((f) => ({ ...f, hp: e.target.value }));
+            if (addRowErrors.has("hp")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("hp"); return n; });
+          }}
           onFocus={selectOnFocus}
           placeholder={t("setup_col_hp")}
           min={1}
-          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${addRowErrors.has("hp") ? " field-error" : ""}`}
+          aria-invalid={addRowErrors.has("hp") || undefined}
           data-testid="add-row-hp"
         />
         <input
           type="number"
           value={addRow.ac}
-          onChange={(e) => setAddRow((f) => ({ ...f, ac: e.target.value }))}
+          onChange={(e) => {
+            setAddRow((f) => ({ ...f, ac: e.target.value }));
+            if (addRowErrors.has("ac")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("ac"); return n; });
+          }}
           onFocus={selectOnFocus}
           placeholder={t("setup_col_ac")}
           min={1}
-          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${addRowErrors.has("ac") ? " field-error" : ""}`}
+          aria-invalid={addRowErrors.has("ac") || undefined}
           data-testid="add-row-ac"
         />
         <input

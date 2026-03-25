@@ -9,6 +9,7 @@ import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { Skull, Sparkles, HeartPulse, Package } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -40,9 +41,10 @@ export default async function AppLayout({
         brandHref="/app/dashboard"
         links={[
           { href: "/app/dashboard", label: t("dashboard") },
-          { href: "/app/compendium?tab=monsters", label: <><span aria-hidden="true">🐉</span> {t("monsters")}</> },
-          { href: "/app/compendium?tab=spells", label: <><span aria-hidden="true">✨</span> {t("spells")}</> },
-          { href: "/app/compendium?tab=conditions", label: <><span aria-hidden="true">⚡</span> {t("conditions")}</> },
+          { href: "/app/compendium?tab=monsters", label: <><Skull className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" /> {t("monsters")}</> },
+          { href: "/app/compendium?tab=spells", label: <><Sparkles className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" /> {t("spells")}</> },
+          { href: "/app/compendium?tab=conditions", label: <><HeartPulse className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" /> {t("conditions")}</> },
+          { href: "/app/presets", label: <><Package className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" /> {t("presets")}</> },
           { href: "/app/settings", label: t("settings") },
         ]}
         rightSlot={<><OracleSearchTrigger /><LogoutButton /></>}
