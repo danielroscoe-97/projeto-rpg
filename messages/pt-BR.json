@@ -251,6 +251,7 @@
     "monster_stats": "CR {cr} · HP {hp} · CA {ac}",
     "setup_add": "Adicionar",
     "error_no_combatants": "Adicione pelo menos um combatente antes de iniciar.",
+    "error_add_row_missing": "Preencha Nome, HP e CA para adicionar um combatente.",
     "error_missing_init": "{count} combatente(s) ainda precisam de valores de iniciativa.",
     "error_start_combat": "Falha ao iniciar combate.",
     "combatants_count": "{count} combatente",
@@ -362,7 +363,10 @@
     "sync_reconnecting": "Reconectando...",
     "sync_offline": "Offline — tentará reconectar",
     "you_label": "você",
-    "defeated": "Derrotado"
+    "defeated": "Derrotado",
+    "note_placeholder": "ex: Concentrando em Bênção",
+    "note_send": "Enviar",
+    "note_sent": "Enviado!"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",

@@ -1,51 +1,30 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
-import {
-  persistInitiativeAndStartCombat,
-  persistTurnAdvance,
-  persistHpChange,
-  persistConditions,
-  persistDefeated,
-  persistCombatantStats,
-  persistRulesetVersion,
-  persistNewCombatant,
-  persistRemoveCombatant,
-  persistInitiativeOrder,
-  persistEndEncounter,
-  persistDmNotes,
-  persistPlayerNotes,
-} from "@/lib/supabase/session";
+import { persistInitiativeAndStartCombat } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
-import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
 import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
-import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
-import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
+import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 
 interface CombatSessionClientProps {
-  /** Session ID — null for fresh encounters not yet persisted */
   sessionId: string | null;
-  /** Encounter ID — null for fresh encounters not yet persisted */
   encounterId: string | null;
-  initialCombatants: Combatant[];
+  initialCombatants: import("@/lib/types/combat").Combatant[];
   isActive: boolean;
   roundNumber: number;
   currentTurnIndex: number;
-  /** Ruleset version for SRD search (used in fresh encounter setup) */
   rulesetVersion?: RulesetVersion;
-  /** Campaign ID to link this session to (null = quick combat) */
   campaignId?: string | null;
-  /** Player characters pre-loaded from selected campaign */
   preloadedPlayers?: PlayerCharacter[];
 }
 
@@ -62,20 +41,32 @@ export function CombatSessionClient({
 }: CombatSessionClientProps) {
   const router = useRouter();
   const t = useTranslations("combat");
-  const [turnPending, setTurnPending] = useState(false);
-  const turnPendingRef = useRef(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
 
-  /** Get sessionId for broadcasts — always available during active combat */
-  const getSessionId = (): string => {
-    return useCombatStore.getState().session_id ?? sessionId ?? "";
-  };
-  const { combatants, startCombat, setEncounterId, is_active, setError, advanceTurn } =
+  const { combatants, startCombat, setEncounterId, is_active, setError } =
     useCombatStore();
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
   const round_number = useCombatStore((s) => s.round_number);
+
+  const {
+    turnPending,
+    handleAdvanceTurn,
+    handleApplyDamage,
+    handleApplyHealing,
+    handleSetTempHp,
+    handleToggleCondition,
+    handleSetDefeated,
+    handleRemoveCombatant,
+    handleAddCombatant: addCombatantAction,
+    handleUpdateStats,
+    handleSwitchVersion,
+    handleUpdateDmNotes,
+    handleUpdatePlayerNotes,
+    handleEndEncounter,
+    getSessionId,
+  } = useCombatActions({ sessionId, onNavigate: (path) => router.push(path) });
 
   // Hydrate the store from server-fetched data (skip for fresh encounters).
   useEffect(() => {
@@ -92,7 +83,6 @@ export function CombatSessionClient({
         store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
       }
     } else {
-      // Fresh encounter — just clear for a blank slate
       store.clearEncounter();
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
@@ -100,12 +90,9 @@ export function CombatSessionClient({
   const handleStartCombat = async () => {
     const store = useCombatStore.getState();
     const current = store.combatants;
-
-    // Sort by initiative and assign order
     const sorted = assignInitiativeOrder(sortByInitiative(current));
     store.hydrateCombatants(sorted);
 
-    // If we already have an encounter (resumed session), use the existing persist flow
     if (store.encounter_id) {
       try {
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
@@ -116,7 +103,6 @@ export function CombatSessionClient({
       return;
     }
 
-    // Fresh encounter — create session + encounter + combatants in one shot
     try {
       const { session_id, encounter_id } = await createEncounterWithCombatants(
         sorted,
@@ -124,218 +110,20 @@ export function CombatSessionClient({
         campaignId
       );
       store.setEncounterId(encounter_id, session_id);
-
-      // Mark encounter as active in DB
       await persistInitiativeAndStartCombat(encounter_id, sorted);
       store.startCombat();
-
-      // Update URL for reload resilience (no visible navigation)
       router.replace(`/app/session/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("error_start_combat"));
     }
   };
 
-  const handleAdvanceTurn = async () => {
-    // Synchronous ref guard prevents double-advance from rapid keypresses
-    if (turnPendingRef.current) return;
-    turnPendingRef.current = true;
-    setTurnPending(true);
-
-    const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } =
-      useCombatStore.getState();
-    if (!encounter_id) {
-      turnPendingRef.current = false;
-      setTurnPending(false);
-      return;
-    }
-
-    advanceTurn();
-    const { current_turn_index: nextIdx, round_number: nextRound } =
-      useCombatStore.getState();
-    if (nextIdx === prevIdx && nextRound === prevRound) {
-      turnPendingRef.current = false;
-      setTurnPending(false);
-      return;
-    }
-
-    broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound });
-
-    try {
-      await persistTurnAdvance(encounter_id, nextIdx, nextRound);
-    } catch (err) {
-      useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
-      setError(err instanceof Error ? err.message : t("error_save_turn"));
-    } finally {
-      turnPendingRef.current = false;
-      setTurnPending(false);
-    }
-  };
-
-  // --- HP Management (Story 3-5) ---
-  const handleApplyDamage = useCallback((id: string, amount: number) => {
-    useCombatStore.getState().applyDamage(id, amount);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [getSessionId]);
-
-  const handleApplyHealing = useCallback((id: string, amount: number) => {
-    useCombatStore.getState().applyHealing(id, amount);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [getSessionId]);
-
-  const handleSetTempHp = useCallback((id: string, value: number) => {
-    useCombatStore.getState().setTempHp(id, value);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [getSessionId]);
-
-  // --- Conditions (Story 3-6) ---
-  const handleToggleCondition = useCallback((id: string, condition: string) => {
-    useCombatStore.getState().toggleCondition(id, condition);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:condition_change", combatant_id: id, conditions: c.conditions });
-      persistConditions(id, c.conditions).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [getSessionId]);
-
-  // --- Defeat (Story 3-7) ---
-  const handleSetDefeated = useCallback((id: string, isDefeated: boolean) => {
-    useCombatStore.getState().setDefeated(id, isDefeated);
-    broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
-    persistDefeated(id, isDefeated).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [getSessionId]);
-
-  // --- Remove Combatant (Story 3-7) ---
-  const handleRemoveCombatant = useCallback((id: string) => {
-    const store = useCombatStore.getState();
-    const idx = store.combatants.findIndex((c) => c.id === id);
-    const wasCurrentTurn = idx === store.current_turn_index;
-
-    store.removeCombatant(id);
-
-    // If removed combatant was current turn, advance to adjust
-    if (wasCurrentTurn && store.combatants.length > 0) {
-      // current_turn_index might now point beyond the list; clamp it
-      const newState = useCombatStore.getState();
-      const clampedIdx = Math.min(newState.current_turn_index, newState.combatants.length - 1);
-      if (clampedIdx !== newState.current_turn_index) {
-        newState.hydrateActiveState(clampedIdx, newState.round_number);
-      }
-    }
-
-    // Re-assign initiative order
-    const updated = useCombatStore.getState().combatants;
-    const reordered = assignInitiativeOrder(updated);
-    useCombatStore.getState().hydrateCombatants(reordered);
-
-    broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
-    persistRemoveCombatant(id).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    if (updated.length > 0) {
-      persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, []);
-
-  // --- Add Combatant Mid-Combat (Story 3-7) ---
-  const handleAddCombatant = useCallback((newCombatant: Omit<Combatant, "id">) => {
-    const store = useCombatStore.getState();
-    const existingIds = new Set(store.combatants.map((c) => c.id));
-    store.addCombatant(newCombatant);
-
-    // Re-sort and re-assign initiative order
-    const allCombatants = useCombatStore.getState().combatants;
-    const sorted = assignInitiativeOrder(sortByInitiative(allCombatants));
-    useCombatStore.getState().hydrateCombatants(sorted);
-
-    // Find the newly added combatant by ID (the only one not in the previous snapshot)
-    const added = useCombatStore.getState().combatants.find(
-      (c) => !existingIds.has(c.id)
-    );
-    if (added && store.encounter_id) {
-      broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
-      persistNewCombatant(store.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-      persistInitiativeOrder(
-        useCombatStore.getState().combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
-      ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-
+  const handleAddCombatant = useCallback((newCombatant: Parameters<typeof addCombatantAction>[0]) => {
+    addCombatantAction(newCombatant);
     setShowAddForm(false);
-  }, [getSessionId]);
-
-  // --- Edit Stats (Story 3-8) ---
-  const handleUpdateStats = useCallback((id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
-    useCombatStore.getState().updateCombatantStats(id, stats);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      const dbStats: Record<string, unknown> = {};
-      if (stats.name !== undefined) dbStats.name = stats.name;
-      if (stats.max_hp !== undefined) {
-        dbStats.max_hp = stats.max_hp;
-        dbStats.current_hp = c.current_hp; // might have been capped
-      }
-      if (stats.ac !== undefined) dbStats.ac = stats.ac;
-      if (stats.spell_save_dc !== undefined) dbStats.spell_save_dc = stats.spell_save_dc;
-      broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
-      persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [getSessionId]);
-
-  // --- Version Switch (Story 3-9) ---
-  const handleSwitchVersion = useCallback((id: string, version: RulesetVersion) => {
-    useCombatStore.getState().setRulesetVersion(id, version);
-    broadcastEvent(getSessionId(), { type: "combat:version_switch", combatant_id: id, ruleset_version: version });
-    persistRulesetVersion(id, version).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [getSessionId]);
-
-  // --- Notes (Story 8-6) ---
-  const handleUpdateDmNotes = useCallback((id: string, notes: string) => {
-    useCombatStore.getState().updateDmNotes(id, notes);
-    // DM notes are NEVER broadcast — persist directly
-    persistDmNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, []);
-
-  const handleUpdatePlayerNotes = useCallback((id: string, notes: string) => {
-    useCombatStore.getState().updatePlayerNotes(id, notes);
-    broadcastEvent(getSessionId(), { type: "combat:player_notes_update", combatant_id: id, player_notes: notes });
-    persistPlayerNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [getSessionId]);
-
-  // --- End Encounter (Story 3-10) ---
-  const handleEndEncounter = useCallback(async () => {
-    const { encounter_id } = useCombatStore.getState();
-    if (!encounter_id) return;
-    const sessionId = getSessionId();
-    try {
-      await persistEndEncounter(encounter_id);
-      // Notify players that the session has ended before cleaning up the channel
-      broadcastEvent(sessionId, {
-        type: "session:state_sync",
-        combatants: [],
-        current_turn_index: -1,
-        round_number: 0,
-      });
-      // Expire all player tokens so stale join links become invalid
-      await expireSessionTokens(sessionId);
-      cleanupDmChannel();
-      router.push("/app/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to end encounter.");
-    }
-  }, [router, setError, getSessionId]);
+  }, [addCombatantAction]);
 
   // Keyboard shortcuts for DM combat view (NFR25)
-  // The hook is called unconditionally; `enabled` controls whether listeners attach.
   useCombatKeyboardShortcuts({
     enabled: is_active,
     onNextTurn: handleAdvanceTurn,
@@ -343,7 +131,6 @@ export function CombatSessionClient({
     focusedIndex,
     onFocusChange: (idx) => {
       setFocusedIndex(idx);
-      // Scroll the focused combatant into view
       const el = document.querySelector(`[data-testid="initiative-list"] > :nth-child(${idx + 1})`);
       el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     },

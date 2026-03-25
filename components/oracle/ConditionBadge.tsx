@@ -23,22 +23,39 @@ const CONDITION_COLORS: Record<string, string> = {
 interface ConditionBadgeProps {
   condition: string;
   rulesetVersion?: RulesetVersion;
+  /** When provided, a ✕ button is shown to remove the condition directly. */
+  onRemove?: (condition: string) => void;
 }
 
-export function ConditionBadge({ condition, rulesetVersion = "2014" }: ConditionBadgeProps) {
+export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }: ConditionBadgeProps) {
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const colorClass = CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]";
 
   return (
-    <button
-      type="button"
-      onClick={() => pinCard("condition", condition.toLowerCase(), rulesetVersion)}
-      className={`px-2 py-0.5 rounded-full text-xs text-white font-medium ${colorClass} hover:opacity-80 transition-opacity cursor-pointer`}
-      aria-label={`View ${condition} rules`}
+    <span
+      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs text-white font-medium ${colorClass}`}
       data-testid={`condition-badge-${condition.toLowerCase()}`}
     >
-      {condition}
-    </button>
+      <button
+        type="button"
+        onClick={() => pinCard("condition", condition.toLowerCase(), rulesetVersion)}
+        className="hover:opacity-80 transition-opacity cursor-pointer"
+        aria-label={`View ${condition} rules`}
+      >
+        {condition}
+      </button>
+      {onRemove && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onRemove(condition); }}
+          className="ml-0.5 hover:text-red-300 transition-colors text-white/70 text-[10px] leading-none min-w-[16px] min-h-[16px] flex items-center justify-center"
+          aria-label={`Remove ${condition}`}
+          data-testid={`condition-remove-${condition.toLowerCase()}`}
+        >
+          ✕
+        </button>
+      )}
+    </span>
   );
 }
 

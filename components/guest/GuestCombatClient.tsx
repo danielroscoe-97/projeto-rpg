@@ -107,7 +107,10 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     const name = addRow.name.trim();
     const hp = parseInt(addRow.hp, 10);
     const ac = parseInt(addRow.ac, 10);
-    if (!name || isNaN(hp) || hp < 1 || isNaN(ac) || ac < 1) return;
+    if (!name || isNaN(hp) || hp < 1 || isNaN(ac) || ac < 1) {
+      setSubmitError(t("error_add_row_missing"));
+      return;
+    }
 
     const initVal = addRow.initiative.trim()
       ? parseInt(addRow.initiative, 10)

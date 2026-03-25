@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { linkAnonymousUser } from "@/lib/supabase/session-token";
@@ -92,129 +92,194 @@ export function PlayerJoinClient({
     initAuth();
   }, [tokenId]);
 
+  const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
+  const reconnectBackoffRef = useRef(1000);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Stable ref to createChannel — lets the visibility handler reuse the full channel setup
+  const createChannelRef = useRef<(() => void) | null>(null);
+
+  // Full state fetch from DB — used on reconnect & polling fallback
+  const fetchFullState = useCallback(async (eid: string) => {
+    try {
+      const supabase = supabaseRef.current ?? createClient();
+      const { data: enc } = await supabase
+        .from("encounters")
+        .select("round_number, current_turn_index, is_active")
+        .eq("id", eid)
+        .single();
+      if (enc) {
+        setRound(enc.round_number ?? 1);
+        setTurnIndex(enc.current_turn_index ?? 0);
+        setActive(enc.is_active ?? false);
+      }
+      const { data: rows } = await supabase
+        .from("combatants")
+        .select("id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version")
+        .eq("encounter_id", eid)
+        .order("initiative_order", { ascending: true });
+      if (rows) setCombatants(rows);
+    } catch {
+      // Silent failure — will retry
+    }
+  }, []);
+
   // Subscribe to realtime channel for combat updates
   useEffect(() => {
     if (!authReady || !sessionId) return;
 
     const supabase = createClient();
-    const channel = supabase.channel(`session:${sessionId}`, {
-      config: { broadcast: { self: false } },
-    });
+    supabaseRef.current = supabase;
 
-    channel
-      .on("broadcast", { event: "session:state_sync" }, ({ payload }) => {
-        if (payload.combatants) setCombatants(payload.combatants);
-        if (payload.round_number !== undefined) setRound(payload.round_number);
-        if (payload.current_turn_index !== undefined) setTurnIndex(payload.current_turn_index);
-        if (payload.is_active !== undefined) setActive(payload.is_active);
-      })
-      .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
-        if (payload.current_turn_index !== undefined) setTurnIndex(payload.current_turn_index);
-        if (payload.round_number !== undefined) setRound(payload.round_number);
-      })
-      .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
-        if (payload.combatant_id) {
-          setCombatants((prev) =>
-            prev.map((c) =>
-              c.id === payload.combatant_id
-                ? { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp }
-                : c
-            )
-          );
-        }
-      })
-      .on("broadcast", { event: "combat:condition_change" }, ({ payload }) => {
-        if (payload.combatant_id) {
-          setCombatants((prev) =>
-            prev.map((c) =>
-              c.id === payload.combatant_id
-                ? { ...c, conditions: payload.conditions }
-                : c
-            )
-          );
-        }
-      })
-      .on("broadcast", { event: "combat:defeated_change" }, ({ payload }) => {
-        if (payload.combatant_id) {
-          setCombatants((prev) =>
-            prev.map((c) =>
-              c.id === payload.combatant_id
-                ? { ...c, is_defeated: payload.is_defeated }
-                : c
-            )
-          );
-        }
-      })
-      .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
-        if (payload.combatant) {
-          setCombatants((prev) => [...prev, payload.combatant]);
-        }
-      })
-      .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }) => {
-        if (payload.combatant_id) {
-          setCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
-        }
-      })
-      .on("broadcast", { event: "combat:version_switch" }, ({ payload }) => {
-        if (payload.combatant_id) {
-          setCombatants((prev) =>
-            prev.map((c) =>
-              c.id === payload.combatant_id
-                ? { ...c, ruleset_version: payload.ruleset_version }
-                : c
-            )
-          );
-        }
-      })
-      .on("broadcast", { event: "combat:stats_update" }, ({ payload }) => {
-        if (payload.combatant_id) {
-          setCombatants((prev) =>
-            prev.map((c) => {
-              if (c.id !== payload.combatant_id) return c;
-              const updated = { ...c };
-              if (payload.name !== undefined) updated.name = payload.name;
-              if (payload.max_hp !== undefined) updated.max_hp = payload.max_hp;
-              if (payload.current_hp !== undefined) updated.current_hp = payload.current_hp;
-              if (payload.ac !== undefined) updated.ac = payload.ac;
-              return updated;
-            })
-          );
-        }
-      })
-      .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }) => {
-        if (payload.combatants) {
-          setCombatants(payload.combatants);
-        }
-      })
-      .subscribe((status) => {
-        if (status === "SUBSCRIBED") {
-          setConnectionStatus("connected");
-          disconnectedAtRef.current = null;
-          // Stop polling if active
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-          }
-        } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
-          setConnectionStatus("disconnected");
-          if (!disconnectedAtRef.current) {
-            disconnectedAtRef.current = Date.now();
-          }
-          // Start polling fallback after 3s (NFR9) — track so we can cancel on unmount
-          if (pollFallbackTimerRef.current) clearTimeout(pollFallbackTimerRef.current);
-          pollFallbackTimerRef.current = setTimeout(() => {
-            pollFallbackTimerRef.current = null;
-            if (disconnectedAtRef.current && Date.now() - disconnectedAtRef.current >= 3000 && encounterId) {
-              startPolling(encounterId);
-            }
-          }, 3000);
-        } else {
-          setConnectionStatus("connecting");
-        }
+    function createChannel() {
+      createChannelRef.current = createChannel;
+      const channel = supabase.channel(`session:${sessionId}`, {
+        config: { broadcast: { self: false } },
       });
 
+      channel
+        .on("broadcast", { event: "session:state_sync" }, ({ payload }) => {
+          if (payload.combatants) setCombatants(payload.combatants);
+          if (payload.round_number !== undefined) setRound(payload.round_number);
+          if (payload.current_turn_index !== undefined) setTurnIndex(payload.current_turn_index);
+          if (payload.is_active !== undefined) setActive(payload.is_active);
+        })
+        .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
+          if (payload.current_turn_index !== undefined) setTurnIndex(payload.current_turn_index);
+          if (payload.round_number !== undefined) setRound(payload.round_number);
+        })
+        .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            setCombatants((prev) =>
+              prev.map((c) =>
+                c.id === payload.combatant_id
+                  ? { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp }
+                  : c
+              )
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:condition_change" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            setCombatants((prev) =>
+              prev.map((c) =>
+                c.id === payload.combatant_id
+                  ? { ...c, conditions: payload.conditions }
+                  : c
+              )
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:defeated_change" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            setCombatants((prev) =>
+              prev.map((c) =>
+                c.id === payload.combatant_id
+                  ? { ...c, is_defeated: payload.is_defeated }
+                  : c
+              )
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
+          if (payload.combatant) {
+            setCombatants((prev) => [...prev, payload.combatant]);
+          }
+        })
+        .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            setCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
+          }
+        })
+        .on("broadcast", { event: "combat:version_switch" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            setCombatants((prev) =>
+              prev.map((c) =>
+                c.id === payload.combatant_id
+                  ? { ...c, ruleset_version: payload.ruleset_version }
+                  : c
+              )
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:stats_update" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            setCombatants((prev) =>
+              prev.map((c) => {
+                if (c.id !== payload.combatant_id) return c;
+                const updated = { ...c };
+                if (payload.name !== undefined) updated.name = payload.name;
+                if (payload.max_hp !== undefined) updated.max_hp = payload.max_hp;
+                if (payload.current_hp !== undefined) updated.current_hp = payload.current_hp;
+                if (payload.ac !== undefined) updated.ac = payload.ac;
+                return updated;
+              })
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }) => {
+          if (payload.combatants) {
+            setCombatants(payload.combatants);
+          }
+        })
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            setConnectionStatus("connected");
+            disconnectedAtRef.current = null;
+            reconnectBackoffRef.current = 1000;
+            // Stop polling if active
+            if (pollIntervalRef.current) {
+              clearInterval(pollIntervalRef.current);
+              pollIntervalRef.current = null;
+            }
+            // Fetch full state on reconnect to catch anything missed
+            if (encounterId) fetchFullState(encounterId);
+          } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
+            setConnectionStatus("disconnected");
+            if (!disconnectedAtRef.current) {
+              disconnectedAtRef.current = Date.now();
+            }
+            // Start polling fallback after 3s (NFR9)
+            if (pollFallbackTimerRef.current) clearTimeout(pollFallbackTimerRef.current);
+            pollFallbackTimerRef.current = setTimeout(() => {
+              pollFallbackTimerRef.current = null;
+              if (disconnectedAtRef.current && encounterId) {
+                startPolling(encounterId);
+              }
+            }, 3000);
+
+            // Exponential backoff reconnection — cancel any pending timer to prevent duplicate channels
+            if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+            const delay = Math.min(reconnectBackoffRef.current, 30000);
+            reconnectBackoffRef.current = delay * 2;
+            reconnectTimerRef.current = setTimeout(() => {
+              reconnectTimerRef.current = null;
+              if (channelRef.current) {
+                supabase.removeChannel(channelRef.current);
+                channelRef.current = null;
+              }
+              createChannel();
+            }, delay);
+          } else {
+            setConnectionStatus("connecting");
+          }
+        });
+
+      channelRef.current = channel;
+      return channel;
+    }
+
+    createChannel();
+
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
       if (pollFallbackTimerRef.current) {
         clearTimeout(pollFallbackTimerRef.current);
         pollFallbackTimerRef.current = null;
@@ -224,34 +289,55 @@ export function PlayerJoinClient({
         pollIntervalRef.current = null;
       }
     };
-  }, [authReady, sessionId, encounterId]);
+  }, [authReady, sessionId, encounterId, fetchFullState]);
 
-  // Polling fallback — fetch latest state from DB every 2s (NFR9)
-  const startPolling = (eid: string) => {
-    if (pollIntervalRef.current) return;
-    pollIntervalRef.current = setInterval(async () => {
-      try {
-        const supabase = createClient();
-        const { data: enc } = await supabase
-          .from("encounters")
-          .select("round_number, current_turn_index, is_active")
-          .eq("id", eid)
-          .single();
-        if (enc) {
-          setRound(enc.round_number ?? 1);
-          setTurnIndex(enc.current_turn_index ?? 0);
-          setActive(enc.is_active ?? false);
+  // Visibility change handler — reconnect when phone unlocks / tab regains focus
+  useEffect(() => {
+    if (!authReady || !sessionId) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Phone unlocked or tab re-focused — fetch full state immediately
+        if (encounterId) fetchFullState(encounterId);
+
+        // If realtime is disconnected, force reconnect via the same createChannel function
+        // (which re-attaches all broadcast event listeners — the previous inline version did not)
+        if (disconnectedAtRef.current && supabaseRef.current) {
+          if (channelRef.current) {
+            supabaseRef.current.removeChannel(channelRef.current);
+            channelRef.current = null;
+          }
+          if (reconnectTimerRef.current) {
+            clearTimeout(reconnectTimerRef.current);
+            reconnectTimerRef.current = null;
+          }
+          reconnectBackoffRef.current = 1000;
+          createChannelRef.current?.();
         }
-        const { data: rows } = await supabase
-          .from("combatants")
-          .select("id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version")
-          .eq("encounter_id", eid)
-          .order("initiative_order", { ascending: true });
-        if (rows) setCombatants(rows);
-      } catch {
-        // Silent failure — will retry on next interval
       }
-    }, 2000);
+    };
+
+    // Also handle online/offline events for network loss
+    const handleOnline = () => {
+      if (encounterId) fetchFullState(encounterId);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, [authReady, sessionId, encounterId, fetchFullState]);
+
+  // Polling fallback — fetch latest state from DB (mobile-friendly interval).
+  // Clears any previous interval before starting so second-disconnect restarts correctly.
+  const startPolling = (eid: string) => {
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    const isMobile = typeof navigator !== "undefined" && /Mobi|Android/i.test(navigator.userAgent);
+    const interval = isMobile ? 5000 : 2000;
+    pollIntervalRef.current = setInterval(() => fetchFullState(eid), interval);
   };
 
   if (error) {
@@ -338,6 +424,16 @@ export function PlayerJoinClient({
           combatants={combatants}
           currentTurnIndex={turnIndex}
           rulesetVersion={rulesetVersion}
+          onPlayerNote={(combatantId, note) => {
+            // Broadcast player note to DM via realtime channel
+            if (channelRef.current) {
+              channelRef.current.send({
+                type: "broadcast",
+                event: "player:note",
+                payload: { combatant_id: combatantId, note },
+              });
+            }
+          }}
         />
       </div>
     </div>

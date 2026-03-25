@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
+import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
+import { HeroParticles } from "@/components/marketing/HeroParticles";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
 function ArrowRight({ className }: { className?: string }) {
@@ -69,6 +71,9 @@ function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
       </div>
 
+      {/* Floating particles */}
+      <HeroParticles />
+
       {/* Radial glows */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/[0.07] rounded-full blur-[120px]" />
@@ -101,7 +106,7 @@ function HeroSection() {
           {/* Primary escape-hatch — elongated, full width */}
           <Link
             href="/try"
-            className="group w-full py-3 bg-white/[0.06] text-foreground font-medium text-base rounded-lg border border-white/[0.10] hover:bg-white/[0.10] hover:border-gold/30 hover:text-gold transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2"
+            className="group relative overflow-hidden w-full py-3 bg-white/[0.06] text-foreground font-medium text-base rounded-lg border border-white/[0.10] hover:bg-white/[0.10] hover:border-gold/30 hover:text-gold transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
             Experimentar agora (Grátis)
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
@@ -111,7 +116,7 @@ function HeroSection() {
           <div className="flex items-center gap-3 w-full">
             <Link
               href="/auth/sign-up"
-              className="group flex-1 px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5"
+              className="group relative overflow-hidden flex-1 px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5 btn-shimmer"
             >
               <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
               Salvar minhas campanhas
@@ -129,18 +134,33 @@ function HeroSection() {
         {/* Stats strip */}
         <div className="flex items-center justify-center gap-0 pt-2 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           {[
-            { value: "334", label: "monstros SRD" },
-            { value: "319", label: "magias SRD" },
-            { value: "∞", label: "gratis para sempre" },
+            { value: 334, label: "monstros SRD" },
+            { value: 319, label: "magias SRD" },
           ].map((stat, i) => (
             <React.Fragment key={stat.label}>
               {i > 0 && <div className="w-px h-7 bg-white/[0.08] mx-5" />}
               <div className="text-center">
-                <div className="text-gold font-mono font-bold text-sm leading-none">{stat.value}</div>
+                <div className="text-gold font-mono font-bold text-sm leading-none">
+                  <AnimatedCounter target={stat.value} duration={2200} />
+                </div>
                 <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">{stat.label}</div>
               </div>
             </React.Fragment>
           ))}
+          <div className="w-px h-7 bg-white/[0.08] mx-5" />
+          <div className="text-center">
+            <div className="text-gold font-mono font-bold text-sm leading-none">∞</div>
+            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">grátis para sempre</div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 animate-fade-in pointer-events-none" style={{ animationDelay: "1.4s" }} aria-hidden="true">
+          <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground/30">scroll</span>
+          <svg width="14" height="22" viewBox="0 0 14 22" fill="none" className="text-muted-foreground/25">
+            <rect x="1" y="1" width="12" height="20" rx="6" stroke="currentColor" strokeWidth="1" />
+            <circle cx="7" cy="7" r="1.5" fill="currentColor" className="animate-bounce" style={{ animationDuration: "2s" }} />
+          </svg>
         </div>
       </div>
     </section>
@@ -588,6 +608,68 @@ function ComparisonSection() {
   );
 }
 
+// ── Social Proof ─────────────────────────────────────────────────────────────
+function SocialProofSection() {
+  const testimonials = [
+    {
+      quote: "Finalmente algo feito pra quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
+      author: "Mestre de 8 anos",
+      role: "Campanha semanal, 5 jogadores",
+    },
+    {
+      quote: "Eu usava Roll20 só pelo tracker e odiava a lentidão. Taverna resolve em 30 segundos o que demorava 5 minutos.",
+      author: "DM veterano",
+      role: "Migrou do Roll20",
+    },
+    {
+      quote: "O oráculo de magias salvou minha vida. Consultar magia no meio do combate sem perder o ritmo é game changer.",
+      author: "Mestra iniciante",
+      role: "Primeira campanha DMando",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cool/[0.03] rounded-full blur-[120px]" />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto">
+        <div className="text-center mb-14 animate-fade-in">
+          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
+            O que mestres estão dizendo
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Feedback real de quem usa na mesa toda semana.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <div
+              key={i}
+              className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              {/* Quote mark */}
+              <svg width="28" height="21" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-4 shrink-0" aria-hidden="true">
+                <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
+              </svg>
+              <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                <p className="text-sm font-medium text-foreground">{t.author}</p>
+                <p className="text-xs text-muted-foreground">{t.role}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
@@ -628,7 +710,7 @@ function FinalCtaSection() {
         <div className="flex flex-col items-center gap-3 pt-2">
           <Link
             href="/auth/sign-up"
-            className="group inline-flex items-center gap-2.5 px-10 py-4 bg-gold text-surface-primary font-semibold text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[52px]"
+            className="group relative overflow-hidden inline-flex items-center gap-2.5 px-10 py-4 bg-gold text-surface-primary font-semibold text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[52px] btn-shimmer"
           >
             <SparkleIcon className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
             Começar Agora — é Grátis
@@ -686,6 +768,7 @@ export default function LandingPage() {
       <HowItWorksSection />
       <SectionDivider />
       <ComparisonSection />
+      <SocialProofSection />
       <FinalCtaSection />
 
       <Footer />

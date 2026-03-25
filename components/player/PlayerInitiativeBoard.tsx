@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -18,6 +18,54 @@ interface PlayerCombatant {
   is_player: boolean;
   monster_id: string | null;
   ruleset_version: string | null;
+}
+
+/** Inline note input for players to signal the DM (e.g. "concentrating on Bless") */
+function PlayerNoteInput({ combatantId, onSubmit }: { combatantId: string; onSubmit: (id: string, note: string) => void }) {
+  const t = useTranslations("player");
+  const [value, setValue] = useState("");
+  const [saved, setSaved] = useState(false);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    };
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    if (!value.trim()) return;
+    onSubmit(combatantId, value.trim());
+    setSaved(true);
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    savedTimerRef.current = setTimeout(() => {
+      savedTimerRef.current = null;
+      setSaved(false);
+    }, 2000);
+  }, [combatantId, onSubmit, value]);
+
+  return (
+    <div className="mt-2 flex items-center gap-1.5">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
+        placeholder={t("note_placeholder")}
+        className="flex-1 bg-transparent border border-border rounded px-2 py-1.5 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-gold min-h-[36px]"
+        maxLength={100}
+        data-testid={`player-note-input-${combatantId}`}
+      />
+      <button
+        type="button"
+        onClick={handleSubmit}
+        className="px-2 py-1.5 text-xs font-medium rounded bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[36px]"
+        data-testid={`player-note-send-${combatantId}`}
+      >
+        {saved ? t("note_sent") : t("note_send")}
+      </button>
+    </div>
+  );
 }
 
 function getHpBarColor(current: number, max: number): string {
@@ -40,12 +88,15 @@ interface PlayerInitiativeBoardProps {
   combatants: PlayerCombatant[];
   currentTurnIndex: number;
   rulesetVersion: RulesetVersion;
+  /** Callback when a player edits their own character's note */
+  onPlayerNote?: (combatantId: string, note: string) => void;
 }
 
 export function PlayerInitiativeBoard({
   combatants,
   currentTurnIndex,
   rulesetVersion,
+  onPlayerNote,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
@@ -126,6 +177,13 @@ export function PlayerInitiativeBoard({
                       />
                     ))}
                   </div>
+                )}
+                {/* Player note input — players can signal the DM */}
+                {onPlayerNote && (
+                  <PlayerNoteInput
+                    combatantId={pc.id}
+                    onSubmit={onPlayerNote}
+                  />
                 )}
               </div>
             );

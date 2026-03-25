@@ -147,7 +147,7 @@ export function CombatantSetupRow({
         <button
           type="button"
           onClick={() => pinCard("monster", combatant.monster_id!, combatant.ruleset_version!)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30 opacity-0 group-hover:opacity-100 focus:opacity-100"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30"
           aria-label={`Ver ficha de ${combatant.name}`}
           data-testid={`ver-ficha-setup-${combatant.id}`}
         >
@@ -160,7 +160,7 @@ export function CombatantSetupRow({
       <button
         type="button"
         onClick={() => onRemove(combatant.id)}
-        className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs w-14 flex-shrink-0 text-center opacity-0 group-hover:opacity-100 focus:opacity-100 min-h-[32px]"
+        className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs w-14 flex-shrink-0 text-center min-h-[32px]"
         aria-label={t("setup_remove_aria", { name: combatant.name })}
         data-testid={`setup-remove-${combatant.id}`}
       >

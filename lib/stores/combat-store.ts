@@ -1,9 +1,12 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
+import { shallow } from "zustand/shallow";
 import type { Combatant, EncounterState, CombatActions } from "@/lib/types/combat";
 import {
   sortByInitiative,
   assignInitiativeOrder,
 } from "@/lib/utils/initiative";
+import { saveCombatBackup } from "@/lib/stores/combat-persist";
 
 type CombatStore = EncounterState & CombatActions;
 
@@ -18,7 +21,7 @@ const initialState: EncounterState = {
   error: null,
 };
 
-export const useCombatStore = create<CombatStore>((set) => ({
+export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) => ({
   ...initialState,
 
   addCombatant: (combatant) =>
@@ -169,7 +172,25 @@ export const useCombatStore = create<CombatStore>((set) => ({
         c.id === id ? { ...c, player_notes: notes } : c
       ),
     })),
-}));
+})));
+
+// Auto-persist combat state to localStorage on changes.
+// shallow equality prevents firing when unrelated state slices update.
+useCombatStore.subscribe(
+  (state) => ({
+    encounter_id: state.encounter_id,
+    combatants: state.combatants,
+    round_number: state.round_number,
+    current_turn_index: state.current_turn_index,
+    is_active: state.is_active,
+  }),
+  (slice) => {
+    if (slice.is_active && slice.encounter_id) {
+      saveCombatBackup(useCombatStore.getState());
+    }
+  },
+  { equalityFn: shallow }
+);
 
 /** Auto-number combatants with the same base name.
  *  e.g. adding two "Goblin" monsters produces ["Goblin 1", "Goblin 2"].

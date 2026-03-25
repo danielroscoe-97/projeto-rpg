@@ -43,6 +43,7 @@ export interface CombatantRowProps {
   onSetDefeated?: (id: string, isDefeated: boolean) => void;
   onRemoveCombatant?: (id: string) => void;
   onUpdateStats?: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  onSetInitiative?: (id: string, value: number | null) => void;
   onSwitchVersion?: (id: string, version: RulesetVersion) => void;
   onUpdateDmNotes?: (id: string, notes: string) => void;
   onUpdatePlayerNotes?: (id: string, notes: string) => void;
@@ -63,6 +64,7 @@ export function CombatantRow({
   onSetDefeated,
   onRemoveCombatant,
   onUpdateStats,
+  onSetInitiative,
   onSwitchVersion,
   onUpdateDmNotes,
   onUpdatePlayerNotes,
@@ -78,6 +80,8 @@ export function CombatantRow({
   const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
   const [flash, setFlash] = useState(false);
   const [versionConfirmOpen, setVersionConfirmOpen] = useState(false);
+  const [inlineEditTarget, setInlineEditTarget] = useState<"current" | "max" | "initiative" | null>(null);
+  const [inlineHpValue, setInlineHpValue] = useState("");
   const prevHp = useRef(combatant.current_hp);
 
   // Trigger red flash when current HP decreases
@@ -130,7 +134,9 @@ export function CombatantRow({
     <li
       className={`bg-card border rounded-md overflow-hidden transition-colors ${
         isCurrentTurn ? "border-gold" : "border-border"
-      } ${combatant.is_defeated ? "opacity-50" : ""} ${flash ? "animate-flash-red" : ""}`}
+      } ${combatant.is_defeated ? "opacity-50" : ""} ${flash ? "animate-flash-red" : ""} ${
+        combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : ""
+      }`}
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
       data-testid={`combatant-row-${combatant.id}`}
@@ -159,6 +165,40 @@ export function CombatantRow({
             >
               ▶
             </span>
+          )}
+
+          {/* Initiative badge — clickable to edit inline */}
+          {showActions && (
+            inlineEditTarget === "initiative" ? (
+              <input
+                type="number"
+                value={inlineHpValue}
+                onChange={(e) => setInlineHpValue(e.target.value)}
+                onBlur={() => {
+                  const val = parseInt(inlineHpValue, 10);
+                  if (!isNaN(val)) onSetInitiative?.(combatant.id, Math.min(50, Math.max(-5, val)));
+                  setInlineEditTarget(null);
+                  setInlineHpValue("");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                  if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); }
+                }}
+                className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-gold text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                autoFocus
+                data-testid={`inline-init-input-${combatant.id}`}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setInlineEditTarget("initiative"); setInlineHpValue(combatant.initiative !== null ? String(combatant.initiative) : ""); }}
+                className="flex-shrink-0 px-1.5 py-0.5 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors"
+                title="Editar iniciativa"
+                data-testid={`initiative-badge-${combatant.id}`}
+              >
+                Init. {combatant.initiative ?? "—"}
+              </button>
+            )
           )}
 
           {/* Name — clickable to open pinned card if monster; min-h-[44px] satisfies NFR24 */}
@@ -212,23 +252,63 @@ export function CombatantRow({
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-            <span className="text-muted-foreground text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
-              {combatant.current_hp} / {combatant.max_hp}
-              {/* HP threshold text label — satisfies NFR21 for sighted color-blind users */}
-              {hpThresholdLabel && (
-                <span
-                  className="text-xs font-mono ml-1 text-muted-foreground"
-                  data-testid={`hp-threshold-${combatant.id}`}
-                >
-                  {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
-                </span>
-              )}
-              {hasTempHp && (
-                <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
-                  {t("temp_hp", { value: combatant.temp_hp })}
-                </span>
-              )}
-            </span>
+            {showActions && inlineEditTarget === "current" ? (
+              <form
+                className="flex items-center gap-1"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const val = inlineHpValue.trim();
+                  if (!val) { setInlineEditTarget(null); return; }
+                  const num = parseInt(val, 10);
+                  if (isNaN(num)) { setInlineEditTarget(null); return; }
+                  // Negative = damage, positive = healing
+                  if (num < 0) {
+                    onApplyDamage?.(combatant.id, Math.abs(num));
+                  } else {
+                    onApplyHealing?.(combatant.id, num);
+                  }
+                  setInlineEditTarget(null);
+                  setInlineHpValue("");
+                }}
+              >
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={inlineHpValue}
+                  onChange={(e) => setInlineHpValue(e.target.value)}
+                  onBlur={() => { setInlineEditTarget(null); setInlineHpValue(""); }}
+                  onKeyDown={(e) => { if (e.key === "Escape") { setInlineEditTarget(null); setInlineHpValue(""); } }}
+                  className="w-16 bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs font-mono text-right focus:outline-none focus:ring-1 focus:ring-gold"
+                  autoFocus
+                  placeholder="-5 / +3"
+                  data-testid={`inline-hp-input-${combatant.id}`}
+                />
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { if (showActions) { setInlineEditTarget("current"); setInlineHpValue(""); } }}
+                className={`text-muted-foreground text-xs font-mono ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                data-testid={`hp-display-${combatant.id}`}
+                title={showActions ? t("inline_hp_hint") : undefined}
+              >
+                {combatant.current_hp} / {combatant.max_hp}
+                {/* HP threshold text label — satisfies NFR21 for sighted color-blind users */}
+                {hpThresholdLabel && (
+                  <span
+                    className="text-xs font-mono ml-1 text-muted-foreground"
+                    data-testid={`hp-threshold-${combatant.id}`}
+                  >
+                    {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
+                  </span>
+                )}
+                {hasTempHp && (
+                  <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
+                    {t("temp_hp", { value: combatant.temp_hp })}
+                  </span>
+                )}
+              </button>
+            )}
           </div>
           <div
             className="h-2 bg-white/[0.06] rounded-full overflow-hidden"
@@ -246,7 +326,7 @@ export function CombatantRow({
           </div>
         </div>
 
-        {/* Condition badges */}
+        {/* Condition badges — tappable ✕ to remove directly in active combat */}
         {combatant.conditions.length > 0 && (
           <div
             className="flex flex-wrap gap-1"
@@ -255,7 +335,12 @@ export function CombatantRow({
             data-testid={`conditions-${combatant.id}`}
           >
             {combatant.conditions.map((condition) => (
-              <ConditionBadge key={condition} condition={condition} rulesetVersion={combatant.ruleset_version ?? "2014"} />
+              <ConditionBadge
+                key={condition}
+                condition={condition}
+                rulesetVersion={combatant.ruleset_version ?? "2014"}
+                onRemove={showActions ? (cond) => onToggleCondition?.(combatant.id, cond) : undefined}
+              />
             ))}
           </div>
         )}

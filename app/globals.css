@@ -196,6 +196,101 @@ html {
     }
   }
 
+  /* ─── LP Feature Icon Animations ─── */
+
+  /* SVG line-draw effect */
+  @keyframes draw-line {
+    from { stroke-dashoffset: 120; }
+    to   { stroke-dashoffset: 0; }
+  }
+
+  .draw-line {
+    stroke-dasharray: 120;
+    stroke-dashoffset: 120;
+  }
+
+  .feature-card-visible .draw-line {
+    animation: draw-line 1s ease-out forwards;
+  }
+
+  /* Twinkle on SVG star dots */
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50%      { opacity: 0.8; }
+  }
+
+  .feature-card-visible .twinkle {
+    animation: twinkle 2s ease-in-out infinite;
+  }
+
+  /* Pulse ring for live indicator */
+  @keyframes pulse-ring {
+    0%   { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.6); }
+  }
+
+  .feature-card-visible .pulse-ring {
+    animation: pulse-ring 2s ease-out infinite;
+    transform-origin: center;
+  }
+
+  /* Gradient border glow on hover */
+  @keyframes border-glow {
+    0%, 100% { border-color: rgba(212,168,83,0.15); }
+    50%      { border-color: rgba(212,168,83,0.4); }
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    transform-origin: left;
+    background: linear-gradient(90deg, #D4A853, #E8C87A);
+  }
+
+  /* Magnetic button hover */
+  .btn-magnetic {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Shimmer sweep on CTA */
+  @keyframes shimmer-sweep {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .btn-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,0.15) 50%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    border-radius: inherit;
+  }
+
+  .btn-shimmer:hover::after {
+    animation: shimmer-sweep 0.6s ease-out forwards;
+  }
+
+  /* Section wave divider path animation */
+  @keyframes wave-drift {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .wave-drift {
+    animation: wave-drift 12s linear infinite;
+  }
+
+  /* Comparison table row stagger highlight */
+  @keyframes row-highlight {
+    from { background-color: rgba(212,168,83,0.08); }
+    to   { background-color: transparent; }
+  }
+
   /* Damage flash — subtle red pulse on row */
   @keyframes flash-red {
     0%   { background-color: transparent; }

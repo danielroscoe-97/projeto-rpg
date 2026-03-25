@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { createSessionToken } from "@/lib/supabase/session-token";
+import QRCode from "qrcode";
 
 interface ShareSessionButtonProps {
   sessionId: string;
@@ -15,6 +16,20 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showQr, setShowQr] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Render QR code to canvas when URL is ready and QR panel is open
+  useEffect(() => {
+    if (!joinUrl || !showQr || !canvasRef.current) return;
+    QRCode.toCanvas(canvasRef.current, joinUrl, {
+      width: 200,
+      margin: 2,
+      color: { dark: "#D4A853", light: "#13131E" },
+    }).catch(() => {
+      // silent — the URL text is still available as fallback
+    });
+  }, [joinUrl, showQr]);
 
   const handleGenerateLink = async () => {
     setIsLoading(true);
@@ -22,6 +37,7 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
     try {
       const { joinUrl: url } = await createSessionToken(sessionId);
       setJoinUrl(url);
+      setShowQr(true);
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
@@ -44,7 +60,7 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
   };
 
   return (
-    <div className="flex items-center gap-2" data-testid="share-session">
+    <div className="relative" data-testid="share-session">
       {!joinUrl ? (
         <button
           type="button"
@@ -58,14 +74,15 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
         </button>
       ) : (
         <div className="flex items-center gap-2">
-          <input
-            type="text"
-            readOnly
-            value={joinUrl}
-            className="bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs font-mono w-[220px] truncate"
-            aria-label={t("share_link_label")}
-            data-testid="share-session-url"
-          />
+          <button
+            type="button"
+            onClick={() => setShowQr((v) => !v)}
+            className="px-3 py-2 text-sm font-medium rounded-md bg-gold text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
+            aria-label={t("share_qr_toggle")}
+            data-testid="share-session-qr-toggle"
+          >
+            {t("share_qr_label")}
+          </button>
           <button
             type="button"
             onClick={handleCopy}
@@ -77,8 +94,43 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
           </button>
         </div>
       )}
+
+      {/* QR Code popover */}
+      {showQr && joinUrl && (
+        <div
+          className="absolute top-full right-0 mt-2 z-50 bg-surface-secondary border border-border rounded-lg p-4 shadow-xl min-w-[260px]"
+          data-testid="share-session-qr"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-foreground text-sm font-medium">{t("share_qr_title")}</span>
+            <button
+              type="button"
+              onClick={() => setShowQr(false)}
+              className="text-muted-foreground hover:text-foreground text-sm min-h-[32px] min-w-[32px] flex items-center justify-center"
+              aria-label={tc("close")}
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex justify-center mb-3">
+            <canvas ref={canvasRef} className="rounded-md" data-testid="qr-canvas" />
+          </div>
+          <p className="text-muted-foreground text-xs text-center mb-2">
+            {t("share_qr_hint")}
+          </p>
+          <input
+            type="text"
+            readOnly
+            value={joinUrl}
+            className="bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs font-mono w-full truncate"
+            aria-label={t("share_link_label")}
+            data-testid="share-session-url"
+          />
+        </div>
+      )}
+
       {error && (
-        <span className="text-red-400 text-xs" data-testid="share-session-error">
+        <span className="text-red-400 text-xs mt-1 block" data-testid="share-session-error">
           {error}
         </span>
       )}
