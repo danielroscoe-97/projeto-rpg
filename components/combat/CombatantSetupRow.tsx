@@ -137,11 +137,11 @@ export function CombatantSetupRow({
       <button
         type="button"
         onClick={() => onRemove(combatant.id)}
-        className="text-muted-foreground/40 hover:text-red-400 transition-colors text-sm w-6 h-6 flex items-center justify-center flex-shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs w-14 flex-shrink-0 text-center opacity-0 group-hover:opacity-100 focus:opacity-100 min-h-[32px]"
         aria-label={`Remove ${combatant.name}`}
         data-testid={`setup-remove-${combatant.id}`}
       >
-        ✕
+        Remove
       </button>
     </div>
   );

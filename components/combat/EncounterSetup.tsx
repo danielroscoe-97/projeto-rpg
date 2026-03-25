@@ -306,15 +306,15 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
         )}
       </div>
 
-      {/* Column headers — always visible so add-row columns are identifiable */}
+      {/* Column headers — always visible, aligned with both rows and add-row */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
-        <span className="w-5" /> {/* drag handle spacer */}
-        <span className="w-14 text-center">Init</span>
-        <span className="flex-1">Name</span>
-        <span className="w-16 text-center">HP</span>
-        <span className="w-14 text-center">AC</span>
-        <span className="flex-1">Notes</span>
-        <span className="w-6" /> {/* remove/add btn spacer */}
+        <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
+        <span className="w-14 flex-shrink-0 text-center">Init</span>
+        <span className="flex-1 min-w-0">Name</span>
+        <span className="w-16 flex-shrink-0 text-center">HP</span>
+        <span className="w-14 flex-shrink-0 text-center">AC</span>
+        <span className="flex-1 min-w-0">Notes</span>
+        <span className="w-14 flex-shrink-0" /> {/* remove btn / Add btn spacer */}
       </div>
 
       {/* Combatant list (insertion order, drag-reorderable) */}
@@ -402,7 +402,7 @@ export function EncounterSetup({ onStartCombat }: EncounterSetupProps) {
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="px-3 py-1.5 bg-gold/20 text-gold text-sm font-medium rounded hover:bg-gold/40 transition-colors min-h-[32px] flex-shrink-0"
+          className="w-14 flex-shrink-0 py-1.5 bg-gold/20 text-gold text-sm font-medium rounded hover:bg-gold/40 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           Add
