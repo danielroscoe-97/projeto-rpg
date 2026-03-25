@@ -53,6 +53,8 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [addRowGlow, setAddRowGlow] = useState(false);
+  const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
+  const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
@@ -62,6 +64,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   // Bug #2: Clear stale validation error when combatants change (e.g. initiative filled)
   useEffect(() => {
     if (submitError) setSubmitError(null);
+    if (invalidInitIds.size > 0) setInvalidInitIds(new Set());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combatants]);
 
@@ -108,8 +111,10 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     const name = addRow.name.trim();
     if (!name) {
       setSubmitError(t("error_add_row_name"));
+      setAddRowErrors(new Set(["name"]));
       return;
     }
+    setAddRowErrors(new Set());
     const hp = addRow.hp.trim() ? parseInt(addRow.hp, 10) : 0;
     const ac = addRow.ac.trim() ? parseInt(addRow.ac, 10) : 0;
 
@@ -180,6 +185,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     const missingInit = combatants.filter((c) => c.initiative === null);
     if (missingInit.length > 0) {
       setSubmitError(t("error_missing_init", { count: missingInit.length }));
+      setInvalidInitIds(new Set(missingInit.map((c) => c.id)));
       return;
     }
     setSubmitError(null);
@@ -240,6 +246,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               dragHandleProps={dragHandleProps}
+              highlightInit={invalidInitIds.has(c.id)}
             />
           )}
         />
@@ -277,9 +284,11 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
           onChange={(e) => {
             lastSelectedMonster.current = null;
             setAddRow((f) => ({ ...f, name: e.target.value }));
+            if (addRowErrors.has("name")) setAddRowErrors(new Set());
           }}
           placeholder={t("setup_col_name")}
-          className={`${inputClass} flex-1 min-w-0`}
+          className={`${inputClass} flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
+          aria-invalid={addRowErrors.has("name") || undefined}
           data-testid="add-row-name"
         />
         <input
