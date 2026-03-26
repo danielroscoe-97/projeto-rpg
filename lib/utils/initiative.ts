@@ -84,3 +84,39 @@ export function detectTies(combatants: Combatant[]): Set<number> {
 export function assignInitiativeOrder(combatants: Combatant[]): Combatant[] {
   return combatants.map((c, index) => ({ ...c, initiative_order: index }));
 }
+
+/**
+ * After a drag-and-drop reorder, recalculate the moved combatant's initiative
+ * so it fits its new position in descending order.
+ *
+ * @param reordered  - the full array after arrayMove (new visual order)
+ * @param movedId    - the id of the combatant that was dragged
+ * @returns a new array with the moved combatant's initiative adjusted
+ */
+export function adjustInitiativeAfterReorder(
+  reordered: Combatant[],
+  movedId: string
+): Combatant[] {
+  const idx = reordered.findIndex((c) => c.id === movedId);
+  if (idx === -1) return reordered;
+
+  const above = idx > 0 ? reordered[idx - 1] : null;
+  const below = idx < reordered.length - 1 ? reordered[idx + 1] : null;
+
+  // List is descending: position 0 = highest initiative.
+  // The moved combatant must fit between its neighbors.
+  let newInit: number;
+  if (!above && below?.initiative !== null && below) {
+    // Moved to top — must be higher than the one below
+    newInit = below.initiative! + 1;
+  } else if (above?.initiative !== null && above) {
+    // Has a neighbor above — place just below it
+    newInit = above.initiative! - 1;
+  } else {
+    return reordered;
+  }
+
+  return reordered.map((c) =>
+    c.id === movedId ? { ...c, initiative: newInit } : c
+  );
+}

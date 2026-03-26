@@ -2,6 +2,13 @@
 // Pure dice-rolling engine
 // ---------------------------------------------------------------------------
 
+export type RollMode =
+  | "normal"
+  | "advantage"
+  | "disadvantage"
+  | "critical"
+  | "resistance";
+
 export interface DieResult {
   sides: number;
   value: number;
@@ -22,6 +29,12 @@ export interface RollResult {
   isNat1: boolean;
   /** Whether the d20 rolled a natural 20 */
   isNat20: boolean;
+  /** Roll modifier mode */
+  mode: RollMode;
+  /** Discarded d20 for advantage/disadvantage */
+  discardedDice: DieResult[];
+  /** Pre-halved total for resistance mode */
+  resistanceTotal?: number;
 }
 
 /**
@@ -62,31 +75,90 @@ function rollDie(sides: number): number {
  *
  * @param notation - e.g. "2d6+5", "1d20+7", "4d6"
  * @param label - contextual label for the roll
+ * @param mode - optional modifier: advantage/disadvantage (d20) or critical/resistance (damage)
  */
 const MAX_DICE = 100;
 
-export function roll(notation: string, label = ""): RollResult {
+export function roll(
+  notation: string,
+  label = "",
+  mode: RollMode = "normal",
+): RollResult {
   const { count, sides, modifier } = parseNotation(notation);
 
-  const safeCount = Math.min(count, MAX_DICE);
+  const isD20 = count === 1 && sides === 20;
+  const discardedDice: DieResult[] = [];
+  let effectiveMode = mode;
+
+  // Validate mode compatibility — silently fall back to normal if incompatible
+  if ((mode === "advantage" || mode === "disadvantage") && !isD20) {
+    effectiveMode = "normal";
+  }
+  if ((mode === "critical" || mode === "resistance") && isD20) {
+    effectiveMode = "normal";
+  }
+
+  // Determine actual dice count to roll
+  let actualCount = Math.min(count, MAX_DICE);
+  if (effectiveMode === "critical") {
+    actualCount = Math.min(count * 2, MAX_DICE);
+  }
+
+  // For advantage/disadvantage, roll 2d20
+  if (effectiveMode === "advantage" || effectiveMode === "disadvantage") {
+    const die1: DieResult = { sides: 20, value: rollDie(20) };
+    const die2: DieResult = { sides: 20, value: rollDie(20) };
+
+    let kept: DieResult;
+    let discarded: DieResult;
+    if (effectiveMode === "advantage") {
+      kept = die1.value >= die2.value ? die1 : die2;
+      discarded = die1.value >= die2.value ? die2 : die1;
+    } else {
+      kept = die1.value <= die2.value ? die1 : die2;
+      discarded = die1.value <= die2.value ? die2 : die1;
+    }
+
+    discardedDice.push(discarded);
+    const total = kept.value + modifier;
+
+    return {
+      notation,
+      label,
+      dice: [kept],
+      modifier,
+      total,
+      isNat1: kept.value === 1,
+      isNat20: kept.value === 20,
+      mode: effectiveMode,
+      discardedDice,
+    };
+  }
+
+  // Standard roll (normal, critical, resistance)
   const dice: DieResult[] = [];
-  for (let i = 0; i < safeCount; i++) {
+  for (let i = 0; i < actualCount; i++) {
     dice.push({ sides, value: rollDie(sides) });
   }
 
   const diceTotal = dice.reduce((sum, d) => sum + d.value, 0);
   const total = diceTotal + modifier;
 
-  // Nat 1/20 only applies to single d20 rolls
-  const isD20 = safeCount === 1 && sides === 20;
-
-  return {
+  const result: RollResult = {
     notation,
     label,
     dice,
     modifier,
     total,
-    isNat1: isD20 && dice[0].value === 1,
-    isNat20: isD20 && dice[0].value === 20,
+    isNat1: isD20 && dice[0]?.value === 1,
+    isNat20: isD20 && dice[0]?.value === 20,
+    mode: effectiveMode,
+    discardedDice,
   };
+
+  if (effectiveMode === "resistance") {
+    result.resistanceTotal = Math.floor(total / 2);
+  }
+
+  return result;
 }

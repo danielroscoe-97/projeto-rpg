@@ -23,7 +23,7 @@ import type { Combatant } from "@/lib/types/combat";
 
 interface SortableCombatantListProps {
   combatants: Combatant[];
-  onReorder: (newOrder: Combatant[]) => void;
+  onReorder: (newOrder: Combatant[], movedId?: string) => void;
   renderItem: (combatant: Combatant, dragHandleProps: Record<string, unknown>) => React.ReactNode;
 }
 
@@ -57,7 +57,7 @@ export function SortableCombatantList({
       if (oldIndex === -1 || newIndex === -1) return;
 
       const newOrder = arrayMove(combatants, oldIndex, newIndex);
-      onReorder(newOrder);
+      onReorder(newOrder, String(active.id));
     },
     [combatants, onReorder]
   );

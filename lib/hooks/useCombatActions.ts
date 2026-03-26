@@ -19,7 +19,7 @@ import {
 } from "@/lib/supabase/session";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
-import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
+import { assignInitiativeOrder, sortByInitiative, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -200,11 +200,11 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     persistPlayerNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError]);
 
-  const handleReorderCombatants = useCallback((newOrder: Combatant[]) => {
+  const handleReorderCombatants = useCallback((newOrder: Combatant[], movedId?: string) => {
     const store = useCombatStore.getState();
-    // Track which combatant currently holds the turn so the index follows them
     const currentCombatant = store.combatants[store.current_turn_index];
-    store.reorderCombatants(newOrder);
+    const adjusted = movedId ? adjustInitiativeAfterReorder(newOrder, movedId) : newOrder;
+    store.reorderCombatants(adjusted);
     if (currentCombatant) {
       const newIdx = useCombatStore.getState().combatants.findIndex((c) => c.id === currentCombatant.id);
       if (newIdx !== -1 && newIdx !== store.current_turn_index) {
@@ -214,7 +214,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const reordered = useCombatStore.getState().combatants;
     broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: reordered });
     persistInitiativeOrder(
-      reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+      reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
     ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError]);
 

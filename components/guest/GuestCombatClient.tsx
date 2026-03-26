@@ -11,7 +11,7 @@ import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant } from "@/lib/utils/initiative";
+import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
@@ -502,10 +502,11 @@ export function GuestCombatClient() {
     [updateCombatantStats]
   );
   const handleReorderCombatants = useCallback(
-    (newOrder: Combatant[]) => {
+    (newOrder: Combatant[], movedId?: string) => {
       const store = useGuestCombatStore.getState();
       const currentCombatant = store.combatants[store.currentTurnIndex];
-      store.reorderCombatants(newOrder);
+      const adjusted = movedId ? adjustInitiativeAfterReorder(newOrder, movedId) : newOrder;
+      store.reorderCombatants(adjusted);
       if (currentCombatant) {
         const newIdx = useGuestCombatStore.getState().combatants.findIndex((c) => c.id === currentCombatant.id);
         if (newIdx !== -1 && newIdx !== store.currentTurnIndex) {

@@ -157,16 +157,15 @@ export async function persistRemoveCombatant(
 
 /** Persists initiative_order for all combatants (used after mid-combat reorder). */
 export async function persistInitiativeOrder(
-  combatants: { id: string; initiative_order: number | null }[]
+  combatants: { id: string; initiative_order: number | null; initiative?: number | null }[]
 ): Promise<void> {
   const supabase = createClient();
   await Promise.all(
-    combatants.map((c) =>
-      supabase
-        .from("combatants")
-        .update({ initiative_order: c.initiative_order })
-        .eq("id", c.id)
-    )
+    combatants.map((c) => {
+      const fields: Record<string, unknown> = { initiative_order: c.initiative_order };
+      if (c.initiative !== undefined) fields.initiative = c.initiative;
+      return supabase.from("combatants").update(fields).eq("id", c.id);
+    })
   );
 }
 
