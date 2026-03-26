@@ -6,6 +6,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
+import { Button } from "@/components/ui/button";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
 function ArrowRight({ className }: { className?: string }) {
@@ -647,6 +648,18 @@ function HowItWorksSection() {
             </div>
           ))}
         </div>
+
+        {/* CTA after steps */}
+        <div className="text-center mt-12">
+          <Button variant="gold" size="lg" asChild>
+            <Link href="/try">
+              Começar Agora — é Grátis
+            </Link>
+          </Button>
+          <p className="text-muted-foreground text-sm mt-3">
+            Sem cadastro necessário
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -954,7 +967,7 @@ export default function LandingPage() {
               className="group bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center gap-1.5 text-sm hover:shadow-gold-glow hover:-translate-y-[1px] active:translate-y-0 transition-all duration-[200ms]"
             >
               <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-              Criar Conta
+              Começar Grátis
             </Link>
           </>
         }

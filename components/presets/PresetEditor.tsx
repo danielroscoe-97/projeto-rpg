@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Trash2, ArrowLeft } from "lucide-react";
+import { Trash2, ArrowLeft, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
@@ -83,14 +84,15 @@ export function PresetEditor({ preset, onSave, onCancel }: PresetEditorProps) {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5">
       {/* Back button */}
-      <button
-        type="button"
+      <Button
+        variant="link"
+        size="sm"
         onClick={onCancel}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="text-muted-foreground hover:text-foreground p-0 h-auto"
       >
         <ArrowLeft className="w-4 h-4" />
         {t("back_to_list")}
-      </button>
+      </Button>
 
       <h2 className="text-xl font-semibold text-foreground">
         {preset ? t("edit_title") : t("create_title")}
@@ -155,13 +157,14 @@ export function PresetEditor({ preset, onSave, onCancel }: PresetEditorProps) {
                 />
                 <span className="w-14 text-center text-xs text-muted-foreground font-mono">{m.hp}</span>
                 <span className="w-14 text-center text-xs text-muted-foreground font-mono">{m.ac}</span>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleRemoveMonster(index)}
-                  className="w-8 flex items-center justify-center p-1 text-muted-foreground hover:text-red-400 transition-colors"
+                  className="w-8 h-8 text-muted-foreground hover:text-red-400"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                </Button>
               </div>
             ))}
           </div>
@@ -175,21 +178,28 @@ export function PresetEditor({ preset, onSave, onCancel }: PresetEditorProps) {
 
       {/* Actions */}
       <div className="flex items-center justify-end gap-3 pt-2">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={onCancel}
-          className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[40px]"
+          className="text-muted-foreground hover:text-foreground min-h-[40px]"
         >
           {t("cancel")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="gold"
           onClick={handleSubmit}
           disabled={isSaving}
-          className="px-5 py-2 bg-gold text-surface-primary font-medium text-sm rounded-md transition-all duration-[250ms] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          className="min-h-[44px]"
         >
-          {isSaving ? t("saving") : preset ? t("save_changes") : t("create_preset_btn")}
-        </button>
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
+              {t("saving")}
+            </>
+          ) : (
+            preset ? t("save_changes") : t("create_preset_btn")
+          )}
+        </Button>
       </div>
     </div>
   );

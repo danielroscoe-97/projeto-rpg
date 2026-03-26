@@ -345,15 +345,15 @@ export function CommandPalette() {
           {/* Footer hints */}
           <div className="border-t border-white/[0.08] px-4 py-2 flex items-center gap-4 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 bg-white/[0.06] rounded text-[10px] font-mono">↑↓</kbd>
+              <kbd className="px-1 py-0.5 bg-gold/10 text-gold/70 rounded text-[10px] font-mono">↑↓</kbd>
               {t("hint_navigate")}
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 bg-white/[0.06] rounded text-[10px] font-mono">↵</kbd>
+              <kbd className="px-1 py-0.5 bg-gold/10 text-gold/70 rounded text-[10px] font-mono">↵</kbd>
               {t("hint_select")}
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 bg-white/[0.06] rounded text-[10px] font-mono">esc</kbd>
+              <kbd className="px-1 py-0.5 bg-gold/10 text-gold/70 rounded text-[10px] font-mono">esc</kbd>
               {t("hint_close")}
             </span>
           </div>

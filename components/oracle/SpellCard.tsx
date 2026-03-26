@@ -1,6 +1,7 @@
 "use client";
 
 import type { SrdSpell } from "@/lib/srd/srd-loader";
+import { LinkedText } from "@/components/oracle/LinkedText";
 import "@/styles/stat-card-5e.css";
 
 export interface SpellCardProps {
@@ -103,7 +104,7 @@ export function SpellCard({
         <div className="trait-block" data-testid="spell-description">
           {spell.description.split("\n\n").map((paragraph, i) => (
             <p key={i} className="trait-desc" style={{ marginBottom: "0.5em" }}>
-              {paragraph}
+              <LinkedText text={paragraph} rulesetVersion={spell.ruleset_version} />
             </p>
           ))}
         </div>
@@ -113,7 +114,9 @@ export function SpellCard({
           <>
             <div className="trait-block" data-testid="spell-higher-levels">
               <span className="trait-name">At Higher Levels. </span>
-              <span className="trait-desc">{spell.higher_levels}</span>
+              <span className="trait-desc">
+                <LinkedText text={spell.higher_levels} rulesetVersion={spell.ruleset_version} />
+              </span>
             </div>
           </>
         )}

@@ -20,7 +20,7 @@
     "dash": "—"
   },
   "nav": {
-    "brand": "RPG Tracker",
+    "brand": "Taverna do Mestre",
     "dashboard": "Dashboard",
     "compendium": "Compendium",
     "monsters": "Monsters",
@@ -56,6 +56,7 @@
     "signup_description": "Create a new account",
     "repeat_password": "Repeat Password",
     "passwords_mismatch": "Passwords do not match",
+    "password_min_chars": "Min. 6 characters",
     "signup_submit": "Sign up",
     "signup_submitting": "Creating an account...",
     "have_account": "Already have an account?",
@@ -591,7 +592,20 @@
     "upsell_data_preserved": "Your combat data will be preserved after signing up.",
     "upsell_cta": "Create My Free Account",
     "upsell_dismiss": "I'll decide later",
-    "share_upsell_cta": "Share with players"
+    "share_upsell_cta": "Share with players",
+    "upsell_title_save": "Save your progress",
+    "upsell_description_save": "Create your account to save encounters, resume combats later, and never lose data again.",
+    "upsell_title_share": "Share with your players",
+    "upsell_description_share": "Create your account to generate session links and let your players follow combat in real time.",
+    "import_title": "Encounter found!",
+    "import_description": "We found a saved encounter from guest mode. Would you like to import it?",
+    "import_preview": "Encounter with {count} combatants, round {round}",
+    "import_button": "Import",
+    "import_discard": "Discard",
+    "footer_enjoyed": "Enjoying the Tavern?",
+    "footer_create_account": "Create your account and save your campaigns →",
+    "save_requires_account": "Save (requires account)",
+    "share_requires_account": "Share (requires account)"
   },
   "presets": {
     "title": "Encounter Presets",
@@ -649,6 +663,14 @@
     "hint_close": "close",
     "trigger_aria": "Search"
   },
+  "dice": {
+    "history_title": "Roll History",
+    "history_new": "new",
+    "clear_tooltip": "Clear history",
+    "clear_button": "Clear",
+    "close_tooltip": "Close history",
+    "empty_message": "No rolls yet."
+  },
   "landing": {
     "social_proof_heading": "Used by DMs across Brazil",
     "social_proof_subheading": "Real feedback from weekly table sessions.",
@@ -657,6 +679,9 @@
     "testimonial_2_quote": "Combat flows much faster now. I set up the encounter in 1 minute.",
     "testimonial_2_author": "Veteran DM",
     "testimonial_3_quote": "The spell oracle saved my life mid-combat.",
-    "testimonial_3_author": "New DM"
+    "testimonial_3_author": "New DM",
+    "how_it_works_cta": "Start Now — It's Free",
+    "no_account_needed": "No account needed",
+    "cta_primary": "Start Free"
   }
 }

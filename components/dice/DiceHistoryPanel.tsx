@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   useDiceHistoryStore,
   initDiceHistoryListener,
@@ -14,6 +15,8 @@ import type { RollResult } from "@/lib/dice/roll";
 // ---------------------------------------------------------------------------
 
 export function DiceHistoryPanel() {
+  const t = useTranslations("dice");
+  const locale = useLocale();
   const { entries, isOpen, unreadCount, togglePanel, clear, markRead } =
     useDiceHistoryStore();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -44,8 +47,8 @@ export function DiceHistoryPanel() {
         type="button"
         className="dice-history-pill"
         onClick={togglePanel}
-        title="Histórico de rolls"
-        aria-label={`Histórico de rolls${unreadCount > 0 ? ` (${unreadCount} novos)` : ""}`}
+        title={t("history_title")}
+        aria-label={`${t("history_title")}${unreadCount > 0 ? ` (${unreadCount} ${t("history_new")})` : ""}`}
       >
         <svg
           width="16"
@@ -75,24 +78,24 @@ export function DiceHistoryPanel() {
   return (
     <div className="dice-history-panel">
       <div className="dice-history-header">
-        <span className="dice-history-title">Histórico de Rolls</span>
+        <span className="dice-history-title">{t("history_title")}</span>
         <div className="dice-history-actions">
           {entries.length > 0 && (
             <button
               type="button"
               className="dice-history-clear"
               onClick={clear}
-              title="Limpar histórico"
+              title={t("clear_tooltip")}
             >
-              Limpar
+              {t("clear_button")}
             </button>
           )}
           <button
             type="button"
             className="dice-history-close"
             onClick={togglePanel}
-            title="Fechar histórico"
-            aria-label="Fechar histórico"
+            title={t("close_tooltip")}
+            aria-label={t("close_tooltip")}
           >
             ✕
           </button>
@@ -101,10 +104,10 @@ export function DiceHistoryPanel() {
 
       <div className="dice-history-scroll" ref={scrollRef}>
         {entries.length === 0 ? (
-          <div className="dice-history-empty">Nenhum roll ainda.</div>
+          <div className="dice-history-empty">{t("empty_message")}</div>
         ) : (
           entries.map((entry) => (
-            <HistoryEntryRow key={entry.id} entry={entry} />
+            <HistoryEntryRow key={entry.id} entry={entry} locale={locale} />
           ))
         )}
       </div>
@@ -116,9 +119,9 @@ export function DiceHistoryPanel() {
 // Individual history entry
 // ---------------------------------------------------------------------------
 
-function HistoryEntryRow({ entry }: { entry: HistoryEntry }) {
+function HistoryEntryRow({ entry, locale }: { entry: HistoryEntry; locale: string }) {
   const { result, timestamp } = entry;
-  const time = new Date(timestamp).toLocaleTimeString("pt-BR", {
+  const time = new Date(timestamp).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",

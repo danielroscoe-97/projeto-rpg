@@ -201,6 +201,41 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
   )
 );
 
+/** Returns guest encounter data from sessionStorage if it exists. */
+export function getGuestEncounterData(): {
+  combatants: Combatant[];
+  roundNumber: number;
+  currentTurnIndex: number;
+  phase: GuestCombatPhase;
+} | null {
+  try {
+    const raw = typeof window !== "undefined"
+      ? sessionStorage.getItem("guest-combat-v1")
+      : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const state = parsed?.state;
+    if (!state?.combatants?.length) return null;
+    return {
+      combatants: state.combatants,
+      roundNumber: state.roundNumber ?? 1,
+      currentTurnIndex: state.currentTurnIndex ?? 0,
+      phase: state.phase ?? "setup",
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Clears guest encounter data from sessionStorage. */
+export function clearGuestEncounterData() {
+  try {
+    sessionStorage.removeItem("guest-combat-v1");
+  } catch {
+    // storage unavailable
+  }
+}
+
 /** Auto-number combatants with the same base name.
  *  e.g. adding two "Goblin" monsters produces ["Goblin 1", "Goblin 2"].
  */

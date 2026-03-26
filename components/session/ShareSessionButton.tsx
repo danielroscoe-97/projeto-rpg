@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { createSessionToken } from "@/lib/supabase/session-token";
+import { Button } from "@/components/ui/button";
 import QRCode from "qrcode";
 
 interface ShareSessionButtonProps {
@@ -62,36 +63,39 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
   return (
     <div className="relative" data-testid="share-session">
       {!joinUrl ? (
-        <button
-          type="button"
+        <Button
+          variant="gold"
+          size="sm"
           onClick={handleGenerateLink}
           disabled={isLoading}
-          className="px-3 py-2 text-sm font-medium rounded-md bg-gold text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[44px]"
+          className="min-h-[44px]"
           aria-label={t("share_button")}
           data-testid="share-session-generate"
         >
           {isLoading ? t("share_generating") : t("share_button")}
-        </button>
+        </Button>
       ) : (
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <Button
+            variant="gold"
+            size="sm"
             onClick={() => setShowQr((v) => !v)}
-            className="px-3 py-2 text-sm font-medium rounded-md bg-gold text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
+            className="min-h-[44px]"
             aria-label={t("share_qr_toggle")}
             data-testid="share-session-qr-toggle"
           >
             {t("share_qr_label")}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleCopy}
-            className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
+            className="min-h-[44px] bg-white/[0.06] hover:bg-white/[0.1]"
             aria-label={t("share_copy_aria")}
             data-testid="share-session-copy"
           >
             {copied ? tc("copied") : tc("copy")}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -103,14 +107,15 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-foreground text-sm font-medium">{t("share_qr_title")}</span>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setShowQr(false)}
-              className="text-muted-foreground hover:text-foreground text-sm min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className="text-muted-foreground hover:text-foreground h-8 w-8"
               aria-label={tc("close")}
             >
               ✕
-            </button>
+            </Button>
           </div>
           <div className="flex justify-center mb-3">
             <canvas ref={canvasRef} className="rounded-md" data-testid="qr-canvas" />

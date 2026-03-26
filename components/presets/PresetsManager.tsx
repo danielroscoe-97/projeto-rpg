@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, Trash2, Pencil, Copy } from "lucide-react";
+import { Plus, Trash2, Pencil, Copy, Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PresetEditor } from "@/components/presets/PresetEditor";
 import { createPreset, updatePreset, deletePreset } from "@/lib/supabase/presets";
 import type { PresetRow } from "@/lib/supabase/presets";
@@ -95,14 +96,14 @@ export function PresetsManager({ initialPresets, userId }: PresetsManagerProps) 
   return (
     <div className="space-y-4">
       {/* Create button */}
-      <button
-        type="button"
+      <Button
+        variant="gold"
         onClick={() => setIsCreating(true)}
-        className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm shadow-card hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px]"
+        className="min-h-[44px]"
       >
         <Plus className="w-4 h-4" />
         {t("new_preset")}
-      </button>
+      </Button>
 
       {error && (
         <p className="text-red-400 text-sm" role="alert">{error}</p>
@@ -110,8 +111,12 @@ export function PresetsManager({ initialPresets, userId }: PresetsManagerProps) 
 
       {/* Preset cards */}
       {presets.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground text-sm">
-          {t("empty")}
+        <div className="text-center py-12">
+          <Package className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-muted-foreground text-sm mb-4">{t("empty")}</p>
+          <Button variant="gold" size="sm" onClick={() => setIsCreating(true)}>
+            {t("new_preset")}
+          </Button>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -128,30 +133,33 @@ export function PresetsManager({ initialPresets, userId }: PresetsManagerProps) 
                   </p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setEditingPreset(preset)}
-                    className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     title={t("edit")}
                   >
                     <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => handleDuplicate(preset)}
-                    className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     title={t("duplicate")}
                   >
                     <Copy className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setDeleteConfirmId(preset.id)}
-                    className="p-1.5 text-muted-foreground hover:text-red-400 transition-colors rounded"
+                    className="h-7 w-7 text-muted-foreground hover:text-red-400"
                     title={t("delete")}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -178,20 +186,20 @@ export function PresetsManager({ initialPresets, userId }: PresetsManagerProps) 
               {deleteConfirmId === preset.id && (
                 <div className="flex items-center gap-2 pt-2 border-t border-border">
                   <span className="text-xs text-red-400 flex-1">{t("delete_confirm")}</span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="destructive"
+                    size="sm"
                     onClick={() => handleDelete(preset.id)}
-                    className="px-2.5 py-1 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-500 transition-colors"
                   >
                     {t("delete_yes")}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setDeleteConfirmId(null)}
-                    className="px-2.5 py-1 text-xs font-medium bg-white/10 text-foreground rounded hover:bg-white/15 transition-colors"
                   >
                     {t("delete_no")}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

@@ -57,6 +57,7 @@
     "signup_description": "Criar uma nova conta",
     "repeat_password": "Repetir Senha",
     "passwords_mismatch": "As senhas não correspondem",
+    "password_min_chars": "Min. 6 caracteres",
     "signup_submit": "Criar Conta",
     "signup_submitting": "Criando conta...",
     "have_account": "Já tem uma conta?",
@@ -594,7 +595,20 @@
     "upsell_data_preserved": "Seus dados de combate serão preservados após criar conta.",
     "upsell_cta": "Criar Minha Conta Grátis",
     "upsell_dismiss": "Vou decidir mais tarde",
-    "share_upsell_cta": "Compartilhar com jogadores"
+    "share_upsell_cta": "Compartilhar com jogadores",
+    "upsell_title_save": "Salve seu progresso",
+    "upsell_description_save": "Crie sua conta para salvar encontros, retomar combates depois e nunca mais perder dados.",
+    "upsell_title_share": "Compartilhe com seus jogadores",
+    "upsell_description_share": "Crie sua conta para gerar links de sessão e deixar seus jogadores acompanharem o combate em tempo real.",
+    "import_title": "Encontro encontrado!",
+    "import_description": "Encontramos um encontro salvo do modo visitante. Deseja importá-lo?",
+    "import_preview": "Encontro com {count} combatentes, rodada {round}",
+    "import_button": "Importar",
+    "import_discard": "Descartar",
+    "footer_enjoyed": "Curtiu a Taverna?",
+    "footer_create_account": "Crie sua conta e salve suas campanhas →",
+    "save_requires_account": "Salvar (requer conta)",
+    "share_requires_account": "Compartilhar (requer conta)"
   },
   "presets": {
     "title": "Encontros Preparados",
@@ -652,6 +666,14 @@
     "hint_close": "fechar",
     "trigger_aria": "Busca"
   },
+  "dice": {
+    "history_title": "Histórico de Rolls",
+    "history_new": "novos",
+    "clear_tooltip": "Limpar histórico",
+    "clear_button": "Limpar",
+    "close_tooltip": "Fechar histórico",
+    "empty_message": "Nenhum roll ainda."
+  },
   "landing": {
     "social_proof_heading": "Usado por DMs em todo o Brasil",
     "social_proof_subheading": "Feedback de quem usa na mesa toda semana.",
@@ -660,6 +682,9 @@
     "testimonial_2_quote": "O combate flui muito mais rápido agora. Montei o encontro em 1 minuto.",
     "testimonial_2_author": "DM veterano",
     "testimonial_3_quote": "O oráculo de magias salvou minha vida no meio do combate.",
-    "testimonial_3_author": "Mestra iniciante"
+    "testimonial_3_author": "Mestra iniciante",
+    "how_it_works_cta": "Começar Agora — é Grátis",
+    "no_account_needed": "Sem cadastro necessário",
+    "cta_primary": "Começar Grátis"
   }
 }

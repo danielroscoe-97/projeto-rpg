@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -730,7 +731,14 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               disabled={state.isSubmitting}
               variant="gold"
             >
-              {state.isSubmitting ? t("creating") : t("create_button")}
+              {state.isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("creating")}
+                </>
+              ) : (
+                t("create_button")
+              )}
             </Button>
           </>
         )}

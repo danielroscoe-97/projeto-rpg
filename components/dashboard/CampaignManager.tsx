@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -210,7 +211,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
             disabled={!newName.trim() || isLoading}
             onClick={handleCreate}
           >
-            {tc("save")}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {tc("saving")}
+              </>
+            ) : (
+              tc("save")
+            )}
           </Button>
           <Button
             size="sm"
@@ -268,7 +276,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                   disabled={!editName.trim() || isLoading}
                   onClick={handleUpdate}
                 >
-                  {tc("save")}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {tc("saving")}
+                    </>
+                  ) : (
+                    tc("save")
+                  )}
                 </Button>
                 <Button
                   size="sm"
@@ -293,13 +308,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Link
-                    href={`/app/campaigns/${campaign.id}`}
-                    aria-label={`Manage players for ${campaign.name}`}
-                    className="inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-2 text-gold hover:bg-gold/10 transition-colors"
-                  >
-                    {t("campaigns_manage_players")}
-                  </Link>
+                  <Button variant="ghost" size="sm" asChild className="text-gold hover:bg-gold/10 text-xs h-7 px-2">
+                    <Link
+                      href={`/app/campaigns/${campaign.id}`}
+                      aria-label={`Manage players for ${campaign.name}`}
+                    >
+                      {t("campaigns_manage_players")}
+                    </Link>
+                  </Button>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -347,7 +363,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                           disabled={isLoading}
                           onClick={() => handleDelete(campaign.id)}
                         >
-                          {t("campaigns_delete_button")}
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              {t("campaigns_delete_button")}
+                            </>
+                          ) : (
+                            t("campaigns_delete_button")
+                          )}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

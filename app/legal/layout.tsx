@@ -16,7 +16,7 @@ export default function LegalLayout({
         Skip to main content
       </a>
       <Navbar
-        brand="RPG Tracker"
+        brand="Taverna do Mestre"
         brandHref="/"
         rightSlot={
           <>

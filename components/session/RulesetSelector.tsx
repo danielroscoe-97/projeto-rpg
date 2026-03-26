@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import type { RulesetVersion } from "@/lib/types/database";
 
 interface RulesetSelectorProps {
@@ -27,21 +28,18 @@ export function RulesetSelector({
       )}
       <div className="flex gap-1" role="group" aria-label="Ruleset version">
         {VERSIONS.map((v) => (
-          <button
+          <Button
             key={v}
-            type="button"
+            variant={value === v ? "gold" : "ghost"}
+            size="sm"
             onClick={() => onChange(v)}
             disabled={disabled}
             aria-pressed={value === v}
-            className={`px-3 py-1 rounded text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:cursor-not-allowed disabled:opacity-50 ${
-              value === v
-                ? "bg-gold text-surface-primary"
-                : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
-            }`}
+            className={value !== v ? "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]" : undefined}
             data-testid={`ruleset-btn-${v}`}
           >
             {v}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

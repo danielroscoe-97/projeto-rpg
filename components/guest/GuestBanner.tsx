@@ -81,8 +81,13 @@ export function GuestBanner() {
           {t("signup_cta")}
         </Link>
       </span>
-      {minutesLeft !== null && !isUrgent && (
-        <span className="text-muted-foreground/60 text-xs shrink-0 font-mono">
+      {minutesLeft !== null && (
+        <span
+          className={`text-xs shrink-0 font-mono ${
+            isUrgent ? "text-red-300 font-bold" : "text-muted-foreground/60"
+          }`}
+          aria-live="polite"
+        >
           {minutesLeft}min
         </span>
       )}

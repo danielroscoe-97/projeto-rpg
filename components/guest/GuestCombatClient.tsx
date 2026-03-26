@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Share2 } from "lucide-react";
+import { Share2, Lock } from "lucide-react";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
@@ -223,9 +223,11 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         <button
           type="button"
           onClick={onShareUpsell}
-          className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] flex items-center gap-1.5"
+          className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-muted-foreground/60 hover:text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] flex items-center gap-1.5"
+          title={tg("share_requires_account")}
           data-testid="guest-share-upsell"
         >
+          <Lock className="w-3.5 h-3.5" aria-hidden="true" />
           <Share2 className="w-4 h-4" aria-hidden="true" />
           {tg("share_upsell_cta")}
         </button>
@@ -418,6 +420,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
 export function GuestCombatClient() {
   const t = useTranslations("combat");
+  const tg = useTranslations("guest");
   const tCommon = useTranslations("common");
   const [showAddForm, setShowAddForm] = useState(false);
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -609,9 +612,11 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => openUpsell("save")}
-              className="px-3 py-2 bg-white/[0.06] text-muted-foreground font-medium rounded-md hover:bg-white/[0.1] transition-all duration-[250ms] text-sm min-h-[44px]"
+              className="px-3 py-2 bg-white/[0.06] text-muted-foreground/60 font-medium rounded-md hover:bg-white/[0.1] hover:text-muted-foreground transition-all duration-[250ms] text-sm min-h-[44px] flex items-center gap-1.5"
+              title={tg("save_requires_account")}
               data-testid="save-btn"
             >
+              <Lock className="w-3.5 h-3.5" aria-hidden="true" />
               {tCommon("save")}
             </button>
 
@@ -684,13 +689,13 @@ export function GuestCombatClient() {
 
         {/* Footer nudge */}
         <div className="pt-6 text-center text-sm text-muted-foreground/60">
-          Curtiu a Taverna?{" "}
+          {tg("footer_enjoyed")}{" "}
           <button
             type="button"
             onClick={() => openUpsell("save")}
             className="text-gold hover:underline underline-offset-2 transition-colors"
           >
-            Crie sua conta e salve suas campanhas →
+            {tg("footer_create_account")}
           </button>
         </div>
       </div>

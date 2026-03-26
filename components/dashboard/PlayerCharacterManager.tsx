@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -302,7 +303,14 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
           disabled={isSaveDisabled(form) || isLoading}
           onClick={onSubmit}
         >
-          {isLoading ? tc("saving") : tc("save")}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {tc("saving")}
+            </>
+          ) : (
+            tc("save")
+          )}
         </Button>
       </div>
     </div>
@@ -401,7 +409,14 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     disabled={isLoading}
                     onClick={handleRemove}
                   >
-                    {isLoading ? tc("saving") : tc("confirm")}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {tc("saving")}
+                      </>
+                    ) : (
+                      tc("confirm")
+                    )}
                   </Button>
                   <Button
                     size="sm"

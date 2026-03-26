@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { searchSpells } from "@/lib/srd/srd-search";
 import { VersionBadge } from "@/components/session/RulesetSelector";
@@ -22,6 +22,8 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SrdSpell[]>([]);
   const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const listRef = useRef<HTMLUListElement>(null);
 
   // Debounced search
   useEffect(() => {
@@ -43,9 +45,37 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
         })
         .slice(0, MAX_RESULTS);
       setResults(found);
+      setSelectedIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [query, defaultVersion]);
+
+  // Auto-scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex < 0 || !listRef.current) return;
+    const item = listRef.current.children[selectedIndex] as HTMLElement | undefined;
+    item?.scrollIntoView({ block: "nearest" });
+  }, [selectedIndex]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(i - 1, 0));
+      } else if (e.key === "Enter" && selectedIndex >= 0) {
+        e.preventDefault();
+        setSelectedSpell(results[selectedIndex]);
+      } else if (e.key === "Escape") {
+        setQuery("");
+        setResults([]);
+        setSelectedIndex(-1);
+      }
+    },
+    [results, selectedIndex],
+  );
 
   return (
     <div className="space-y-3" data-testid="spell-search">
@@ -53,25 +83,37 @@ export function SpellSearch({ defaultVersion }: SpellSearchProps) {
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder={t("spell_search_placeholder")}
         className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-gold"
         aria-label={t("spell_search_label")}
+        aria-autocomplete="list"
+        aria-controls="spell-search-listbox"
+        aria-activedescendant={
+          selectedIndex >= 0 ? `spell-option-${selectedIndex}` : undefined
+        }
         data-testid="spell-search-input"
       />
 
       {results.length > 0 && (
         <ul
+          ref={listRef}
+          id="spell-search-listbox"
           className="space-y-1"
-          role="list"
+          role="listbox"
           aria-label={t("spell_results_aria")}
           data-testid="spell-search-results"
         >
-          {results.map((spell) => {
+          {results.map((spell, idx) => {
             const rowKey = `${spell.id}:${spell.ruleset_version}`;
+            const isSelected = idx === selectedIndex;
             return (
               <li
                 key={rowKey}
-                className="bg-card border border-border rounded-md overflow-hidden flex items-center"
+                id={`spell-option-${idx}`}
+                role="option"
+                aria-selected={isSelected}
+                className={`bg-card border border-border rounded-md overflow-hidden flex items-center${isSelected ? " bg-gold/10" : ""}`}
               >
                 <button
                   type="button"

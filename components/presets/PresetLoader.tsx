@@ -82,7 +82,10 @@ export function PresetLoader({ onLoad }: PresetLoaderProps) {
       )}
 
       {!isLoading && presets.length === 0 && !error && (
-        <p className="text-sm text-muted-foreground py-4 text-center">{t("no_presets")}</p>
+        <div className="text-center py-12">
+          <Package className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-muted-foreground text-sm mb-4">{t("no_presets")}</p>
+        </div>
       )}
 
       {!isLoading && presets.length > 0 && (

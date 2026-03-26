@@ -14,7 +14,7 @@ interface GuestUpsellModalProps {
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
+export function GuestUpsellModal({ isOpen, onClose, trigger }: GuestUpsellModalProps) {
   const t = useTranslations("guest");
   const tc = useTranslations("common");
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -97,10 +97,10 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
             id="upsell-modal-title"
             className="font-display text-xl text-foreground"
           >
-            {t("upsell_title")}
+            {trigger === "player-link" ? t("upsell_title_share") : trigger === "save" ? t("upsell_title_save") : t("upsell_title")}
           </h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            {t("upsell_description")}
+            {trigger === "player-link" ? t("upsell_description_share") : trigger === "save" ? t("upsell_description_save") : t("upsell_description")}
           </p>
           <p className="text-gold text-xs font-medium">
             {t("upsell_data_preserved")}

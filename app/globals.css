@@ -31,7 +31,7 @@ html {
     --destructive: 10 79% 57%;
     --destructive-foreground: 40 5% 90%;
     --border: 0 0% 100% / 0.08;
-    --input: 0 0% 100% / 0.12;
+    --input: 0 0% 100% / 0.18;
     --ring: 39 56% 67%;
     --radius: 0.75rem;
 
@@ -378,6 +378,19 @@ html {
   @media (prefers-reduced-motion: reduce) {
     .field-error {
       animation: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-drift-1,
+    .float-drift-2,
+    .float-drift-3,
+    .float-drift-4,
+    .float-gentle,
+    .animate-spin-slow,
+    .glow-pulse,
+    .wave-drift {
+      animation: none !important;
     }
   }
 }

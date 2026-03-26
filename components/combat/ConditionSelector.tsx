@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { CONDITION_ICONS } from "@/components/oracle/ConditionBadge";
 
 const ALL_CONDITIONS = [
   "Blinded",
@@ -45,6 +46,7 @@ export function ConditionSelector({
       <div className="flex flex-wrap gap-1">
         {ALL_CONDITIONS.map((condition) => {
           const isActive = activeConditions.includes(condition);
+          const IconComponent = CONDITION_ICONS[condition.toLowerCase()];
           return (
             <button
               key={condition}
@@ -52,7 +54,7 @@ export function ConditionSelector({
               onClick={() => {
                 onToggle(condition);
               }}
-              className={`px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 isActive
                   ? "bg-gold text-surface-primary"
                   : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
@@ -61,6 +63,7 @@ export function ConditionSelector({
               aria-label={isActive ? tcombat("condition_remove_aria", { name: t(condition.toLowerCase()) }) : tcombat("condition_add_aria", { name: t(condition.toLowerCase()) })}
               data-testid={`condition-toggle-${condition.toLowerCase()}`}
             >
+              {IconComponent && <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />}
               {t(condition.toLowerCase())}
             </button>
           );

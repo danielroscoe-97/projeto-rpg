@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { searchMonsters } from "@/lib/srd/srd-search";
@@ -27,6 +27,8 @@ export function MonsterSearch({
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SrdMonster[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const listRef = useRef<HTMLUListElement>(null);
 
   // Debounced search — resets expanded state on every new search
   useEffect(() => {
@@ -50,6 +52,7 @@ export function MonsterSearch({
         .slice(0, MAX_RESULTS);
       setResults(found);
       setExpandedIds(new Set());
+      setSelectedIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [query, defaultVersion]);
@@ -67,30 +70,74 @@ export function MonsterSearch({
     });
   }, []);
 
+  // Auto-scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex < 0 || !listRef.current) return;
+    const item = listRef.current.children[selectedIndex] as HTMLElement | undefined;
+    item?.scrollIntoView({ block: "nearest" });
+  }, [selectedIndex]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(i - 1, 0));
+      } else if (e.key === "Enter" && selectedIndex >= 0) {
+        e.preventDefault();
+        const monster = results[selectedIndex];
+        const rowKey = `${monster.id}:${monster.ruleset_version}`;
+        toggleExpand(rowKey);
+      } else if (e.key === "Escape") {
+        setQuery("");
+        setResults([]);
+        setSelectedIndex(-1);
+      }
+    },
+    [results, selectedIndex, toggleExpand],
+  );
+
   return (
     <div className="space-y-3" data-testid="monster-search">
       <input
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder={t("monster_search_placeholder")}
         className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-gold"
         aria-label={t("monster_search_label")}
+        aria-autocomplete="list"
+        aria-controls="monster-search-listbox"
+        aria-activedescendant={
+          selectedIndex >= 0 ? `monster-option-${selectedIndex}` : undefined
+        }
         data-testid="monster-search-input"
       />
 
       {results.length > 0 && (
         <ul
+          ref={listRef}
+          id="monster-search-listbox"
           className="space-y-1"
-          role="list"
+          role="listbox"
           aria-label={t("monster_results_aria")}
           data-testid="monster-search-results"
         >
-          {results.map((monster) => {
+          {results.map((monster, idx) => {
             const rowKey = `${monster.id}:${monster.ruleset_version}`;
             const isExpanded = expandedIds.has(rowKey);
+            const isSelected = idx === selectedIndex;
             return (
-              <li key={rowKey} className="bg-card border border-border rounded-md overflow-hidden">
+              <li
+                key={rowKey}
+                id={`monster-option-${idx}`}
+                role="option"
+                aria-selected={isSelected}
+                className={`bg-card border border-border rounded-md overflow-hidden${isSelected ? " bg-gold/10" : ""}`}
+              >
                 {/* Result row */}
                 <div className="flex items-center gap-2 px-3 py-2">
                   <button
