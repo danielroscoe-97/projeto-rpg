@@ -6,6 +6,12 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords } from "lucide-react";
 
+export interface CombatLogEntry {
+  text: string;
+  timestamp: number;
+  type: "damage" | "heal" | "turn" | "condition";
+}
+
 interface PlayerCombatant {
   id: string;
   name: string;
@@ -85,10 +91,25 @@ function getHpThresholdKey(current: number, max: number): string | null {
   return "hp_crit";
 }
 
+function formatRelativeTime(timestamp: number, t: ReturnType<typeof useTranslations<"player">>): string {
+  const diff = Math.floor((Date.now() - timestamp) / 1000);
+  if (diff < 60) return t("log_time_now");
+  const min = Math.floor(diff / 60);
+  return t("log_time_minutes", { min });
+}
+
+const LOG_TYPE_COLORS: Record<CombatLogEntry["type"], string> = {
+  damage: "text-red-400",
+  heal: "text-green-400",
+  turn: "text-gold",
+  condition: "text-purple-400",
+};
+
 interface PlayerInitiativeBoardProps {
   combatants: PlayerCombatant[];
   currentTurnIndex: number;
   rulesetVersion: RulesetVersion;
+  combatLog?: CombatLogEntry[];
   /** Callback when a player edits their own character's note */
   onPlayerNote?: (combatantId: string, note: string) => void;
 }
@@ -97,10 +118,14 @@ export function PlayerInitiativeBoard({
   combatants,
   currentTurnIndex,
   rulesetVersion,
+  combatLog,
   onPlayerNote,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
+  const prevTurnIndexRef = useRef(currentTurnIndex);
+  const [showYourTurn, setShowYourTurn] = useState(false);
+  const yourTurnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-scroll to current turn combatant when turn changes
   useEffect(() => {
@@ -111,8 +136,69 @@ export function PlayerInitiativeBoard({
   const playerChars = combatants.filter((c) => c.is_player);
   const hasOwnChar = playerChars.length > 0;
 
+  // TASK 2: Turn notification with vibration
+  useEffect(() => {
+    if (prevTurnIndexRef.current === currentTurnIndex) return;
+    prevTurnIndexRef.current = currentTurnIndex;
+
+    const currentCombatant = combatants[currentTurnIndex];
+    if (!currentCombatant?.is_player) return;
+
+    // Vibrate
+    try {
+      if (navigator.vibrate) navigator.vibrate(200);
+    } catch {
+      // vibrate not supported
+    }
+
+    // Show banner
+    setShowYourTurn(true);
+    if (yourTurnTimerRef.current) clearTimeout(yourTurnTimerRef.current);
+    yourTurnTimerRef.current = setTimeout(() => {
+      yourTurnTimerRef.current = null;
+      setShowYourTurn(false);
+    }, 3000);
+
+    return () => {
+      if (yourTurnTimerRef.current) clearTimeout(yourTurnTimerRef.current);
+    };
+  }, [currentTurnIndex, combatants]);
+
+  // Check if it's currently the player's turn (for pulse animation)
+  const isPlayerTurn = combatants[currentTurnIndex]?.is_player ?? false;
+
+  // Last 5 log entries for display
+  const visibleLog = combatLog?.slice(-5) ?? [];
+
   return (
     <div className="space-y-3">
+      {/* Your Turn Banner */}
+      {showYourTurn && (
+        <div className="bg-gold/20 border border-gold rounded-lg px-4 py-3 text-center animate-pulse">
+          <span className="text-gold font-semibold text-sm">
+            🎯 {t("your_turn_banner")}
+          </span>
+        </div>
+      )}
+
+      {/* Combat Log */}
+      {visibleLog.length > 0 && (
+        <div className="bg-card border border-border rounded-lg px-3 py-2">
+          <h3 className="text-muted-foreground text-xs font-medium mb-1.5">{t("combat_log_title")}</h3>
+          <ul className="space-y-0.5 max-h-28 overflow-y-auto">
+            {visibleLog.map((entry, i) => (
+              <li key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 text-xs">
+                <span className={`shrink-0 ${LOG_TYPE_COLORS[entry.type]}`}>●</span>
+                <span className="text-foreground/80 flex-1">{entry.text}</span>
+                <span className="text-muted-foreground text-[10px] shrink-0">
+                  {formatRelativeTime(entry.timestamp, t)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Own Character Card(s) — prominent display */}
       {hasOwnChar && (
         <div className="space-y-2">
@@ -125,7 +211,7 @@ export function PlayerInitiativeBoard({
             return (
               <div
                 key={pc.id}
-                className="bg-card border-2 border-gold rounded-lg px-4 py-4"
+                className={`bg-card border-2 border-gold rounded-lg px-4 py-4${isPlayerTurn ? " animate-pulse" : ""}`}
                 data-testid={`own-character-${pc.id}`}
               >
                 <div className="flex items-center gap-2 mb-3">

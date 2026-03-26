@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { linkAnonymousUser } from "@/lib/supabase/session-token";
-import { PlayerInitiativeBoard } from "@/components/player/PlayerInitiativeBoard";
+import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
 import type { ConnectionStatus } from "@/lib/realtime/use-realtime-channel";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -54,6 +54,8 @@ export function PlayerJoinClient({
   initialCombatants,
 }: PlayerJoinClientProps) {
   const t = useTranslations("player");
+  const tRef = useRef(t);
+  tRef.current = t;
   const [combatants, setCombatants] = useState(initialCombatants);
   const [round, setRound] = useState(roundNumber);
   const [turnIndex, setTurnIndex] = useState(currentTurnIndex);
@@ -62,6 +64,9 @@ export function PlayerJoinClient({
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
   const [showOracle, setShowOracle] = useState(false);
+  const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
+  const combatantsRef = useRef(initialCombatants);
+  const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -99,6 +104,65 @@ export function PlayerJoinClient({
   // Stable ref to createChannel — lets the visibility handler reuse the full channel setup
   const createChannelRef = useRef<(() => void) | null>(null);
 
+  // Combat log helpers
+  const addLogEntry = useCallback((text: string, type: CombatLogEntry["type"]) => {
+    setCombatLog((prev) => {
+      const next = [...prev, { text, timestamp: Date.now(), type }];
+      return next.length > 20 ? next.slice(-20) : next;
+    });
+  }, []);
+
+  const detectHpChanges = useCallback((prevList: PlayerCombatant[], nextList: PlayerCombatant[]) => {
+    for (const next of nextList) {
+      const prev = prevList.find((c) => c.id === next.id);
+      if (!prev) continue;
+      const diff = next.current_hp - prev.current_hp;
+      if (diff < 0) {
+        addLogEntry(tRef.current("log_damage", { name: next.name, value: Math.abs(diff) }), "damage");
+      } else if (diff > 0) {
+        addLogEntry(tRef.current("log_heal", { name: next.name, value: diff }), "heal");
+      }
+    }
+  }, [addLogEntry]);
+
+  const detectConditionChanges = useCallback((prevList: PlayerCombatant[], nextList: PlayerCombatant[]) => {
+    for (const next of nextList) {
+      const prev = prevList.find((c) => c.id === next.id);
+      if (!prev) continue;
+      const added = next.conditions.filter((c) => !prev.conditions.includes(c));
+      const removed = prev.conditions.filter((c) => !next.conditions.includes(c));
+      for (const cond of added) {
+        addLogEntry(tRef.current("log_condition_add", { name: next.name, condition: cond }), "condition");
+      }
+      for (const cond of removed) {
+        addLogEntry(tRef.current("log_condition_remove", { name: next.name, condition: cond }), "condition");
+      }
+    }
+  }, [addLogEntry]);
+
+  const updateCombatants = useCallback((updater: PlayerCombatant[] | ((prev: PlayerCombatant[]) => PlayerCombatant[])) => {
+    setCombatants((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      detectHpChanges(prev, next);
+      detectConditionChanges(prev, next);
+      combatantsRef.current = next;
+      return next;
+    });
+  }, [detectHpChanges, detectConditionChanges]);
+
+  const updateTurnIndex = useCallback((newIndex: number) => {
+    setTurnIndex((prev) => {
+      if (prev !== newIndex) {
+        const current = combatantsRef.current[newIndex];
+        if (current) {
+          addLogEntry(tRef.current("log_turn", { name: current.name }), "turn");
+        }
+      }
+      turnIndexRef.current = newIndex;
+      return newIndex;
+    });
+  }, [addLogEntry]);
+
   // Full state fetch from DB — used on reconnect & polling fallback
   const fetchFullState = useCallback(async (eid: string) => {
     try {
@@ -110,7 +174,7 @@ export function PlayerJoinClient({
         .single();
       if (enc) {
         setRound(enc.round_number ?? 1);
-        setTurnIndex(enc.current_turn_index ?? 0);
+        updateTurnIndex(enc.current_turn_index ?? 0);
         setActive(enc.is_active ?? false);
       }
       const { data: rows } = await supabase
@@ -118,11 +182,11 @@ export function PlayerJoinClient({
         .select("id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version")
         .eq("encounter_id", eid)
         .order("initiative_order", { ascending: true });
-      if (rows) setCombatants(rows);
+      if (rows) updateCombatants(rows);
     } catch {
       // Silent failure — will retry
     }
-  }, []);
+  }, [updateTurnIndex, updateCombatants]);
 
   // Subscribe to realtime channel for combat updates
   useEffect(() => {
@@ -139,18 +203,18 @@ export function PlayerJoinClient({
 
       channel
         .on("broadcast", { event: "session:state_sync" }, ({ payload }) => {
-          if (payload.combatants) setCombatants(payload.combatants);
+          if (payload.combatants) updateCombatants(payload.combatants);
           if (payload.round_number !== undefined) setRound(payload.round_number);
-          if (payload.current_turn_index !== undefined) setTurnIndex(payload.current_turn_index);
+          if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
           if (payload.is_active !== undefined) setActive(payload.is_active);
         })
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
-          if (payload.current_turn_index !== undefined) setTurnIndex(payload.current_turn_index);
+          if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
           if (payload.round_number !== undefined) setRound(payload.round_number);
         })
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
           if (payload.combatant_id) {
-            setCombatants((prev) =>
+            updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
                   ? { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp }
@@ -161,7 +225,7 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:condition_change" }, ({ payload }) => {
           if (payload.combatant_id) {
-            setCombatants((prev) =>
+            updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
                   ? { ...c, conditions: payload.conditions }
@@ -172,7 +236,7 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:defeated_change" }, ({ payload }) => {
           if (payload.combatant_id) {
-            setCombatants((prev) =>
+            updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
                   ? { ...c, is_defeated: payload.is_defeated }
@@ -183,17 +247,17 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
           if (payload.combatant) {
-            setCombatants((prev) => [...prev, payload.combatant]);
+            updateCombatants((prev) => [...prev, payload.combatant]);
           }
         })
         .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }) => {
           if (payload.combatant_id) {
-            setCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
+            updateCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
           }
         })
         .on("broadcast", { event: "combat:version_switch" }, ({ payload }) => {
           if (payload.combatant_id) {
-            setCombatants((prev) =>
+            updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
                   ? { ...c, ruleset_version: payload.ruleset_version }
@@ -204,7 +268,7 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:stats_update" }, ({ payload }) => {
           if (payload.combatant_id) {
-            setCombatants((prev) =>
+            updateCombatants((prev) =>
               prev.map((c) => {
                 if (c.id !== payload.combatant_id) return c;
                 const updated = { ...c };
@@ -219,7 +283,7 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }) => {
           if (payload.combatants) {
-            setCombatants(payload.combatants);
+            updateCombatants(payload.combatants);
           }
         })
         .subscribe((status) => {
@@ -424,6 +488,7 @@ export function PlayerJoinClient({
           combatants={combatants}
           currentTurnIndex={turnIndex}
           rulesetVersion={rulesetVersion}
+          combatLog={combatLog}
           onPlayerNote={(combatantId, note) => {
             // Broadcast player note to DM via realtime channel
             if (channelRef.current) {
