@@ -343,7 +343,7 @@ export function SpellBrowser() {
       {/* Desktop: split panel */}
       <div className="hidden md:grid md:grid-cols-[minmax(320px,2fr)_3fr] gap-0 h-[calc(100vh-180px)] border border-white/[0.06] rounded-xl overflow-hidden">
         {/* LEFT: List panel */}
-        <div className="flex flex-col border-r border-white/[0.06] bg-[#13131e]/60">
+        <div className="flex flex-col min-h-0 border-r border-white/[0.06] bg-[#13131e]/60">
           <div className="p-3 border-b border-white/[0.06] bg-[#13131e]/95 backdrop-blur-sm">
             {filterBar}
           </div>
