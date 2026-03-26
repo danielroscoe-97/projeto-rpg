@@ -6,10 +6,11 @@ import { List as VirtualList, type RowComponentProps } from "react-window";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
-const ROW_HEIGHT = 44;
+const ROW_HEIGHT = 48;
 
 const CR_RANGES = [
   { label: "0–1", min: 0, max: 1 },
@@ -73,6 +74,12 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
           : "text-foreground hover:bg-white/[0.06]"
       }`}
     >
+      <MonsterToken
+        tokenUrl={m.token_url}
+        creatureType={m.type}
+        name={m.name}
+        size={36}
+      />
       <span className="font-medium text-sm flex-1 min-w-0 truncate">
         {m.name}
       </span>

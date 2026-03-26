@@ -6,6 +6,7 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
 import { loadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -388,7 +389,6 @@ export function MonsterSearchPanel({
           data-testid="srd-results"
         >
           {results.map((monster, idx) => {
-            const { icon, color } = getCreatureIcon(monster.type ?? "");
             const typePrimary = monster.type?.split(" ")[0] ?? "";
             return (
               <li
@@ -403,13 +403,13 @@ export function MonsterSearchPanel({
                 }`}
                 data-testid={`srd-result-${monster.id}`}
               >
-                {/* Creature type thumbnail */}
-                <div
-                  className={`w-9 h-9 flex-shrink-0 rounded-md flex items-center justify-center text-lg ${color}`}
-                  aria-hidden
-                >
-                  {icon}
-                </div>
+                {/* Monster token thumbnail */}
+                <MonsterToken
+                  tokenUrl={monster.token_url}
+                  creatureType={monster.type}
+                  name={monster.name}
+                  size={36}
+                />
 
                 {/* Info — clickable to select */}
                 <button

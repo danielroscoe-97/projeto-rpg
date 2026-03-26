@@ -5,6 +5,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { LinkedText } from "./LinkedText";
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 import "@/styles/stat-card-5e.css";
 
 // ---------------------------------------------------------------------------
@@ -278,11 +279,21 @@ export function MonsterStatBlock({
         </div>
       )}
 
-      {/* Header */}
-      <div className="card-name">{monster.name}</div>
-      <div className="card-subtitle">
-        {monster.size} {monster.type}
-        {monster.alignment ? `, ${monster.alignment}` : ""}
+      {/* Header with token */}
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="card-name">{monster.name}</div>
+          <div className="card-subtitle">
+            {monster.size} {monster.type}
+            {monster.alignment ? `, ${monster.alignment}` : ""}
+          </div>
+        </div>
+        <MonsterToken
+          tokenUrl={monster.token_url}
+          creatureType={monster.type}
+          name={monster.name}
+          size={64}
+        />
       </div>
 
       <CardDivider />
