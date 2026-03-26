@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
+import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
 function ArrowRight({ className }: { className?: string }) {
@@ -212,7 +213,7 @@ function HeroSection() {
           <div className="w-px h-7 bg-white/[0.08] mx-5" />
           <div className="text-center">
             <div className="text-gold font-mono font-bold text-sm leading-none">∞</div>
-            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">grátis para sempre</div>
+            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">comece grátis</div>
           </div>
         </div>
 
