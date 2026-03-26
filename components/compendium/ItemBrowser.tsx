@@ -118,7 +118,7 @@ function ItemRow(props: RowComponentProps<ItemRowProps>) {
         </span>
       )}
       {item.reqAttune && (
-        <span className="text-[10px] text-amber-400" title="Requires Attunement">◈</span>
+        <span className="text-[10px] text-amber-400" title={t("item_requires_attunement")}>◈</span>
       )}
       {item.edition === "one" && (
         <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-blue-900/40 text-blue-400">
@@ -370,7 +370,7 @@ export function ItemBrowser() {
           </span>
         )}
         {item.reqAttune && (
-          <span className="text-[10px] text-amber-400" title="Requires Attunement">◈</span>
+          <span className="text-[10px] text-amber-400" title={t("item_requires_attunement")}>◈</span>
         )}
         {item.edition === "one" && (
           <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-blue-900/40 text-blue-400">
@@ -400,7 +400,7 @@ export function ItemBrowser() {
         <div className="flex items-center gap-2 mb-3">
           <button
             type="button"
-            onClick={() => pinCard("item", selectedItem.id, "2014")}
+            onClick={() => pinCard("item", selectedItem.id, selectedItem.edition === "one" ? "2024" : "2014")}
             className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
           >
             📌 {t("pin_card")}
@@ -473,7 +473,7 @@ export function ItemBrowser() {
               <div className="flex items-center gap-2 mb-4">
                 <button
                   type="button"
-                  onClick={() => pinCard("item", selectedItem.id, "2014")}
+                  onClick={() => pinCard("item", selectedItem.id, selectedItem.edition === "one" ? "2024" : "2014")}
                   className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
                 >
                   📌 {t("pin_card")}

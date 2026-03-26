@@ -90,14 +90,14 @@ export function ItemCard({ item, variant = "card" }: ItemCardProps) {
         {item.ac != null && (
           <div className="prop-line">
             <span className="prop-label">AC</span> {item.ac}
-            {item.stealth && <span className="text-muted-foreground text-[11px] ml-1">(Stealth disadvantage)</span>}
-            {item.strength && <span className="text-muted-foreground text-[11px] ml-1">(Str {item.strength})</span>}
+            {item.stealth && <span className="text-muted-foreground text-[11px] ml-1">({t("item_stealth_disadvantage")})</span>}
+            {item.strength && <span className="text-muted-foreground text-[11px] ml-1">({t("item_str_requirement", { value: item.strength })})</span>}
           </div>
         )}
         {item.dmg1 && (
           <div className="prop-line">
             <span className="prop-label">{t("item_damage")}</span> {item.dmg1} {item.dmgType || ""}
-            {item.dmg2 && <span className="text-muted-foreground text-[11px] ml-1">(versatile {item.dmg2})</span>}
+            {item.dmg2 && <span className="text-muted-foreground text-[11px] ml-1">({t("item_versatile", { dmg: item.dmg2 })})</span>}
           </div>
         )}
         {item.range && (
@@ -122,12 +122,12 @@ export function ItemCard({ item, variant = "card" }: ItemCardProps) {
         )}
         {item.bonusWeapon && (
           <div className="prop-line">
-            <span className="prop-label">Bonus</span> {item.bonusWeapon} to attack and damage
+            <span className="prop-label">{t("item_bonus_weapon")}</span> {item.bonusWeapon}
           </div>
         )}
         {item.bonusAc && (
           <div className="prop-line">
-            <span className="prop-label">Bonus AC</span> {item.bonusAc}
+            <span className="prop-label">{t("item_bonus_ac")}</span> {item.bonusAc}
           </div>
         )}
         {item.charges != null && (
@@ -159,12 +159,12 @@ export function ItemCard({ item, variant = "card" }: ItemCardProps) {
           <div className="flex items-center gap-2">
             {item.curse && (
               <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-red-900/40 text-red-400">
-                Cursed
+                {t("item_cursed")}
               </span>
             )}
             {item.sentient && (
               <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-900/40 text-purple-400">
-                Sentient
+                {t("item_sentient")}
               </span>
             )}
           </div>
