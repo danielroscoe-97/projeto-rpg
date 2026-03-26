@@ -40,12 +40,12 @@ export default async function AppLayout({
         brand={t("brand")}
         brandHref="/app/dashboard"
         links={[
-          { href: "/app/dashboard", label: <><LayoutDashboard className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" />{" "}{t("dashboard")}</> },
-          { href: "/app/compendium?tab=monsters", label: <><Skull className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" />{" "}{t("monsters")}</> },
-          { href: "/app/compendium?tab=spells", label: <><Sparkles className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" />{" "}{t("spells")}</> },
-          { href: "/app/compendium?tab=conditions", label: <><HeartPulse className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" />{" "}{t("conditions")}</> },
-          { href: "/app/presets", label: <><Package className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" />{" "}{t("presets")}</> },
-          { href: "/app/settings", label: <><Settings className="inline-block w-4 h-4 -mt-0.5" aria-hidden="true" />{" "}{t("settings")}</> },
+          { href: "/app/dashboard", label: <span className="inline-flex items-center gap-1.5"><LayoutDashboard className="w-4 h-4" aria-hidden="true" />{t("dashboard")}</span> },
+          { href: "/app/compendium?tab=monsters", label: <span className="inline-flex items-center gap-1.5"><Skull className="w-4 h-4" aria-hidden="true" />{t("monsters")}</span> },
+          { href: "/app/compendium?tab=spells", label: <span className="inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" aria-hidden="true" />{t("spells")}</span> },
+          { href: "/app/compendium?tab=conditions", label: <span className="inline-flex items-center gap-1.5"><HeartPulse className="w-4 h-4" aria-hidden="true" />{t("conditions")}</span> },
+          { href: "/app/presets", label: <span className="inline-flex items-center gap-1.5"><Package className="w-4 h-4" aria-hidden="true" />{t("presets")}</span> },
+          { href: "/app/settings", label: <span className="inline-flex items-center gap-1.5"><Settings className="w-4 h-4" aria-hidden="true" />{t("settings")}</span> },
         ]}
         rightSlot={<><OracleSearchTrigger /><LogoutButton /></>}
       />
