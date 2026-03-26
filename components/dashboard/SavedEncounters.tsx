@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
+import { Flame } from "lucide-react";
 
 export interface SavedEncounterRow {
   session_id: string;
@@ -43,7 +44,8 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
             data-testid={`encounter-link-${enc.session_id}`}
           >
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
                 <span className="text-foreground font-medium text-sm">{enc.encounter_name}</span>
                 <span className="text-muted-foreground text-xs ml-2">{enc.session_name}</span>
               </div>
