@@ -11,7 +11,7 @@ import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
+import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
@@ -78,7 +78,9 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     (monster: SrdMonster) => {
       const numberedName = getGuestNumberedName(monster.name, useGuestCombatStore.getState().combatants);
       
-      // Add directly to combatants
+      // Roll initiative instantly using the monster's DEX
+      const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+
       addCombatant({
         name: numberedName,
         current_hp: monster.hit_points,
@@ -86,7 +88,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
         temp_hp: 0,
         ac: monster.armor_class,
         spell_save_dc: null,
-        initiative: null,
+        initiative: rollResult.total,
         initiative_order: null,
         conditions: [],
         ruleset_version: monster.ruleset_version,

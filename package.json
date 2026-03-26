@@ -9,6 +9,7 @@
     "test:watch": "jest --watch",
     "generate-srd": "ts-node scripts/generate-srd-bundles.ts",
     "fetch-srd": "ts-node scripts/fetch-srd-data.ts",
+    "fetch-bestiary": "ts-node scripts/fetch-5etools-bestiary.ts",
     "validate:srd": "npx tsx scripts/validate-srd-crossrefs.ts"
   },
   "dependencies": {

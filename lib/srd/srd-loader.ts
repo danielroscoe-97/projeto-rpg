@@ -18,6 +18,8 @@ export interface SrdMonster {
   /** Maps from DB ac */
   armor_class: number;
   ruleset_version: RulesetVersion;
+  /** Source book abbreviation (e.g. "MM", "VGM", "MTF") */
+  source?: string;
 
   // --- Full stat block fields (present in bundles; optional for lean test fixtures) ---
   size?: string;
