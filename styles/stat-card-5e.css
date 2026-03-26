@@ -702,6 +702,174 @@
   }
 }
 
+/* ============================================================
+   Oracle AI Card — Gold-themed AI response card
+   ============================================================ */
+
+.stat-card-5e.card-type-oracle-ai {
+  --5e-oracle-gold: #c9a959;
+  --5e-oracle-gold-dim: rgba(201, 169, 89, 0.15);
+  --5e-oracle-glow: rgba(201, 169, 89, 0.25);
+  border: 1px solid rgba(201, 169, 89, 0.3);
+  max-width: 560px;
+}
+
+.stat-card-5e.card-type-oracle-ai:hover {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 12px var(--5e-oracle-glow);
+}
+
+.stat-card-5e.card-type-oracle-ai .card-divider {
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--5e-oracle-gold),
+    rgba(201, 169, 89, 0.6),
+    var(--5e-oracle-gold),
+    transparent
+  );
+}
+
+.stat-card-5e.card-type-oracle-ai .section-header {
+  color: var(--5e-oracle-gold);
+  border-bottom-color: var(--5e-oracle-gold);
+}
+
+/* Oracle AI header with icon */
+.oracle-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.oracle-ai-icon {
+  font-size: 1.2em;
+  filter: drop-shadow(0 0 4px var(--5e-oracle-glow));
+}
+
+.oracle-ai-header .card-name {
+  color: var(--5e-oracle-gold);
+  margin: 0;
+}
+
+/* Question styling */
+.oracle-ai-question {
+  font-style: italic;
+  font-size: 0.9em;
+  color: var(--5e-text-muted);
+  margin: 4px 0 8px 0;
+  padding-left: 8px;
+  border-left: 2px solid var(--5e-oracle-gold-dim);
+}
+
+/* Collapsible sections */
+.oracle-ai-section {
+  margin: 6px 0;
+}
+
+.oracle-ai-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--5e-oracle-gold-dim);
+  border: none;
+  border-radius: 3px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.oracle-ai-section-header:hover {
+  background: rgba(201, 169, 89, 0.22);
+}
+
+.oracle-ai-chevron {
+  font-size: 0.8em;
+  color: var(--5e-oracle-gold);
+  transition: transform 150ms ease;
+}
+
+.oracle-ai-chevron[data-collapsed="true"] {
+  transform: rotate(-90deg);
+}
+
+.oracle-ai-section-content {
+  padding: 6px 10px 2px 10px;
+}
+
+/* Sources list */
+.oracle-ai-sources {
+  font-size: 0.8em;
+}
+
+.oracle-ai-sources-label {
+  font-weight: 700;
+  font-size: 0.85em;
+  color: var(--5e-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.oracle-ai-sources ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.oracle-ai-sources a {
+  color: var(--5e-oracle-gold);
+  font-size: 0.9em;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(201, 169, 89, 0.4);
+  transition: color 150ms ease;
+}
+
+.oracle-ai-sources a:hover {
+  color: var(--5e-text);
+}
+
+/* Streaming loading indicator */
+.oracle-ai-streaming {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--5e-oracle-gold);
+  font-size: 0.85em;
+  margin-top: 8px;
+}
+
+.oracle-ai-streaming-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--5e-oracle-gold);
+  animation: oracle-dot-pulse 1.2s ease-in-out infinite;
+}
+
+.oracle-ai-streaming-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.oracle-ai-streaming-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes oracle-dot-pulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.2); }
+}
+
 /* ---- Reduced Motion: disable all animations & transitions ---- */
 @media (prefers-reduced-motion: reduce) {
   .stat-card-5e,
@@ -716,7 +884,10 @@
   .dice-popover,
   .dice-history-panel,
   .dice-history-pill,
-  .dice-history-entry {
+  .dice-history-entry,
+  .oracle-ai-chevron,
+  .oracle-ai-section-header,
+  .oracle-ai-streaming-dot {
     animation: none !important;
     transition: none !important;
   }

@@ -415,6 +415,21 @@
     "conditions_view_aria": "Ver regras de {name}",
     "conditions_empty": "Nenhuma condição carregada."
   },
+  "oracle_ai": {
+    "title": "Oráculo IA",
+    "placeholder": "Perguntar ao Oráculo…",
+    "hint": "Faça uma pergunta sobre regras, builds ou interações de D&D 5e. O Oráculo consulta RAW, RAI e o consenso da comunidade.",
+    "ask": "Perguntar",
+    "pin": "Fixar resposta",
+    "copy": "Copiar",
+    "close": "Fechar",
+    "minimize": "Minimizar",
+    "sources": "Fontes",
+    "switch_ai": "Perguntar ao Oráculo ✨",
+    "switch_search": "Busca simples 🔍",
+    "error_no_key": "Oráculo IA não configurado. Adicione GEMINI_API_KEY.",
+    "streaming": "O Oráculo está consultando…"
+  },
   "settings": {
     "title": "Configurações",
     "description": "Preferências, referência SRD e conta.",

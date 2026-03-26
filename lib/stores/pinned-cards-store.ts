@@ -2,15 +2,23 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { RulesetVersion } from "@/lib/types/database";
 
+export interface OracleAIData {
+  question: string;
+  answer: string;
+  sources?: { title: string; uri: string }[];
+}
+
 export interface PinnedCard {
   id: string;
-  type: "monster" | "spell" | "condition";
+  type: "monster" | "spell" | "condition" | "oracle-ai";
   entityId: string;
   rulesetVersion: RulesetVersion;
   position: { x: number; y: number };
   zIndex: number;
   isMinimized: boolean;
   pinnedAt: number;
+  /** Only present for oracle-ai cards */
+  oracleData?: OracleAIData;
 }
 
 interface PinnedCardsState {
@@ -24,6 +32,7 @@ interface PinnedCardsActions {
     entityId: string,
     rulesetVersion: RulesetVersion,
   ) => void;
+  pinOracleAI: (data: OracleAIData) => void;
   unpinCard: (cardId: string) => void;
   moveCard: (cardId: string, position: { x: number; y: number }) => void;
   focusCard: (cardId: string) => void;
@@ -89,6 +98,38 @@ export const usePinnedCardsStore = create<PinnedCardsStore>()(
           zIndex: state.nextZIndex,
           isMinimized: false,
           pinnedAt: Date.now(),
+        };
+
+        set({ cards: [...currentCards, newCard], nextZIndex: state.nextZIndex + 1 });
+      },
+
+      pinOracleAI: (data) => {
+        const state = get();
+        let currentCards = [...state.cards];
+
+        if (currentCards.length >= MAX_PINNED_CARDS) {
+          const sorted = [...currentCards].sort((a, b) => a.pinnedAt - b.pinnedAt);
+          const toRemove = sorted.slice(0, currentCards.length - MAX_PINNED_CARDS + 1);
+          const removeIds = new Set(toRemove.map((c) => c.id));
+          currentCards = currentCards.filter((c) => !removeIds.has(c.id));
+        }
+
+        const cascadeIndex = currentCards.length % MAX_PINNED_CARDS;
+        const position = {
+          x: BASE_POSITION.x + cascadeIndex * CASCADE_OFFSET,
+          y: BASE_POSITION.y + cascadeIndex * CASCADE_OFFSET,
+        };
+
+        const newCard: PinnedCard = {
+          id: crypto.randomUUID(),
+          type: "oracle-ai",
+          entityId: `oracle-${Date.now()}`,
+          rulesetVersion: "2014",
+          position,
+          zIndex: state.nextZIndex,
+          isMinimized: false,
+          pinnedAt: Date.now(),
+          oracleData: data,
         };
 
         set({ cards: [...currentCards, newCard], nextZIndex: state.nextZIndex + 1 });

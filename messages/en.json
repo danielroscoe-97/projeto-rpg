@@ -403,6 +403,21 @@
     "conditions_view_aria": "View {name} rules",
     "conditions_empty": "No conditions loaded."
   },
+  "oracle_ai": {
+    "title": "Oracle AI",
+    "placeholder": "Ask the Oracle…",
+    "hint": "Ask a question about D&D 5e rules, builds, or interactions. The Oracle checks RAW, RAI, and community consensus.",
+    "ask": "Ask",
+    "pin": "Pin response",
+    "copy": "Copy",
+    "close": "Close",
+    "minimize": "Minimize",
+    "sources": "Sources",
+    "switch_ai": "Ask the Oracle ✨",
+    "switch_search": "Simple search 🔍",
+    "error_no_key": "Oracle AI not configured. Add GEMINI_API_KEY.",
+    "streaming": "The Oracle is consulting…"
+  },
   "settings": {
     "title": "Settings",
     "description": "Preferences, SRD reference, and account.",

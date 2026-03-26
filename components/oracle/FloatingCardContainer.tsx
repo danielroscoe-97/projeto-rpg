@@ -15,6 +15,7 @@ import { getMonsterById, getSpellById, findCondition } from "@/lib/srd/srd-searc
 import { MonsterStatBlock } from "./MonsterStatBlock";
 import { SpellCard } from "./SpellCard";
 import { ConditionCard } from "./ConditionCard";
+import { OracleAICard } from "./OracleAICard";
 import "@/styles/stat-card-5e.css";
 
 // ---------------------------------------------------------------------------
@@ -78,6 +79,7 @@ function DraggableCard({
 function resolveDisplayName(card: PinnedCard): string {
   if (card.type === "monster") return getMonsterById(card.entityId, card.rulesetVersion)?.name ?? card.entityId;
   if (card.type === "spell") return getSpellById(card.entityId, card.rulesetVersion)?.name ?? card.entityId;
+  if (card.type === "oracle-ai") return card.oracleData?.question?.slice(0, 40) ?? "Oracle AI";
   return findCondition(card.entityId)?.name ?? card.entityId;
 }
 
@@ -94,14 +96,16 @@ function MinimizedCard({
   onClose: () => void;
   onFocus: () => void;
 }) {
-  const typeIcon = card.type === "monster" ? "👹" : card.type === "spell" ? "✨" : "⚡";
+  const typeIcon = card.type === "monster" ? "👹" : card.type === "spell" ? "✨" : card.type === "oracle-ai" ? "🔮" : "⚡";
   const displayName = resolveDisplayName(card);
   const typeClass =
     card.type === "spell"
       ? "card-type-spell"
       : card.type === "condition"
         ? "card-type-condition"
-        : "";
+        : card.type === "oracle-ai"
+          ? "card-type-oracle-ai"
+          : "";
 
   return (
     <div
@@ -330,6 +334,17 @@ export function FloatingCardContainer() {
         return <PinnedSpellCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
       case "condition":
         return <PinnedConditionCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
+      case "oracle-ai":
+        if (!card.oracleData) return null;
+        return (
+          <OracleAICard
+            data={card.oracleData}
+            variant="card"
+            onPin={onPin}
+            onClose={onClose}
+            onMinimize={onMinimize}
+          />
+        );
       default:
         return null;
     }

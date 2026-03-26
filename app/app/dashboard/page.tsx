@@ -69,21 +69,20 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="mb-8 flex items-start justify-between gap-4 relative">
-        <div className="absolute -right-2 -top-2 hidden sm:block" aria-hidden="true">
-          <Image src="/art/icons/pet-deviruchi.png" alt="" width={48} height={48} className="pixel-art opacity-20 float-gentle" unoptimized />
-        </div>
-        <div>
+        <div className="flex-1 min-w-0 pr-4">
           <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             {t("description")}
           </p>
         </div>
-        <Link
-          href="/app/session/new"
-          className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-5 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] min-w-[240px] shrink-0"
-        >
-          <Swords className="inline-block w-4 h-4" aria-hidden="true" /> {t("new_session")}
-        </Link>
+        <div className="md:pr-[112px] flex items-center justify-end">
+          <Link
+            href="/app/session/new"
+            className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-5 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] min-w-[240px] shrink-0"
+          >
+            <Swords className="inline-block w-4 h-4" aria-hidden="true" /> {t("new_session")}
+          </Link>
+        </div>
       </div>
       <SavedEncounters encounters={savedEncounters} />
 
