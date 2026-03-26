@@ -6,28 +6,9 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
 import { loadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { MonsterToken } from "@/components/srd/MonsterToken";
+import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import type { RulesetVersion } from "@/lib/types/database";
-
-// ─── Creature type icons ────────────────────────────────────────────────────
-
-const CREATURE_ICONS: Record<string, string> = {
-  aberration: "👁",
-  beast: "🐺",
-  celestial: "✦",
-  construct: "⚙",
-  dragon: "🐉",
-  elemental: "🌊",
-  fey: "🌙",
-  fiend: "👿",
-  giant: "🗿",
-  humanoid: "👤",
-  monstrosity: "🦑",
-  ooze: "💧",
-  plant: "🌿",
-  undead: "💀",
-};
 
 const CREATURE_COLORS: Record<string, string> = {
   aberration: "bg-purple-900/40 text-purple-300",

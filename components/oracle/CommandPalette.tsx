@@ -11,15 +11,19 @@ import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import type { SrdMonster, SrdSpell } from "@/lib/srd/srd-loader";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
 import { Skull, Sparkles, HeartPulse } from "lucide-react";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 
 const MAX_RESULTS_PER_GROUP = 5;
 const DEBOUNCE_MS = 150;
+
+type SearchFilter = "all" | "monster" | "spell" | "condition";
 
 export function CommandPalette() {
   const t = useTranslations("command_palette");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [filter, setFilter] = useState<SearchFilter>("all");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Modal state for detail views
@@ -38,14 +42,18 @@ export function CommandPalette() {
     };
   }, [query]);
 
-  // Search results
-  const monsterResults = debouncedQuery
+  // Search results (filtered by category)
+  const showMonsters = filter === "all" || filter === "monster";
+  const showSpells = filter === "all" || filter === "spell";
+  const showConditions = filter === "all" || filter === "condition";
+
+  const monsterResults = debouncedQuery && showMonsters
     ? searchMonsters(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
     : [];
-  const spellResults = debouncedQuery
+  const spellResults = debouncedQuery && showSpells
     ? searchSpells(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
     : [];
-  const conditionResults = debouncedQuery
+  const conditionResults = debouncedQuery && showConditions
     ? getAllConditions().filter((c) =>
         c.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
       ).slice(0, MAX_RESULTS_PER_GROUP)
@@ -53,10 +61,17 @@ export function CommandPalette() {
 
   const hasResults = monsterResults.length > 0 || spellResults.length > 0 || conditionResults.length > 0;
 
+  // ESC = full close (clears query + filter)
   const handleClose = useCallback(() => {
     setOpen(false);
     setQuery("");
     setDebouncedQuery("");
+    setFilter("all");
+  }, []);
+
+  // Backdrop click = soft dismiss (preserves query + filter for reopen)
+  const handleDismiss = useCallback(() => {
+    setOpen(false);
   }, []);
 
   // Global keyboard shortcuts (Ctrl+K to toggle, ESC to close)
@@ -133,14 +148,14 @@ export function CommandPalette() {
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-150"
-        onClick={handleClose}
+        onClick={handleDismiss}
         aria-hidden="true"
       />
 
       {/* Command Palette */}
-      <div className="fixed inset-0 z-[61] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4">
+      <div className="fixed inset-0 z-[61] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4 pointer-events-none">
         <Command
-          className="w-full max-w-[640px] rounded-xl border border-white/10 bg-[#1a1a28] shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150"
+          className="w-full max-w-[640px] rounded-xl border border-white/10 bg-[#1a1a28] shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150 pointer-events-auto"
           label={t("label")}
           shouldFilter={false}
         >
@@ -170,6 +185,30 @@ export function CommandPalette() {
             >
               ESC
             </button>
+          </div>
+
+          {/* Filter pills */}
+          <div className="flex items-center gap-1.5 px-4 py-2 border-b border-white/[0.08]">
+            {([
+              { key: "all" as SearchFilter, label: t("filter_all"), icon: null },
+              { key: "monster" as SearchFilter, label: t("group_monsters"), icon: <Skull className="w-3 h-3" /> },
+              { key: "spell" as SearchFilter, label: t("group_spells"), icon: <Sparkles className="w-3 h-3" /> },
+              { key: "condition" as SearchFilter, label: t("group_conditions"), icon: <HeartPulse className="w-3 h-3" /> },
+            ]).map((f) => (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setFilter(f.key)}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                  filter === f.key
+                    ? "bg-white/[0.12] text-foreground border border-white/[0.15]"
+                    : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground border border-transparent"
+                }`}
+              >
+                {f.icon}
+                {f.label}
+              </button>
+            ))}
           </div>
 
           <Command.List className="max-h-[min(400px,50vh)] overflow-y-auto p-2">
@@ -206,6 +245,12 @@ export function CommandPalette() {
                     onSelect={() => handlePinMonster(r.item)}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-white/[0.06] aria-selected:bg-white/[0.10] transition-colors min-h-[44px]"
                   >
+                    <MonsterToken
+                      tokenUrl={r.item.token_url}
+                      creatureType={r.item.type}
+                      name={r.item.name}
+                      size={32}
+                    />
                     <div className="flex-1 min-w-0">
                       <span className="font-medium">{r.item.name}</span>
                       <span className="ml-2 text-xs text-muted-foreground">

@@ -3,8 +3,8 @@ import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
 const DB_NAME = "srd-cache";
-// Bumped to 3: full 5e.tools compendium (3000+ monsters, 900+ spells, conditions with categories)
-const DB_VERSION = 3;
+// Bumped to 4: invalidate stale cache missing monster token_url fields
+const DB_VERSION = 4;
 
 // Singleton promise — one IDBDatabase connection shared across all reads/writes
 let _dbPromise: ReturnType<typeof openDB> | null = null;
@@ -22,9 +22,9 @@ function getDb() {
         if (!db.objectStoreNames.contains("conditions")) {
           db.createObjectStore("conditions");
         }
-        // When upgrading from v2 → v3, clear stale SRD-only data so the
-        // full 5e.tools compendium gets fetched and cached fresh.
-        if (oldVersion < 3) {
+        // Clear stale data on version upgrade so fresh SRD bundles
+        // (with token_url and latest fields) get fetched and cached.
+        if (oldVersion < 4) {
           tx.objectStore("monsters").clear();
           tx.objectStore("spells").clear();
           tx.objectStore("conditions").clear();

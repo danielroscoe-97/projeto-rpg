@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // ─── Creature type emoji fallbacks ──────────────────────────────────────────
 
-const CREATURE_ICONS: Record<string, string> = {
+export const CREATURE_ICONS: Record<string, string> = {
   aberration: "\u{1F441}",
   beast: "\u{1F43A}",
   celestial: "\u2726",
@@ -21,7 +21,7 @@ const CREATURE_ICONS: Record<string, string> = {
   undead: "\u{1F480}",
 };
 
-function getCreatureEmoji(type: string | undefined): string {
+export function getCreatureEmoji(type: string | undefined): string {
   if (!type) return "\u2694";
   const key = type.split(" ")[0].toLowerCase();
   return CREATURE_ICONS[key] ?? "\u2694";

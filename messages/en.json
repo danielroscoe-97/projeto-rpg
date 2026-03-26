@@ -554,6 +554,7 @@
     "placeholder": "Search monsters, spells, conditions…",
     "loading": "Loading SRD data…",
     "no_results": "No results found.",
+    "filter_all": "All",
     "hint": "Type to search monsters, spells, or conditions.",
     "group_monsters": "Monsters",
     "group_spells": "Spells",

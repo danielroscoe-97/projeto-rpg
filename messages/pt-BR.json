@@ -566,6 +566,7 @@
     "placeholder": "Pesquisar monstros, magias, condições…",
     "loading": "Carregando dados SRD…",
     "no_results": "Nenhum resultado encontrado.",
+    "filter_all": "Todos",
     "hint": "Digite para pesquisar monstros, magias ou condições.",
     "group_monsters": "Monstros",
     "group_spells": "Magias",
