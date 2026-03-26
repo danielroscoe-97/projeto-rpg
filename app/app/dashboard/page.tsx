@@ -80,7 +80,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/app/session/new"
-          className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg text-sm shadow-card hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] shrink-0"
+          className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-3 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] shrink-0"
         >
           <Swords className="inline-block w-4 h-4" aria-hidden="true" /> {t("new_session")}
         </Link>
