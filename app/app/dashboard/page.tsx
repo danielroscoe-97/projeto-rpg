@@ -78,7 +78,7 @@ export default async function DashboardPage() {
         <div className="flex items-center justify-end">
           <Link
             href="/app/session/new"
-            className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-5 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] min-w-[240px] shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-[45px] py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] min-w-[240px] shrink-0"
           >
             <Swords className="inline-block w-4 h-4" aria-hidden="true" /> {t("new_session")}
           </Link>
