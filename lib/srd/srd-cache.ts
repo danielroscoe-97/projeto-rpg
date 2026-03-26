@@ -3,8 +3,8 @@ import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
 const DB_NAME = "srd-cache";
-// Bumped to 2: SrdMonster extended with full stat block fields (story 4.2)
-const DB_VERSION = 2;
+// Bumped to 3: full 5e.tools compendium (3000+ monsters, 900+ spells, conditions with categories)
+const DB_VERSION = 3;
 
 // Singleton promise — one IDBDatabase connection shared across all reads/writes
 let _dbPromise: ReturnType<typeof openDB> | null = null;
@@ -12,7 +12,7 @@ let _dbPromise: ReturnType<typeof openDB> | null = null;
 function getDb() {
   if (!_dbPromise) {
     _dbPromise = openDB(DB_NAME, DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion, _newVersion, tx) {
         if (!db.objectStoreNames.contains("monsters")) {
           db.createObjectStore("monsters");
         }
@@ -21,6 +21,13 @@ function getDb() {
         }
         if (!db.objectStoreNames.contains("conditions")) {
           db.createObjectStore("conditions");
+        }
+        // When upgrading from v2 → v3, clear stale SRD-only data so the
+        // full 5e.tools compendium gets fetched and cached fresh.
+        if (oldVersion < 3) {
+          tx.objectStore("monsters").clear();
+          tx.objectStore("spells").clear();
+          tx.objectStore("conditions").clear();
         }
       },
     });
