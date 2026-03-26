@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { SpellCard } from "@/components/oracle/SpellCard";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
+
+const MOBILE_PAGE_SIZE = 50;
 
 const SPELL_LEVELS = [
   { value: 0, label: "Cantrip" },
@@ -69,30 +71,15 @@ export function SpellBrowser() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [mobileDetail, setMobileDetail] = useState(false);
 
-  // List container sizing
-  const listContainerRef = useRef<HTMLDivElement>(null);
-  const [listHeight, setListHeight] = useState(() => {
-    return typeof window !== "undefined" ? window.innerHeight - 300 : 600;
-  });
-
-  useEffect(() => {
-    const el = listContainerRef.current;
-    if (!el) return;
-    setListHeight(el.getBoundingClientRect().height || window.innerHeight - 300);
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setListHeight(entry.contentRect.height);
-      }
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  // Mobile pagination
+  const [mobileVisibleCount, setMobileVisibleCount] = useState(MOBILE_PAGE_SIZE);
 
   const toggleNumSet = useCallback((set: Set<number>, value: number, setter: (s: Set<number>) => void) => {
     const next = new Set(set);
     if (next.has(value)) next.delete(value);
     else next.add(value);
     setter(next);
+    setMobileVisibleCount(MOBILE_PAGE_SIZE);
   }, []);
 
   const toggleStrSet = useCallback((set: Set<string>, value: string, setter: (s: Set<string>) => void) => {
@@ -100,6 +87,7 @@ export function SpellBrowser() {
     if (next.has(value)) next.delete(value);
     else next.add(value);
     setter(next);
+    setMobileVisibleCount(MOBILE_PAGE_SIZE);
   }, []);
 
   const filtered = useMemo(() => {
@@ -137,19 +125,11 @@ export function SpellBrowser() {
     return [...result].sort((a, b) => a.name.localeCompare(b.name));
   }, [spells, nameFilter, versionFilter, levels, schools, classes, ritualOnly, concentrationOnly, sortBy]);
 
-  // Derive selected spell
+  // Derive selected spell; clear when filtered out
   const selectedSpell = useMemo(() => {
     if (!selectedKey) return null;
     return filtered.find((s) => rowKey(s) === selectedKey) ?? null;
   }, [filtered, selectedKey]);
-
-  // Clear selectedKey when spell is filtered out
-  useEffect(() => {
-    if (selectedKey && !selectedSpell) {
-      setSelectedKey(null);
-      setMobileDetail(false);
-    }
-  }, [selectedKey, selectedSpell]);
 
   // Keyboard navigation
   const handleListKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -188,7 +168,7 @@ export function SpellBrowser() {
         <input
           type="text"
           value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
+          onChange={(e) => { setNameFilter(e.target.value); setMobileVisibleCount(MOBILE_PAGE_SIZE); }}
           placeholder={t("search_placeholder")}
           className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors"
         />
@@ -211,7 +191,7 @@ export function SpellBrowser() {
         <div className="space-y-2 pl-1">
           <FilterGroup label={t("filter_version")}>
             {(["all", "2014", "2024"] as const).map((v) => (
-              <Chip key={v} active={versionFilter === v} onClick={() => setVersionFilter(v)}>
+              <Chip key={v} active={versionFilter === v} onClick={() => { setVersionFilter(v); setMobileVisibleCount(MOBILE_PAGE_SIZE); }}>
                 {v === "all" ? t("filter_version_all") : v}
               </Chip>
             ))}
@@ -242,10 +222,10 @@ export function SpellBrowser() {
           </FilterGroup>
 
           <FilterGroup label="">
-            <Chip active={ritualOnly} onClick={() => setRitualOnly(!ritualOnly)}>
+            <Chip active={ritualOnly} onClick={() => { setRitualOnly(!ritualOnly); setMobileVisibleCount(MOBILE_PAGE_SIZE); }}>
               ® {t("filter_ritual")}
             </Chip>
-            <Chip active={concentrationOnly} onClick={() => setConcentrationOnly(!concentrationOnly)}>
+            <Chip active={concentrationOnly} onClick={() => { setConcentrationOnly(!concentrationOnly); setMobileVisibleCount(MOBILE_PAGE_SIZE); }}>
               ◉ {t("filter_concentration")}
             </Chip>
           </FilterGroup>
@@ -305,49 +285,59 @@ export function SpellBrowser() {
     );
   };
 
-  // ---- MOBILE: detail view ----
-  if (mobileDetail && selectedSpell) {
-    return (
-      <div className="md:hidden">
-        <button
-          type="button"
-          onClick={() => setMobileDetail(false)}
-          className="flex items-center gap-1.5 text-sm text-gold mb-4 min-h-[44px]"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-          </svg>
-          {t("back_to_list")}
-        </button>
-        <div className="flex items-center gap-2 mb-3">
-          <button
-            type="button"
-            onClick={() => pinCard("spell", selectedSpell.id, selectedSpell.ruleset_version)}
-            className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
-          >
-            📌 {t("pin_card")}
-          </button>
-        </div>
-        <SpellCard spell={selectedSpell} variant="inline" />
-      </div>
-    );
-  }
+  const mobileVisible = filtered.slice(0, mobileVisibleCount);
 
   // ---- MAIN LAYOUT ----
   return (
     <div>
-      {/* Mobile: list view */}
+      {/* Mobile: detail view OR list view */}
       <div className="md:hidden">
-        {filterBar}
-        <div className="mt-3">
-          {filtered.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
-          ) : (
-            <div className="max-h-[500px] overflow-y-auto">
-              {filtered.map((spell) => renderSpellRow(spell, handleMobileSelect))}
+        {mobileDetail && selectedSpell ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setMobileDetail(false)}
+              className="flex items-center gap-1.5 text-sm text-gold mb-4 min-h-[44px]"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+              </svg>
+              {t("back_to_list")}
+            </button>
+            <div className="flex items-center gap-2 mb-3">
+              <button
+                type="button"
+                onClick={() => pinCard("spell", selectedSpell.id, selectedSpell.ruleset_version)}
+                className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
+              >
+                📌 {t("pin_card")}
+              </button>
             </div>
-          )}
-        </div>
+            <SpellCard spell={selectedSpell} variant="inline" />
+          </>
+        ) : (
+          <>
+            {filterBar}
+            <div className="mt-3">
+              {filtered.length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
+              ) : (
+                <div className="max-h-[500px] overflow-y-auto">
+                  {mobileVisible.map((spell) => renderSpellRow(spell, handleMobileSelect))}
+                  {mobileVisibleCount < filtered.length && (
+                    <button
+                      type="button"
+                      onClick={() => setMobileVisibleCount((c) => c + MOBILE_PAGE_SIZE)}
+                      className="w-full py-3 text-sm text-gold hover:text-gold/80 transition-colors"
+                    >
+                      {t("load_more")} ({filtered.length - mobileVisibleCount})
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Desktop: split panel */}
@@ -364,7 +354,7 @@ export function SpellBrowser() {
             <span className="w-10" />
           </div>
 
-          <div ref={listContainerRef} className="flex-1 min-h-0 overflow-y-auto" onKeyDown={handleListKeyDown} tabIndex={0} role="listbox" aria-label={t("tab_spells")}>
+          <div className="flex-1 min-h-0 overflow-y-auto" onKeyDown={handleListKeyDown} tabIndex={0} role="listbox" aria-label={t("tab_spells")}>
             {filtered.length === 0 ? (
               <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
             ) : (

@@ -3,7 +3,9 @@
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { SpellCard } from "@/components/oracle/SpellCard";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 
@@ -29,11 +31,21 @@ export function SpellDescriptionModal({
         aria-describedby="spell-description"
         data-testid="spell-modal"
       >
-        <SpellCard
-          spell={spell}
-          variant="inline"
-          onPin={onPin}
-        />
+        <VisuallyHidden.Root><DialogTitle>{spell.name}</DialogTitle></VisuallyHidden.Root>
+        {onPin && (
+          <div className="flex justify-end px-4 pt-3 pb-0">
+            <button
+              type="button"
+              onClick={onPin}
+              className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[28px]"
+              aria-label={`Pin ${spell.name} card`}
+              data-testid="spell-modal-pin-btn"
+            >
+              📌 Pin
+            </button>
+          </div>
+        )}
+        <SpellCard spell={spell} variant="inline" />
       </DialogContent>
     </Dialog>
   );

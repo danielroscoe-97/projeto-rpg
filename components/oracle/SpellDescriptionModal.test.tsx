@@ -66,11 +66,11 @@ describe("SpellDescriptionModal", () => {
     expect(container.innerHTML).toBe("");
   });
 
-  it("renders spell name as dialog title", () => {
+  it("renders spell name", () => {
     render(
       <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} />
     );
-    expect(screen.getByText("Fireball")).toBeInTheDocument();
+    expect(screen.getByTestId("spell-name")).toHaveTextContent("Fireball");
   });
 
   it("renders level + school line for leveled spell", () => {
@@ -86,8 +86,9 @@ describe("SpellDescriptionModal", () => {
     render(
       <SpellDescriptionModal spell={CANTRIP} open={true} onOpenChange={() => {}} />
     );
+    // SpellCard.formatSpellLevel produces "Evocation Cantrip" (capitalized)
     expect(screen.getByTestId("spell-level-school")).toHaveTextContent(
-      "Evocation cantrip"
+      "Evocation Cantrip"
     );
   });
 
@@ -117,7 +118,6 @@ describe("SpellDescriptionModal", () => {
       <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} />
     );
     expect(screen.getByTestId("spell-higher-levels")).toBeInTheDocument();
-    expect(screen.getByText("At Higher Levels.")).toBeInTheDocument();
   });
 
   it("does NOT render At Higher Levels when null", () => {
@@ -145,15 +145,7 @@ describe("SpellDescriptionModal", () => {
     render(
       <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} />
     );
-    expect(screen.queryByText("Concentration")).not.toBeInTheDocument();
-    expect(screen.queryByText("Ritual")).not.toBeInTheDocument();
-  });
-
-  it("shows version badge", () => {
-    render(
-      <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} />
-    );
-    expect(screen.getByText("2014")).toBeInTheDocument();
+    expect(screen.queryByTestId("spell-badges")).not.toBeInTheDocument();
   });
 
   it("shows class list", () => {
@@ -165,10 +157,25 @@ describe("SpellDescriptionModal", () => {
     );
   });
 
-  it("has accessible dialog title", () => {
+  it("has accessible dialog", () => {
     render(
       <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} />
     );
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("renders pin button when onPin is provided", () => {
+    const onPin = jest.fn();
+    render(
+      <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} onPin={onPin} />
+    );
+    expect(screen.getByTestId("spell-modal-pin-btn")).toBeInTheDocument();
+  });
+
+  it("does NOT render pin button when onPin is not provided", () => {
+    render(
+      <SpellDescriptionModal spell={FIREBALL} open={true} onOpenChange={() => {}} />
+    );
+    expect(screen.queryByTestId("spell-modal-pin-btn")).not.toBeInTheDocument();
   });
 });

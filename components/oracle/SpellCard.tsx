@@ -46,7 +46,7 @@ export function SpellCard({
       className={`stat-card-5e card-type-spell${isCard ? " card-floating card-transition" : " stat-card-5e-inline"}`}
       data-testid="spell-card"
     >
-      {(isCard || onPin) && (
+      {isCard && (
         <div className="card-toolbar">
           {onPin && (
             <button type="button" onClick={onPin} aria-label="Pin spell card" data-testid="spell-pin-btn">
