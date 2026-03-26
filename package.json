@@ -10,6 +10,9 @@
     "generate-srd": "ts-node scripts/generate-srd-bundles.ts",
     "fetch-srd": "ts-node scripts/fetch-srd-data.ts",
     "fetch-bestiary": "ts-node scripts/fetch-5etools-bestiary.ts",
+    "fetch-spells": "ts-node scripts/fetch-5etools-spells.ts",
+    "fetch-conditions": "ts-node scripts/fetch-5etools-conditions.ts",
+    "fetch-all-5etools": "ts-node scripts/fetch-5etools-bestiary.ts && ts-node scripts/fetch-5etools-spells.ts && ts-node scripts/fetch-5etools-conditions.ts",
     "validate:srd": "npx tsx scripts/validate-srd-crossrefs.ts"
   },
   "dependencies": {

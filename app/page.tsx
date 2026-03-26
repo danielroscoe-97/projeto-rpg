@@ -84,7 +84,7 @@ function HeroSection() {
         {/* Live badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-xs text-muted-foreground animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          SRD 5.1 + 5.2 — 2014 &amp; 2024 Rules
+          5e.tools Compendium — 2014 &amp; 2024 Rules
         </div>
 
         {/* Headline */}
@@ -133,8 +133,8 @@ function HeroSection() {
         {/* Stats strip */}
         <div className="flex items-center justify-center gap-0 pt-2 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           {[
-            { value: 334, label: "monstros SRD" },
-            { value: 319, label: "magias SRD" },
+            { value: 3037, label: "monstros" },
+            { value: 935, label: "magias" },
           ].map((stat, i) => (
             <React.Fragment key={stat.label}>
               {i > 0 && <div className="w-px h-7 bg-white/[0.08] mx-5" />}
@@ -196,7 +196,7 @@ function FeaturesSection() {
       tag: null,
       title: "Oráculo de Magias & Monstros",
       description:
-        "Busca instantânea no SRD 5.1 e 5.2. Stat blocks inline, descrições de magia em modal. Funciona offline.",
+        "Busca instantânea em 3000+ monstros e 900+ magias. Stat blocks inline, descrições de magia em modal. Funciona offline.",
     },
     {
       emoji: "📖",
@@ -296,7 +296,7 @@ function HowItWorksSection() {
       number: "01",
       emoji: "🗺️",
       title: "Crie o Encontro",
-      description: "Busque monstros do SRD, adicione NPCs custom, carregue sua campanha salva.",
+      description: "Busque no compendium completo, adicione NPCs custom, carregue sua campanha salva.",
       time: "~1 min",
     },
     {
@@ -576,7 +576,7 @@ function ComparisonSection() {
       },
       {
         icon: "📚",
-        feature: "SRD 2014 + 2024",
+        feature: "Compendium 2014 + 2024",
         roll20: { type: "partial", label: "Depende de módulo pago" },
         beyond: { type: "partial", label: "Disponível (pago)" },
         taverna: { type: "check", label: "Grátis, sempre" },

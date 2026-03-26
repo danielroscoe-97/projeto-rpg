@@ -51,6 +51,8 @@ export interface SrdSpell {
   id: string;
   name: string;
   ruleset_version: RulesetVersion;
+  /** Source book abbreviation (e.g. "PHB", "XGE", "TCE") */
+  source?: string;
   level: number;
   school: string;
   casting_time: string;
@@ -68,6 +70,9 @@ export interface SrdCondition {
   id: string;
   name: string;
   description: string;
+  /** Source book abbreviation */
+  source?: string;
+  ruleset_version?: RulesetVersion;
 }
 
 const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();
