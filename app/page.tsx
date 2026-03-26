@@ -266,6 +266,54 @@ function FeaturesSection() {
   );
 }
 
+// ── Social Proof Strip ───────────────────────────────────────────────────────
+function SocialProofStrip() {
+  const testimonials = [
+    {
+      quote: "Finalmente algo feito para quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
+      author: "Mestre há 8 anos",
+    },
+    {
+      quote: "O combate flui muito mais rápido agora. Montei o encontro em 1 minuto.",
+      author: "DM veterano",
+    },
+    {
+      quote: "O oráculo de magias salvou minha vida no meio do combate.",
+      author: "Mestra iniciante",
+    },
+  ];
+
+  return (
+    <section className="py-16 px-6 relative overflow-hidden">
+      <div className="relative max-w-5xl mx-auto">
+        <div className="text-center mb-10 animate-fade-in">
+          <p className="text-sm font-semibold text-gold uppercase tracking-widest mb-2">
+            ✦
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-display text-foreground">
+            Usado por DMs em todo o Brasil
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {testimonials.map((t, i) => (
+            <div
+              key={i}
+              className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.08}s` }}
+            >
+              <p className="text-foreground/70 text-sm leading-relaxed italic">
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <p className="mt-3 text-xs text-gold/70 font-medium">— {t.author}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── How It Works ──────────────────────────────────────────────────────────────
 function StepCircle({ number }: { number: string }) {
   return (
@@ -836,6 +884,7 @@ export default function LandingPage() {
       <HeroSection />
       <SectionDivider />
       <FeaturesSection />
+      <SocialProofStrip />
       <SectionDivider />
       <HowItWorksSection />
       <SectionDivider />

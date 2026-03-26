@@ -80,7 +80,19 @@
     "resend_email": "Resend confirmation email",
     "resending": "Sending...",
     "resend_success": "Email sent!",
-    "resend_error": "Failed to resend email. Please try again."
+    "resend_error": "Failed to resend email. Please try again.",
+    "error_title": "Something went wrong",
+    "error_unspecified": "An unspecified error occurred.",
+    "error_code": "Error code: {code}",
+    "error_help": "If the problem persists, try creating a new account.",
+    "back_to_login": "Back to login",
+    "error_back_to_login": "Back to login",
+    "checklist_open_email": "Open your email",
+    "checklist_check_spam": "Check your spam folder",
+    "checklist_click_link": "Click the confirmation link",
+    "email_delay_notice": "The email may take up to 2 minutes to arrive",
+    "tab_login": "Login",
+    "tab_signup": "Sign Up"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -93,7 +105,7 @@
     "campaigns_update_error": "Failed to update campaign. Please try again.",
     "campaigns_delete_error": "Failed to delete campaign. Please try again.",
     "campaigns_name_label": "Campaign name",
-    "campaigns_empty": "No campaigns yet. Create your first campaign above.",
+    "campaigns_empty": "No campaigns yet. Create your first campaign!",
     "campaigns_players_plural": "players",
     "campaigns_players_singular": "player",
     "campaigns_manage_players": "Manage Players",
@@ -103,6 +115,7 @@
     "campaigns_delete_button": "Confirm Delete",
     "encounters_title": "Active Encounters",
     "encounters_empty": "No active encounters. Start a new combat session!",
+    "encounters_start_combat": "Start new combat",
     "encounters_round": "Round",
     "encounters_in_progress": "In Progress",
     "pc_title": "Player Characters",
@@ -136,6 +149,7 @@
     "choose_combat_title": "Quick Combat",
     "choose_combat_description": "Skip the setup and jump straight into the combat tracker. Add combatants on the fly.",
     "choose_combat_cta": "Go to combat →",
+    "choose_combat_recommended": "Recommended for your first time",
     "step_campaign": "Campaign",
     "step_players": "Players",
     "step_encounter": "Encounter",
@@ -302,7 +316,18 @@
     "roll_npcs": "Roll NPCs",
     "roll_npcs_title": "Roll initiative for NPC combatants missing a value (1d20 + DEX mod for monsters)",
     "roll_init_single": "Roll initiative",
-    "roll_init_single_aria": "Roll initiative for {name}"
+    "roll_init_single_aria": "Roll initiative for {name}",
+    "condition_view_aria": "View {name} rules",
+    "condition_remove_aria": "Remove condition {name}",
+    "condition_add_aria": "Add condition {name}",
+    "setup_duplicate": "Duplicate",
+    "setup_duplicate_aria": "Duplicate {name}",
+    "encounter_name_label": "Encounter name",
+    "encounter_name_placeholder": "e.g. Goblin Ambush",
+    "error_encounter_name_required": "Give the encounter a name before starting.",
+    "shortcut_damage": "Damage (HP)",
+    "shortcut_heal": "Heal (HP)",
+    "shortcut_undo": "Undo HP"
   },
   "conditions": {
     "blinded": "Blinded",
@@ -384,7 +409,16 @@
     "defeated": "Defeated",
     "note_placeholder": "e.g. Concentrating on Bless",
     "note_send": "Send",
-    "note_sent": "Sent!"
+    "note_sent": "Sent!",
+    "combat_log_title": "Combat Log",
+    "log_damage": "{name} took {value} damage",
+    "log_heal": "{name} recovered {value} HP",
+    "log_turn": "It's {name}'s turn",
+    "log_condition_add": "{name} is {condition}",
+    "log_condition_remove": "{name} is no longer {condition}",
+    "your_turn_banner": "It's your turn!",
+    "log_time_now": "now",
+    "log_time_minutes": "{min}min ago"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",
@@ -401,7 +435,9 @@
     "conditions_list_aria": "Condition rules list",
     "conditions_view_rules": "View rules",
     "conditions_view_aria": "View {name} rules",
-    "conditions_empty": "No conditions loaded."
+    "conditions_empty": "No conditions loaded.",
+    "add_to_combat": "Add to combat",
+    "add_to_combat_aria": "Add {name} to combat"
   },
   "oracle_ai": {
     "title": "Oracle AI",
@@ -415,7 +451,9 @@
     "minimize": "Minimize",
     "sources": "Sources",
     "error_no_key": "Oracle AI not configured. Add GEMINI_API_KEY.",
-    "streaming": "The Oracle is consulting…"
+    "streaming": "The Oracle is consulting…",
+    "retry": "Try again",
+    "compendium_fallback": "Or try searching the Compendium →"
   },
   "settings": {
     "title": "Settings",
@@ -502,13 +540,20 @@
     "components": "Components",
     "duration": "Duration",
     "cantrip": "Cantrip",
-    "spell_level_format": "{level}-level"
+    "spell_level_format": "{level}-level",
+    "monsters_found_aria": "{count} monsters found",
+    "spells_found_aria": "{count} spells found"
   },
   "guest": {
     "guest_notice": "Guest mode — your combat won't be saved.",
     "time_warning": "Only {minutes} min left! Sign up to save your combat.",
     "signup_cta": "Create free account →",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "upsell_title": "Take your combat to the next level.",
+    "upsell_description": "Create your account in seconds to save your encounters, organize your campaigns, and more. Free forever.",
+    "upsell_data_preserved": "Your combat data will be preserved after signing up.",
+    "upsell_cta": "Create My Free Account",
+    "upsell_dismiss": "I'll decide later"
   },
   "presets": {
     "title": "Encounter Presets",
@@ -565,5 +610,15 @@
     "hint_select": "select",
     "hint_close": "close",
     "trigger_aria": "Search"
+  },
+  "landing": {
+    "social_proof_heading": "Used by DMs across Brazil",
+    "social_proof_subheading": "Real feedback from weekly table sessions.",
+    "testimonial_1_quote": "Finally something made for DMs at the table, not a monitor. My players love following along on their phones.",
+    "testimonial_1_author": "DM for 8 years",
+    "testimonial_2_quote": "Combat flows much faster now. I set up the encounter in 1 minute.",
+    "testimonial_2_author": "Veteran DM",
+    "testimonial_3_quote": "The spell oracle saved my life mid-combat.",
+    "testimonial_3_author": "New DM"
   }
 }

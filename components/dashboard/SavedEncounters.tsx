@@ -27,6 +27,12 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
         <div className="flex flex-col items-center gap-3 py-8 text-center">
           <Image src="/art/icons/pet-lunatic.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
           <p className="text-muted-foreground text-sm">{t("encounters_empty")}</p>
+          <Link
+            href="/app/session/new"
+            className="mt-2 inline-flex items-center justify-center px-5 py-2.5 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+          >
+            {t("encounters_start_combat")}
+          </Link>
         </div>
       </div>
     );

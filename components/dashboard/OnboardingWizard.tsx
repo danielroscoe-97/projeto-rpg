@@ -300,7 +300,36 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Campaign Path */}
+          {/* Quick Combat Path — Primary */}
+          <button
+            type="button"
+            onClick={() => router.push("/app/session/new")}
+            className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 cursor-pointer"
+          >
+            <Image
+              src="/art/icons/potion.png"
+              alt=""
+              width={48}
+              height={48}
+              className="pixel-art mb-4 opacity-80 group-hover:opacity-100 transition-opacity"
+              aria-hidden="true"
+              unoptimized
+            />
+            <h2 className="text-lg font-semibold text-foreground mb-2">
+              {t("choose_combat_title")}
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t("choose_combat_description")}
+            </p>
+            <span className="mt-2 text-[11px] font-medium text-gold/80">
+              {t("choose_combat_recommended")}
+            </span>
+            <span className="mt-2 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
+              {t("choose_combat_cta")}
+            </span>
+          </button>
+
+          {/* Campaign Path — Secondary */}
           <button
             type="button"
             onClick={() => setState((s) => ({ ...s, step: 1 }))}
@@ -323,32 +352,6 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             </p>
             <span className="mt-4 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
               {t("choose_campaign_cta")}
-            </span>
-          </button>
-
-          {/* Quick Combat Path */}
-          <button
-            type="button"
-            onClick={() => router.push("/app/session/new")}
-            className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-border bg-white/[0.03] hover:bg-white/[0.07] hover:border-gold/40 transition-all duration-200 cursor-pointer"
-          >
-            <Image
-              src="/art/icons/potion.png"
-              alt=""
-              width={48}
-              height={48}
-              className="pixel-art mb-4 opacity-70 group-hover:opacity-100 transition-opacity"
-              aria-hidden="true"
-              unoptimized
-            />
-            <h2 className="text-lg font-semibold text-foreground mb-2">
-              {t("choose_combat_title")}
-            </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {t("choose_combat_description")}
-            </p>
-            <span className="mt-4 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
-              {t("choose_combat_cta")}
             </span>
           </button>
         </div>

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 const DISMISSED_KEY = "guest-banner-dismissed";
 const SESSION_START_KEY = "guest-session-start";
-const SESSION_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
+const SESSION_LIMIT_MS = 60 * 60 * 1000; // 60 minutes
 
 export function GuestBanner() {
   const t = useTranslations("guest");
@@ -52,8 +52,8 @@ export function GuestBanner() {
     setDismissed(true);
   };
 
-  // Show urgent warning when 5 minutes or less remain, even if banner was dismissed
-  const isUrgent = minutesLeft !== null && minutesLeft <= 5;
+  // Show urgent warning when 10 minutes or less remain, even if banner was dismissed
+  const isUrgent = minutesLeft !== null && minutesLeft <= 10;
   const showBanner = !dismissed || isUrgent;
 
   if (!showBanner) return null;

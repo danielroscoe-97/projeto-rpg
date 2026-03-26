@@ -1,33 +1,46 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Suspense } from "react";
+"use client";
 
-async function ErrorContent({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>;
-}) {
-  const params = await searchParams;
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+function ErrorContent() {
+  const t = useTranslations("auth");
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
 
   return (
-    <>
-      {params?.error ? (
+    <div className="space-y-4">
+      {error ? (
         <p className="text-sm text-white/60">
-          Code error: {params.error}
+          {t("error_code", { code: error })}
         </p>
       ) : (
         <p className="text-sm text-white/60">
-          An unspecified error occurred.
+          {t("error_unspecified")}
         </p>
       )}
-    </>
+      <p className="text-sm text-muted-foreground">
+        {t("error_help")}
+      </p>
+      <Button
+        asChild
+        className="w-full min-h-[44px] bg-gold text-surface-primary font-semibold hover:shadow-gold-glow transition-all duration-[250ms]"
+      >
+        <Link href="/auth/login">
+          {t("error_back_to_login")}
+        </Link>
+      </Button>
+    </div>
   );
 }
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>;
-}) {
+export default function Page() {
+  const t = useTranslations("auth");
+
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -35,12 +48,12 @@ export default function Page({
           <Card className="bg-[#16213e] border-white/10">
             <CardHeader>
               <CardTitle className="text-2xl text-white">
-                Sorry, something went wrong.
+                {t("error_title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <Suspense>
-                <ErrorContent searchParams={searchParams} />
+                <ErrorContent />
               </Suspense>
             </CardContent>
           </Card>

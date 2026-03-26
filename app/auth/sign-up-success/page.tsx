@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import {
   Card,
@@ -50,11 +51,31 @@ export default function Page() {
               <p className="text-sm text-muted-foreground">
                 {t("signup_success_description")}
               </p>
+
+              {/* Visual checklist */}
+              <div className="space-y-2 rounded-lg bg-white/[0.04] border border-border p-4">
+                <div className="flex items-center gap-3 text-sm text-foreground">
+                  <span className="text-lg leading-none">📧</span>
+                  <span>{t("checklist_open_email")}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-foreground">
+                  <span className="text-lg leading-none">📁</span>
+                  <span>{t("checklist_check_spam")}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-foreground">
+                  <span className="text-lg leading-none">🔗</span>
+                  <span>{t("checklist_click_link")}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground/70 text-center">
+                {t("email_delay_notice")}
+              </p>
+
               {email && (
                 <div className="flex flex-col gap-2">
                   <Button
-                    variant="outline"
-                    className="w-full min-h-[44px]"
+                    className="w-full min-h-[44px] bg-gold text-surface-primary font-semibold hover:shadow-gold-glow transition-all duration-[250ms]"
                     onClick={handleResend}
                     disabled={resendStatus === "loading" || resendStatus === "sent"}
                   >
@@ -71,6 +92,13 @@ export default function Page() {
                   )}
                 </div>
               )}
+
+              <Link
+                href="/auth/login"
+                className="text-sm text-muted-foreground hover:text-gold text-center underline-offset-4 hover:underline transition-colors min-h-[44px] flex items-center justify-center"
+              >
+                {t("back_to_login")}
+              </Link>
             </CardContent>
           </Card>
         </div>

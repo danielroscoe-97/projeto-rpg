@@ -231,6 +231,18 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
         <div className="flex flex-col items-center gap-3 py-12 text-center">
           <Image src="/art/icons/pet-cat.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
           <p className="text-muted-foreground text-sm">{t("campaigns_empty")}</p>
+          <Button
+            variant="gold"
+            className="mt-2 min-h-[44px]"
+            onClick={() => {
+              setShowCreate(true);
+              setEditingId(null);
+              setEditName("");
+              setError(null);
+            }}
+          >
+            {t("campaigns_new")}
+          </Button>
         </div>
       )}
 

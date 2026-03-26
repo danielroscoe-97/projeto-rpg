@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export type UpsellTrigger = "save" | "export" | "player-link";
 
@@ -14,6 +15,8 @@ interface GuestUpsellModalProps {
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
+  const t = useTranslations("guest");
+  const tc = useTranslations("common");
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +83,7 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
           type="button"
           onClick={onClose}
           className="absolute top-4 right-4 text-muted-foreground/60 hover:text-muted-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-          aria-label="Fechar"
+          aria-label={tc("close")}
         >
           ×
         </button>
@@ -94,10 +97,13 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
             id="upsell-modal-title"
             className="font-display text-xl text-foreground"
           >
-            Leve seu combate para o próximo nível.
+            {t("upsell_title")}
           </h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Crie sua conta em segundos para salvar seus encontros, organizar suas campanhas e muito mais. É grátis e sempre será.
+            {t("upsell_description")}
+          </p>
+          <p className="text-gold text-xs font-medium">
+            {t("upsell_data_preserved")}
           </p>
         </div>
 
@@ -107,14 +113,14 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
             href="/auth/sign-up"
             className="relative overflow-hidden w-full text-center px-6 py-3 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] min-h-[48px] flex items-center justify-center btn-shimmer"
           >
-            Criar Minha Conta Grátis
+            {t("upsell_cta")}
           </Link>
           <button
             type="button"
             onClick={onClose}
             className="w-full text-center px-6 py-3 bg-white/[0.06] text-muted-foreground rounded-lg hover:bg-white/[0.1] transition-all duration-[250ms] min-h-[48px] text-sm"
           >
-            Vou decidir mais tarde
+            {t("upsell_dismiss")}
           </button>
         </div>
       </div>

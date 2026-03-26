@@ -432,6 +432,21 @@ export function GuestCombatClient() {
   } = useGuestCombatStore();
 
   const openUpsell = useCallback((trigger: UpsellTrigger) => {
+    // Save current combat state to localStorage before showing upsell
+    try {
+      const state = useGuestCombatStore.getState();
+      const combatSnapshot = state.combatants.map((c) => ({
+        name: c.name,
+        current_hp: c.current_hp,
+        max_hp: c.max_hp,
+        ac: c.ac,
+        initiative: c.initiative,
+        conditions: c.conditions,
+      }));
+      localStorage.setItem("guest-combat-state", JSON.stringify(combatSnapshot));
+    } catch {
+      // storage unavailable
+    }
     setUpsellTrigger(trigger);
     setUpsellOpen(true);
   }, []);

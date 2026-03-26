@@ -81,7 +81,19 @@
     "resend_email": "Reenviar email de confirmação",
     "resending": "Enviando...",
     "resend_success": "Email enviado!",
-    "resend_error": "Falha ao reenviar email. Tente novamente."
+    "resend_error": "Falha ao reenviar email. Tente novamente.",
+    "error_title": "Algo deu errado",
+    "error_unspecified": "Ocorreu um erro não especificado.",
+    "error_code": "Código do erro: {code}",
+    "error_help": "Se o problema persistir, tente criar uma nova conta.",
+    "back_to_login": "Voltar ao login",
+    "error_back_to_login": "Voltar ao login",
+    "checklist_open_email": "Abra seu email",
+    "checklist_check_spam": "Verifique a pasta de spam",
+    "checklist_click_link": "Clique no link de confirmação",
+    "email_delay_notice": "O email pode levar até 2 minutos para chegar",
+    "tab_login": "Entrar",
+    "tab_signup": "Criar Conta"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -96,7 +108,7 @@
     "back_to_dashboard": "← Voltar ao Dashboard",
     "manage_players_description": "Gerencie os personagens dos jogadores desta campanha.",
     "campaigns_name_label": "Nome da campanha",
-    "campaigns_empty": "Nenhuma campanha ainda. Crie sua primeira campanha acima.",
+    "campaigns_empty": "Nenhuma campanha ainda. Crie sua primeira campanha!",
     "campaigns_players_plural": "jogadores",
     "campaigns_players_singular": "jogador",
     "campaigns_manage_players": "Gerenciar Jogadores",
@@ -106,6 +118,7 @@
     "campaigns_delete_button": "Confirmar Exclusão",
     "encounters_title": "Encontros Ativos",
     "encounters_empty": "Nenhum encontro ativo. Inicie uma nova sessão de combate!",
+    "encounters_start_combat": "Iniciar novo combate",
     "encounters_round": "Rodada",
     "encounters_in_progress": "Em Andamento",
     "pc_title": "Personagens de Jogadores",
@@ -139,6 +152,7 @@
     "choose_combat_title": "Combate Rápido",
     "choose_combat_description": "Pule a configuração e vá direto para o combat tracker. Adicione combatentes e monstros na hora.",
     "choose_combat_cta": "Combate Rápido →",
+    "choose_combat_recommended": "Recomendado para sua primeira vez",
     "step_campaign": "Campanha",
     "step_players": "Jogadores",
     "step_encounter": "Encontro",
@@ -314,7 +328,18 @@
     "setup_hp_aria": "Definir HP inicial",
     "setup_ac_aria": "Definir Classe de Armadura",
     "setup_init_aria": "Definir Iniciativa",
-    "setup_name_aria": "Nome do combatente"
+    "setup_name_aria": "Nome do combatente",
+    "condition_view_aria": "Ver regras de {name}",
+    "condition_remove_aria": "Remover condição {name}",
+    "condition_add_aria": "Adicionar condição {name}",
+    "setup_duplicate": "Duplicar",
+    "setup_duplicate_aria": "Duplicar {name}",
+    "encounter_name_label": "Nome do encontro",
+    "encounter_name_placeholder": "ex: Emboscada Goblin",
+    "error_encounter_name_required": "Dê um nome ao encontro antes de iniciar.",
+    "shortcut_damage": "Dano (HP)",
+    "shortcut_heal": "Cura (HP)",
+    "shortcut_undo": "Desfazer HP"
   },
   "conditions": {
     "blinded": "Cego",
@@ -396,7 +421,16 @@
     "defeated": "Derrotado",
     "note_placeholder": "ex: Concentrando em Bênção",
     "note_send": "Enviar",
-    "note_sent": "Enviado!"
+    "note_sent": "Enviado!",
+    "combat_log_title": "Log de Combate",
+    "log_damage": "{name} recebeu {value} de dano",
+    "log_heal": "{name} recuperou {value} HP",
+    "log_turn": "É a vez de {name}",
+    "log_condition_add": "{name} está {condition}",
+    "log_condition_remove": "{name} não está mais {condition}",
+    "your_turn_banner": "É a sua vez!",
+    "log_time_now": "agora",
+    "log_time_minutes": "{min}min atrás"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",
@@ -413,7 +447,9 @@
     "conditions_list_aria": "Lista de regras de condição",
     "conditions_view_rules": "Ver regras",
     "conditions_view_aria": "Ver regras de {name}",
-    "conditions_empty": "Nenhuma condição carregada."
+    "conditions_empty": "Nenhuma condição carregada.",
+    "add_to_combat": "Adicionar ao combate",
+    "add_to_combat_aria": "Adicionar {name} ao combate"
   },
   "oracle_ai": {
     "title": "Oráculo IA",
@@ -427,7 +463,9 @@
     "minimize": "Minimizar",
     "sources": "Fontes",
     "error_no_key": "Oráculo IA não configurado. Adicione GEMINI_API_KEY.",
-    "streaming": "O Oráculo está consultando…"
+    "streaming": "O Oráculo está consultando…",
+    "retry": "Tentar novamente",
+    "compendium_fallback": "Ou tente buscar no Compêndio →"
   },
   "settings": {
     "title": "Configurações",
@@ -514,13 +552,20 @@
     "components": "Componentes",
     "duration": "Duração",
     "cantrip": "Truque",
-    "spell_level_format": "{level}º nível"
+    "spell_level_format": "{level}º nível",
+    "monsters_found_aria": "{count} monstros encontrados",
+    "spells_found_aria": "{count} magias encontradas"
   },
   "guest": {
     "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",
     "time_warning": "Restam apenas {minutes} min! Crie sua conta para não perder nada.",
     "signup_cta": "Criar conta grátis →",
-    "dismiss": "Fechar aviso"
+    "dismiss": "Fechar aviso",
+    "upsell_title": "Leve seu combate para o próximo nível.",
+    "upsell_description": "Crie sua conta em segundos para salvar seus encontros, organizar suas campanhas e muito mais. É grátis e sempre será.",
+    "upsell_data_preserved": "Seus dados de combate serão preservados após criar conta.",
+    "upsell_cta": "Criar Minha Conta Grátis",
+    "upsell_dismiss": "Vou decidir mais tarde"
   },
   "presets": {
     "title": "Encontros Preparados",
@@ -577,5 +622,15 @@
     "hint_select": "selecionar",
     "hint_close": "fechar",
     "trigger_aria": "Busca"
+  },
+  "landing": {
+    "social_proof_heading": "Usado por DMs em todo o Brasil",
+    "social_proof_subheading": "Feedback de quem usa na mesa toda semana.",
+    "testimonial_1_quote": "Finalmente algo feito para quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
+    "testimonial_1_author": "Mestre há 8 anos",
+    "testimonial_2_quote": "O combate flui muito mais rápido agora. Montei o encontro em 1 minuto.",
+    "testimonial_2_author": "DM veterano",
+    "testimonial_3_quote": "O oráculo de magias salvou minha vida no meio do combate.",
+    "testimonial_3_author": "Mestra iniciante"
   }
 }
