@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Copy } from "lucide-react";
 import type { Combatant } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 
 interface CombatantSetupRowProps {
@@ -96,6 +97,16 @@ export function CombatantSetupRow({
           </button>
         )}
       </div>
+
+      {/* Monster token */}
+      {combatant.monster_id && (
+        <MonsterToken
+          tokenUrl={combatant.token_url ?? undefined}
+          creatureType={combatant.creature_type ?? undefined}
+          name={combatant.name}
+          size={32}
+        />
+      )}
 
       {/* Name */}
       <div className="flex items-center gap-1 flex-1 min-w-0">

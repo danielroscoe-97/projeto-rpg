@@ -17,6 +17,10 @@ export interface Combatant {
   is_player: boolean;
   /** SRD monster id (from public/srd/*.json), null for custom NPCs and players */
   monster_id: string | null;
+  /** URL to the monster's token image (webp from 5e.tools), null for custom NPCs and players */
+  token_url: string | null;
+  /** Creature type for emoji fallback (e.g. "dragon", "undead"), null for players */
+  creature_type: string | null;
   /** Private DM notes — never broadcast to players */
   dm_notes: string;
   /** Player-visible notes — broadcast via realtime */

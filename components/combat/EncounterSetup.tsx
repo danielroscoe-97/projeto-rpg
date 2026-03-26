@@ -111,6 +111,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         is_defeated: false,
         is_player: true,
         monster_id: null,
+        token_url: null,
+        creature_type: null,
         dm_notes: "",
         player_notes: "",
       };
@@ -163,6 +165,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           is_defeated: false,
           is_player: true,
           monster_id: null,
+          token_url: null,
+          creature_type: null,
           dm_notes: "",
           player_notes: `token:${payload.id}`,
         });
@@ -196,6 +200,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         is_defeated: false,
         is_player: false,
         monster_id: monster.id,
+        token_url: monster.token_url ?? null,
+        creature_type: monster.type ?? null,
         dm_notes: "",
         player_notes: "",
       });
@@ -247,6 +253,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       is_defeated: false,
       is_player: false,
       monster_id: sel?.id ?? null,
+      token_url: null,
+      creature_type: null,
       dm_notes: "",
       player_notes: addRow.notes.trim(),
     });
@@ -277,6 +285,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           is_defeated: false,
           is_player: true,
           monster_id: null,
+          token_url: null,
+          creature_type: null,
           dm_notes: "",
           player_notes: "",
         };
@@ -308,6 +318,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             is_defeated: false,
             is_player: false,
             monster_id: pm.monster_id,
+            token_url: null,
+            creature_type: null,
             dm_notes: "",
             player_notes: "",
           };
@@ -368,6 +380,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         is_defeated: false,
         is_player: source.is_player,
         monster_id: source.monster_id,
+        token_url: source.token_url,
+        creature_type: source.creature_type,
         dm_notes: "",
         player_notes: "",
       });

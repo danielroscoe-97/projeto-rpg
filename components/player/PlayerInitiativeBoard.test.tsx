@@ -25,6 +25,8 @@ const COMBATANTS = [
     is_defeated: false,
     is_player: true,
     monster_id: null,
+    token_url: null,
+    creature_type: null,
     ruleset_version: null,
   },
   {
@@ -36,6 +38,8 @@ const COMBATANTS = [
     is_defeated: false,
     is_player: false,
     monster_id: "goblin",
+    token_url: null,
+    creature_type: null,
     ruleset_version: "2014",
   },
   {
@@ -47,6 +51,8 @@ const COMBATANTS = [
     is_defeated: true,
     is_player: false,
     monster_id: "orc",
+    token_url: null,
+    creature_type: null,
     ruleset_version: "2014",
   },
 ];

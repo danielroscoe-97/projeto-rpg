@@ -48,6 +48,8 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
       is_defeated: false,
       is_player: false,
       monster_id: null,
+      token_url: null,
+      creature_type: null,
       dm_notes: '',
       player_notes: '',
     });

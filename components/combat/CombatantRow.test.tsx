@@ -51,6 +51,8 @@ const BASE_PLAYER: Combatant = {
   is_defeated: false,
   is_player: true,
   monster_id: null,
+  token_url: null,
+  creature_type: null,
   dm_notes: "",
   player_notes: "",
 };
@@ -70,6 +72,8 @@ const MONSTER_COMBATANT: Combatant = {
   is_defeated: false,
   is_player: false,
   monster_id: "goblin",
+  token_url: null,
+  creature_type: null,
   dm_notes: "",
   player_notes: "",
 };

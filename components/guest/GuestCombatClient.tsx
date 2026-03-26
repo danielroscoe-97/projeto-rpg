@@ -97,6 +97,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         is_defeated: false,
         is_player: false,
         monster_id: monster.id,
+        token_url: monster.token_url ?? null,
+        creature_type: monster.type ?? null,
         dm_notes: "",
         player_notes: "",
       });
@@ -147,6 +149,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       is_defeated: false,
       is_player: false,
       monster_id: sel?.id ?? null,
+      token_url: null,
+      creature_type: null,
       dm_notes: "",
       player_notes: addRow.notes.trim(),
     });

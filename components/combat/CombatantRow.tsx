@@ -7,6 +7,7 @@ import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 import { HpAdjuster } from "./HpAdjuster";
 import { ConditionSelector } from "./ConditionSelector";
 import { StatsEditor } from "./StatsEditor";
@@ -220,6 +221,16 @@ export function CombatantRow({
                 Init. {combatant.initiative ?? "—"}
               </button>
             )
+          )}
+
+          {/* Monster token */}
+          {combatant.monster_id && (
+            <MonsterToken
+              tokenUrl={combatant.token_url ?? fullMonster?.token_url}
+              creatureType={combatant.creature_type ?? fullMonster?.type}
+              name={combatant.name}
+              size={32}
+            />
           )}
 
           {/* Name — clickable to open pinned card if monster */}

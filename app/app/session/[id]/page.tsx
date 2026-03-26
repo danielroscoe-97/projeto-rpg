@@ -67,6 +67,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
     is_defeated: row.is_defeated ?? false,
     is_player: row.is_player ?? false,
     monster_id: row.monster_id ?? null,
+    token_url: null,
+    creature_type: null,
     dm_notes: row.dm_notes ?? '',
     player_notes: row.player_notes ?? '',
   }));
