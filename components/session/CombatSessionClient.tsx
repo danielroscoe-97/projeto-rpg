@@ -6,6 +6,7 @@ import { useCombatStore } from "@/lib/stores/combat-store";
 import { persistInitiativeAndStartCombat } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
+import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
 import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
@@ -60,6 +61,7 @@ export function CombatSessionClient({
     handleSetDefeated,
     handleRemoveCombatant,
     handleAddCombatant: addCombatantAction,
+    handleReorderCombatants,
     handleUpdateStats,
     handleSetInitiative,
     handleSwitchVersion,
@@ -223,33 +225,41 @@ export function CombatSessionClient({
         />
       )}
 
-      <ul
-        className="space-y-2"
+      <div
         role="list"
         aria-label={t("initiative_order")}
         data-testid="initiative-list"
+        className="space-y-2"
       >
-        {combatants.map((c, index) => (
-          <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
-            <CombatantRow
-              combatant={c}
-              isCurrentTurn={index === current_turn_index}
-              showActions
-              onApplyDamage={handleApplyDamage}
-              onApplyHealing={handleApplyHealing}
-              onSetTempHp={handleSetTempHp}
-              onToggleCondition={handleToggleCondition}
-              onSetDefeated={handleSetDefeated}
-              onRemoveCombatant={handleRemoveCombatant}
-              onUpdateStats={handleUpdateStats}
-              onSetInitiative={handleSetInitiative}
-              onSwitchVersion={handleSwitchVersion}
-              onUpdateDmNotes={handleUpdateDmNotes}
-              onUpdatePlayerNotes={handleUpdatePlayerNotes}
-            />
-          </div>
-        ))}
-      </ul>
+        <SortableCombatantList
+          combatants={combatants}
+          onReorder={handleReorderCombatants}
+          renderItem={(c, dragHandleProps) => {
+            const index = combatants.findIndex((x) => x.id === c.id);
+            return (
+              <div className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+                <CombatantRow
+                  combatant={c}
+                  isCurrentTurn={index === current_turn_index}
+                  showActions
+                  dragHandleProps={dragHandleProps}
+                  onApplyDamage={handleApplyDamage}
+                  onApplyHealing={handleApplyHealing}
+                  onSetTempHp={handleSetTempHp}
+                  onToggleCondition={handleToggleCondition}
+                  onSetDefeated={handleSetDefeated}
+                  onRemoveCombatant={handleRemoveCombatant}
+                  onUpdateStats={handleUpdateStats}
+                  onSetInitiative={handleSetInitiative}
+                  onSwitchVersion={handleSwitchVersion}
+                  onUpdateDmNotes={handleUpdateDmNotes}
+                  onUpdatePlayerNotes={handleUpdatePlayerNotes}
+                />
+              </div>
+            );
+          }}
+        />
+      </div>
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
     </div>

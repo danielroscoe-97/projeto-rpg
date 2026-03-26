@@ -1,4 +1,50 @@
 import type { Combatant } from "@/lib/types/combat";
+import { rollD20, abilityModifier } from "@/lib/utils/dice";
+import type { SrdMonster } from "@/lib/srd/srd-loader";
+
+/** Result of rolling initiative for a single combatant. */
+export interface InitiativeRollResult {
+  combatantId: string;
+  total: number;
+  /** Individual d20 result(s) (2 if advantage/disadvantage). */
+  rolls: number[];
+  modifier: number;
+}
+
+/**
+ * Roll initiative for a single combatant.
+ * If `dexScore` is provided, the modifier is derived from it.
+ * Otherwise modifier defaults to 0 (plain 1d20).
+ */
+export function rollInitiativeForCombatant(
+  combatantId: string,
+  dexScore?: number | null
+): InitiativeRollResult {
+  const mod = dexScore != null ? abilityModifier(dexScore) : 0;
+  const result = rollD20(mod);
+  return {
+    combatantId,
+    total: result.total,
+    rolls: result.rolls,
+    modifier: mod,
+  };
+}
+
+/**
+ * Resolve the DEX score for a combatant.
+ * For monsters with a monster_id, looks up the DEX from the SRD monster list.
+ * Returns undefined if no DEX data is available.
+ */
+export function getDexScore(
+  combatant: Combatant,
+  monsterIndex: Map<string, SrdMonster>
+): number | undefined {
+  if (combatant.monster_id) {
+    const monster = monsterIndex.get(combatant.monster_id);
+    return monster?.dex ?? undefined;
+  }
+  return undefined;
+}
 
 /**
  * Sorts combatants in descending initiative order (highest first).

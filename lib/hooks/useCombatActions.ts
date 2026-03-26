@@ -200,6 +200,24 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     persistPlayerNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError]);
 
+  const handleReorderCombatants = useCallback((newOrder: Combatant[]) => {
+    const store = useCombatStore.getState();
+    // Track which combatant currently holds the turn so the index follows them
+    const currentCombatant = store.combatants[store.current_turn_index];
+    store.reorderCombatants(newOrder);
+    if (currentCombatant) {
+      const newIdx = useCombatStore.getState().combatants.findIndex((c) => c.id === currentCombatant.id);
+      if (newIdx !== -1 && newIdx !== store.current_turn_index) {
+        useCombatStore.getState().hydrateActiveState(newIdx, store.round_number);
+      }
+    }
+    const reordered = useCombatStore.getState().combatants;
+    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: reordered });
+    persistInitiativeOrder(
+      reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+    ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError]);
+
   const handleSetInitiative = useCallback((id: string, value: number | null) => {
     useCombatStore.getState().setInitiative(id, value);
     const store = useCombatStore.getState();
@@ -232,6 +250,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
   return {
     turnPending,
     handleAdvanceTurn,
+    handleReorderCombatants,
     handleApplyDamage,
     handleApplyHealing,
     handleSetTempHp,

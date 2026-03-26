@@ -10,6 +10,8 @@ import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { loadMonsters } from "@/lib/srd/srd-loader";
+import { rollInitiativeForCombatant, getDexScore } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 
@@ -57,6 +59,18 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
+  const monsterIndexRef = useRef<Map<string, SrdMonster>>(new Map());
+  const [monsterIndexLoaded, setMonsterIndexLoaded] = useState(false);
+
+  // Load SRD monsters for DEX lookup when rolling initiative
+  useEffect(() => {
+    loadMonsters(rulesetVersion).then((monsters) => {
+      const idx = new Map<string, SrdMonster>();
+      for (const m of monsters) idx.set(m.id, m);
+      monsterIndexRef.current = idx;
+      setMonsterIndexLoaded(true);
+    }).catch(() => { /* SRD load failure is non-blocking */ });
+  }, [rulesetVersion]);
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
@@ -261,6 +275,41 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     [updatePlayerNotes]
   );
 
+  // Roll initiative for a single combatant
+  const handleRollOne = useCallback(
+    (id: string) => {
+      const store = useCombatStore.getState();
+      const c = store.combatants.find((x) => x.id === id);
+      if (!c) return;
+      const dex = getDexScore(c, monsterIndexRef.current);
+      const result = rollInitiativeForCombatant(id, dex);
+      setInitiative(id, result.total);
+    },
+    [setInitiative]
+  );
+
+  // Roll initiative for all combatants missing initiative
+  const handleRollAll = useCallback(() => {
+    const store = useCombatStore.getState();
+    for (const c of store.combatants) {
+      if (c.initiative !== null) continue;
+      const dex = getDexScore(c, monsterIndexRef.current);
+      const result = rollInitiativeForCombatant(c.id, dex);
+      setInitiative(c.id, result.total);
+    }
+  }, [setInitiative]);
+
+  // Roll initiative only for NPCs (non-player combatants) missing initiative
+  const handleRollNpcs = useCallback(() => {
+    const store = useCombatStore.getState();
+    for (const c of store.combatants) {
+      if (c.initiative !== null || c.is_player) continue;
+      const dex = getDexScore(c, monsterIndexRef.current);
+      const result = rollInitiativeForCombatant(c.id, dex);
+      setInitiative(c.id, result.total);
+    }
+  }, [setInitiative]);
+
   // Start combat
   const handleStartCombat = async () => {
     if (combatants.length === 0) {
@@ -345,6 +394,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
               onAcChange={handleRowAcChange}
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
+              onRollInitiative={handleRollOne}
               dragHandleProps={dragHandleProps}
               highlightInit={invalidInitIds.has(c.id)}
             />
@@ -451,11 +501,37 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
 
       {/* Start Combat */}
       <div className="flex items-center justify-between pt-2">
-        <p className="text-muted-foreground text-xs">
-          {combatants.length > 0
-            ? `${combatants.length} combatant${combatants.length !== 1 ? "s" : ""}`
-            : ""}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-muted-foreground text-xs">
+            {combatants.length > 0
+              ? `${combatants.length} combatant${combatants.length !== 1 ? "s" : ""}`
+              : ""}
+          </p>
+          {combatants.length > 0 && (
+            <div className="flex items-center gap-1.5 ml-2">
+              <button
+                type="button"
+                onClick={handleRollAll}
+                disabled={combatants.every((c) => c.initiative !== null)}
+                className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title={t("roll_all_title")}
+                data-testid="roll-all-init-btn"
+              >
+                🎲 {t("roll_all")}
+              </button>
+              <button
+                type="button"
+                onClick={handleRollNpcs}
+                disabled={combatants.filter((c) => !c.is_player && c.initiative === null).length === 0}
+                className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title={t("roll_npcs_title")}
+                data-testid="roll-npcs-init-btn"
+              >
+                🎲 {t("roll_npcs")}
+              </button>
+            </div>
+          )}
+        </div>
         <button
           type="button"
           onClick={handleStartCombat}

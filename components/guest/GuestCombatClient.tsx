@@ -11,7 +11,8 @@ import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
+import { loadMonsters } from "@/lib/srd/srd-loader";
+import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, getDexScore } from "@/lib/utils/initiative";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
@@ -58,6 +59,16 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
+  const monsterIndexRef = useRef<Map<string, SrdMonster>>(new Map());
+
+  // Load SRD monsters for DEX lookup when rolling initiative
+  useEffect(() => {
+    loadMonsters(rulesetVersion).then((monsters) => {
+      const idx = new Map<string, SrdMonster>();
+      for (const m of monsters) idx.set(m.id, m);
+      monsterIndexRef.current = idx;
+    }).catch(() => { /* SRD load failure is non-blocking */ });
+  }, [rulesetVersion]);
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
@@ -177,6 +188,41 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     [updatePlayerNotes]
   );
 
+  // Roll initiative for a single combatant
+  const handleRollOne = useCallback(
+    (id: string) => {
+      const store = useGuestCombatStore.getState();
+      const c = store.combatants.find((x) => x.id === id);
+      if (!c) return;
+      const dex = getDexScore(c, monsterIndexRef.current);
+      const result = rollInitiativeForCombatant(id, dex);
+      setInitiative(id, result.total);
+    },
+    [setInitiative]
+  );
+
+  // Roll initiative for all combatants missing initiative
+  const handleRollAll = useCallback(() => {
+    const store = useGuestCombatStore.getState();
+    for (const c of store.combatants) {
+      if (c.initiative !== null) continue;
+      const dex = getDexScore(c, monsterIndexRef.current);
+      const result = rollInitiativeForCombatant(c.id, dex);
+      setInitiative(c.id, result.total);
+    }
+  }, [setInitiative]);
+
+  // Roll initiative only for NPCs missing initiative
+  const handleRollNpcs = useCallback(() => {
+    const store = useGuestCombatStore.getState();
+    for (const c of store.combatants) {
+      if (c.initiative !== null || c.is_player) continue;
+      const dex = getDexScore(c, monsterIndexRef.current);
+      const result = rollInitiativeForCombatant(c.id, dex);
+      setInitiative(c.id, result.total);
+    }
+  }, [setInitiative]);
+
   const handleStartCombat = () => {
     if (combatants.length === 0) {
       setSubmitError(t("error_no_combatants"));
@@ -245,6 +291,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
               onAcChange={handleRowAcChange}
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
+              onRollInitiative={handleRollOne}
               dragHandleProps={dragHandleProps}
               highlightInit={invalidInitIds.has(c.id)}
             />
@@ -468,6 +515,21 @@ export function GuestCombatClient() {
       updateCombatantStats(id, stats),
     [updateCombatantStats]
   );
+  const handleReorderCombatants = useCallback(
+    (newOrder: Combatant[]) => {
+      const store = useGuestCombatStore.getState();
+      const currentCombatant = store.combatants[store.currentTurnIndex];
+      store.reorderCombatants(newOrder);
+      if (currentCombatant) {
+        const newIdx = useGuestCombatStore.getState().combatants.findIndex((c) => c.id === currentCombatant.id);
+        if (newIdx !== -1 && newIdx !== store.currentTurnIndex) {
+          useGuestCombatStore.setState({ currentTurnIndex: newIdx });
+        }
+      }
+    },
+    []
+  );
+
   const handleSetInitiative = useCallback(
     (id: string, value: number | null) => {
       useGuestCombatStore.getState().setInitiative(id, value);
@@ -567,32 +629,39 @@ export function GuestCombatClient() {
           />
         )}
 
-        <ul
-          className="space-y-2"
+        <div
           role="list"
           aria-label={t("initiative_order")}
           data-testid="initiative-list"
+          className="space-y-2"
         >
-          {combatants.map((c, index) => (
-            <CombatantRow
-              key={c.id}
-              combatant={c}
-              isCurrentTurn={index === currentTurnIndex}
-              showActions
-              onApplyDamage={handleApplyDamage}
-              onApplyHealing={handleApplyHealing}
-              onSetTempHp={handleSetTempHp}
-              onToggleCondition={handleToggleCondition}
-              onSetDefeated={handleSetDefeated}
-              onRemoveCombatant={handleRemoveCombatant}
-              onUpdateStats={handleUpdateStats}
-              onSetInitiative={handleSetInitiative}
-              onSwitchVersion={handleSwitchVersion}
-              onUpdateDmNotes={handleUpdateDmNotes}
-              onUpdatePlayerNotes={handleUpdatePlayerNotes}
-            />
-          ))}
-        </ul>
+          <SortableCombatantList
+            combatants={combatants}
+            onReorder={handleReorderCombatants}
+            renderItem={(c, dragHandleProps) => {
+              const index = combatants.findIndex((x) => x.id === c.id);
+              return (
+                <CombatantRow
+                  combatant={c}
+                  isCurrentTurn={index === currentTurnIndex}
+                  showActions
+                  dragHandleProps={dragHandleProps}
+                  onApplyDamage={handleApplyDamage}
+                  onApplyHealing={handleApplyHealing}
+                  onSetTempHp={handleSetTempHp}
+                  onToggleCondition={handleToggleCondition}
+                  onSetDefeated={handleSetDefeated}
+                  onRemoveCombatant={handleRemoveCombatant}
+                  onUpdateStats={handleUpdateStats}
+                  onSetInitiative={handleSetInitiative}
+                  onSwitchVersion={handleSwitchVersion}
+                  onUpdateDmNotes={handleUpdateDmNotes}
+                  onUpdatePlayerNotes={handleUpdatePlayerNotes}
+                />
+              );
+            }}
+          />
+        </div>
 
         {/* Footer nudge */}
         <div className="pt-6 text-center text-sm text-muted-foreground/60">

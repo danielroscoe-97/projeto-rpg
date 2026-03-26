@@ -146,7 +146,7 @@ export function CombatantRow({
   return (
     <li
       className={`bg-card border rounded-md overflow-hidden transition-colors ${
-        isCurrentTurn ? "border-gold" : "border-border"
+        isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
       } ${combatant.is_defeated ? "opacity-50" : ""} ${flash ? "animate-flash-red" : ""} ${
         combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : ""
       }`}
@@ -155,9 +155,9 @@ export function CombatantRow({
       data-testid={`combatant-row-${combatant.id}`}
     >
       {/* === ZERO-TAP TIER: always visible === */}
-      <div className="px-4 py-3">
+      <div className="px-3 py-1.5">
         {/* Name row */}
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-1.5 mb-1">
           {/* Drag handle */}
           {dragHandleProps && (
             <span
@@ -172,7 +172,7 @@ export function CombatantRow({
           {/* Turn indicator — shape glyph (▶) satisfies NFR21: color is not the sole indicator */}
           {isCurrentTurn && (
             <span
-              className="text-gold shrink-0 text-xs leading-none select-none"
+              className="text-gold shrink-0 text-sm leading-none select-none"
               aria-label={t("current_turn")}
               data-testid="current-turn-indicator"
             >
@@ -215,7 +215,7 @@ export function CombatantRow({
             )
           )}
 
-          {/* Name — clickable to open pinned card if monster; min-h-[44px] satisfies NFR24 */}
+          {/* Name — clickable to open pinned card if monster */}
           <button
             type="button"
             onClick={() => {
@@ -223,7 +223,7 @@ export function CombatantRow({
                 pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
               }
             }}
-            className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] flex items-center ${
+            className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] flex items-center ${
               canExpand
                 ? "text-foreground hover:text-gold cursor-pointer"
                 : "text-foreground cursor-default"
@@ -234,12 +234,95 @@ export function CombatantRow({
             {combatant.name}
           </button>
 
+          {/* HP display — inline with name */}
+          <div className="flex items-center gap-0.5 text-xs font-mono flex-shrink-0" data-testid={`hp-display-${combatant.id}`}>
+            {/* Current HP — click to set directly */}
+            {showActions && inlineEditTarget === "current" ? (
+              <input
+                type="number"
+                value={inlineHpValue}
+                onChange={(e) => setInlineHpValue(e.target.value)}
+                onBlur={() => {
+                  if (inlineEditRef.current !== "current") return;
+                  const desired = parseInt(inlineHpValue, 10);
+                  if (!isNaN(desired) && desired >= 0) {
+                    const delta = desired - combatant.current_hp;
+                    if (delta < 0) onApplyDamage?.(combatant.id, Math.abs(delta));
+                    else if (delta > 0) onApplyHealing?.(combatant.id, delta);
+                  }
+                  closeInlineEdit();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                  if (e.key === "Escape") closeInlineEdit();
+                }}
+                className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                autoFocus
+                aria-label={t("edit_current_hp_aria", { name: combatant.name })}
+                data-testid={`inline-current-hp-input-${combatant.id}`}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
+                className={`text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                title={showActions ? t("edit_current_hp_title") : undefined}
+                data-testid={`current-hp-btn-${combatant.id}`}
+              >
+                {combatant.current_hp}
+              </button>
+            )}
+            <span className="text-muted-foreground/40">/</span>
+            {/* Max HP — click to set directly */}
+            {showActions && inlineEditTarget === "max" ? (
+              <input
+                type="number"
+                value={inlineHpValue}
+                onChange={(e) => setInlineHpValue(e.target.value)}
+                onBlur={() => {
+                  if (inlineEditRef.current !== "max") return;
+                  const val = parseInt(inlineHpValue, 10);
+                  if (!isNaN(val) && val >= 1) onUpdateStats?.(combatant.id, { max_hp: val });
+                  closeInlineEdit();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                  if (e.key === "Escape") closeInlineEdit();
+                }}
+                className="w-14 bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                autoFocus
+                aria-label={t("edit_max_hp_aria", { name: combatant.name })}
+                data-testid={`inline-max-hp-input-${combatant.id}`}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => { if (showActions) openInlineEdit("max", String(combatant.max_hp)); }}
+                className={`text-muted-foreground/60 ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                title={showActions ? t("edit_max_hp_title") : undefined}
+                data-testid={`max-hp-btn-${combatant.id}`}
+              >
+                {combatant.max_hp}
+              </button>
+            )}
+            {hpThresholdLabel && (
+              <span className="text-[10px] font-mono ml-0.5 text-muted-foreground" data-testid={`hp-threshold-${combatant.id}`}>
+                {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
+              </span>
+            )}
+            {hasTempHp && (
+              <span className="text-[#9f7aea] ml-0.5 text-[10px]" data-testid={`temp-hp-${combatant.id}`}>
+                {t("temp_hp", { value: combatant.temp_hp })}
+              </span>
+            )}
+          </div>
+
           {/* Inline expand toggle (separate from name) */}
           {canExpand && (
             <button
               type="button"
               onClick={handleToggle}
-              className="text-muted-foreground/60 text-xs hover:text-muted-foreground transition-colors px-1 min-h-[44px] flex items-center"
+              className="text-muted-foreground/60 text-xs hover:text-muted-foreground transition-colors px-1 min-h-[32px] flex items-center"
               aria-expanded={isExpanded}
               aria-controls={`stat-block-combatant-${combatant.id}`}
               aria-label={isExpanded ? "Collapse stat block" : "Expand stat block"}
@@ -263,93 +346,9 @@ export function CombatantRow({
         </div>
 
         {/* HP bar */}
-        <div className="mb-2">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-            <div className="flex items-center gap-0.5 text-xs font-mono" data-testid={`hp-display-${combatant.id}`}>
-              {/* Current HP — click to set directly */}
-              {showActions && inlineEditTarget === "current" ? (
-                <input
-                  type="number"
-                  value={inlineHpValue}
-                  onChange={(e) => setInlineHpValue(e.target.value)}
-                  onBlur={() => {
-                    if (inlineEditRef.current !== "current") return;
-                    const desired = parseInt(inlineHpValue, 10);
-                    if (!isNaN(desired) && desired >= 0) {
-                      const delta = desired - combatant.current_hp;
-                      if (delta < 0) onApplyDamage?.(combatant.id, Math.abs(delta));
-                      else if (delta > 0) onApplyHealing?.(combatant.id, delta);
-                    }
-                    closeInlineEdit();
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                    if (e.key === "Escape") closeInlineEdit();
-                  }}
-                  className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  autoFocus
-                  aria-label={t("edit_current_hp_aria", { name: combatant.name })}
-                  data-testid={`inline-current-hp-input-${combatant.id}`}
-                />
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
-                  className={`text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
-                  title={showActions ? t("edit_current_hp_title") : undefined}
-                  data-testid={`current-hp-btn-${combatant.id}`}
-                >
-                  {combatant.current_hp}
-                </button>
-              )}
-              <span className="text-muted-foreground/40 mx-0.5">/</span>
-              {/* Max HP — click to set directly */}
-              {showActions && inlineEditTarget === "max" ? (
-                <input
-                  type="number"
-                  value={inlineHpValue}
-                  onChange={(e) => setInlineHpValue(e.target.value)}
-                  onBlur={() => {
-                    if (inlineEditRef.current !== "max") return;
-                    const val = parseInt(inlineHpValue, 10);
-                    if (!isNaN(val) && val >= 1) onUpdateStats?.(combatant.id, { max_hp: val });
-                    closeInlineEdit();
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                    if (e.key === "Escape") closeInlineEdit();
-                  }}
-                  className="w-14 bg-transparent border border-border rounded px-1 py-0.5 text-foreground text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  autoFocus
-                  aria-label={t("edit_max_hp_aria", { name: combatant.name })}
-                  data-testid={`inline-max-hp-input-${combatant.id}`}
-                />
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => { if (showActions) openInlineEdit("max", String(combatant.max_hp)); }}
-                  className={`text-muted-foreground/60 ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
-                  title={showActions ? t("edit_max_hp_title") : undefined}
-                  data-testid={`max-hp-btn-${combatant.id}`}
-                >
-                  {combatant.max_hp}
-                </button>
-              )}
-              {hpThresholdLabel && (
-                <span className="text-xs font-mono ml-1 text-muted-foreground" data-testid={`hp-threshold-${combatant.id}`}>
-                  — {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
-                </span>
-              )}
-              {hasTempHp && (
-                <span className="text-[#9f7aea] ml-1" data-testid={`temp-hp-${combatant.id}`}>
-                  {t("temp_hp", { value: combatant.temp_hp })}
-                </span>
-              )}
-            </div>
-          </div>
+        <div className="mb-1">
           <div
-            className="h-2 bg-white/[0.06] rounded-full overflow-hidden"
+            className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden"
             role="progressbar"
             aria-valuenow={combatant.current_hp}
             aria-valuemin={0}
@@ -383,8 +382,8 @@ export function CombatantRow({
           </div>
         )}
 
-        {/* === NOTES (player-visible + DM-only) === */}
-        {showActions && (
+        {/* === NOTES (player-visible + DM-only) — hidden when both empty === */}
+        {showActions && (combatant.player_notes || combatant.dm_notes || editingPlayerNotes || editingDmNotes) && (
           <div className="flex flex-wrap gap-3 mt-1 text-xs" data-testid={`notes-${combatant.id}`}>
             {/* Player notes */}
             {editingPlayerNotes ? (
@@ -470,13 +469,13 @@ export function CombatantRow({
 
         {/* === ACTION BUTTONS (only during active combat) === */}
         {showActions && (
-          <div className="flex flex-wrap gap-1 mt-2" data-testid={`action-buttons-${combatant.id}`}>
+          <div className="flex flex-wrap gap-1 mt-1" data-testid={`action-buttons-${combatant.id}`}>
             {/* Pin stat block (monsters only) */}
             {canExpand && fullMonster && (
               <button
                 type="button"
                 onClick={() => pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014")}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[28px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 aria-label={`Pin ${combatant.name} stat block`}
                 data-testid={`pin-btn-${combatant.id}`}
               >
@@ -486,7 +485,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("hp")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "hp" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("adjust_hp")}
@@ -497,7 +496,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("conditions")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "conditions" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("manage_conditions")}
@@ -508,7 +507,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => onSetDefeated?.(combatant.id, !combatant.is_defeated)}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 combatant.is_defeated
                   ? "bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/50"
                   : "bg-red-900/20 text-red-400 hover:bg-red-900/40"
@@ -521,7 +520,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("edit")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "edit" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("edit_stats")}
@@ -534,7 +533,7 @@ export function CombatantRow({
                 <button
                   type="button"
                   onClick={() => setVersionConfirmOpen(true)}
-                  className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="px-2 py-1 text-xs rounded font-medium min-h-[28px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                   aria-label={t("switch_version", { version: otherVersion })}
                   data-testid={`version-btn-${combatant.id}`}
                 >
