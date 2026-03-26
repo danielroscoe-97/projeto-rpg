@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "./server";
+import { trackServerEvent } from "@/lib/analytics/track-server";
 
 interface PlayerRegistrationData {
   name: string;
@@ -103,8 +104,16 @@ export async function registerPlayerCombatant(
       throw new Error(`Failed to register: ${insertError.message}`);
     }
 
+    trackServerEvent("player:joined", {
+      properties: { session_id: sessionId, token_id: tokenId },
+    });
+
     return { combatantId: combatant.id };
   }
+
+  trackServerEvent("player:joined", {
+    properties: { session_id: sessionId, token_id: tokenId },
+  });
 
   // No encounter yet — player data saved on token, DM will pick it up
   return { combatantId: tokenId };

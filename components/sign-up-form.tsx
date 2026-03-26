@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { trackEvent } from "@/lib/analytics/track";
 
 export function SignUpForm({
   className,
@@ -37,6 +38,8 @@ export function SignUpForm({
     }
     setPasswordMismatch(false);
 
+    trackEvent("auth:signup_start");
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -55,7 +58,7 @@ export function SignUpForm({
   };
 
   const inputClass =
-    "bg-surface-tertiary border-white/[0.06] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/40 focus:ring-gold/30";
+    "bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/60 focus:ring-gold/50";
 
   return (
     <div className={cn("flex flex-col", className)} {...props}>
@@ -112,7 +115,7 @@ export function SignUpForm({
               type="password"
               required
               aria-required="true"
-              placeholder="Min. 6 caracteres"
+              placeholder={t("password_min_chars")}
               aria-describedby={error ? "signup-error" : undefined}
               aria-invalid={passwordMismatch || undefined}
               value={password}
@@ -132,7 +135,7 @@ export function SignUpForm({
               type="password"
               required
               aria-required="true"
-              placeholder="Repita"
+              placeholder={t("repeat_password")}
               aria-describedby={error ? "signup-error" : undefined}
               aria-invalid={passwordMismatch || undefined}
               value={repeatPassword}

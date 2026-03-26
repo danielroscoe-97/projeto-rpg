@@ -1,5 +1,6 @@
 import { createClient } from "./client";
 import type { Combatant } from "@/lib/types/combat";
+import { trackEvent } from "@/lib/analytics/track";
 
 /** Persists initiative values + order for all combatants, then marks encounter active. */
 export async function persistInitiativeAndStartCombat(
@@ -28,6 +29,11 @@ export async function persistInitiativeAndStartCombat(
     .eq("id", encounterId);
 
   if (error) throw new Error(error.message);
+
+  trackEvent("combat:started", {
+    encounter_id: encounterId,
+    combatant_count: combatants.length,
+  });
 }
 
 /** Persists HP changes (current_hp, temp_hp) for a combatant. */
@@ -171,7 +177,8 @@ export async function persistInitiativeOrder(
 
 /** Marks an encounter as completed (is_active = false). */
 export async function persistEndEncounter(
-  encounterId: string
+  encounterId: string,
+  stats?: { rounds_total?: number; duration_seconds?: number; combatants_defeated?: number }
 ): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase
@@ -179,6 +186,11 @@ export async function persistEndEncounter(
     .update({ is_active: false })
     .eq("id", encounterId);
   if (error) throw new Error(error.message);
+
+  trackEvent("combat:ended", {
+    encounter_id: encounterId,
+    ...stats,
+  });
 }
 
 /** Persists DM-only notes for a combatant (never broadcast). */

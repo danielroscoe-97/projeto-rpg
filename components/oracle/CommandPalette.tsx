@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/analytics/track";
 import { Command } from "cmdk";
 import { searchMonsters, searchSpells, getAllConditions } from "@/lib/srd/srd-search";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
@@ -59,7 +60,21 @@ export function CommandPalette() {
       ).slice(0, MAX_RESULTS_PER_GROUP)
     : [];
 
-  const hasResults = monsterResults.length > 0 || spellResults.length > 0 || conditionResults.length > 0;
+  const totalResults = monsterResults.length + spellResults.length + conditionResults.length;
+  const hasResults = totalResults > 0;
+
+  // Track search queries (debounced — fires once per final query, not per keystroke)
+  const lastTrackedQuery = useRef("");
+  useEffect(() => {
+    if (debouncedQuery && debouncedQuery !== lastTrackedQuery.current) {
+      lastTrackedQuery.current = debouncedQuery;
+      trackEvent("oracle:search", {
+        query_length: debouncedQuery.length,
+        filter,
+        result_count: totalResults,
+      });
+    }
+  }, [debouncedQuery, filter, totalResults]);
 
   // ESC = full close (clears query + filter)
   const handleClose = useCallback(() => {
@@ -201,7 +216,7 @@ export function CommandPalette() {
                 onClick={() => setFilter(f.key)}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                   filter === f.key
-                    ? "bg-white/[0.12] text-foreground border border-white/[0.15]"
+                    ? "bg-gold/20 text-gold border border-gold/30"
                     : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground border border-transparent"
                 }`}
               >
@@ -235,7 +250,7 @@ export function CommandPalette() {
             {/* Monsters */}
             {monsterResults.length > 0 && (
               <Command.Group heading={t("group_monsters")}>
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
                   <Skull className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_monsters")}
                 </div>
                 {monsterResults.map((r) => (
@@ -243,7 +258,7 @@ export function CommandPalette() {
                     key={`m:${r.item.id}:${r.item.ruleset_version}`}
                     value={`monster:${r.item.id}:${r.item.ruleset_version}`}
                     onSelect={() => handlePinMonster(r.item)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-white/[0.06] aria-selected:bg-white/[0.10] transition-colors min-h-[44px]"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
                   >
                     <MonsterToken
                       tokenUrl={r.item.token_url}
@@ -270,7 +285,7 @@ export function CommandPalette() {
             {/* Spells */}
             {spellResults.length > 0 && (
               <Command.Group heading={t("group_spells")}>
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
                   <Sparkles className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_spells")}
                 </div>
                 {spellResults.map((r) => (
@@ -278,7 +293,7 @@ export function CommandPalette() {
                     key={`s:${r.item.id}:${r.item.ruleset_version}`}
                     value={`spell:${r.item.id}:${r.item.ruleset_version}`}
                     onSelect={() => handleViewSpell(r.item)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-white/[0.06] aria-selected:bg-white/[0.10] transition-colors min-h-[44px]"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
                   >
                     <div className="flex-1 min-w-0">
                       <span className="font-medium">{r.item.name}</span>
@@ -307,7 +322,7 @@ export function CommandPalette() {
             {/* Conditions */}
             {conditionResults.length > 0 && (
               <Command.Group heading={t("group_conditions")}>
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
                   <HeartPulse className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_conditions")}
                 </div>
                 {conditionResults.map((c) => (
@@ -315,7 +330,7 @@ export function CommandPalette() {
                     key={`c:${c.id}`}
                     value={`condition:${c.id}`}
                     onSelect={() => handleViewCondition(c)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-white/[0.06] aria-selected:bg-white/[0.10] transition-colors min-h-[44px]"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
                   >
                     <span className="font-medium">{c.name}</span>
                     <span className="text-xs text-muted-foreground truncate flex-1">

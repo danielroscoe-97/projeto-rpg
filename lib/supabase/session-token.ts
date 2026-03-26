@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import { trackEvent } from "@/lib/analytics/track";
 
 /** Generate a cryptographically random token for session sharing. */
 function generateToken(): string {
@@ -37,6 +38,7 @@ export async function createSessionToken(
   }
 
   const joinUrl = `${window.location.origin}/join/${token}`;
+  trackEvent("share:link_generated", { session_id: sessionId });
   return { token, joinUrl };
 }
 

@@ -121,7 +121,7 @@ export const metadata = {
 // ── Hero ─────────────────────────────────────────────────────────────────────
 function HeroSection() {
   return (
-    <section className="relative min-h-dvh flex items-center justify-center px-6 pt-[72px] overflow-hidden">
+    <section data-section="hero" className="relative min-h-dvh flex items-center justify-center px-6 pt-[72px] overflow-hidden">
       {/* Background photo */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <Image
@@ -286,7 +286,7 @@ function FeaturesSection() {
   ];
 
   return (
-    <section className="py-24 px-6 relative overflow-hidden" id="features">
+    <section data-section="features" className="py-24 px-6 relative overflow-hidden" id="features">
       {/* Decorative layer — floating RPG dice */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-gold/[0.04] rounded-full blur-[120px]" />
@@ -369,7 +369,7 @@ function SocialProofSection() {
   ];
 
   return (
-    <section className="py-24 px-6 relative overflow-hidden">
+    <section data-section="social-proof" className="py-24 px-6 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cool/[0.03] rounded-full blur-[120px]" />
       </div>
@@ -468,7 +468,7 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section id="como-funciona" className="py-24 px-6 bg-surface-secondary/50 relative overflow-hidden">
+    <section data-section="how-it-works" id="como-funciona" className="py-24 px-6 bg-surface-secondary/50 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cool/[0.04] rounded-full blur-[100px]" />
         {/* Subtle grid pattern */}
@@ -738,7 +738,7 @@ function ComparisonSection() {
 
   return (
     // Darker "stage" bg — breaks visual monotony from the rest of the page
-    <section id="comparativo" className="py-24 px-6 relative overflow-hidden bg-[#0c0c16]">
+    <section data-section="comparison" id="comparativo" className="py-24 px-6 relative overflow-hidden bg-[#0c0c16]">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/[0.025] rounded-full blur-[140px]" />
       </div>
@@ -882,7 +882,7 @@ function ComparisonSection() {
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
-    <section className="py-24 px-6 relative overflow-hidden">
+    <section data-section="final-cta" className="py-24 px-6 relative overflow-hidden">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/[0.06] rounded-full blur-[100px]" />
@@ -970,6 +970,7 @@ export default function LandingPage() {
       <SocialProofSection />
       <FinalCtaSection />
 
+      <LandingPageTracker />
       <Footer />
     </div>
   );

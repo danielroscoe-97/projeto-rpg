@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { trackEvent } from "@/lib/analytics/track";
 
 export function LoginForm({
   className,
@@ -33,6 +34,7 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
+      trackEvent("auth:login");
       // Sync language preference from DB to cookie
       try {
         const res = await fetch("/api/user/language");
@@ -88,7 +90,7 @@ export function LoginForm({
             aria-describedby={error ? "login-error" : undefined}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-surface-tertiary border-white/[0.06] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/40 focus:ring-gold/30"
+            className="bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/60 focus:ring-gold/50"
           />
         </div>
 
@@ -117,7 +119,7 @@ export function LoginForm({
             aria-describedby={error ? "login-error" : undefined}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-surface-tertiary border-white/[0.06] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/40 focus:ring-gold/30"
+            className="bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/60 focus:ring-gold/50"
           />
         </div>
 

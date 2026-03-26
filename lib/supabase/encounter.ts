@@ -2,6 +2,7 @@ import { createClient } from "./client";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { trackEvent } from "@/lib/analytics/track";
 
 export interface CreateEncounterResult {
   session_id: string;
@@ -36,6 +37,11 @@ export async function createSessionOnly(
   if (sessionError || !session) {
     throw new Error(sessionError?.message ?? "Failed to create session");
   }
+  trackEvent("combat:session_created", {
+    session_id: session.id,
+    has_campaign: !!campaignId,
+    ruleset: ruleset_version,
+  });
   return session.id;
 }
 
@@ -124,6 +130,15 @@ export async function createEncounterWithCombatants(
   if (combatantsError) {
     throw new Error(combatantsError.message ?? "Failed to insert combatants");
   }
+
+  const playerCount = combatants.filter((c) => c.is_player).length;
+  const monsterCount = combatants.length - playerCount;
+  trackEvent("combat:encounter_created", {
+    encounter_id: encounter.id,
+    combatant_count: combatants.length,
+    player_count: playerCount,
+    monster_count: monsterCount,
+  });
 
   return { session_id: sessionId, encounter_id: encounter.id };
 }
