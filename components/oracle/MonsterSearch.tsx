@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { Plus } from "lucide-react";
 import { searchMonsters } from "@/lib/srd/srd-search";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
@@ -134,11 +135,12 @@ export function MonsterSearch({
                     <button
                       type="button"
                       onClick={() => onAddToCombat(monster)}
-                      className="px-2 py-1 text-xs text-gold border border-gold/40 rounded hover:bg-gold/10 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                      aria-label={`Add ${monster.name} to combat`}
+                      className="inline-flex items-center justify-center gap-1 px-2 py-1 text-xs text-gold border border-gold/40 rounded hover:bg-gold/10 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] shrink-0 min-h-[44px] min-w-[44px]"
+                      aria-label={t("add_to_combat_aria", { name: monster.name })}
                       data-testid={`add-monster-${monster.id}`}
+                      title={t("add_to_combat")}
                     >
-                      + Add
+                      <Plus className="w-4 h-4" />
                     </button>
                   )}
                 </div>

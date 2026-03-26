@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import ReactMarkdown from "react-markdown";
+import { RefreshCw } from "lucide-react";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { OracleAIData } from "@/lib/stores/pinned-cards-store";
 
@@ -54,6 +56,12 @@ export function OracleAIModal() {
     setQuestion("");
   }, []);
 
+  // Soft dismiss — backdrop click preserves query + response for quick reopen
+  const handleDismiss = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  // Full close — ESC clears everything
   const handleClose = useCallback(() => {
     setOpen(false);
     setQuery("");
@@ -74,8 +82,8 @@ export function OracleAIModal() {
   }, [open, handleClose]);
 
   // Ask Oracle AI
-  const handleAsk = useCallback(async () => {
-    const q = query.trim();
+  const handleAsk = useCallback(async (overrideQuery?: string) => {
+    const q = (overrideQuery ?? query).trim();
     if (!q || streamingRef.current) return;
 
     streamingRef.current = true;
@@ -178,7 +186,7 @@ export function OracleAIModal() {
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-150"
-        onClick={handleClose}
+        onClick={handleDismiss}
         aria-hidden="true"
       />
 
@@ -201,7 +209,7 @@ export function OracleAIModal() {
             {query.trim() && !streaming && (
               <button
                 type="button"
-                onClick={handleAsk}
+                onClick={() => handleAsk()}
                 className="mr-2 px-2 py-1 text-xs font-medium text-[#1a1a28] bg-[#c9a959] rounded hover:bg-[#c9a959]/80 transition-colors"
               >
                 {t("ask")}
@@ -234,8 +242,8 @@ export function OracleAIModal() {
                 </p>
 
                 {/* Response text */}
-                <div className="text-sm text-[#e8e4d0] leading-relaxed whitespace-pre-wrap">
-                  {response}
+                <div className="oracle-ai-markdown text-sm text-[#e8e4d0] leading-relaxed">
+                  <ReactMarkdown>{response}</ReactMarkdown>
                 </div>
 
                 {/* Streaming dots */}
@@ -291,8 +299,33 @@ export function OracleAIModal() {
 
             {/* Error */}
             {error && (
-              <div className="px-4 py-4 text-center text-sm text-red-400">
-                {error}
+              <div className="px-4 py-4 text-center text-sm text-red-400 space-y-3">
+                <p>{error}</p>
+                {!streaming && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuery(question);
+                        handleAsk(question);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#c9a959] border border-[#c9a959]/40 rounded-lg hover:bg-[#c9a959]/10 transition-colors min-h-[44px]"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      {t("retry")}
+                    </button>
+                    <p className="text-xs text-muted-foreground">
+                      <a
+                        href="/app/compendium"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#c9a959]/70 hover:text-[#c9a959] transition-colors"
+                      >
+                        {t("compendium_fallback")}
+                      </a>
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>

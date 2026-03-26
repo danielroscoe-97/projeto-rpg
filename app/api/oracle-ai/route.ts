@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_MAX_ENTRIES = 1_000;
 
 function isRateLimited(ip: string): boolean {
