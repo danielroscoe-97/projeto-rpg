@@ -7,6 +7,8 @@ import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
+import { OracleAITrigger } from "@/components/oracle/OracleAITrigger";
+import { OracleAIModal } from "@/components/oracle/OracleAIModal";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
@@ -48,12 +50,13 @@ export default async function AppLayout({
           { href: "/app/presets", label: <span className="inline-flex items-center gap-1.5"><Package className="w-4 h-4" aria-hidden="true" />{t("presets")}</span> },
           { href: "/app/settings", label: <span className="inline-flex items-center gap-1.5"><Settings className="w-4 h-4" aria-hidden="true" />{t("settings")}</span> },
         ]}
-        rightSlot={<><OracleSearchTrigger /><LogoutButton /></>}
+        rightSlot={<><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
       />
       <SrdInitializer />
       <ErrorBoundary name="Oracle">
         <FloatingCardContainer />
         <CommandPalette />
+        <OracleAIModal />
         <OracleFAB />
         <DiceHistoryPanel />
       </ErrorBoundary>

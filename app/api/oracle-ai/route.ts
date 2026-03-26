@@ -1,15 +1,22 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ORACLE_SYSTEM_PROMPT } from "@/lib/oracle-ai/system-prompt";
 
 export const runtime = "nodejs";
 
-// Simple in-memory rate limiter: max 10 requests per minute per IP
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_MAX_ENTRIES = 1_000;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
+
+  // Evict expired entries to prevent unbounded memory growth
+  if (rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES) {
+    for (const [key, val] of rateLimitMap) {
+      if (now > val.resetAt) rateLimitMap.delete(key);
+    }
+  }
+
   const entry = rateLimitMap.get(ip);
   if (!entry || now > entry.resetAt) {
     rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
@@ -19,44 +26,18 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
-// Models to try in order (fallback chain)
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+
+// Free tier models (Mar 2026): Flash-Lite 15RPM/1000req, Flash 10RPM/250req, Pro 5RPM/100req
 const MODEL_CHAIN = [
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-1.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-2.5-pro",
 ];
 
-async function tryGenerateStream(
-  genAI: GoogleGenerativeAI,
-  question: string,
-) {
-  let lastError: Error | null = null;
-
-  for (const modelName of MODEL_CHAIN) {
-    try {
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction: ORACLE_SYSTEM_PROMPT,
-        tools: [{ googleSearch: {} } as any],
-      });
-      const result = await model.generateContentStream(question);
-      return { result, modelName };
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      // Only retry on 429 (quota) or 503 (overloaded)
-      const msg = lastError.message;
-      if (msg.includes("429") || msg.includes("503") || msg.includes("quota")) {
-        continue;
-      }
-      throw lastError;
-    }
-  }
-
-  throw lastError ?? new Error("All models failed");
-}
+const REQUEST_TIMEOUT_MS = 8_000;
 
 export async function POST(request: Request) {
-  // Check API key is configured
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -65,7 +46,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Rate limiting
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     request.headers.get("x-real-ip") ||
@@ -78,7 +58,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Parse request
   let question: string;
   try {
     const body = await request.json();
@@ -94,77 +73,131 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const { result } = await tryGenerateStream(genAI, question);
+  const requestBody = {
+    system_instruction: { parts: [{ text: ORACLE_SYSTEM_PROMPT }] },
+    contents: [{ role: "user", parts: [{ text: question }] }],
+    tools: [{ google_search: {} }],
+  };
 
-    // Stream the response as SSE
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of result.stream) {
-            const text = chunk.text();
-            if (text) {
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ text })}\n\n`),
-              );
-            }
-          }
+  let lastError = "";
+  for (const modelName of MODEL_CHAIN) {
+    const url = `${GEMINI_BASE}/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
-          // Extract grounding metadata from the final response
-          const response = await result.response;
-          const candidate = response.candidates?.[0];
-          const groundingMeta = candidate?.groundingMetadata;
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-          if (groundingMeta?.groundingChunks?.length) {
-            const sources = groundingMeta.groundingChunks
-              .filter((c: any) => c.web)
-              .map((c: any) => ({
-                title: c.web.title || "",
-                uri: c.web.uri || "",
-              }));
-            if (sources.length > 0) {
-              controller.enqueue(
-                encoder.encode(
-                  `data: ${JSON.stringify({ sources })}\n\n`,
-                ),
-              );
-            }
-          }
+      const geminiRes = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
 
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        } catch (err) {
-          const message =
-            err instanceof Error ? err.message : "Stream error";
-          controller.enqueue(
-            encoder.encode(
-              `data: ${JSON.stringify({ error: message })}\n\n`,
-            ),
-          );
-          controller.close();
+      if (!geminiRes.ok) {
+        const errBody = await geminiRes.text().catch(() => "");
+        if (geminiRes.status === 429 || errBody.includes("quota")) {
+          lastError = errBody;
+          continue;
         }
-      },
-    });
+        lastError = errBody || `HTTP ${geminiRes.status}`;
+        continue;
+      }
 
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
-    });
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to call Gemini API";
-    // Friendly message for quota errors
-    if (message.includes("429") || message.includes("quota")) {
-      return Response.json(
-        { error: "O Oráculo atingiu o limite de consultas. Tente novamente em alguns segundos." },
-        { status: 429 },
-      );
+      const geminiStream = geminiRes.body;
+      if (!geminiStream) {
+        lastError = "No response body from Gemini";
+        continue;
+      }
+
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      const transformStream = new ReadableStream({
+        async start(ctrl) {
+          const reader = geminiStream.getReader();
+          let buffer = "";
+
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              buffer += decoder.decode(value, { stream: true });
+
+              let lineEnd: number;
+              while ((lineEnd = buffer.indexOf("\n")) !== -1) {
+                const line = buffer.slice(0, lineEnd).replace(/\r$/, "");
+                buffer = buffer.slice(lineEnd + 1);
+
+                if (!line.startsWith("data: ")) continue;
+                const json = line.slice(6).trim();
+                if (!json || json === "[DONE]") continue;
+
+                try {
+                  const parsed = JSON.parse(json);
+                  const text = parsed?.candidates?.[0]?.content?.parts
+                    ?.map((p: any) => p.text || "")
+                    .join("") || "";
+
+                  if (text) {
+                    ctrl.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+                  }
+
+                  const groundingMeta = parsed?.candidates?.[0]?.groundingMetadata;
+                  if (groundingMeta?.groundingChunks?.length) {
+                    const sources = groundingMeta.groundingChunks
+                      .filter((c: any) => c.web)
+                      .map((c: any) => ({
+                        title: c.web?.title || "",
+                        uri: c.web?.uri || "",
+                      }));
+                    if (sources.length > 0) {
+                      ctrl.enqueue(encoder.encode(`data: ${JSON.stringify({ sources })}\n\n`));
+                    }
+                  }
+                } catch {
+                  // Skip malformed chunks
+                }
+              }
+            }
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "Stream error";
+            ctrl.enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
+          }
+
+          ctrl.enqueue(encoder.encode("data: [DONE]\n\n"));
+          ctrl.close();
+        },
+      });
+
+      return new Response(transformStream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        lastError = `Timeout connecting to ${modelName}`;
+        continue;
+      }
+      lastError = err instanceof Error ? err.message : String(err);
+      continue;
     }
-    return Response.json({ error: message }, { status: 500 });
   }
+
+  if (lastError.includes("429") || lastError.includes("quota")) {
+    return Response.json(
+      { error: "O Oráculo atingiu o limite de consultas. Tente novamente em alguns segundos." },
+      { status: 429 },
+    );
+  }
+
+  return Response.json(
+    { error: lastError || "All models failed. Please try again." },
+    { status: 502 },
+  );
 }

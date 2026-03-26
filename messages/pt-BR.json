@@ -417,6 +417,7 @@
   },
   "oracle_ai": {
     "title": "Oráculo IA",
+    "trigger_label": "Perguntar ao Oráculo",
     "placeholder": "Perguntar ao Oráculo…",
     "hint": "Faça uma pergunta sobre regras, builds ou interações de D&D 5e. O Oráculo consulta RAW, RAI e o consenso da comunidade.",
     "ask": "Perguntar",
@@ -425,8 +426,6 @@
     "close": "Fechar",
     "minimize": "Minimizar",
     "sources": "Fontes",
-    "switch_ai": "Perguntar ao Oráculo ✨",
-    "switch_search": "Busca simples 🔍",
     "error_no_key": "Oráculo IA não configurado. Adicione GEMINI_API_KEY.",
     "streaming": "O Oráculo está consultando…"
   },
@@ -563,7 +562,7 @@
     "no_presets": "Nenhum preset encontrado. Crie um no Dashboard."
   },
   "command_palette": {
-    "label": "Busca Oracle",
+    "label": "Busca",
     "placeholder": "Pesquisar monstros, magias, condições…",
     "loading": "Carregando dados SRD…",
     "no_results": "Nenhum resultado encontrado.",
@@ -576,6 +575,6 @@
     "hint_navigate": "navegar",
     "hint_select": "selecionar",
     "hint_close": "fechar",
-    "trigger_aria": "Busca Oracle"
+    "trigger_aria": "Busca"
   }
 }

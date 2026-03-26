@@ -405,6 +405,7 @@
   },
   "oracle_ai": {
     "title": "Oracle AI",
+    "trigger_label": "Ask the Oracle",
     "placeholder": "Ask the Oracle…",
     "hint": "Ask a question about D&D 5e rules, builds, or interactions. The Oracle checks RAW, RAI, and community consensus.",
     "ask": "Ask",
@@ -413,8 +414,6 @@
     "close": "Close",
     "minimize": "Minimize",
     "sources": "Sources",
-    "switch_ai": "Ask the Oracle ✨",
-    "switch_search": "Simple search 🔍",
     "error_no_key": "Oracle AI not configured. Add GEMINI_API_KEY.",
     "streaming": "The Oracle is consulting…"
   },
@@ -551,7 +550,7 @@
     "no_presets": "No presets found. Create one from the Dashboard."
   },
   "command_palette": {
-    "label": "Oracle Search",
+    "label": "Search",
     "placeholder": "Search monsters, spells, conditions…",
     "loading": "Loading SRD data…",
     "no_results": "No results found.",
@@ -564,6 +563,6 @@
     "hint_navigate": "navigate",
     "hint_select": "select",
     "hint_close": "close",
-    "trigger_aria": "Oracle Search"
+    "trigger_aria": "Search"
   }
 }
