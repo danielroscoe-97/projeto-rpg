@@ -43,16 +43,16 @@ function D4Icon({ className, style }: { className?: string; style?: React.CSSPro
   );
 }
 
-// D6 — cube
+// D6 — isometric cube
 function D6Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      <rect x="8" y="8" width="32" height="32" rx="3" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
-      <circle cx="18" cy="18" r="2" fill="currentColor" opacity="0.4" />
-      <circle cx="30" cy="18" r="2" fill="currentColor" opacity="0.4" />
-      <circle cx="18" cy="30" r="2" fill="currentColor" opacity="0.4" />
-      <circle cx="30" cy="30" r="2" fill="currentColor" opacity="0.4" />
-      <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.4" />
+      {/* Top face */}
+      <polygon points="24,6 40,16 24,26 8,16" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.5" />
+      {/* Left face */}
+      <polygon points="8,16 24,26 24,42 8,32" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.6" />
+      {/* Right face */}
+      <polygon points="40,16 24,26 24,42 40,32" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
     </svg>
   );
 }
@@ -69,39 +69,43 @@ function D8Icon({ className, style }: { className?: string; style?: React.CSSPro
   );
 }
 
-// D10 — kite / pentagonal shape
+// D10 — trapezohedron (elongated diamond with facets)
 function D10Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      <polygon points="24,3 42,18 36,44 12,44 6,18" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
-      <line x1="24" y1="3" x2="24" y2="44" stroke="currentColor" strokeWidth="1.2" opacity="0.25" />
-      <text x="24" y="32" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="700" fontFamily="monospace" opacity="0.7">10</text>
+      {/* Outer diamond */}
+      <polygon points="24,2 44,22 24,46 4,22" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.6" />
+      {/* Upper facet lines */}
+      <line x1="24" y1="2" x2="14" y2="22" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      <line x1="24" y1="2" x2="34" y2="22" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      {/* Mid belt */}
+      <polyline points="4,22 14,22 24,26 34,22 44,22" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.35" />
+      {/* Lower facet lines */}
+      <line x1="24" y1="46" x2="14" y2="22" stroke="currentColor" strokeWidth="1" opacity="0.25" />
+      <line x1="24" y1="46" x2="34" y2="22" stroke="currentColor" strokeWidth="1" opacity="0.25" />
     </svg>
   );
 }
 
-// D12 — pentagon
-function D12Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      <polygon points="24,4 44,17 38,40 10,40 4,17" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
-      <polygon points="24,12 35,20 32,34 16,34 13,20" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.3" />
-      <text x="24" y="29" textAnchor="middle" fill="currentColor" fontSize="10" fontWeight="700" fontFamily="monospace" opacity="0.7">12</text>
-    </svg>
-  );
-}
 
-function D20Icon({ className }: { className?: string }) {
+function D20Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <polygon points="32,4 60,20 60,44 32,60 4,44 4,20" stroke="currentColor" strokeWidth="2" fill="none" opacity="0.6" />
-      <polygon points="32,4 60,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-      <polygon points="32,4 4,20 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-      <polygon points="60,20 60,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-      <polygon points="4,20 4,44 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-      <polygon points="60,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-      <polygon points="4,44 32,60 32,28" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-      <text x="32" y="37" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="700" fontFamily="monospace" opacity="0.8">20</text>
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      {/* Outer silhouette — irregular pentagon (3D perspective) */}
+      <polygon points="32,2 58,18 52,56 12,56 6,18" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
+      {/* Top face — front triangle */}
+      <polygon points="32,2 6,18 58,18" stroke="currentColor" strokeWidth="1.2" fill="none" opacity="0.35" />
+      {/* Upper-left facet */}
+      <line x1="6" y1="18" x2="32" y2="34" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      {/* Upper-right facet */}
+      <line x1="58" y1="18" x2="32" y2="34" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      {/* Lower-left facet */}
+      <line x1="12" y1="56" x2="32" y2="34" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      {/* Lower-right facet */}
+      <line x1="52" y1="56" x2="32" y2="34" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      {/* Bottom edge to center */}
+      <line x1="6" y1="18" x2="12" y2="56" stroke="currentColor" strokeWidth="1.2" opacity="0.25" />
+      <line x1="58" y1="18" x2="52" y2="56" stroke="currentColor" strokeWidth="1.2" opacity="0.25" />
     </svg>
   );
 }
@@ -286,28 +290,25 @@ function FeaturesSection() {
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-gold/[0.04] rounded-full blur-[120px]" />
 
-        {/* Existing */}
-        <D20Icon className="absolute top-10 right-10 w-28 h-28 text-gold/[0.06] animate-spin-slow" />
-        <SparkleIcon className="absolute bottom-16 left-16 w-10 h-10 text-gold/[0.10] float-gentle" />
+        {/* d20 — top-right */}
+        <D20Icon className="absolute top-10 right-10 w-24 h-24 text-gold/20 float-drift-3" style={{ animationDelay: "-1s" }} />
+        <SparkleIcon className="absolute bottom-16 left-16 w-10 h-10 text-gold/20 float-gentle" />
 
         {/* d4 — top-left */}
-        <D4Icon className="absolute top-8 left-[8%] w-14 h-14 text-gold/[0.07] float-drift-1" />
+        <D4Icon className="absolute top-8 left-[8%] w-16 h-16 text-gold/15 float-drift-1" />
 
         {/* d6 — mid-right */}
-        <D6Icon className="absolute top-1/3 right-[5%] w-12 h-12 text-gold/[0.06] float-drift-2" />
+        <D6Icon className="absolute top-1/3 right-[5%] w-14 h-14 text-gold/12 float-drift-2" />
 
         {/* d8 — bottom-right */}
-        <D8Icon className="absolute bottom-12 right-[12%] w-16 h-16 text-gold/[0.07] float-drift-3" />
+        <D8Icon className="absolute bottom-12 right-[12%] w-16 h-16 text-gold/15 float-drift-3" />
 
         {/* d10 — mid-left */}
-        <D10Icon className="absolute top-[55%] left-[3%] w-12 h-12 text-gold/[0.06] float-drift-4" />
-
-        {/* d12 — top-center-left */}
-        <D12Icon className="absolute top-4 left-[35%] w-10 h-10 text-gold/[0.05] float-drift-2" style={{ animationDelay: "-2s" }} />
+        <D10Icon className="absolute top-[55%] left-[3%] w-14 h-14 text-gold/12 float-drift-4" />
 
         {/* Extra sparkles */}
-        <SparkleIcon className="absolute top-[20%] right-[25%] w-6 h-6 text-gold/[0.08] float-drift-1" style={{ animationDelay: "-1.5s" }} />
-        <SparkleIcon className="absolute bottom-[30%] left-[20%] w-8 h-8 text-gold/[0.06] float-drift-3" style={{ animationDelay: "-3s" }} />
+        <SparkleIcon className="absolute top-[20%] right-[25%] w-7 h-7 text-gold/15 float-drift-1" style={{ animationDelay: "-1.5s" }} />
+        <SparkleIcon className="absolute bottom-[30%] left-[20%] w-8 h-8 text-gold/12 float-drift-3" style={{ animationDelay: "-3s" }} />
       </div>
 
       <div className="relative max-w-5xl mx-auto">
@@ -346,39 +347,60 @@ function FeaturesSection() {
   );
 }
 
-// ── Social Proof Strip ───────────────────────────────────────────────────────
-async function SocialProofStrip() {
-  const { getTranslations } = await import("next-intl/server");
-  const t = await getTranslations("landing");
+// ── Social Proof ─────────────────────────────────────────────────────────────
+function SocialProofSection() {
   const testimonials = [
-    { quote: t("testimonial_1_quote"), author: t("testimonial_1_author") },
-    { quote: t("testimonial_2_quote"), author: t("testimonial_2_author") },
-    { quote: t("testimonial_3_quote"), author: t("testimonial_3_author") },
+    {
+      quote: "Finalmente algo feito para quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
+      author: "Mestre há 8 anos",
+      role: "Campanha semanal, 5 jogadores",
+    },
+    {
+      quote: "Eu usava Roll20 só pelo tracker e odiava a lentidão. Taverna resolve em 30 segundos o que demorava 5 minutos.",
+      author: "DM veterano",
+      role: "Migrou do Roll20",
+    },
+    {
+      quote: "O oráculo de magias salvou minha vida. Consultar magia no meio do combate sem perder o ritmo é game changer.",
+      author: "Mestra iniciante",
+      role: "Primeira campanha DMando",
+    },
   ];
 
   return (
-    <section className="py-16 px-6 relative overflow-hidden">
+    <section className="py-24 px-6 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cool/[0.03] rounded-full blur-[120px]" />
+      </div>
+
       <div className="relative max-w-5xl mx-auto">
-        <div className="text-center mb-10 animate-fade-in">
-          <p className="text-sm font-semibold text-gold uppercase tracking-widest mb-2">
-            ✦
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-display text-foreground">
-            {t("social_proof_heading")}
+        <div className="text-center mb-14 animate-fade-in">
+          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
+            O que mestres estão dizendo
           </h2>
+          <p className="text-muted-foreground text-sm">
+            Feedback real de quem usa na mesa toda semana.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-5">
-          {testimonials.map((item, i) => (
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
             <div
               key={i}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 animate-fade-in-up"
-              style={{ animationDelay: `${i * 0.08}s` }}
+              className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <p className="text-foreground/70 text-sm leading-relaxed italic">
-                &ldquo;{item.quote}&rdquo;
+              {/* Quote mark */}
+              <svg width="28" height="21" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-4 shrink-0" aria-hidden="true">
+                <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
+              </svg>
+              <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
+                &ldquo;{t.quote}&rdquo;
               </p>
-              <p className="mt-3 text-xs text-gold/70 font-medium">— {item.author}</p>
+              <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                <p className="text-sm font-medium text-foreground">{t.author}</p>
+                <p className="text-xs text-muted-foreground">{t.role}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -812,67 +834,6 @@ function ComparisonSection() {
 }
 
 // ── Social Proof ─────────────────────────────────────────────────────────────
-function SocialProofSection() {
-  const testimonials = [
-    {
-      quote: "Finalmente algo feito para quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
-      author: "Mestre há 8 anos",
-      role: "Campanha semanal, 5 jogadores",
-    },
-    {
-      quote: "Eu usava Roll20 só pelo tracker e odiava a lentidão. Taverna resolve em 30 segundos o que demorava 5 minutos.",
-      author: "DM veterano",
-      role: "Migrou do Roll20",
-    },
-    {
-      quote: "O oráculo de magias salvou minha vida. Consultar magia no meio do combate sem perder o ritmo é game changer.",
-      author: "Mestra iniciante",
-      role: "Primeira campanha DMando",
-    },
-  ];
-
-  return (
-    <section className="py-24 px-6 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cool/[0.03] rounded-full blur-[120px]" />
-      </div>
-
-      <div className="relative max-w-5xl mx-auto">
-        <div className="text-center mb-14 animate-fade-in">
-          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
-            O que mestres estão dizendo
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            Feedback real de quem usa na mesa toda semana.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
-            <div
-              key={i}
-              className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              {/* Quote mark */}
-              <svg width="28" height="21" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-4 shrink-0" aria-hidden="true">
-                <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
-              </svg>
-              <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <p className="text-sm font-medium text-foreground">{t.author}</p>
-                <p className="text-xs text-muted-foreground">{t.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
@@ -957,7 +918,6 @@ export default function LandingPage() {
       <HeroSection />
       <SectionDivider />
       <FeaturesSection />
-      <SocialProofStrip />
       <SectionDivider />
       <HowItWorksSection />
       <SectionDivider />
