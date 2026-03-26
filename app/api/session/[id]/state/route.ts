@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getHpStatus } from "@/lib/utils/hp-status";
 
 export async function GET(
@@ -18,8 +18,12 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Use service client to bypass RLS for token/session/encounter lookups
+  // (anonymous players can't read these tables through RLS)
+  const serviceClient = createServiceClient();
+
   // Check if user has a valid session token
-  const { data: tokenRow } = await supabase
+  const { data: tokenRow } = await serviceClient
     .from("session_tokens")
     .select("id")
     .eq("session_id", sessionId)
@@ -33,7 +37,7 @@ export async function GET(
   }
 
   // Fetch active encounter + combatants
-  const { data: encounter } = await supabase
+  const { data: encounter } = await serviceClient
     .from("encounters")
     .select("id, round_number, current_turn_index, is_active")
     .eq("session_id", sessionId)
@@ -46,7 +50,7 @@ export async function GET(
     return NextResponse.json({ data: { encounter: null, combatants: [] } });
   }
 
-  const { data: combatants } = await supabase
+  const { data: combatants } = await serviceClient
     .from("combatants")
     .select(
       "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version"

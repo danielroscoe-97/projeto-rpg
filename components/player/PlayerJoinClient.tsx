@@ -3,8 +3,7 @@
 import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { linkAnonymousUser } from "@/lib/supabase/session-token";
-import { registerPlayerCombatant } from "@/lib/supabase/player-registration";
+import { claimPlayerToken, registerPlayerCombatant } from "@/lib/supabase/player-registration";
 import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
 import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
@@ -78,13 +77,14 @@ export function PlayerJoinClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredName, setRegisteredName] = useState<string | undefined>();
   const [joinedPlayers, setJoinedPlayers] = useState<Array<{ id: string; name: string }>>([]);
+  const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Anonymous auth + link to token
+  // Anonymous auth + claim token via server action (bypasses RLS)
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -93,15 +93,18 @@ export function PlayerJoinClient({
           data: { session },
         } = await supabase.auth.getSession();
 
+        let userId: string;
         if (!session) {
           const { data, error: authError } = await supabase.auth.signInAnonymously();
           if (authError) throw authError;
-          if (data.user) {
-            await linkAnonymousUser(tokenId, data.user.id);
-          }
+          userId = data.user!.id;
         } else {
-          await linkAnonymousUser(tokenId, session.user.id);
+          userId = session.user.id;
         }
+
+        // Server action — creates per-player token if shared one is taken
+        const claimedTokenId = await claimPlayerToken(tokenId, userId);
+        setEffectiveTokenId(claimedTokenId);
         setAuthReady(true);
       } catch {
         setError(t("connection_error_detail"));
@@ -442,7 +445,7 @@ export function PlayerJoinClient({
     hp: number | null;
     ac: number | null;
   }) => {
-    await registerPlayerCombatant(tokenId, sessionId, data);
+    await registerPlayerCombatant(effectiveTokenId, sessionId, data);
     setIsRegistered(true);
     setRegisteredName(data.name);
     // Broadcast to other players and DM that this player joined
@@ -451,7 +454,7 @@ export function PlayerJoinClient({
         type: "broadcast",
         event: "player:joined",
         payload: {
-          id: tokenId,
+          id: effectiveTokenId,
           name: data.name,
           initiative: data.initiative,
           hp: data.hp,
@@ -459,7 +462,7 @@ export function PlayerJoinClient({
         },
       });
     }
-  }, [tokenId, sessionId]);
+  }, [effectiveTokenId, sessionId]);
 
   if (error) {
     return (

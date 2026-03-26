@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "./server";
+import { createServiceClient } from "./server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 
 interface PlayerRegistrationData {
@@ -11,16 +11,91 @@ interface PlayerRegistrationData {
 }
 
 /**
+ * Claims an existing session token for an anonymous player, or creates a new
+ * per-player token if the shared token is already claimed.
+ * Uses service client to bypass RLS (anonymous players have no token yet).
+ * Returns the effective token ID for this player.
+ */
+export async function claimPlayerToken(
+  masterTokenId: string,
+  anonUserId: string
+): Promise<string> {
+  const supabase = createServiceClient();
+
+  // Look up the master token
+  const { data: master } = await supabase
+    .from("session_tokens")
+    .select("id, session_id, anon_user_id")
+    .eq("id", masterTokenId)
+    .eq("is_active", true)
+    .single();
+
+  if (!master) throw new Error("Token not found");
+
+  // Already claimed by this player
+  if (master.anon_user_id === anonUserId) return master.id;
+
+  // Check if player already has a token for this session
+  const { data: existing } = await supabase
+    .from("session_tokens")
+    .select("id")
+    .eq("session_id", master.session_id)
+    .eq("anon_user_id", anonUserId)
+    .eq("is_active", true)
+    .limit(1)
+    .single();
+
+  if (existing) return existing.id;
+
+  // Token unclaimed — try to claim it (atomic: only succeeds if still null)
+  if (!master.anon_user_id) {
+    const { data: claimed } = await supabase
+      .from("session_tokens")
+      .update({
+        anon_user_id: anonUserId,
+        last_seen_at: new Date().toISOString(),
+      })
+      .eq("id", masterTokenId)
+      .is("anon_user_id", null)
+      .select("id")
+      .single();
+
+    if (claimed) return masterTokenId;
+  }
+
+  // Token already claimed by another player — create a new one
+  const newToken = Array.from(
+    crypto.getRandomValues(new Uint8Array(24)),
+    (b) => b.toString(36).padStart(2, "0")
+  ).join("").slice(0, 32);
+
+  const { data: created, error: insertError } = await supabase
+    .from("session_tokens")
+    .insert({
+      session_id: master.session_id,
+      token: newToken,
+      anon_user_id: anonUserId,
+      is_active: true,
+    })
+    .select("id")
+    .single();
+
+  if (insertError) throw new Error(`Failed to create player token: ${insertError.message}`);
+  return created.id;
+}
+
+/**
  * Register a player combatant for a session.
  * Creates a combatant with is_player=true linked to the session's active encounter.
  * Each token can only register once (prevents duplicates).
+ * Uses service client to bypass RLS (anonymous players).
  */
 export async function registerPlayerCombatant(
   tokenId: string,
   sessionId: string,
   data: PlayerRegistrationData
 ): Promise<{ combatantId: string }> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   // Server-side validation
   const name = data.name?.trim();
@@ -68,8 +143,6 @@ export async function registerPlayerCombatant(
 
   encounterId = encounter?.id ?? null;
 
-  // If no encounter exists yet, we store the player data on the token
-  // and the DM will see it when setting up the encounter
   // Mark the token with the player name regardless
   await supabase
     .from("session_tokens")
@@ -125,7 +198,7 @@ export async function registerPlayerCombatant(
 export async function getRegisteredPlayers(
   sessionId: string
 ): Promise<Array<{ id: string; name: string }>> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const { data: tokens } = await supabase
     .from("session_tokens")

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";
 import { getHpStatus } from "@/lib/utils/hp-status";
@@ -10,7 +10,9 @@ interface JoinPageProps {
 export default async function JoinPage({ params }: JoinPageProps) {
   const { token } = await params;
   const t = await getTranslations("player");
-  const supabase = await createClient();
+  // Use service client to bypass RLS — the player has no auth session yet
+  // (anonymous sign-in happens client-side in PlayerJoinClient)
+  const supabase = createServiceClient();
 
   // Validate token
   const { data: tokenRow, error: tokenError } = await supabase
