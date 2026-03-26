@@ -91,6 +91,9 @@ export function PlayerLobby({
             <p className="text-muted-foreground text-sm mt-4">
               {t("lobby_waiting")}
             </p>
+            <p className="text-muted-foreground/50 text-xs mt-1">
+              {t("lobby_auto_update")}
+            </p>
           </div>
 
           {/* Players at the table */}
@@ -151,6 +154,9 @@ export function PlayerLobby({
               autoFocus
               data-testid="lobby-name"
             />
+            {errors.has("name") && (
+              <p className="text-red-400 text-xs mt-1">{t("lobby_error_name")}</p>
+            )}
           </div>
 
           {/* Initiative (required) */}
@@ -173,11 +179,14 @@ export function PlayerLobby({
               aria-invalid={errors.has("initiative") || undefined}
               data-testid="lobby-initiative"
             />
+            {errors.has("initiative") && (
+              <p className="text-red-400 text-xs mt-1">{t("lobby_error_initiative")}</p>
+            )}
           </div>
 
           {/* HP (optional) */}
           <div>
-            <label htmlFor="lobby-hp" className="text-sm font-medium text-foreground block mb-1">
+            <label htmlFor="lobby-hp" className="text-sm font-medium text-muted-foreground block mb-1">
               {t("lobby_hp_label")}
             </label>
             <input
@@ -187,14 +196,14 @@ export function PlayerLobby({
               onChange={(e) => setHp(e.target.value)}
               placeholder={t("lobby_hp_placeholder")}
               min={1}
-              className={`${inputClass} font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+              className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
               data-testid="lobby-hp"
             />
           </div>
 
           {/* AC (optional) */}
           <div>
-            <label htmlFor="lobby-ac" className="text-sm font-medium text-foreground block mb-1">
+            <label htmlFor="lobby-ac" className="text-sm font-medium text-muted-foreground block mb-1">
               {t("lobby_ac_label")}
             </label>
             <input
@@ -205,7 +214,7 @@ export function PlayerLobby({
               placeholder={t("lobby_ac_placeholder")}
               min={1}
               max={30}
-              className={`${inputClass} font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+              className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
               data-testid="lobby-ac"
             />
           </div>

@@ -98,7 +98,7 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
       {/* QR Code popover */}
       {showQr && joinUrl && (
         <div
-          className="absolute top-full right-0 mt-2 z-50 bg-surface-secondary border border-border rounded-lg p-4 shadow-xl min-w-[260px]"
+          className="absolute top-full right-0 mt-2 z-50 bg-surface-secondary border border-border rounded-lg p-4 shadow-xl min-w-[260px] max-w-[calc(100vw-2rem)]"
           data-testid="share-session-qr"
         >
           <div className="flex items-center justify-between mb-3">

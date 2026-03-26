@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { Share2 } from "lucide-react";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
@@ -35,8 +36,9 @@ const EMPTY_ADD_ROW: AddRowForm = {
 
 // ─── Setup Phase ────────────────────────────────────────────────────────────
 
-function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
+function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: () => void; onShareUpsell: () => void }) {
   const t = useTranslations("combat");
+  const tg = useTranslations("guest");
   const tCommon = useTranslations("common");
 
   const {
@@ -212,9 +214,21 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
-        <p className="text-muted-foreground text-sm mt-1">{t("encounter_description")}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{t("encounter_description")}</p>
+        </div>
+        {/* Share upsell — nudge guest to sign up for sharing */}
+        <button
+          type="button"
+          onClick={onShareUpsell}
+          className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] flex items-center gap-1.5"
+          data-testid="guest-share-upsell"
+        >
+          <Share2 className="w-4 h-4" aria-hidden="true" />
+          {tg("share_upsell_cta")}
+        </button>
       </div>
 
       <div className="flex items-end gap-3 flex-wrap">
@@ -558,7 +572,10 @@ export function GuestCombatClient() {
   if (phase === "setup" || phase === "ended") {
     return (
       <>
-        <GuestEncounterSetup onStartCombat={handleStartCombat} />
+        <GuestEncounterSetup
+          onStartCombat={handleStartCombat}
+          onShareUpsell={() => { setUpsellTrigger("player-link"); setUpsellOpen(true); }}
+        />
         <GuestUpsellModal
           isOpen={upsellOpen}
           onClose={() => setUpsellOpen(false)}

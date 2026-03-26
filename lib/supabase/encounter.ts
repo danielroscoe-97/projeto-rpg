@@ -9,27 +9,20 @@ export interface CreateEncounterResult {
 }
 
 /**
- * Creates a session + encounter + all combatants in the database.
- * Returns the new session_id and encounter_id.
+ * Creates only a session in the database (no encounter yet).
+ * Used when DM wants to share the session link before starting combat.
  */
-export async function createEncounterWithCombatants(
-  combatants: Combatant[],
+export async function createSessionOnly(
   ruleset_version: RulesetVersion,
-  campaignId?: string | null,
-  encounterName?: string
-): Promise<CreateEncounterResult> {
+  campaignId?: string | null
+): Promise<string> {
   const supabase = createClient();
-
-  // 1. Get current user
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
-  if (userError || !user) {
-    throw new Error("Not authenticated");
-  }
+  if (userError || !user) throw new Error("Not authenticated");
 
-  // 2. Create session (campaign_id is nullable after migration 006)
   const { data: session, error: sessionError } = await supabase
     .from("sessions")
     .insert({
@@ -43,12 +36,60 @@ export async function createEncounterWithCombatants(
   if (sessionError || !session) {
     throw new Error(sessionError?.message ?? "Failed to create session");
   }
+  return session.id;
+}
+
+/**
+ * Creates a session + encounter + all combatants in the database.
+ * Returns the new session_id and encounter_id.
+ */
+export async function createEncounterWithCombatants(
+  combatants: Combatant[],
+  ruleset_version: RulesetVersion,
+  campaignId?: string | null,
+  encounterName?: string,
+  /** If provided, reuses this session instead of creating a new one. */
+  existingSessionId?: string | null
+): Promise<CreateEncounterResult> {
+  const supabase = createClient();
+
+  // 1. Get current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    throw new Error("Not authenticated");
+  }
+
+  let sessionId: string;
+
+  if (existingSessionId) {
+    // Reuse an existing session (e.g., created on-demand for sharing)
+    sessionId = existingSessionId;
+  } else {
+    // 2. Create session (campaign_id is nullable after migration 006)
+    const { data: session, error: sessionError } = await supabase
+      .from("sessions")
+      .insert({
+        campaign_id: campaignId ?? null,
+        owner_id: user.id,
+        name: "Quick Encounter",
+        ruleset_version,
+      })
+      .select("id")
+      .single();
+    if (sessionError || !session) {
+      throw new Error(sessionError?.message ?? "Failed to create session");
+    }
+    sessionId = session.id;
+  }
 
   // 3. Create encounter
   const { data: encounter, error: encounterError } = await supabase
     .from("encounters")
     .insert({
-      session_id: session.id,
+      session_id: sessionId,
       name: encounterName || "Encounter 1",
     })
     .select("id")
@@ -84,7 +125,7 @@ export async function createEncounterWithCombatants(
     throw new Error(combatantsError.message ?? "Failed to insert combatants");
   }
 
-  return { session_id: session.id, encounter_id: encounter.id };
+  return { session_id: sessionId, encounter_id: encounter.id };
 }
 
 /** Convenience helper for converting an SRD monster into a Combatant shape. */

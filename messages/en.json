@@ -278,6 +278,8 @@
     "combatants_count_plural": "{count} combatants",
     "starting": "Starting…",
     "start_combat": "Start Combat →",
+    "share_session": "Share with Players",
+    "share_session_error": "Failed to prepare session for sharing. Try again.",
     "hp_mode_damage_aria": "{mode} amount",
     "hp_mode_damage": "Dmg",
     "hp_mode_heal": "Heal",
@@ -449,7 +451,11 @@
     "lobby_you_joined": "You're at the table as {name}",
     "combat_started": "Combat started!",
     "reveal_waiting": "Combat in progress...",
-    "reveal_count": "{revealed} of ? combatants revealed"
+    "reveal_count": "{revealed} of ? combatants revealed",
+    "turn_not_reached": "Waiting for your turn...",
+    "lobby_error_name": "Character name is required",
+    "lobby_error_initiative": "Enter your initiative roll (1-30)",
+    "lobby_auto_update": "This screen updates automatically"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",
@@ -584,7 +590,8 @@
     "upsell_description": "Create your account in seconds to save your encounters, organize your campaigns, and more. Free forever.",
     "upsell_data_preserved": "Your combat data will be preserved after signing up.",
     "upsell_cta": "Create My Free Account",
-    "upsell_dismiss": "I'll decide later"
+    "upsell_dismiss": "I'll decide later",
+    "share_upsell_cta": "Share with players"
   },
   "presets": {
     "title": "Encounter Presets",

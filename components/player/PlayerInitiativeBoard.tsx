@@ -35,7 +35,7 @@ const HP_STATUS_STYLES: Record<string, { colorClass: string; bgClass: string; ic
   LIGHT: { colorClass: "text-green-400", bgClass: "bg-green-400/10", icon: "heart" },
   MODERATE: { colorClass: "text-amber-400", bgClass: "bg-amber-400/10", icon: "warning" },
   HEAVY: { colorClass: "text-red-500", bgClass: "bg-red-500/10", icon: "danger" },
-  CRITICAL: { colorClass: "text-red-900", bgClass: "bg-red-900/20", icon: "skull" },
+  CRITICAL: { colorClass: "text-red-400", bgClass: "bg-red-900/20", icon: "skull" },
 };
 
 function HpStatusBadge({ status }: { status: string }) {
@@ -264,6 +264,8 @@ export function PlayerInitiativeBoard({
       {hasOwnChar && (
         <div className="space-y-2">
           {playerChars.map((pc) => {
+            const pcIndex = combatants.findIndex((c) => c.id === pc.id);
+            const pcTurnReached = roundNumber >= 2 || pcIndex <= maxRevealedIndex;
             const currentHp = pc.current_hp ?? 0;
             const maxHp = pc.max_hp ?? 0;
             const tempHp = pc.temp_hp ?? 0;
@@ -285,6 +287,9 @@ export function PlayerInitiativeBoard({
                   </span>
                   {pc.is_defeated && (
                     <span className="text-xs text-red-400 font-medium">{t("defeated")}</span>
+                  )}
+                  {!pcTurnReached && !pc.is_defeated && (
+                    <span className="text-xs text-muted-foreground/60">{t("turn_not_reached")}</span>
                   )}
                 </div>
                 <div className="mb-2">

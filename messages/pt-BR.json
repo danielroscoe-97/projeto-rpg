@@ -283,6 +283,8 @@
     "combatants_count_plural": "{count} combatentes",
     "starting": "Iniciando…",
     "start_combat": "Iniciar Combate →",
+    "share_session": "Compartilhar com Jogadores",
+    "share_session_error": "Erro ao preparar sessão para compartilhamento. Tente novamente.",
     "hp_mode_damage_aria": "Quantidade de {mode}",
     "hp_mode_damage": "Dano",
     "hp_mode_heal": "Curar",
@@ -452,7 +454,11 @@
     "lobby_you_joined": "Você está na mesa como {name}",
     "combat_started": "Combate iniciado!",
     "reveal_waiting": "Combate em andamento...",
-    "reveal_count": "{revealed} de ? combatentes revelados"
+    "reveal_count": "{revealed} de ? combatentes revelados",
+    "turn_not_reached": "Aguardando seu turno...",
+    "lobby_error_name": "Nome do personagem é obrigatório",
+    "lobby_error_initiative": "Digite sua rolagem de iniciativa (1-30)",
+    "lobby_auto_update": "Esta tela atualiza automaticamente"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",
@@ -587,7 +593,8 @@
     "upsell_description": "Crie sua conta em segundos para salvar seus encontros, organizar suas campanhas e muito mais. É grátis e sempre será.",
     "upsell_data_preserved": "Seus dados de combate serão preservados após criar conta.",
     "upsell_cta": "Criar Minha Conta Grátis",
-    "upsell_dismiss": "Vou decidir mais tarde"
+    "upsell_dismiss": "Vou decidir mais tarde",
+    "share_upsell_cta": "Compartilhar com jogadores"
   },
   "presets": {
     "title": "Encontros Preparados",

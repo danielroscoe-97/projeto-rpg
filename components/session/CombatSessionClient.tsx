@@ -47,6 +47,8 @@ export function CombatSessionClient({
   const [showAddForm, setShowAddForm] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
+  // Session created on-demand by EncounterSetup for sharing before combat
+  const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
 
   const { combatants, startCombat, setEncounterId, is_active, setError } =
     useCombatStore();
@@ -125,7 +127,8 @@ export function CombatSessionClient({
         sorted,
         rulesetVersion,
         campaignId,
-        encounterName
+        encounterName,
+        onDemandSessionId
       );
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
@@ -203,7 +206,7 @@ export function CombatSessionClient({
 
   // Show unified setup if not yet active
   if (!is_active) {
-    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} />;
+    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
   }
 
   // Active combat view
