@@ -107,10 +107,8 @@ export function PlayerJoinClient({
         const claimedTokenId = await claimPlayerToken(tokenId, userId);
         setEffectiveTokenId(claimedTokenId);
         setAuthReady(true);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        console.error("[PlayerJoin] initAuth failed:", msg);
-        setError(`${t("connection_error_detail")} (${msg})`);
+      } catch {
+        setError(t("connection_error_detail"));
       }
     };
     initAuth();
