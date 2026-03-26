@@ -281,6 +281,12 @@ export function MonsterStatBlock({
 
       {/* Header with token */}
       <div className="flex items-start gap-3">
+        <MonsterToken
+          tokenUrl={monster.token_url}
+          creatureType={monster.type}
+          name={monster.name}
+          size={64}
+        />
         <div className="flex-1 min-w-0">
           <div className="card-name">{monster.name}</div>
           <div className="card-subtitle">
@@ -288,12 +294,6 @@ export function MonsterStatBlock({
             {monster.alignment ? `, ${monster.alignment}` : ""}
           </div>
         </div>
-        <MonsterToken
-          tokenUrl={monster.token_url}
-          creatureType={monster.type}
-          name={monster.name}
-          size={64}
-        />
       </div>
 
       <CardDivider />
