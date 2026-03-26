@@ -97,6 +97,23 @@
     "tab_login": "Entrar",
     "tab_signup": "Criar Conta"
   },
+  "auth_errors": {
+    "invalid_credentials": "Email ou senha incorretos.",
+    "email_not_confirmed": "Confirme seu email antes de fazer login. Verifique sua caixa de entrada.",
+    "session_expired": "Sua sessão expirou. Faça login novamente.",
+    "user_not_found": "Nenhuma conta encontrada com este email.",
+    "user_already_registered": "Este email já está cadastrado. Tente fazer login.",
+    "invalid_password": "Digite uma senha válida.",
+    "invalid_email": "O formato do email é inválido.",
+    "password_too_short": "A senha deve ter pelo menos 6 caracteres.",
+    "password_same_as_old": "A nova senha deve ser diferente da senha atual.",
+    "password_too_weak": "A senha é muito fraca. Use letras, números e símbolos.",
+    "rate_limit": "Muitas tentativas. Aguarde um momento antes de tentar novamente.",
+    "email_rate_limit": "Limite de envio de emails atingido. Aguarde alguns minutos.",
+    "link_expired": "Este link expirou. Solicite um novo.",
+    "link_invalid": "Este link é inválido. Solicite um novo.",
+    "user_banned": "Esta conta foi suspensa."
+  },
   "dashboard": {
     "title": "Dashboard",
     "description": "Gerencie suas campanhas e inicie encontros de combate.",

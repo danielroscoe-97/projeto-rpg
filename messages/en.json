@@ -96,6 +96,23 @@
     "tab_login": "Login",
     "tab_signup": "Sign Up"
   },
+  "auth_errors": {
+    "invalid_credentials": "Incorrect email or password.",
+    "email_not_confirmed": "Please confirm your email before logging in. Check your inbox.",
+    "session_expired": "Your session has expired. Please log in again.",
+    "user_not_found": "No account found with this email.",
+    "user_already_registered": "This email is already registered. Try logging in.",
+    "invalid_password": "Please enter a valid password.",
+    "invalid_email": "The email format is invalid.",
+    "password_too_short": "Password must be at least 6 characters.",
+    "password_same_as_old": "New password must be different from your current password.",
+    "password_too_weak": "Password is too weak. Use letters, numbers and symbols.",
+    "rate_limit": "Too many attempts. Please wait a moment before trying again.",
+    "email_rate_limit": "Email sending limit reached. Please wait a few minutes.",
+    "link_expired": "This link has expired. Please request a new one.",
+    "link_invalid": "This link is invalid. Please request a new one.",
+    "user_banned": "This account has been suspended."
+  },
   "dashboard": {
     "title": "Dashboard",
     "description": "Manage your campaigns and start combat encounters.",

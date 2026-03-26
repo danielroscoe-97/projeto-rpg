@@ -6,23 +6,20 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { getAuthErrorKey } from "@/lib/auth/translate-error";
 
 function ErrorContent() {
   const t = useTranslations("auth");
+  const te = useTranslations("auth_errors");
   const searchParams = useSearchParams();
-  const error = searchParams.get("error");
+  const rawError = searchParams.get("error");
+  const errorKey = rawError ? getAuthErrorKey(rawError) : null;
 
   return (
     <div className="space-y-4">
-      {error ? (
-        <p className="text-sm text-white/60">
-          {t("error_code", { code: error })}
-        </p>
-      ) : (
-        <p className="text-sm text-white/60">
-          {t("error_unspecified")}
-        </p>
-      )}
+      <p className="text-sm text-white/60">
+        {errorKey ? te(errorKey) : rawError ? t("error_code", { code: rawError }) : t("error_unspecified")}
+      </p>
       <p className="text-sm text-muted-foreground">
         {t("error_help")}
       </p>

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { getAuthErrorKey } from "@/lib/auth/translate-error";
 
 export function UpdatePasswordForm({
   className,
@@ -22,6 +23,7 @@ export function UpdatePasswordForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
+  const te = useTranslations("auth_errors");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +41,9 @@ export function UpdatePasswordForm({
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/app/dashboard");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : tc("error_generic"));
+      const msg = error instanceof Error ? error.message : "";
+      const key = getAuthErrorKey(msg);
+      setError(key ? te(key) : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }

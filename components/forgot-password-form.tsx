@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { getAuthErrorKey } from "@/lib/auth/translate-error";
 
 export function ForgotPasswordForm({
   className,
@@ -22,6 +23,7 @@ export function ForgotPasswordForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
+  const te = useTranslations("auth_errors");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -41,7 +43,9 @@ export function ForgotPasswordForm({
       if (error) throw error;
       setSuccess(true);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : tc("error_generic"));
+      const msg = error instanceof Error ? error.message : "";
+      const key = getAuthErrorKey(msg);
+      setError(key ? te(key) : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }

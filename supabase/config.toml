@@ -217,25 +217,36 @@ otp_length = 8
 otp_expiry = 3600
 
 # Use a production-ready SMTP server
+# Configure via Supabase Dashboard > Authentication > SMTP Settings
+# Recommended: Resend (free 3k/month) — https://resend.com
 # [auth.email.smtp]
 # enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# host = "smtp.resend.com"
+# port = 465
+# user = "resend"
+# pass = "env(RESEND_API_KEY)"
+# admin_email = "contato@tavernadomestre.vercel.app"
+# sender_name = "Taverna do Mestre"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+[auth.email.template.invite]
+subject = "Você foi convidado — Taverna do Mestre"
+content_path = "./supabase/templates/invite.html"
 
-# Uncomment to customize notification email template
-# [auth.email.notification.password_changed]
-# enabled = true
-# subject = "Your password has been changed"
-# content_path = "./templates/password_changed_notification.html"
+[auth.email.template.confirmation]
+subject = "Confirme sua conta — Taverna do Mestre"
+content_path = "./supabase/templates/confirm-signup.html"
+
+[auth.email.template.recovery]
+subject = "Redefinir senha — Taverna do Mestre"
+content_path = "./supabase/templates/reset-password.html"
+
+[auth.email.template.magic_link]
+subject = "Seu link de acesso — Taverna do Mestre"
+content_path = "./supabase/templates/magic-link.html"
+
+[auth.email.template.email_change]
+subject = "Confirmar novo email — Taverna do Mestre"
+content_path = "./supabase/templates/change-email.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

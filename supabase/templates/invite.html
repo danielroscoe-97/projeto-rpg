@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convite — Taverna do Mestre</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0c0a09;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0c0a09;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background-color:#1c1917;border-radius:16px;border:1px solid rgba(212,168,83,0.15);overflow:hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,rgba(212,168,83,0.12),rgba(212,168,83,0.04));padding:32px 32px 24px;text-align:center;border-bottom:1px solid rgba(212,168,83,0.1);">
+              <div style="width:56px;height:56px;margin:0 auto 16px;background:rgba(212,168,83,0.1);border:1px solid rgba(212,168,83,0.3);border-radius:50%;line-height:56px;font-size:24px;">
+                &#x1f3b2;
+              </div>
+              <h1 style="margin:0;font-size:22px;font-weight:700;color:#d4a853;letter-spacing:0.5px;">
+                Taverna do Mestre
+              </h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <h2 style="margin:0 0 8px;font-size:20px;color:#fafaf9;font-weight:600;">
+                Voc&ecirc; foi convidado!
+              </h2>
+              <p style="margin:0 0 24px;font-size:15px;color:#a8a29e;line-height:1.6;">
+                Algu&eacute;m te convidou para a Taverna do Mestre, o combat tracker definitivo para D&amp;D 5e. Aceite o convite para come&ccedil;ar a aventura!
+              </p>
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding:4px 0 24px;">
+                    <a href="{{ .ConfirmationURL }}"
+                       target="_blank"
+                       style="display:inline-block;background-color:#d4a853;color:#1c1917;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:10px;letter-spacing:0.3px;">
+                      &#x1f3b2; Aceitar convite
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <!-- Fallback -->
+              <p style="margin:0 0 8px;font-size:12px;color:#78716c;">
+                Se o bot&atilde;o n&atilde;o funcionar, copie e cole este link:
+              </p>
+              <p style="margin:0;font-size:12px;color:#d4a853;word-break:break-all;line-height:1.5;">
+                {{ .ConfirmationURL }}
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+              <p style="margin:0;font-size:12px;color:#57534e;line-height:1.5;">
+                <a href="{{ .SiteURL }}" style="color:#d4a853;text-decoration:none;">Taverna do Mestre</a>
+                — Combat Tracker D&amp;D 5e
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

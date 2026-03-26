@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { trackEvent } from "@/lib/analytics/track";
+import { getAuthErrorKey } from "@/lib/auth/translate-error";
 
 export function LoginForm({
   className,
@@ -16,6 +17,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
+  const te = useTranslations("auth_errors");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +49,9 @@ export function LoginForm({
       }
       router.push("/app/dashboard");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : tc("error_generic"));
+      const msg = error instanceof Error ? error.message : "";
+      const key = getAuthErrorKey(msg);
+      setError(key ? te(key) : tc("error_generic"));
     } finally {
       setIsLoading(false);
     }
