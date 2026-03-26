@@ -661,7 +661,14 @@
     "item_rarity_varies": "Varies",
     "item_rarity_unknown": "Unknown",
     "item_weapon_simple": "Simple",
-    "item_weapon_martial": "Martial"
+    "item_weapon_martial": "Martial",
+    "item_stealth_disadvantage": "Stealth Disadvantage",
+    "item_str_requirement": "Str {value}",
+    "item_versatile": "versatile {dmg}",
+    "item_bonus_weapon": "Weapon Bonus",
+    "item_bonus_ac": "AC Bonus",
+    "item_cursed": "Cursed",
+    "item_sentient": "Sentient"
   },
   "guest": {
     "guest_notice": "Guest mode — your combat won't be saved.",

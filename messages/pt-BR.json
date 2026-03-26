@@ -664,7 +664,14 @@
     "item_rarity_varies": "Variável",
     "item_rarity_unknown": "Desconhecido",
     "item_weapon_simple": "Simples",
-    "item_weapon_martial": "Marcial"
+    "item_weapon_martial": "Marcial",
+    "item_stealth_disadvantage": "Desvantagem em Furtividade",
+    "item_str_requirement": "Força {value}",
+    "item_versatile": "versátil {dmg}",
+    "item_bonus_weapon": "Bônus Arma",
+    "item_bonus_ac": "Bônus CA",
+    "item_cursed": "Amaldiçoado",
+    "item_sentient": "Senciente"
   },
   "guest": {
     "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",
