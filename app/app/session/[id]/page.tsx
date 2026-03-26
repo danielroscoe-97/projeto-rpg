@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
@@ -69,6 +70,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
     player_notes: row.player_notes ?? '',
   }));
 
+  const t = await getTranslations("dashboard");
+
   return (
     <div className="relative">
       {/* Subtle RPG watermark */}
@@ -89,9 +92,9 @@ export default async function SessionPage({ params }: SessionPageProps) {
         <Link
           href="/app/dashboard"
           className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
-          aria-label="Back to Dashboard"
+          aria-label={t("back_to_dashboard")}
         >
-          ← Dashboard
+          {t("back_to_dashboard")}
         </Link>
       </div>
 

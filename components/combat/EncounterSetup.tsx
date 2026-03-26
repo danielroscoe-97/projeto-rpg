@@ -402,6 +402,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           placeholder={t("setup_col_init")}
           min={-5}
           max={50}
+          aria-label={t("setup_init_aria")}
           className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />
@@ -415,6 +416,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           }}
           placeholder={t("setup_col_name")}
           className={`${inputClass} flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
+          aria-label={t("setup_name_aria")}
           aria-invalid={addRowErrors.has("name") || undefined}
           data-testid="add-row-name"
         />
@@ -425,6 +427,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           onFocus={selectOnFocus}
           placeholder={t("setup_col_hp")}
           min={1}
+          aria-label={t("setup_hp_aria")}
           className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-hp"
         />
@@ -435,6 +438,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           onFocus={selectOnFocus}
           placeholder={t("setup_col_ac")}
           min={1}
+          aria-label={t("setup_ac_aria")}
           className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-ac"
         />
@@ -468,7 +472,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground text-xs">
             {combatants.length > 0
-              ? `${combatants.length} combatant${combatants.length !== 1 ? "s" : ""}`
+              ? t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })
               : ""}
           </p>
           {combatants.length > 0 && (

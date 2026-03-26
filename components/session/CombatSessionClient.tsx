@@ -176,7 +176,9 @@ export function CombatSessionClient({
         </h2>
         <div className="flex items-center gap-3 flex-wrap">
           <ShareSessionButton sessionId={getSessionId()} />
-          <span className="text-muted-foreground text-xs">{combatants.length} {combatants.length === 1 ? t("combatant") : t("combatants")}</span>
+          <span className="text-muted-foreground text-xs">
+            {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
+          </span>
           <button
             type="button"
             onClick={handleEndEncounter}

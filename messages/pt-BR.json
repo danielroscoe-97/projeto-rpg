@@ -17,7 +17,7 @@
     "close": "Fechar",
     "clear_all": "Limpar tudo",
     "error_generic": "Ocorreu um erro inesperado.",
-    "optional": "(opcional)",
+    "optional": "opcional",
     "dash": "—"
   },
   "nav": {
@@ -93,6 +93,8 @@
     "campaigns_create_error": "Falha ao criar campanha. Por favor, tente novamente.",
     "campaigns_update_error": "Falha ao atualizar campanha. Por favor, tente novamente.",
     "campaigns_delete_error": "Falha ao excluir campanha. Por favor, tente novamente.",
+    "back_to_dashboard": "← Voltar ao Dashboard",
+    "manage_players_description": "Gerencie os personagens dos jogadores desta campanha.",
     "campaigns_name_label": "Nome da campanha",
     "campaigns_empty": "Nenhuma campanha ainda. Crie sua primeira campanha acima.",
     "campaigns_players_plural": "jogadores",
@@ -261,6 +263,8 @@
     "error_add_row_name": "Preencha o nome do combatente.",
     "error_missing_init": "{count} combatente(s) ainda precisam de valores de iniciativa.",
     "error_start_combat": "Falha ao iniciar combate.",
+    "combatant": "combatente",
+    "combatants": "combatentes",
     "combatants_count": "{count} combatente",
     "combatants_count_plural": "{count} combatentes",
     "starting": "Iniciando…",
@@ -303,7 +307,14 @@
     "roll_npcs": "Rolar NPCs",
     "roll_npcs_title": "Rolar iniciativa para NPCs sem valor (1d20 + mod DEX para monstros)",
     "roll_init_single": "Rolar iniciativa",
-    "roll_init_single_aria": "Rolar iniciativa para {name}"
+    "roll_init_single_aria": "Rolar iniciativa para {name}",
+    "ac_aria": "Classe de Armadura",
+    "init_aria": "Iniciativa",
+    "name_aria": "Nome do combatente",
+    "setup_hp_aria": "Definir HP inicial",
+    "setup_ac_aria": "Definir Classe de Armadura",
+    "setup_init_aria": "Definir Iniciativa",
+    "setup_name_aria": "Nome do combatente"
   },
   "conditions": {
     "blinded": "Cego",
