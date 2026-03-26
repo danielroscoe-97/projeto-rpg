@@ -211,7 +211,7 @@ export function PlayerInitiativeBoard({
             return (
               <div
                 key={pc.id}
-                className={`bg-card border-2 border-gold rounded-lg px-4 py-4${isPlayerTurn ? " animate-pulse" : ""}`}
+                className={`bg-card border-2 border-gold rounded-lg px-4 py-4${isPlayerTurn ? " ring-2 ring-gold/50 shadow-[0_0_12px_rgba(212,168,83,0.3)] motion-reduce:ring-gold/30 motion-reduce:shadow-none" : ""}`}
                 data-testid={`own-character-${pc.id}`}
               >
                 <div className="flex items-center gap-2 mb-3">

@@ -7,6 +7,7 @@ import { useSrdStore } from "@/lib/stores/srd-store";
 import { MonsterBrowser } from "@/components/compendium/MonsterBrowser";
 import { SpellBrowser } from "@/components/compendium/SpellBrowser";
 import { ConditionReference } from "@/components/compendium/ConditionReference";
+import { CompendiumSkeleton } from "@/components/ui/skeletons/CompendiumSkeleton";
 
 type Tab = "monsters" | "spells" | "conditions";
 
@@ -59,9 +60,7 @@ function CompendiumContent() {
 
       {/* Content */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-20 text-muted-foreground text-sm">
-          {t("loading")}
-        </div>
+        <CompendiumSkeleton />
       ) : (
         <>
           {activeTab === "monsters" && <MonsterBrowser />}
@@ -75,7 +74,7 @@ function CompendiumContent() {
 
 export default function CompendiumPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<CompendiumSkeleton />}>
       <CompendiumContent />
     </Suspense>
   );

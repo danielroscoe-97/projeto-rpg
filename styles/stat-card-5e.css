@@ -870,6 +870,75 @@
   40% { opacity: 1; transform: scale(1.2); }
 }
 
+/* Oracle AI Markdown — styles for rendered markdown inside the modal */
+.oracle-ai-markdown h1,
+.oracle-ai-markdown h2,
+.oracle-ai-markdown h3 {
+  color: #c9a959;
+  font-weight: 700;
+  margin: 1em 0 0.4em;
+  line-height: 1.3;
+}
+
+.oracle-ai-markdown h1 { font-size: 1.15em; }
+.oracle-ai-markdown h2 { font-size: 1.05em; }
+.oracle-ai-markdown h3 { font-size: 0.95em; }
+
+.oracle-ai-markdown h1:first-child,
+.oracle-ai-markdown h2:first-child,
+.oracle-ai-markdown h3:first-child {
+  margin-top: 0;
+}
+
+.oracle-ai-markdown p {
+  margin: 0.5em 0;
+}
+
+.oracle-ai-markdown strong {
+  color: #e8e4d0;
+  font-weight: 600;
+}
+
+.oracle-ai-markdown em {
+  color: #c9a959;
+  font-style: italic;
+}
+
+.oracle-ai-markdown ul,
+.oracle-ai-markdown ol {
+  margin: 0.4em 0;
+  padding-left: 1.4em;
+}
+
+.oracle-ai-markdown li {
+  margin: 0.2em 0;
+}
+
+.oracle-ai-markdown li::marker {
+  color: #c9a959;
+}
+
+.oracle-ai-markdown code {
+  background: rgba(201, 169, 89, 0.12);
+  color: #c9a959;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.oracle-ai-markdown blockquote {
+  border-left: 2px solid rgba(201, 169, 89, 0.4);
+  padding-left: 0.8em;
+  margin: 0.5em 0;
+  color: rgba(232, 228, 208, 0.7);
+}
+
+.oracle-ai-markdown hr {
+  border: none;
+  border-top: 1px solid rgba(201, 169, 89, 0.2);
+  margin: 0.8em 0;
+}
+
 /* ---- Reduced Motion: disable all animations & transitions ---- */
 @media (prefers-reduced-motion: reduce) {
   .stat-card-5e,

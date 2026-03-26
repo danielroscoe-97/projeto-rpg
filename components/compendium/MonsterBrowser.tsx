@@ -305,6 +305,9 @@ export function MonsterBrowser() {
       <div className="text-[11px] text-muted-foreground">
         {t("showing_results", { count: filtered.length, total: monsters.length })}
       </div>
+      <div className="sr-only" role="status" aria-live="polite">
+        {t("monsters_found_aria", { count: filtered.length })}
+      </div>
     </div>
   );
 

@@ -287,7 +287,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
   const handleDuplicate = useCallback(
     (source: Combatant) => {
       addCombatant({
-        name: `${source.name} (2)`,
+        name: getNumberedName(source.name, useCombatStore.getState().combatants),
         current_hp: source.max_hp,
         max_hp: source.max_hp,
         temp_hp: 0,
@@ -376,8 +376,14 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           maxLength={60}
           className={`mt-1 w-full max-w-md ${inputClass}${nameError ? " field-error" : ""}`}
           aria-invalid={nameError || undefined}
+          aria-describedby={nameError ? "encounter-name-error" : undefined}
           data-testid="encounter-name-input"
         />
+        {nameError && (
+          <p id="encounter-name-error" className="text-red-400 text-xs mt-1">
+            {t("error_encounter_name_required")}
+          </p>
+        )}
       </div>
 
       {/* Toolbar: Ruleset + SRD Search + Campaign Loader + Preset Loader */}

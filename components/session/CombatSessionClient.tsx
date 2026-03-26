@@ -140,8 +140,9 @@ export function CombatSessionClient({
     combatantCount: combatants.length,
     focusedIndex,
     onFocusChange: (idx) => {
-      setFocusedIndex(idx);
-      const el = document.querySelector(`[data-testid="initiative-list"] > :nth-child(${idx + 1})`);
+      const clamped = Math.max(0, Math.min(idx, combatants.length - 1));
+      setFocusedIndex(clamped);
+      const el = document.querySelector(`[data-testid="initiative-list"] > :nth-child(${clamped + 1})`);
       el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     },
     onToggleExpand: () => {
@@ -175,6 +176,12 @@ export function CombatSessionClient({
       }
     },
     onUndoHp: () => useCombatStore.getState().undoLastHpChange(),
+    onReorder: (fromIndex: number, toIndex: number) => {
+      const reordered = [...combatants];
+      const [moved] = reordered.splice(fromIndex, 1);
+      reordered.splice(toIndex, 0, moved);
+      handleReorderCombatants(reordered, moved.id);
+    },
     cheatsheetOpen,
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
   });

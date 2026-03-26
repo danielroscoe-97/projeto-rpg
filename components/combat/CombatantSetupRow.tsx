@@ -174,11 +174,11 @@ export function CombatantSetupRow({
             type="button"
             onClick={() => pinCard("monster", combatant.monster_id!, combatant.ruleset_version!)}
             className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30"
-            aria-label={`Ver ficha de ${combatant.name}`}
+            aria-label={t("setup_view_card_aria", { name: combatant.name })}
             data-testid={`ver-ficha-setup-${combatant.id}`}
           >
             <span aria-hidden>📖</span>
-            <span>Ver Ficha</span>
+            <span>{t("setup_view_card")}</span>
           </button>
         )}
         {onDuplicate && (

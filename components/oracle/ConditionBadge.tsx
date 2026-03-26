@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -28,8 +29,11 @@ interface ConditionBadgeProps {
 }
 
 export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }: ConditionBadgeProps) {
+  const t = useTranslations("combat");
+  const tc = useTranslations("conditions");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const colorClass = CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]";
+  const localizedName = tc(condition.toLowerCase());
 
   return (
     <span
@@ -40,7 +44,7 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }:
         type="button"
         onClick={() => pinCard("condition", condition.toLowerCase(), rulesetVersion)}
         className="hover:opacity-80 transition-opacity cursor-pointer"
-        aria-label={`View ${condition} rules`}
+        aria-label={t("condition_view_aria", { name: localizedName })}
       >
         {condition}
       </button>
@@ -49,7 +53,7 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }:
           type="button"
           onClick={(e) => { e.stopPropagation(); onRemove(condition); }}
           className="ml-0.5 hover:text-red-300 transition-colors text-white/70 text-[10px] leading-none min-w-[16px] min-h-[16px] flex items-center justify-center"
-          aria-label={`Remove ${condition}`}
+          aria-label={t("condition_remove_aria", { name: localizedName })}
           data-testid={`condition-remove-${condition.toLowerCase()}`}
         >
           ✕

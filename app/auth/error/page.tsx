@@ -52,7 +52,7 @@ export default function Page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Suspense>
+              <Suspense fallback={<div className="h-20 animate-pulse bg-white/[0.06] rounded" />}>
                 <ErrorContent />
               </Suspense>
             </CardContent>

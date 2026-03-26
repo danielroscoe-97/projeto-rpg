@@ -237,6 +237,9 @@ export function SpellBrowser() {
         <span className="text-[11px] text-muted-foreground">
           {t("showing_results", { count: filtered.length, total: spells.length })}
         </span>
+        <div className="sr-only" role="status" aria-live="polite">
+          {t("spells_found_aria", { count: filtered.length })}
+        </div>
         <div className="flex items-center gap-1">
           <Chip active={sortBy === "name"} onClick={() => setSortBy("name")}>{t("sort_name")}</Chip>
           <Chip active={sortBy === "level"} onClick={() => setSortBy("level")}>{t("sort_level")}</Chip>

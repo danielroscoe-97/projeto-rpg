@@ -334,6 +334,8 @@
     "condition_add_aria": "Adicionar condição {name}",
     "setup_duplicate": "Duplicar",
     "setup_duplicate_aria": "Duplicar {name}",
+    "setup_view_card": "Ver Ficha",
+    "setup_view_card_aria": "Ver ficha de {name}",
     "encounter_name_label": "Nome do encontro",
     "encounter_name_placeholder": "ex: Emboscada Goblin",
     "error_encounter_name_required": "Dê um nome ao encontro antes de iniciar.",
