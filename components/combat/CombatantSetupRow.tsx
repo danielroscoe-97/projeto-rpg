@@ -13,6 +13,8 @@ interface CombatantSetupRowProps {
   onAcChange: (id: string, ac: number) => void;
   onNotesChange: (id: string, notes: string) => void;
   onRemove: (id: string) => void;
+  /** Roll initiative for this combatant (1d20 + DEX mod if available) */
+  onRollInitiative?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
   /** Highlight the initiative field as invalid */
@@ -27,6 +29,7 @@ export function CombatantSetupRow({
   onAcChange,
   onNotesChange,
   onRemove,
+  onRollInitiative,
   dragHandleProps,
   highlightInit,
 }: CombatantSetupRowProps) {
@@ -52,29 +55,43 @@ export function CombatantSetupRow({
       </span>
 
       {/* Init */}
-      <input
-        type="number"
-        value={combatant.initiative ?? ""}
-        onChange={(e) => {
-          const raw = e.target.value;
-          if (raw === "") {
-            onInitiativeChange(combatant.id, null);
-            return;
-          }
-          const val = Number(raw);
-          if (!isNaN(val)) {
-            onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
-          }
-        }}
-        onFocus={selectOnFocus}
-        placeholder={t("setup_init_placeholder")}
-        min={-5}
-        max={50}
-        className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${highlightInit ? " field-error" : ""}`}
-        aria-label={t("setup_init_aria", { name: combatant.name })}
-        aria-invalid={highlightInit || undefined}
-        data-testid={`setup-init-${combatant.id}`}
-      />
+      <div className="flex items-center gap-0.5 w-14 flex-shrink-0">
+        <input
+          type="number"
+          value={combatant.initiative ?? ""}
+          onChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              onInitiativeChange(combatant.id, null);
+              return;
+            }
+            const val = Number(raw);
+            if (!isNaN(val)) {
+              onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
+            }
+          }}
+          onFocus={selectOnFocus}
+          placeholder={t("setup_init_placeholder")}
+          min={-5}
+          max={50}
+          className={`${inputClass} w-10 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${highlightInit ? " field-error" : ""}`}
+          aria-label={t("setup_init_aria", { name: combatant.name })}
+          aria-invalid={highlightInit || undefined}
+          data-testid={`setup-init-${combatant.id}`}
+        />
+        {onRollInitiative && (
+          <button
+            type="button"
+            onClick={() => onRollInitiative(combatant.id)}
+            className="text-muted-foreground/40 hover:text-gold transition-colors text-xs flex-shrink-0 p-0.5"
+            title={t("roll_init_single")}
+            aria-label={t("roll_init_single_aria", { name: combatant.name })}
+            data-testid={`roll-init-${combatant.id}`}
+          >
+            🎲
+          </button>
+        )}
+      </div>
 
       {/* Name */}
       <div className="flex items-center gap-1 flex-1 min-w-0">

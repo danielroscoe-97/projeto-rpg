@@ -297,7 +297,13 @@
     "shortcut_conditions": "Condições",
     "shortcut_search": "Busca Oracle",
     "shortcut_close": "Fechar painel",
-    "shortcut_help": "Ajuda"
+    "shortcut_help": "Ajuda",
+    "roll_all": "Rolar Todos",
+    "roll_all_title": "Rolar iniciativa para todos os combatentes sem valor (1d20 + mod DEX para monstros)",
+    "roll_npcs": "Rolar NPCs",
+    "roll_npcs_title": "Rolar iniciativa para NPCs sem valor (1d20 + mod DEX para monstros)",
+    "roll_init_single": "Rolar iniciativa",
+    "roll_init_single_aria": "Rolar iniciativa para {name}"
   },
   "conditions": {
     "blinded": "Cego",

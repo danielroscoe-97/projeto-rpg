@@ -296,7 +296,13 @@
     "shortcut_conditions": "Conditions",
     "shortcut_search": "Oracle search",
     "shortcut_close": "Close panel",
-    "shortcut_help": "Shortcuts"
+    "shortcut_help": "Shortcuts",
+    "roll_all": "Roll All",
+    "roll_all_title": "Roll initiative for all combatants missing a value (1d20 + DEX mod for monsters)",
+    "roll_npcs": "Roll NPCs",
+    "roll_npcs_title": "Roll initiative for NPC combatants missing a value (1d20 + DEX mod for monsters)",
+    "roll_init_single": "Roll initiative",
+    "roll_init_single_aria": "Roll initiative for {name}"
   },
   "conditions": {
     "blinded": "Blinded",

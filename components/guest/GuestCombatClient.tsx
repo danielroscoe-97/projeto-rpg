@@ -399,6 +399,30 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
               ? t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })
               : ""}
           </p>
+          {combatants.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleRollAll}
+                disabled={combatants.every((c) => c.initiative !== null)}
+                className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title={t("roll_all_title")}
+                data-testid="roll-all-init-btn"
+              >
+                🎲 {t("roll_all")}
+              </button>
+              <button
+                type="button"
+                onClick={handleRollNpcs}
+                disabled={combatants.filter((c) => !c.is_player && c.initiative === null).length === 0}
+                className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title={t("roll_npcs_title")}
+                data-testid="roll-npcs-init-btn"
+              >
+                🎲 {t("roll_npcs")}
+              </button>
+            </div>
+          )}
           <button
             type="button"
             onClick={handleStartCombat}
