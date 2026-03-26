@@ -284,7 +284,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                   <Link
                     href={`/app/campaigns/${campaign.id}`}
                     aria-label={`Manage players for ${campaign.name}`}
-                    className="text-gold text-xs hover:underline"
+                    className="inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-2 text-gold hover:bg-gold/10 transition-colors"
                   >
                     {t("campaigns_manage_players")}
                   </Link>
