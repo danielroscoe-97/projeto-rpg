@@ -19,6 +19,42 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
+// Models to try in order (fallback chain)
+const MODEL_CHAIN = [
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+  "gemini-1.5-flash",
+];
+
+async function tryGenerateStream(
+  genAI: GoogleGenerativeAI,
+  question: string,
+) {
+  let lastError: Error | null = null;
+
+  for (const modelName of MODEL_CHAIN) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: ORACLE_SYSTEM_PROMPT,
+        tools: [{ googleSearch: {} } as any],
+      });
+      const result = await model.generateContentStream(question);
+      return { result, modelName };
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      // Only retry on 429 (quota) or 503 (overloaded)
+      const msg = lastError.message;
+      if (msg.includes("429") || msg.includes("503") || msg.includes("quota")) {
+        continue;
+      }
+      throw lastError;
+    }
+  }
+
+  throw lastError ?? new Error("All models failed");
+}
+
 export async function POST(request: Request) {
   // Check API key is configured
   const apiKey = process.env.GEMINI_API_KEY;
@@ -60,13 +96,7 @@ export async function POST(request: Request) {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: ORACLE_SYSTEM_PROMPT,
-      tools: [{ googleSearch: {} } as any],
-    });
-
-    const result = await model.generateContentStream(question);
+    const { result } = await tryGenerateStream(genAI, question);
 
     // Stream the response as SSE
     const encoder = new TextEncoder();
@@ -128,6 +158,13 @@ export async function POST(request: Request) {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to call Gemini API";
+    // Friendly message for quota errors
+    if (message.includes("429") || message.includes("quota")) {
+      return Response.json(
+        { error: "O Oráculo atingiu o limite de consultas. Tente novamente em alguns segundos." },
+        { status: 429 },
+      );
+    }
     return Response.json({ error: message }, { status: 500 });
   }
 }
