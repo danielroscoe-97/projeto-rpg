@@ -325,14 +325,110 @@
     box-shadow 200ms ease;
 }
 
+/* ---- Clickable Dice Rolls ---- */
+.stat-card-5e .dice-roll-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  display: inline;
+  color: #7cb3e0;
+  border-bottom: 1px dotted rgba(124, 179, 224, 0.5);
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.stat-card-5e .dice-roll-btn:hover {
+  color: #a8d4ff;
+  border-bottom-color: #a8d4ff;
+}
+
+.stat-card-5e .dice-roll-btn:active {
+  color: #fff;
+}
+
+/* ---- Dice Popover ---- */
+.dice-popover {
+  background: #15151a;
+  border: 1px solid #922610;
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-width: 140px;
+  max-width: 260px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7);
+  font-size: 13px;
+  line-height: 1.4;
+  color: #e8e4d0;
+  pointer-events: auto;
+  animation: dice-pop-in 150ms ease-out;
+}
+
+@keyframes dice-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dice-popover-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b0aca0;
+  margin-bottom: 2px;
+}
+
+.dice-popover-result {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.dice-popover-breakdown {
+  color: #b0aca0;
+  font-size: 12px;
+}
+
+.dice-popover-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e8e4d0;
+}
+
+.dice-popover-total.dice-nat20 {
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+}
+
+.dice-popover-total.dice-nat1 {
+  color: #f87171;
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
+}
+
+.dice-popover-notation {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
 /* ---- Reduced Motion: disable all animations & transitions ---- */
 @media (prefers-reduced-motion: reduce) {
   .stat-card-5e,
   .stat-card-5e.card-transition,
   .stat-card-5e .card-toolbar button,
   .stat-card-5e a,
-  .stat-card-5e .linked-ref {
+  .stat-card-5e .linked-ref,
+  .stat-card-5e .dice-roll-btn {
     transition: none !important;
+    animation: none !important;
+  }
+  .dice-popover {
     animation: none !important;
   }
 }
