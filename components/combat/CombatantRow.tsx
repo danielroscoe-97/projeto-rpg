@@ -78,7 +78,7 @@ export function CombatantRow({
   const [editingDmNotes, setEditingDmNotes] = useState(false);
   const [playerNotesValue, setPlayerNotesValue] = useState(combatant.player_notes);
   const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
-  const [flash, setFlash] = useState(false);
+  const [flash, setFlash] = useState<"damage" | "heal" | false>(false);
   const [versionConfirmOpen, setVersionConfirmOpen] = useState(false);
   const [inlineEditTarget, setInlineEditTarget] = useState<"current" | "max" | "initiative" | null>(null);
   const [inlineHpValue, setInlineHpValue] = useState("");
@@ -97,11 +97,18 @@ export function CombatantRow({
     setInlineHpValue("");
   };
 
-  // Trigger red flash when current HP decreases
+  // Trigger red/green flash when current HP changes
   useEffect(() => {
     if (combatant.current_hp < prevHp.current) {
-      setFlash(true);
+      setFlash("damage");
       const timer = setTimeout(() => setFlash(false), 800);
+      prevHp.current = combatant.current_hp;
+      return () => clearTimeout(timer);
+    }
+    if (combatant.current_hp > prevHp.current) {
+      setFlash("heal");
+      const timer = setTimeout(() => setFlash(false), 500);
+      prevHp.current = combatant.current_hp;
       return () => clearTimeout(timer);
     }
     prevHp.current = combatant.current_hp;
@@ -147,7 +154,7 @@ export function CombatantRow({
     <li
       className={`bg-card border rounded-md overflow-hidden transition-colors ${
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
-      } ${combatant.is_defeated ? "opacity-50" : ""} ${flash ? "animate-flash-red" : ""} ${
+      } ${combatant.is_defeated ? "opacity-50" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
         combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : ""
       }`}
       role="listitem"

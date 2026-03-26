@@ -15,7 +15,8 @@ export interface CreateEncounterResult {
 export async function createEncounterWithCombatants(
   combatants: Combatant[],
   ruleset_version: RulesetVersion,
-  campaignId?: string | null
+  campaignId?: string | null,
+  encounterName?: string
 ): Promise<CreateEncounterResult> {
   const supabase = createClient();
 
@@ -48,7 +49,7 @@ export async function createEncounterWithCombatants(
     .from("encounters")
     .insert({
       session_id: session.id,
-      name: "Encounter 1",
+      name: encounterName || "Encounter 1",
     })
     .select("id")
     .single();

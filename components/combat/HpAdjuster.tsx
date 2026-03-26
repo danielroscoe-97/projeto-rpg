@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-type HpMode = "damage" | "heal" | "temp";
+export type HpMode = "damage" | "heal" | "temp";
+
+/** Module-level variable so the last-used mode persists across open/close cycles. */
+let lastUsedMode: HpMode = "damage";
+
+/** Programmatically set the initial mode for the next HpAdjuster open (used by keyboard shortcuts). */
+export function setLastHpMode(mode: HpMode) {
+  lastUsedMode = mode;
+}
 
 interface HpAdjusterProps {
   onApplyDamage: (amount: number) => void;
@@ -19,7 +27,11 @@ export function HpAdjuster({
   onClose,
 }: HpAdjusterProps) {
   const t = useTranslations("combat");
-  const [mode, setMode] = useState<HpMode>("damage");
+  const [mode, setModeState] = useState<HpMode>(lastUsedMode);
+  const setMode = (m: HpMode) => {
+    lastUsedMode = m;
+    setModeState(m);
+  };
   const [value, setValue] = useState("");
 
   const handleApply = () => {

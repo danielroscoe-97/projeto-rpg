@@ -16,7 +16,7 @@ import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/
 import type { Combatant } from "@/lib/types/combat";
 
 interface EncounterSetupProps {
-  onStartCombat: () => Promise<void>;
+  onStartCombat: (encounterName?: string) => Promise<void>;
   campaignId?: string | null;
   preloadedPlayers?: PlayerCharacter[];
 }
@@ -49,6 +49,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     reorderCombatants,
   } = useCombatStore();
 
+  const [encounterName, setEncounterName] = useState("");
+  const [nameError, setNameError] = useState(false);
   const [rulesetVersion, setRulesetVersion] = useState<RulesetVersion>("2014");
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -282,8 +284,38 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     [updatePlayerNotes]
   );
 
+  const handleDuplicate = useCallback(
+    (source: Combatant) => {
+      addCombatant({
+        name: `${source.name} (2)`,
+        current_hp: source.max_hp,
+        max_hp: source.max_hp,
+        temp_hp: 0,
+        ac: source.ac,
+        spell_save_dc: source.spell_save_dc,
+        initiative: null,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: source.ruleset_version,
+        is_defeated: false,
+        is_player: source.is_player,
+        monster_id: source.monster_id,
+        dm_notes: "",
+        player_notes: "",
+      });
+    },
+    [addCombatant]
+  );
+
   // Start combat
   const handleStartCombat = async () => {
+    const trimmedName = encounterName.trim();
+    if (!trimmedName) {
+      setNameError(true);
+      setSubmitError(t("error_encounter_name_required"));
+      return;
+    }
+    setNameError(false);
     if (combatants.length === 0) {
       setSubmitError(t("error_no_combatants"));
       return;
@@ -297,7 +329,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     setSubmitError(null);
     setIsPending(true);
     try {
-      await onStartCombat();
+      await onStartCombat(trimmedName);
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : t("error_start_combat")
@@ -327,6 +359,27 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         </p>
       </div>
 
+      {/* Encounter name */}
+      <div>
+        <label htmlFor="encounter-name" className="text-sm font-medium text-foreground">
+          {t("encounter_name_label")} <span className="text-red-400">*</span>
+        </label>
+        <input
+          id="encounter-name"
+          type="text"
+          value={encounterName}
+          onChange={(e) => {
+            setEncounterName(e.target.value);
+            if (nameError) setNameError(false);
+          }}
+          placeholder={t("encounter_name_placeholder")}
+          maxLength={60}
+          className={`mt-1 w-full max-w-md ${inputClass}${nameError ? " field-error" : ""}`}
+          aria-invalid={nameError || undefined}
+          data-testid="encounter-name-input"
+        />
+      </div>
+
       {/* Toolbar: Ruleset + SRD Search + Campaign Loader + Preset Loader */}
       <div className="flex items-end gap-3 flex-wrap">
         <RulesetSelector value={rulesetVersion} onChange={setRulesetVersion} />
@@ -349,7 +402,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
         <span className="flex-1 min-w-0">{t("setup_col_notes")}</span>
-        <span className="w-[140px] flex-shrink-0" /> {/* actions spacer (Ver Ficha + Remover / Adicionar) */}
+        <span className="w-[170px] flex-shrink-0" /> {/* actions spacer (Duplicar + Ver Ficha + Remover / Adicionar) */}
       </div>
 
       {/* Combatant list (insertion order, drag-reorderable) */}
@@ -364,6 +417,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
               onNameChange={handleRowNameChange}
               onHpChange={handleRowHpChange}
               onAcChange={handleRowAcChange}
+              onDuplicate={handleDuplicate}
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}
@@ -453,7 +507,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-[140px] flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
+          className="w-[170px] flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}

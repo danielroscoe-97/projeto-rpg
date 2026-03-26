@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Copy } from "lucide-react";
 import type { Combatant } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
@@ -13,6 +14,8 @@ interface CombatantSetupRowProps {
   onAcChange: (id: string, ac: number) => void;
   onNotesChange: (id: string, notes: string) => void;
   onRemove: (id: string) => void;
+  /** Duplicate this combatant with same stats */
+  onDuplicate?: (combatant: Combatant) => void;
   /** Roll initiative for this combatant (1d20 + DEX mod if available) */
   onRollInitiative?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
@@ -29,6 +32,7 @@ export function CombatantSetupRow({
   onAcChange,
   onNotesChange,
   onRemove,
+  onDuplicate,
   onRollInitiative,
   dragHandleProps,
   highlightInit,
@@ -164,7 +168,7 @@ export function CombatantSetupRow({
       />
 
       {/* Actions — fixed width so columns stay aligned regardless of Ver Ficha */}
-      <div className="w-[140px] flex-shrink-0 flex items-center justify-end gap-1">
+      <div className="w-[170px] flex-shrink-0 flex items-center justify-end gap-1">
         {combatant.monster_id && combatant.ruleset_version && (
           <button
             type="button"
@@ -175,6 +179,18 @@ export function CombatantSetupRow({
           >
             <span aria-hidden>📖</span>
             <span>Ver Ficha</span>
+          </button>
+        )}
+        {onDuplicate && (
+          <button
+            type="button"
+            onClick={() => onDuplicate(combatant)}
+            className="text-muted-foreground/40 hover:text-gold transition-colors text-xs min-h-[32px] px-1"
+            aria-label={t("setup_duplicate_aria", { name: combatant.name })}
+            title={t("setup_duplicate")}
+            data-testid={`setup-duplicate-${combatant.id}`}
+          >
+            <Copy className="w-3.5 h-3.5" />
           </button>
         )}
         <button

@@ -15,14 +15,20 @@ interface CombatKeyboardShortcutsOptions {
   focusedIndex: number;
   /** Callback to toggle expand/collapse on focused combatant */
   onToggleExpand: () => void;
-  /** Callback to open HP adjuster on focused combatant */
-  onOpenHp: () => void;
+  /** Callback to open HP adjuster on focused combatant in damage mode */
+  onOpenHpDamage: () => void;
+  /** Callback to open HP adjuster on focused combatant in heal mode */
+  onOpenHpHeal: () => void;
   /** Callback to open condition selector on focused combatant */
   onOpenConditions: () => void;
   /** Whether the shortcut cheatsheet is shown */
   cheatsheetOpen: boolean;
   /** Toggle cheatsheet visibility */
   onToggleCheatsheet: () => void;
+  /** Callback to undo last HP change */
+  onUndoHp?: () => void;
+  /** Callback to reorder the focused combatant — receives (fromIndex, toIndex) */
+  onReorder?: (fromIndex: number, toIndex: number) => void;
 }
 
 /**
@@ -30,7 +36,8 @@ interface CombatKeyboardShortcutsOptions {
  * Implements the shortcuts defined in the UX spec (NFR25).
  *
  * Space = Next Turn, ↑↓ = Navigate, Enter = Expand, Esc = Close,
- * H = HP Adjuster, C = Conditions, ? = Cheatsheet
+ * D = HP Adjuster (damage), H = HP Adjuster (heal), C = Conditions,
+ * Ctrl+Z = Undo HP, ? = Cheatsheet
  */
 export function useCombatKeyboardShortcuts({
   enabled,
@@ -39,10 +46,13 @@ export function useCombatKeyboardShortcuts({
   onFocusChange,
   focusedIndex,
   onToggleExpand,
-  onOpenHp,
+  onOpenHpDamage,
+  onOpenHpHeal,
   onOpenConditions,
   cheatsheetOpen,
   onToggleCheatsheet,
+  onUndoHp,
+  onReorder,
 }: CombatKeyboardShortcutsOptions) {
   const optionsRef = useRef({
     onNextTurn,
@@ -50,10 +60,13 @@ export function useCombatKeyboardShortcuts({
     onFocusChange,
     focusedIndex,
     onToggleExpand,
-    onOpenHp,
+    onOpenHpDamage,
+    onOpenHpHeal,
     onOpenConditions,
     cheatsheetOpen,
     onToggleCheatsheet,
+    onUndoHp,
+    onReorder,
   });
 
   optionsRef.current = {
@@ -62,10 +75,13 @@ export function useCombatKeyboardShortcuts({
     onFocusChange,
     focusedIndex,
     onToggleExpand,
-    onOpenHp,
+    onOpenHpDamage,
+    onOpenHpHeal,
     onOpenConditions,
     cheatsheetOpen,
     onToggleCheatsheet,
+    onUndoHp,
+    onReorder,
   };
 
   const handleKeyDown = useCallback(
@@ -84,6 +100,13 @@ export function useCombatKeyboardShortcuts({
 
       const opts = optionsRef.current;
 
+      // Ctrl+Z = Undo HP (works even when cheatsheet is open)
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        opts.onUndoHp?.();
+        return;
+      }
+
       // Don't process combat shortcuts while the cheatsheet is open (except Escape to close it)
       if (opts.cheatsheetOpen && e.key !== "Escape") return;
 
@@ -96,16 +119,26 @@ export function useCombatKeyboardShortcuts({
         case "ArrowUp":
           e.preventDefault();
           if (opts.combatantCount > 0) {
-            const next = opts.focusedIndex <= 0 ? opts.combatantCount - 1 : opts.focusedIndex - 1;
-            opts.onFocusChange(next);
+            if (e.ctrlKey && opts.onReorder && opts.focusedIndex > 0) {
+              opts.onReorder(opts.focusedIndex, opts.focusedIndex - 1);
+              opts.onFocusChange(opts.focusedIndex - 1);
+            } else if (!e.ctrlKey) {
+              const next = opts.focusedIndex <= 0 ? opts.combatantCount - 1 : opts.focusedIndex - 1;
+              opts.onFocusChange(next);
+            }
           }
           break;
 
         case "ArrowDown":
           e.preventDefault();
           if (opts.combatantCount > 0) {
-            const next = opts.focusedIndex >= opts.combatantCount - 1 ? 0 : opts.focusedIndex + 1;
-            opts.onFocusChange(next);
+            if (e.ctrlKey && opts.onReorder && opts.focusedIndex < opts.combatantCount - 1) {
+              opts.onReorder(opts.focusedIndex, opts.focusedIndex + 1);
+              opts.onFocusChange(opts.focusedIndex + 1);
+            } else if (!e.ctrlKey) {
+              const next = opts.focusedIndex >= opts.combatantCount - 1 ? 0 : opts.focusedIndex + 1;
+              opts.onFocusChange(next);
+            }
           }
           break;
 
@@ -121,11 +154,19 @@ export function useCombatKeyboardShortcuts({
           }
           break;
 
+        case "d":
+        case "D":
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            opts.onOpenHpDamage();
+          }
+          break;
+
         case "h":
         case "H":
           if (!e.ctrlKey && !e.metaKey) {
             e.preventDefault();
-            opts.onOpenHp();
+            opts.onOpenHpHeal();
           }
           break;
 

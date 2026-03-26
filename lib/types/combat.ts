@@ -23,15 +23,24 @@ export interface Combatant {
   player_notes: string;
 }
 
+export interface HpUndoEntry {
+  combatantId: string;
+  previousHp: number;
+  previousTempHp: number;
+  action: "damage" | "heal" | "temp";
+}
+
 export interface EncounterState {
   encounter_id: string | null;
   session_id: string | null;
+  encounter_name: string;
   combatants: Combatant[];
   round_number: number;
   current_turn_index: number;
   is_active: boolean;
   is_loading: boolean;
   error: string | null;
+  hpUndoStack: HpUndoEntry[];
 }
 
 export interface CombatActions {
@@ -73,4 +82,6 @@ export interface CombatActions {
   updateDmNotes: (id: string, notes: string) => void;
   /** Update player-visible notes for a combatant. */
   updatePlayerNotes: (id: string, notes: string) => void;
+  /** Undo the last HP change from the undo stack. */
+  undoLastHpChange: () => void;
 }

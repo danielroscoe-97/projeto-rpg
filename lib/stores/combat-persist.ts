@@ -8,6 +8,7 @@ export function saveCombatBackup(state: EncounterState): void {
     const snapshot = {
       encounter_id: state.encounter_id,
       session_id: state.session_id,
+      encounter_name: state.encounter_name,
       combatants: state.combatants,
       round_number: state.round_number,
       current_turn_index: state.current_turn_index,

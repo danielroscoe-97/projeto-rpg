@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { shallow } from "zustand/shallow";
-import type { Combatant, EncounterState, CombatActions } from "@/lib/types/combat";
+import type { Combatant, EncounterState, CombatActions, HpUndoEntry } from "@/lib/types/combat";
 import {
   sortByInitiative,
   assignInitiativeOrder,
@@ -10,15 +10,24 @@ import { saveCombatBackup } from "@/lib/stores/combat-persist";
 
 type CombatStore = EncounterState & CombatActions;
 
+const MAX_UNDO = 10;
+
+function pushUndo(stack: HpUndoEntry[], entry: HpUndoEntry): HpUndoEntry[] {
+  const next = [...stack, entry];
+  return next.length > MAX_UNDO ? next.slice(next.length - MAX_UNDO) : next;
+}
+
 const initialState: EncounterState = {
   encounter_id: null,
   session_id: null,
+  encounter_name: "",
   combatants: [],
   round_number: 1,
   current_turn_index: 0,
   is_active: false,
   is_loading: false,
   error: null,
+  hpUndoStack: [],
 };
 
 export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) => ({
@@ -94,38 +103,59 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
     set({ is_active: true, current_turn_index: currentTurnIndex, round_number: roundNumber }),
 
   applyDamage: (id, amount) =>
-    set((state) => ({
-      combatants: state.combatants.map((c) => {
-        if (c.id !== id) return c;
-        let remaining = amount;
-        let newTempHp = c.temp_hp;
-        if (newTempHp > 0) {
-          const absorbed = Math.min(newTempHp, remaining);
-          newTempHp -= absorbed;
-          remaining -= absorbed;
-        }
-        const newCurrentHp = Math.max(0, c.current_hp - remaining);
-        return { ...c, current_hp: newCurrentHp, temp_hp: newTempHp };
-      }),
-    })),
+    set((state) => {
+      const target = state.combatants.find((c) => c.id === id);
+      const undoEntry: HpUndoEntry | null = target
+        ? { combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "damage" }
+        : null;
+      return {
+        hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
+        combatants: state.combatants.map((c) => {
+          if (c.id !== id) return c;
+          let remaining = amount;
+          let newTempHp = c.temp_hp;
+          if (newTempHp > 0) {
+            const absorbed = Math.min(newTempHp, remaining);
+            newTempHp -= absorbed;
+            remaining -= absorbed;
+          }
+          const newCurrentHp = Math.max(0, c.current_hp - remaining);
+          return { ...c, current_hp: newCurrentHp, temp_hp: newTempHp };
+        }),
+      };
+    }),
 
   applyHealing: (id, amount) =>
-    set((state) => ({
-      combatants: state.combatants.map((c) =>
-        c.id === id
-          ? { ...c, current_hp: Math.min(c.max_hp, c.current_hp + amount) }
-          : c
-      ),
-    })),
+    set((state) => {
+      const target = state.combatants.find((c) => c.id === id);
+      const undoEntry: HpUndoEntry | null = target
+        ? { combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "heal" }
+        : null;
+      return {
+        hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
+        combatants: state.combatants.map((c) =>
+          c.id === id
+            ? { ...c, current_hp: Math.min(c.max_hp, c.current_hp + amount) }
+            : c
+        ),
+      };
+    }),
 
   setTempHp: (id, value) =>
-    set((state) => ({
-      combatants: state.combatants.map((c) =>
-        c.id === id
-          ? { ...c, temp_hp: Math.max(c.temp_hp, value) }
-          : c
-      ),
-    })),
+    set((state) => {
+      const target = state.combatants.find((c) => c.id === id);
+      const undoEntry: HpUndoEntry | null = target
+        ? { combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "temp" }
+        : null;
+      return {
+        hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
+        combatants: state.combatants.map((c) =>
+          c.id === id
+            ? { ...c, temp_hp: Math.max(c.temp_hp, value) }
+            : c
+        ),
+      };
+    }),
 
   toggleCondition: (id, condition) =>
     set((state) => ({
@@ -181,6 +211,21 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
         c.id === id ? { ...c, player_notes: notes } : c
       ),
     })),
+
+  undoLastHpChange: () =>
+    set((state) => {
+      if (state.hpUndoStack.length === 0) return state;
+      const stack = [...state.hpUndoStack];
+      const entry = stack.pop()!;
+      return {
+        hpUndoStack: stack,
+        combatants: state.combatants.map((c) =>
+          c.id === entry.combatantId
+            ? { ...c, current_hp: entry.previousHp, temp_hp: entry.previousTempHp }
+            : c
+        ),
+      };
+    }),
 })));
 
 // Auto-persist combat state to localStorage on changes.

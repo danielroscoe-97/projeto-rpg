@@ -31,6 +31,7 @@ export function ConditionSelector({
 }: ConditionSelectorProps) {
   const t = useTranslations("conditions");
   const tc = useTranslations("common");
+  const tcombat = useTranslations("combat");
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") onClose();
   };
@@ -50,8 +51,6 @@ export function ConditionSelector({
               type="button"
               onClick={() => {
                 onToggle(condition);
-                // Close after a short delay to give visual feedback but satisfy the auto-close request
-                setTimeout(onClose, 300);
               }}
               className={`px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 isActive
@@ -59,6 +58,7 @@ export function ConditionSelector({
                   : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-pressed={isActive}
+              aria-label={isActive ? tcombat("condition_remove_aria", { name: t(condition.toLowerCase()) }) : tcombat("condition_add_aria", { name: t(condition.toLowerCase()) })}
               data-testid={`condition-toggle-${condition.toLowerCase()}`}
             >
               {t(condition.toLowerCase())}

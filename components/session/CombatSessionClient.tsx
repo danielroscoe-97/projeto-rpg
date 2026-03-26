@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
+import { setLastHpMode } from "@/components/combat/HpAdjuster";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -50,6 +51,7 @@ export function CombatSessionClient({
     useCombatStore();
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
   const round_number = useCombatStore((s) => s.round_number);
+  const encounter_name = useCombatStore((s) => s.encounter_name);
 
   const {
     turnPending,
@@ -90,11 +92,15 @@ export function CombatSessionClient({
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
 
-  const handleStartCombat = async () => {
+  const handleStartCombat = async (encounterName?: string) => {
     const store = useCombatStore.getState();
     const current = store.combatants;
     const sorted = assignInitiativeOrder(sortByInitiative(current));
     store.hydrateCombatants(sorted);
+
+    if (encounterName) {
+      useCombatStore.setState({ encounter_name: encounterName });
+    }
 
     if (store.encounter_id) {
       try {
@@ -110,7 +116,8 @@ export function CombatSessionClient({
       const { session_id, encounter_id } = await createEncounterWithCombatants(
         sorted,
         rulesetVersion,
-        campaignId
+        campaignId,
+        encounterName
       );
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
@@ -144,9 +151,18 @@ export function CombatSessionClient({
         btn?.click();
       }
     },
-    onOpenHp: () => {
+    onOpenHpDamage: () => {
       const c = combatants[focusedIndex];
       if (c) {
+        setLastHpMode("damage");
+        const btn = document.querySelector(`[data-testid="hp-btn-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    onOpenHpHeal: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        setLastHpMode("heal");
         const btn = document.querySelector(`[data-testid="hp-btn-${c.id}"]`) as HTMLButtonElement | null;
         btn?.click();
       }
@@ -158,6 +174,7 @@ export function CombatSessionClient({
         btn?.click();
       }
     },
+    onUndoHp: () => useCombatStore.getState().undoLastHpChange(),
     cheatsheetOpen,
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
   });
@@ -172,6 +189,7 @@ export function CombatSessionClient({
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
       <div className="flex items-center justify-between">
         <h2 className="text-foreground font-semibold">
+          {encounter_name && <span className="mr-2">{encounter_name}</span>}
           {t("round")} <span className="font-mono text-gold">{round_number}</span>
         </h2>
         <div className="flex items-center gap-3 flex-wrap">
