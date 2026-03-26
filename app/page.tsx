@@ -664,7 +664,7 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
     : "text-white/45 text-sm leading-snug";
 
   return (
-    <div className="flex items-center gap-2.5 py-[18px]">
+    <div className="flex items-center gap-2.5 py-5">
       {val.type === "check" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
           <circle cx="9" cy="9" r="8.25" stroke={iconColor} strokeWidth="1.5" />
@@ -695,41 +695,43 @@ function ComparisonSection() {
     roll20: CellValue;
     beyond: CellValue;
     taverna: CellValue;
+    knockout?: boolean;
   }[] = [
       {
         icon: "⚔️",
         feature: "Combat tracker",
-        roll20: { type: "partial", label: "VTT completo, mas pesado" },
-        beyond: { type: "partial", label: "Básico, limitado" },
+        roll20: { type: "partial", label: "Pesado" },
+        beyond: { type: "partial", label: "Básico" },
         taverna: { type: "check", label: "Otimizado para mestrar" },
       },
       {
         icon: "📱",
         feature: "Player view no celular",
-        roll20: { type: "cross", label: "App obrigatorio + conta" },
-        beyond: { type: "cross", label: "Nao disponivel" },
+        roll20: { type: "cross", label: "Requer app + conta" },
+        beyond: { type: "cross", label: "Indisponível" },
         taverna: { type: "check", label: "Link direto, zero conta" },
       },
       {
         icon: "🎯",
         feature: "Foco na Mesa Física",
-        roll20: { type: "cross", label: "Feito para o jogo online" },
+        roll20: { type: "cross", label: "Online-first" },
         beyond: { type: "cross", label: "Digital-first" },
-        taverna: { type: "check", label: "O foco principal" },
+        taverna: { type: "check", label: "Pensado para a mesa real" },
       },
       {
         icon: "📚",
         feature: "Compendium 2014 + 2024",
-        roll20: { type: "partial", label: "Depende de módulo pago" },
-        beyond: { type: "partial", label: "Disponível (pago)" },
-        taverna: { type: "check", label: "Grátis, sempre" },
+        roll20: { type: "partial", label: "Módulo pago" },
+        beyond: { type: "partial", label: "Pago" },
+        taverna: { type: "check", label: "Grátis, sempre atualizado" },
       },
       {
         icon: "💰",
         feature: "Preço",
         roll20: { type: "cross", label: "$5–50/mês" },
         beyond: { type: "cross", label: "$6/mês" },
-        taverna: { type: "check", label: "Grátis para sempre" },
+        taverna: { type: "check", label: "Comece grátis" },
+        knockout: true,
       },
     ];
 
@@ -743,18 +745,19 @@ function ComparisonSection() {
       <div className="relative max-w-4xl mx-auto">
         <div className="text-center mb-14 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
-            Por que não usar o que já existe?
+            Feito para a mesa, não para a tela
           </h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-            Roll20 e Foundry são VTTs poderosos. D&amp;D Beyond é uma enciclopédia digital.
-            Nenhum foi feito para a{" "}
-            <span className="text-foreground font-medium">mesa física</span>.
+            VTTs são poderosos para o jogo online. Ferramentas digitais ajudam na consulta.
+            Mas quem mestra{" "}
+            <span className="text-foreground font-medium">presencialmente</span>{" "}
+            merece algo pensado pra isso.
           </p>
         </div>
 
-        {/* Table card — its own surface, contrasting with the section bg */}
+        {/* ── Desktop table (hidden on mobile) ── */}
         <div
-          className="overflow-hidden rounded-2xl animate-fade-in-up"
+          className="hidden md:block overflow-hidden rounded-2xl animate-fade-in-up"
           style={{
             background: "#13131f",
             border: "1px solid rgba(255,255,255,0.07)",
@@ -764,20 +767,20 @@ function ComparisonSection() {
         >
           {/* Column headers */}
           <div className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr]">
-            <div className="px-7 py-5 border-b border-white/[0.06]" />
-            <div className="px-6 py-5 text-center border-b border-l border-white/[0.06]">
+            <div className="px-7 py-6 border-b border-white/[0.06]" />
+            <div className="px-6 py-6 text-center border-b border-l border-white/[0.06]">
               <span className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">
                 Roll20 / Foundry
               </span>
             </div>
-            <div className="px-6 py-5 text-center border-b border-l border-white/[0.06]">
+            <div className="px-6 py-6 text-center border-b border-l border-white/[0.06]">
               <span className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">
                 D&amp;D Beyond
               </span>
             </div>
-            {/* TdM header: 3 signals — top border gradient + tinted bg + badge */}
+            {/* TdM header */}
             <div
-              className="px-6 py-4 text-center border-b border-l border-l-gold/20 border-b-gold/15 flex flex-col items-center gap-2"
+              className="px-6 py-5 text-center border-b border-l border-l-gold/20 border-b-gold/15 flex flex-col items-center gap-2"
               style={{
                 background: "rgba(212,168,83,0.09)",
                 borderTop: "2px solid rgba(212,168,83,0.65)",
@@ -799,12 +802,12 @@ function ComparisonSection() {
             return (
               <div
                 key={row.feature}
-                className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-colors duration-150"
-                style={{ background: isEven ? "transparent" : "rgba(255,255,255,0.016)" }}
+                className={`grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-colors duration-150 ${row.knockout ? "border-t-2 border-t-gold/25" : ""}`}
+                style={{ background: row.knockout ? "rgba(212,168,83,0.04)" : isEven ? "transparent" : "rgba(255,255,255,0.016)" }}
               >
-                <div className={`px-7 flex items-center gap-3 group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b border-white/[0.04]"}`}>
+                <div className={`px-7 py-1 flex items-center gap-3 group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b border-white/[0.04]"}`}>
                   <span className="text-xl leading-none shrink-0">{row.icon}</span>
-                  <span className="text-sm font-semibold text-white/70">{row.feature}</span>
+                  <span className="text-[15px] font-semibold text-white/90">{row.feature}</span>
                 </div>
                 <div className={`px-6 border-l border-white/[0.04] group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b"}`}>
                   <CompCell val={row.roll20} />
@@ -814,13 +817,54 @@ function ComparisonSection() {
                 </div>
                 <div
                   className={`px-6 border-l border-l-gold/15 group-hover:brightness-110 transition-all duration-150 ${isLast ? "" : "border-b border-b-gold/10"}`}
-                  style={{ background: "rgba(212,168,83,0.07)" }}
+                  style={{ background: row.knockout ? "rgba(212,168,83,0.12)" : "rgba(212,168,83,0.07)" }}
                 >
                   <CompCell val={row.taverna} highlight />
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* ── Mobile cards (hidden on desktop) ── */}
+        <div className="md:hidden flex flex-col gap-3 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+          {rows.map((row) => (
+            <div
+              key={row.feature}
+              className={`rounded-xl overflow-hidden ${row.knockout ? "ring-1 ring-gold/30" : ""}`}
+              style={{
+                background: "#13131f",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              {/* Feature header */}
+              <div className={`px-5 py-4 flex items-center gap-3 ${row.knockout ? "bg-gold/[0.06]" : "bg-white/[0.02]"}`}>
+                <span className="text-xl leading-none shrink-0">{row.icon}</span>
+                <span className="text-[15px] font-semibold text-white/90">{row.feature}</span>
+              </div>
+              {/* Competitor rows */}
+              <div className="divide-y divide-white/[0.04]">
+                <div className="px-5 py-3 flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">Roll20</span>
+                  <CompCell val={row.roll20} />
+                </div>
+                <div className="px-5 py-3 flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">D&amp;D Beyond</span>
+                  <CompCell val={row.beyond} />
+                </div>
+                <div
+                  className="px-5 py-3 flex items-center justify-between"
+                  style={{
+                    background: row.knockout ? "rgba(212,168,83,0.12)" : "rgba(212,168,83,0.07)",
+                    borderTop: "1px solid rgba(212,168,83,0.15)",
+                  }}
+                >
+                  <span className="text-[11px] font-bold text-gold/80 uppercase tracking-wider">Taverna</span>
+                  <CompCell val={row.taverna} highlight />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="mt-7 text-center">
