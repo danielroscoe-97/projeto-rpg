@@ -558,7 +558,7 @@ export function CombatantRow({
             <button
               type="button"
               onClick={() => onRemoveCombatant?.(combatant.id)}
-              className="px-2 py-1 text-xs rounded font-medium min-h-[32px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className="px-2 py-1 text-xs rounded font-medium min-h-[28px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               aria-label={t("remove_aria")}
               data-testid={`remove-btn-${combatant.id}`}
             >
