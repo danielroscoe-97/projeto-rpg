@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-25
+last_updated: 2026-03-26
 project: projeto-rpg
 
 project_key: NOKEY
@@ -166,3 +166,19 @@ development_status:
   12-4-condition-panel-auto-close-on-defeat: done
   12-5-navbar-click-reliability: done
   epic-12-retrospective: optional
+
+  # Epic 13: Player Combat Companion — Lobby, Data Security & Progressive Reveal
+  epic-13: done
+  13-1-strip-monster-data-from-realtime-broadcast: done
+  13-2-strip-monster-data-from-api-state: done
+  13-3-hp-status-labels-system: done
+  13-4-player-initiative-board-hp-labels-render: done
+  13-5-share-session-before-combat: done
+  13-6-player-lobby-ui: done
+  13-7-player-self-registration-api: done
+  13-8-dm-live-feed-player-joining: done
+  13-9-player-waiting-room: done
+  13-10-progressive-reveal-round-1: done
+  13-11-dark-state-ui-and-reveal-animation: done
+  13-12-mobile-touch-audit-and-polish: done
+  epic-13-retrospective: optional

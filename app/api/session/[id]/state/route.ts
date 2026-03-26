@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getHpStatus } from "@/lib/utils/hp-status";
 
 export async function GET(
   _request: NextRequest,
@@ -53,13 +54,12 @@ export async function GET(
     .eq("encounter_id", encounter.id)
     .order("initiative_order", { ascending: true });
 
-  // Strip exact HP values from monsters — players see status label only (OK/LOW/CRIT)
+  // Strip sensitive data from monsters — players see only HP status label
   const playerCombatants = (combatants ?? []).map((c) => {
     if (c.is_player) return c;
-    const pct = c.max_hp > 0 ? c.current_hp / c.max_hp : 0;
-    const hpStatus = pct > 0.5 ? "OK" : pct > 0.25 ? "LOW" : "CRIT";
-    const { current_hp, max_hp, temp_hp, ...rest } = c;
-    return { ...rest, hp_status: hpStatus };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { current_hp, max_hp, temp_hp, ac, ...rest } = c;
+    return { ...rest, hp_status: getHpStatus(current_hp, max_hp) };
   });
 
   return NextResponse.json({

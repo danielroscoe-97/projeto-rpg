@@ -17,6 +17,7 @@ import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcu
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { setLastHpMode } from "@/components/combat/HpAdjuster";
+import { broadcastEvent } from "@/lib/realtime/broadcast";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -106,6 +107,13 @@ export function CombatSessionClient({
       try {
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
+        // Notify players that combat has started
+        broadcastEvent(getSessionId(), {
+          type: "session:state_sync",
+          combatants: sorted,
+          current_turn_index: 0,
+          round_number: 1,
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : t("error_start_combat"));
       }
@@ -122,6 +130,13 @@ export function CombatSessionClient({
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
       store.startCombat();
+      // Notify players that combat has started
+      broadcastEvent(session_id, {
+        type: "session:state_sync",
+        combatants: sorted,
+        current_turn_index: 0,
+        round_number: 1,
+      });
       router.replace(`/app/session/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("error_start_combat"));
@@ -188,7 +203,7 @@ export function CombatSessionClient({
 
   // Show unified setup if not yet active
   if (!is_active) {
-    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} />;
+    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} />;
   }
 
   // Active combat view

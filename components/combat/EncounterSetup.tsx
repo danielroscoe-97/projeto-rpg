@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/supabase/client";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CampaignLoader } from "@/components/session/CampaignLoader";
@@ -19,6 +20,8 @@ interface EncounterSetupProps {
   onStartCombat: (encounterName?: string) => Promise<void>;
   campaignId?: string | null;
   preloadedPlayers?: PlayerCharacter[];
+  /** Session ID for listening to player registrations via realtime */
+  sessionId?: string | null;
 }
 
 interface AddRowForm {
@@ -37,7 +40,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
   notes: "",
 };
 
-export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: EncounterSetupProps) {
+export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId }: EncounterSetupProps) {
   const t = useTranslations("combat");
   const {
     combatants,
@@ -105,6 +108,45 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
     });
   }, [preloadedPlayers, addCombatant]);
+
+  // Listen for players joining via realtime (player:joined broadcast)
+  useEffect(() => {
+    if (!sessionId) return;
+    const supabase = createClient();
+    const channel = supabase.channel(`session:${sessionId}`, {
+      config: { broadcast: { self: false } },
+    });
+
+    channel
+      .on("broadcast", { event: "player:joined" }, ({ payload }) => {
+        if (!payload.name || !payload.id) return;
+        const currentCombatants = useCombatStore.getState().combatants;
+        // Avoid duplicate — use token ID, not name (two players could share a name)
+        if (currentCombatants.some((c) => c.is_player && c.player_notes === `token:${payload.id}`)) return;
+        addCombatant({
+          name: payload.name,
+          current_hp: payload.hp ?? 0,
+          max_hp: payload.hp ?? 0,
+          temp_hp: 0,
+          ac: payload.ac ?? 0,
+          spell_save_dc: null,
+          initiative: payload.initiative ?? null,
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: null,
+          is_defeated: false,
+          is_player: true,
+          monster_id: null,
+          dm_notes: "",
+          player_notes: `token:${payload.id}`,
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [sessionId, addCombatant]);
 
   // Auto-add monster with rolled initiative when selected from compendium
   const handleSelectMonster = useCallback(

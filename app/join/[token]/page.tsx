@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";
+import { getHpStatus } from "@/lib/utils/hp-status";
 
 interface JoinPageProps {
   params: Promise<{ token: string }>;
@@ -66,16 +67,17 @@ export default async function JoinPage({ params }: JoinPageProps) {
   let combatants: Array<{
     id: string;
     name: string;
-    current_hp: number;
-    max_hp: number;
-    temp_hp: number;
-    ac: number;
+    current_hp?: number;
+    max_hp?: number;
+    temp_hp?: number;
+    ac?: number;
     initiative_order: number | null;
     conditions: string[];
     is_defeated: boolean;
     is_player: boolean;
     monster_id: string | null;
     ruleset_version: string | null;
+    hp_status?: string;
   }> = [];
 
   if (encounter) {
@@ -87,7 +89,13 @@ export default async function JoinPage({ params }: JoinPageProps) {
       .eq("encounter_id", encounter.id)
       .order("initiative_order", { ascending: true });
 
-    combatants = combatantRows ?? [];
+    // Strip sensitive monster stats — players only see HP status label
+    combatants = (combatantRows ?? []).map((c) => {
+      if (c.is_player) return c;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { current_hp, max_hp, temp_hp, ac, ...safe } = c;
+      return { ...safe, hp_status: getHpStatus(current_hp, max_hp) };
+    });
   }
 
   return (

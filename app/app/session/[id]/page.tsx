@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
+import { ShareSessionButton } from "@/components/session/ShareSessionButton";
 import type { Combatant } from "@/lib/types/combat";
 
 interface SessionPageProps {
@@ -89,30 +90,27 @@ export default async function SessionPage({ params }: SessionPageProps) {
             {session.name} · Ruleset {session.ruleset_version}
           </p>
         </div>
-        <Link
-          href="/app/dashboard"
-          className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
-          aria-label={t("back_to_dashboard")}
-        >
-          {t("back_to_dashboard")}
-        </Link>
+        <div className="flex items-center gap-3">
+          <ShareSessionButton sessionId={sessionId} />
+          <Link
+            href="/app/dashboard"
+            className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
+            aria-label={t("back_to_dashboard")}
+          >
+            {t("back_to_dashboard")}
+          </Link>
+        </div>
       </div>
 
       {/* Client component — manages initiative, combat state */}
-      {encounter ? (
-        <CombatSessionClient
-          sessionId={sessionId}
-          encounterId={encounter.id}
-          initialCombatants={combatants}
-          isActive={encounter.is_active ?? false}
-          roundNumber={encounter.round_number ?? 1}
-          currentTurnIndex={encounter.current_turn_index ?? 0}
-        />
-      ) : (
-        <p className="text-muted-foreground text-sm text-center mt-12">
-          No encounter found for this session.
-        </p>
-      )}
+      <CombatSessionClient
+        sessionId={sessionId}
+        encounterId={encounter?.id ?? null}
+        initialCombatants={combatants}
+        isActive={encounter?.is_active ?? false}
+        roundNumber={encounter?.round_number ?? 1}
+        currentTurnIndex={encounter?.current_turn_index ?? 0}
+      />
     </div>
   );
 }

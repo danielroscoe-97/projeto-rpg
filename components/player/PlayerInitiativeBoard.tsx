@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords } from "lucide-react";
+import { Swords, Skull } from "lucide-react";
 
 export interface CombatLogEntry {
   text: string;
@@ -15,16 +15,51 @@ export interface CombatLogEntry {
 interface PlayerCombatant {
   id: string;
   name: string;
-  current_hp: number;
-  max_hp: number;
-  temp_hp: number;
-  ac: number;
+  /** Only present for is_player=true */
+  current_hp?: number;
+  max_hp?: number;
+  temp_hp?: number;
+  ac?: number;
   initiative_order: number | null;
   conditions: string[];
   is_defeated: boolean;
   is_player: boolean;
   monster_id: string | null;
   ruleset_version: string | null;
+  /** HP status label for monsters (LIGHT/MODERATE/HEAVY/CRITICAL) */
+  hp_status?: string;
+}
+
+/** Visual config for monster HP status labels */
+const HP_STATUS_STYLES: Record<string, { colorClass: string; bgClass: string; icon: "heart" | "warning" | "danger" | "skull" }> = {
+  LIGHT: { colorClass: "text-green-400", bgClass: "bg-green-400/10", icon: "heart" },
+  MODERATE: { colorClass: "text-amber-400", bgClass: "bg-amber-400/10", icon: "warning" },
+  HEAVY: { colorClass: "text-red-500", bgClass: "bg-red-500/10", icon: "danger" },
+  CRITICAL: { colorClass: "text-red-900", bgClass: "bg-red-900/20", icon: "skull" },
+};
+
+function HpStatusBadge({ status }: { status: string }) {
+  const t = useTranslations("player");
+  const style = HP_STATUS_STYLES[status] ?? HP_STATUS_STYLES.LIGHT;
+  const label = t(`hp_status_${status.toLowerCase()}` as Parameters<typeof t>[0]);
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${style.colorClass} ${style.bgClass}`}
+      aria-label={label}
+    >
+      {style.icon === "skull" ? (
+        <Skull className="w-3.5 h-3.5" aria-hidden="true" />
+      ) : style.icon === "warning" ? (
+        <span aria-hidden="true">⚠</span>
+      ) : style.icon === "danger" ? (
+        <span aria-hidden="true">‼</span>
+      ) : (
+        <span aria-hidden="true">♥</span>
+      )}
+      {label}
+    </span>
+  );
 }
 
 /** Inline note input for players to signal the DM (e.g. "concentrating on Bless") */
@@ -59,14 +94,14 @@ function PlayerNoteInput({ combatantId, onSubmit }: { combatantId: string; onSub
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
         placeholder={t("note_placeholder")}
-        className="flex-1 bg-transparent border border-border rounded px-2 py-1.5 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-gold min-h-[36px]"
+        className="flex-1 bg-transparent border border-border rounded px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[44px]"
         maxLength={100}
         data-testid={`player-note-input-${combatantId}`}
       />
       <button
         type="button"
         onClick={handleSubmit}
-        className="px-2 py-1.5 text-xs font-medium rounded bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[36px]"
+        className="px-3 py-2 text-sm font-medium rounded bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[44px]"
         data-testid={`player-note-send-${combatantId}`}
       >
         {saved ? t("note_sent") : t("note_send")}
@@ -108,6 +143,7 @@ const LOG_TYPE_COLORS: Record<CombatLogEntry["type"], string> = {
 interface PlayerInitiativeBoardProps {
   combatants: PlayerCombatant[];
   currentTurnIndex: number;
+  roundNumber: number;
   rulesetVersion: RulesetVersion;
   combatLog?: CombatLogEntry[];
   /** Callback when a player edits their own character's note */
@@ -117,6 +153,7 @@ interface PlayerInitiativeBoardProps {
 export function PlayerInitiativeBoard({
   combatants,
   currentTurnIndex,
+  roundNumber,
   rulesetVersion,
   combatLog,
   onPlayerNote,
@@ -126,6 +163,25 @@ export function PlayerInitiativeBoard({
   const prevTurnIndexRef = useRef(currentTurnIndex);
   const [showYourTurn, setShowYourTurn] = useState(false);
   const yourTurnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track highest revealed index during round 1 (persists across re-renders)
+  const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
+
+  // Update max revealed index when turn advances in round 1
+  useEffect(() => {
+    if (roundNumber === 1 && currentTurnIndex > maxRevealedIndex) {
+      setMaxRevealedIndex(currentTurnIndex);
+    }
+    // When round 2 starts, reveal all
+    if (roundNumber >= 2) {
+      setMaxRevealedIndex(combatants.length - 1);
+    }
+  }, [currentTurnIndex, roundNumber, combatants.length, maxRevealedIndex]);
+
+  // Progressive reveal: in round 1, only show combatants up to current turn
+  const isRevealed = useCallback((index: number) => {
+    if (roundNumber >= 2) return true;
+    return index <= maxRevealedIndex;
+  }, [roundNumber, maxRevealedIndex]);
 
   // Auto-scroll to current turn combatant when turn changes
   useEffect(() => {
@@ -135,6 +191,11 @@ export function PlayerInitiativeBoard({
   // Separate player characters from others for "own character" highlight
   const playerChars = combatants.filter((c) => c.is_player);
   const hasOwnChar = playerChars.length > 0;
+
+  // Count revealed vs total for round 1 display
+  const revealedCount = roundNumber >= 2
+    ? combatants.length
+    : Math.min(maxRevealedIndex + 1, combatants.length);
 
   // TASK 2: Turn notification with vibration
   useEffect(() => {
@@ -203,10 +264,13 @@ export function PlayerInitiativeBoard({
       {hasOwnChar && (
         <div className="space-y-2">
           {playerChars.map((pc) => {
-            const hpPct = pc.max_hp > 0 ? Math.max(0, Math.min(1, pc.current_hp / pc.max_hp)) : 0;
-            const hpBarColor = getHpBarColor(pc.current_hp, pc.max_hp);
-            const hpThresholdKey = getHpThresholdKey(pc.current_hp, pc.max_hp);
-            const hasTempHp = pc.temp_hp > 0;
+            const currentHp = pc.current_hp ?? 0;
+            const maxHp = pc.max_hp ?? 0;
+            const tempHp = pc.temp_hp ?? 0;
+            const hpPct = maxHp > 0 ? Math.max(0, Math.min(1, currentHp / maxHp)) : 0;
+            const hpBarColor = getHpBarColor(currentHp, maxHp);
+            const hpThresholdKey = getHpThresholdKey(currentHp, maxHp);
+            const hasTempHp = tempHp > 0;
 
             return (
               <div
@@ -227,7 +291,7 @@ export function PlayerInitiativeBoard({
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
                     <span className="text-foreground text-2xl font-mono font-bold">
-                      {pc.current_hp}<span className="text-muted-foreground text-base font-normal"> / {pc.max_hp}</span>
+                      {currentHp}<span className="text-muted-foreground text-base font-normal"> / {maxHp}</span>
                       {hpThresholdKey && (
                         <span className="text-xs font-mono ml-2 text-muted-foreground">
                           {t(hpThresholdKey)}
@@ -237,15 +301,15 @@ export function PlayerInitiativeBoard({
                   </div>
                   {hasTempHp && (
                     <div className="text-sm text-[#9f7aea] font-mono mb-1">
-                      {t("temp_hp", { value: pc.temp_hp })}
+                      {t("temp_hp", { value: tempHp })}
                     </div>
                   )}
                   <div
                     className="h-3 bg-white/[0.06] rounded-full overflow-hidden"
                     role="progressbar"
-                    aria-valuenow={pc.current_hp}
+                    aria-valuenow={currentHp}
                     aria-valuemin={0}
-                    aria-valuemax={pc.max_hp}
+                    aria-valuemax={maxHp}
                     aria-label={t("hp_aria", { name: pc.name }) + (hpThresholdKey ? ` — ${t(hpThresholdKey)}` : "")}
                   >
                     <div
@@ -278,6 +342,15 @@ export function PlayerInitiativeBoard({
         </div>
       )}
 
+      {/* Round 1 reveal indicator */}
+      {roundNumber === 1 && (
+        <div className="text-center py-2">
+          <p className="text-muted-foreground text-xs">
+            {t("reveal_count", { revealed: revealedCount })}
+          </p>
+        </div>
+      )}
+
       {/* Initiative Order */}
       <ul
         className="space-y-2"
@@ -286,27 +359,28 @@ export function PlayerInitiativeBoard({
         data-testid="player-initiative-board"
       >
         {combatants.map((combatant, index) => {
+          // Progressive reveal: hide unrevealed combatants in round 1
+          if (!isRevealed(index)) return null;
           const isCurrentTurn = index === currentTurnIndex;
-          const hpPct =
-            combatant.max_hp > 0
-              ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
-              : 0;
-          const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
-          const hpThresholdKey = getHpThresholdKey(
-            combatant.current_hp,
-            combatant.max_hp,
-          );
-          const hasTempHp = combatant.temp_hp > 0;
+          const isPlayer = combatant.is_player;
+
+          // Player characters: show full HP bar
+          const hpPct = isPlayer && combatant.max_hp && combatant.max_hp > 0
+            ? Math.max(0, Math.min(1, (combatant.current_hp ?? 0) / combatant.max_hp))
+            : 0;
+          const hpBarColor = isPlayer ? getHpBarColor(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : "";
+          const hpThresholdKey = isPlayer ? getHpThresholdKey(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : null;
+          const hasTempHp = isPlayer && (combatant.temp_hp ?? 0) > 0;
 
           return (
             <li
               key={combatant.id}
               ref={isCurrentTurn ? turnRef : undefined}
-              className={`bg-card border rounded-lg px-4 py-3 min-h-[64px] transition-colors ${
+              className={`bg-card border rounded-lg px-4 py-3 min-h-[64px] transition-all duration-300 ${
                 isCurrentTurn ? "border-gold bg-gold/5" : "border-border"
               } ${combatant.is_defeated ? "opacity-50" : ""} ${
-                combatant.is_player ? "border-gold/40" : ""
-              }`}
+                isPlayer ? "border-gold/40" : ""
+              } ${roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""}`}
               role="listitem"
               aria-current={isCurrentTurn ? true : undefined}
               data-testid={`player-combatant-${combatant.id}`}
@@ -323,7 +397,7 @@ export function PlayerInitiativeBoard({
                 )}
                 <span className="text-foreground text-sm font-medium flex-1 truncate">
                   {combatant.name}
-                  {combatant.is_player && (
+                  {isPlayer && (
                     <span className="text-gold/60 text-xs ml-1">({t("you_label")})</span>
                   )}
                 </span>
@@ -334,40 +408,46 @@ export function PlayerInitiativeBoard({
                 )}
               </div>
 
-              {/* HP bar */}
-              <div className="mb-2">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-                  <span className="text-muted-foreground text-sm font-mono">
-                    {combatant.current_hp} / {combatant.max_hp}
-                    {hpThresholdKey && (
-                      <span className="text-xs font-mono ml-1 text-muted-foreground">
-                        {t(hpThresholdKey)}
-                      </span>
-                    )}
-                    {hasTempHp && (
-                      <span className="text-[#9f7aea] ml-1 text-xs">
-                        {t("temp_hp", { value: combatant.temp_hp })}
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div
-                  className="h-2.5 bg-white/[0.06] rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={combatant.current_hp}
-                  aria-valuemin={0}
-                  aria-valuemax={combatant.max_hp}
-                  aria-label={t("hp_aria", { name: combatant.name }) + (hpThresholdKey ? ` — ${t(hpThresholdKey)}` : "")}
-                >
+              {/* HP display — full bar for players, status label for monsters */}
+              {isPlayer ? (
+                <div className="mb-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
+                    <span className="text-muted-foreground text-sm font-mono">
+                      {combatant.current_hp} / {combatant.max_hp}
+                      {hpThresholdKey && (
+                        <span className="text-xs font-mono ml-1 text-muted-foreground">
+                          {t(hpThresholdKey)}
+                        </span>
+                      )}
+                      {hasTempHp && (
+                        <span className="text-[#9f7aea] ml-1 text-xs">
+                          {t("temp_hp", { value: combatant.temp_hp ?? 0 })}
+                        </span>
+                      )}
+                    </span>
+                  </div>
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${hpBarColor}`}
-                    style={{ width: `${hpPct * 100}%` }}
-                  />
+                    className="h-2.5 bg-white/[0.06] rounded-full overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={combatant.current_hp}
+                    aria-valuemin={0}
+                    aria-valuemax={combatant.max_hp}
+                    aria-label={t("hp_aria", { name: combatant.name }) + (hpThresholdKey ? ` — ${t(hpThresholdKey)}` : "")}
+                  >
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${hpBarColor}`}
+                      style={{ width: `${hpPct * 100}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : combatant.hp_status ? (
+                <div className="mb-2">
+                  <HpStatusBadge status={combatant.hp_status} />
+                </div>
+              ) : null}
 
-              {/* Condition badges — min-height for touch targets */}
+              {/* Condition badges */}
               {combatant.conditions.length > 0 && (
                 <div className="flex flex-wrap gap-1.5" role="list" aria-label={`${combatant.name} conditions`}>
                   {combatant.conditions.map((condition) => (

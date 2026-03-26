@@ -19,6 +19,12 @@ export interface RealtimeHpUpdate {
   combatant_id: string;
   current_hp: number;
   temp_hp: number;
+  /** Included for broadcast sanitization — stripped for non-player combatants */
+  max_hp?: number;
+  /** Included for broadcast sanitization — determines what data players see */
+  is_player?: boolean;
+  /** Calculated server-side for non-player combatants (LIGHT/MODERATE/HEAVY/CRITICAL) */
+  hp_status?: string;
 }
 
 export interface RealtimeTurnAdvance {

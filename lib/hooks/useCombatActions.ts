@@ -81,7 +81,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     useCombatStore.getState().applyDamage(id, amount);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
       persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [setError]);
@@ -90,7 +90,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     useCombatStore.getState().applyHealing(id, amount);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
       persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [setError]);
@@ -99,7 +99,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     useCombatStore.getState().setTempHp(id, value);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp });
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
       persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
   }, [setError]);

@@ -4,10 +4,13 @@ import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { linkAnonymousUser } from "@/lib/supabase/session-token";
+import { registerPlayerCombatant } from "@/lib/supabase/player-registration";
 import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
+import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
 import type { ConnectionStatus } from "@/lib/realtime/use-realtime-channel";
 import type { RulesetVersion } from "@/lib/types/database";
+
 
 const SpellSearch = lazy(() =>
   import("@/components/oracle/SpellSearch").then((mod) => ({
@@ -18,16 +21,19 @@ const SpellSearch = lazy(() =>
 interface PlayerCombatant {
   id: string;
   name: string;
-  current_hp: number;
-  max_hp: number;
-  temp_hp: number;
-  ac: number;
+  /** Only present for is_player=true combatants */
+  current_hp?: number;
+  max_hp?: number;
+  temp_hp?: number;
+  ac?: number;
   initiative_order: number | null;
   conditions: string[];
   is_defeated: boolean;
   is_player: boolean;
   monster_id: string | null;
   ruleset_version: string | null;
+  /** HP status label for monsters (LIGHT/MODERATE/HEAVY/CRITICAL) */
+  hp_status?: string;
 }
 
 interface PlayerJoinClientProps {
@@ -60,11 +66,18 @@ export function PlayerJoinClient({
   const [round, setRound] = useState(roundNumber);
   const [turnIndex, setTurnIndex] = useState(currentTurnIndex);
   const [active, setActive] = useState(isActive);
+  const [currentEncounterId, setCurrentEncounterId] = useState(encounterId);
+  const encounterIdRef = useRef(encounterId);
+  // Keep ref in sync with state
+  useEffect(() => { encounterIdRef.current = currentEncounterId; }, [currentEncounterId]);
   const [authReady, setAuthReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
   const [showOracle, setShowOracle] = useState(false);
   const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [registeredName, setRegisteredName] = useState<string | undefined>();
+  const [joinedPlayers, setJoinedPlayers] = useState<Array<{ id: string; name: string }>>([]);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
@@ -116,7 +129,7 @@ export function PlayerJoinClient({
     for (const next of nextList) {
       const prev = prevList.find((c) => c.id === next.id);
       if (!prev) continue;
-      const diff = next.current_hp - prev.current_hp;
+      const diff = (next.current_hp ?? 0) - (prev.current_hp ?? 0);
       if (diff < 0) {
         addLogEntry(tRef.current("log_damage", { name: next.name, value: Math.abs(diff) }), "damage");
       } else if (diff > 0) {
@@ -163,30 +176,27 @@ export function PlayerJoinClient({
     });
   }, [addLogEntry]);
 
-  // Full state fetch from DB — used on reconnect & polling fallback
-  const fetchFullState = useCallback(async (eid: string) => {
+  // Full state fetch via API — used on reconnect & polling fallback.
+  // Uses /api/session/[id]/state which sanitizes monster data server-side.
+  const fetchFullState = useCallback(async (_eid: string) => {
     try {
-      const supabase = supabaseRef.current ?? createClient();
-      const { data: enc } = await supabase
-        .from("encounters")
-        .select("round_number, current_turn_index, is_active")
-        .eq("id", eid)
-        .single();
-      if (enc) {
-        setRound(enc.round_number ?? 1);
-        updateTurnIndex(enc.current_turn_index ?? 0);
-        setActive(enc.is_active ?? false);
+      const res = await fetch(`/api/session/${sessionId}/state`);
+      if (!res.ok) return;
+      const { data } = await res.json();
+      if (!data) return;
+      if (data.encounter) {
+        setRound(data.encounter.round_number ?? 1);
+        updateTurnIndex(data.encounter.current_turn_index ?? 0);
+        setActive(data.encounter.is_active ?? false);
+        if (data.encounter.id) setCurrentEncounterId(data.encounter.id);
       }
-      const { data: rows } = await supabase
-        .from("combatants")
-        .select("id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version")
-        .eq("encounter_id", eid)
-        .order("initiative_order", { ascending: true });
-      if (rows) updateCombatants(rows);
+      if (data.combatants) {
+        updateCombatants(data.combatants);
+      }
     } catch {
       // Silent failure — will retry
     }
-  }, [updateTurnIndex, updateCombatants]);
+  }, [sessionId, updateTurnIndex, updateCombatants]);
 
   // Subscribe to realtime channel for combat updates
   useEffect(() => {
@@ -206,7 +216,9 @@ export function PlayerJoinClient({
           if (payload.combatants) updateCombatants(payload.combatants);
           if (payload.round_number !== undefined) setRound(payload.round_number);
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
-          if (payload.is_active !== undefined) setActive(payload.is_active);
+          // state_sync means combat is active — update state to exit lobby
+          setActive(true);
+          if (payload.encounter_id) setCurrentEncounterId(payload.encounter_id);
         })
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
@@ -215,11 +227,17 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
           if (payload.combatant_id) {
             updateCombatants((prev) =>
-              prev.map((c) =>
-                c.id === payload.combatant_id
-                  ? { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp }
-                  : c
-              )
+              prev.map((c) => {
+                if (c.id !== payload.combatant_id) return c;
+                // Monster/NPC: only hp_status is sent (no exact numbers)
+                if (payload.hp_status && payload.current_hp === undefined) {
+                  return { ...c, hp_status: payload.hp_status };
+                }
+                // Player character: full HP data (including max_hp if changed)
+                const updated = { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp };
+                if (payload.max_hp !== undefined) updated.max_hp = payload.max_hp;
+                return updated;
+              })
             );
           }
         })
@@ -272,10 +290,8 @@ export function PlayerJoinClient({
               prev.map((c) => {
                 if (c.id !== payload.combatant_id) return c;
                 const updated = { ...c };
+                // Only name changes come through — AC/HP/spell_save_dc are stripped by broadcast
                 if (payload.name !== undefined) updated.name = payload.name;
-                if (payload.max_hp !== undefined) updated.max_hp = payload.max_hp;
-                if (payload.current_hp !== undefined) updated.current_hp = payload.current_hp;
-                if (payload.ac !== undefined) updated.ac = payload.ac;
                 return updated;
               })
             );
@@ -284,6 +300,21 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }) => {
           if (payload.combatants) {
             updateCombatants(payload.combatants);
+          }
+        })
+        .on("broadcast", { event: "player:joined" }, ({ payload }) => {
+          if (payload.id && payload.name) {
+            setJoinedPlayers((prev) => {
+              if (prev.some((p) => p.id === payload.id)) return prev;
+              return [...prev, { id: payload.id, name: payload.name }];
+            });
+          }
+        })
+        .on("broadcast", { event: "combat:started" }, ({ payload }) => {
+          setActive(true);
+          if (payload?.encounter_id) {
+            setCurrentEncounterId(payload.encounter_id);
+            fetchFullState(payload.encounter_id);
           }
         })
         .subscribe((status) => {
@@ -297,7 +328,7 @@ export function PlayerJoinClient({
               pollIntervalRef.current = null;
             }
             // Fetch full state on reconnect to catch anything missed
-            if (encounterId) fetchFullState(encounterId);
+            if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
           } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
             setConnectionStatus("disconnected");
             if (!disconnectedAtRef.current) {
@@ -307,8 +338,8 @@ export function PlayerJoinClient({
             if (pollFallbackTimerRef.current) clearTimeout(pollFallbackTimerRef.current);
             pollFallbackTimerRef.current = setTimeout(() => {
               pollFallbackTimerRef.current = null;
-              if (disconnectedAtRef.current && encounterId) {
-                startPolling(encounterId);
+              if (disconnectedAtRef.current && encounterIdRef.current) {
+                startPolling(encounterIdRef.current);
               }
             }, 3000);
 
@@ -353,7 +384,7 @@ export function PlayerJoinClient({
         pollIntervalRef.current = null;
       }
     };
-  }, [authReady, sessionId, encounterId, fetchFullState]);
+  }, [authReady, sessionId, fetchFullState]);
 
   // Visibility change handler — reconnect when phone unlocks / tab regains focus
   useEffect(() => {
@@ -362,7 +393,7 @@ export function PlayerJoinClient({
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         // Phone unlocked or tab re-focused — fetch full state immediately
-        if (encounterId) fetchFullState(encounterId);
+        if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
 
         // If realtime is disconnected, force reconnect via the same createChannel function
         // (which re-attaches all broadcast event listeners — the previous inline version did not)
@@ -383,7 +414,7 @@ export function PlayerJoinClient({
 
     // Also handle online/offline events for network loss
     const handleOnline = () => {
-      if (encounterId) fetchFullState(encounterId);
+      if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -393,7 +424,7 @@ export function PlayerJoinClient({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);
     };
-  }, [authReady, sessionId, encounterId, fetchFullState]);
+  }, [authReady, sessionId, fetchFullState]);
 
   // Polling fallback — fetch latest state from DB (mobile-friendly interval).
   // Clears any previous interval before starting so second-disconnect restarts correctly.
@@ -403,6 +434,32 @@ export function PlayerJoinClient({
     const interval = isMobile ? 5000 : 2000;
     pollIntervalRef.current = setInterval(() => fetchFullState(eid), interval);
   };
+
+  // Player registration handler — MUST be before any early returns (Rules of Hooks)
+  const handleRegister = useCallback(async (data: {
+    name: string;
+    initiative: number;
+    hp: number | null;
+    ac: number | null;
+  }) => {
+    await registerPlayerCombatant(tokenId, sessionId, data);
+    setIsRegistered(true);
+    setRegisteredName(data.name);
+    // Broadcast to other players and DM that this player joined
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "player:joined",
+        payload: {
+          id: tokenId,
+          name: data.name,
+          initiative: data.initiative,
+          hp: data.hp,
+          ac: data.ac,
+        },
+      });
+    }
+  }, [tokenId, sessionId]);
 
   if (error) {
     return (
@@ -425,16 +482,16 @@ export function PlayerJoinClient({
     );
   }
 
-  if (!active || !encounterId) {
+  // Show lobby when combat isn't active yet
+  if (!active || !currentEncounterId) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center space-y-3">
-          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
-          <p className="text-muted-foreground text-sm">
-            {t("waiting_dm")}
-          </p>
-        </div>
-      </div>
+      <PlayerLobby
+        sessionName={sessionName}
+        joinedPlayers={joinedPlayers}
+        onRegister={handleRegister}
+        isRegistered={isRegistered}
+        registeredName={registeredName}
+      />
     );
   }
 
@@ -487,6 +544,7 @@ export function PlayerJoinClient({
         <PlayerInitiativeBoard
           combatants={combatants}
           currentTurnIndex={turnIndex}
+          roundNumber={round}
           rulesetVersion={rulesetVersion}
           combatLog={combatLog}
           onPlayerNote={(combatantId, note) => {
