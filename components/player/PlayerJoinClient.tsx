@@ -96,8 +96,9 @@ export function PlayerJoinClient({
         let userId: string;
         if (!session) {
           const { data, error: authError } = await supabase.auth.signInAnonymously();
-          if (authError) throw authError;
-          userId = data.user!.id;
+          if (authError) throw new Error(`anon-auth: ${authError.message}`);
+          if (!data.user) throw new Error("anon-auth: no user returned");
+          userId = data.user.id;
         } else {
           userId = session.user.id;
         }
@@ -106,8 +107,10 @@ export function PlayerJoinClient({
         const claimedTokenId = await claimPlayerToken(tokenId, userId);
         setEffectiveTokenId(claimedTokenId);
         setAuthReady(true);
-      } catch {
-        setError(t("connection_error_detail"));
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error("[PlayerJoin] initAuth failed:", msg);
+        setError(`${t("connection_error_detail")} (${msg})`);
       }
     };
     initAuth();
