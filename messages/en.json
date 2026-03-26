@@ -456,6 +456,7 @@
     "hp_status_heavy": "Heavy",
     "hp_status_critical": "Critical",
     "lobby_title": "Join Combat",
+    "lobby_subtitle": "Enter your info",
     "lobby_name_label": "Character Name",
     "lobby_name_placeholder": "e.g. Aragorn",
     "lobby_initiative_label": "Initiative",

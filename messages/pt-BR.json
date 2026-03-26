@@ -459,6 +459,7 @@
     "hp_status_heavy": "Grave",
     "hp_status_critical": "Crítico",
     "lobby_title": "Entrar no Combate",
+    "lobby_subtitle": "Insira suas infos",
     "lobby_name_label": "Nome do Personagem",
     "lobby_name_placeholder": "ex: Aragorn",
     "lobby_initiative_label": "Iniciativa",

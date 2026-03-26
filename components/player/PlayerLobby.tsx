@@ -129,8 +129,8 @@ export function PlayerLobby({
       <div className="max-w-sm mx-auto w-full space-y-6">
         <div className="text-center">
           <Swords className="w-8 h-8 text-gold mx-auto mb-3" aria-hidden="true" />
-          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
-          <p className="text-muted-foreground text-sm mt-1">{t("lobby_title")}</p>
+          <h1 className="text-foreground text-xl font-semibold">{t("lobby_title")}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{t("lobby_subtitle")}</p>
         </div>
 
         <div className="space-y-4">
