@@ -157,7 +157,7 @@ export function roll(
   };
 
   if (effectiveMode === "resistance") {
-    result.resistanceTotal = Math.floor(total / 2);
+    result.resistanceTotal = Math.max(0, Math.floor(total / 2));
   }
 
   return result;

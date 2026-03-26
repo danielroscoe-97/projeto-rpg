@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { getAllConditions } from "@/lib/srd/srd-search";
+import { getCoreConditions } from "@/lib/srd/srd-search";
 import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
 
 export function ConditionLookup() {
   const t = useTranslations("oracle");
-  const conditions = getAllConditions();
+  const conditions = getCoreConditions();
   const [selectedCondition, setSelectedCondition] =
     useState<SrdCondition | null>(null);
 

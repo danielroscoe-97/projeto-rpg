@@ -59,6 +59,9 @@ interface MonsterAction {
   attack_bonus?: number;
 }
 
+const TOKEN_BASE_URL =
+  "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens";
+
 interface SrdMonster {
   id: string;
   name: string;
@@ -68,6 +71,7 @@ interface SrdMonster {
   hit_points: number;
   armor_class: number;
   ruleset_version: "2014" | "2024";
+  token_url: string;
   size: string;
   alignment: string | null;
   hp_formula: string | null;
@@ -643,6 +647,8 @@ function transformMonster(
     special_abilities = [...(traits || []), ...(spellcastingActions || [])];
   }
 
+  const tokenUrl = `${TOKEN_BASE_URL}/${sourceCode}/${encodeURIComponent(name)}.webp`;
+
   return {
     id,
     name,
@@ -651,6 +657,7 @@ function transformMonster(
     type: parseType(raw.type),
     hit_points,
     armor_class: parseAC(raw.ac),
+    token_url: tokenUrl,
     ruleset_version: version,
     size: parseSize(raw.size),
     alignment: parseAlignment(raw.alignment),

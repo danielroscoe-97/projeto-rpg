@@ -29,6 +29,7 @@ interface SrdCondition {
   description: string;
   source: string;
   ruleset_version: "2014" | "2024";
+  category: "condition" | "disease" | "status";
   created_at: string;
 }
 
@@ -159,6 +160,7 @@ async function main() {
       description,
       source,
       ruleset_version: is2024 ? "2024" : "2014",
+      category: "condition" as const,
       created_at: now,
     });
   }
@@ -178,10 +180,11 @@ async function main() {
 
     conditions.push({
       id,
-      name: `[Disease] ${name}`,
+      name,
       description,
       source,
       ruleset_version: is2024 ? "2024" : "2014",
+      category: "disease" as const,
       created_at: now,
     });
   }
@@ -201,15 +204,21 @@ async function main() {
 
     conditions.push({
       id,
-      name: `[Status] ${name}`,
+      name,
       description,
       source,
       ruleset_version: is2024 ? "2024" : "2014",
+      category: "status" as const,
       created_at: now,
     });
   }
 
-  // Sort by name
+  // Sort: conditions first, then diseases, then statuses; alphabetical within each
+  const categoryOrder = { condition: 0, disease: 1, status: 2 };
+  conditions.sort((a, b) => {
+    const catDiff = categoryOrder[a.category] - categoryOrder[b.category];
+    return catDiff !== 0 ? catDiff : a.name.localeCompare(b.name);
+  });
   conditions.sort((a, b) => a.name.localeCompare(b.name));
 
   // Write output

@@ -8,6 +8,7 @@ import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer
 import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
+import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LayoutDashboard, Skull, Sparkles, HeartPulse, Package, Settings } from "lucide-react";
 
@@ -54,6 +55,7 @@ export default async function AppLayout({
         <FloatingCardContainer />
         <CommandPalette />
         <OracleFAB />
+        <DiceHistoryPanel />
       </ErrorBoundary>
       <main id="main-content" className="flex-1 pt-[72px] p-6">
         <ErrorBoundary name="MainContent">

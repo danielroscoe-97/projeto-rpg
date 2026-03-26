@@ -20,6 +20,8 @@ export interface SrdMonster {
   ruleset_version: RulesetVersion;
   /** Source book abbreviation (e.g. "MM", "VGM", "MTF") */
   source?: string;
+  /** URL to the monster's token image (webp) */
+  token_url?: string;
 
   // --- Full stat block fields (present in bundles; optional for lean test fixtures) ---
   size?: string;
@@ -73,6 +75,8 @@ export interface SrdCondition {
   /** Source book abbreviation */
   source?: string;
   ruleset_version?: RulesetVersion;
+  /** Categorizes the entry: core condition, disease, or status */
+  category?: "condition" | "disease" | "status";
 }
 
 const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();

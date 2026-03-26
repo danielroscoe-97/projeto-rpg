@@ -79,6 +79,18 @@ export function getAllConditions(): SrdCondition[] {
   return conditionData;
 }
 
+/** Returns only core conditions (not diseases or statuses). */
+export function getCoreConditions(): SrdCondition[] {
+  return conditionData.filter((c) => !c.category || c.category === "condition");
+}
+
+/** Returns conditions filtered by category. */
+export function getConditionsByCategory(
+  category: "condition" | "disease" | "status"
+): SrdCondition[] {
+  return conditionData.filter((c) => c.category === category);
+}
+
 /** Look up a single spell by SRD id and ruleset version. O(1) map lookup. */
 export function getSpellById(
   id: string,

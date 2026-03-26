@@ -1,16 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { roll, type RollResult } from "@/lib/dice/roll";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { roll, parseNotation, type RollResult, type RollMode } from "@/lib/dice/roll";
 
 // ---------------------------------------------------------------------------
 // ClickableRoll — an inline button that rolls dice on click and shows a
 // popover with the result breakdown. Designed to sit inside stat block text
 // exactly like 5e.tools' clickable dice notations.
+//
+// Shift+click: Advantage (d20) / Critical (damage)
+// Ctrl/Cmd+click: Disadvantage (d20) / Resistance (damage)
 // ---------------------------------------------------------------------------
 
 // Global event to dismiss all other popovers when a new roll occurs
 const DISMISS_EVENT = "dice-roll-dismiss";
+// Event dispatched after each roll for the history store
+const ROLL_RESULT_EVENT = "dice-roll-result";
 
 export interface ClickableRollProps {
   /** Dice notation, e.g. "1d20+7", "2d6+5" */
@@ -27,6 +32,14 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
   const btnRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const instanceId = useRef(Math.random().toString(36).slice(2));
+
+  // Determine if this is a d20 roll for contextual tooltips
+  const parsed = useMemo(() => parseNotation(notation), [notation]);
+  const isD20 = parsed.count === 1 && parsed.sides === 20;
+
+  const tooltip = isD20
+    ? `Roll ${notation} — Shift: Vantagem, Ctrl: Desvantagem`
+    : `Roll ${notation} — Shift: Crítico (2x dados), Ctrl: Resistência (÷2)`;
 
   // Listen for global dismiss events from other ClickableRoll instances
   useEffect(() => {
@@ -56,7 +69,16 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      const r = roll(notation, label);
+
+      // Determine mode from modifier keys + context
+      let mode: RollMode = "normal";
+      if (e.shiftKey) {
+        mode = isD20 ? "advantage" : "critical";
+      } else if (e.ctrlKey || e.metaKey) {
+        mode = isD20 ? "disadvantage" : "resistance";
+      }
+
+      const r = roll(notation, label, mode);
 
       // Guard: don't show popover for invalid/empty results
       if (r.dice.length === 0 && r.modifier === 0) return;
@@ -66,13 +88,18 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
         new CustomEvent(DISMISS_EVENT, { detail: instanceId.current }),
       );
 
+      // Dispatch roll result for the history store (structuredClone avoids shared mutable ref)
+      window.dispatchEvent(
+        new CustomEvent(ROLL_RESULT_EVENT, { detail: structuredClone(r) }),
+      );
+
       setResult(r);
 
       // Position popover near the click
       const rect = e.currentTarget.getBoundingClientRect();
       setPopoverPos({ x: rect.left, y: rect.bottom + 6 });
     },
-    [notation, label],
+    [notation, label, isD20],
   );
 
   const dismiss = useCallback(() => {
@@ -88,7 +115,7 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
         type="button"
         className="dice-roll-btn"
         onClick={handleClick}
-        title={`Roll ${notation}`}
+        title={tooltip}
       >
         {children ?? notation}
       </button>
@@ -135,16 +162,8 @@ function DicePopover({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onDismiss, triggerRef]);
 
-  // Build breakdown string: "[4, 3] + 5 = 12"
-  const diceStr =
-    result.dice.length > 0
-      ? `[${result.dice.map((d) => d.value).join(", ")}]`
-      : "";
-  const modStr =
-    result.modifier !== 0
-      ? ` ${result.modifier >= 0 ? "+" : "−"} ${Math.abs(result.modifier)}`
-      : "";
-  const breakdown = `${diceStr}${modStr} = `;
+  // Mode badge
+  const modeBadge = getModeBadge(result.mode);
 
   // Nat 1/20 indicator
   const natClass = result.isNat20
@@ -166,12 +185,82 @@ function DicePopover({
         zIndex: 9999,
       }}
     >
-      {result.label && <div className="dice-popover-label">{result.label}</div>}
-      <div className="dice-popover-result">
-        <span className="dice-popover-breakdown">{breakdown}</span>
-        <span className={`dice-popover-total ${natClass}`}>{result.total}</span>
+      <div className="dice-popover-header">
+        {result.label && <div className="dice-popover-label">{result.label}</div>}
+        {modeBadge}
       </div>
+      <div className="dice-popover-result">
+        <span className="dice-popover-breakdown">
+          <PopoverBreakdown result={result} />
+        </span>
+        <span className={`dice-popover-total ${natClass}`}>
+          {result.mode === "resistance" && result.resistanceTotal !== undefined
+            ? result.resistanceTotal
+            : result.total}
+        </span>
+      </div>
+      {result.mode === "resistance" && result.resistanceTotal !== undefined && (
+        <div className="dice-resist-total">
+          {result.total} → {result.resistanceTotal}
+        </div>
+      )}
       <div className="dice-popover-notation">{result.notation}</div>
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getModeBadge(mode: RollResult["mode"]): React.ReactNode {
+  switch (mode) {
+    case "advantage":
+      return <span className="dice-adv-badge">ADV</span>;
+    case "disadvantage":
+      return <span className="dice-dis-badge">DIS</span>;
+    case "critical":
+      return <span className="dice-crit-badge">CRIT</span>;
+    case "resistance":
+      return <span className="dice-resist-badge">RESIST</span>;
+    default:
+      return null;
+  }
+}
+
+function PopoverBreakdown({ result }: { result: RollResult }) {
+  const { mode, dice, discardedDice, modifier } = result;
+
+  // Advantage/Disadvantage: show both d20 values, discarded one dimmed
+  if ((mode === "advantage" || mode === "disadvantage") && discardedDice.length > 0 && dice.length > 0) {
+    const kept = dice[0].value;
+    const discarded = discardedDice[0].value;
+    const modStr = modifier !== 0
+      ? ` ${modifier >= 0 ? "+" : "−"} ${Math.abs(modifier)}`
+      : "";
+
+    return (
+      <>
+        [
+        {mode === "advantage" ? (
+          <>{kept}, <span className="dice-discarded">{discarded}</span></>
+        ) : (
+          <><span className="dice-discarded">{discarded}</span>, {kept}</>
+        )}
+        ]{modStr} ={" "}
+      </>
+    );
+  }
+
+  // Standard breakdown
+  const diceStr =
+    dice.length > 0
+      ? `[${dice.map((d) => d.value).join(", ")}]`
+      : "";
+  const modStr =
+    modifier !== 0
+      ? ` ${modifier >= 0 ? "+" : "−"} ${Math.abs(modifier)}`
+      : "";
+
+  return <>{diceStr}{modStr} = </>;
 }

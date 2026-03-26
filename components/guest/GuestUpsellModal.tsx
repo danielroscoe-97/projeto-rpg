@@ -105,7 +105,7 @@ export function GuestUpsellModal({ isOpen, onClose }: GuestUpsellModalProps) {
         <div className="flex flex-col gap-3 pt-1">
           <Link
             href="/auth/sign-up"
-            className="w-full text-center px-6 py-3 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] min-h-[48px] flex items-center justify-center btn-shimmer"
+            className="relative overflow-hidden w-full text-center px-6 py-3 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] min-h-[48px] flex items-center justify-center btn-shimmer"
           >
             Criar Minha Conta Grátis
           </Link>

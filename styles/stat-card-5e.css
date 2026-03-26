@@ -417,6 +417,291 @@
   margin-top: 2px;
 }
 
+/* ---- Mode Badges (ADV/DIS/CRIT/RESIST) ---- */
+.dice-adv-badge,
+.dice-dis-badge,
+.dice-crit-badge,
+.dice-resist-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.4;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.dice-adv-badge {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.dice-dis-badge {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.dice-crit-badge {
+  background: rgba(201, 169, 89, 0.15);
+  color: #c9a959;
+  border: 1px solid rgba(201, 169, 89, 0.3);
+}
+
+.dice-resist-badge {
+  background: rgba(58, 110, 165, 0.15);
+  color: #6fa8dc;
+  border: 1px solid rgba(58, 110, 165, 0.3);
+}
+
+/* ---- Discarded Die (advantage/disadvantage strikethrough) ---- */
+.dice-discarded {
+  text-decoration: line-through;
+  opacity: 0.4;
+}
+
+/* ---- Resistance Total Arrow ---- */
+.dice-resist-total {
+  font-size: 11px;
+  color: #6fa8dc;
+  margin-top: 1px;
+}
+
+/* ---- Popover Header (label + badge on same line) ---- */
+.dice-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.dice-popover-header .dice-popover-label {
+  margin-bottom: 0;
+}
+
+/* ---- Dice History Panel (floating, global) ---- */
+.dice-history-pill {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  z-index: 9990;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #15151a;
+  border: 1px solid #922610;
+  border-radius: 20px;
+  padding: 8px 12px;
+  color: #e8e4d0;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.dice-history-pill:hover {
+  border-color: #c9a959;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 6px rgba(201, 169, 89, 0.2);
+}
+
+.dice-history-badge {
+  background: #922610;
+  color: #e8e4d0;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.dice-history-panel {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  z-index: 9990;
+  width: 320px;
+  max-height: 384px;
+  display: flex;
+  flex-direction: column;
+  background: #15151a;
+  border: 1px solid #922610;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7);
+  color: #e8e4d0;
+  font-size: 13px;
+  animation: dice-pop-in 150ms ease-out;
+}
+
+.dice-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(146, 38, 16, 0.4);
+  flex-shrink: 0;
+}
+
+.dice-history-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b0aca0;
+}
+
+.dice-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dice-history-clear {
+  background: none;
+  border: 1px solid rgba(232, 228, 208, 0.15);
+  color: #b0aca0;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.dice-history-clear:hover {
+  color: #e8e4d0;
+  border-color: rgba(232, 228, 208, 0.3);
+}
+
+.dice-history-close {
+  background: none;
+  border: none;
+  color: #b0aca0;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 150ms ease;
+}
+
+.dice-history-close:hover {
+  color: #e8e4d0;
+}
+
+.dice-history-scroll {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 4px 0;
+}
+
+.dice-history-empty {
+  text-align: center;
+  padding: 24px 12px;
+  color: #666;
+  font-size: 12px;
+}
+
+.dice-history-entry {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color 150ms ease;
+}
+
+.dice-history-entry:last-child {
+  border-bottom: none;
+}
+
+.dice-history-entry:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dice-history-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.dice-history-time {
+  font-size: 10px;
+  color: #666;
+  font-variant-numeric: tabular-nums;
+}
+
+.dice-history-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b0aca0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dice-history-entry-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dice-history-breakdown {
+  font-size: 11px;
+  color: #888;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dice-history-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e8e4d0;
+  flex-shrink: 0;
+}
+
+.dice-history-total.dice-history-nat20 {
+  color: #4ade80;
+  text-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+.dice-history-entry.dice-history-nat20 {
+  background-color: rgba(74, 222, 128, 0.05);
+}
+
+.dice-history-total.dice-history-nat1 {
+  color: #f87171;
+  text-shadow: 0 0 6px rgba(248, 113, 113, 0.4);
+}
+
+.dice-history-entry.dice-history-nat1 {
+  background-color: rgba(248, 113, 113, 0.05);
+}
+
+/* ---- Mobile: full-width bottom sheet ---- */
+@media (max-width: 767px) {
+  .dice-history-panel {
+    width: calc(100% - 1rem);
+    right: 0.5rem;
+    left: 0.5rem;
+    bottom: 4.5rem;
+    max-height: 50vh;
+  }
+
+  .dice-history-pill {
+    right: 1rem;
+    bottom: 4.5rem;
+  }
+}
+
 /* ---- Reduced Motion: disable all animations & transitions ---- */
 @media (prefers-reduced-motion: reduce) {
   .stat-card-5e,
@@ -428,7 +713,11 @@
     transition: none !important;
     animation: none !important;
   }
-  .dice-popover {
+  .dice-popover,
+  .dice-history-panel,
+  .dice-history-pill,
+  .dice-history-entry {
     animation: none !important;
+    transition: none !important;
   }
 }

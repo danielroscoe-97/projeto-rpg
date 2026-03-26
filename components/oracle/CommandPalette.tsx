@@ -53,23 +53,27 @@ export function CommandPalette() {
 
   const hasResults = monsterResults.length > 0 || spellResults.length > 0 || conditionResults.length > 0;
 
-  // Global keyboard shortcut
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    setQuery("");
+    setDebouncedQuery("");
+  }, []);
+
+  // Global keyboard shortcuts (Ctrl+K to toggle, ESC to close)
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setOpen((prev) => !prev);
       }
+      if (e.key === "Escape" && open) {
+        e.preventDefault();
+        handleClose();
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setOpen(false);
-    setQuery("");
-    setDebouncedQuery("");
-  }, []);
+  }, [open, handleClose]);
 
   const handlePinMonster = useCallback((monster: SrdMonster) => {
     pinCard("monster", monster.id, monster.ruleset_version);
@@ -158,9 +162,14 @@ export function CommandPalette() {
               placeholder={t("placeholder")}
               className="flex-1 h-12 bg-transparent text-foreground text-base placeholder:text-muted-foreground outline-none"
             />
-            <kbd className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground bg-white/[0.06] rounded border border-white/[0.08]">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground bg-white/[0.06] rounded border border-white/[0.08] hover:bg-white/[0.12] hover:text-foreground transition-colors cursor-pointer"
+              aria-label={t("hint_close")}
+            >
               ESC
-            </kbd>
+            </button>
           </div>
 
           <Command.List className="max-h-[min(400px,50vh)] overflow-y-auto p-2">
