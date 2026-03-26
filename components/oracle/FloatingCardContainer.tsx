@@ -11,9 +11,10 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { usePinnedCardsStore, type PinnedCard } from "@/lib/stores/pinned-cards-store";
-import { getMonsterById, getSpellById, findCondition } from "@/lib/srd/srd-search";
+import { getMonsterById, getSpellById, getItemById, findCondition } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "./MonsterStatBlock";
 import { SpellCard } from "./SpellCard";
+import { ItemCard } from "./ItemCard";
 import { ConditionCard } from "./ConditionCard";
 import { OracleAICard } from "./OracleAICard";
 import "@/styles/stat-card-5e.css";
@@ -79,6 +80,7 @@ function DraggableCard({
 function resolveDisplayName(card: PinnedCard): string {
   if (card.type === "monster") return getMonsterById(card.entityId, card.rulesetVersion)?.name ?? card.entityId;
   if (card.type === "spell") return getSpellById(card.entityId, card.rulesetVersion)?.name ?? card.entityId;
+  if (card.type === "item") return getItemById(card.entityId)?.name ?? card.entityId;
   if (card.type === "oracle-ai") return card.oracleData?.question?.slice(0, 40) ?? "Oracle AI";
   return findCondition(card.entityId)?.name ?? card.entityId;
 }
@@ -96,7 +98,7 @@ function MinimizedCard({
   onClose: () => void;
   onFocus: () => void;
 }) {
-  const typeIcon = card.type === "monster" ? "👹" : card.type === "spell" ? "✨" : card.type === "oracle-ai" ? "🔮" : "⚡";
+  const typeIcon = card.type === "monster" ? "👹" : card.type === "spell" ? "✨" : card.type === "item" ? "⚔️" : card.type === "oracle-ai" ? "🔮" : "⚡";
   const displayName = resolveDisplayName(card);
   const typeClass =
     card.type === "spell"
@@ -250,6 +252,45 @@ function PinnedConditionCard({
 }
 
 // ---------------------------------------------------------------------------
+// Pinned Item Card Wrapper
+// ---------------------------------------------------------------------------
+
+function PinnedItemCard({
+  card,
+  onPin,
+  onClose,
+  onMinimize,
+}: {
+  card: PinnedCard;
+  onPin: () => void;
+  onClose: () => void;
+  onMinimize: () => void;
+}) {
+  const item = getItemById(card.entityId);
+  if (!item) {
+    return (
+      <div className="stat-card-5e card-floating" data-testid="card-not-found">
+        <div className="card-toolbar">
+          <button type="button" onClick={onClose} aria-label="Close card">×</button>
+        </div>
+        <p className="card-name">Item not found</p>
+        <p className="card-subtitle">{card.entityId}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="stat-card-5e card-floating">
+      <div className="card-toolbar">
+        <button type="button" onClick={onPin} aria-label="Focus card" title="Focus">📌</button>
+        <button type="button" onClick={onMinimize} aria-label="Minimize card" title="Minimize">−</button>
+        <button type="button" onClick={onClose} aria-label="Close card" title="Close">×</button>
+      </div>
+      <ItemCard item={item} variant="inline" />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main Container
 // ---------------------------------------------------------------------------
 
@@ -334,6 +375,8 @@ export function FloatingCardContainer() {
         return <PinnedSpellCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
       case "condition":
         return <PinnedConditionCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
+      case "item":
+        return <PinnedItemCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
       case "oracle-ai":
         if (!card.oracleData) return null;
         return (

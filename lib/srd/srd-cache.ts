@@ -1,10 +1,10 @@
 import { openDB } from "idb";
-import type { SrdMonster, SrdSpell, SrdCondition } from "./srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
 const DB_NAME = "srd-cache";
-// Bumped to 4: invalidate stale cache missing monster token_url fields
-const DB_VERSION = 4;
+// Bumped to 5: added items object store
+const DB_VERSION = 5;
 
 // Singleton promise — one IDBDatabase connection shared across all reads/writes
 let _dbPromise: ReturnType<typeof openDB> | null = null;
@@ -22,9 +22,12 @@ function getDb() {
         if (!db.objectStoreNames.contains("conditions")) {
           db.createObjectStore("conditions");
         }
+        if (!db.objectStoreNames.contains("items")) {
+          db.createObjectStore("items");
+        }
         // Clear stale data on version upgrade so fresh SRD bundles
         // (with token_url and latest fields) get fetched and cached.
-        if (oldVersion < 4) {
+        if (oldVersion < 5) {
           tx.objectStore("monsters").clear();
           tx.objectStore("spells").clear();
           tx.objectStore("conditions").clear();
@@ -99,6 +102,27 @@ export async function setCachedConditions(
   try {
     const db = await getDb();
     await db.put("conditions", data, "all");
+  } catch {
+    // Private browsing or storage quota — degrade gracefully
+  }
+}
+
+export async function getCachedItems(): Promise<SrdItem[] | null> {
+  try {
+    const db = await getDb();
+    const result = await db.get("items", "all");
+    return result ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function setCachedItems(
+  data: SrdItem[]
+): Promise<void> {
+  try {
+    const db = await getDb();
+    await db.put("items", data, "all");
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }

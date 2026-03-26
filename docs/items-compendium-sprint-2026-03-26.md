@@ -23,12 +23,12 @@ Nova aba "Itens" no Compêndio. Dataset de ~2.600 itens extraídos do 5e.tools (
 
 | # | Task | Status | Notas |
 |---|------|--------|-------|
-| 1.1 | Criar script `crawl-5etools-items.ts` que fetcha `items-base.json` e `items.json` do 5e.tools | ⬜ Pending | Node.js script, execução local |
-| 1.2 | Normalizar type codes (M→melee-weapon, LA→light-armor, etc.) | ⬜ Pending | Mapa de conversão completo na spec |
-| 1.3 | Flatten entries (converter objetos table/list em strings) | ⬜ Pending | Runtime não deve parsear objetos complexos |
-| 1.4 | Computar `isMagic`, `id` (kebab-case), `edition` (source→classic/one) | ⬜ Pending | |
-| 1.5 | Gerar `public/srd/items.json` consolidado | ⬜ Pending | Validar tamanho (~2-4MB) |
-| 1.6 | Validar integridade do JSON (tipos corretos, sem nulls inesperados) | ⬜ Pending | |
+| 1.1 | Criar script `crawl-5etools-items.ts` que fetcha `items-base.json` e `items.json` do 5e.tools | ✅ Done | Node.js script, execução local |
+| 1.2 | Normalizar type codes (M→melee-weapon, LA→light-armor, etc.) | ✅ Done | Mapa de conversão completo na spec |
+| 1.3 | Flatten entries (converter objetos table/list em strings) | ✅ Done | Runtime não deve parsear objetos complexos |
+| 1.4 | Computar `isMagic`, `id` (kebab-case), `edition` (source→classic/one) | ✅ Done | |
+| 1.5 | Gerar `public/srd/items.json` consolidado | ✅ Done | Validar tamanho (~2-4MB) |
+| 1.6 | Validar integridade do JSON (tipos corretos, sem nulls inesperados) | ✅ Done | |
 
 ---
 
@@ -45,12 +45,12 @@ Nova aba "Itens" no Compêndio. Dataset de ~2.600 itens extraídos do 5e.tools (
 
 | # | Task | Status | Notas |
 |---|------|--------|-------|
-| 2.1 | Adicionar `SrdItem` interface + `ItemType` + `ItemRarity` types em `srd-loader.ts` | ⬜ Pending | |
-| 2.2 | Adicionar `loadItems()` function em `srd-loader.ts` | ⬜ Pending | Fetch `/srd/items.json` |
-| 2.3 | Bump DB_VERSION → 5, adicionar object store "items" em `srd-cache.ts` | ⬜ Pending | +getCachedItems, +setCachedItems |
-| 2.4 | Adicionar `buildItemIndex()`, `searchItems()`, `getItemById()`, `getAllItems()` em `srd-search.ts` | ⬜ Pending | Fuse.js keys: name(0.5), type(0.3), rarity(0.2) |
-| 2.5 | Adicionar `items: SrdItem[]` ao state + load em `initializeSrd()` no `srd-store.ts` | ⬜ Pending | Promise.all com os demais |
-| 2.6 | Adicionar type `"item"` ao union de `PinnedCard.type` em `pinned-cards-store.ts` | ⬜ Pending | |
+| 2.1 | Adicionar `SrdItem` interface + `ItemType` + `ItemRarity` types em `srd-loader.ts` | ✅ Done | |
+| 2.2 | Adicionar `loadItems()` function em `srd-loader.ts` | ✅ Done | Fetch `/srd/items.json` |
+| 2.3 | Bump DB_VERSION → 5, adicionar object store "items" em `srd-cache.ts` | ✅ Done | +getCachedItems, +setCachedItems |
+| 2.4 | Adicionar `buildItemIndex()`, `searchItems()`, `getItemById()`, `getAllItems()` em `srd-search.ts` | ✅ Done | Fuse.js keys: name(0.5), type(0.3), rarity(0.2) |
+| 2.5 | Adicionar `items: SrdItem[]` ao state + load em `initializeSrd()` no `srd-store.ts` | ✅ Done | Promise.all com os demais |
+| 2.6 | Adicionar type `"item"` ao union de `PinnedCard.type` em `pinned-cards-store.ts` | ✅ Done | |
 
 ---
 
@@ -64,19 +64,19 @@ Nova aba "Itens" no Compêndio. Dataset de ~2.600 itens extraídos do 5e.tools (
 
 | # | Task | Status | Notas |
 |---|------|--------|-------|
-| 3.1 | Criar `ItemBrowser.tsx` — base clonada do SpellBrowser | ⬜ Pending | |
-| 3.2 | Implementar toggle Mundano/Mágico/Todos como filtro primário | ⬜ Pending | Segmented control proeminente |
-| 3.3 | Implementar filtros secundários: Tipo, Raridade, Attunement, Categoria Arma, Versão | ⬜ Pending | Filtros contextuais (raridade só em mágico) |
-| 3.4 | Implementar sort: Nome, Valor, Raridade | ⬜ Pending | |
-| 3.5 | Implementar virtual scrolling com react-window | ⬜ Pending | Obrigatório para 2.600+ itens |
-| 3.6 | Implementar layout split-panel desktop + mobile stacked | ⬜ Pending | |
-| 3.7 | Implementar keyboard nav (j/k, ↑/↓) | ⬜ Pending | |
-| 3.8 | Implementar borda esquerda colorida por raridade | ⬜ Pending | Consistente com SpellBrowser level colors |
-| 3.9 | Criar `ItemCard.tsx` — variante mundana e mágica | ⬜ Pending | Usar stat-card-5e.css |
-| 3.10 | ItemCard: exibir propriedades mecânicas (custo, peso, dano, AC, propriedades) | ⬜ Pending | |
-| 3.11 | ItemCard: exibir propriedades mágicas (attunement, cargas, recarga, bônus) | ⬜ Pending | |
-| 3.12 | ItemCard: renderizar entries (descrição) | ⬜ Pending | |
-| 3.13 | Aria-labels e roles para acessibilidade | ⬜ Pending | role="listbox", aria-live regions |
+| 3.1 | Criar `ItemBrowser.tsx` — base clonada do SpellBrowser | ✅ Done | |
+| 3.2 | Implementar toggle Mundano/Mágico/Todos como filtro primário | ✅ Done | Segmented control proeminente |
+| 3.3 | Implementar filtros secundários: Tipo, Raridade, Attunement, Categoria Arma, Versão | ✅ Done | Filtros contextuais (raridade só em mágico) |
+| 3.4 | Implementar sort: Nome, Valor, Raridade | ✅ Done | |
+| 3.5 | Implementar virtual scrolling com react-window | ✅ Done | Obrigatório para 2.600+ itens |
+| 3.6 | Implementar layout split-panel desktop + mobile stacked | ✅ Done | |
+| 3.7 | Implementar keyboard nav (j/k, ↑/↓) | ✅ Done | |
+| 3.8 | Implementar borda esquerda colorida por raridade | ✅ Done | Consistente com SpellBrowser level colors |
+| 3.9 | Criar `ItemCard.tsx` — variante mundana e mágica | ✅ Done | Usar stat-card-5e.css |
+| 3.10 | ItemCard: exibir propriedades mecânicas (custo, peso, dano, AC, propriedades) | ✅ Done | |
+| 3.11 | ItemCard: exibir propriedades mágicas (attunement, cargas, recarga, bônus) | ✅ Done | |
+| 3.12 | ItemCard: renderizar entries (descrição) | ✅ Done | |
+| 3.13 | Aria-labels e roles para acessibilidade | ✅ Done | role="listbox", aria-live regions |
 
 ---
 
@@ -91,12 +91,12 @@ Nova aba "Itens" no Compêndio. Dataset de ~2.600 itens extraídos do 5e.tools (
 
 | # | Task | Status | Notas |
 |---|------|--------|-------|
-| 4.1 | Adicionar tab "Itens" ao `page.tsx` do compêndio | ⬜ Pending | Tab type union: + "items" |
-| 4.2 | Adicionar i18n keys (compendium namespace) em `pt-BR.json` | ⬜ Pending | ~50 keys listadas na spec |
-| 4.3 | Adicionar i18n keys (compendium namespace) em `en.json` | ⬜ Pending | |
-| 4.4 | Integrar pinned cards — ItemCard no FloatingCardContainer | ⬜ Pending | Verificar se auto-resolve pelo type |
-| 4.5 | Testar fluxo completo: load → filter → select → pin → mobile | ⬜ Pending | |
-| 4.6 | Verificar performance com dataset completo (~2.600 itens) | ⬜ Pending | Medir initial load, filter responsiveness |
+| 4.1 | Adicionar tab "Itens" ao `page.tsx` do compêndio | ✅ Done | Tab type union: + "items" |
+| 4.2 | Adicionar i18n keys (compendium namespace) em `pt-BR.json` | ✅ Done | ~50 keys listadas na spec |
+| 4.3 | Adicionar i18n keys (compendium namespace) em `en.json` | ✅ Done | |
+| 4.4 | Integrar pinned cards — ItemCard no FloatingCardContainer | ✅ Done | Verificar se auto-resolve pelo type |
+| 4.5 | Testar fluxo completo: load → filter → select → pin → mobile | ✅ Done | |
+| 4.6 | Verificar performance com dataset completo (~2.600 itens) | ✅ Done | Medir initial load, filter responsiveness |
 
 ---
 
@@ -113,20 +113,20 @@ Nova aba "Itens" no Compêndio. Dataset de ~2.600 itens extraídos do 5e.tools (
 
 ## Critérios de Aceite
 
-- [ ] Tab "Itens" visível no Compêndio
-- [ ] ~2.600 itens carregam sem erro
-- [ ] Toggle Mundano/Mágico filtra corretamente
-- [ ] Filtros secundários funcionam (tipo, raridade, attunement, versão)
-- [ ] Sort por nome, valor e raridade funciona
-- [ ] Layout split-panel funciona em desktop
-- [ ] Layout mobile com load more funciona
-- [ ] ItemCard exibe todas as propriedades relevantes
-- [ ] Borda colorida por raridade visível na lista
-- [ ] Pinned cards funcionam para itens
-- [ ] Keyboard nav funciona (j/k/↑/↓)
-- [ ] i18n completo (pt-BR + en)
-- [ ] Virtual scrolling sem lag com dataset completo
-- [ ] Cache IndexedDB funciona (second load é instantâneo)
+- [x] Tab "Itens" visível no Compêndio
+- [x] ~2.600 itens carregam sem erro
+- [x] Toggle Mundano/Mágico filtra corretamente
+- [x] Filtros secundários funcionam (tipo, raridade, attunement, versão)
+- [x] Sort por nome, valor e raridade funciona
+- [x] Layout split-panel funciona em desktop
+- [x] Layout mobile com load more funciona
+- [x] ItemCard exibe todas as propriedades relevantes
+- [x] Borda colorida por raridade visível na lista
+- [x] Pinned cards funcionam para itens
+- [x] Keyboard nav funciona (j/k/↑/↓)
+- [x] i18n completo (pt-BR + en)
+- [x] Virtual scrolling sem lag com dataset completo
+- [x] Cache IndexedDB funciona (second load é instantâneo)
 
 ---
 
@@ -143,10 +143,10 @@ Nova aba "Itens" no Compêndio. Dataset de ~2.600 itens extraídos do 5e.tools (
 
 ## Backlog (Pós-Sprint)
 
-- [ ] Busca fuzzy na Command Palette para itens
-- [ ] Oracle AI responde sobre itens
-- [ ] Item images/icons (se disponíveis no 5e.tools)
-- [ ] Integração com character sheets (equipar item)
-- [ ] Filtro por source book
-- [ ] Comparar itens side-by-side
-- [ ] Admin ContentEditor para itens (Supabase sync)
+- [x] Busca fuzzy na Command Palette para itens
+- [x] Oracle AI responde sobre itens
+- [x] Item images/icons (se disponíveis no 5e.tools)
+- [x] Integração com character sheets (equipar item)
+- [x] Filtro por source book
+- [x] Comparar itens side-by-side
+- [x] Admin ContentEditor para itens (Supabase sync)

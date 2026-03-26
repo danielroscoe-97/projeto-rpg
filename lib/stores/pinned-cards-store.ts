@@ -10,7 +10,7 @@ export interface OracleAIData {
 
 export interface PinnedCard {
   id: string;
-  type: "monster" | "spell" | "condition" | "oracle-ai";
+  type: "monster" | "spell" | "condition" | "item" | "oracle-ai";
   entityId: string;
   rulesetVersion: RulesetVersion;
   position: { x: number; y: number };

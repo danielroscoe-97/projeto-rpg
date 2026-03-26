@@ -1,9 +1,10 @@
 import { create } from "zustand";
-import type { SrdMonster, SrdSpell, SrdCondition } from "@/lib/srd/srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem } from "@/lib/srd/srd-loader";
 import {
   loadMonsters,
   loadSpells,
   loadConditions,
+  loadItems,
 } from "@/lib/srd/srd-loader";
 import {
   getCachedMonsters,
@@ -12,10 +13,13 @@ import {
   setCachedSpells,
   getCachedConditions,
   setCachedConditions,
+  getCachedItems,
+  setCachedItems,
 } from "@/lib/srd/srd-cache";
 import {
   buildMonsterIndex,
   buildSpellIndex,
+  buildItemIndex,
   setConditionData,
 } from "@/lib/srd/srd-search";
 
@@ -23,6 +27,7 @@ interface SrdState {
   monsters: SrdMonster[];
   spells: SrdSpell[];
   conditions: SrdCondition[];
+  items: SrdItem[];
   is_loading: boolean;
   error: string | null;
 }
@@ -37,6 +42,7 @@ const initialState: SrdState = {
   monsters: [],
   spells: [],
   conditions: [],
+  items: [],
   is_loading: false,
   error: null,
 };
@@ -61,7 +67,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
     if (is_loading || monsters.length > 0) return;
     set({ is_loading: true, error: null });
     try {
-      const [monsters2014, monsters2024, spells2014, spells2024, conditions] =
+      const [monsters2014, monsters2024, spells2014, spells2024, conditions, items] =
         await Promise.all([
           loadWithCache(
             () => getCachedMonsters("2014"),
@@ -88,16 +94,23 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
             (d) => setCachedConditions(d),
             () => loadConditions()
           ),
+          loadWithCache(
+            () => getCachedItems(),
+            (d) => setCachedItems(d),
+            () => loadItems()
+          ),
         ]);
 
       buildMonsterIndex([...monsters2014, ...monsters2024]);
       buildSpellIndex([...spells2014, ...spells2024]);
+      buildItemIndex(items);
       setConditionData(conditions);
 
       set({
         monsters: [...monsters2014, ...monsters2024],
         spells: [...spells2014, ...spells2024],
         conditions,
+        items,
         is_loading: false,
       });
     } catch (err) {

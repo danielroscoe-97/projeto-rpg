@@ -68,6 +68,80 @@ export interface SrdSpell {
   concentration: boolean;
 }
 
+export type ItemRarity =
+  | "none"
+  | "common"
+  | "uncommon"
+  | "rare"
+  | "very rare"
+  | "legendary"
+  | "artifact"
+  | "varies"
+  | "unknown";
+
+export type ItemType =
+  | "melee-weapon"
+  | "ranged-weapon"
+  | "light-armor"
+  | "medium-armor"
+  | "heavy-armor"
+  | "shield"
+  | "potion"
+  | "scroll"
+  | "ring"
+  | "wand"
+  | "rod"
+  | "staff"
+  | "adventuring-gear"
+  | "tool"
+  | "instrument"
+  | "gaming-set"
+  | "artisan-tools"
+  | "spellcasting-focus"
+  | "ammunition"
+  | "wondrous"
+  | "trade-good"
+  | "art-object"
+  | "gemstone"
+  | "vehicle"
+  | "mount"
+  | "food-drink"
+  | "explosive"
+  | "other";
+
+export interface SrdItem {
+  id: string;
+  name: string;
+  source: string;
+  type: ItemType;
+  rarity: ItemRarity;
+  isMagic: boolean;
+  value?: number;
+  weight?: number;
+  ac?: number;
+  dmg1?: string;
+  dmg2?: string;
+  dmgType?: string;
+  weaponCategory?: "simple" | "martial";
+  property?: string[];
+  range?: string;
+  stealth?: boolean;
+  strength?: string;
+  reqAttune?: boolean | string;
+  charges?: number;
+  recharge?: string;
+  bonusWeapon?: string;
+  bonusAc?: string;
+  wondrous?: boolean;
+  curse?: boolean;
+  sentient?: boolean;
+  entries: string[];
+  baseItem?: string;
+  edition?: "classic" | "one";
+  srd?: boolean;
+  basicRules?: boolean;
+}
+
 export interface SrdCondition {
   id: string;
   name: string;
@@ -119,4 +193,23 @@ export async function loadConditions(): Promise<SrdCondition[]> {
     throw new Error(`Failed to load SRD conditions: ${res.status}`);
   }
   return res.json() as Promise<SrdCondition[]>;
+}
+
+const itemCache = new Map<string, Promise<SrdItem[]>>();
+
+/** Fetches the SRD items bundle (consolidated mundane + magic).
+ *  Promise is cached so multiple callers share one fetch+parse. */
+export function loadItems(): Promise<SrdItem[]> {
+  const key = "all";
+  const cached = itemCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(`/srd/items.json`).then((res) => {
+    if (!res.ok) {
+      itemCache.delete(key);
+      throw new Error(`Failed to load SRD items: ${res.status}`);
+    }
+    return res.json() as Promise<SrdItem[]>;
+  });
+  itemCache.set(key, promise);
+  return promise;
 }

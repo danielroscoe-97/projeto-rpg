@@ -7,9 +7,10 @@ import { useSrdStore } from "@/lib/stores/srd-store";
 import { MonsterBrowser } from "@/components/compendium/MonsterBrowser";
 import { SpellBrowser } from "@/components/compendium/SpellBrowser";
 import { ConditionReference } from "@/components/compendium/ConditionReference";
+import { ItemBrowser } from "@/components/compendium/ItemBrowser";
 import { CompendiumSkeleton } from "@/components/ui/skeletons/CompendiumSkeleton";
 
-type Tab = "monsters" | "spells" | "conditions";
+type Tab = "monsters" | "spells" | "conditions" | "items";
 
 function CompendiumContent() {
   const t = useTranslations("compendium");
@@ -18,7 +19,7 @@ function CompendiumContent() {
   const isLoading = useSrdStore((s) => s.is_loading);
 
   const tabParam = searchParams.get("tab") as Tab | null;
-  const activeTab: Tab = (tabParam && ["monsters", "spells", "conditions"].includes(tabParam)) ? tabParam : "monsters";
+  const activeTab: Tab = (tabParam && ["monsters", "spells", "conditions", "items"].includes(tabParam)) ? tabParam : "monsters";
 
   function handleTabChange(tab: Tab) {
     router.replace(`/app/compendium?tab=${tab}`, { scroll: false });
@@ -27,6 +28,7 @@ function CompendiumContent() {
   const tabs: { key: Tab; label: string }[] = [
     { key: "monsters", label: t("tab_monsters") },
     { key: "spells", label: t("tab_spells") },
+    { key: "items", label: t("tab_items") },
     { key: "conditions", label: t("tab_conditions") },
   ];
 
@@ -65,6 +67,7 @@ function CompendiumContent() {
         <>
           {activeTab === "monsters" && <MonsterBrowser />}
           {activeTab === "spells" && <SpellBrowser />}
+          {activeTab === "items" && <ItemBrowser />}
           {activeTab === "conditions" && <ConditionReference />}
         </>
       )}
