@@ -27,7 +27,7 @@ export function ConditionReference() {
   const t = useTranslations("compendium");
   const conditions = getAllConditions();
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [nameFilter, setNameFilter] = useState("");
 
   const filtered = nameFilter
@@ -35,12 +35,7 @@ export function ConditionReference() {
     : conditions;
 
   function toggleExpand(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    setExpanded((prev) => (prev === id ? null : id));
   }
 
   return (
@@ -59,7 +54,7 @@ export function ConditionReference() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {filtered.map((condition) => {
-            const isOpen = expanded.has(condition.id);
+            const isOpen = expanded === condition.id;
             const borderColor = CONDITION_COLORS[condition.name] ?? "border-l-gray-500";
             const preview = condition.description.split("\n")[0].slice(0, 100);
 
@@ -84,7 +79,7 @@ export function ConditionReference() {
                     onClick={() => pinCard("condition", condition.id, "2014")}
                     className="px-2 py-0.5 text-[10px] rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[28px] shrink-0"
                   >
-                    📌
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5"><path d="M8.5 1.5a.5.5 0 0 0-1 0v4.396L4.12 7.673a.5.5 0 0 0-.27.444v1.266a.5.5 0 0 0 .63.484L7.5 9.18V13l-1.354 1.354a.5.5 0 0 0 .354.854h3a.5.5 0 0 0 .354-.854L8.5 13V9.18l3.02.687a.5.5 0 0 0 .63-.484V8.117a.5.5 0 0 0-.27-.444L8.5 5.896V1.5z"/></svg>
                   </button>
                 </div>
 

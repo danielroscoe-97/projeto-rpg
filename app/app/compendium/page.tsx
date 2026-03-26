@@ -24,9 +24,9 @@ function CompendiumContent() {
   }
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: "monsters", label: `🐉 ${t("tab_monsters")}` },
-    { key: "spells", label: `✨ ${t("tab_spells")}` },
-    { key: "conditions", label: `⚡ ${t("tab_conditions")}` },
+    { key: "monsters", label: t("tab_monsters") },
+    { key: "spells", label: t("tab_spells") },
+    { key: "conditions", label: t("tab_conditions") },
   ];
 
   return (

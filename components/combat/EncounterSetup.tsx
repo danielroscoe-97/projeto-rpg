@@ -143,8 +143,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     const ac = parseInt(addRow.ac, 10);
     const errors = new Set<string>();
     if (!name) errors.add("name");
-    if (isNaN(hp) || hp < 1) errors.add("hp");
-    if (isNaN(ac) || ac < 1) errors.add("ac");
     if (errors.size > 0) {
       setAddRowErrors(errors);
       return;
@@ -158,10 +156,10 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     const sel = lastSelectedMonster.current;
     addCombatant({
       name,
-      current_hp: hp,
-      max_hp: hp,
+      current_hp: isNaN(hp) || hp < 1 ? 0 : hp,
+      max_hp: isNaN(hp) || hp < 1 ? 0 : hp,
       temp_hp: 0,
-      ac,
+      ac: isNaN(ac) || ac < 1 ? 0 : ac,
       spell_save_dc: null,
       initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
       initiative_order: null,
@@ -456,8 +454,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           onFocus={selectOnFocus}
           placeholder={t("setup_col_hp")}
           min={1}
-          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${addRowErrors.has("hp") ? " field-error" : ""}`}
-          aria-invalid={addRowErrors.has("hp") || undefined}
+          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-hp"
         />
         <input

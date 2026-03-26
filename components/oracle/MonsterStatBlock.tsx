@@ -3,6 +3,8 @@
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 import { LinkedText } from "./LinkedText";
+import { ClickableRoll } from "@/components/dice/ClickableRoll";
+import { DiceText } from "@/components/dice/DiceText";
 import "@/styles/stat-card-5e.css";
 
 // ---------------------------------------------------------------------------
@@ -132,22 +134,32 @@ function AbilityTable({
           {scores[i]}
         </div>
       ))}
-      {/* Mod row */}
-      {ABILITY_KEYS.map((key, i) => (
-        <div key={`mod-${key}`} className="ability-mod">
-          {signedStr(abilityModNum(scores[i]!))}
-        </div>
-      ))}
-      {/* Save row */}
+      {/* Mod row — clickable ability checks */}
+      {ABILITY_KEYS.map((key, i) => {
+        const mod = abilityModNum(scores[i]!);
+        const label = `${ABILITY_LABELS[i]} check`;
+        return (
+          <div key={`mod-${key}`} className="ability-mod">
+            <ClickableRoll notation={`1d20${mod >= 0 ? "+" : ""}${mod}`} label={label}>
+              {signedStr(mod)}
+            </ClickableRoll>
+          </div>
+        );
+      })}
+      {/* Save row — clickable saving throws */}
       {ABILITY_KEYS.map((key, i) => {
         const hasProf = saveProfSet.has(key);
         const saveStr = calculateSave(scores[i]!, hasProf, pb);
+        const saveNum = hasProf ? abilityModNum(scores[i]!) + pb : abilityModNum(scores[i]!);
+        const label = `${ABILITY_LABELS[i]} save`;
         return (
           <div
             key={`save-${key}`}
             className={hasProf ? "ability-save-prof ability-row-even" : "ability-save ability-row-even"}
           >
-            {saveStr}
+            <ClickableRoll notation={`1d20${saveNum >= 0 ? "+" : ""}${saveNum}`} label={label}>
+              {saveStr}
+            </ClickableRoll>
           </div>
         );
       })}
@@ -162,7 +174,7 @@ function SectionBlock({
 }: {
   title: string;
   items: { name: string; desc: string }[];
-  renderDesc: (desc: string) => React.ReactNode;
+  renderDesc: (desc: string, actionName: string) => React.ReactNode;
 }) {
   if (!items || items.length === 0) return null;
   return (
@@ -173,7 +185,7 @@ function SectionBlock({
         {items.map((item) => (
           <p key={item.name} className="trait-block">
             <span className="trait-name">{item.name}. </span>
-            <span className="trait-desc">{renderDesc(item.desc)}</span>
+            <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
           </p>
         ))}
       </div>
@@ -191,8 +203,8 @@ export interface MonsterStatBlockProps {
   onPin?: () => void;
   onMinimize?: () => void;
   onClose?: () => void;
-  /** Override description renderer — used by LinkedText integration */
-  renderDesc?: (text: string, rulesetVersion: RulesetVersion) => React.ReactNode;
+  /** Override description renderer — used by LinkedText/DiceText integration */
+  renderDesc?: (text: string, rulesetVersion: RulesetVersion, actionName?: string) => React.ReactNode;
 }
 
 export function MonsterStatBlock({
@@ -212,10 +224,11 @@ export function MonsterStatBlock({
         .join(", ")
     : null;
 
-  const skillsStr = monster.skills
-    ? Object.entries(monster.skills)
-        .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} ${v >= 0 ? "+" : ""}${v}`)
-        .join(", ")
+  const skillEntries = monster.skills
+    ? Object.entries(monster.skills).map(([k, v]) => ({
+        name: k.charAt(0).toUpperCase() + k.slice(1),
+        modifier: v,
+      }))
     : null;
 
   // CR line: "CR {cr} (XP {xp}; PB +{pb})"
@@ -227,11 +240,11 @@ export function MonsterStatBlock({
     crDisplay = `${monster.cr} (PB +${pb})`;
   }
 
-  // Description renderer — default uses LinkedText for spell/condition cross-references
+  // Description renderer — default uses DiceText (clickable dice + spell/condition links)
   const renderDesc = renderDescProp
-    ? (text: string) => renderDescProp(text, monster.ruleset_version)
-    : (text: string) => (
-        <LinkedText text={text} rulesetVersion={monster.ruleset_version} />
+    ? (text: string, actionName: string) => renderDescProp(text, monster.ruleset_version)
+    : (text: string, actionName: string) => (
+        <DiceText text={text} rulesetVersion={monster.ruleset_version} actionName={actionName} />
       );
 
   const isCard = variant === "card";
@@ -276,19 +289,34 @@ export function MonsterStatBlock({
 
       {/* Core stats */}
       <PropLine label="AC" value={String(monster.armor_class)} />
-      <PropLine
-        label="HP"
-        value={
-          monster.hp_formula
-            ? `${monster.hit_points} (${monster.hp_formula})`
-            : String(monster.hit_points)
-        }
-      />
+      <p className="prop-line">
+        <span className="prop-label">HP </span>
+        <span className="prop-value">
+          {monster.hp_formula ? (
+            <>
+              {monster.hit_points} (
+              <ClickableRoll notation={monster.hp_formula} label={`${monster.name} HP`}>
+                {monster.hp_formula}
+              </ClickableRoll>
+              )
+            </>
+          ) : (
+            String(monster.hit_points)
+          )}
+        </span>
+      </p>
       {dexMod !== null && (
-        <PropLine
-          label="Initiative"
-          value={`${signedStr(dexMod)} (${10 + dexMod})`}
-        />
+        <p className="prop-line">
+          <span className="prop-label">Initiative </span>
+          <span className="prop-value">
+            <ClickableRoll
+              notation={`1d20${dexMod >= 0 ? "+" : ""}${dexMod}`}
+              label={`${monster.name} Initiative`}
+            >
+              {signedStr(dexMod)} ({10 + dexMod})
+            </ClickableRoll>
+          </span>
+        </p>
       )}
       {speedStr && <PropLine label="Speed" value={speedStr} />}
 
@@ -302,7 +330,25 @@ export function MonsterStatBlock({
 
       {/* Properties */}
       <CardDivider />
-      {skillsStr && <PropLine label="Skills" value={skillsStr} />}
+      {skillEntries && skillEntries.length > 0 && (
+        <p className="prop-line">
+          <span className="prop-label">Skills </span>
+          <span className="prop-value">
+            {skillEntries.map((skill, i) => (
+              <span key={skill.name}>
+                {i > 0 && ", "}
+                {skill.name}{" "}
+                <ClickableRoll
+                  notation={`1d20${skill.modifier >= 0 ? "+" : ""}${skill.modifier}`}
+                  label={`${skill.name} check`}
+                >
+                  {skill.modifier >= 0 ? "+" : ""}{skill.modifier}
+                </ClickableRoll>
+              </span>
+            ))}
+          </span>
+        </p>
+      )}
       {monster.damage_vulnerabilities && (
         <PropLine label="Damage Vulnerabilities" value={monster.damage_vulnerabilities} />
       )}
@@ -346,7 +392,7 @@ export function MonsterStatBlock({
             {monster.legendary_actions.map((item) => (
               <p key={item.name} className="trait-block">
                 <span className="trait-name">{item.name}. </span>
-                <span className="trait-desc">{renderDesc(item.desc)}</span>
+                <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
               </p>
             ))}
           </div>

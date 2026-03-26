@@ -55,6 +55,15 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
       return { combatants: sorted };
     }),
 
+  batchSetInitiatives: (entries) =>
+    set((state) => {
+      const initMap = new Map(entries.map((e) => [e.id, e.value]));
+      const updated = state.combatants.map((c) =>
+        initMap.has(c.id) ? { ...c, initiative: initMap.get(c.id)! } : c
+      );
+      return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
+    }),
+
   reorderCombatants: (newOrder) =>
     set({ combatants: assignInitiativeOrder(newOrder) }),
 

@@ -43,6 +43,8 @@ export interface CombatActions {
   setLoading: (is_loading: boolean) => void;
   /** Update a single combatant's initiative value and re-sort the list. */
   setInitiative: (id: string, value: number | null) => void;
+  /** Batch-set initiative for multiple combatants in a single update (avoids N re-sorts). */
+  batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
   /** Replace the combatant list with a manually reordered array and re-assign initiative_order. */
   reorderCombatants: (newOrder: Combatant[]) => void;
   /** Mark the encounter as active and set current_turn_index = 0. */
