@@ -128,6 +128,46 @@ html {
     50% { transform: translateY(-6px); }
   }
 
+  /* Float variants for organic dice movement */
+  .float-drift-1 {
+    animation: float-drift-1 5s ease-in-out infinite;
+  }
+
+  @keyframes float-drift-1 {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    33% { transform: translateY(-8px) translateX(4px) rotate(5deg); }
+    66% { transform: translateY(-3px) translateX(-3px) rotate(-3deg); }
+  }
+
+  .float-drift-2 {
+    animation: float-drift-2 6s ease-in-out infinite;
+  }
+
+  @keyframes float-drift-2 {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    50% { transform: translateY(-10px) translateX(-5px) rotate(-6deg); }
+  }
+
+  .float-drift-3 {
+    animation: float-drift-3 7s ease-in-out infinite;
+  }
+
+  @keyframes float-drift-3 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-5px) rotate(4deg); }
+    75% { transform: translateY(-9px) rotate(-4deg); }
+  }
+
+  .float-drift-4 {
+    animation: float-drift-4 5.5s ease-in-out infinite;
+  }
+
+  @keyframes float-drift-4 {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    40% { transform: translateY(-7px) translateX(6px) rotate(8deg); }
+    80% { transform: translateY(-2px) translateX(-2px) rotate(-2deg); }
+  }
+
   /* Subtle pulse glow for RPG elements */
   .glow-pulse {
     animation: glow-pulse 3s ease-in-out infinite;

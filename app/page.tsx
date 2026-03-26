@@ -32,6 +32,65 @@ function SparkleIcon({ className, style }: { className?: string; style?: React.C
   );
 }
 
+// D4 — tetrahedron (triangle)
+function D4Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <polygon points="24,6 44,42 4,42" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
+      <line x1="24" y1="6" x2="24" y2="42" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      <text x="24" y="34" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="700" fontFamily="monospace" opacity="0.7">4</text>
+    </svg>
+  );
+}
+
+// D6 — cube
+function D6Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <rect x="8" y="8" width="32" height="32" rx="3" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
+      <circle cx="18" cy="18" r="2" fill="currentColor" opacity="0.4" />
+      <circle cx="30" cy="18" r="2" fill="currentColor" opacity="0.4" />
+      <circle cx="18" cy="30" r="2" fill="currentColor" opacity="0.4" />
+      <circle cx="30" cy="30" r="2" fill="currentColor" opacity="0.4" />
+      <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.4" />
+    </svg>
+  );
+}
+
+// D8 — octahedron (diamond)
+function D8Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <polygon points="24,4 44,24 24,44 4,24" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
+      <line x1="4" y1="24" x2="44" y2="24" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      <line x1="24" y1="4" x2="24" y2="44" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      <text x="24" y="28" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="700" fontFamily="monospace" opacity="0.7">8</text>
+    </svg>
+  );
+}
+
+// D10 — kite / pentagonal shape
+function D10Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <polygon points="24,3 42,18 36,44 12,44 6,18" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
+      <line x1="24" y1="3" x2="24" y2="44" stroke="currentColor" strokeWidth="1.2" opacity="0.25" />
+      <text x="24" y="32" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="700" fontFamily="monospace" opacity="0.7">10</text>
+    </svg>
+  );
+}
+
+// D12 — pentagon
+function D12Icon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      <polygon points="24,4 44,17 38,40 10,40 4,17" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
+      <polygon points="24,12 35,20 32,34 16,34 13,20" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.3" />
+      <text x="24" y="29" textAnchor="middle" fill="currentColor" fontSize="10" fontWeight="700" fontFamily="monospace" opacity="0.7">12</text>
+    </svg>
+  );
+}
+
 function D20Icon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -223,11 +282,32 @@ function FeaturesSection() {
 
   return (
     <section className="py-24 px-6 relative overflow-hidden" id="features">
-      {/* Decorative layer */}
+      {/* Decorative layer — floating RPG dice */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-gold/[0.04] rounded-full blur-[120px]" />
+
+        {/* Existing */}
         <D20Icon className="absolute top-10 right-10 w-28 h-28 text-gold/[0.06] animate-spin-slow" />
         <SparkleIcon className="absolute bottom-16 left-16 w-10 h-10 text-gold/[0.10] float-gentle" />
+
+        {/* d4 — top-left */}
+        <D4Icon className="absolute top-8 left-[8%] w-14 h-14 text-gold/[0.07] float-drift-1" />
+
+        {/* d6 — mid-right */}
+        <D6Icon className="absolute top-1/3 right-[5%] w-12 h-12 text-gold/[0.06] float-drift-2" />
+
+        {/* d8 — bottom-right */}
+        <D8Icon className="absolute bottom-12 right-[12%] w-16 h-16 text-gold/[0.07] float-drift-3" />
+
+        {/* d10 — mid-left */}
+        <D10Icon className="absolute top-[55%] left-[3%] w-12 h-12 text-gold/[0.06] float-drift-4" />
+
+        {/* d12 — top-center-left */}
+        <D12Icon className="absolute top-4 left-[35%] w-10 h-10 text-gold/[0.05] float-drift-2" style={{ animationDelay: "-2s" }} />
+
+        {/* Extra sparkles */}
+        <SparkleIcon className="absolute top-[20%] right-[25%] w-6 h-6 text-gold/[0.08] float-drift-1" style={{ animationDelay: "-1.5s" }} />
+        <SparkleIcon className="absolute bottom-[30%] left-[20%] w-8 h-8 text-gold/[0.06] float-drift-3" style={{ animationDelay: "-3s" }} />
       </div>
 
       <div className="relative max-w-5xl mx-auto">
