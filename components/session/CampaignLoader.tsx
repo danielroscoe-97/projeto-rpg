@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Users } from "lucide-react";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface CampaignWithCount {
@@ -94,9 +95,10 @@ export function CampaignLoader({ onLoad }: Props) {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="text-sm text-muted-foreground hover:text-foreground/80 underline transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground bg-white/[0.06] border border-border rounded-lg hover:bg-white/10 transition-colors min-h-[40px]"
           data-testid="load-campaign-btn"
         >
+          <Users className="w-4 h-4" />
           {t("load_campaign")}
         </button>
       </DialogTrigger>
