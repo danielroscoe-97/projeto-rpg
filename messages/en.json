@@ -475,6 +475,7 @@
     "view_details": "View details",
     "filters": "Filters",
     "select_monster": "Select a monster from the list to view its stat block",
+    "select_spell": "Select a spell from the list to view its details",
     "back_to_list": "Back to list",
     "hp_label": "HP",
     "ac_label": "AC",

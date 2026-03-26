@@ -63,11 +63,14 @@ function rollDie(sides: number): number {
  * @param notation - e.g. "2d6+5", "1d20+7", "4d6"
  * @param label - contextual label for the roll
  */
+const MAX_DICE = 100;
+
 export function roll(notation: string, label = ""): RollResult {
   const { count, sides, modifier } = parseNotation(notation);
 
+  const safeCount = Math.min(count, MAX_DICE);
   const dice: DieResult[] = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < safeCount; i++) {
     dice.push({ sides, value: rollDie(sides) });
   }
 
@@ -75,7 +78,7 @@ export function roll(notation: string, label = ""): RollResult {
   const total = diceTotal + modifier;
 
   // Nat 1/20 only applies to single d20 rolls
-  const isD20 = count === 1 && sides === 20;
+  const isD20 = safeCount === 1 && sides === 20;
 
   return {
     notation,

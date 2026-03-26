@@ -68,16 +68,24 @@ export interface SrdCondition {
   description: string;
 }
 
+const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();
+
 /** Fetches the SRD monster bundle for a given ruleset version.
- *  Results are cached by the browser via the standard fetch cache. */
-export async function loadMonsters(
+ *  Promise is cached so multiple callers share one fetch+parse. */
+export function loadMonsters(
   version: RulesetVersion
 ): Promise<SrdMonster[]> {
-  const res = await fetch(`/srd/monsters-${version}.json`);
-  if (!res.ok) {
-    throw new Error(`Failed to load SRD monsters (${version}): ${res.status}`);
-  }
-  return res.json() as Promise<SrdMonster[]>;
+  const cached = monsterCache.get(version);
+  if (cached) return cached;
+  const promise = fetch(`/srd/monsters-${version}.json`).then((res) => {
+    if (!res.ok) {
+      monsterCache.delete(version);
+      throw new Error(`Failed to load SRD monsters (${version}): ${res.status}`);
+    }
+    return res.json() as Promise<SrdMonster[]>;
+  });
+  monsterCache.set(version, promise);
+  return promise;
 }
 
 /** Fetches the SRD spell bundle for a given ruleset version.

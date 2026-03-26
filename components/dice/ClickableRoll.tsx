@@ -9,6 +9,9 @@ import { roll, type RollResult } from "@/lib/dice/roll";
 // exactly like 5e.tools' clickable dice notations.
 // ---------------------------------------------------------------------------
 
+// Global event to dismiss all other popovers when a new roll occurs
+const DISMISS_EVENT = "dice-roll-dismiss";
+
 export interface ClickableRollProps {
   /** Dice notation, e.g. "1d20+7", "2d6+5" */
   notation: string;
@@ -23,6 +26,20 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
   const [popoverPos, setPopoverPos] = useState<{ x: number; y: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const instanceId = useRef(Math.random().toString(36).slice(2));
+
+  // Listen for global dismiss events from other ClickableRoll instances
+  useEffect(() => {
+    function handleGlobalDismiss(e: Event) {
+      const detail = (e as CustomEvent).detail;
+      if (detail !== instanceId.current) {
+        setResult(null);
+        setPopoverPos(null);
+      }
+    }
+    window.addEventListener(DISMISS_EVENT, handleGlobalDismiss);
+    return () => window.removeEventListener(DISMISS_EVENT, handleGlobalDismiss);
+  }, []);
 
   // Auto-dismiss popover after 4s
   useEffect(() => {
@@ -40,6 +57,15 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       const r = roll(notation, label);
+
+      // Guard: don't show popover for invalid/empty results
+      if (r.dice.length === 0 && r.modifier === 0) return;
+
+      // Dismiss all other popovers
+      window.dispatchEvent(
+        new CustomEvent(DISMISS_EVENT, { detail: instanceId.current }),
+      );
+
       setResult(r);
 
       // Position popover near the click
@@ -50,6 +76,7 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
   );
 
   const dismiss = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setResult(null);
     setPopoverPos(null);
   }, []);
@@ -67,7 +94,12 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
       </button>
 
       {result && popoverPos && (
-        <DicePopover result={result} position={popoverPos} onDismiss={dismiss} />
+        <DicePopover
+          result={result}
+          position={popoverPos}
+          onDismiss={dismiss}
+          triggerRef={btnRef}
+        />
       )}
     </>
   );
@@ -81,23 +113,27 @@ function DicePopover({
   result,
   position,
   onDismiss,
+  triggerRef,
 }: {
   result: RollResult;
   position: { x: number; y: number };
   onDismiss: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
+  // Close on outside click — exclude the trigger button to prevent flash on re-roll
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      if (!(e.target instanceof Node)) return;
+      if (ref.current && !ref.current.contains(e.target) &&
+          !(triggerRef.current && triggerRef.current.contains(e.target))) {
         onDismiss();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onDismiss]);
+  }, [onDismiss, triggerRef]);
 
   // Build breakdown string: "[4, 3] + 5 = 12"
   const diceStr =

@@ -476,6 +476,7 @@
     "view_details": "Ver detalhes",
     "filters": "Filtros",
     "select_monster": "Selecione um monstro da lista para ver sua ficha",
+    "select_spell": "Selecione uma magia da lista para ver seus detalhes",
     "back_to_list": "Voltar para lista",
     "hp_label": "Vida (PV)",
     "ac_label": "CA",

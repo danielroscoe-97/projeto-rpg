@@ -55,7 +55,7 @@ export function CombatantSetupRow({
       </span>
 
       {/* Init */}
-      <div className="flex items-center gap-0.5 w-14 flex-shrink-0">
+      <div className="flex items-center gap-0.5 w-16 flex-shrink-0">
         <input
           type="number"
           value={combatant.initiative ?? ""}

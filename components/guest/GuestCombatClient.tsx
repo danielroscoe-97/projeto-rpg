@@ -11,8 +11,8 @@ import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { loadMonsters } from "@/lib/srd/srd-loader";
-import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, getDexScore } from "@/lib/utils/initiative";
+import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
+import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
@@ -59,16 +59,11 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
-  const monsterIndexRef = useRef<Map<string, SrdMonster>>(new Map());
 
-  // Load SRD monsters for DEX lookup when rolling initiative
-  useEffect(() => {
-    loadMonsters(rulesetVersion).then((monsters) => {
-      const idx = new Map<string, SrdMonster>();
-      for (const m of monsters) idx.set(m.id, m);
-      monsterIndexRef.current = idx;
-    }).catch(() => { /* SRD load failure is non-blocking */ });
-  }, [rulesetVersion]);
+  const { handleRollOne, handleRollAll, handleRollNpcs } = useInitiativeRolling(
+    useGuestCombatStore,
+    rulesetVersion
+  );
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
@@ -188,41 +183,6 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
     [updatePlayerNotes]
   );
 
-  // Roll initiative for a single combatant
-  const handleRollOne = useCallback(
-    (id: string) => {
-      const store = useGuestCombatStore.getState();
-      const c = store.combatants.find((x) => x.id === id);
-      if (!c) return;
-      const dex = getDexScore(c, monsterIndexRef.current);
-      const result = rollInitiativeForCombatant(id, dex);
-      setInitiative(id, result.total);
-    },
-    [setInitiative]
-  );
-
-  // Roll initiative for all combatants missing initiative
-  const handleRollAll = useCallback(() => {
-    const store = useGuestCombatStore.getState();
-    for (const c of store.combatants) {
-      if (c.initiative !== null) continue;
-      const dex = getDexScore(c, monsterIndexRef.current);
-      const result = rollInitiativeForCombatant(c.id, dex);
-      setInitiative(c.id, result.total);
-    }
-  }, [setInitiative]);
-
-  // Roll initiative only for NPCs missing initiative
-  const handleRollNpcs = useCallback(() => {
-    const store = useGuestCombatStore.getState();
-    for (const c of store.combatants) {
-      if (c.initiative !== null || c.is_player) continue;
-      const dex = getDexScore(c, monsterIndexRef.current);
-      const result = rollInitiativeForCombatant(c.id, dex);
-      setInitiative(c.id, result.total);
-    }
-  }, [setInitiative]);
-
   const handleStartCombat = () => {
     if (combatants.length === 0) {
       setSubmitError(t("error_no_combatants"));
@@ -269,7 +229,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
       {/* Column headers — Sticky for usability in long lists */}
       <div className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-wider border-b border-border/50 mb-1">
         <span className="w-5 flex-shrink-0" />
-        <span className="w-14 flex-shrink-0 text-center">{t("setup_col_init")}</span>
+        <span className="w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
         <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
         <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
@@ -322,7 +282,7 @@ function GuestEncounterSetup({ onStartCombat }: { onStartCombat: () => void }) {
           placeholder={t("setup_col_init")}
           min={-5}
           max={50}
-          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />
         <input

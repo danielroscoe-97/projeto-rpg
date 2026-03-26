@@ -1,14 +1,12 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
-import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal";
+import { SpellCard } from "@/components/oracle/SpellCard";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
-
-const PAGE_SIZE = 25;
 
 const SPELL_LEVELS = [
   { value: 0, label: "Cantrip" },
@@ -33,7 +31,7 @@ const CLASSES = [
   "Ranger", "Sorcerer", "Warlock", "Wizard",
 ];
 
-/** Localized spell level label — resolved inside component via `t()` callback */
+/** Localized spell level label */
 function formatSpellLevel(level: number, t: ReturnType<typeof import("next-intl").useTranslations>): string {
   if (level === 0) return t("cantrip");
   return t("spell_level_format", { level });
@@ -46,6 +44,8 @@ function levelBorderColor(level: number): string {
   if (level <= 6) return "border-l-purple-500";
   return "border-l-gold";
 }
+
+const rowKey = (s: SrdSpell) => `${s.id}:${s.ruleset_version}`;
 
 export function SpellBrowser() {
   const t = useTranslations("compendium");
@@ -60,22 +60,39 @@ export function SpellBrowser() {
   const [ritualOnly, setRitualOnly] = useState(false);
   const [concentrationOnly, setConcentrationOnly] = useState(false);
   const [versionFilter, setVersionFilter] = useState<RulesetVersion | "all">("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Sort
   const [sortBy, setSortBy] = useState<"name" | "level">("name");
 
-  // Pagination
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // Selection (split-panel)
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [mobileDetail, setMobileDetail] = useState(false);
 
-  // Detail modal
-  const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
+  // List container sizing
+  const listContainerRef = useRef<HTMLDivElement>(null);
+  const [listHeight, setListHeight] = useState(() => {
+    return typeof window !== "undefined" ? window.innerHeight - 300 : 600;
+  });
+
+  useEffect(() => {
+    const el = listContainerRef.current;
+    if (!el) return;
+    setListHeight(el.getBoundingClientRect().height || window.innerHeight - 300);
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setListHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const toggleNumSet = useCallback((set: Set<number>, value: number, setter: (s: Set<number>) => void) => {
     const next = new Set(set);
     if (next.has(value)) next.delete(value);
     else next.add(value);
     setter(next);
-    setVisibleCount(PAGE_SIZE);
   }, []);
 
   const toggleStrSet = useCallback((set: Set<string>, value: string, setter: (s: Set<string>) => void) => {
@@ -83,7 +100,6 @@ export function SpellBrowser() {
     if (next.has(value)) next.delete(value);
     else next.add(value);
     setter(next);
-    setVisibleCount(PAGE_SIZE);
   }, []);
 
   const filtered = useMemo(() => {
@@ -115,38 +131,92 @@ export function SpellBrowser() {
     if (ritualOnly) result = result.filter((s) => s.ritual);
     if (concentrationOnly) result = result.filter((s) => s.concentration);
 
-    // Sort
     if (sortBy === "level") {
       return [...result].sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
     }
     return [...result].sort((a, b) => a.name.localeCompare(b.name));
   }, [spells, nameFilter, versionFilter, levels, schools, classes, ritualOnly, concentrationOnly, sortBy]);
 
-  const visible = filtered.slice(0, visibleCount);
+  // Derive selected spell
+  const selectedSpell = useMemo(() => {
+    if (!selectedKey) return null;
+    return filtered.find((s) => rowKey(s) === selectedKey) ?? null;
+  }, [filtered, selectedKey]);
 
-  return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <div className="sticky top-[72px] z-10 bg-[#13131e]/95 backdrop-blur-sm border-b border-white/[0.08] -mx-6 px-6 py-3 space-y-3">
+  // Clear selectedKey when spell is filtered out
+  useEffect(() => {
+    if (selectedKey && !selectedSpell) {
+      setSelectedKey(null);
+      setMobileDetail(false);
+    }
+  }, [selectedKey, selectedSpell]);
+
+  // Keyboard navigation
+  const handleListKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "j" || e.key === "ArrowDown") {
+      e.preventDefault();
+      const idx = selectedKey ? filtered.findIndex((s) => rowKey(s) === selectedKey) : -1;
+      const next = Math.min(idx + 1, filtered.length - 1);
+      if (filtered[next]) setSelectedKey(rowKey(filtered[next]));
+    } else if (e.key === "k" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const idx = selectedKey ? filtered.findIndex((s) => rowKey(s) === selectedKey) : -1;
+      const prev = Math.max(idx - 1, 0);
+      if (filtered[prev]) setSelectedKey(rowKey(filtered[prev]));
+    }
+  }, [filtered, selectedKey]);
+
+  const handleDesktopSelect = useCallback((s: SrdSpell) => {
+    setSelectedKey(rowKey(s));
+  }, []);
+
+  const handleMobileSelect = useCallback((s: SrdSpell) => {
+    setSelectedKey(rowKey(s));
+    setMobileDetail(true);
+  }, []);
+
+  const hasActiveFilters = levels.size > 0 || schools.size > 0 || classes.size > 0 || ritualOnly || concentrationOnly || versionFilter !== "all";
+
+  // ---- Filter bar ----
+  const filterBar = (
+    <div className="space-y-2">
+      {/* Search */}
+      <div className="relative">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
         <input
           type="text"
           value={nameFilter}
-          onChange={(e) => { setNameFilter(e.target.value); setVisibleCount(PAGE_SIZE); }}
+          onChange={(e) => setNameFilter(e.target.value)}
           placeholder={t("search_placeholder")}
-          className="w-full h-10 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors"
+          className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors"
         />
+      </div>
 
-        <div className="flex flex-wrap gap-2">
-          {/* Version */}
+      {/* Toggle filters */}
+      <button
+        type="button"
+        onClick={() => setFiltersOpen((o) => !o)}
+        className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <svg className={`w-3 h-3 transition-transform ${filtersOpen ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+        {t("filters")}
+        {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-gold" />}
+      </button>
+
+      {filtersOpen && (
+        <div className="space-y-2 pl-1">
           <FilterGroup label={t("filter_version")}>
             {(["all", "2014", "2024"] as const).map((v) => (
-              <Chip key={v} active={versionFilter === v} onClick={() => { setVersionFilter(v); setVisibleCount(PAGE_SIZE); }}>
+              <Chip key={v} active={versionFilter === v} onClick={() => setVersionFilter(v)}>
                 {v === "all" ? t("filter_version_all") : v}
               </Chip>
             ))}
           </FilterGroup>
 
-          {/* Level */}
           <FilterGroup label={t("filter_level")}>
             {SPELL_LEVELS.map((l) => (
               <Chip key={l.value} active={levels.has(l.value)} onClick={() => toggleNumSet(levels, l.value, setLevels)}>
@@ -155,7 +225,6 @@ export function SpellBrowser() {
             ))}
           </FilterGroup>
 
-          {/* School */}
           <FilterGroup label={t("filter_school")}>
             {SCHOOLS.map((s) => (
               <Chip key={s} active={schools.has(s)} onClick={() => toggleStrSet(schools, s, setSchools)}>
@@ -164,7 +233,6 @@ export function SpellBrowser() {
             ))}
           </FilterGroup>
 
-          {/* Class */}
           <FilterGroup label={t("filter_class")}>
             {CLASSES.map((c) => (
               <Chip key={c} active={classes.has(c)} onClick={() => toggleStrSet(classes, c, setClasses)}>
@@ -173,90 +241,165 @@ export function SpellBrowser() {
             ))}
           </FilterGroup>
 
-          {/* Toggles */}
           <FilterGroup label="">
-            <Chip active={ritualOnly} onClick={() => { setRitualOnly(!ritualOnly); setVisibleCount(PAGE_SIZE); }}>
+            <Chip active={ritualOnly} onClick={() => setRitualOnly(!ritualOnly)}>
               ® {t("filter_ritual")}
             </Chip>
-            <Chip active={concentrationOnly} onClick={() => { setConcentrationOnly(!concentrationOnly); setVisibleCount(PAGE_SIZE); }}>
+            <Chip active={concentrationOnly} onClick={() => setConcentrationOnly(!concentrationOnly)}>
               ◉ {t("filter_concentration")}
             </Chip>
           </FilterGroup>
         </div>
+      )}
 
-        {/* Sort & count */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            {t("showing_results", { count: visible.length, total: filtered.length })}
-          </span>
-          <div className="flex items-center gap-1">
-            <Chip active={sortBy === "name"} onClick={() => setSortBy("name")}>{t("sort_name")}</Chip>
-            <Chip active={sortBy === "level"} onClick={() => setSortBy("level")}>{t("sort_level")}</Chip>
-          </div>
+      {/* Sort & count */}
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] text-muted-foreground">
+          {t("showing_results", { count: filtered.length, total: spells.length })}
+        </span>
+        <div className="flex items-center gap-1">
+          <Chip active={sortBy === "name"} onClick={() => setSortBy("name")}>{t("sort_name")}</Chip>
+          <Chip active={sortBy === "level"} onClick={() => setSortBy("level")}>{t("sort_level")}</Chip>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ---- Spell row ----
+  const renderSpellRow = (spell: SrdSpell, onSelect: (s: SrdSpell) => void) => {
+    const key = rowKey(spell);
+    const isSelected = key === selectedKey;
+
+    return (
+      <button
+        key={key}
+        type="button"
+        onClick={() => onSelect(spell)}
+        className={`w-full flex items-center gap-2 px-3 py-2.5 text-left transition-colors duration-150 border-b border-white/[0.04] border-l-2 ${levelBorderColor(spell.level)} ${
+          isSelected
+            ? "bg-gold/10 text-gold"
+            : "text-foreground hover:bg-white/[0.06]"
+        }`}
+      >
+        <span className="font-medium text-sm flex-1 min-w-0 truncate">
+          {spell.name}
+        </span>
+        <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">
+          {formatSpellLevel(spell.level, t)} · {spell.school}
+        </span>
+        <span className="text-[11px] text-muted-foreground whitespace-nowrap lg:hidden">
+          {spell.level === 0 ? "C" : spell.level}
+        </span>
+        {spell.concentration && (
+          <span className="text-[10px] text-amber-400" title="Concentration">◉</span>
+        )}
+        {spell.ritual && (
+          <span className="text-[10px] text-teal-400" title="Ritual">®</span>
+        )}
+        <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${
+          spell.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
+        }`}>
+          {spell.ruleset_version}
+        </span>
+      </button>
+    );
+  };
+
+  // ---- MOBILE: detail view ----
+  if (mobileDetail && selectedSpell) {
+    return (
+      <div className="md:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileDetail(false)}
+          className="flex items-center gap-1.5 text-sm text-gold mb-4 min-h-[44px]"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+          {t("back_to_list")}
+        </button>
+        <div className="flex items-center gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => pinCard("spell", selectedSpell.id, selectedSpell.ruleset_version)}
+            className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
+          >
+            📌 {t("pin_card")}
+          </button>
+        </div>
+        <SpellCard spell={selectedSpell} variant="inline" />
+      </div>
+    );
+  }
+
+  // ---- MAIN LAYOUT ----
+  return (
+    <div>
+      {/* Mobile: list view */}
+      <div className="md:hidden">
+        {filterBar}
+        <div className="mt-3">
+          {filtered.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
+          ) : (
+            <div className="max-h-[500px] overflow-y-auto">
+              {filtered.map((spell) => renderSpellRow(spell, handleMobileSelect))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Results */}
-      {filtered.length === 0 ? (
-        <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
-      ) : (
-        <div className="space-y-1">
-          {visible.map((spell) => (
-            <div
-              key={`${spell.id}:${spell.ruleset_version}`}
-              className={`rounded-lg border border-white/[0.06] hover:border-white/[0.12] border-l-2 ${levelBorderColor(spell.level)} transition-colors`}
-            >
-              <button
-                type="button"
-                onClick={() => setSelectedSpell(spell)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left min-h-[52px]"
-              >
-                <span className="font-medium text-sm text-foreground flex-1 min-w-0 truncate">
-                  {spell.name}
-                </span>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
-                  {formatSpellLevel(spell.level, t)} · {spell.school}
-                </span>
-                <span className="text-xs text-muted-foreground whitespace-nowrap hidden md:inline">
-                  {spell.casting_time}
-                </span>
-                {spell.concentration && (
-                  <span className="text-xs text-amber-400" title="Concentration">◉</span>
-                )}
-                {spell.ritual && (
-                  <span className="text-xs text-teal-400" title="Ritual">®</span>
-                )}
-                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                  spell.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-                }`}>
-                  {spell.ruleset_version}
-                </span>
-              </button>
-            </div>
-          ))}
+      {/* Desktop: split panel */}
+      <div className="hidden md:grid md:grid-cols-[minmax(320px,2fr)_3fr] gap-0 h-[calc(100vh-180px)] border border-white/[0.06] rounded-xl overflow-hidden">
+        {/* LEFT: List panel */}
+        <div className="flex flex-col border-r border-white/[0.06] bg-[#13131e]/60">
+          <div className="p-3 border-b border-white/[0.06] bg-[#13131e]/95 backdrop-blur-sm">
+            {filterBar}
+          </div>
 
-          {visibleCount < filtered.length && (
-            <button
-              type="button"
-              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-              className="w-full py-3 text-sm text-gold hover:text-gold/80 transition-colors"
-            >
-              {t("load_more")} ({filtered.length - visibleCount} {t("tab_spells").toLowerCase()})
-            </button>
+          <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] text-muted-foreground uppercase tracking-wider border-b border-white/[0.04] bg-white/[0.02]">
+            <span className="flex-1">{t("sort_name")}</span>
+            <span className="hidden lg:inline w-28 text-right">{t("sort_level")} · {t("filter_school")}</span>
+            <span className="w-10" />
+          </div>
+
+          <div ref={listContainerRef} className="flex-1 min-h-0 overflow-y-auto" onKeyDown={handleListKeyDown} tabIndex={0} role="listbox" aria-label={t("tab_spells")}>
+            {filtered.length === 0 ? (
+              <div className="py-12 text-center text-muted-foreground text-sm">{t("no_results")}</div>
+            ) : (
+              filtered.map((spell) => renderSpellRow(spell, handleDesktopSelect))
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: Detail panel */}
+        <div className="overflow-y-auto bg-[#0e0e18]/80">
+          {selectedSpell ? (
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => pinCard("spell", selectedSpell.id, selectedSpell.ruleset_version)}
+                  className="px-2 py-1 text-xs rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[32px]"
+                >
+                  📌 {t("pin_card")}
+                </button>
+              </div>
+              <SpellCard spell={selectedSpell} variant="inline" />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+              <div className="text-center space-y-3">
+                <svg className="w-12 h-12 mx-auto text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                </svg>
+                <p>{t("select_spell")}</p>
+              </div>
+            </div>
           )}
         </div>
-      )}
-
-      {/* Spell detail modal */}
-      <SpellDescriptionModal
-        spell={selectedSpell}
-        open={!!selectedSpell}
-        onOpenChange={(v) => !v && setSelectedSpell(null)}
-        onPin={selectedSpell ? () => {
-          pinCard("spell", selectedSpell.id, selectedSpell.ruleset_version);
-          setSelectedSpell(null);
-        } : undefined}
-      />
+      </div>
     </div>
   );
 }

@@ -242,7 +242,7 @@ export function MonsterStatBlock({
 
   // Description renderer — default uses DiceText (clickable dice + spell/condition links)
   const renderDesc = renderDescProp
-    ? (text: string, actionName: string) => renderDescProp(text, monster.ruleset_version)
+    ? (text: string, actionName: string) => renderDescProp(text, monster.ruleset_version, actionName)
     : (text: string, actionName: string) => (
         <DiceText text={text} rulesetVersion={monster.ruleset_version} actionName={actionName} />
       );

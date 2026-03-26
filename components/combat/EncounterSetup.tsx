@@ -10,8 +10,8 @@ import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { loadMonsters } from "@/lib/srd/srd-loader";
-import { rollInitiativeForCombatant, getDexScore } from "@/lib/utils/initiative";
+import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
+import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 
@@ -59,18 +59,11 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
-  const monsterIndexRef = useRef<Map<string, SrdMonster>>(new Map());
-  const [monsterIndexLoaded, setMonsterIndexLoaded] = useState(false);
 
-  // Load SRD monsters for DEX lookup when rolling initiative
-  useEffect(() => {
-    loadMonsters(rulesetVersion).then((monsters) => {
-      const idx = new Map<string, SrdMonster>();
-      for (const m of monsters) idx.set(m.id, m);
-      monsterIndexRef.current = idx;
-      setMonsterIndexLoaded(true);
-    }).catch(() => { /* SRD load failure is non-blocking */ });
-  }, [rulesetVersion]);
+  const { handleRollOne, handleRollAll, handleRollNpcs } = useInitiativeRolling(
+    useCombatStore,
+    rulesetVersion
+  );
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
@@ -111,20 +104,36 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     });
   }, [preloadedPlayers, addCombatant]);
 
-  // Fill add row from monster search selection
+  // Auto-add monster with rolled initiative when selected from compendium
   const handleSelectMonster = useCallback(
     (monster: SrdMonster) => {
       const numberedName = getNumberedName(monster.name, useCombatStore.getState().combatants);
-      lastSelectedMonster.current = { id: monster.id, version: monster.ruleset_version };
-      setAddRow((prev) => ({
-        ...prev,
+
+      // Roll initiative instantly using the monster's DEX
+      const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+
+      addCombatant({
         name: numberedName,
-        hp: String(monster.hit_points),
-        ac: String(monster.armor_class),
-      }));
-      initInputRef.current?.focus();
+        current_hp: monster.hit_points,
+        max_hp: monster.hit_points,
+        temp_hp: 0,
+        ac: monster.armor_class,
+        spell_save_dc: null,
+        initiative: rollResult.total,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: monster.ruleset_version,
+        is_defeated: false,
+        is_player: false,
+        monster_id: monster.id,
+        dm_notes: "",
+        player_notes: "",
+      });
+
+      lastSelectedMonster.current = null;
+      setAddRow(EMPTY_ADD_ROW);
     },
-    []
+    [addCombatant]
   );
 
   // Trigger golden glow on the add row after monster selection
@@ -273,41 +282,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
     [updatePlayerNotes]
   );
 
-  // Roll initiative for a single combatant
-  const handleRollOne = useCallback(
-    (id: string) => {
-      const store = useCombatStore.getState();
-      const c = store.combatants.find((x) => x.id === id);
-      if (!c) return;
-      const dex = getDexScore(c, monsterIndexRef.current);
-      const result = rollInitiativeForCombatant(id, dex);
-      setInitiative(id, result.total);
-    },
-    [setInitiative]
-  );
-
-  // Roll initiative for all combatants missing initiative
-  const handleRollAll = useCallback(() => {
-    const store = useCombatStore.getState();
-    for (const c of store.combatants) {
-      if (c.initiative !== null) continue;
-      const dex = getDexScore(c, monsterIndexRef.current);
-      const result = rollInitiativeForCombatant(c.id, dex);
-      setInitiative(c.id, result.total);
-    }
-  }, [setInitiative]);
-
-  // Roll initiative only for NPCs (non-player combatants) missing initiative
-  const handleRollNpcs = useCallback(() => {
-    const store = useCombatStore.getState();
-    for (const c of store.combatants) {
-      if (c.initiative !== null || c.is_player) continue;
-      const dex = getDexScore(c, monsterIndexRef.current);
-      const result = rollInitiativeForCombatant(c.id, dex);
-      setInitiative(c.id, result.total);
-    }
-  }, [setInitiative]);
-
   // Start combat
   const handleStartCombat = async () => {
     if (combatants.length === 0) {
@@ -370,7 +344,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
       {/* Column headers — always visible, aligned with both rows and add-row */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
         <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
-        <span className="w-14 flex-shrink-0 text-center">{t("setup_col_init")}</span>
+        <span className="w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
         <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
         <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
@@ -428,7 +402,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
           placeholder={t("setup_col_init")}
           min={-5}
           max={50}
-          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />
         <input
@@ -447,10 +421,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         <input
           type="number"
           value={addRow.hp}
-          onChange={(e) => {
-            setAddRow((f) => ({ ...f, hp: e.target.value }));
-            if (addRowErrors.has("hp")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("hp"); return n; });
-          }}
+          onChange={(e) => setAddRow((f) => ({ ...f, hp: e.target.value }))}
           onFocus={selectOnFocus}
           placeholder={t("setup_col_hp")}
           min={1}
@@ -460,15 +431,11 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers }: 
         <input
           type="number"
           value={addRow.ac}
-          onChange={(e) => {
-            setAddRow((f) => ({ ...f, ac: e.target.value }));
-            if (addRowErrors.has("ac")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("ac"); return n; });
-          }}
+          onChange={(e) => setAddRow((f) => ({ ...f, ac: e.target.value }))}
           onFocus={selectOnFocus}
           placeholder={t("setup_col_ac")}
           min={1}
-          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${addRowErrors.has("ac") ? " field-error" : ""}`}
-          aria-invalid={addRowErrors.has("ac") || undefined}
+          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-ac"
         />
         <input
