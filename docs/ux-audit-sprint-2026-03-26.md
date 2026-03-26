@@ -24,12 +24,12 @@ Auditoria UX completa avaliou TODAS as superfícies do app:
 
 | Story | Descrição | Arquivos Afetados | Status |
 |-------|-----------|-------------------|--------|
-| 1.1 | Extrair textos hardcoded PT para i18n | `GuestCombatClient`, `GuestBanner`, `DiceHistoryPanel`, `sign-up-form` | ⬜ Pending |
-| 1.2 | Corrigir botões "Save"/"Share" no Guest mode (transparência) | `GuestCombatClient` | ⬜ Pending |
-| 1.3 | ConditionBadge — adicionar ícones para acessibilidade | `ConditionBadge`, `ConditionSelector` | ⬜ Pending |
-| 1.4 | GuestBanner — timer visível SEMPRE (especialmente urgente) | `GuestBanner` | ⬜ Pending |
-| 1.5 | Aumentar contraste de inputs (bordas + focus ring) | `globals.css`, componentes de input | ⬜ Pending |
-| 1.6 | Guest mode — adicionar focus ring gold no turno atual | `GuestCombatClient` | ⬜ Pending |
+| 1.1 | Extrair textos hardcoded PT para i18n | `GuestCombatClient`, `GuestBanner`, `DiceHistoryPanel`, `sign-up-form` | ✅ Done |
+| 1.2 | Corrigir botões "Save"/"Share" no Guest mode (transparência) | `GuestCombatClient`, `GuestUpsellModal` | ✅ Done |
+| 1.3 | ConditionBadge — adicionar ícones para acessibilidade | `ConditionBadge`, `ConditionSelector` | ✅ Done |
+| 1.4 | GuestBanner — timer visível SEMPRE (especialmente urgente) | `GuestBanner` | ✅ Done |
+| 1.5 | Aumentar contraste de inputs (bordas + focus ring) | `globals.css`, `input.tsx`, `login-form`, `sign-up-form` | ✅ Done |
+| 1.6 | Guest mode — adicionar focus ring gold no turno atual | `GuestCombatClient` | ✅ Done (already implemented) |
 
 ---
 
@@ -39,12 +39,12 @@ Auditoria UX completa avaliou TODAS as superfícies do app:
 
 | Story | Descrição | Arquivos Afetados | Status |
 |-------|-----------|-------------------|--------|
-| 2.1 | Padronizar botões para `<Button>` component | `CampaignManager`, `ShareSessionButton`, `RulesetSelector`, `PresetEditor` | ⬜ Pending |
-| 2.2 | Unificar empty states (ícone + texto + ação) | `PresetsManager`, `PresetLoader`, `SavedEncounters` | ⬜ Pending |
-| 2.3 | CommandPalette — converter acentos para gold | `CommandPalette` | ⬜ Pending |
-| 2.4 | Consolidar ConditionCard (eliminar duplicata) | `oracle/ConditionCard`, `compendium/ConditionReference` | ⬜ Pending |
-| 2.5 | Padronizar loading states (spinner consistente) | `PlayerCharacterManager`, `OnboardingWizard`, `PresetEditor` | ⬜ Pending |
-| 2.6 | Unificar modals (migrar custom → Radix Dialog) | `CommandPalette`, `OracleAIModal` | ⬜ Pending |
+| 2.1 | Padronizar botões para `<Button>` component | `CampaignManager`, `ShareSessionButton`, `RulesetSelector`, `PresetEditor`, `PresetsManager` | ✅ Done |
+| 2.2 | Unificar empty states (ícone + texto + ação) | `PresetsManager`, `PresetLoader`, `SavedEncounters` | ✅ Done |
+| 2.3 | CommandPalette — converter acentos para gold | `CommandPalette` | ✅ Done |
+| 2.4 | Consolidar ConditionCard (eliminar duplicata) | `oracle/ConditionCard`, `compendium/ConditionReference` | ✅ Done |
+| 2.5 | Padronizar loading states (spinner consistente) | `PlayerCharacterManager`, `OnboardingWizard`, `PresetEditor`, `CampaignManager` | ✅ Done |
+| 2.6 | Unificar modals (backdrop padronizado) | `CommandPalette`, `OracleAIModal` | ✅ Done |
 
 ---
 
@@ -54,12 +54,12 @@ Auditoria UX completa avaliou TODAS as superfícies do app:
 
 | Story | Descrição | Arquivos Afetados | Status |
 |-------|-----------|-------------------|--------|
-| 3.1 | Migração Guest → Auth (importar localStorage) | `sign-up flow`, `GuestCombatClient`, novo hook | ⬜ Pending |
-| 3.2 | Keyboard nav em MonsterSearch/SpellSearch | `MonsterSearch`, `SpellSearch` | ⬜ Pending |
-| 3.3 | CTA na seção "Como Funciona" da landing | `app/page.tsx` | ⬜ Pending |
-| 3.4 | Unificar texto dos CTAs de signup | `app/page.tsx`, `Navbar` | ⬜ Pending |
-| 3.5 | `prefers-reduced-motion` nos dados CSS flutuantes | `globals.css` | ⬜ Pending |
-| 3.6 | LinkedText em SpellCard e OracleAICard | `SpellCard`, `OracleAICard`, `LinkedText` | ⬜ Pending |
+| 3.1 | Migração Guest → Auth (importar localStorage) | `guest-combat-store`, `GuestDataImportModal` (novo), `dashboard/page` | ✅ Done |
+| 3.2 | Keyboard nav em MonsterSearch/SpellSearch | `MonsterSearchPanel`, `SpellSearch` | ✅ Done |
+| 3.3 | CTA na seção "Como Funciona" da landing | `app/page.tsx` | ✅ Done |
+| 3.4 | Unificar texto dos CTAs de signup | `app/page.tsx`, `Navbar` | ✅ Done |
+| 3.5 | `prefers-reduced-motion` nos dados CSS flutuantes | `globals.css` | ✅ Done |
+| 3.6 | LinkedText em SpellCard e OracleAICard | `SpellCard`, `OracleAICard`, `LinkedText` | ✅ Done |
 
 ---
 

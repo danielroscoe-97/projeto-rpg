@@ -1,7 +1,6 @@
 "use client";
 
 import "@/styles/stat-card-5e.css";
-import { CONDITION_COLORS } from "@/components/oracle/ConditionBadge";
 
 /** Maps condition names to left-border colors for the reference variant */
 const REFERENCE_BORDER_COLORS: Record<string, string> = {
@@ -60,6 +59,8 @@ export function ConditionCard({
             type="button"
             onClick={onToggle}
             className="flex-1 text-left min-w-0"
+            aria-expanded={expanded}
+            aria-label={`${condition.name} — ${expanded ? "collapse" : "expand"}`}
           >
             <div className="flex items-center gap-2">
               <span className="font-medium text-sm text-foreground">{condition.name}</span>
@@ -76,6 +77,7 @@ export function ConditionCard({
               type="button"
               onClick={onPin}
               className="px-2 py-0.5 text-[10px] rounded font-medium bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[28px] shrink-0"
+              aria-label={`Pin ${condition.name}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5"><path d="M8.5 1.5a.5.5 0 0 0-1 0v4.396L4.12 7.673a.5.5 0 0 0-.27.444v1.266a.5.5 0 0 0 .63.484L7.5 9.18V13l-1.354 1.354a.5.5 0 0 0 .354.854h3a.5.5 0 0 0 .354-.854L8.5 13V9.18l3.02.687a.5.5 0 0 0 .63-.484V8.117a.5.5 0 0 0-.27-.444L8.5 5.896V1.5z"/></svg>
             </button>

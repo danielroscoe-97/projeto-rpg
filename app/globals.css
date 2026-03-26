@@ -240,12 +240,6 @@ html {
     animation: glow-gold 1.5s ease-in-out both;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .glow-gold-flash {
-      animation: none;
-    }
-  }
-
   /* ─── LP Feature Icon Animations ─── */
 
   /* SVG line-draw effect */
@@ -376,12 +370,10 @@ html {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .glow-gold-flash,
     .field-error {
       animation: none;
     }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
     .float-drift-1,
     .float-drift-2,
     .float-drift-3,
