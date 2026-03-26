@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
+import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
 import { Swords, Package } from "lucide-react";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 
@@ -84,6 +85,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
+      <GuestDataImportModal />
       <SavedEncounters encounters={savedEncounters} />
 
       {/* Presets quick-access */}
