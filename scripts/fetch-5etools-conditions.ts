@@ -219,7 +219,6 @@ async function main() {
     const catDiff = categoryOrder[a.category] - categoryOrder[b.category];
     return catDiff !== 0 ? catDiff : a.name.localeCompare(b.name);
   });
-  conditions.sort((a, b) => a.name.localeCompare(b.name));
 
   // Write output
   const path = join(OUTPUT_DIR, "conditions.json");
