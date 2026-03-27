@@ -1,22 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useAudioStore } from "@/lib/stores/audio-store";
 
 export function DmAudioControls() {
   const t = useTranslations("audio");
   const [isOpen, setIsOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const volume = useAudioStore((s) => s.volume);
   const isMuted = useAudioStore((s) => s.isMuted);
   const lastSoundLabel = useAudioStore((s) => s.lastSoundLabel);
   const setVolume = useAudioStore((s) => s.setVolume);
   const toggleMute = useAudioStore((s) => s.toggleMute);
 
+  // Click outside to close
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
   const volumeIcon = isMuted ? "🔇" : volume < 0.3 ? "🔈" : "🔊";
 
   return (
-    <div className="relative">
+    <div className="relative" ref={popoverRef}>
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
@@ -70,7 +83,7 @@ export function DmAudioControls() {
 
           {/* Last sound indicator */}
           {lastSoundLabel && (
-            <div className="mt-3 pt-3 border-t border-border">
+            <div className="mt-3 pt-3 border-t border-border" aria-live="polite">
               <p className="text-muted-foreground text-xs">
                 {t("last_sound")}: <span className="text-foreground">{lastSoundLabel}</span>
               </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { getAllPresets } from "@/lib/utils/audio-presets";
@@ -29,6 +29,14 @@ export function PlayerSoundboard({
   const [isOpen, setIsOpen] = useState(false);
   const [cooldownId, setCooldownId] = useState<string | null>(null);
   const lastTriggerRef = useRef<number>(0);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup cooldown timer on unmount
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, []);
 
   const handlePlaySound = useCallback(
     (soundId: string, source: "preset" | "custom", audioUrl?: string) => {
@@ -39,7 +47,8 @@ export function PlayerSoundboard({
 
       // Anti-spam cooldown visual
       setCooldownId(soundId);
-      setTimeout(() => setCooldownId(null), COOLDOWN_MS);
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+      cooldownTimerRef.current = setTimeout(() => setCooldownId(null), COOLDOWN_MS);
 
       // Broadcast via channelRef (player → DM)
       channelRef.current?.send({

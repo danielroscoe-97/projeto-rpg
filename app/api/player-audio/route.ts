@@ -5,13 +5,13 @@ import { captureError } from "@/lib/errors/capture";
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const MAX_FILES_PER_PLAYER = 6;
 
-/** Validate MP3 magic bytes: MPEG sync (0xFF 0xFB/F3/F2) or ID3 tag (0x49 0x44 0x33) */
+/** Validate MP3 magic bytes: MPEG frame sync (0xFF + high 3 bits set) or ID3 tag (0x49 0x44 0x33) */
 function isMp3(buffer: Uint8Array): boolean {
   if (buffer.length < 3) return false;
-  // ID3 tag header
+  // ID3 tag header (ID3v2)
   if (buffer[0] === 0x49 && buffer[1] === 0x44 && buffer[2] === 0x33) return true;
-  // MPEG audio frame sync
-  if (buffer[0] === 0xff && (buffer[1] === 0xfb || buffer[1] === 0xf3 || buffer[1] === 0xf2)) return true;
+  // MPEG audio frame sync: first 11 bits must be set (0xFF + 0xE0 mask on second byte)
+  if (buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0) return true;
   return false;
 }
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     if (uploadError) throw uploadError;
 
-    // Insert metadata
+    // Insert metadata — clean up storage file if DB insert fails
     const { data: record, error: insertError } = await supabase
       .from("player_audio_files")
       .insert({
@@ -95,7 +95,11 @@ export async function POST(request: NextRequest) {
       .select("id, user_id, file_name, file_path, file_size_bytes, created_at")
       .single();
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      // Clean up orphaned storage file
+      await supabase.storage.from("player-audio").remove([filePath]).catch(() => {});
+      throw insertError;
+    }
 
     return NextResponse.json({ data: record });
   } catch (err) {

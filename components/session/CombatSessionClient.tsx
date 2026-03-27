@@ -433,16 +433,22 @@ export function CombatSessionClient({
 
     const handleAudioPlay = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
-      const { sound_id, source, player_name, audio_url } = payload as {
-        sound_id: string; source: "preset" | "custom"; player_name: string; audio_url?: string;
+      const { sound_id, source, player_name } = payload as {
+        sound_id: string; source: "preset" | "custom"; player_name: string;
       };
 
-      useAudioStore.getState().playSound(sound_id, source, player_name, audio_url);
+      // SECURITY: Never trust audio_url from player payload — resolve from preloaded store
+      const store = useAudioStore.getState();
+      const resolvedUrl = source === "custom" ? store.playerAudioUrls[sound_id] : undefined;
+      if (source === "custom" && !resolvedUrl) return; // Unknown custom sound — ignore
+
+      const sanitizedName = typeof player_name === "string" ? player_name.slice(0, 30) : "???";
+      store.playSound(sound_id, source, sanitizedName, resolvedUrl);
 
       // Discrete toast
       const preset = source === "preset" ? getPresetById(sound_id) : null;
       const label = preset ? `${preset.icon} ${preset.id}` : sound_id;
-      toast(`🔊 ${player_name}: ${label}`, { duration: 2000 });
+      toast(`🔊 ${sanitizedName}: ${label}`, { duration: 2000 });
     };
 
     // Clean stale audio bindings before adding new one

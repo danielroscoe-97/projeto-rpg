@@ -126,6 +126,16 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   preloadPlayerAudio: async (audioFiles) => {
     if (audioFiles.length === 0) return;
 
+    // Clean up existing preloaded audio for the same IDs to prevent memory leaks
+    const existing = get().preloadedAudio;
+    for (const file of audioFiles) {
+      const old = existing[file.id];
+      if (old) {
+        old.pause();
+        old.src = "";
+      }
+    }
+
     const supabase = createClient();
     const urls: Record<string, string> = {};
     const preloaded: Record<string, HTMLAudioElement> = {};
