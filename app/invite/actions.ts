@@ -48,6 +48,7 @@ export async function acceptInviteAction(data: AcceptInviteData) {
       current_hp: data.currentHp,
       ac: data.ac,
       spell_save_dc: data.spellSaveDc,
+      user_id: user.id,
     });
 
   if (charError) throw charError;

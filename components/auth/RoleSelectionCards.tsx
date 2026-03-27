@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Swords, Shield, Users } from "lucide-react";
 
@@ -45,7 +45,7 @@ export function RoleSelectionCards({ userId }: RoleSelectionCardsProps) {
       router.push("/app/dashboard");
     } catch (err) {
       toast.error(t("role_save_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "RoleSelectionCards", action: "saveRole", category: "database" });
     } finally {
       setIsLoading(false);
     }

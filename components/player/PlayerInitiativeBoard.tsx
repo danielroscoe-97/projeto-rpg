@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
+import { PlayerBottomBar } from "@/components/player/PlayerBottomBar";
 import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
 import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOverlay";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
@@ -48,11 +49,11 @@ function HpStatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${style.colorClass} ${style.bgClass}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm lg:text-xs font-medium ${style.colorClass} ${style.bgClass}`}
       aria-label={label}
     >
       {style.icon === "skull" ? (
-        <Skull className="w-3.5 h-3.5" aria-hidden="true" />
+        <Skull className="w-4 h-4 lg:w-3.5 lg:h-3.5" aria-hidden="true" />
       ) : style.icon === "warning" ? (
         <span aria-hidden="true">⚠</span>
       ) : style.icon === "danger" ? (
@@ -90,21 +91,21 @@ function PlayerNoteInput({ combatantId, onSubmit }: { combatantId: string; onSub
   }, [combatantId, onSubmit, value]);
 
   return (
-    <div className="mt-2 flex items-center gap-1.5">
+    <div className="mt-3 flex items-center gap-2">
       <input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
         placeholder={t("note_placeholder")}
-        className="flex-1 bg-transparent border border-border rounded px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[44px]"
+        className="flex-1 bg-transparent border border-border rounded px-3 py-2 text-foreground text-base lg:text-sm focus:outline-none focus:ring-1 focus:ring-gold min-h-[48px]"
         maxLength={100}
         data-testid={`player-note-input-${combatantId}`}
       />
       <button
         type="button"
         onClick={handleSubmit}
-        className="px-3 py-2 text-sm font-medium rounded bg-gold/20 text-gold hover:bg-gold/30 transition-colors min-h-[44px]"
+        className="px-4 py-2 text-base lg:text-sm font-medium rounded bg-gold/20 text-gold active:bg-gold/40 lg:hover:bg-gold/30 transition-colors min-h-[48px]"
         data-testid={`player-note-send-${combatantId}`}
       >
         {saved ? t("note_sent") : t("note_send")}
@@ -186,9 +187,19 @@ export function PlayerInitiativeBoard({
     : Math.min(maxRevealedIndex + 1, combatants.length);
 
   // Story 3.1 + 3.2: Turn notification state
-  // "É sua vez!" — persistent while it's a player combatant's turn
   const currentCombatant = combatants[currentTurnIndex];
   const isPlayerTurn = currentCombatant?.is_player ?? false;
+
+  // "É sua vez!" overlay — shows on turn start, dismissible
+  const [overlayDismissed, setOverlayDismissed] = useState(false);
+  // Reset dismissed state when turn changes (so overlay shows again on next turn)
+  const prevTurnRef = useRef(currentTurnIndex);
+  useEffect(() => {
+    if (currentTurnIndex !== prevTurnRef.current) {
+      prevTurnRef.current = currentTurnIndex;
+      setOverlayDismissed(false);
+    }
+  }, [currentTurnIndex]);
 
   // "Você é o próximo!" — show when next_combatant_id matches a player combatant
   const isPlayerUpcoming = !!(
@@ -200,12 +211,16 @@ export function PlayerInitiativeBoard({
   // Last 5 log entries for display
   const visibleLog = combatLog?.slice(-5) ?? [];
 
+  // First player character for bottom bar (primary character)
+  const primaryPlayerChar = playerChars[0] ?? null;
+
   return (
-    <div className="space-y-3">
-      {/* Story 3.2: "É sua vez!" — persistent overlay with pulse animation */}
+    <div className="bg-black lg:bg-transparent min-h-screen lg:min-h-0 space-y-3 pb-32 lg:pb-0">
+      {/* Story 3.2: "É sua vez!" — full-screen overlay with spring animation, auto-dismiss 3s */}
       <TurnNotificationOverlay
-        visible={isPlayerTurn}
+        visible={isPlayerTurn && !overlayDismissed}
         playerName={currentCombatant?.name ?? ""}
+        onDismiss={() => setOverlayDismissed(true)}
       />
 
       {/* Story 3.1: "Você é o próximo!" — shown when player is next (not current) */}
@@ -214,13 +229,13 @@ export function PlayerInitiativeBoard({
       {/* Combat Log */}
       {visibleLog.length > 0 && (
         <div className="bg-card border border-border rounded-lg px-3 py-2">
-          <h3 className="text-muted-foreground text-xs font-medium mb-1.5">{t("combat_log_title")}</h3>
-          <ul className="space-y-0.5 max-h-28 overflow-y-auto">
+          <h3 className="text-muted-foreground text-sm lg:text-xs font-medium mb-1.5">{t("combat_log_title")}</h3>
+          <ul className="space-y-1 lg:space-y-0.5 max-h-36 lg:max-h-28 overflow-y-auto">
             {visibleLog.map((entry, i) => (
-              <li key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 text-xs">
+              <li key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 text-sm lg:text-xs min-h-[32px] lg:min-h-0 items-center lg:items-baseline">
                 <span className={`shrink-0 ${LOG_TYPE_COLORS[entry.type]}`}>●</span>
                 <span className="text-foreground/80 flex-1">{entry.text}</span>
-                <span className="text-muted-foreground text-[10px] shrink-0">
+                <span className="text-muted-foreground text-xs lg:text-[10px] shrink-0">
                   {formatRelativeTime(entry.timestamp, t)}
                 </span>
               </li>
@@ -229,9 +244,9 @@ export function PlayerInitiativeBoard({
         </div>
       )}
 
-      {/* Own Character Card(s) — prominent display */}
+      {/* Own Character Card(s) — prominent display (hidden on mobile when bottom bar is visible, shown on desktop) */}
       {hasOwnChar && (
-        <div className="space-y-2">
+        <div className="hidden lg:block space-y-2">
           {playerChars.map((pc) => {
             const pcIndex = combatants.findIndex((c) => c.id === pc.id);
             const pcTurnReached = roundNumber >= 2 || pcIndex <= maxRevealedIndex;
@@ -279,7 +294,7 @@ export function PlayerInitiativeBoard({
                     </div>
                   )}
                   <div
-                    className="h-3 bg-white/[0.06] rounded-full overflow-hidden"
+                    className="h-4 bg-white/[0.06] rounded-full overflow-hidden"
                     role="progressbar"
                     aria-valuenow={currentHp}
                     aria-valuemin={0}
@@ -316,10 +331,23 @@ export function PlayerInitiativeBoard({
         </div>
       )}
 
+      {/* Mobile-only: player note input above initiative list (since own-character card is in bottom bar) */}
+      {hasOwnChar && onPlayerNote && (
+        <div className="lg:hidden">
+          {playerChars.map((pc) => (
+            <PlayerNoteInput
+              key={pc.id}
+              combatantId={pc.id}
+              onSubmit={onPlayerNote}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Round 1 reveal indicator */}
       {roundNumber === 1 && (
         <div className="text-center py-2">
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm lg:text-xs">
             {t("reveal_count", { revealed: revealedCount })}
           </p>
         </div>
@@ -327,7 +355,7 @@ export function PlayerInitiativeBoard({
 
       {/* Initiative Order */}
       <ul
-        className="space-y-2"
+        className="space-y-2 lg:space-y-2"
         role="list"
         aria-label={t("initiative_order")}
         data-testid="player-initiative-board"
@@ -350,8 +378,10 @@ export function PlayerInitiativeBoard({
             <li
               key={combatant.id}
               ref={isCurrentTurn ? turnRef : undefined}
-              className={`bg-card border rounded-lg px-4 py-3 min-h-[64px] transition-all duration-300 ${
-                isCurrentTurn ? "border-gold bg-gold/5" : "border-border"
+              className={`bg-card border rounded-lg transition-all duration-300 min-h-[48px] ${
+                isCurrentTurn
+                  ? "border-amber-400 border-2 bg-gold/5 px-4 py-4 lg:px-4 lg:py-3"
+                  : "border-border px-4 py-3"
               } ${combatant.is_defeated ? "opacity-50" : ""} ${
                 isPlayer ? "border-gold/40" : ""
               } ${roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""}`}
@@ -360,23 +390,25 @@ export function PlayerInitiativeBoard({
               data-testid={`player-combatant-${combatant.id}`}
             >
               {/* Name row */}
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 min-h-[48px] lg:min-h-0">
                 {isCurrentTurn && (
                   <span
-                    className="text-gold shrink-0 text-sm leading-none select-none"
+                    className="text-gold shrink-0 text-lg lg:text-sm leading-none select-none"
                     aria-label={t("current_turn")}
                   >
                     ▶
                   </span>
                 )}
-                <span className="text-foreground text-sm font-medium flex-1 truncate">
+                <span className={`text-foreground font-medium flex-1 truncate ${
+                  isCurrentTurn ? "text-2xl lg:text-sm" : "text-xl lg:text-sm"
+                }`}>
                   {combatant.name}
                   {isPlayer && (
-                    <span className="text-gold/60 text-xs ml-1">({t("you_label")})</span>
+                    <span className="text-gold/60 text-sm lg:text-xs ml-1">({t("you_label")})</span>
                   )}
                 </span>
                 {combatant.is_defeated && (
-                  <span className="text-xs text-red-400 font-medium shrink-0">
+                  <span className="text-sm lg:text-xs text-red-400 font-medium shrink-0">
                     {t("defeated")}
                   </span>
                 )}
@@ -386,23 +418,23 @@ export function PlayerInitiativeBoard({
               {isPlayer ? (
                 <div className="mb-2">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-                    <span className="text-muted-foreground text-sm font-mono">
+                    <span className="text-muted-foreground text-sm lg:text-xs">{t("hp_label")}</span>
+                    <span className="text-muted-foreground text-base lg:text-sm font-mono">
                       {combatant.current_hp} / {combatant.max_hp}
                       {hpThresholdKey && (
-                        <span className="text-xs font-mono ml-1 text-muted-foreground">
+                        <span className="text-sm lg:text-xs font-mono ml-1 text-muted-foreground">
                           {t(hpThresholdKey)}
                         </span>
                       )}
                       {hasTempHp && (
-                        <span className="text-[#9f7aea] ml-1 text-xs">
+                        <span className="text-[#9f7aea] ml-1 text-sm lg:text-xs">
                           {t("temp_hp", { value: combatant.temp_hp ?? 0 })}
                         </span>
                       )}
                     </span>
                   </div>
                   <div
-                    className="h-2.5 bg-white/[0.06] rounded-full overflow-hidden"
+                    className="h-6 lg:h-2.5 bg-white/[0.06] rounded-full overflow-hidden"
                     role="progressbar"
                     aria-valuenow={combatant.current_hp}
                     aria-valuemin={0}
@@ -423,7 +455,7 @@ export function PlayerInitiativeBoard({
 
               {/* Condition badges */}
               {combatant.conditions.length > 0 && (
-                <div className="flex flex-wrap gap-1.5" role="list" aria-label={`${combatant.name} conditions`}>
+                <div className="flex flex-wrap gap-2 lg:gap-1.5" role="list" aria-label={`${combatant.name} conditions`}>
                   {combatant.conditions.map((condition) => (
                     <ConditionBadge
                       key={condition}
@@ -437,6 +469,24 @@ export function PlayerInitiativeBoard({
           );
         })}
       </ul>
+
+      {/* Bottom-anchored bar for player's own character (mobile only) */}
+      {primaryPlayerChar && primaryPlayerChar.current_hp != null && primaryPlayerChar.max_hp != null && (
+        <PlayerBottomBar
+          character={{
+            id: primaryPlayerChar.id,
+            name: primaryPlayerChar.name,
+            current_hp: primaryPlayerChar.current_hp,
+            max_hp: primaryPlayerChar.max_hp,
+            temp_hp: primaryPlayerChar.temp_hp,
+            ac: primaryPlayerChar.ac,
+            conditions: primaryPlayerChar.conditions,
+            is_defeated: primaryPlayerChar.is_defeated,
+            ruleset_version: primaryPlayerChar.ruleset_version,
+          }}
+          rulesetVersion={rulesetVersion}
+        />
+      )}
     </div>
   );
 }

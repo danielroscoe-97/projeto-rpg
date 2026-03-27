@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
@@ -105,6 +106,12 @@ export function CombatantRow({
   const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
   const hpThresholdKey = getHpThresholdKey(combatant.current_hp, combatant.max_hp);
   const hasTempHp = combatant.temp_hp > 0;
+
+  // HP bar tooltip: DM sees exact numbers, players see only tier name
+  const hpTierTooltipKey = hpThresholdKey ? `hp_tooltip_${hpThresholdKey.replace("hp_", "")}` as const : null;
+  const hpTooltip = hpTierTooltipKey
+    ? t(`hp_tooltip_dm`, { tier: t(hpTierTooltipKey), current: combatant.current_hp, max: combatant.max_hp })
+    : undefined;
 
   // Look up full monster data for stat block expansion
   const fullMonster =
@@ -211,6 +218,7 @@ export function CombatantRow({
           {combatant.monster_id && (
             <MonsterToken
               tokenUrl={combatant.token_url ?? fullMonster?.token_url}
+              fallbackTokenUrl={fullMonster?.fallback_token_url}
               creatureType={combatant.creature_type ?? fullMonster?.type}
               name={combatant.name}
               size={32}
@@ -352,15 +360,16 @@ export function CombatantRow({
           )}
         </div>
 
-        {/* HP bar */}
+        {/* HP bar with tooltip */}
         <div className="mb-1">
           <div
-            className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden"
+            className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden cursor-help"
             role="progressbar"
             aria-valuenow={combatant.current_hp}
             aria-valuemin={0}
             aria-valuemax={combatant.max_hp}
             aria-label={t("hp_aria", { name: combatant.name })}
+            title={hpTooltip}
           >
             <div
               className={`h-full rounded-full transition-all ${hpBarColor}`}
@@ -602,28 +611,38 @@ export function CombatantRow({
       </div>
 
       {/* === ONE-TAP TIER: AC, DC, stat block === */}
-      {isExpanded && fullMonster && (
-        <div
-          id={`stat-block-combatant-${combatant.id}`}
-          className="border-t border-border px-4 pb-4"
-          data-testid={`expanded-stat-block-${combatant.id}`}
-        >
-          {/* Quick stats row */}
-          <div className="flex gap-4 py-2 text-sm">
-            <span className="text-muted-foreground">
-              {t("ac_label")} <span className="text-foreground font-mono">{combatant.ac}</span>
-            </span>
-            {combatant.spell_save_dc !== null && (
-              <span className="text-muted-foreground">
-                {t("dc_label")} <span className="text-foreground font-mono">{combatant.spell_save_dc}</span>
-              </span>
-            )}
-          </div>
+      <AnimatePresence>
+        {isExpanded && fullMonster && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div
+              id={`stat-block-combatant-${combatant.id}`}
+              className="border-t border-border px-4 pb-4"
+              data-testid={`expanded-stat-block-${combatant.id}`}
+            >
+              {/* Quick stats row */}
+              <div className="flex gap-4 py-2 text-sm">
+                <span className="text-muted-foreground">
+                  {t("ac_label")} <span className="text-foreground font-mono">{combatant.ac}</span>
+                </span>
+                {combatant.spell_save_dc !== null && (
+                  <span className="text-muted-foreground">
+                    {t("dc_label")} <span className="text-foreground font-mono">{combatant.spell_save_dc}</span>
+                  </span>
+                )}
+              </div>
 
-          {/* Full stat block */}
-          <MonsterStatBlock monster={fullMonster} />
-        </div>
-      )}
+              {/* Full stat block */}
+              <MonsterStatBlock monster={fullMonster} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </li>
   );
 }

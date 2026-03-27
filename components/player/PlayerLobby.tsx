@@ -1,10 +1,19 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Swords, Users } from "lucide-react";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
+
+interface PrefilledCharacter {
+  id: string;
+  name: string;
+  max_hp: number;
+  current_hp: number;
+  ac: number;
+  spell_save_dc: number | null;
+}
 
 interface PlayerLobbyProps {
   sessionName: string;
@@ -32,6 +41,8 @@ interface PlayerLobbyProps {
   }) => Promise<void>;
   /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" */
   lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected";
+  /** Characters the authenticated player has in this campaign (auto-join pre-fill) */
+  prefilledCharacters?: PrefilledCharacter[];
 }
 
 export function PlayerLobby({
@@ -43,14 +54,30 @@ export function PlayerLobby({
   isCombatActive = false,
   onLateJoinRequest,
   lateJoinStatus = "idle",
+  prefilledCharacters,
 }: PlayerLobbyProps) {
   const t = useTranslations("player");
-  const [name, setName] = useState("");
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
+    prefilledCharacters?.length === 1 ? prefilledCharacters[0].id : null
+  );
+  const selectedChar = prefilledCharacters?.find((c) => c.id === selectedCharacterId);
+
+  const [name, setName] = useState(selectedChar?.name ?? "");
   const [initiative, setInitiative] = useState("");
-  const [hp, setHp] = useState("");
-  const [ac, setAc] = useState("");
+  const [hp, setHp] = useState(selectedChar ? String(selectedChar.max_hp) : "");
+  const [ac, setAc] = useState(selectedChar ? String(selectedChar.ac) : "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Set<string>>(new Set());
+
+  // Pre-fill form when character selected
+  const handleSelectCharacter = (charId: string) => {
+    const char = prefilledCharacters?.find((c) => c.id === charId);
+    if (!char) return;
+    setSelectedCharacterId(charId);
+    setName(char.name);
+    setHp(String(char.max_hp));
+    setAc(String(char.ac));
+  };
 
   // Original handleSubmit is replaced by handleFormSubmit in the render body
 
@@ -60,11 +87,11 @@ export function PlayerLobby({
   // Waiting state — player already registered
   if (isRegistered) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
         <div className="max-w-sm mx-auto w-full space-y-6 text-center">
           <div>
-            <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
-            <p className="text-gold text-sm mt-2 font-medium">
+            <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
+            <p className="text-gold text-base lg:text-sm mt-2 font-medium">
               {t("lobby_you_joined", { name: registeredName ?? "" })}
             </p>
           </div>
@@ -114,17 +141,17 @@ export function PlayerLobby({
   // Late-join waiting state
   if (lateJoinStatus === "waiting") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
         <div className="max-w-sm mx-auto w-full space-y-6 text-center">
-          <Swords className="w-8 h-8 text-gold mx-auto mb-3" aria-hidden="true" />
-          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-gold mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
           <div className="py-8">
             <div className="flex items-center justify-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:0ms]" />
               <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:150ms]" />
               <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:300ms]" />
             </div>
-            <p className="text-muted-foreground text-sm mt-4">
+            <p className="text-muted-foreground text-base lg:text-sm mt-4">
               {t("late_join_waiting")}
             </p>
           </div>
@@ -136,15 +163,15 @@ export function PlayerLobby({
   // Late-join rejected state
   if (lateJoinStatus === "rejected") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
         <div className="max-w-sm mx-auto w-full space-y-6 text-center">
-          <Swords className="w-8 h-8 text-red-400 mx-auto mb-3" aria-hidden="true" />
-          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
-          <p className="text-red-400 text-sm">{t("late_join_rejected")}</p>
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-red-400 mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
+          <p className="text-red-400 text-base lg:text-sm">{t("late_join_rejected")}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-card border border-border rounded-lg text-foreground text-sm hover:bg-white/[0.06] transition-colors"
+            className="px-4 py-3 lg:py-2 bg-card border border-border rounded-lg text-foreground text-base lg:text-sm active:bg-white/[0.06] lg:hover:bg-white/[0.06] transition-colors min-h-[48px]"
           >
             {t("late_join_retry")}
           </button>
@@ -188,22 +215,24 @@ export function PlayerLobby({
     } catch (error) {
       setIsSubmitting(false);
       toast.error(t('registerError'));
-      Sentry.captureException(error, {
-        tags: { component: 'PlayerLobby', flow: isCombatActive ? 'late-join' : 'player-registration' },
+      captureError(error, {
+        component: "PlayerLobby",
+        action: isCombatActive ? "lateJoinRequest" : "playerRegistration",
+        category: "realtime",
         extra: { sessionName },
       });
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
       <div className="max-w-sm mx-auto w-full space-y-6">
         <div className="text-center">
-          <Swords className="w-8 h-8 text-gold mx-auto mb-3" aria-hidden="true" />
-          <h1 className="text-foreground text-xl font-semibold">
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-gold mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">
             {isCombatActive ? t("late_join_title") : t("lobby_title")}
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <p className="text-muted-foreground text-base lg:text-sm mt-1">
             {isCombatActive ? t("late_join_info") : t("lobby_subtitle")}
           </p>
           {isCombatActive && (
@@ -214,6 +243,43 @@ export function PlayerLobby({
         </div>
 
         <div className="space-y-4">
+          {/* Character selector — shown when player has characters in this campaign */}
+          {prefilledCharacters && prefilledCharacters.length > 1 && (
+            <div>
+              <label className="text-sm font-medium text-foreground block mb-1.5">
+                {t("auto_join_select_character")}
+              </label>
+              <div className="grid gap-2">
+                {prefilledCharacters.map((char) => (
+                  <button
+                    key={char.id}
+                    type="button"
+                    onClick={() => handleSelectCharacter(char.id)}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
+                      selectedCharacterId === char.id
+                        ? "border-gold bg-gold/10 text-foreground"
+                        : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-gold/40"
+                    }`}
+                    data-testid={`character-select-${char.id}`}
+                  >
+                    <span className="font-medium text-sm">{char.name}</span>
+                    <span className="text-xs text-muted-foreground/60 ml-2">
+                      HP {char.max_hp} · CA {char.ac}
+                      {char.spell_save_dc ? ` · CD ${char.spell_save_dc}` : ""}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Auto-join notice when single character pre-filled */}
+          {prefilledCharacters && prefilledCharacters.length === 1 && (
+            <div className="bg-gold/10 border border-gold/30 rounded-lg px-3 py-2 text-xs text-gold">
+              {t("auto_join_prefilled")}
+            </div>
+          )}
+
           {/* Name (required) */}
           <div>
             <label htmlFor="lobby-name" className="text-sm font-medium text-foreground block mb-1">
@@ -305,10 +371,16 @@ export function PlayerLobby({
           type="button"
           onClick={handleFormSubmit}
           disabled={isSubmitting}
-          className="w-full px-4 py-3 bg-gold text-foreground font-semibold rounded-lg transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[48px] text-base"
+          className="w-full px-4 py-4 lg:py-3 bg-gold text-foreground font-semibold rounded-lg transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[48px] text-lg lg:text-base active:scale-[0.98]"
           data-testid="lobby-submit"
         >
-          {isSubmitting ? "..." : isCombatActive ? t("late_join_submit") : t("lobby_submit")}
+          {isSubmitting
+            ? "..."
+            : isCombatActive
+            ? t("late_join_submit")
+            : selectedChar
+            ? t("auto_join_confirm")
+            : t("lobby_submit")}
         </button>
 
         {/* Players already at the table */}

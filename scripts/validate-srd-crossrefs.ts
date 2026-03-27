@@ -84,6 +84,7 @@ function extractSpellNames(text: string): string[] {
   // Frequency markers: "Cantrips (at will)", "1st level (4 slots)",
   //                    "3/day each", "2/day", "At will"
   const freqMarkerRe =
+    // eslint-disable-next-line security/detect-unsafe-regex -- Static regex for SRD spellcasting frequency markers; input is trusted SRD data
     /(?:cantrips?\s*\([^)]*\)|[\dA-Za-z]+(?:st|nd|rd|th)?\s+level\s*\([^)]*\)|\d+\/day(?:\s+each)?|at\s+will)\s*:/gi;
 
   const markerStarts: number[] = [];

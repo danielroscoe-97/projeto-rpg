@@ -47,8 +47,8 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     turnPendingRef.current = true;
     setTurnPending(true);
 
-    const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } =
-      useCombatStore.getState();
+    const snap = useCombatStore.getState();
+    const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } = snap;
     if (!encounter_id) {
       turnPendingRef.current = false;
       setTurnPending(false);
@@ -56,8 +56,8 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
 
     advanceTurn();
-    const { current_turn_index: nextIdx, round_number: nextRound, combatants } =
-      useCombatStore.getState();
+    const postAdvance = useCombatStore.getState();
+    const { current_turn_index: nextIdx, round_number: nextRound, combatants } = postAdvance;
     if (nextIdx === prevIdx && nextRound === prevRound) {
       turnPendingRef.current = false;
       setTurnPending(false);
@@ -87,130 +87,166 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       turnPendingRef.current = false;
       setTurnPending(false);
     }
-  }, [advanceTurn, setError, t]);
+  }, [advanceTurn, setError, t, getSessionId]);
 
   const handleApplyDamage = useCallback((id: string, amount: number) => {
-    useCombatStore.getState().applyDamage(id, amount);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((x) => x.id === id);
+    if (!before) return;
+
+    snap.applyDamage(id, amount);
+
+    // Compute expected post-damage values from snapshot (mirrors store logic)
+    let remaining = amount;
+    let newTempHp = before.temp_hp;
+    if (newTempHp > 0) {
+      const absorbed = Math.min(newTempHp, remaining);
+      newTempHp -= absorbed;
+      remaining -= absorbed;
     }
-  }, [setError]);
+    const newCurrentHp = Math.max(0, before.current_hp - remaining);
+
+    broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: newTempHp, max_hp: before.max_hp, is_player: before.is_player });
+    persistHpChange(id, newCurrentHp, newTempHp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError, getSessionId]);
 
   const handleApplyHealing = useCallback((id: string, amount: number) => {
-    useCombatStore.getState().applyHealing(id, amount);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [setError]);
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((x) => x.id === id);
+    if (!before) return;
+
+    snap.applyHealing(id, amount);
+
+    // Compute expected post-healing values from snapshot (mirrors store logic)
+    const newCurrentHp = Math.min(before.max_hp, before.current_hp + amount);
+
+    broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: before.temp_hp, max_hp: before.max_hp, is_player: before.is_player });
+    persistHpChange(id, newCurrentHp, before.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError, getSessionId]);
 
   const handleSetTempHp = useCallback((id: string, value: number) => {
-    useCombatStore.getState().setTempHp(id, value);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
-      persistHpChange(id, c.current_hp, c.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [setError]);
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((x) => x.id === id);
+    if (!before) return;
+
+    snap.setTempHp(id, value);
+
+    // Compute expected post-set values from snapshot (mirrors store logic: max of current temp_hp and value)
+    const newTempHp = Math.max(before.temp_hp, value);
+
+    broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: before.current_hp, temp_hp: newTempHp, max_hp: before.max_hp, is_player: before.is_player });
+    persistHpChange(id, before.current_hp, newTempHp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError, getSessionId]);
 
   const handleToggleCondition = useCallback((id: string, condition: string) => {
-    useCombatStore.getState().toggleCondition(id, condition);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      broadcastEvent(getSessionId(), { type: "combat:condition_change", combatant_id: id, conditions: c.conditions });
-      persistConditions(id, c.conditions).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    }
-  }, [setError]);
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((x) => x.id === id);
+    if (!before) return;
+
+    snap.toggleCondition(id, condition);
+
+    // Compute expected post-toggle conditions from snapshot (mirrors store logic)
+    const has = before.conditions.includes(condition);
+    const newConditions = has
+      ? before.conditions.filter((cond) => cond !== condition)
+      : [...before.conditions, condition];
+
+    broadcastEvent(getSessionId(), { type: "combat:condition_change", combatant_id: id, conditions: newConditions });
+    persistConditions(id, newConditions).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError, getSessionId]);
 
   const handleSetDefeated = useCallback((id: string, isDefeated: boolean) => {
     useCombatStore.getState().setDefeated(id, isDefeated);
     broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
     persistDefeated(id, isDefeated).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleRemoveCombatant = useCallback((id: string) => {
-    const store = useCombatStore.getState();
-    const idx = store.combatants.findIndex((c) => c.id === id);
-    const wasCurrentTurn = idx === store.current_turn_index;
+    const snap = useCombatStore.getState();
+    const idx = snap.combatants.findIndex((c) => c.id === id);
+    const wasCurrentTurn = idx === snap.current_turn_index;
 
-    store.removeCombatant(id);
+    snap.removeCombatant(id);
 
-    if (wasCurrentTurn && store.combatants.length > 0) {
-      const newState = useCombatStore.getState();
-      const clampedIdx = Math.min(newState.current_turn_index, newState.combatants.length - 1);
-      if (clampedIdx !== newState.current_turn_index) {
-        newState.hydrateActiveState(clampedIdx, newState.round_number);
+    if (wasCurrentTurn && snap.combatants.length > 1) {
+      const postRemove = useCombatStore.getState();
+      const clampedIdx = Math.min(postRemove.current_turn_index, postRemove.combatants.length - 1);
+      if (clampedIdx !== postRemove.current_turn_index) {
+        postRemove.hydrateActiveState(clampedIdx, postRemove.round_number);
       }
     }
 
-    const updated = useCombatStore.getState().combatants;
-    const reordered = assignInitiativeOrder(updated);
-    useCombatStore.getState().hydrateCombatants(reordered);
+    const postState = useCombatStore.getState();
+    const reordered = assignInitiativeOrder(postState.combatants);
+    postState.hydrateCombatants(reordered);
 
     broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
     persistRemoveCombatant(id).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-    if (updated.length > 0) {
+    if (reordered.length > 0) {
       persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleAddCombatant = useCallback((newCombatant: Omit<Combatant, "id">) => {
-    const store = useCombatStore.getState();
-    const prevTurnIndex = store.current_turn_index;
-    const currentTurnCombatant = store.combatants[prevTurnIndex];
-    const existingIds = new Set(store.combatants.map((c) => c.id));
+    const snap = useCombatStore.getState();
+    const prevTurnIndex = snap.current_turn_index;
+    const currentTurnCombatant = snap.combatants[prevTurnIndex];
+    const existingIds = new Set(snap.combatants.map((c) => c.id));
 
-    store.addCombatant(newCombatant);
-    const allCombatants = useCombatStore.getState().combatants;
-    const sorted = assignInitiativeOrder(sortByInitiative(allCombatants));
-    useCombatStore.getState().hydrateCombatants(sorted);
+    snap.addCombatant(newCombatant);
+    const postAdd = useCombatStore.getState();
+    const sorted = assignInitiativeOrder(sortByInitiative(postAdd.combatants));
+    postAdd.hydrateCombatants(sorted);
 
     // Adjust current_turn_index: find where the current-turn combatant ended up after re-sort
-    if (store.is_active && currentTurnCombatant) {
+    if (snap.is_active && currentTurnCombatant) {
       const newIdx = sorted.findIndex((c) => c.id === currentTurnCombatant.id);
       if (newIdx !== -1 && newIdx !== prevTurnIndex) {
-        useCombatStore.getState().hydrateActiveState(newIdx, store.round_number);
+        useCombatStore.getState().hydrateActiveState(newIdx, snap.round_number);
       }
     }
 
-    const added = useCombatStore.getState().combatants.find(
-      (c) => !existingIds.has(c.id)
-    );
-    if (added && store.encounter_id) {
+    const added = sorted.find((c) => !existingIds.has(c.id));
+    if (added && snap.encounter_id) {
       broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
-      persistNewCombatant(store.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+      persistNewCombatant(snap.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
       persistInitiativeOrder(
-        useCombatStore.getState().combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+        sorted.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
       ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     }
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleUpdateStats = useCallback((id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
-    useCombatStore.getState().updateCombatantStats(id, stats);
-    const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-    if (c) {
-      const dbStats: Record<string, unknown> = {};
-      if (stats.name !== undefined) dbStats.name = stats.name;
-      if (stats.display_name !== undefined) dbStats.display_name = stats.display_name;
-      if (stats.max_hp !== undefined) {
-        dbStats.max_hp = stats.max_hp;
-        dbStats.current_hp = c.current_hp;
-      }
-      if (stats.ac !== undefined) dbStats.ac = stats.ac;
-      if (stats.spell_save_dc !== undefined) dbStats.spell_save_dc = stats.spell_save_dc;
-      broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
-      persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((x) => x.id === id);
+    if (!before) return;
+
+    snap.updateCombatantStats(id, stats);
+
+    // Compute expected post-update current_hp from snapshot (mirrors store logic)
+    const updatedMaxHp = stats.max_hp !== undefined ? stats.max_hp : before.max_hp;
+    const postCurrentHp = stats.max_hp !== undefined && before.current_hp > updatedMaxHp
+      ? updatedMaxHp
+      : before.current_hp;
+
+    const dbStats: Record<string, unknown> = {};
+    if (stats.name !== undefined) dbStats.name = stats.name;
+    if (stats.display_name !== undefined) dbStats.display_name = stats.display_name;
+    if (stats.max_hp !== undefined) {
+      dbStats.max_hp = stats.max_hp;
+      dbStats.current_hp = postCurrentHp;
     }
-  }, [setError]);
+    if (stats.ac !== undefined) dbStats.ac = stats.ac;
+    if (stats.spell_save_dc !== undefined) dbStats.spell_save_dc = stats.spell_save_dc;
+    broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
+    persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [setError, getSessionId]);
 
   const handleSwitchVersion = useCallback((id: string, version: RulesetVersion) => {
     useCombatStore.getState().setRulesetVersion(id, version);
     broadcastEvent(getSessionId(), { type: "combat:version_switch", combatant_id: id, ruleset_version: version });
     persistRulesetVersion(id, version).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleUpdateDmNotes = useCallback((id: string, notes: string) => {
     useCombatStore.getState().updateDmNotes(id, notes);
@@ -221,34 +257,37 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     useCombatStore.getState().updatePlayerNotes(id, notes);
     broadcastEvent(getSessionId(), { type: "combat:player_notes_update", combatant_id: id, player_notes: notes });
     persistPlayerNotes(id, notes).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleReorderCombatants = useCallback((newOrder: Combatant[], movedId?: string) => {
-    const store = useCombatStore.getState();
-    const currentCombatant = store.combatants[store.current_turn_index];
+    const snap = useCombatStore.getState();
+    const currentCombatant = snap.combatants[snap.current_turn_index];
     const adjusted = movedId ? adjustInitiativeAfterReorder(newOrder, movedId) : newOrder;
-    store.reorderCombatants(adjusted);
+    snap.reorderCombatants(adjusted);
+
+    const postReorder = useCombatStore.getState();
     if (currentCombatant) {
-      const newIdx = useCombatStore.getState().combatants.findIndex((c) => c.id === currentCombatant.id);
-      if (newIdx !== -1 && newIdx !== store.current_turn_index) {
-        useCombatStore.getState().hydrateActiveState(newIdx, store.round_number);
+      const newIdx = postReorder.combatants.findIndex((c) => c.id === currentCombatant.id);
+      if (newIdx !== -1 && newIdx !== snap.current_turn_index) {
+        postReorder.hydrateActiveState(newIdx, snap.round_number);
       }
     }
-    const reordered = useCombatStore.getState().combatants;
+    const reordered = postReorder.combatants;
     broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: reordered });
     persistInitiativeOrder(
       reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
     ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleSetInitiative = useCallback((id: string, value: number | null) => {
-    useCombatStore.getState().setInitiative(id, value);
-    const store = useCombatStore.getState();
-    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: store.combatants });
+    const snap = useCombatStore.getState();
+    snap.setInitiative(id, value);
+    const postSet = useCombatStore.getState();
+    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: postSet.combatants });
     persistInitiativeOrder(
-      store.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+      postSet.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
     ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-  }, [setError]);
+  }, [setError, getSessionId]);
 
   const handleEndEncounter = useCallback(async () => {
     const { encounter_id } = useCombatStore.getState();
@@ -268,7 +307,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to end encounter.");
     }
-  }, [onNavigate, setError]);
+  }, [onNavigate, setError, getSessionId]);
 
   return {
     turnPending,

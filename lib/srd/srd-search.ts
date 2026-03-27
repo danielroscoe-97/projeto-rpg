@@ -147,6 +147,34 @@ export function getAllItems(): SrdItem[] {
   return Array.from(itemMap.values());
 }
 
+// ── Homebrew merge ────────────────────────────────────────────────────────────
+
+/**
+ * Merge homebrew monsters into the existing Fuse.js index.
+ * Call after loading homebrew from Supabase.
+ * Homebrew entries get `is_homebrew: true` for badge rendering.
+ */
+export function mergeHomebrewMonsters(homebrew: SrdMonster[]): void {
+  if (!monsterIndex) return;
+  const all = [...Array.from(monsterMap.values()), ...homebrew];
+  monsterIndex = new Fuse(all, MONSTER_OPTIONS);
+  homebrew.forEach((m) => monsterMap.set(`${m.id}:${m.ruleset_version}`, m));
+}
+
+export function mergeHomebrewSpells(homebrew: SrdSpell[]): void {
+  if (!spellIndex) return;
+  const all = [...Array.from(spellMap.values()), ...homebrew];
+  spellIndex = new Fuse(all, SPELL_OPTIONS);
+  homebrew.forEach((s) => spellMap.set(`${s.id}:${s.ruleset_version}`, s));
+}
+
+export function mergeHomebrewItems(homebrew: SrdItem[]): void {
+  if (!itemIndex) return;
+  const all = [...Array.from(itemMap.values()), ...homebrew];
+  itemIndex = new Fuse(all, ITEM_OPTIONS);
+  homebrew.forEach((i) => itemMap.set(i.id, i));
+}
+
 /** Resets singleton indexes — for testing only. */
 export function resetSrdIndexes(): void {
   monsterIndex = null;

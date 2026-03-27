@@ -251,6 +251,32 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
         [groupId]: !state.expandedGroups[groupId],
       },
     })),
+
+  linkCharacter: (combatantId, characterId, stats) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === combatantId
+          ? {
+              ...c,
+              player_character_id: characterId,
+              name: stats.name,
+              max_hp: stats.max_hp,
+              current_hp: stats.max_hp,
+              ac: stats.ac,
+              spell_save_dc: stats.spell_save_dc,
+            }
+          : c
+      ),
+    })),
+
+  unlinkCharacter: (combatantId) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === combatantId
+          ? { ...c, player_character_id: null }
+          : c
+      ),
+    })),
 })));
 
 // Auto-persist combat state to localStorage on changes.

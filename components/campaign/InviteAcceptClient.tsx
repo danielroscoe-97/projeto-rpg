@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { acceptInviteAction } from "@/app/invite/actions";
@@ -23,7 +23,7 @@ export function InviteAcceptClient({
   campaignId,
   campaignName,
   dmName,
-  userId,
+  userId: _userId,
   token,
 }: InviteAcceptClientProps) {
   const t = useTranslations("campaign");
@@ -56,11 +56,11 @@ export function InviteAcceptClient({
       router.push("/app/dashboard");
     } catch (err) {
       toast.error(t("invite_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "InviteAcceptClient", action: "acceptInvite", category: "network" });
     } finally {
       setIsSubmitting(false);
     }
-  }, [name, hp, ac, spellSaveDc, campaignId, inviteId, t, router]);
+  }, [name, hp, ac, spellSaveDc, campaignId, inviteId, token, t, router]);
 
   const inputClass =
     "bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg";

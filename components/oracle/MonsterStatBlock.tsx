@@ -2,7 +2,7 @@
 
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
-import { LinkedText } from "./LinkedText";
+
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
 import { MonsterToken } from "@/components/srd/MonsterToken";
@@ -283,6 +283,7 @@ export function MonsterStatBlock({
       <div className="flex items-start gap-3">
         <MonsterToken
           tokenUrl={monster.token_url}
+          fallbackTokenUrl={monster.fallback_token_url}
           creatureType={monster.type}
           name={monster.name}
           size={64}

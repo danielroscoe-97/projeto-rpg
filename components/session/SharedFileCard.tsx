@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import { FileImage, FileText, Trash2, ExternalLink } from "lucide-react";
 
 interface SharedFile {
@@ -40,7 +40,7 @@ export function SharedFileCard({ file, canRemove, onRemove }: SharedFileCardProp
       }
     } catch (err) {
       toast.error(t("files_view_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "SharedFileCard", action: "viewFile", category: "network" });
     } finally {
       setIsViewing(false);
     }
@@ -55,7 +55,7 @@ export function SharedFileCard({ file, canRemove, onRemove }: SharedFileCardProp
       onRemove?.(file.id);
     } catch (err) {
       toast.error(t("files_remove_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "SharedFileCard", action: "removeFile", category: "database" });
     }
   }, [file.id, file.file_path, onRemove, t]);
 

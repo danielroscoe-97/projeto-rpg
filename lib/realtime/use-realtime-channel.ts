@@ -31,10 +31,16 @@ export function useRealtimeChannel({
   const disconnectedAtRef = useRef<number | null>(null);
   const [shouldPoll, setShouldPoll] = useState(false);
 
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const cleanup = useCallback(() => {
     if (channelRef.current) {
       channelRef.current.unsubscribe();
       channelRef.current = null;
+    }
+    if (pollTimerRef.current) {
+      clearTimeout(pollTimerRef.current);
+      pollTimerRef.current = null;
     }
   }, []);
 
@@ -77,7 +83,9 @@ export function useRealtimeChannel({
           disconnectedAtRef.current = Date.now();
         }
         // Enable polling fallback after 3s disconnect (NFR9)
-        setTimeout(() => {
+        if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+        pollTimerRef.current = setTimeout(() => {
+          pollTimerRef.current = null;
           if (disconnectedAtRef.current && Date.now() - disconnectedAtRef.current >= 3000) {
             setShouldPoll(true);
           }

@@ -59,8 +59,16 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
   const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
+  const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const initInputRef = useRef<HTMLInputElement>(null);
+
+  // Cleanup glow timer on unmount
+  useEffect(() => {
+    return () => {
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
+    };
+  }, []);
 
   const { handleRollOne, handleRollAll, handleRollNpcs } = useInitiativeRolling(
     useGuestCombatStore,
@@ -73,6 +81,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   useEffect(() => {
     if (submitError) setSubmitError(null);
     if (invalidInitIds.size > 0) setInvalidInitIds(new Set());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Reset validation state when combatants change; including submitError/invalidInitIds would cause infinite loop
   }, [combatants]);
 
   const handleSelectMonster = useCallback(
@@ -103,6 +112,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         group_order: null,
         dm_notes: "",
         player_notes: "",
+        player_character_id: null,
       });
 
       // We still clear the add row to ensure a clean state
@@ -115,9 +125,13 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
   const handleMonsterAdded = useCallback(() => {
     setAddRowGlow(false);
+    if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
     requestAnimationFrame(() => {
       setAddRowGlow(true);
-      setTimeout(() => setAddRowGlow(false), 1500);
+      glowTimerRef.current = setTimeout(() => {
+        glowTimerRef.current = null;
+        setAddRowGlow(false);
+      }, 1500);
     });
   }, []);
 
@@ -158,13 +172,14 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       group_order: null,
       dm_notes: "",
       player_notes: addRow.notes.trim(),
+      player_character_id: null,
     });
 
     lastSelectedMonster.current = null;
     setAddRow(EMPTY_ADD_ROW);
     setSubmitError(null);
     initInputRef.current?.focus();
-  }, [addRow, addCombatant]);
+  }, [addRow, addCombatant, t]);
 
   const handleRowInitChange = useCallback(
     (id: string, value: number | null) => setInitiative(id, value),

@@ -6,7 +6,7 @@ import { useCombatStore } from "@/lib/stores/combat-store";
 import { persistInitiativeAndStartCombat, persistInitiativeOrder } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
-import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
+
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
 import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
@@ -53,11 +53,12 @@ export function CombatSessionClient({
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
 
-  const { combatants, startCombat, setEncounterId, is_active, setError } =
+  const { combatants, is_active, setError } =
     useCombatStore();
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
   const round_number = useCombatStore((s) => s.round_number);
   const encounter_name = useCombatStore((s) => s.encounter_name);
+  const expandedGroups = useCombatStore((s) => s.expandedGroups);
 
   const {
     turnPending,
@@ -250,6 +251,7 @@ export function CombatSessionClient({
                 group_order: null,
                 dm_notes: "",
                 player_notes: "",
+                player_character_id: null,
               } as Omit<Combatant, "id">);
               broadcastEvent(sid, {
                 type: "combat:late_join_response",
@@ -354,7 +356,7 @@ export function CombatSessionClient({
         combatants={combatants}
         currentTurnIndex={current_turn_index}
         focusedIndex={focusedIndex}
-        expandedGroups={useCombatStore((s) => s.expandedGroups)}
+        expandedGroups={expandedGroups}
         onReorder={handleReorderCombatants}
         onApplyDamage={handleApplyDamage}
         onApplyHealing={handleApplyHealing}

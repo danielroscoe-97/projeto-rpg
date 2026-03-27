@@ -59,7 +59,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Aarakocra%20Skirmisher.webp"
   },
   {
     "id": "aarakocra-skirmisher-xmm-2024",
@@ -107,7 +108,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Merfolk%20Skirmisher.webp"
   },
   {
     "id": "aberrant-cultist-xmm-2024",
@@ -172,7 +174,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp"
   },
   {
     "id": "aberrant-spirit-xphb-2024",
@@ -235,7 +238,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Aberrant%20Spirit.webp"
   },
   {
     "id": "aboleth-xmm-2024",
@@ -327,7 +331,8 @@
         "desc": "If the aboleth has at least one creature Charmed or Grappled, it uses Consume Memories and regains 5 (1d10) Hit Points."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Aboleth.webp"
   },
   {
     "id": "abominable-yeti-xmm-2024",
@@ -393,7 +398,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Abominable%20Yeti.webp"
   },
   {
     "id": "adult-black-dragon-xmm-2024",
@@ -476,7 +482,8 @@
         "desc": "The dragon can move up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Black%20Dragon.webp"
   },
   {
     "id": "adult-blue-dragon-xmm-2024",
@@ -555,7 +562,8 @@
         "desc": "The dragon makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Blue%20Dragon.webp"
   },
   {
     "id": "adult-brass-dragon-xmm-2024",
@@ -640,7 +648,8 @@
         "desc": "dex DC 16, one creature the dragon can see within 120 feet. {@actSaveFail} 27 (6d8) Fire damage, and the target's Speed is halved until the end of its next turn. {@actSaveSuccessOrFail} The dragon can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Brass%20Dragon.webp"
   },
   {
     "id": "adult-bronze-dragon-xmm-2024",
@@ -728,7 +737,8 @@
         "desc": "con DC 17, each creature in a 20-foot-radius Sphere [Area of Effect] centered on a point the dragon can see within 90 feet. {@actSaveFail} 10 (3d6) Thunder damage, and the target has the Deafened condition until the end of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Bronze%20Dragon.webp"
   },
   {
     "id": "adult-copper-dragon-xmm-2024",
@@ -812,7 +822,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Copper%20Dragon.webp"
   },
   {
     "id": "adult-gold-dragon-xmm-2024",
@@ -901,7 +912,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Gold%20Dragon.webp"
   },
   {
     "id": "adult-green-dragon-xmm-2024",
@@ -986,7 +998,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Green%20Dragon.webp"
   },
   {
     "id": "adult-red-dragon-xmm-2024",
@@ -1065,7 +1078,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Red%20Dragon.webp"
   },
   {
     "id": "adult-silver-dragon-xmm-2024",
@@ -1148,7 +1162,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Silver%20Dragon.webp"
   },
   {
     "id": "adult-white-dragon-xmm-2024",
@@ -1228,7 +1243,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20White%20Dragon.webp"
   },
   {
     "id": "air-elemental-xmm-2024",
@@ -1283,7 +1299,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Air%20Elemental.webp"
   },
   {
     "id": "allosaurus-xmm-2024",
@@ -1330,7 +1347,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Allosaurus.webp"
   },
   {
     "id": "ancient-black-dragon-xmm-2024",
@@ -1413,7 +1431,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Black%20Dragon.webp"
   },
   {
     "id": "ancient-blue-dragon-xmm-2024",
@@ -1492,7 +1511,8 @@
         "desc": "The dragon makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Blue%20Dragon.webp"
   },
   {
     "id": "ancient-brass-dragon-xmm-2024",
@@ -1577,7 +1597,8 @@
         "desc": "dex DC 20, one creature the dragon can see within 120 feet. {@actSaveFail} 36 (8d8) Fire damage, and the target's Speed is halved until the end of its next turn. {@actSaveSuccessOrFail} The dragon can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Brass%20Dragon.webp"
   },
   {
     "id": "ancient-bronze-dragon-xmm-2024",
@@ -1665,7 +1686,8 @@
         "desc": "con DC 22, each creature in a 20-foot-radius Sphere [Area of Effect] centered on a point the dragon can see within 120 feet. {@actSaveFail} 13 (3d8) Thunder damage, and the target has the Deafened condition until the end of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Bronze%20Dragon.webp"
   },
   {
     "id": "ancient-copper-dragon-xmm-2024",
@@ -1749,7 +1771,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Copper%20Dragon.webp"
   },
   {
     "id": "ancient-gold-dragon-xmm-2024",
@@ -1838,7 +1861,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Gold%20Dragon.webp"
   },
   {
     "id": "ancient-green-dragon-xmm-2024",
@@ -1923,7 +1947,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Green%20Dragon.webp"
   },
   {
     "id": "ancient-red-dragon-xmm-2024",
@@ -2002,7 +2027,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Red%20Dragon.webp"
   },
   {
     "id": "ancient-silver-dragon-xmm-2024",
@@ -2085,7 +2111,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Silver%20Dragon.webp"
   },
   {
     "id": "ancient-white-dragon-xmm-2024",
@@ -2165,7 +2192,8 @@
         "desc": "The dragon moves up to half its Speed, and it makes one Rend attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20White%20Dragon.webp"
   },
   {
     "id": "animal-lord-xmm-2024",
@@ -2258,7 +2286,8 @@
         "desc": "The animal lord makes one Radiant Ray attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy%20Lord.webp"
   },
   {
     "id": "animated-armor-xmm-2024",
@@ -2303,7 +2332,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Animated%20Armor.webp"
   },
   {
     "id": "animated-broom-xmm-2024",
@@ -2350,7 +2380,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CM/Animated%20Broom.webp"
   },
   {
     "id": "animated-flying-sword-xmm-2024",
@@ -2394,7 +2425,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flying%20Sword.webp"
   },
   {
     "id": "animated-object-xphb-2024",
@@ -2435,7 +2467,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/PHB/Animated%20Object%20(Huge).webp"
   },
   {
     "id": "animated-rug-of-smothering-xmm-2024",
@@ -2476,7 +2509,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rug%20of%20Smothering.webp"
   },
   {
     "id": "ankheg-xmm-2024",
@@ -2527,7 +2561,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ankheg.webp"
   },
   {
     "id": "ankylosaurus-xmm-2024",
@@ -2574,7 +2609,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ankylosaurus.webp"
   },
   {
     "id": "ape-xmm-2024",
@@ -2627,7 +2663,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ape.webp"
   },
   {
     "id": "arcanaloth-xmm-2024",
@@ -2708,7 +2745,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Arcanaloth.webp"
   },
   {
     "id": "arch-hag-xmm-2024",
@@ -2798,7 +2836,8 @@
         "desc": "The hag uses Spellcasting to cast Dimension Door or Hypnotic Pattern. The hag can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Annis%20Hag.webp"
   },
   {
     "id": "archelon-xmm-2024",
@@ -2851,7 +2890,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elephant.webp"
   },
   {
     "id": "archmage-xmm-2024",
@@ -2920,7 +2960,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Archmage.webp"
   },
   {
     "id": "archpriest-xmm-2024",
@@ -2988,7 +3029,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa%20Archpriest.webp"
   },
   {
     "id": "assassin-xmm-2024",
@@ -3049,7 +3091,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Assassin.webp"
   },
   {
     "id": "avatar-of-death-xdmg-2024",
@@ -3100,7 +3143,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/DMG/Avatar%20of%20Death.webp"
   },
   {
     "id": "awakened-shrub-xmm-2024",
@@ -3141,7 +3185,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Awakened%20Shrub.webp"
   },
   {
     "id": "awakened-tree-xmm-2024",
@@ -3182,7 +3227,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Awakened%20Tree.webp"
   },
   {
     "id": "axe-beak-xmm-2024",
@@ -3223,7 +3269,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Axe%20Beak.webp"
   },
   {
     "id": "azer-pyromancer-xmm-2024",
@@ -3291,7 +3338,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Azer.webp"
   },
   {
     "id": "azer-sentinel-xmm-2024",
@@ -3343,7 +3391,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CM/Sapphire%20Sentinel.webp"
   },
   {
     "id": "baboon-xmm-2024",
@@ -3390,7 +3439,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Baboon.webp"
   },
   {
     "id": "badger-xmm-2024",
@@ -3434,7 +3484,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Badger.webp"
   },
   {
     "id": "balor-xmm-2024",
@@ -3506,7 +3557,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Balor.webp"
   },
   {
     "id": "bandit-xmm-2024",
@@ -3551,7 +3603,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit.webp"
   },
   {
     "id": "bandit-captain-xmm-2024",
@@ -3612,7 +3665,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The bandit is hit by a melee attack roll while holding a weapon. {@actResponse} The bandit adds 2 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit%20Captain.webp"
   },
   {
     "id": "bandit-crime-lord-xmm-2024",
@@ -3673,7 +3727,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPP/Doomguard%20Doom%20Lord.webp"
   },
   {
     "id": "bandit-deceiver-xmm-2024",
@@ -3734,7 +3789,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit.webp"
   },
   {
     "id": "banshee-xmm-2024",
@@ -3799,7 +3855,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Banshee.webp"
   },
   {
     "id": "barbed-devil-xmm-2024",
@@ -3875,7 +3932,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Barbed%20Devil.webp"
   },
   {
     "id": "barlgura-xmm-2024",
@@ -3940,7 +3998,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Barlgura.webp"
   },
   {
     "id": "basilisk-xmm-2024",
@@ -3981,7 +4040,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Basilisk.webp"
   },
   {
     "id": "bat-xmm-2024",
@@ -4023,7 +4083,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bat.webp"
   },
   {
     "id": "bearded-devil-xmm-2024",
@@ -4081,7 +4142,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bearded%20Devil.webp"
   },
   {
     "id": "beast-of-the-land-xphb-2024",
@@ -4128,7 +4190,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Beast%20of%20the%20Land.webp"
   },
   {
     "id": "beast-of-the-sea-xphb-2024",
@@ -4179,7 +4242,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Beast%20of%20the%20Sea.webp"
   },
   {
     "id": "beast-of-the-sky-xphb-2024",
@@ -4230,7 +4294,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Beast%20of%20the%20Sky.webp"
   },
   {
     "id": "behir-xmm-2024",
@@ -4287,7 +4352,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Behir.webp"
   },
   {
     "id": "beholder-xmm-2024",
@@ -4356,7 +4422,8 @@
         "desc": "The beholder uses Eye Rays."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Beholder.webp"
   },
   {
     "id": "beholder-zombie-xmm-2024",
@@ -4413,7 +4480,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Beholder%20Zombie.webp"
   },
   {
     "id": "berserker-xmm-2024",
@@ -4459,7 +4527,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Berserker.webp"
   },
   {
     "id": "berserker-commander-xmm-2024",
@@ -4519,7 +4588,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Warrior%20Commander.webp"
   },
   {
     "id": "bestial-spirit-xphb-2024",
@@ -4580,7 +4650,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Bestial%20Spirit.webp"
   },
   {
     "id": "black-bear-xmm-2024",
@@ -4629,7 +4700,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Black%20Bear.webp"
   },
   {
     "id": "black-dragon-wyrmling-xmm-2024",
@@ -4691,7 +4763,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Black%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "black-pudding-xmm-2024",
@@ -4751,7 +4824,8 @@
         "name": "Split",
         "desc": "{@actTrigger} While the pudding is Large or Medium and has 10+ Hit Points, it becomes Bloodied or is subjected to Lightning or Slashing damage. {@actResponse} The pudding splits into two new Black Puddings. Each new pudding is one size smaller than the original pudding and acts on its Initiative. The original pudding's Hit Points are divided evenly between the new puddings (round down)."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Black%20Pudding.webp"
   },
   {
     "id": "blink-dog-xmm-2024",
@@ -4795,7 +4869,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blink%20Dog.webp"
   },
   {
     "id": "blob-of-annihilation-xmm-2024",
@@ -4877,7 +4952,8 @@
         "desc": "The blob makes one Pseudopod attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Elder%20Oblex.webp"
   },
   {
     "id": "blood-hawk-xmm-2024",
@@ -4926,7 +5002,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blood%20Hawk.webp"
   },
   {
     "id": "blue-dragon-wyrmling-xmm-2024",
@@ -4983,7 +5060,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blue%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "blue-slaad-xmm-2024",
@@ -5039,7 +5117,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blue%20Slaad.webp"
   },
   {
     "id": "boar-xmm-2024",
@@ -5085,7 +5164,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Boar.webp"
   },
   {
     "id": "bone-devil-xmm-2024",
@@ -5152,7 +5232,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bone%20Devil.webp"
   },
   {
     "id": "bone-naga-xmm-2024",
@@ -5206,7 +5287,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Guardian%20Naga.webp"
   },
   {
     "id": "brass-dragon-wyrmling-xmm-2024",
@@ -5263,7 +5345,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Brass%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "brazen-gorgon-xmm-2024",
@@ -5323,7 +5406,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Gorgon.webp"
   },
   {
     "id": "bronze-dragon-wyrmling-xmm-2024",
@@ -5389,7 +5473,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bronze%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "brown-bear-xmm-2024",
@@ -5441,7 +5526,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Brown%20Bear.webp"
   },
   {
     "id": "bugbear-stalker-xmm-2024",
@@ -5501,7 +5587,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/VRGR/Carrion%20Stalker.webp"
   },
   {
     "id": "bugbear-warrior-xmm-2024",
@@ -5554,7 +5641,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bullywug%20Warrior.webp"
   },
   {
     "id": "bulette-xmm-2024",
@@ -5606,7 +5694,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bulette.webp"
   },
   {
     "id": "bulette-pup-xmm-2024",
@@ -5650,7 +5739,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bulette.webp"
   },
   {
     "id": "bullywug-bog-sage-xmm-2024",
@@ -5716,7 +5806,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CM/Master%20Sage.webp"
   },
   {
     "id": "bullywug-warrior-xmm-2024",
@@ -5769,7 +5860,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bugbear%20Warrior.webp"
   },
   {
     "id": "cambion-xmm-2024",
@@ -5833,7 +5925,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cambion.webp"
   },
   {
     "id": "camel-xmm-2024",
@@ -5876,7 +5969,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Camel.webp"
   },
   {
     "id": "carrion-crawler-xmm-2024",
@@ -5933,7 +6027,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Carrion%20Crawler.webp"
   },
   {
     "id": "cat-xmm-2024",
@@ -5985,7 +6080,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cat.webp"
   },
   {
     "id": "celestial-spirit-xphb-2024",
@@ -6039,7 +6135,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Celestial%20Spirit.webp"
   },
   {
     "id": "centaur-trooper-xmm-2024",
@@ -6091,7 +6188,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Giff%20Shock%20Trooper.webp"
   },
   {
     "id": "centaur-warden-xmm-2024",
@@ -6152,7 +6250,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/EFA/Kundarak%20Warden.webp"
   },
   {
     "id": "chain-devil-xmm-2024",
@@ -6218,7 +6317,8 @@
         "name": "Unnerving Gaze",
         "desc": "{@actTrigger} A creature the devil can see starts its turn within 30 feet of the devil and can see the devil. dwis DC 15, the triggering creature. {@actSaveFail} The target has the Frightened condition until the end of its turn. {@actSaveSuccess} The target is immune to this devil's Unnerving Gaze for 24 hours."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chain%20Devil.webp"
   },
   {
     "id": "chasme-xmm-2024",
@@ -6278,7 +6378,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chasme.webp"
   },
   {
     "id": "chimera-xmm-2024",
@@ -6338,7 +6439,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chimera.webp"
   },
   {
     "id": "chuul-xmm-2024",
@@ -6399,7 +6501,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chuul.webp"
   },
   {
     "id": "clay-golem-xmm-2024",
@@ -6461,7 +6564,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Clay%20Golem.webp"
   },
   {
     "id": "cloaker-xmm-2024",
@@ -6522,7 +6626,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cloaker.webp"
   },
   {
     "id": "cloud-giant-xmm-2024",
@@ -6587,7 +6692,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cloud%20Giant.webp"
   },
   {
     "id": "cockatrice-xmm-2024",
@@ -6629,7 +6735,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cockatrice.webp"
   },
   {
     "id": "cockatrice-regent-xmm-2024",
@@ -6691,7 +6798,8 @@
         "name": "Magical Backlash",
         "desc": "{@actTrigger} A creature within 120 feet of the cockatrice deals damage to it. ddex DC 14, the triggering creature. {@actSaveFail} 13 (3d6 + 3) Force damage."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cockatrice.webp"
   },
   {
     "id": "colossus-xmm-2024",
@@ -6773,7 +6881,8 @@
         "desc": "The colossus moves up to half its Speed without provoking Opportunity Attack, and it can make one Slam attack at any point during that move."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BGG/Flesh%20Colossus.webp"
   },
   {
     "id": "commoner-xmm-2024",
@@ -6819,7 +6928,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Commoner.webp"
   },
   {
     "id": "constrictor-snake-xmm-2024",
@@ -6868,7 +6978,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Constrictor%20Snake.webp"
   },
   {
     "id": "construct-spirit-xphb-2024",
@@ -6927,7 +7038,8 @@
         "name": "Berserk Lashing (Clay Only)",
         "desc": "{@actTrigger} The spirit takes damage from a creature. {@actResponse} The spirit makes a Slam attack against that creature if possible, or the spirit moves up to half its Speed toward that creature without provoking Opportunity Attack."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Construct%20Spirit.webp"
   },
   {
     "id": "copper-dragon-wyrmling-xmm-2024",
@@ -6984,7 +7096,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Copper%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "couatl-xmm-2024",
@@ -7046,7 +7159,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Couatl.webp"
   },
   {
     "id": "crab-xmm-2024",
@@ -7095,7 +7209,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Crab.webp"
   },
   {
     "id": "crawling-claw-xmm-2024",
@@ -7137,7 +7252,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Crawling%20Claw.webp"
   },
   {
     "id": "crocodile-xmm-2024",
@@ -7188,7 +7304,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Crocodile.webp"
   },
   {
     "id": "cultist-xmm-2024",
@@ -7234,7 +7351,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp"
   },
   {
     "id": "cultist-fanatic-xmm-2024",
@@ -7290,7 +7408,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cult%20Fanatic.webp"
   },
   {
     "id": "cultist-hierophant-xmm-2024",
@@ -7351,7 +7470,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp"
   },
   {
     "id": "cyclops-oracle-xmm-2024",
@@ -7416,7 +7536,8 @@
         "name": "Portent (Recharge 4-6)",
         "desc": "{@actTrigger} The cyclops or an ally it can see makes a D20 Test. {@actResponse} The cyclops rolls 1d20 and chooses whether to use that roll in place of the d20 rolled for the D20 Test."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MOT/Oracle.webp"
   },
   {
     "id": "cyclops-sentry-xmm-2024",
@@ -7470,7 +7591,8 @@
         "name": "Limited Foresight {@recharge}",
         "desc": "{@actTrigger} A creature the cyclops can see makes an attack roll against it. {@actResponse} The cyclops imposes Disadvantage on the roll, and the cyclops gains Advantage on attack rolls against the target until the end of the cyclops's next turn."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MOT/Returned%20Sentry.webp"
   },
   {
     "id": "dao-xmm-2024",
@@ -7545,7 +7667,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dao.webp"
   },
   {
     "id": "darkmantle-xmm-2024",
@@ -7593,7 +7716,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Darkmantle.webp"
   },
   {
     "id": "death-cultist-xmm-2024",
@@ -7654,7 +7778,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp"
   },
   {
     "id": "death-dog-xmm-2024",
@@ -7702,7 +7827,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Dog.webp"
   },
   {
     "id": "death-knight-xmm-2024",
@@ -7793,7 +7919,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The death knight is hit by a melee attack roll while holding a weapon. {@actResponse} The death knight adds 6 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Knight.webp"
   },
   {
     "id": "death-knight-aspirant-xmm-2024",
@@ -7863,7 +7990,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The aspirant is hit by a melee attack roll while holding a weapon. {@actResponse} The aspirant adds 4 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Knight.webp"
   },
   {
     "id": "death-slaad-xmm-2024",
@@ -7924,7 +8052,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Slaad.webp"
   },
   {
     "id": "death-tyrant-xmm-2024",
@@ -7993,7 +8122,8 @@
         "desc": "The death tyrant uses Eye Rays."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Tyrant.webp"
   },
   {
     "id": "deer-xmm-2024",
@@ -8041,7 +8171,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Deer.webp"
   },
   {
     "id": "demilich-xmm-2024",
@@ -8117,7 +8248,8 @@
         "desc": "The demilich makes one Necrotic Burst attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Demilich.webp"
   },
   {
     "id": "deva-xmm-2024",
@@ -8186,7 +8318,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Deva.webp"
   },
   {
     "id": "dire-wolf-xmm-2024",
@@ -8235,7 +8368,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dire%20Wolf.webp"
   },
   {
     "id": "dire-worg-xmm-2024",
@@ -8294,7 +8428,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Worg.webp"
   },
   {
     "id": "displacer-beast-xmm-2024",
@@ -8352,7 +8487,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Displacer%20Beast.webp"
   },
   {
     "id": "djinni-xmm-2024",
@@ -8426,7 +8562,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Djinni.webp"
   },
   {
     "id": "doppelganger-xmm-2024",
@@ -8483,7 +8620,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Doppelganger.webp"
   },
   {
     "id": "dracolich-xmm-2024",
@@ -8574,7 +8712,8 @@
         "desc": "wis DC 19, each creature in a 30-foot Emanation [Area of Effect] originating from the dracolich. {@actSaveFail} 11 (2d10) Psychic damage, and the target has the Frightened condition until the end of its next turn. {@actSaveSuccessOrFail} The dracolich can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Blue%20Dracolich.webp"
   },
   {
     "id": "draconic-spirit-xphb-2024",
@@ -8630,7 +8769,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/FTD/Draconic%20Spirit.webp"
   },
   {
     "id": "draft-horse-xmm-2024",
@@ -8671,7 +8811,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Draft%20Horse.webp"
   },
   {
     "id": "dragon-turtle-xmm-2024",
@@ -8733,7 +8874,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dragon%20Turtle.webp"
   },
   {
     "id": "dretch-xmm-2024",
@@ -8778,7 +8920,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dretch.webp"
   },
   {
     "id": "drider-xmm-2024",
@@ -8848,7 +8991,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Drider.webp"
   },
   {
     "id": "druid-xmm-2024",
@@ -8906,7 +9050,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Druid.webp"
   },
   {
     "id": "dryad-xmm-2024",
@@ -8971,7 +9116,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dryad.webp"
   },
   {
     "id": "dust-mephit-xmm-2024",
@@ -9029,7 +9175,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dust%20Mephit.webp"
   },
   {
     "id": "eagle-xmm-2024",
@@ -9073,7 +9220,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Eagle.webp"
   },
   {
     "id": "earth-elemental-xmm-2024",
@@ -9132,7 +9280,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Earth%20Elemental.webp"
   },
   {
     "id": "efreeti-xmm-2024",
@@ -9202,7 +9351,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Efreeti.webp"
   },
   {
     "id": "elemental-cataclysm-xmm-2024",
@@ -9285,7 +9435,8 @@
         "desc": "The cataclysm moves up to its Speed, Fly Speed, or Swim Speed without provoking Opportunity Attack. Each creature within 5 feet of the cataclysm as it moves is targeted once by the following effect. con DC 23. {@actSaveFail} The target has the Prone condition. {@actSaveSuccessOrFail} The cataclysm can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Air%20Elemental.webp"
   },
   {
     "id": "elemental-cultist-xmm-2024",
@@ -9351,7 +9502,8 @@
         "name": "Elemental Absorption (1/Day)",
         "desc": "{@actTrigger} The cultist takes Acid, Cold, Fire, Lightning, or Thunder damage. {@actResponse} The cultist gives itself Resistance to that instance of damage and gains 10 Temporary Hit Points."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp"
   },
   {
     "id": "elemental-spirit-xphb-2024",
@@ -9404,7 +9556,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Elemental%20Spirit.webp"
   },
   {
     "id": "elephant-xmm-2024",
@@ -9449,7 +9602,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elephant.webp"
   },
   {
     "id": "elk-xmm-2024",
@@ -9492,7 +9646,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elk.webp"
   },
   {
     "id": "empyrean-xmm-2024",
@@ -9575,7 +9730,8 @@
         "desc": "The empyrean makes one Divine Ray attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Empyrean.webp"
   },
   {
     "id": "empyrean-iota-xmm-2024",
@@ -9638,7 +9794,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Empyrean.webp"
   },
   {
     "id": "erinyes-xmm-2024",
@@ -9713,7 +9870,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The erinyes is hit by a melee attack roll while holding a weapon. {@actResponse} The erinyes adds 4 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Erinyes.webp"
   },
   {
     "id": "ettercap-xmm-2024",
@@ -9780,7 +9938,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ettercap.webp"
   },
   {
     "id": "ettin-xmm-2024",
@@ -9831,7 +9990,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ettin.webp"
   },
   {
     "id": "faerie-dragon-adult-xmm-2024",
@@ -9894,7 +10054,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Faerie%20Dragon%20(Blue).webp"
   },
   {
     "id": "faerie-dragon-youth-xmm-2024",
@@ -9957,7 +10118,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Faerie%20Dragon%20(Blue).webp"
   },
   {
     "id": "fey-spirit-xphb-2024",
@@ -10003,7 +10165,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Fey%20Spirit.webp"
   },
   {
     "id": "fiend-cultist-xmm-2024",
@@ -10063,7 +10226,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp"
   },
   {
     "id": "fiendish-spirit-xphb-2024",
@@ -10131,7 +10295,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Fiendish%20Spirit.webp"
   },
   {
     "id": "fire-elemental-xmm-2024",
@@ -10193,7 +10358,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fire%20Elemental.webp"
   },
   {
     "id": "fire-giant-xmm-2024",
@@ -10249,7 +10415,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fire%20Giant.webp"
   },
   {
     "id": "flameskull-xmm-2024",
@@ -10315,7 +10482,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flameskull.webp"
   },
   {
     "id": "flaming-skeleton-xmm-2024",
@@ -10373,7 +10541,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/PaBTSO/Dwarf%20Skeleton.webp"
   },
   {
     "id": "flesh-golem-xmm-2024",
@@ -10439,7 +10608,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flesh%20Golem.webp"
   },
   {
     "id": "flumph-xmm-2024",
@@ -10502,7 +10672,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flumph.webp"
   },
   {
     "id": "flying-snake-xmm-2024",
@@ -10550,7 +10721,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flying%20Snake.webp"
   },
   {
     "id": "fomorian-xmm-2024",
@@ -10602,7 +10774,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fomorian.webp"
   },
   {
     "id": "frog-xmm-2024",
@@ -10656,7 +10829,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Frog.webp"
   },
   {
     "id": "frost-giant-xmm-2024",
@@ -10712,7 +10886,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Frost%20Giant.webp"
   },
   {
     "id": "galeb-duhr-xmm-2024",
@@ -10757,7 +10932,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Galeb%20Duhr.webp"
   },
   {
     "id": "gargoyle-xmm-2024",
@@ -10810,7 +10986,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gargoyle.webp"
   },
   {
     "id": "gas-spore-fungus-xmm-2024",
@@ -10857,7 +11034,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp"
   },
   {
     "id": "gelatinous-cube-xmm-2024",
@@ -10911,7 +11089,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gelatinous%20Cube.webp"
   },
   {
     "id": "ghast-xmm-2024",
@@ -10963,7 +11142,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghast.webp"
   },
   {
     "id": "ghast-gravecaller-xmm-2024",
@@ -11024,7 +11204,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghast.webp"
   },
   {
     "id": "ghost-xmm-2024",
@@ -11091,7 +11272,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghost.webp"
   },
   {
     "id": "ghoul-xmm-2024",
@@ -11140,7 +11322,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghoul.webp"
   },
   {
     "id": "giant-ape-xmm-2024",
@@ -11194,7 +11377,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Ape.webp"
   },
   {
     "id": "giant-axe-beak-xmm-2024",
@@ -11245,7 +11429,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Axe%20Beak.webp"
   },
   {
     "id": "giant-badger-xmm-2024",
@@ -11289,7 +11474,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Badger.webp"
   },
   {
     "id": "giant-bat-xmm-2024",
@@ -11331,7 +11517,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Bat.webp"
   },
   {
     "id": "giant-boar-xmm-2024",
@@ -11379,7 +11566,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Boar.webp"
   },
   {
     "id": "giant-centipede-xmm-2024",
@@ -11421,7 +11609,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Centipede.webp"
   },
   {
     "id": "giant-constrictor-snake-xmm-2024",
@@ -11473,7 +11662,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Constrictor%20Snake.webp"
   },
   {
     "id": "giant-crab-xmm-2024",
@@ -11522,7 +11712,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Crab.webp"
   },
   {
     "id": "giant-crocodile-xmm-2024",
@@ -11579,7 +11770,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Crocodile.webp"
   },
   {
     "id": "giant-eagle-xmm-2024",
@@ -11627,7 +11819,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Eagle.webp"
   },
   {
     "id": "giant-elk-xmm-2024",
@@ -11673,7 +11866,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Elk.webp"
   },
   {
     "id": "giant-fire-beetle-xmm-2024",
@@ -11720,7 +11914,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Fire%20Beetle.webp"
   },
   {
     "id": "giant-fly-xdmg-2024",
@@ -11757,7 +11952,8 @@
     "special_abilities": null,
     "actions": null,
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/DMG/Giant%20Fly.webp"
   },
   {
     "id": "giant-frog-xmm-2024",
@@ -11815,7 +12011,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Frog.webp"
   },
   {
     "id": "giant-goat-xmm-2024",
@@ -11861,7 +12058,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Goat.webp"
   },
   {
     "id": "giant-hyena-xmm-2024",
@@ -11904,7 +12102,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Hyena.webp"
   },
   {
     "id": "giant-insect-xphb-2024",
@@ -11960,7 +12159,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Ape.webp"
   },
   {
     "id": "giant-lizard-xmm-2024",
@@ -12009,7 +12209,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Lizard.webp"
   },
   {
     "id": "giant-octopus-xmm-2024",
@@ -12064,7 +12265,8 @@
         "name": "Ink Cloud (1/Day)",
         "desc": "{@actTrigger} The octopus takes damage while underwater. {@actResponse} The octopus releases ink that fills a 10-foot Cube [Area of Effect] centered on itself, and the octopus moves up to its Swim Speed. The Cube [Area of Effect] is Heavily Obscured for 1 minute or until a strong current or similar effect disperses the ink."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Octopus.webp"
   },
   {
     "id": "giant-owl-xmm-2024",
@@ -12120,7 +12322,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Owl.webp"
   },
   {
     "id": "giant-rat-xmm-2024",
@@ -12171,7 +12374,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Rat.webp"
   },
   {
     "id": "giant-scorpion-xmm-2024",
@@ -12220,7 +12424,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Scorpion.webp"
   },
   {
     "id": "giant-seahorse-xmm-2024",
@@ -12267,7 +12472,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Seahorse.webp"
   },
   {
     "id": "giant-shark-xmm-2024",
@@ -12320,7 +12526,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Shark.webp"
   },
   {
     "id": "giant-spider-xmm-2024",
@@ -12378,7 +12585,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Spider.webp"
   },
   {
     "id": "giant-squid-xmm-2024",
@@ -12443,7 +12651,8 @@
         "name": "Ink Cloud (1/Day)",
         "desc": "{@actTrigger} The squid takes damage while underwater. {@actResponse} The squid releases ink that fills a 15-foot Cube [Area of Effect] centered on itself, and the squid moves up to its Swim Speed. The Cube [Area of Effect] is Heavily Obscured for 1 minute or until a strong current or similar effect disperses the ink."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Ape.webp"
   },
   {
     "id": "giant-toad-xmm-2024",
@@ -12498,7 +12707,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Toad.webp"
   },
   {
     "id": "giant-venomous-snake-xmm-2024",
@@ -12542,7 +12752,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Constrictor%20Snake.webp"
   },
   {
     "id": "giant-vulture-xmm-2024",
@@ -12591,7 +12802,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Vulture.webp"
   },
   {
     "id": "giant-wasp-xmm-2024",
@@ -12638,7 +12850,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Wasp.webp"
   },
   {
     "id": "giant-weasel-xmm-2024",
@@ -12684,7 +12897,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Weasel.webp"
   },
   {
     "id": "giant-wolf-spider-xmm-2024",
@@ -12734,7 +12948,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Wolf%20Spider.webp"
   },
   {
     "id": "gibbering-mouther-xmm-2024",
@@ -12789,7 +13004,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gibbering%20Mouther.webp"
   },
   {
     "id": "githyanki-dracomancer-xmm-2024",
@@ -12856,7 +13072,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Githyanki%20Knight.webp"
   },
   {
     "id": "githyanki-knight-xmm-2024",
@@ -12914,7 +13131,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Githyanki%20Knight.webp"
   },
   {
     "id": "githyanki-warrior-xmm-2024",
@@ -12972,7 +13190,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Githyanki%20Warrior.webp"
   },
   {
     "id": "githzerai-monk-xmm-2024",
@@ -13038,7 +13257,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Githzerai%20Monk.webp"
   },
   {
     "id": "githzerai-psion-xmm-2024",
@@ -13102,7 +13322,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/VGM/Mind%20Flayer%20Psion.webp"
   },
   {
     "id": "githzerai-zerth-xmm-2024",
@@ -13169,7 +13390,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Githzerai%20Zerth.webp"
   },
   {
     "id": "glabrezu-xmm-2024",
@@ -13239,7 +13461,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Glabrezu.webp"
   },
   {
     "id": "gladiator-xmm-2024",
@@ -13301,7 +13524,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The gladiator is hit by a melee attack roll while holding a weapon. {@actResponse} The gladiator adds 3 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gladiator.webp"
   },
   {
     "id": "gnoll-demoniac-xmm-2024",
@@ -13357,7 +13581,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Gnoll%20Warrior.webp"
   },
   {
     "id": "gnoll-fang-of-yeenoghu-xmm-2024",
@@ -13410,7 +13635,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gnoll%20Fang%20of%20Yeenoghu.webp"
   },
   {
     "id": "gnoll-pack-lord-xmm-2024",
@@ -13463,7 +13689,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gnoll%20Pack%20Lord.webp"
   },
   {
     "id": "gnoll-warrior-xmm-2024",
@@ -13508,7 +13735,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sahuagin%20Warrior.webp"
   },
   {
     "id": "goat-xmm-2024",
@@ -13554,7 +13782,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goat.webp"
   },
   {
     "id": "goblin-boss-xmm-2024",
@@ -13610,7 +13839,8 @@
         "name": "Redirect Attack",
         "desc": "{@actTrigger} A creature the goblin can see makes an attack roll against it. {@actResponse} The goblin chooses a Small or Medium ally within 5 feet of itself. The goblin and that ally swap places, and the ally becomes the target of the attack instead."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin%20Boss.webp"
   },
   {
     "id": "goblin-hexer-xmm-2024",
@@ -13668,7 +13898,8 @@
         "name": "Jinx",
         "desc": "{@actTrigger} A creature the goblin can see hits it with an attack roll. dwis DC 13, the triggering creature. {@actSaveFail} The attack misses instead."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Goblin%20Boss.webp"
   },
   {
     "id": "goblin-minion-xmm-2024",
@@ -13711,7 +13942,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Goblin%20Boss.webp"
   },
   {
     "id": "goblin-warrior-xmm-2024",
@@ -13758,7 +13990,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bugbear%20Warrior.webp"
   },
   {
     "id": "gold-dragon-wyrmling-xmm-2024",
@@ -13824,7 +14057,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gold%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "gorgon-xmm-2024",
@@ -13871,7 +14105,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gorgon.webp"
   },
   {
     "id": "goristro-xmm-2024",
@@ -13941,7 +14176,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goristro.webp"
   },
   {
     "id": "graveyard-revenant-xmm-2024",
@@ -14000,7 +14236,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Revenant.webp"
   },
   {
     "id": "gray-ooze-xmm-2024",
@@ -14053,7 +14290,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gray%20Ooze.webp"
   },
   {
     "id": "gray-slaad-xmm-2024",
@@ -14114,7 +14352,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gray%20Slaad.webp"
   },
   {
     "id": "green-dragon-wyrmling-xmm-2024",
@@ -14176,7 +14415,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Green%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "green-hag-xmm-2024",
@@ -14244,7 +14484,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Green%20Hag.webp"
   },
   {
     "id": "green-slaad-xmm-2024",
@@ -14305,7 +14546,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Green%20Slaad.webp"
   },
   {
     "id": "grell-xmm-2024",
@@ -14363,7 +14605,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Grell.webp"
   },
   {
     "id": "grick-xmm-2024",
@@ -14415,7 +14658,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Grick.webp"
   },
   {
     "id": "grick-ancient-xmm-2024",
@@ -14471,7 +14715,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Grick.webp"
   },
   {
     "id": "griffon-xmm-2024",
@@ -14519,7 +14764,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Griffon.webp"
   },
   {
     "id": "grimlock-xmm-2024",
@@ -14565,7 +14811,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Grimlock.webp"
   },
   {
     "id": "guard-xmm-2024",
@@ -14608,7 +14855,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Guard.webp"
   },
   {
     "id": "guard-captain-xmm-2024",
@@ -14660,7 +14908,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit%20Captain.webp"
   },
   {
     "id": "guardian-naga-xmm-2024",
@@ -14730,7 +14979,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Guardian%20Naga.webp"
   },
   {
     "id": "gulthias-blight-xmm-2024",
@@ -14790,7 +15040,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/LoX/Astral%20Blight.webp"
   },
   {
     "id": "half-dragon-xmm-2024",
@@ -14851,7 +15102,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MCV3MC/Ender%20Dragon.webp"
   },
   {
     "id": "harpy-xmm-2024",
@@ -14897,7 +15149,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Harpy.webp"
   },
   {
     "id": "haunting-revenant-xmm-2024",
@@ -14958,7 +15211,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Revenant.webp"
   },
   {
     "id": "hawk-xmm-2024",
@@ -15002,7 +15256,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hawk.webp"
   },
   {
     "id": "hell-hound-xmm-2024",
@@ -15058,7 +15313,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hell%20Hound.webp"
   },
   {
     "id": "helmed-horror-xmm-2024",
@@ -15115,7 +15371,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Helmed%20Horror.webp"
   },
   {
     "id": "hezrou-xmm-2024",
@@ -15177,7 +15434,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hezrou.webp"
   },
   {
     "id": "hill-giant-xmm-2024",
@@ -15228,7 +15486,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hill%20Giant.webp"
   },
   {
     "id": "hippogriff-xmm-2024",
@@ -15281,7 +15540,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hippogriff.webp"
   },
   {
     "id": "hippopotamus-xmm-2024",
@@ -15336,7 +15596,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elephant.webp"
   },
   {
     "id": "hobgoblin-captain-xmm-2024",
@@ -15390,7 +15651,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hobgoblin%20Captain.webp"
   },
   {
     "id": "hobgoblin-warlord-xmm-2024",
@@ -15454,7 +15716,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The hobgoblin is hit by a melee attack roll while holding a weapon. {@actResponse} The hobgoblin adds 3 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hobgoblin%20Warlord.webp"
   },
   {
     "id": "hobgoblin-warrior-xmm-2024",
@@ -15504,7 +15767,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bugbear%20Warrior.webp"
   },
   {
     "id": "homunculus-xmm-2024",
@@ -15554,7 +15818,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Homunculus.webp"
   },
   {
     "id": "hook-horror-xmm-2024",
@@ -15604,7 +15869,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hook%20Horror.webp"
   },
   {
     "id": "horned-devil-xmm-2024",
@@ -15672,7 +15938,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Horned%20Devil.webp"
   },
   {
     "id": "hunter-shark-xmm-2024",
@@ -15721,7 +15988,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hunter%20Shark.webp"
   },
   {
     "id": "hydra-xmm-2024",
@@ -15782,7 +16050,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hydra.webp"
   },
   {
     "id": "hyena-xmm-2024",
@@ -15830,7 +16099,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hyena.webp"
   },
   {
     "id": "ice-devil-xmm-2024",
@@ -15901,7 +16171,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ice%20Devil.webp"
   },
   {
     "id": "ice-mephit-xmm-2024",
@@ -15959,7 +16230,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ice%20Mephit.webp"
   },
   {
     "id": "imp-xmm-2024",
@@ -16018,7 +16290,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Imp.webp"
   },
   {
     "id": "incubus-xmm-2024",
@@ -16079,7 +16352,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Incubus.webp"
   },
   {
     "id": "intellect-devourer-xmm-2024",
@@ -16140,7 +16414,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Intellect%20Devourer.webp"
   },
   {
     "id": "invisible-stalker-xmm-2024",
@@ -16202,7 +16477,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Invisible%20Stalker.webp"
   },
   {
     "id": "iron-golem-xmm-2024",
@@ -16268,7 +16544,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Iron%20Golem.webp"
   },
   {
     "id": "jackal-xmm-2024",
@@ -16312,7 +16589,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Jackal.webp"
   },
   {
     "id": "jackalwere-xmm-2024",
@@ -16374,7 +16652,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Jackalwere.webp"
   },
   {
     "id": "juvenile-shadow-dragon-xmm-2024",
@@ -16439,7 +16718,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Shadow%20Dragon.webp"
   },
   {
     "id": "kenku-xmm-2024",
@@ -16493,7 +16773,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kenku.webp"
   },
   {
     "id": "killer-whale-xmm-2024",
@@ -16543,7 +16824,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Killer%20Whale.webp"
   },
   {
     "id": "knight-xmm-2024",
@@ -16600,7 +16882,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The knight is hit by a melee attack roll while holding a weapon. {@actResponse} The knight adds 2 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Knight.webp"
   },
   {
     "id": "kobold-warrior-xmm-2024",
@@ -16650,7 +16933,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TftYP/Dread%20Warrior.webp"
   },
   {
     "id": "kraken-xmm-2024",
@@ -16738,7 +17022,8 @@
         "desc": "con DC 23, each creature in a 15-foot Emanation [Area of Effect] originating from the kraken while it is underwater. {@actSaveFail} The target has the Blinded and Poisoned conditions until the end of the kraken's next turn. The kraken then moves up to its Speed. {@actSaveSuccessOrFail} The kraken can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kraken.webp"
   },
   {
     "id": "kuo-toa-xmm-2024",
@@ -16800,7 +17085,8 @@
         "name": "Sticky Shield",
         "desc": "{@actTrigger} A creature misses the kuo-toa with a melee attack roll using a weapon. dstr DC 11, the triggering creature. {@actSaveFail} The attack's weapon sticks to the kuo-toa's shield. If the target doesn't let go of the weapon, the target has the Grappled condition while the weapon is stuck (escape DC 11). While stuck, the weapon can't be used. The target can take an action to make a DC 11 Strength (Athletics) check, freeing the weapon on a success."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa.webp"
   },
   {
     "id": "kuo-toa-archpriest-xmm-2024",
@@ -16866,7 +17152,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa%20Archpriest.webp"
   },
   {
     "id": "kuo-toa-monitor-xmm-2024",
@@ -16924,7 +17211,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa%20Monitor.webp"
   },
   {
     "id": "kuo-toa-whip-xmm-2024",
@@ -16986,7 +17274,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa%20Whip.webp"
   },
   {
     "id": "lacedon-ghoul-xmm-2024",
@@ -17036,7 +17325,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghoul.webp"
   },
   {
     "id": "lamia-xmm-2024",
@@ -17094,7 +17384,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lamia.webp"
   },
   {
     "id": "larva-xmm-2024",
@@ -17135,7 +17426,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/DMG/Larva.webp"
   },
   {
     "id": "lemure-xmm-2024",
@@ -17181,7 +17473,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lemure.webp"
   },
   {
     "id": "lich-xmm-2024",
@@ -17270,7 +17563,8 @@
         "desc": "con DC 20, each creature that isn't an Undead in a 20-foot Emanation [Area of Effect] originating from the lich. {@actSaveFail} 31 (9d6) Necrotic damage. {@actSaveSuccess} Half damage. {@actSaveSuccessOrFail} The lich can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lich.webp"
   },
   {
     "id": "lion-xmm-2024",
@@ -17331,7 +17625,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lion.webp"
   },
   {
     "id": "lizard-xmm-2024",
@@ -17378,7 +17673,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lizard.webp"
   },
   {
     "id": "lizardfolk-geomancer-xmm-2024",
@@ -17438,7 +17734,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/HotB/Lizardfolk%20Warden.webp"
   },
   {
     "id": "lizardfolk-sovereign-xmm-2024",
@@ -17495,7 +17792,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Sovereign.webp"
   },
   {
     "id": "mage-xmm-2024",
@@ -17560,7 +17858,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mage.webp"
   },
   {
     "id": "mage-apprentice-xmm-2024",
@@ -17612,7 +17911,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/HoL/Apprentice.webp"
   },
   {
     "id": "magma-mephit-xmm-2024",
@@ -17665,7 +17965,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Magma%20Mephit.webp"
   },
   {
     "id": "magmin-xmm-2024",
@@ -17711,7 +18012,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Magmin.webp"
   },
   {
     "id": "mammoth-xmm-2024",
@@ -17759,7 +18061,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mammoth.webp"
   },
   {
     "id": "manes-xmm-2024",
@@ -17800,7 +18103,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Manes.webp"
   },
   {
     "id": "manes-vaporspawn-xmm-2024",
@@ -17850,7 +18154,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Manes.webp"
   },
   {
     "id": "manticore-xmm-2024",
@@ -17900,7 +18205,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Manticore.webp"
   },
   {
     "id": "marid-xmm-2024",
@@ -17975,7 +18281,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Marid.webp"
   },
   {
     "id": "marilith-xmm-2024",
@@ -18050,7 +18357,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The marilith is hit by a melee attack roll while holding a weapon. {@actResponse} The marilith adds 5 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Marilith.webp"
   },
   {
     "id": "mastiff-xmm-2024",
@@ -18093,7 +18401,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mastiff.webp"
   },
   {
     "id": "medusa-xmm-2024",
@@ -18152,7 +18461,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Medusa.webp"
   },
   {
     "id": "merfolk-skirmisher-xmm-2024",
@@ -18199,7 +18509,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Aarakocra%20Skirmisher.webp"
   },
   {
     "id": "merfolk-wavebender-xmm-2024",
@@ -18266,7 +18577,8 @@
         "name": "Watery Rebuke",
         "desc": "{@actTrigger} An enemy the merfolk can see enters a space within 5 feet of the merfolk. dstr DC 15, the triggering enemy. {@actSaveFail} 14 (4d6) Cold damage. If the target is Large or smaller, it is pushed up to 30 feet straight away from the merfolk by conjured water."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Merfolk%20Skirmisher.webp"
   },
   {
     "id": "merrow-xmm-2024",
@@ -18325,7 +18637,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Merrow.webp"
   },
   {
     "id": "mezzoloth-xmm-2024",
@@ -18389,7 +18702,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mezzoloth.webp"
   },
   {
     "id": "mimic-xmm-2024",
@@ -18441,7 +18755,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mimic.webp"
   },
   {
     "id": "mind-flayer-xmm-2024",
@@ -18510,7 +18825,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mind%20Flayer.webp"
   },
   {
     "id": "mind-flayer-arcanist-xmm-2024",
@@ -18583,7 +18899,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mind%20Flayer%20Arcanist.webp"
   },
   {
     "id": "minotaur-of-baphomet-xmm-2024",
@@ -18631,7 +18948,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Baphomet.webp"
   },
   {
     "id": "minotaur-skeleton-xmm-2024",
@@ -18676,7 +18994,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Minotaur%20Skeleton.webp"
   },
   {
     "id": "modron-duodrone-xmm-2024",
@@ -18726,7 +19045,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Duodrone.webp"
   },
   {
     "id": "modron-monodrone-xmm-2024",
@@ -18777,7 +19097,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Monodrone.webp"
   },
   {
     "id": "modron-pentadrone-xmm-2024",
@@ -18837,7 +19158,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pentadrone.webp"
   },
   {
     "id": "modron-quadrone-xmm-2024",
@@ -18894,7 +19216,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Quadrone.webp"
   },
   {
     "id": "modron-tridrone-xmm-2024",
@@ -18944,7 +19267,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tridrone.webp"
   },
   {
     "id": "mud-mephit-xmm-2024",
@@ -18998,7 +19322,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mud%20Mephit.webp"
   },
   {
     "id": "mule-xmm-2024",
@@ -19046,7 +19371,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mule.webp"
   },
   {
     "id": "mummy-xmm-2024",
@@ -19097,7 +19423,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy.webp"
   },
   {
     "id": "mummy-lord-xmm-2024",
@@ -19192,7 +19519,8 @@
         "name": "Whirlwind of Sand",
         "desc": "{@actTrigger} The mummy is hit by an attack roll. {@actResponse} The mummy adds 2 to its AC against the attack, possibly causing the attack to miss, and the mummy teleports up to 60 feet to an unoccupied space it can see. Each creature of its choice that it can see within 5 feet of its destination space has the Blinded condition until the end of the mummy's next turn."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy%20Lord.webp"
   },
   {
     "id": "myconid-adult-xmm-2024",
@@ -19246,7 +19574,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Adult.webp"
   },
   {
     "id": "myconid-sovereign-xmm-2024",
@@ -19308,7 +19637,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Sovereign.webp"
   },
   {
     "id": "myconid-spore-servant-xmm-2024",
@@ -19349,7 +19679,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/OotA/Chuul%20Spore%20Servant.webp"
   },
   {
     "id": "myconid-sprout-xmm-2024",
@@ -19399,7 +19730,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Sprout.webp"
   },
   {
     "id": "nalfeshnee-xmm-2024",
@@ -19468,7 +19800,8 @@
         "name": "Pursuit",
         "desc": "{@actTrigger} Another creature the nalfeshnee can see ends its move within 120 feet of the nalfeshnee. {@actResponse} The nalfeshnee uses Teleport, but its destination space must be within 10 feet of the triggering creature."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nalfeshnee.webp"
   },
   {
     "id": "needle-blight-xmm-2024",
@@ -19513,7 +19846,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Needle%20Blight.webp"
   },
   {
     "id": "night-hag-xmm-2024",
@@ -19584,7 +19918,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Night%20Hag.webp"
   },
   {
     "id": "nightmare-xmm-2024",
@@ -19639,7 +19974,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nightmare.webp"
   },
   {
     "id": "noble-xmm-2024",
@@ -19689,7 +20025,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The noble is hit by a melee attack roll while holding a weapon. {@actResponse} The noble adds 2 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Noble.webp"
   },
   {
     "id": "noble-prodigy-xmm-2024",
@@ -19751,7 +20088,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Noble.webp"
   },
   {
     "id": "nothic-xmm-2024",
@@ -19805,7 +20143,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nothic.webp"
   },
   {
     "id": "nycaloth-xmm-2024",
@@ -19863,7 +20202,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nycaloth.webp"
   },
   {
     "id": "ochre-jelly-xmm-2024",
@@ -19919,7 +20259,8 @@
         "name": "Split",
         "desc": "{@actTrigger} While the jelly is Large or Medium and has 10+ Hit Points, it becomes Bloodied or is subjected to Lightning or Slashing damage. {@actResponse} The jelly splits into two new Ochre Jellies. Each new jelly is one size smaller than the original jelly and acts on its Initiative. The original jelly's Hit Points are divided evenly between the new jellies (round down)."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ochre%20Jelly.webp"
   },
   {
     "id": "octopus-xmm-2024",
@@ -19978,7 +20319,8 @@
         "name": "Ink Cloud (1/Day)",
         "desc": "{@actTrigger} A creature ends its turn within 5 feet of the octopus while underwater. {@actResponse} The octopus releases ink that fills a 5-foot Cube [Area of Effect] centered on itself, and the octopus moves up to its Swim Speed. The Cube [Area of Effect] is Heavily Obscured for 1 minute or until a strong current or similar effect disperses the ink."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Octopus.webp"
   },
   {
     "id": "ogre-xmm-2024",
@@ -20023,7 +20365,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ogre.webp"
   },
   {
     "id": "ogre-zombie-xmm-2024",
@@ -20071,7 +20414,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ogre%20Zombie.webp"
   },
   {
     "id": "ogrillon-ogre-xmm-2024",
@@ -20116,7 +20460,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ogre.webp"
   },
   {
     "id": "oni-xmm-2024",
@@ -20192,7 +20537,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Oni.webp"
   },
   {
     "id": "otherworldly-steed-xphb-2024",
@@ -20239,7 +20585,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/FRAiF/Nimblewright%20Steed.webp"
   },
   {
     "id": "otyugh-xmm-2024",
@@ -20294,7 +20641,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Otyugh.webp"
   },
   {
     "id": "owl-xmm-2024",
@@ -20344,7 +20692,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Owl.webp"
   },
   {
     "id": "owlbear-xmm-2024",
@@ -20392,7 +20741,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Owlbear.webp"
   },
   {
     "id": "panther-xmm-2024",
@@ -20437,7 +20787,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Panther.webp"
   },
   {
     "id": "pegasus-xmm-2024",
@@ -20486,7 +20837,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pegasus.webp"
   },
   {
     "id": "performer-xmm-2024",
@@ -20539,7 +20891,8 @@
         "name": "Uncanny Dodge",
         "desc": "{@actTrigger} The performer is hit by an attack roll. {@actResponse} The performer halves the damage (round down) it takes from that attack."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Performer%20Legend.webp"
   },
   {
     "id": "performer-legend-xmm-2024",
@@ -20609,7 +20962,8 @@
         "name": "Warding Charm",
         "desc": "{@actTrigger} A creature hits the performer with an attack roll. dwis DC 17, the triggering creature. {@actSaveFail} The attack roll misses the performer, and the target has the Charmed condition until the end of the performer's next turn."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Performer.webp"
   },
   {
     "id": "performer-maestro-xmm-2024",
@@ -20672,7 +21026,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Performer.webp"
   },
   {
     "id": "peryton-xmm-2024",
@@ -20730,7 +21085,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Peryton.webp"
   },
   {
     "id": "phase-spider-xmm-2024",
@@ -20791,7 +21147,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Phase%20Spider.webp"
   },
   {
     "id": "piercer-xmm-2024",
@@ -20844,7 +21201,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Piercer.webp"
   },
   {
     "id": "piranha-xmm-2024",
@@ -20891,7 +21249,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/ToA/Almiraj.webp"
   },
   {
     "id": "pirate-xmm-2024",
@@ -20943,7 +21302,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Neogi%20Pirate.webp"
   },
   {
     "id": "pirate-admiral-xmm-2024",
@@ -21006,7 +21366,8 @@
         "name": "Defensive Stance",
         "desc": "{@actTrigger} The pirate is hit by a melee attack roll while holding a weapon. {@actResponse} The pirate adds 4 to its AC against melee attack rolls (including the triggering attack) until the start of its next turn, possibly causing the attacks to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/GoS/Pirate%20Bosun.webp"
   },
   {
     "id": "pirate-captain-xmm-2024",
@@ -21068,7 +21429,8 @@
         "name": "Riposte",
         "desc": "{@actTrigger} The pirate is hit by a melee attack roll while holding a weapon. {@actResponse} The pirate adds 3 to its AC against that attack, possibly causing it to miss. On a miss, the pirate makes one Rapier attack against the triggering creature if within range."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/GoS/Pirate%20Captain.webp"
   },
   {
     "id": "pit-fiend-xmm-2024",
@@ -21149,7 +21511,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pit%20Fiend.webp"
   },
   {
     "id": "pixie-xmm-2024",
@@ -21203,7 +21566,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pixie.webp"
   },
   {
     "id": "pixie-wonderbringer-xmm-2024",
@@ -21266,7 +21630,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pixie.webp"
   },
   {
     "id": "planetar-xmm-2024",
@@ -21344,7 +21709,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Planetar.webp"
   },
   {
     "id": "plesiosaurus-xmm-2024",
@@ -21394,7 +21760,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Plesiosaurus.webp"
   },
   {
     "id": "polar-bear-xmm-2024",
@@ -21443,7 +21810,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Polar%20Bear.webp"
   },
   {
     "id": "poltergeist-xmm-2024",
@@ -21498,7 +21866,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Poltergeist.webp"
   },
   {
     "id": "pony-xmm-2024",
@@ -21541,7 +21910,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pony.webp"
   },
   {
     "id": "priest-xmm-2024",
@@ -21603,7 +21973,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Priest.webp"
   },
   {
     "id": "priest-acolyte-xmm-2024",
@@ -21660,7 +22031,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Acolyte.webp"
   },
   {
     "id": "primeval-owlbear-xmm-2024",
@@ -21721,7 +22093,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Owlbear.webp"
   },
   {
     "id": "pseudodragon-xmm-2024",
@@ -21779,7 +22152,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pseudodragon.webp"
   },
   {
     "id": "psychic-gray-ooze-xmm-2024",
@@ -21837,7 +22211,8 @@
         "name": "Mind Corrosion",
         "desc": "{@actTrigger} The ooze fails a saving throw against a spell or another magical effect created by a creature. {@actResponse} The triggering creature takes 3 (1d6) Psychic damage."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gray%20Ooze.webp"
   },
   {
     "id": "pteranodon-xmm-2024",
@@ -21886,7 +22261,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pteranodon.webp"
   },
   {
     "id": "purple-worm-xmm-2024",
@@ -21944,7 +22320,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Purple%20Worm.webp"
   },
   {
     "id": "quaggoth-xmm-2024",
@@ -21997,7 +22374,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Quaggoth.webp"
   },
   {
     "id": "quaggoth-thonot-xmm-2024",
@@ -22058,7 +22436,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Quaggoth%20Thonot.webp"
   },
   {
     "id": "quasit-xmm-2024",
@@ -22118,7 +22497,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Quasit.webp"
   },
   {
     "id": "questing-knight-xmm-2024",
@@ -22185,7 +22565,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/ERLW/Bone%20Knight.webp"
   },
   {
     "id": "rakshasa-xmm-2024",
@@ -22251,7 +22632,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rakshasa.webp"
   },
   {
     "id": "rat-xmm-2024",
@@ -22300,7 +22682,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rat.webp"
   },
   {
     "id": "raven-xmm-2024",
@@ -22349,7 +22732,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Raven.webp"
   },
   {
     "id": "red-dragon-wyrmling-xmm-2024",
@@ -22406,7 +22790,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Red%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "red-slaad-xmm-2024",
@@ -22462,7 +22847,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Red%20Slaad.webp"
   },
   {
     "id": "reef-shark-xmm-2024",
@@ -22515,7 +22901,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Reef%20Shark.webp"
   },
   {
     "id": "remorhaz-xmm-2024",
@@ -22562,7 +22949,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Remorhaz.webp"
   },
   {
     "id": "revenant-xmm-2024",
@@ -22625,7 +23013,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Revenant.webp"
   },
   {
     "id": "rhinoceros-xmm-2024",
@@ -22666,7 +23055,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rhinoceros.webp"
   },
   {
     "id": "riding-horse-xmm-2024",
@@ -22707,7 +23097,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Riding%20Horse.webp"
   },
   {
     "id": "roc-xmm-2024",
@@ -22762,7 +23153,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Roc.webp"
   },
   {
     "id": "roper-xmm-2024",
@@ -22824,7 +23216,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Roper.webp"
   },
   {
     "id": "rust-monster-xmm-2024",
@@ -22887,7 +23280,8 @@
         "name": "Reflexive Antennae",
         "desc": "{@actTrigger} An attack roll hits the rust monster. {@actResponse} The rust monster uses Antennae."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rust%20Monster.webp"
   },
   {
     "id": "saber-toothed-tiger-xmm-2024",
@@ -22943,7 +23337,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Saber-Toothed%20Tiger.webp"
   },
   {
     "id": "sahuagin-baron-xmm-2024",
@@ -23013,7 +23408,8 @@
         "name": "Fiendish Blood",
         "desc": "{@actTrigger} The sahuagin takes Piercing or Slashing damage. dcon DC 14, each creature of the sahuagin's choice in a 5-foot Emanation [Area of Effect] originating from the sahuagin. {@actSaveFail} 10 (3d6) Acid damage, and the target is cursed until it finishes a Short Rest or Long Rest. While cursed, the target can't benefit from the Invisible condition, its Speed decreases by 10 feet, and all Fiends within 120 feet of the target can sense its location regardless of interposing obstacles."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Sahuagin%20Baron.webp"
   },
   {
     "id": "sahuagin-priest-xmm-2024",
@@ -23083,7 +23479,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Kraken%20Priest.webp"
   },
   {
     "id": "sahuagin-warrior-xmm-2024",
@@ -23144,7 +23541,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Gnoll%20Warrior.webp"
   },
   {
     "id": "salamander-xmm-2024",
@@ -23199,7 +23597,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Salamander.webp"
   },
   {
     "id": "salamander-fire-snake-xmm-2024",
@@ -23246,7 +23645,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fire%20Snake.webp"
   },
   {
     "id": "salamander-inferno-master-xmm-2024",
@@ -23308,7 +23708,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/GoS/Drowned%20Master.webp"
   },
   {
     "id": "satyr-xmm-2024",
@@ -23362,7 +23763,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Satyr.webp"
   },
   {
     "id": "satyr-revelmaster-xmm-2024",
@@ -23423,7 +23825,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Satyr.webp"
   },
   {
     "id": "scarecrow-xmm-2024",
@@ -23468,7 +23871,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Scarecrow.webp"
   },
   {
     "id": "scorpion-xmm-2024",
@@ -23509,7 +23913,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Scorpion.webp"
   },
   {
     "id": "scout-xmm-2024",
@@ -23563,7 +23968,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Scout.webp"
   },
   {
     "id": "scout-captain-xmm-2024",
@@ -23625,7 +24031,8 @@
         "name": "Uncanny Dodge",
         "desc": "{@actTrigger} The scout is hit by an attack roll. {@actResponse} The scout halves the damage (round down) it takes from that attack."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit%20Captain.webp"
   },
   {
     "id": "sea-hag-xmm-2024",
@@ -23688,7 +24095,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Sea%20Hag.webp"
   },
   {
     "id": "seahorse-xmm-2024",
@@ -23738,7 +24146,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Giant%20Seahorse.webp"
   },
   {
     "id": "shadow-xmm-2024",
@@ -23790,7 +24199,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shadow.webp"
   },
   {
     "id": "shadow-demon-xmm-2024",
@@ -23850,7 +24260,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shadow%20Demon.webp"
   },
   {
     "id": "shadow-dragon-xmm-2024",
@@ -23929,7 +24340,8 @@
         "desc": "The dragon uses Shadow Stealth, and one creature of its choice that it can see within 10 feet of it takes 10 (3d6) Necrotic damage. The dragon can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MCV3MC/Ender%20Dragon.webp"
   },
   {
     "id": "shambling-mound-xmm-2024",
@@ -23986,7 +24398,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shambling%20Mound.webp"
   },
   {
     "id": "shield-guardian-xmm-2024",
@@ -24049,7 +24462,8 @@
         "name": "Protection",
         "desc": "{@actTrigger} An attack roll hits the wearer of the guardian's amulet while the wearer is within 5 feet of the guardian. {@actResponse} The wearer gains a +5 bonus to AC, including against the triggering attack and possibly causing it to miss, until the start of the guardian's next turn."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shield%20Guardian.webp"
   },
   {
     "id": "shrieker-fungus-xmm-2024",
@@ -24090,7 +24504,8 @@
         "name": "Shriek",
         "desc": "{@actTrigger} A creature or a source of Bright Light moves within 30 feet of the shrieker. {@actResponse} The shrieker emits a shriek audible within 300 feet of itself for 1 minute or until the shrieker dies."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp"
   },
   {
     "id": "silver-dragon-wyrmling-xmm-2024",
@@ -24150,7 +24565,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Silver%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "skeleton-xmm-2024",
@@ -24195,7 +24611,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Skeleton.webp"
   },
   {
     "id": "slaad-tadpole-xmm-2024",
@@ -24244,7 +24661,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Slaad%20Tadpole.webp"
   },
   {
     "id": "smoke-mephit-xmm-2024",
@@ -24298,7 +24716,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Smoke%20Mephit.webp"
   },
   {
     "id": "solar-xmm-2024",
@@ -24384,7 +24803,8 @@
         "desc": "The solar teleports up to 60 feet to an unoccupied space it can see. dex DC 25, each creature in a 10-foot Emanation [Area of Effect] originating from the solar at its destination space. {@actSaveFail} 11 (2d10) Radiant damage. {@actSaveSuccess} Half damage."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Solar.webp"
   },
   {
     "id": "spectator-xmm-2024",
@@ -24441,7 +24861,8 @@
         "name": "Spell Reflection",
         "desc": "{@actTrigger} The spectator succeeds on a saving throw against a spell, or a spell's attack roll misses it. ddex DC 12, one creature the spectator can see within 120 feet. {@actSaveFail} 10 (3d6) Force damage."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spectator.webp"
   },
   {
     "id": "specter-xmm-2024",
@@ -24492,7 +24913,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Specter.webp"
   },
   {
     "id": "sphinx-of-lore-xmm-2024",
@@ -24569,7 +24991,8 @@
         "desc": "con DC 16, one creature the sphinx can see within 120 feet. {@actSaveFail} The target gains 1 Exhaustion level. While the target has any Exhaustion levels, it appears 3d10 years older. {@actSaveSuccessOrFail} The sphinx can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sphinx%20of%20Secrets.webp"
   },
   {
     "id": "sphinx-of-secrets-xmm-2024",
@@ -24636,7 +25059,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sphinx%20of%20Lore.webp"
   },
   {
     "id": "sphinx-of-valor-xmm-2024",
@@ -24717,7 +25141,8 @@
         "desc": "con DC 16, one creature the sphinx can see within 120 feet. {@actSaveFail} The target gains 1 Exhaustion level. While the target has any Exhaustion levels, it appears 3d10 years older. {@actSaveSuccessOrFail} The sphinx can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sphinx%20of%20Lore.webp"
   },
   {
     "id": "sphinx-of-wonder-xmm-2024",
@@ -24773,7 +25198,8 @@
         "name": "Burst of Ingenuity (2/Day)",
         "desc": "{@actTrigger} The sphinx or another creature within 30 feet makes an ability check or a saving throw. {@actResponse} The sphinx adds 2 to the roll."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/FRAiF/Domestic%20Wonder.webp"
   },
   {
     "id": "spider-xmm-2024",
@@ -24826,7 +25252,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spider.webp"
   },
   {
     "id": "spined-devil-xmm-2024",
@@ -24885,7 +25312,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spined%20Devil.webp"
   },
   {
     "id": "spirit-naga-xmm-2024",
@@ -24948,7 +25376,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spirit%20Naga.webp"
   },
   {
     "id": "sprite-xmm-2024",
@@ -25006,7 +25435,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Sprite.webp"
   },
   {
     "id": "spy-xmm-2024",
@@ -25059,7 +25489,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spy.webp"
   },
   {
     "id": "spy-master-xmm-2024",
@@ -25125,7 +25556,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Duergar%20Mind%20Master.webp"
   },
   {
     "id": "steam-mephit-xmm-2024",
@@ -25182,7 +25614,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Steam%20Mephit.webp"
   },
   {
     "id": "stirge-xmm-2024",
@@ -25224,7 +25657,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Stirge.webp"
   },
   {
     "id": "stone-giant-xmm-2024",
@@ -25286,7 +25720,8 @@
         "name": "Deflect Missile (Recharge 5-6)",
         "desc": "{@actTrigger} The giant is hit by a ranged attack roll and takes Bludgeoning, Piercing, or Slashing damage from it. {@actResponse} The giant reduces the damage it takes from the attack by 11 (1d10 + 6), and if that damage is reduced to 0, the giant can redirect some of the attack's force. dex DC 17, one creature the giant can see within 60 feet. {@actSaveFail} 11 (1d10 + 6) Force damage."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Stone%20Giant.webp"
   },
   {
     "id": "stone-golem-xmm-2024",
@@ -25348,7 +25783,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Stone%20Golem.webp"
   },
   {
     "id": "storm-giant-xmm-2024",
@@ -25422,7 +25858,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Storm%20Giant.webp"
   },
   {
     "id": "succubus-xmm-2024",
@@ -25487,7 +25924,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Succubus.webp"
   },
   {
     "id": "swarm-of-bats-xmm-2024",
@@ -25534,7 +25972,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Bats.webp"
   },
   {
     "id": "swarm-of-crawling-claws-xmm-2024",
@@ -25581,7 +26020,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/ToA/Ankylosaurus%20Zombie.webp"
   },
   {
     "id": "swarm-of-dretches-xmm-2024",
@@ -25635,7 +26075,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoA/Ayperobo%20Swarm.webp"
   },
   {
     "id": "swarm-of-insects-xmm-2024",
@@ -25685,7 +26126,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Insects.webp"
   },
   {
     "id": "swarm-of-larvae-xmm-2024",
@@ -25731,7 +26173,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoA/Ayperobo%20Swarm.webp"
   },
   {
     "id": "swarm-of-lemures-xmm-2024",
@@ -25785,7 +26228,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoA/Ayperobo%20Swarm.webp"
   },
   {
     "id": "swarm-of-piranhas-xmm-2024",
@@ -25836,7 +26280,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Bats.webp"
   },
   {
     "id": "swarm-of-rats-xmm-2024",
@@ -25883,7 +26328,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Rats.webp"
   },
   {
     "id": "swarm-of-ravens-xmm-2024",
@@ -25936,7 +26382,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Ravens.webp"
   },
   {
     "id": "swarm-of-stirges-xmm-2024",
@@ -25983,7 +26430,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/VRGR/Swarm%20of%20Gremishkas.webp"
   },
   {
     "id": "swarm-of-venomous-snakes-xmm-2024",
@@ -26030,7 +26478,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Poisonous%20Snakes.webp"
   },
   {
     "id": "tarrasque-xmm-2024",
@@ -26122,7 +26571,8 @@
         "desc": "The tarrasque moves up to its Speed. At the end of this movement, the tarrasque creates an instantaneous shock wave in a 60-foot Emanation [Area of Effect] originating from itself. Creatures in that area lose Concentration and, if Medium or smaller, have the Prone condition. The tarrasque can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tarrasque.webp"
   },
   {
     "id": "thri-kreen-marauder-xmm-2024",
@@ -26175,7 +26625,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Thri-kreen%20Gladiator.webp"
   },
   {
     "id": "thri-kreen-psion-xmm-2024",
@@ -26234,7 +26685,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Thri-kreen%20Gladiator.webp"
   },
   {
     "id": "tiger-xmm-2024",
@@ -26278,7 +26730,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tiger.webp"
   },
   {
     "id": "tough-xmm-2024",
@@ -26328,7 +26781,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Tough%20Boss.webp"
   },
   {
     "id": "tough-boss-xmm-2024",
@@ -26386,7 +26840,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin%20Boss.webp"
   },
   {
     "id": "treant-xmm-2024",
@@ -26444,7 +26899,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Treant.webp"
   },
   {
     "id": "tree-blight-xmm-2024",
@@ -26493,7 +26949,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoS/Tree%20Blight.webp"
   },
   {
     "id": "triceratops-xmm-2024",
@@ -26538,7 +26995,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Triceratops.webp"
   },
   {
     "id": "troglodyte-xmm-2024",
@@ -26591,7 +27049,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Troglodyte.webp"
   },
   {
     "id": "troll-xmm-2024",
@@ -26647,7 +27106,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Troll.webp"
   },
   {
     "id": "troll-limb-xmm-2024",
@@ -26697,7 +27157,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Dire%20Troll.webp"
   },
   {
     "id": "twig-blight-xmm-2024",
@@ -26745,7 +27206,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Twig%20Blight.webp"
   },
   {
     "id": "tyrannosaurus-rex-xmm-2024",
@@ -26799,7 +27261,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tyrannosaurus%20Rex.webp"
   },
   {
     "id": "ultroloth-xmm-2024",
@@ -26870,7 +27333,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ultroloth.webp"
   },
   {
     "id": "umber-hulk-xmm-2024",
@@ -26921,7 +27385,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Umber%20Hulk.webp"
   },
   {
     "id": "undead-spirit-xphb-2024",
@@ -26984,7 +27449,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TCE/Undead%20Spirit.webp"
   },
   {
     "id": "unicorn-xmm-2024",
@@ -27059,7 +27525,8 @@
         "desc": "The unicorn targets itself or one creature it can see within 60 feet of itself. The target gains 10 (3d6) Temporary Hit Points, and its AC increases by 2 until the end of the unicorn's next turn. The unicorn can't take this action again until the start of its next turn."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Unicorn.webp"
   },
   {
     "id": "vampire-xmm-2024",
@@ -27147,7 +27614,8 @@
         "desc": "The vampire moves up to half its Speed, and it makes one Grave Strike attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vampire.webp"
   },
   {
     "id": "vampire-familiar-xmm-2024",
@@ -27205,7 +27673,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MOT/Akroan%20Hoplite.webp"
   },
   {
     "id": "vampire-nightbringer-xmm-2024",
@@ -27266,7 +27735,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/IDRotF/Gnoll%20Vampire.webp"
   },
   {
     "id": "vampire-spawn-xmm-2024",
@@ -27330,7 +27800,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vampire%20Spawn.webp"
   },
   {
     "id": "vampire-umbral-lord-xmm-2024",
@@ -27416,7 +27887,8 @@
         "desc": "The vampire moves up to half its Speed, and it makes one Grave Strike or Sickening Ray attack."
       }
     ],
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy%20Lord.webp"
   },
   {
     "id": "venomous-snake-xmm-2024",
@@ -27458,7 +27930,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Constrictor%20Snake.webp"
   },
   {
     "id": "vine-blight-xmm-2024",
@@ -27506,7 +27979,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vine%20Blight.webp"
   },
   {
     "id": "violet-fungus-xmm-2024",
@@ -27551,7 +28025,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp"
   },
   {
     "id": "violet-fungus-necrohulk-xmm-2024",
@@ -27600,7 +28075,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp"
   },
   {
     "id": "vrock-xmm-2024",
@@ -27667,7 +28143,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vrock.webp"
   },
   {
     "id": "vulture-xmm-2024",
@@ -27716,7 +28193,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vulture.webp"
   },
   {
     "id": "warhorse-xmm-2024",
@@ -27759,7 +28237,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Warhorse.webp"
   },
   {
     "id": "warhorse-skeleton-xmm-2024",
@@ -27800,7 +28279,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Warhorse%20Skeleton.webp"
   },
   {
     "id": "warrior-commander-xmm-2024",
@@ -27863,7 +28343,8 @@
         "name": "Counterattack",
         "desc": "{@actTrigger} The warrior is hit by an attack roll. {@actResponse} The warrior adds 4 to its AC against that attack, possibly causing it to miss. On a miss, the warrior can make one Greatsword or Longbow attack against the attacker."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Berserker%20Commander.webp"
   },
   {
     "id": "warrior-infantry-xmm-2024",
@@ -27909,7 +28390,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Githyanki%20Warrior.webp"
   },
   {
     "id": "warrior-veteran-xmm-2024",
@@ -27966,7 +28448,8 @@
         "name": "Parry",
         "desc": "{@actTrigger} The warrior is hit by a melee attack roll while holding a weapon. {@actResponse} The warrior adds 2 to its AC against that attack, possibly causing it to miss."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Veteran.webp"
   },
   {
     "id": "water-elemental-xmm-2024",
@@ -28025,7 +28508,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Water%20Elemental.webp"
   },
   {
     "id": "water-weird-xmm-2024",
@@ -28076,7 +28560,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Water%20Weird.webp"
   },
   {
     "id": "weasel-xmm-2024",
@@ -28122,7 +28607,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Weasel.webp"
   },
   {
     "id": "werebear-xmm-2024",
@@ -28178,7 +28664,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Werebear.webp"
   },
   {
     "id": "wereboar-xmm-2024",
@@ -28233,7 +28720,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wereboar.webp"
   },
   {
     "id": "wererat-xmm-2024",
@@ -28290,7 +28778,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wererat.webp"
   },
   {
     "id": "weretiger-xmm-2024",
@@ -28346,7 +28835,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Weretiger.webp"
   },
   {
     "id": "werewolf-xmm-2024",
@@ -28407,7 +28897,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Werewolf.webp"
   },
   {
     "id": "white-dragon-wyrmling-xmm-2024",
@@ -28470,7 +28961,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/White%20Dragon%20Wyrmling.webp"
   },
   {
     "id": "wight-xmm-2024",
@@ -28531,7 +29023,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wight.webp"
   },
   {
     "id": "will-o-wisp-xmm-2024",
@@ -28586,7 +29079,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Will-o'-Wisp.webp"
   },
   {
     "id": "winged-kobold-xmm-2024",
@@ -28641,7 +29135,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Winged%20Kobold.webp"
   },
   {
     "id": "winter-wolf-xmm-2024",
@@ -28694,7 +29189,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Winter%20Wolf.webp"
   },
   {
     "id": "wolf-xmm-2024",
@@ -28743,7 +29239,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wolf.webp"
   },
   {
     "id": "worg-xmm-2024",
@@ -28786,7 +29283,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Worg.webp"
   },
   {
     "id": "wraith-xmm-2024",
@@ -28841,7 +29339,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wraith.webp"
   },
   {
     "id": "wyvern-xmm-2024",
@@ -28893,7 +29392,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wyvern.webp"
   },
   {
     "id": "xorn-xmm-2024",
@@ -28955,7 +29455,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Xorn.webp"
   },
   {
     "id": "yeti-xmm-2024",
@@ -29017,7 +29518,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yeti.webp"
   },
   {
     "id": "yochlol-xmm-2024",
@@ -29097,7 +29599,8 @@
         "name": "Toxic Escape",
         "desc": "{@actTrigger} The yochlol is hit by an attack roll. {@actResponse} The yochlol halves the attack's damage to itself (round down), and it teleports to an unoccupied space it can see within 30 feet of itself. con DC 15, each creature within 5 feet of the yochlol's destination space. {@actSaveFail} The target has the Poisoned condition until the end of its next turn. While Poisoned, it has the Incapacitated condition."
       }
-    ]
+    ],
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yochlol.webp"
   },
   {
     "id": "young-black-dragon-xmm-2024",
@@ -29159,7 +29662,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Black%20Dragon.webp"
   },
   {
     "id": "young-blue-dragon-xmm-2024",
@@ -29216,7 +29720,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Blue%20Dragon.webp"
   },
   {
     "id": "young-brass-dragon-xmm-2024",
@@ -29278,7 +29783,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Brass%20Dragon.webp"
   },
   {
     "id": "young-bronze-dragon-xmm-2024",
@@ -29345,7 +29851,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Bronze%20Dragon.webp"
   },
   {
     "id": "young-copper-dragon-xmm-2024",
@@ -29407,7 +29914,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Copper%20Dragon.webp"
   },
   {
     "id": "young-gold-dragon-xmm-2024",
@@ -29475,7 +29983,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Gold%20Dragon.webp"
   },
   {
     "id": "young-green-dragon-xmm-2024",
@@ -29538,7 +30047,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Green%20Dragon.webp"
   },
   {
     "id": "young-red-dragon-xmm-2024",
@@ -29595,7 +30105,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Red%20Dragon.webp"
   },
   {
     "id": "young-remorhaz-xmm-2024",
@@ -29642,7 +30153,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Remorhaz.webp"
   },
   {
     "id": "young-silver-dragon-xmm-2024",
@@ -29703,7 +30215,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Silver%20Dragon.webp"
   },
   {
     "id": "young-white-dragon-xmm-2024",
@@ -29766,7 +30279,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20White%20Dragon.webp"
   },
   {
     "id": "yuan-ti-abomination-xmm-2024",
@@ -29832,7 +30346,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Abomination.webp"
   },
   {
     "id": "yuan-ti-infiltrator-xmm-2024",
@@ -29894,7 +30409,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/FTD/Draconian%20Infiltrator.webp"
   },
   {
     "id": "yuan-ti-malison-type-1-xmm-2024",
@@ -29955,7 +30471,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Malison%20(Type%201).webp"
   },
   {
     "id": "yuan-ti-malison-type-2-xmm-2024",
@@ -30012,7 +30529,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Malison%20(Type%202).webp"
   },
   {
     "id": "yuan-ti-malison-type-3-xmm-2024",
@@ -30073,7 +30591,8 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Malison%20(Type%203).webp"
   },
   {
     "id": "zombie-xmm-2024",
@@ -30121,6 +30640,7 @@
       }
     ],
     "legendary_actions": null,
-    "reactions": null
+    "reactions": null,
+    "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Zombie.webp"
   }
 ]

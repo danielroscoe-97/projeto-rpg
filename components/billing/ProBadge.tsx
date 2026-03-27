@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { trackEvent } from "@/lib/analytics/track";
-import { UpsellCard, shouldShowUpsell, markUpsellShown } from "./UpsellCard";
+import { UpsellCard, shouldShowUpsell } from "./UpsellCard";
 import type { FeatureFlagKey } from "@/lib/types/subscription";
 
 interface ProBadgeProps {

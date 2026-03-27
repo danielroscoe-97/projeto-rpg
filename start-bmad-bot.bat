@@ -17,7 +17,8 @@ echo    "retomar"           - retoma a queue
 echo.
 cd /d "%~dp0scripts\orchestrator"
 :loop
-node --no-warnings --max-old-space-size=4096 node_modules/.bin/tsx slack-bot.ts < nul
+set NODE_OPTIONS=--no-warnings --max-old-space-size=4096
+call node_modules\.bin\tsx.cmd slack-bot.ts < nul
 echo.
 echo  [%time%] Bot parou. Reiniciando em 5 segundos...
 timeout /t 5 /nobreak > nul

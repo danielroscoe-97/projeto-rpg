@@ -169,6 +169,7 @@ export async function registerPlayerCombatant(
         monster_id: null,
         dm_notes: "",
         player_notes: "",
+        player_character_id: null,
       })
       .select("id")
       .single();

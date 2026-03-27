@@ -4,10 +4,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import { NotebookPen, Eye, Pencil } from "lucide-react";
 
-const DEBOUNCE_MS = 1000;
+const DEBOUNCE_MS = 500;
 const STORAGE_KEY_PREFIX = "gm-notes-panel-open:";
 
 interface GMNotesSheetProps {
@@ -47,7 +47,7 @@ export function GMNotesSheet({ sessionId, userId }: GMNotesSheetProps) {
           .maybeSingle();
         if (data) setContent(data.content);
       } catch (err) {
-        Sentry.captureException(err);
+        captureError(err, { component: "GMNotesSheet", action: "load", category: "database", sessionId });
       } finally {
         setIsLoaded(true);
       }
@@ -81,7 +81,7 @@ export function GMNotesSheet({ sessionId, userId }: GMNotesSheetProps) {
       }, 2000);
     } catch (err) {
       toast.error(t("notes_save_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "GMNotesSheet", action: "save", category: "database", sessionId });
     }
   }, [sessionId, userId, t]);
 
@@ -143,7 +143,7 @@ export function GMNotesSheet({ sessionId, userId }: GMNotesSheetProps) {
           {previewMode ? (
             <div
               className="prose prose-invert prose-sm max-w-none min-h-[150px] text-foreground/80"
-              // Simple markdown rendering: headers, bold, italic, lists
+              // eslint-disable-next-line react/no-danger -- Input is DM's own notes, sanitized via simpleMarkdown which escapes HTML entities before transforming markdown
               dangerouslySetInnerHTML={{ __html: simpleMarkdown(content) }}
             />
           ) : (
@@ -173,6 +173,7 @@ function simpleMarkdown(text: string): string {
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/^- (.+)$/gm, "<li>$1</li>")
+    // eslint-disable-next-line security/detect-unsafe-regex -- Matches consecutive <li> elements for wrapping in <ul>; input is already HTML-escaped above
     .replace(/(<li>.*<\/li>\n?)+/g, "<ul>$&</ul>")
     .replace(/\n/g, "<br />");
 }

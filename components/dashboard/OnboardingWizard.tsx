@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -190,7 +191,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         .select("id")
         .single();
       if (campaignErr || !campaign) {
-        console.error("[Onboarding] Campaign insert failed:", campaignErr);
+        captureError(campaignErr, { component: "OnboardingWizard", action: "createCampaign", category: "database" });
         throw new Error(t("error_campaign"));
       }
 
@@ -207,7 +208,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         .from("player_characters")
         .insert(characters);
       if (pcErr) {
-        console.error("[Onboarding] Player characters insert failed:", pcErr);
+        captureError(pcErr, { component: "OnboardingWizard", action: "insertPlayers", category: "database" });
         throw new Error(t("error_players"));
       }
 
@@ -223,7 +224,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         .select("id")
         .single();
       if (sessionErr || !session) {
-        console.error("[Onboarding] Session insert failed:", sessionErr);
+        captureError(sessionErr, { component: "OnboardingWizard", action: "createSession", category: "database" });
         throw new Error(t("error_session"));
       }
 
@@ -234,7 +235,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         is_active: true,
       });
       if (encErr) {
-        console.error("[Onboarding] Encounter insert failed:", encErr);
+        captureError(encErr, { component: "OnboardingWizard", action: "createEncounter", category: "database" });
         throw new Error(t("error_encounter"));
       }
 
@@ -244,7 +245,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         .from("session_tokens")
         .insert({ session_id: session.id, token, is_active: true });
       if (tokenErr) {
-        console.error("[Onboarding] Session token insert failed:", tokenErr);
+        captureError(tokenErr, { component: "OnboardingWizard", action: "createToken", category: "database" });
         throw new Error(t("error_link"));
       }
 

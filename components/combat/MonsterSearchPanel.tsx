@@ -432,6 +432,7 @@ export function MonsterSearchPanel({
                 {/* Monster token thumbnail */}
                 <MonsterToken
                   tokenUrl={monster.token_url}
+                  fallbackTokenUrl={monster.fallback_token_url}
                   creatureType={monster.type}
                   name={monster.name}
                   size={36}

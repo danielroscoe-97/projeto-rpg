@@ -53,6 +53,7 @@ export function parseNotation(notation: string): {
     return { count: 0, sides: 0, modifier: Number(cleaned) };
   }
 
+  // eslint-disable-next-line security/detect-unsafe-regex -- Simple anchored dice notation regex (e.g. "2d6+3"); no ReDoS risk
   const match = cleaned.match(/^(\d+)?d(\d+)([+-]\d+)?$/i);
   if (!match) {
     return { count: 0, sides: 0, modifier: 0 };

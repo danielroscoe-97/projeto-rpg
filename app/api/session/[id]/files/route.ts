@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -101,7 +101,7 @@ export async function POST(
 
     return NextResponse.json({ data: fileRecord });
   } catch (err) {
-    Sentry.captureException(err);
+    captureError(err, { component: "SessionFilesAPI", action: "uploadFile", category: "database" });
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
@@ -140,7 +140,7 @@ export async function DELETE(
 
     return NextResponse.json({ data: { deleted: true } });
   } catch (err) {
-    Sentry.captureException(err);
+    captureError(err, { component: "SessionFilesAPI", action: "deleteFile", category: "database" });
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
 }

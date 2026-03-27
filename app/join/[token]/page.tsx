@@ -1,4 +1,4 @@
-import { createServiceClient } from "@/lib/supabase/server";
+import { createClient as createAuthClient, createServiceClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";
 import { getHpStatus } from "@/lib/utils/hp-status";
@@ -99,6 +99,44 @@ export default async function JoinPage({ params }: JoinPageProps) {
     });
   }
 
+  // Auto-join: detect authenticated user with characters in this campaign
+  let prefilledCharacters: Array<{
+    id: string;
+    name: string;
+    max_hp: number;
+    current_hp: number;
+    ac: number;
+    spell_save_dc: number | null;
+  }> = [];
+
+  try {
+    // Check if user is authenticated (may not be — anonymous players skip this)
+    const authClient = await createAuthClient();
+    const { data: { user } } = await authClient.auth.getUser();
+
+    if (user) {
+      // Fetch session's campaign_id
+      const { data: sessionWithCampaign } = await supabase
+        .from("sessions")
+        .select("campaign_id")
+        .eq("id", session.id)
+        .single();
+
+      if (sessionWithCampaign?.campaign_id) {
+        // Find player's characters in this campaign
+        const { data: characters } = await supabase
+          .from("player_characters")
+          .select("id, name, max_hp, current_hp, ac, spell_save_dc")
+          .eq("campaign_id", sessionWithCampaign.campaign_id)
+          .eq("user_id", user.id);
+
+        prefilledCharacters = characters ?? [];
+      }
+    }
+  } catch {
+    // Auth check failed — continue as anonymous (standard empty form)
+  }
+
   return (
     <PlayerJoinClient
       tokenId={tokenRow.id}
@@ -110,6 +148,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       roundNumber={encounter?.round_number ?? 0}
       currentTurnIndex={encounter?.current_turn_index ?? 0}
       initialCombatants={combatants}
+      prefilledCharacters={prefilledCharacters}
     />
   );
 }

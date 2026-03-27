@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -51,7 +51,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
           setInvites(data ?? []);
         }
       } catch (err) {
-        Sentry.captureException(err);
+        captureError(err, { component: "InvitePlayerDialog", action: "loadInvites", category: "network" });
       }
     };
     load();
@@ -91,7 +91,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
       }
     } catch (err) {
       toast.error(t("invite_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "InvitePlayerDialog", action: "sendInvite", category: "network" });
     } finally {
       setIsSubmitting(false);
     }
@@ -108,7 +108,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
       ));
     } catch (err) {
       toast.error(t("invite_cancel_error"));
-      Sentry.captureException(err);
+      captureError(err, { component: "InvitePlayerDialog", action: "cancelInvite", category: "network" });
     }
   }, [campaignId, t]);
 

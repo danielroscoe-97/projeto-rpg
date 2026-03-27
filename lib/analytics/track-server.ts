@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHash } from "crypto";
+import { captureWarning } from "@/lib/errors/capture";
 
 // Lazy singleton — avoids crash when env vars aren't set at build time
 let _supabaseAdmin: SupabaseClient | null = null;
@@ -61,6 +62,6 @@ export function trackServerEvent(name: string, opts: TrackOptions = {}) {
       user_agent: opts.req?.headers.get("user-agent") ?? null,
     })
     .then(({ error }) => {
-      if (error) console.error("[analytics] insert failed:", error.message);
+      if (error) captureWarning(`insert failed: ${error.message}`, { component: "analytics", category: "database" });
     });
 }

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 
 /**
  * POST /api/billing-portal — Create Stripe Customer Portal session.
  * Requires auth + active subscription with stripe_customer_id.
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    Sentry.captureException(error);
+    captureError(error, { component: "BillingPortalAPI", action: "createPortalSession", category: "payment" });
     return NextResponse.json(
       { error: "Failed to create portal session" },
       { status: 500 }

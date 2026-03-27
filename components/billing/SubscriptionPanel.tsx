@@ -6,7 +6,7 @@ import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { invalidateFlagCache } from "@/lib/feature-flags";
 import { trackEvent } from "@/lib/analytics/track";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import {
   Crown,
   Lock,
@@ -65,7 +65,7 @@ export function SubscriptionPanel() {
       useSubscriptionStore.setState({ initialized: false });
       loadSubscription();
     } catch (error) {
-      Sentry.captureException(error);
+      captureError(error, { component: "SubscriptionPanel", action: "startTrial", category: "payment" });
       toast.error(t("trial_error"));
     } finally {
       setActionLoading(false);
@@ -90,7 +90,7 @@ export function SubscriptionPanel() {
       trackEvent("checkout_started", { interval });
       window.location.href = data.url;
     } catch (error) {
-      Sentry.captureException(error);
+      captureError(error, { component: "SubscriptionPanel", action: "checkout", category: "payment" });
       toast.error(t("checkout_error"));
     } finally {
       setActionLoading(false);
@@ -110,7 +110,7 @@ export function SubscriptionPanel() {
 
       window.location.href = data.url;
     } catch (error) {
-      Sentry.captureException(error);
+      captureError(error, { component: "SubscriptionPanel", action: "manageBilling", category: "payment" });
       toast.error(t("portal_error"));
     } finally {
       setActionLoading(false);

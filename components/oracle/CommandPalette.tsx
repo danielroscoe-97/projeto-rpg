@@ -110,7 +110,7 @@ export function CommandPalette() {
     handleClose();
   }, [pinCard, handleClose]);
 
-  const handlePinSpell = useCallback((spell: SrdSpell) => {
+  const _handlePinSpell = useCallback((spell: SrdSpell) => {
     pinCard("spell", spell.id, spell.ruleset_version);
     handleClose();
   }, [pinCard, handleClose]);
@@ -120,7 +120,7 @@ export function CommandPalette() {
     handleClose();
   }, [handleClose]);
 
-  const handlePinCondition = useCallback((condition: SrdCondition) => {
+  const _handlePinCondition = useCallback((condition: SrdCondition) => {
     pinCard("condition", condition.id, "2014");
     handleClose();
   }, [pinCard, handleClose]);
@@ -262,6 +262,7 @@ export function CommandPalette() {
                   >
                     <MonsterToken
                       tokenUrl={r.item.token_url}
+                      fallbackTokenUrl={r.item.fallback_token_url}
                       creatureType={r.item.type}
                       name={r.item.name}
                       size={32}

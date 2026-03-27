@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -71,7 +72,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
         .single();
 
       if (dbError || !data) {
-        console.error("Campaign create error:", dbError);
+        captureError(dbError, { component: "CampaignManager", action: "create", category: "database" });
         throw new Error(dbError?.message ?? t("campaigns_create_error"));
       }
 

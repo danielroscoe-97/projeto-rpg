@@ -22,6 +22,8 @@ export interface SrdMonster {
   source?: string;
   /** URL to the monster's token image (webp) */
   token_url?: string;
+  /** Fallback token URL (cross-version or similar creature) */
+  fallback_token_url?: string;
 
   // --- Full stat block fields (present in bundles; optional for lean test fixtures) ---
   size?: string;

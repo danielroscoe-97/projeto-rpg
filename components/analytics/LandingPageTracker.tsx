@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { trackEvent } from "@/lib/analytics/track";
 
-const LP_SECTIONS = [
+const _LP_SECTIONS = [
   "hero",
   "features",
   "social-proof",

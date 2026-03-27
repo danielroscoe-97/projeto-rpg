@@ -128,7 +128,7 @@ export function OracleAICard({
         </div>
 
         {/* Question */}
-        <p className="oracle-ai-question">"{data.question}"</p>
+        <p className="oracle-ai-question">&ldquo;{data.question}&rdquo;</p>
 
         <hr className="card-divider" />
 

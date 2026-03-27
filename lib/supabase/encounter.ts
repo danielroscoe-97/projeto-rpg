@@ -178,5 +178,6 @@ export function monsterToCombatant(
     group_order: null,
     dm_notes: '',
     player_notes: '',
+    player_character_id: null,
   };
 }

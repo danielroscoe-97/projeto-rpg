@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 
 const MAX_INVITES_PER_DAY = 20;
 
@@ -82,7 +82,7 @@ export async function POST(
       },
     });
   } catch (err) {
-    Sentry.captureException(err);
+    captureError(err, { component: "CampaignInvitesAPI", action: "createInvite", category: "database" });
     return NextResponse.json({ error: "Failed to create invite" }, { status: 500 });
   }
 }
@@ -118,7 +118,7 @@ export async function GET(
 
     return NextResponse.json({ data: invites ?? [] });
   } catch (err) {
-    Sentry.captureException(err);
+    captureError(err, { component: "CampaignInvitesAPI", action: "fetchInvites", category: "database" });
     return NextResponse.json({ error: "Failed to fetch invites" }, { status: 500 });
   }
 }
@@ -150,7 +150,7 @@ export async function DELETE(
 
     return NextResponse.json({ data: { cancelled: true } });
   } catch (err) {
-    Sentry.captureException(err);
+    captureError(err, { component: "CampaignInvitesAPI", action: "cancelInvite", category: "database" });
     return NextResponse.json({ error: "Failed to cancel invite" }, { status: 500 });
   }
 }

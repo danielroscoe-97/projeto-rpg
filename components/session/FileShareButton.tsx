@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import { Upload, Loader2 } from "lucide-react";
 import { broadcastEvent } from "@/lib/realtime/broadcast";
 import { SharedFileCard } from "./SharedFileCard";
@@ -31,6 +31,14 @@ export function FileShareButton({ sessionId }: FileShareButtonProps) {
   const [files, setFiles] = useState<SharedFile[]>([]);
   const [showFiles, setShowFiles] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cleanup progress timer on unmount
+  useEffect(() => {
+    return () => {
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+    };
+  }, []);
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,7 +59,8 @@ export function FileShareButton({ sessionId }: FileShareButtonProps) {
       formData.append("file", file);
 
       // Simulate progress for UX (real progress requires XMLHttpRequest)
-      const progressTimer = setInterval(() => {
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+      progressTimerRef.current = setInterval(() => {
         setProgress((p) => Math.min(p + 15, 90));
       }, 200);
 
@@ -60,7 +69,8 @@ export function FileShareButton({ sessionId }: FileShareButtonProps) {
         body: formData,
       });
 
-      clearInterval(progressTimer);
+      clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
 
       if (!res.ok) {
         const body = await res.json();
@@ -91,7 +101,7 @@ export function FileShareButton({ sessionId }: FileShareButtonProps) {
       } else {
         toast.error(t("files_upload_error"));
       }
-      Sentry.captureException(err);
+      captureError(err, { component: "FileShareButton", action: "uploadFile", category: "network" });
     } finally {
       setIsUploading(false);
       setProgress(0);

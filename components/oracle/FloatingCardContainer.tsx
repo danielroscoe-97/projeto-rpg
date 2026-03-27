@@ -27,8 +27,8 @@ function DraggableCard({
   card,
   children,
   onFocus,
-  onClose,
-  onMinimize,
+  onClose: _onClose,
+  onMinimize: _onMinimize,
 }: {
   card: PinnedCard;
   children: React.ReactNode;

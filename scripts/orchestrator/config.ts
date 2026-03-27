@@ -67,6 +67,8 @@ const configSchema = z.object({
     baseDir: z.string().min(1),
     maxConcurrent: z.number().int().positive(),
     cleanupOnSuccess: z.boolean(),
+    rateLimitBackoffMs: z.number().int().positive(),
+    maxRateLimitRetries: z.number().int().positive(),
   }),
   verifyFix: z.object({
     enabled: z.boolean(),
@@ -134,8 +136,10 @@ const raw = {
   },
   worktree: {
     baseDir: join(tmpdir(), "bmad"),
-    maxConcurrent: 1,
+    maxConcurrent: 2,
     cleanupOnSuccess: true,
+    rateLimitBackoffMs: 30_000,
+    maxRateLimitRetries: 5,
   },
   verifyFix: {
     enabled: true,

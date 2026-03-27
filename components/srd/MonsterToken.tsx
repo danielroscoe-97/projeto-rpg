@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 // ─── Creature type emoji fallbacks ──────────────────────────────────────────
 
@@ -27,10 +27,17 @@ export function getCreatureEmoji(type: string | undefined): string {
   return CREATURE_ICONS[key] ?? "\u2694";
 }
 
+// ─── Constants ──────────────────────────────────────────────────────────────
+
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 1500;
+
 // ─── Props ──────────────────────────────────────────────────────────────────
 
 interface MonsterTokenProps {
   tokenUrl?: string;
+  /** Fallback token URL (cross-version or similar creature) */
+  fallbackTokenUrl?: string;
   creatureType?: string;
   name: string;
   /** px size — defaults to 64 */
@@ -41,11 +48,48 @@ interface MonsterTokenProps {
 
 export function MonsterToken({
   tokenUrl,
+  fallbackTokenUrl,
   creatureType,
   name,
   size = 64,
 }: MonsterTokenProps) {
-  const [imgError, setImgError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState<string | null>(tokenUrl ?? null);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const retriesRef = useRef(0);
+  const triedFallbackRef = useRef(false);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup retry timer on unmount
+  useEffect(() => {
+    return () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    };
+  }, []);
+
+  const handleError = useCallback(() => {
+    // Retry primary URL with cache-bust
+    if (retriesRef.current < MAX_RETRIES && tokenUrl) {
+      retriesRef.current += 1;
+      const delay = RETRY_DELAY_MS * retriesRef.current;
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = setTimeout(() => {
+        retryTimerRef.current = null;
+        setCurrentSrc(`${tokenUrl}${tokenUrl.includes("?") ? "&" : "?"}r=${retriesRef.current}`);
+      }, delay);
+      return;
+    }
+
+    // Try fallback URL
+    if (!triedFallbackRef.current && fallbackTokenUrl) {
+      triedFallbackRef.current = true;
+      retriesRef.current = 0;
+      setCurrentSrc(fallbackTokenUrl);
+      return;
+    }
+
+    // All attempts exhausted — show emoji
+    setShowEmoji(true);
+  }, [tokenUrl, fallbackTokenUrl]);
 
   const sizeClass =
     size >= 64
@@ -54,13 +98,13 @@ export function MonsterToken({
         ? "w-9 h-9 text-base"
         : "w-8 h-8 text-sm";
 
-  if (tokenUrl && !imgError) {
+  if (currentSrc && !showEmoji) {
     return (
       <img
-        src={tokenUrl}
+        src={currentSrc}
         alt={`${name} token`}
         loading="lazy"
-        onError={() => setImgError(true)}
+        onError={handleError}
         className={`${sizeClass} rounded-full object-cover border-2 border-[#c9a959]/40 bg-[#1a1a1e] flex-shrink-0`}
       />
     );

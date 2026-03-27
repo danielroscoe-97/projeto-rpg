@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 
 /**
  * POST /api/trial — Activate 14-day free trial.
@@ -38,7 +38,7 @@ export async function POST() {
 
     return NextResponse.json({ success: true, trial_ends_at: trialEndsAt.toISOString() });
   } catch (error) {
-    Sentry.captureException(error);
+    captureError(error, { component: "TrialAPI", action: "activateTrial", category: "payment" });
     return NextResponse.json(
       { error: "Failed to activate trial" },
       { status: 500 }

@@ -1,5 +1,5 @@
 import { usePinnedCardsStore } from "../pinned-cards-store";
-import type { PinnedCard } from "../pinned-cards-store";
+// PinnedCard type available via "../pinned-cards-store" if needed
 
 // Reset store state before each test
 beforeEach(() => {

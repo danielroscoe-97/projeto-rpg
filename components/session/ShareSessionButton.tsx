@@ -19,6 +19,14 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
   const [error, setError] = useState<string | null>(null);
   const [showQr, setShowQr] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    };
+  }, []);
 
   // Render QR code to canvas when URL is ready and QR panel is open
   useEffect(() => {
@@ -41,8 +49,12 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
       setShowQr(true);
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    } catch (err) {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = setTimeout(() => {
+        copiedTimerRef.current = null;
+        setCopied(false);
+      }, 3000);
+    } catch (_err) {
       setError(t("share_error"));
     } finally {
       setIsLoading(false);
@@ -54,7 +66,11 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
     try {
       await navigator.clipboard.writeText(joinUrl);
       setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = setTimeout(() => {
+        copiedTimerRef.current = null;
+        setCopied(false);
+      }, 3000);
     } catch {
       setError(t("share_copy_error"));
     }

@@ -1,6 +1,6 @@
 import { ORACLE_SYSTEM_PROMPT } from "@/lib/oracle-ai/system-prompt";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 
 export const runtime = "nodejs";
 
@@ -93,10 +93,7 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     // Fail-open: allow request if rate limit check fails
-    console.error("[Oracle AI] Rate limit check failed:", error);
-    Sentry.captureException(error, {
-      tags: { component: "oracle-ai", flow: "rate-limit" },
-    });
+    captureError(error, { component: "OracleAI", action: "rateLimit", category: "network" });
   }
 
   let question: string;
@@ -200,7 +197,9 @@ export async function POST(request: Request) {
                     }
                   }
                 } catch {
-                  console.warn("[Oracle AI] Malformed Gemini SSE chunk skipped:", json);
+                  if (process.env.NODE_ENV === "development") {
+                    console.warn("[Oracle AI] Malformed Gemini SSE chunk skipped:", json);
+                  }
                 }
               }
             }

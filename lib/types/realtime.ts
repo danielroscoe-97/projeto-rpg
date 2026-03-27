@@ -1,4 +1,5 @@
 import type { Combatant } from "./combat";
+import type { HpStatus } from "@/lib/utils/hp-status";
 
 /** Realtime event types following domain:action pattern */
 export type RealtimeEventType =
@@ -14,7 +15,8 @@ export type RealtimeEventType =
   | "combat:player_notes_update"
   | "combat:late_join_request"
   | "combat:late_join_response"
-  | "session:state_sync";
+  | "session:state_sync"
+  | "session:player_linked";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -122,3 +124,81 @@ export type RealtimeEvent =
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
   | RealtimeStateSync;
+
+// ── Sanitized types for player-facing broadcast (A.0.6) ──────────
+
+/** Combatant data safe for player broadcast — no DM-only fields, no monster stats. */
+export type SanitizedCombatant = Omit<
+  Combatant,
+  "dm_notes" | "display_name" | "current_hp" | "max_hp" | "temp_hp" | "ac" | "spell_save_dc"
+> & {
+  /** Monsters get hp_status instead of exact HP values */
+  hp_status?: HpStatus;
+  /** Present for players, absent for monsters */
+  current_hp?: number;
+  max_hp?: number;
+  temp_hp?: number;
+  ac?: number;
+  spell_save_dc?: number | null;
+};
+
+/** Player-safe version of combat:combatant_add */
+export interface SanitizedCombatantAdd {
+  type: "combat:combatant_add";
+  combatant: SanitizedCombatant;
+}
+
+/** Player-safe version of session:state_sync */
+export interface SanitizedStateSync {
+  type: "session:state_sync";
+  combatants: SanitizedCombatant[];
+  current_turn_index: number;
+  round_number: number;
+}
+
+/** Player-safe version of combat:initiative_reorder */
+export interface SanitizedInitiativeReorder {
+  type: "combat:initiative_reorder";
+  combatants: SanitizedCombatant[];
+}
+
+/** Player-safe HP update for player characters (full HP data) */
+export interface SanitizedPlayerHpUpdate {
+  type: "combat:hp_update";
+  combatant_id: string;
+  current_hp: number;
+  temp_hp: number;
+  max_hp?: number;
+  hp_status?: HpStatus;
+}
+
+/** Player-safe HP update for monsters (status only, no exact HP) */
+export interface SanitizedMonsterHpUpdate {
+  type: "combat:hp_update";
+  combatant_id: string;
+  hp_status: HpStatus;
+}
+
+/** Player-safe stats update — only name changes reach players */
+export interface SanitizedStatsUpdate {
+  type: "combat:stats_update";
+  combatant_id: string;
+  name?: string;
+}
+
+/** Union of all sanitized event types that can be broadcast to players */
+export type SanitizedEvent =
+  | SanitizedCombatantAdd
+  | SanitizedStateSync
+  | SanitizedInitiativeReorder
+  | SanitizedPlayerHpUpdate
+  | SanitizedMonsterHpUpdate
+  | SanitizedStatsUpdate
+  | RealtimeTurnAdvance
+  | RealtimeConditionChange
+  | RealtimeCombatantRemove
+  | RealtimeVersionSwitch
+  | RealtimeDefeatedChange
+  | RealtimePlayerNotesUpdate
+  | RealtimeLateJoinRequest
+  | RealtimeLateJoinResponse;

@@ -1,26 +1,30 @@
 /**
- * BMAD Orchestrator — Story Queue
+ * BMAD Orchestrator — Story Queue (Parallel)
  *
- * Processes story specs one by one, autonomously.
+ * Processes story specs with configurable concurrency.
  * Designed to run for 28+ hours unattended.
  *
  * Features:
+ * - Parallel execution via semaphore (maxConcurrent slots)
+ * - Dependency-aware scheduling (a0-1 before a0-2, but a0-1 || b1-1)
  * - Persistent queue state (survives restarts)
- * - File locking (prevents concurrent state corruption)
+ * - Async mutex for queue state (no event-loop blocking)
  * - Retry with exponential backoff (max 3 retries per story)
- * - Per-story git branches + commits
- * - Slack notifications at each step
+ * - Rate limit detection + dedicated backoff
+ * - Per-story git branches + commits (git remote ops serialized)
+ * - Slack notifications with slot identification
  * - Structured logging for full history
  */
 
-import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync, existsSync, unlinkSync } from "fs";
 import { execFileSync } from "child_process";
 import { join } from "path";
 import { config } from "./config.js";
 import { runClaude } from "./claude-runner.js";
 import { notify, notifyComplete, notifyError } from "./slack.js";
 import { logger } from "./logger.js";
-import * as git from "./git.js";
+import { Semaphore, Mutex } from "./semaphore.js";
+import { withGitMutex } from "./git-mutex.js";
 import {
   createWorktree,
   removeWorktree,
@@ -46,11 +50,12 @@ interface StoryEntry {
   worktreePath?: string;
   verifyAttempts?: number;
   verifyPassed?: boolean;
+  slotId?: number;
 }
 
 interface QueueState {
   stories: StoryEntry[];
-  currentIndex: number;
+  runningStories: string[];
   startedAt: string;
   lastUpdated: string;
   isPaused: boolean;
@@ -61,12 +66,13 @@ interface QueueState {
 const QUEUE_PATH = join(config.projectRoot, "scripts/orchestrator/.queue-state.json");
 const LOCK_PATH = QUEUE_PATH + ".lock";
 
-// -- File Locking (simple atomic approach) --
+// -- Async Queue Mutex (in-process, non-blocking) --
 
-function acquireLock(maxWaitMs: number = 5000): boolean {
+const queueMutex = new Mutex();
+
+function acquireFileLock(maxWaitMs: number = 5000): boolean {
   const start = Date.now();
   while (existsSync(LOCK_PATH)) {
-    // Check for stale lock (> 60s)
     try {
       const lockAge = Date.now() - Number(readFileSync(LOCK_PATH, "utf-8").trim());
       if (lockAge > 60_000) {
@@ -74,38 +80,38 @@ function acquireLock(maxWaitMs: number = 5000): boolean {
         break;
       }
     } catch {
-      break; // Lock file corrupt, break it
+      break;
     }
-
     if (Date.now() - start > maxWaitMs) {
-      logger.error("Failed to acquire queue lock — timeout");
+      logger.error("Failed to acquire queue file lock — timeout");
       return false;
     }
-
-    // Spin wait 50ms
+    // Brief sync wait — only hit when cross-process contention (rare)
     const end = Date.now() + 50;
     while (Date.now() < end) { /* spin */ }
   }
-
   writeFileSync(LOCK_PATH, String(Date.now()));
   return true;
 }
 
-function releaseLock(): void {
-  try {
-    const { unlinkSync } = require("fs");
-    unlinkSync(LOCK_PATH);
-  } catch { /* best effort */ }
+function releaseFileLock(): void {
+  try { unlinkSync(LOCK_PATH); } catch { /* best effort */ }
 }
 
-function withLock<T>(fn: () => T): T {
-  if (!acquireLock()) {
-    throw new Error("Could not acquire queue lock");
-  }
+/** Async mutex + file lock for queue state access */
+async function withLock<T>(fn: () => T): Promise<T> {
+  await queueMutex.acquire();
   try {
-    return fn();
+    if (!acquireFileLock()) {
+      throw new Error("Could not acquire queue file lock");
+    }
+    try {
+      return fn();
+    } finally {
+      releaseFileLock();
+    }
   } finally {
-    releaseLock();
+    queueMutex.release();
   }
 }
 
@@ -113,9 +119,14 @@ function withLock<T>(fn: () => T): T {
 
 function loadQueue(): QueueState {
   if (existsSync(QUEUE_PATH)) {
-    return JSON.parse(readFileSync(QUEUE_PATH, "utf-8"));
+    const raw = JSON.parse(readFileSync(QUEUE_PATH, "utf-8"));
+    // Migrate from old schema (currentIndex → runningStories)
+    if (!Array.isArray(raw.runningStories)) {
+      raw.runningStories = [];
+    }
+    return raw;
   }
-  return { stories: [], currentIndex: 0, startedAt: "", lastUpdated: "", isPaused: false };
+  return { stories: [], runningStories: [], startedAt: "", lastUpdated: "", isPaused: false };
 }
 
 function saveQueue(state: QueueState): void {
@@ -123,7 +134,7 @@ function saveQueue(state: QueueState): void {
   writeFileSync(QUEUE_PATH, JSON.stringify(state, null, 2));
 }
 
-function loadAndSave(updater: (state: QueueState) => void): QueueState {
+async function loadAndSave(updater: (state: QueueState) => void): Promise<QueueState> {
   return withLock(() => {
     const state = loadQueue();
     updater(state);
@@ -132,14 +143,52 @@ function loadAndSave(updater: (state: QueueState) => void): QueueState {
   });
 }
 
+// -- Dependency Resolution --
+
+/**
+ * Infer sequential dependencies from story ID naming convention.
+ * e.g. "a0-3" depends on "a0-2", "b1-5" depends on "b1-4".
+ * Stories in different streams (a vs b vs c) have no dependencies.
+ */
+function inferDependencies(storyId: string): string[] {
+  const match = storyId.match(/^([a-z]\d+)-(\d+)/);
+  if (!match) return [];
+  const [, stream, numStr] = match;
+  const num = parseInt(numStr);
+  if (num <= 1) return [];
+  return [`${stream}-${num - 1}`];
+}
+
+function areDependenciesMet(storyId: string, stories: StoryEntry[]): boolean {
+  const deps = inferDependencies(storyId);
+  if (deps.length === 0) return true;
+
+  return deps.every((depId) => {
+    const dep = stories.find((s) => s.id === depId);
+    // If dep doesn't exist in queue, assume it's already done
+    return !dep || dep.status === "done";
+  });
+}
+
 // -- Build Queue from Specs --
 
-export function buildQueue(): QueueState {
-  return withLock(() => {
+export function buildQueue(storyIds?: string[]): QueueState {
+  // Synchronous version for initial build (called before parallel execution)
+  if (!acquireFileLock()) throw new Error("Could not acquire queue file lock");
+  try {
     const specsDir = join(config.projectRoot, "_bmad-output/implementation-artifacts");
-    const files = readdirSync(specsDir)
-      .filter((f) => f.startsWith("v2-") && f.endsWith(".md"))
-      .sort();
+    let files: string[];
+
+    if (storyIds && storyIds.length > 0) {
+      files = storyIds
+        .map((id) => id.endsWith(".md") ? id : `${id}.md`)
+        .filter((f) => existsSync(join(specsDir, f)));
+    } else {
+      // Exclude d* (orchestrator self-improvement stories)
+      files = readdirSync(specsDir)
+        .filter((f) => /^(a\d|b\d|c\d|v2-)/.test(f) && f.endsWith(".md"))
+        .sort();
+    }
 
     const stories: StoryEntry[] = files.map((f) => ({
       id: f.replace(".md", ""),
@@ -150,7 +199,7 @@ export function buildQueue(): QueueState {
 
     const state: QueueState = {
       stories,
-      currentIndex: 0,
+      runningStories: [],
       startedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
       isPaused: false,
@@ -158,7 +207,9 @@ export function buildQueue(): QueueState {
 
     saveQueue(state);
     return state;
-  });
+  } finally {
+    releaseFileLock();
+  }
 }
 
 // -- Verify-Fix Loop --
@@ -169,9 +220,6 @@ export interface VerifyResult {
   fixAttempts: number;
 }
 
-/**
- * Run tests and optionally QA in a worktree, fixing failures up to maxAttempts times.
- */
 export async function verifyAndFix(
   worktree: Worktree,
   specContent: string,
@@ -221,14 +269,17 @@ Respond concisely.`,
         allowedTools: ["Read", "Glob", "Grep", "Bash"],
       });
 
-      qaFeedback = qaResult.output;
+      if (qaResult.exitCode !== 0) {
+        qaFeedback = `[Claude CLI exited ${qaResult.exitCode}]`;
+      } else {
+        qaFeedback = qaResult.output;
+      }
 
-      if (qaResult.output.includes("ALL_CRITERIA_MET")) {
+      if (qaResult.exitCode === 0 && qaResult.output.includes("ALL_CRITERIA_MET")) {
         logger.info(`Verify passed on attempt ${attempt + 1}`, { storyId: worktree.storyId });
         return { passed: true, testOutput, fixAttempts: attempt };
       }
     } else if (testPassed) {
-      // Tests pass and QA check disabled
       logger.info(`Tests passed (QA check disabled)`, { storyId: worktree.storyId });
       return { passed: true, testOutput, fixAttempts: attempt };
     }
@@ -239,10 +290,10 @@ Respond concisely.`,
     await notify(`🔧 *${worktree.storyId}* — Tentativa ${fixAttempt}/${maxAttempts}: corrigindo falhas...`);
 
     if (fixAttempt >= maxAttempts) {
-      break; // Don't run fix on the last attempt — we've exhausted retries
+      break;
     }
 
-    await runClaude({
+    const fixResult = await runClaude({
       prompt: `Tests or QA verification failed. Fix the issues in this codebase.
 
 ## Test Output (last 2000 chars)
@@ -264,6 +315,10 @@ ${specContent.slice(0, 3000)}
       maxTurns: config.verifyFix.maxTurnsPerFix,
       allowedTools: ["Read", "Edit", "Write", "Bash", "Glob", "Grep"],
     });
+
+    if (fixResult.exitCode !== 0) {
+      logger.warn(`Fix Claude failed (exit ${fixResult.exitCode}) — skipping to next attempt`);
+    }
   }
 
   return { passed: false, testOutput, fixAttempts: maxAttempts };
@@ -271,21 +326,22 @@ ${specContent.slice(0, 3000)}
 
 // -- Execute Single Story --
 
-async function executeStorySpec(entry: StoryEntry): Promise<boolean> {
-  logger.info(`Starting: ${entry.id} (attempt ${entry.attempts + 1})`);
+async function executeStorySpec(entry: StoryEntry, slotId: number): Promise<boolean> {
+  logger.info(`[Slot ${slotId}] Starting: ${entry.id} (attempt ${entry.attempts + 1})`);
   entry.status = "running";
   entry.startedAt = new Date().toISOString();
   entry.attempts++;
+  entry.slotId = slotId;
 
   let worktree: Worktree | null = null;
 
   try {
-    // 1. Create worktree (isolated directory — main repo stays on base branch)
-    worktree = createWorktree(entry.id, entry.id);
+    // 1. Create worktree (skipFetch — caller fetched once for all)
+    worktree = createWorktree(entry.id, entry.id, { skipFetch: true });
     entry.branch = worktree.branch;
     entry.worktreePath = worktree.path;
 
-    await notify(`💻 *Implementando:* ${entry.id}\n_Branch: ${worktree.branch}_\n_Worktree: ${worktree.path}_`);
+    await notify(`💻 *[Slot ${slotId}] Implementando:* ${entry.id}\n_Branch: ${worktree.branch}_`);
 
     // 2. Read the spec
     const specContent = readFileSync(join(config.projectRoot, entry.specPath), "utf-8");
@@ -318,6 +374,14 @@ ${specContent}
       cwd: worktree.path,
     });
 
+    // 3b. Bail on CLI failure — let outer retry handle it
+    if (result.exitCode !== 0) {
+      if (result.isRateLimited) {
+        throw new Error(`RATE_LIMITED: ${result.output.slice(-200)}`);
+      }
+      throw new Error(`Claude CLI exited with code ${result.exitCode}: ${result.output.slice(-500)}`);
+    }
+
     // 4. Verify-Fix Loop
     const verification = await verifyAndFix(worktree, specContent);
     entry.verifyAttempts = verification.fixAttempts;
@@ -343,25 +407,25 @@ ${specContent}
       return true;
     }
 
-    // 6. Push
+    // 6. Push (serialized via git mutex)
     try {
-      pushWorktree(worktree);
+      await withGitMutex(() => pushWorktree(worktree!));
     } catch (e) {
       logger.warn(`Push failed for ${entry.id}, continuing`, { error: String(e) });
     }
 
-    // 7. Create PR
+    // 7. Create PR (serialized via git mutex)
     const verifyStatus = verification.passed ? "✅ Verificação passou" : "⚠️ NEEDS REVIEW — verificação falhou";
-    const pr = createPRFromWorktree(
-      worktree,
+    await withGitMutex(() => createPRFromWorktree(
+      worktree!,
       `feat(${entry.id}): implement story`,
       `## Story ${entry.id}\n\n${result.output.slice(0, 500)}\n\n### Verificação\n${verifyStatus}\n- Fix attempts: ${verification.fixAttempts}\n\n🤖 Generated by BMAD Orchestrator`
-    );
+    ));
 
     entry.status = "done";
     entry.finishedAt = new Date().toISOString();
 
-    logger.info(`Done: ${entry.id} — commit ${commitHash}`);
+    logger.info(`[Slot ${slotId}] Done: ${entry.id} — commit ${commitHash}`);
     await notifyComplete({
       task: entry.id,
       duration: getDuration(entry.startedAt!, entry.finishedAt),
@@ -388,17 +452,22 @@ ${specContent}
       }
     }
 
+    const isRateLimit = err.message.startsWith("RATE_LIMITED");
+
     if (entry.attempts < 3) {
-      // Exponential backoff: 10s, 30s, 90s
-      const backoffMs = 10_000 * Math.pow(3, entry.attempts - 1);
-      logger.warn(`Failed: ${entry.id} — ${err.message}. Retrying in ${backoffMs / 1000}s.`);
+      // Rate limit gets longer backoff
+      const backoffMs = isRateLimit
+        ? config.worktree.rateLimitBackoffMs * Math.pow(2, entry.attempts - 1)
+        : 10_000 * Math.pow(3, entry.attempts - 1);
+      const reason = isRateLimit ? "rate limited" : err.message.slice(0, 200);
+      logger.warn(`[Slot ${slotId}] Failed: ${entry.id} — ${reason}. Retrying in ${backoffMs / 1000}s.`);
       entry.status = "pending";
-      await notify(`⚠️ *${entry.id}* falhou (tentativa ${entry.attempts}/3): ${err.message.slice(0, 200)}\n_Retentando em ${backoffMs / 1000}s..._`);
+      await notify(`⚠️ *[Slot ${slotId}] ${entry.id}* falhou (tentativa ${entry.attempts}/3): ${reason}\n_Retentando em ${backoffMs / 1000}s..._`);
 
       await new Promise((r) => setTimeout(r, backoffMs));
       return false;
     } else {
-      logger.error(`Failed permanently: ${entry.id} — ${err.message}`);
+      logger.error(`[Slot ${slotId}] Failed permanently: ${entry.id} — ${err.message}`);
       entry.status = "failed";
       await notifyError({
         task: entry.id,
@@ -410,10 +479,10 @@ ${specContent}
   }
 }
 
-// -- Main Queue Runner --
+// -- Main Queue Runner (Parallel) --
 
 export async function runQueue(): Promise<void> {
-  let state = withLock(() => {
+  let state = await withLock(() => {
     const s = loadQueue();
     if (s.stories.length === 0) {
       return buildQueue();
@@ -424,40 +493,116 @@ export async function runQueue(): Promise<void> {
   const total = state.stories.length;
   const pending = state.stories.filter((s) => s.status === "pending").length;
   const done = state.stories.filter((s) => s.status === "done").length;
+  const maxC = config.worktree.maxConcurrent;
 
-  logger.info(`Queue: ${total} stories, ${done} done, ${pending} pending`);
-  await notify(`🚀 *Story Queue iniciando!*\n*Total:* ${total} stories\n*Feitas:* ${done}\n*Pendentes:* ${pending}\n_Processando uma a uma..._`);
+  logger.info(`Queue: ${total} stories, ${done} done, ${pending} pending, maxConcurrent=${maxC}`);
+  await notify(`🚀 *Story Queue iniciando!*\n*Total:* ${total} stories\n*Feitas:* ${done}\n*Pendentes:* ${pending}\n*Concurrency:* ${maxC} slots\n_Processando em paralelo..._`);
 
-  for (let i = 0; i < state.stories.length; i++) {
-    // Reload state (may have been paused externally)
-    state = withLock(() => loadQueue());
+  // Fetch once for all worktrees
+  try {
+    execFileSync("git", ["fetch", "origin", config.git.baseBranch], {
+      cwd: config.projectRoot,
+      encoding: "utf-8",
+      timeout: 60_000,
+    });
+  } catch {
+    logger.warn("Pre-fetch failed (offline?), continuing with local state");
+  }
 
-    if (state.isPaused) {
-      logger.info("Queue paused. Stopping.");
-      await notify("⏸️ Queue pausada. Mande 'retomar queue' para continuar.");
-      return;
-    }
+  const semaphore = new Semaphore(maxC);
+  const promises: Promise<void>[] = [];
+  let slotCounter = 0;
 
-    const story = state.stories[i];
-
+  for (const story of state.stories) {
     if (story.status === "done" || story.status === "skipped") continue;
     if (story.status === "failed" && story.attempts >= 3) continue;
 
-    loadAndSave((s) => { s.currentIndex = i; });
+    const storyId = story.id;
 
-    const success = await executeStorySpec(story);
-    loadAndSave((s) => { s.stories[i] = story; });
+    const storyPromise = semaphore.run(async () => {
+      // Re-check pause state
+      const current = await withLock(() => loadQueue());
+      if (current.isPaused) {
+        logger.info(`Queue paused — skipping ${storyId}`);
+        return;
+      }
 
-    // Progress update every 3 stories
-    if ((i + 1) % 3 === 0) {
-      const doneNow = state.stories.filter((s) => s.status === "done").length;
-      const failedNow = state.stories.filter((s) => s.status === "failed").length;
-      await notify(`📊 *Progresso:* ${doneNow}/${total} done, ${failedNow} failed`);
-    }
+      // Re-check story status (may have changed)
+      const freshStory = current.stories.find((s) => s.id === storyId);
+      if (!freshStory || freshStory.status === "done" || freshStory.status === "skipped") return;
+      if (freshStory.status === "failed" && freshStory.attempts >= 3) return;
+
+      // Check dependencies
+      if (!areDependenciesMet(storyId, current.stories)) {
+        logger.info(`${storyId} waiting on dependencies — re-queuing`);
+        // Wait and let other stories complete, then this promise settles
+        // We poll every 30s until deps are met or queue is paused
+        for (let waitRound = 0; waitRound < 60; waitRound++) { // max ~30 min wait
+          await new Promise((r) => setTimeout(r, 30_000));
+          const updated = await withLock(() => loadQueue());
+          if (updated.isPaused) return;
+          if (areDependenciesMet(storyId, updated.stories)) break;
+          const depStory = updated.stories.find((s) => s.id === storyId);
+          if (depStory?.status === "done" || depStory?.status === "failed") return;
+        }
+        // Re-check one more time
+        const final = await withLock(() => loadQueue());
+        if (!areDependenciesMet(storyId, final.stories)) {
+          logger.warn(`${storyId} deps never met — skipping`);
+          await loadAndSave((s) => {
+            const e = s.stories.find((x) => x.id === storyId);
+            if (e) { e.status = "skipped"; e.error = "Dependencies not met after timeout"; }
+          });
+          return;
+        }
+      }
+
+      const slot = ++slotCounter;
+
+      // Mark as running in queue state
+      await loadAndSave((s) => {
+        const entry = s.stories.find((e) => e.id === storyId);
+        if (entry) entry.slotId = slot;
+        s.runningStories.push(storyId);
+      });
+
+      try {
+        // Execute — may retry internally via the catch block in executeStorySpec
+        const storyEntry = (await withLock(() => loadQueue())).stories.find((s) => s.id === storyId)!;
+        const success = await executeStorySpec(storyEntry, slot);
+
+        await loadAndSave((s) => {
+          const idx = s.stories.findIndex((e) => e.id === storyId);
+          if (idx >= 0) Object.assign(s.stories[idx], storyEntry);
+          s.runningStories = s.runningStories.filter((id) => id !== storyId);
+        });
+
+        // If failed and retryable, recurse
+        if (!success && storyEntry.status === "pending") {
+          const retryEntry = (await withLock(() => loadQueue())).stories.find((s) => s.id === storyId)!;
+          await executeStorySpec(retryEntry, slot);
+          await loadAndSave((s) => {
+            const idx = s.stories.findIndex((e) => e.id === storyId);
+            if (idx >= 0) Object.assign(s.stories[idx], retryEntry);
+            s.runningStories = s.runningStories.filter((id) => id !== storyId);
+          });
+        }
+      } catch (e) {
+        logger.error(`Unhandled error in story ${storyId}`, { error: String(e) });
+        await loadAndSave((s) => {
+          s.runningStories = s.runningStories.filter((id) => id !== storyId);
+        });
+      }
+    });
+
+    promises.push(storyPromise);
   }
 
+  // Wait for all stories (semaphore limits actual concurrency)
+  await Promise.allSettled(promises);
+
   // Final summary
-  state = withLock(() => loadQueue());
+  state = await withLock(() => loadQueue());
   const finalDone = state.stories.filter((s) => s.status === "done").length;
   const finalFailed = state.stories.filter((s) => s.status === "failed").length;
   const finalSkipped = state.stories.filter((s) => s.status === "skipped").length;
@@ -478,29 +623,52 @@ function getDuration(start: string, end: string): string {
 // -- External Controls --
 
 export function pauseQueue(): void {
-  loadAndSave((s) => { s.isPaused = true; });
+  // Sync version for external callers (slack commands)
+  if (!acquireFileLock()) return;
+  try {
+    const state = loadQueue();
+    state.isPaused = true;
+    saveQueue(state);
+  } finally {
+    releaseFileLock();
+  }
 }
 
 export function resumeQueue(): void {
-  loadAndSave((s) => { s.isPaused = false; });
+  if (!acquireFileLock()) return;
+  try {
+    const state = loadQueue();
+    state.isPaused = false;
+    saveQueue(state);
+  } finally {
+    releaseFileLock();
+  }
 }
 
 export function getQueueStatus(): string {
-  const state = withLock(() => loadQueue());
-  if (state.stories.length === 0) return "Queue vazia.";
+  if (!acquireFileLock()) return "Could not read queue state.";
+  try {
+    const state = loadQueue();
+    if (state.stories.length === 0) return "Queue vazia.";
 
-  const done = state.stories.filter((s) => s.status === "done").length;
-  const failed = state.stories.filter((s) => s.status === "failed").length;
-  const pending = state.stories.filter((s) => s.status === "pending").length;
-  const running = state.stories.filter((s) => s.status === "running").length;
-  const current = state.stories[state.currentIndex];
+    const done = state.stories.filter((s) => s.status === "done").length;
+    const failed = state.stories.filter((s) => s.status === "failed").length;
+    const pending = state.stories.filter((s) => s.status === "pending").length;
+    const running = state.stories.filter((s) => s.status === "running");
+    const runningList = running
+      .map((s) => `  • ${s.id}${s.slotId ? ` [Slot ${s.slotId}]` : ""}`)
+      .join("\n");
 
-  return `📊 *Queue Status*
+    return `📊 *Queue Status*
 *Total:* ${state.stories.length}
 ✅ Done: ${done}
-💻 Running: ${running}${current ? ` (${current.id})` : ""}
+💻 Running: ${running.length}/${config.worktree.maxConcurrent}
+${runningList || "  (nenhuma)"}
 ⏳ Pending: ${pending}
 ❌ Failed: ${failed}
 ${state.isPaused ? "⏸️ PAUSADA" : "▶️ Rodando"}
 _Iniciada: ${state.startedAt}_`;
+  } finally {
+    releaseFileLock();
+  }
 }

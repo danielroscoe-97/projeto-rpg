@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/server";
 import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@/lib/errors/capture";
 import type Stripe from "stripe";
 
 /**
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    Sentry.captureException(err);
+    captureError(err, { component: "StripeWebhook", action: "verifySignature", category: "payment" });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -124,7 +125,7 @@ export async function POST(request: NextRequest) {
       }
     }
   } catch (error) {
-    Sentry.captureException(error);
+    captureError(error, { component: "StripeWebhook", action: "processEvent", category: "payment" });
     // Return 500 so Stripe retries (up to 72h with exponential backoff)
     return NextResponse.json({ error: "Processing error" }, { status: 500 });
   }

@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* Safe area padding for iOS devices with home indicator / notch */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
 /* Smooth scroll + offset for fixed navbar */
 html {
   scroll-behavior: smooth;

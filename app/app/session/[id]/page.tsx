@@ -76,6 +76,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     group_order: (row as Record<string, unknown>).group_order as number | null ?? null,
     dm_notes: row.dm_notes ?? '',
     player_notes: row.player_notes ?? '',
+    player_character_id: (row as Record<string, unknown>).player_character_id as string | null ?? null,
   }));
 
   const t = await getTranslations("dashboard");

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";

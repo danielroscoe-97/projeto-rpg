@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useCombatStore } from "@/lib/stores/combat-store";
 import type { Combatant } from "@/lib/types/combat";
 
 interface AddCombatantFormProps {
@@ -17,6 +18,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
   const [ac, setAc] = useState("");
   const [initiative, setInitiative] = useState("");
   const [dc, setDc] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -34,6 +36,18 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
     }
     setFieldErrors(new Set());
 
+    // Auto-generate display_name if not provided
+    const trimmedDisplay = displayName.trim();
+    const existingCombatants = useCombatStore.getState().combatants;
+    let maxN = 0;
+    for (const c of existingCombatants) {
+      if (!c.is_player && c.display_name) {
+        const match = c.display_name.match(/#(\d+)$/);
+        if (match) maxN = Math.max(maxN, parseInt(match[1], 10));
+      }
+    }
+    const autoDisplay = trimmedDisplay || t("display_name_default").replace("{n}", String(maxN + 1));
+
     onAdd({
       name: name.trim(),
       current_hp: parsedMaxHp,
@@ -50,11 +64,12 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
       monster_id: null,
       token_url: null,
       creature_type: null,
-      display_name: null,
+      display_name: autoDisplay,
       monster_group_id: null,
       group_order: null,
       dm_notes: '',
       player_notes: '',
+      player_character_id: null,
     });
   };
 
@@ -115,6 +130,18 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             onFocus={(e) => e.target.select()}
             className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             data-testid="add-initiative-input"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="text-xs text-muted-foreground block mb-1">{t("display_name_label")}</label>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            maxLength={40}
+            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]"
+            placeholder={t("display_name_placeholder")}
+            data-testid="add-display-name-input"
           />
         </div>
         <div>

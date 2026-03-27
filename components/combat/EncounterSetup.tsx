@@ -13,6 +13,7 @@ import { PresetLoader } from "@/components/presets/PresetLoader";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
+import { CRCalculator } from "@/components/combat/CRCalculator";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
@@ -45,6 +46,19 @@ const EMPTY_ADD_ROW: AddRowForm = {
   notes: "",
 };
 
+/** Generate a generic display_name for non-player combatants (anti-metagaming).
+ *  Counts existing "Creature #N" display names to determine the next number. */
+function getDefaultDisplayName(template: string, existingCombatants: Combatant[]): string {
+  let maxN = 0;
+  for (const c of existingCombatants) {
+    if (!c.is_player && c.display_name) {
+      const match = c.display_name.match(/#(\d+)$/);
+      if (match) maxN = Math.max(maxN, parseInt(match[1], 10));
+    }
+  }
+  return template.replace("{n}", String(maxN + 1));
+}
+
 export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId, onSessionCreated }: EncounterSetupProps) {
   const t = useTranslations("combat");
   const {
@@ -67,6 +81,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
   const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
+  const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // On-demand session creation for sharing before combat starts
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
@@ -82,10 +97,18 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
+  // Cleanup glow timer on unmount
+  useEffect(() => {
+    return () => {
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
+    };
+  }, []);
+
   // Bug #2: Clear stale validation error when combatants change
   useEffect(() => {
     if (submitError) setSubmitError(null);
     if (invalidInitIds.size > 0) setInvalidInitIds(new Set());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Reset validation state when combatants change; including submitError/invalidInitIds would cause infinite loop
   }, [combatants]);
 
   // Auto-load preloaded players from campaign selection (runs once on mount)
@@ -117,6 +140,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         group_order: null,
         dm_notes: "",
         player_notes: "",
+        player_character_id: null,
       };
       addCombatant(newCombatant);
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -174,6 +198,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           group_order: null,
           dm_notes: "",
           player_notes: `token:${payload.id}`,
+          player_character_id: null,
         });
       })
       .subscribe();
@@ -186,7 +211,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   // Auto-add monster with rolled initiative when selected from compendium
   const handleSelectMonster = useCallback(
     (monster: SrdMonster) => {
-      const numberedName = getNumberedName(monster.name, useCombatStore.getState().combatants);
+      const currentCombatants = useCombatStore.getState().combatants;
+      const numberedName = getNumberedName(monster.name, currentCombatants);
+      const displayName = getDefaultDisplayName(t("display_name_default"), currentCombatants);
 
       // Roll initiative instantly using the monster's DEX
       const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
@@ -207,25 +234,28 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         monster_id: monster.id,
         token_url: monster.token_url ?? null,
         creature_type: monster.type ?? null,
-        display_name: null,
+        display_name: displayName,
         monster_group_id: null,
         group_order: null,
         dm_notes: "",
         player_notes: "",
+        player_character_id: null,
       });
 
       lastSelectedMonster.current = null;
       setAddRow(EMPTY_ADD_ROW);
     },
-    [addCombatant]
+    [addCombatant, t]
   );
 
   // Add a group of N monsters with shared group ID
   const handleSelectMonsterGroup = useCallback(
     (monster: SrdMonster, qty: number) => {
       const groupId = crypto.randomUUID();
+      const currentCombatants = useCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       for (let i = 1; i <= qty; i++) {
+        const displayName = getDefaultDisplayName(t("display_name_default"), [...currentCombatants, ...newCombatants as Combatant[]]);
         newCombatants.push({
           name: `${monster.name} ${i}`,
           current_hp: monster.hit_points,
@@ -242,25 +272,30 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           monster_id: monster.id,
           token_url: monster.token_url ?? null,
           creature_type: monster.type ?? null,
-          display_name: null,
+          display_name: displayName,
           monster_group_id: groupId,
           group_order: i,
           dm_notes: "",
           player_notes: "",
+          player_character_id: null,
         });
       }
       useCombatStore.getState().addMonsterGroup(newCombatants);
       setAddRow(EMPTY_ADD_ROW);
     },
-    []
+    [t]
   );
 
   // Trigger golden glow on the add row after monster selection
   const handleMonsterAdded = useCallback(() => {
     setAddRowGlow(false);
+    if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
     requestAnimationFrame(() => {
       setAddRowGlow(true);
-      setTimeout(() => setAddRowGlow(false), 1500);
+      glowTimerRef.current = setTimeout(() => {
+        glowTimerRef.current = null;
+        setAddRowGlow(false);
+      }, 1500);
     });
   }, []);
 
@@ -282,6 +317,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       : null;
 
     const sel = lastSelectedMonster.current;
+    const displayName = getDefaultDisplayName(t("display_name_default"), useCombatStore.getState().combatants);
     addCombatant({
       name,
       current_hp: isNaN(hp) || hp < 1 ? 0 : hp,
@@ -298,18 +334,19 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       monster_id: sel?.id ?? null,
       token_url: null,
       creature_type: null,
-      display_name: null,
+      display_name: displayName,
       monster_group_id: null,
       group_order: null,
       dm_notes: "",
       player_notes: addRow.notes.trim(),
+      player_character_id: null,
     });
 
     lastSelectedMonster.current = null;
     setAddRow(EMPTY_ADD_ROW);
     setSubmitError(null);
     initInputRef.current?.focus();
-  }, [addRow, addCombatant]);
+  }, [addRow, addCombatant, t]);
 
   // Load campaign players
   const handleLoadCampaign = useCallback(
@@ -338,6 +375,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           group_order: null,
           dm_notes: "",
           player_notes: "",
+          player_character_id: null,
         };
         addCombatant(newCombatant);
         currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -353,6 +391,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       presetMonsters.forEach((pm) => {
         for (let i = 0; i < pm.quantity; i++) {
           const numberedName = getNumberedName(pm.name, currentCombatants);
+          const displayName = getDefaultDisplayName(t("display_name_default"), currentCombatants);
           const newCombatant: Omit<Combatant, "id"> = {
             name: numberedName,
             current_hp: pm.hp,
@@ -369,18 +408,19 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             monster_id: pm.monster_id,
             token_url: null,
             creature_type: null,
-            display_name: null,
+            display_name: displayName,
             monster_group_id: null,
             group_order: null,
             dm_notes: "",
             player_notes: "",
+            player_character_id: null,
           };
           addCombatant(newCombatant);
           currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
         }
       });
     },
-    [addCombatant, rulesetVersion]
+    [addCombatant, rulesetVersion, t]
   );
 
   // Row edit handlers
@@ -439,6 +479,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         group_order: null,
         dm_notes: "",
         player_notes: "",
+        player_character_id: null,
       });
     },
     [addCombatant]
@@ -554,6 +595,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         onMonsterAdded={handleMonsterAdded}
         onSelectMonsterGroup={handleSelectMonsterGroup}
       />
+
+      {/* CR Calculator (Pro-gated) */}
+      <CRCalculator rulesetVersion={rulesetVersion} />
 
       {/* Column headers — always visible, aligned with both rows and add-row */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">

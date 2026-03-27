@@ -9,7 +9,7 @@
  */
 
 import { execFileSync } from "child_process";
-import { existsSync, writeFileSync, unlinkSync, rmSync, mkdirSync } from "fs";
+import { existsSync, writeFileSync, unlinkSync, rmSync, mkdirSync, symlinkSync } from "fs";
 import { join } from "path";
 import { config } from "./config.js";
 import { logger } from "./logger.js";
@@ -67,7 +67,7 @@ function toBranchSlug(storyId: string, description: string): string {
  * Create an isolated git worktree for a story.
  * If the worktree directory already exists (from a previous run), removes it first.
  */
-export function createWorktree(storyId: string, description: string): Worktree {
+export function createWorktree(storyId: string, description: string, options?: { skipFetch?: boolean }): Worktree {
   const slug = toBranchSlug(storyId, description);
   const branch = `${config.git.branchPrefix}${slug}`;
   const worktreePath = join(config.worktree.baseDir, slug);
@@ -94,15 +94,30 @@ export function createWorktree(storyId: string, description: string): Worktree {
   // Ensure base directory exists
   mkdirSync(config.worktree.baseDir, { recursive: true });
 
-  // Pull latest on base branch (best-effort)
-  try {
-    gitInRepo("fetch", "origin", config.git.baseBranch);
-  } catch {
-    logger.warn("Fetch failed (offline?), continuing with local state");
+  // Pull latest on base branch (best-effort) — skip if caller already fetched
+  if (!options?.skipFetch) {
+    try {
+      gitInRepo("fetch", "origin", config.git.baseBranch);
+    } catch {
+      logger.warn("Fetch failed (offline?), continuing with local state");
+    }
   }
 
   // Create worktree with new branch from base
   gitInRepo("worktree", "add", worktreePath, "-b", branch, config.git.baseBranch);
+
+  // Symlink node_modules from main repo (worktrees don't include gitignored files)
+  const mainNodeModules = join(config.projectRoot, "node_modules");
+  const wtNodeModules = join(worktreePath, "node_modules");
+  if (existsSync(mainNodeModules) && !existsSync(wtNodeModules)) {
+    try {
+      // On Windows, 'junction' works without admin privileges
+      symlinkSync(mainNodeModules, wtNodeModules, "junction");
+      logger.info("Linked node_modules into worktree");
+    } catch (e) {
+      logger.warn("Failed to symlink node_modules — tests may fail in worktree", { error: String(e) });
+    }
+  }
 
   logger.info(`Created worktree`, { path: worktreePath, branch, storyId });
 

@@ -31,6 +31,8 @@ export interface Combatant {
   dm_notes: string;
   /** Player-visible notes — broadcast via realtime */
   player_notes: string;
+  /** Linked player_character ID (DM links temp player to campaign character). Null = unlinked. */
+  player_character_id: string | null;
 }
 
 export interface HpUndoEntry {
@@ -102,4 +104,8 @@ export interface CombatActions {
   setGroupInitiative: (groupId: string, value: number) => void;
   /** Toggle expand/collapse state for a monster group (client-side only). */
   toggleGroupExpanded: (groupId: string) => void;
+  /** Link a temp player to a campaign character (loads stats). */
+  linkCharacter: (combatantId: string, characterId: string, stats: { name: string; max_hp: number; ac: number; spell_save_dc: number | null }) => void;
+  /** Unlink a player from their campaign character. */
+  unlinkCharacter: (combatantId: string) => void;
 }

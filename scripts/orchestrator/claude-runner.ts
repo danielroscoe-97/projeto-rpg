@@ -7,13 +7,37 @@
  * - Uses Max plan (zero API cost)
  */
 
-import { spawn } from "child_process";
+import { spawn, execFileSync } from "child_process";
 import { config } from "./config.js";
 import { logger } from "./logger.js";
+
+/**
+ * Resolve the absolute path to the `claude` CLI binary.
+ * On Windows, `spawn` with `shell: false` doesn't search PATH for npm globals,
+ * so we resolve the full path once at module load.
+ */
+function resolveClaudePath(): string {
+  const cmd = process.platform === "win32" ? "where" : "which";
+  try {
+    const result = execFileSync(cmd, ["claude"], { encoding: "utf-8", shell: true }).trim();
+    // `where` on Windows can return multiple lines — take the first .cmd or first line
+    const lines = result.split(/\r?\n/).filter(Boolean);
+    const cmdLine = lines.find((l) => l.endsWith(".cmd")) || lines[0];
+    logger.info(`Resolved claude CLI: ${cmdLine}`);
+    return cmdLine;
+  } catch {
+    // Fallback — hope it's in PATH at runtime
+    logger.warn("Could not resolve claude path — falling back to 'claude'");
+    return "claude";
+  }
+}
+
+const CLAUDE_BIN = resolveClaudePath();
 
 export interface ClaudeResult {
   output: string;
   exitCode: number;
+  isRateLimited: boolean;
 }
 
 /**
@@ -65,11 +89,13 @@ export async function runClaude(options: {
 
     logger.claude("Spawning", { model, maxTurns, timeoutSec: timeoutMs / 1000 });
 
-    // shell: false — args are passed directly, no interpolation risk
-    const proc = spawn("claude", args, {
+    // On Windows, .cmd wrappers require shell: true to execute.
+    // Prompt is piped via stdin (not args), so shell injection is not a risk.
+    const isWindows = process.platform === "win32";
+    const proc = spawn(CLAUDE_BIN, args, {
       cwd: cwd || config.projectRoot,
       env,
-      shell: false,
+      shell: isWindows,
     });
 
     let stdout = "";
@@ -110,9 +136,19 @@ export async function runClaude(options: {
         outputLength: stdout.length,
       });
 
+      const combined = stdout + stderr;
+      const isRateLimited = code !== 0 && (
+        combined.includes("rate limit") ||
+        combined.includes("429") ||
+        combined.includes("too many requests") ||
+        combined.includes("capacity") ||
+        combined.includes("overloaded")
+      );
+
       resolve({
         output: stdout.trim(),
         exitCode: code ?? 1,
+        isRateLimited,
       });
     });
 

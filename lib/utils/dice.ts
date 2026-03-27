@@ -44,6 +44,7 @@ export function rollDice(notation: string): DiceRollResult {
 
   // Match:  (count)d(faces) [kh/kl(n)] [+/- modifier]
   const match = trimmed.match(
+    // eslint-disable-next-line security/detect-unsafe-regex -- Anchored dice notation regex with optional keep-high/low; no ReDoS risk on bounded user input
     /^(\d+)d(\d+)(?:(kh|kl)(\d+))?(?:([+-])(\d+))?$/
   );
 

@@ -76,6 +76,7 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
     >
       <MonsterToken
         tokenUrl={m.token_url}
+        fallbackTokenUrl={m.fallback_token_url}
         creatureType={m.type}
         name={m.name}
         size={36}

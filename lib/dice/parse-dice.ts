@@ -33,6 +33,7 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
   // Group 2: "+N to hit"               — attack roll
   // Group 3: standalone dice "NdS+M"   — e.g. "1d4 hours"
   const DICE_RE =
+    // eslint-disable-next-line security/detect-unsafe-regex -- Static regex for dice notation parsing; input is bounded SRD text, no ReDoS risk
     /(\d+)\s*\((\d+d\d+(?:\s*[+-]\s*\d+)?)\)|\+(\d+) to hit|(?<!\w)(\d*d\d+(?:\s*[+-]\s*\d+)?)(?!\w)/gi;
 
   const segments: DiceSegment[] = [];

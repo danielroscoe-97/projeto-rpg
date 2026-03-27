@@ -1,7 +1,19 @@
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import type { RealtimeEvent, RealtimeStatsUpdate } from "@/lib/types/realtime";
+import type {
+  RealtimeEvent,
+  SanitizedEvent,
+  SanitizedCombatant,
+  SanitizedCombatantAdd,
+  SanitizedStateSync,
+  SanitizedInitiativeReorder,
+  SanitizedPlayerHpUpdate,
+  SanitizedMonsterHpUpdate,
+  SanitizedStatsUpdate,
+} from "@/lib/types/realtime";
+import type { Combatant } from "@/lib/types/combat";
 import { getHpStatus } from "@/lib/utils/hp-status";
+import { captureError, captureWarning } from "@/lib/errors/capture";
 
 let channel: RealtimeChannel | null = null;
 let currentSessionId: string | null = null;
@@ -19,86 +31,147 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
   channel = supabase.channel(`session:${sessionId}`, {
     config: { broadcast: { self: false } },
   });
-  channel.subscribe();
+  channel.subscribe((status, err) => {
+    if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+      captureError(err ?? new Error(`Channel ${status} for session ${sessionId}`), {
+        component: "broadcast",
+        action: "subscribe",
+        category: "realtime",
+        sessionId,
+      });
+    }
+  });
   currentSessionId = sessionId;
   return channel;
 }
 
-/** Strip DM-only fields before broadcasting to players. */
-function stripDmFields<T extends { dm_notes?: unknown }>(c: T): Omit<T, "dm_notes"> {
-  const { dm_notes: _dm_notes, ...safe } = c;
-  return safe;
-}
+/** Sanitize a full combatant for player broadcast.
+ *  Strips DM notes, monster stats, and applies display_name anti-metagaming. */
+function sanitizeCombatant(c: Combatant): SanitizedCombatant {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only field
+  const { dm_notes, display_name, ...base } = c;
 
-/** Strip sensitive monster stats (HP, AC, spell_save_dc) from a combatant.
- *  Players see only hp_status (LIGHT/MODERATE/HEAVY/CRITICAL) for non-player combatants. */
-function stripMonsterStats<T extends { is_player?: boolean; current_hp?: number; max_hp?: number; temp_hp?: number; ac?: number; spell_save_dc?: number | null }>(
-  c: T
-): Record<string, unknown> {
-  if (c.is_player) return c as Record<string, unknown>;
-  const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _spell_save_dc, ...safe } = c;
-  return {
+  if (c.is_player) {
+    // Players: keep all stats, just strip dm_notes and display_name
+    return {
+      ...base,
+      current_hp: c.current_hp,
+      max_hp: c.max_hp,
+      temp_hp: c.temp_hp,
+      ac: c.ac,
+      spell_save_dc: c.spell_save_dc,
+    };
+  }
+
+  // Monsters/NPCs: strip exact stats, add hp_status
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit sensitive fields
+  const { current_hp, max_hp, temp_hp, ac, spell_save_dc, ...safe } = base;
+
+  const result: SanitizedCombatant = {
     ...safe,
-    hp_status: getHpStatus(_current_hp ?? 0, _max_hp ?? 0),
+    // Apply display_name as the visible name (anti-metagaming)
+    name: display_name || base.name,
+    hp_status: getHpStatus(c.current_hp, c.max_hp),
   };
+
+  return result;
 }
 
-/** Replace real name with display_name for non-player combatants (anti-metagaming). */
-function applyDisplayName(c: Record<string, unknown>): Record<string, unknown> {
-  if (!c.is_player && c.display_name) {
-    return { ...c, name: c.display_name, display_name: undefined };
+/** Validate required fields exist on a sanitized event before broadcast. */
+function validateEvent(event: SanitizedEvent): boolean {
+  if (!event.type) {
+    captureWarning("Broadcast event missing type field", {
+      component: "broadcast",
+      category: "realtime",
+      extra: { event },
+    });
+    return false;
   }
-  // Always strip display_name from player broadcast — DM-only field
-  const { display_name: _display_name, ...safe } = c;
-  return safe;
+  return true;
 }
 
-/** Sanitize a full combatant object for player broadcast. */
-function sanitizeCombatant<T extends { dm_notes?: unknown; is_player?: boolean; current_hp?: number; max_hp?: number; temp_hp?: number; ac?: number; spell_save_dc?: number | null }>(
-  c: T
-): Record<string, unknown> {
-  return applyDisplayName(stripMonsterStats(stripDmFields(c) as T));
-}
-
-/** Remove sensitive data from any combatant objects in the event payload. */
-function sanitizePayload(event: RealtimeEvent): RealtimeEvent {
+/** Sanitize a DM event for player-safe broadcast.
+ *  Removes sensitive data and returns a properly typed SanitizedEvent. */
+function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
   if (event.type === "combat:combatant_add") {
-    return { ...event, combatant: sanitizeCombatant(event.combatant) } as unknown as RealtimeEvent;
+    const result: SanitizedCombatantAdd = {
+      type: event.type,
+      combatant: sanitizeCombatant(event.combatant),
+    };
+    return result;
   }
+
   if (event.type === "session:state_sync") {
-    return { ...event, combatants: event.combatants.map(sanitizeCombatant) } as unknown as RealtimeEvent;
+    const result: SanitizedStateSync = {
+      type: event.type,
+      combatants: event.combatants.map(sanitizeCombatant),
+      current_turn_index: event.current_turn_index,
+      round_number: event.round_number,
+    };
+    return result;
   }
+
   if (event.type === "combat:initiative_reorder") {
-    return { ...event, combatants: event.combatants.map(sanitizeCombatant) } as unknown as RealtimeEvent;
+    const result: SanitizedInitiativeReorder = {
+      type: event.type,
+      combatants: event.combatants.map(sanitizeCombatant),
+    };
+    return result;
   }
+
   if (event.type === "combat:hp_update") {
     if (event.is_player) {
-      // Player characters — send full HP data including max_hp
-      const { is_player: _is_player, ...rest } = event;
-      return rest as unknown as RealtimeEvent;
+      // Player characters — send full HP data
+      const result: SanitizedPlayerHpUpdate = {
+        type: event.type,
+        combatant_id: event.combatant_id,
+        current_hp: event.current_hp,
+        temp_hp: event.temp_hp,
+        max_hp: event.max_hp,
+        hp_status: event.max_hp
+          ? getHpStatus(event.current_hp, event.max_hp)
+          : undefined,
+      };
+      return result;
     }
-    // Monster/NPC — strip exact HP, send only status label
-    return {
+    // Monster/NPC — only status label, no exact HP
+    const result: SanitizedMonsterHpUpdate = {
       type: event.type,
       combatant_id: event.combatant_id,
       hp_status: getHpStatus(event.current_hp, event.max_hp ?? event.current_hp),
-    } as unknown as RealtimeEvent;
+    };
+    return result;
   }
+
   if (event.type === "combat:stats_update") {
-    // Strip AC, spell_save_dc, HP, and display_name from broadcast — only name changes reach players.
-    // display_name is a DM-only anti-metagaming alias — must never reach the player.
-    // Player HP/AC updates reach via combat:hp_update instead.
-    const statsPayload = event as RealtimeStatsUpdate & { display_name?: string | null };
-    const { ac: _ac2, spell_save_dc: _sdc2, max_hp: _mhp2, current_hp: _chp2, display_name: _dn2, ...safe } = statsPayload;
-    return { ...safe, type: event.type } as unknown as RealtimeEvent;
+    // Only name changes reach players — strip AC, spell_save_dc, HP, display_name
+    const result: SanitizedStatsUpdate = {
+      type: event.type,
+      combatant_id: event.combatant_id,
+      name: event.name,
+    };
+    return result;
   }
+
+  // Events that pass through unchanged (no sensitive data)
   return event;
 }
 
-/** Broadcast a combat event to all connected players. */
+/** Broadcast a combat event to all connected players.
+ *  Guards against sending to a stale channel whose session doesn't match. */
 export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
+  if (currentSessionId && currentSessionId !== sessionId) {
+    captureWarning(`Blocked broadcast to stale session ${sessionId} (current: ${currentSessionId})`, {
+      component: "broadcast",
+      action: "send",
+      category: "realtime",
+      sessionId,
+    });
+    return;
+  }
   const ch = getDmChannel(sessionId);
   const safeEvent = sanitizePayload(event);
+  if (!validateEvent(safeEvent)) return;
   ch.send({
     type: "broadcast",
     event: safeEvent.type,

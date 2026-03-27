@@ -72,6 +72,7 @@ interface SrdMonster {
   armor_class: number;
   ruleset_version: "2014" | "2024";
   token_url: string;
+  fallback_token_url?: string;
   size: string;
   alignment: string | null;
   hp_formula: string | null;
@@ -714,6 +715,164 @@ async function fetchJSON(url: string, retries = 3): Promise<unknown> {
   return null;
 }
 
+// ── Fallback token assignment ────────────────────────────────────
+
+/**
+ * Extract family keywords from a monster name for similarity matching.
+ * e.g. "Ancient Brass Dragon" → ["brass", "dragon"]
+ *      "Brass Greatwyrm"      → ["brass", "greatwyrm"]
+ *      "Goblin Boss"          → ["goblin", "boss"]
+ */
+const AGE_PREFIXES = new Set(["ancient", "adult", "young", "wyrmling"]);
+const FILLER_WORDS = new Set(["the", "of", "a", "an", "and", "or", "in"]);
+
+function extractFamilyKeywords(name: string): string[] {
+  return name
+    .toLowerCase()
+    .split(/[\s\-]+/)
+    .filter((w) => w.length > 1 && !FILLER_WORDS.has(w));
+}
+
+/**
+ * Score how similar two monster names are for token fallback purposes.
+ * Higher = more similar. Returns 0 if no meaningful overlap.
+ */
+function nameSimilarity(a: string, b: string): number {
+  const wordsA = extractFamilyKeywords(a);
+  const wordsB = extractFamilyKeywords(b);
+  if (wordsA.length === 0 || wordsB.length === 0) return 0;
+
+  let score = 0;
+  for (const w of wordsA) {
+    if (wordsB.includes(w)) {
+      // Age prefixes are worth less (Ancient/Adult/Young are interchangeable)
+      score += AGE_PREFIXES.has(w) ? 0.5 : 2;
+    }
+  }
+  // Bonus for same creature type suffix (dragon, goblin, etc.)
+  const lastA = wordsA[wordsA.length - 1];
+  const lastB = wordsB[wordsB.length - 1];
+  if (lastA === lastB) score += 3;
+
+  // Normalize by total keywords to avoid long names inflating score
+  return score / Math.max(wordsA.length, wordsB.length);
+}
+
+/**
+ * Parse a CR string to a numeric value for comparison.
+ */
+function parseCRValue(cr: string): number {
+  if (cr === "1/8") return 0.125;
+  if (cr === "1/4") return 0.25;
+  if (cr === "1/2") return 0.5;
+  return parseFloat(cr) || 0;
+}
+
+/**
+ * Assign fallback_token_url to EVERY monster — zero emoji fallbacks.
+ * Strategy (in priority order):
+ *   1. Cross-version: same name in the other ruleset (2024↔2014)
+ *   2. Family similarity: highest-scoring name match in ALL monsters (threshold ≥ 1.0)
+ *   3. Same type + closest CR: guaranteed match for any remaining monsters
+ */
+function assignFallbackTokens(
+  list2014: SrdMonster[],
+  list2024: SrdMonster[]
+): void {
+  // Build name→token_url lookup for cross-version matching
+  const tokenByName2014 = new Map<string, string>();
+  const tokenByName2024 = new Map<string, string>();
+  for (const m of list2014) tokenByName2014.set(m.name.toLowerCase(), m.token_url);
+  for (const m of list2024) tokenByName2024.set(m.name.toLowerCase(), m.token_url);
+
+  // All monsters combined for family-similarity search
+  const allMonsters = [...list2014, ...list2024];
+
+  // Pre-build type→monsters index for fast CR-based lookup (strategy 3)
+  const byType = new Map<string, SrdMonster[]>();
+  for (const m of allMonsters) {
+    const typeKey = (m.type || "humanoid").split("(")[0].trim().toLowerCase();
+    if (!byType.has(typeKey)) byType.set(typeKey, []);
+    byType.get(typeKey)!.push(m);
+  }
+
+  let crossVersionHits = 0;
+  let familyHits = 0;
+  let crFallbackHits = 0;
+
+  for (const m of allMonsters) {
+    const nameLower = m.name.toLowerCase();
+
+    // 1. Cross-version match (exact name, different ruleset)
+    const crossMap = m.ruleset_version === "2024" ? tokenByName2014 : tokenByName2024;
+    const crossUrl = crossMap.get(nameLower);
+    if (crossUrl && crossUrl !== m.token_url) {
+      m.fallback_token_url = crossUrl;
+      crossVersionHits++;
+      continue;
+    }
+
+    // 2. Family similarity — find best match (same type, lowered threshold)
+    let bestScore = 0;
+    let bestUrl = "";
+    for (const other of allMonsters) {
+      if (other === m) continue;
+      if (other.token_url === m.token_url) continue;
+
+      // Prefer same type, but allow cross-type with high-enough score
+      const sameType = (other.type || "").split("(")[0].trim().toLowerCase() ===
+                       (m.type || "").split("(")[0].trim().toLowerCase();
+      const score = nameSimilarity(m.name, other.name);
+      // Same-type matches get a bonus
+      const adjustedScore = sameType ? score : score * 0.6;
+
+      if (adjustedScore > bestScore) {
+        bestScore = adjustedScore;
+        bestUrl = other.token_url;
+      }
+    }
+
+    if (bestScore >= 1.0 && bestUrl) {
+      m.fallback_token_url = bestUrl;
+      familyHits++;
+      continue;
+    }
+
+    // 3. Same type + closest CR — guaranteed fallback (never leaves a monster without)
+    const typeKey = (m.type || "humanoid").split("(")[0].trim().toLowerCase();
+    const candidates = byType.get(typeKey) || byType.get("humanoid") || allMonsters;
+    const myCR = parseCRValue(m.cr);
+    let closestDiff = Infinity;
+    let closestUrl = "";
+
+    for (const other of candidates) {
+      if (other === m) continue;
+      if (other.token_url === m.token_url) continue;
+      const diff = Math.abs(parseCRValue(other.cr) - myCR);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestUrl = other.token_url;
+      }
+    }
+
+    if (closestUrl) {
+      m.fallback_token_url = closestUrl;
+      crFallbackHits++;
+    }
+    // At this point every monster should have a fallback
+  }
+
+  const total = allMonsters.length;
+  const covered = crossVersionHits + familyHits + crFallbackHits;
+  console.log(`  Cross-version fallbacks: ${crossVersionHits}`);
+  console.log(`  Family-similarity fallbacks: ${familyHits}`);
+  console.log(`  Same-type CR fallbacks: ${crFallbackHits}`);
+  console.log(`  Total coverage: ${covered}/${total} (${((covered / total) * 100).toFixed(1)}%)`);
+  if (covered < total) {
+    console.warn(`  ⚠️ ${total - covered} monsters still without fallback!`);
+  }
+}
+
 // ── Main ───────────────────────────────────────────────────────────
 
 async function main() {
@@ -792,6 +951,11 @@ async function main() {
 
   const final2014 = dedup(monsters2014);
   const final2024 = dedup(monsters2024);
+
+  // 3b. Compute fallback_token_url for each monster
+  //     Strategy: cross-version first (2024↔2014 same name), then family keyword match
+  console.log("\nComputing fallback token URLs...");
+  assignFallbackTokens(final2014, final2024);
 
   // 4. Write output
   const files = [

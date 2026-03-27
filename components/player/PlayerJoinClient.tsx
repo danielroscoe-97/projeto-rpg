@@ -35,6 +35,15 @@ interface PlayerCombatant {
   hp_status?: string;
 }
 
+interface PrefilledCharacter {
+  id: string;
+  name: string;
+  max_hp: number;
+  current_hp: number;
+  ac: number;
+  spell_save_dc: number | null;
+}
+
 interface PlayerJoinClientProps {
   tokenId: string;
   sessionId: string;
@@ -45,6 +54,8 @@ interface PlayerJoinClientProps {
   roundNumber: number;
   currentTurnIndex: number;
   initialCombatants: PlayerCombatant[];
+  /** Characters the authenticated player has in this campaign (auto-join) */
+  prefilledCharacters?: PrefilledCharacter[];
 }
 
 export function PlayerJoinClient({
@@ -57,6 +68,7 @@ export function PlayerJoinClient({
   roundNumber,
   currentTurnIndex,
   initialCombatants,
+  prefilledCharacters,
 }: PlayerJoinClientProps) {
   const t = useTranslations("player");
   const tRef = useRef(t);
@@ -116,7 +128,7 @@ export function PlayerJoinClient({
       }
     };
     initAuth();
-  }, [tokenId]);
+  }, [tokenId, t]);
 
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
@@ -411,6 +423,7 @@ export function PlayerJoinClient({
         pollIntervalRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
 
   // Visibility change handler — reconnect when phone unlocks / tab regains focus
@@ -544,6 +557,7 @@ export function PlayerJoinClient({
         onRegister={handleRegister}
         isRegistered={isRegistered}
         registeredName={registeredName}
+        prefilledCharacters={prefilledCharacters}
       />
     );
   }
@@ -560,6 +574,7 @@ export function PlayerJoinClient({
         isCombatActive={true}
         onLateJoinRequest={handleLateJoinRequest}
         lateJoinStatus={lateJoinStatus}
+        prefilledCharacters={prefilledCharacters}
       />
     );
   }

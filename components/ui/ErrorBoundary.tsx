@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
+import { captureError } from "@/lib/errors/capture";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -25,7 +26,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(`[ErrorBoundary${this.props.name ? `:${this.props.name}` : ""}]`, error, errorInfo);
+    captureError(error, {
+      component: `ErrorBoundary${this.props.name ? `:${this.props.name}` : ""}`,
+      action: "componentDidCatch",
+      extra: { componentStack: errorInfo.componentStack },
+    });
   }
 
   render() {

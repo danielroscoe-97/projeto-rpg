@@ -1,23 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
-
-// Simple in-process rate limit (per-edge-instance)
-// Production: replace with Upstash Redis — see NFR14
-const authAttempts = new Map<string, { count: number; resetAt: number }>();
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 10;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = authAttempts.get(ip);
-  if (!record || now > record.resetAt) {
-    authAttempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  record.count += 1;
-  return record.count > MAX_ATTEMPTS;
-}
+import { checkRateLimit } from "../rate-limit";
 
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -30,8 +14,14 @@ export async function updateSession(request: NextRequest) {
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       "unknown";
-    if (checkRateLimit(ip)) {
-      return new NextResponse("Too many requests", { status: 429 });
+    const { limited, reset } = await checkRateLimit(ip);
+    if (limited) {
+      return new NextResponse("Too many requests", {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
+        },
+      });
     }
   }
 
