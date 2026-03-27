@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
+import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords, Skull } from "lucide-react";
 
@@ -35,7 +36,7 @@ const HP_STATUS_STYLES: Record<string, { colorClass: string; bgClass: string; ic
   LIGHT: { colorClass: "text-green-400", bgClass: "bg-green-400/10", icon: "heart" },
   MODERATE: { colorClass: "text-amber-400", bgClass: "bg-amber-400/10", icon: "warning" },
   HEAVY: { colorClass: "text-red-500", bgClass: "bg-red-500/10", icon: "danger" },
-  CRITICAL: { colorClass: "text-red-400", bgClass: "bg-red-900/20", icon: "skull" },
+  CRITICAL: { colorClass: "text-gray-300", bgClass: "bg-gray-900/40", icon: "skull" },
 };
 
 function HpStatusBadge({ status }: { status: string }) {
@@ -110,21 +111,6 @@ function PlayerNoteInput({ combatantId, onSubmit }: { combatantId: string; onSub
   );
 }
 
-function getHpBarColor(current: number, max: number): string {
-  if (max === 0) return "bg-gray-500";
-  const pct = current / max;
-  if (pct > 0.5) return "bg-green-500";
-  if (pct > 0.25) return "bg-amber-400";
-  return "bg-red-500";
-}
-
-function getHpThresholdKey(current: number, max: number): string | null {
-  if (max === 0) return null;
-  const pct = current / max;
-  if (pct > 0.5) return "hp_ok";
-  if (pct > 0.25) return "hp_low";
-  return "hp_crit";
-}
 
 function formatRelativeTime(timestamp: number, t: ReturnType<typeof useTranslations<"player">>): string {
   const diff = Math.floor((Date.now() - timestamp) / 1000);

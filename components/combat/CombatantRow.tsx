@@ -12,25 +12,9 @@ import { HpAdjuster } from "./HpAdjuster";
 import { ConditionSelector } from "./ConditionSelector";
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
+import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
-
-function getHpBarColor(current: number, max: number): string {
-  if (max === 0) return "bg-gray-500";
-  const pct = current / max;
-  if (pct > 0.5) return "bg-green-500";
-  if (pct > 0.25) return "bg-amber-400";
-  return "bg-red-500";
-}
-
-/** Returns a text label for the HP threshold — satisfies NFR21 (color is not the sole indicator). */
-function getHpThresholdLabel(current: number, max: number): string {
-  if (max === 0) return "";
-  const pct = current / max;
-  if (pct >= 0.5) return "OK";
-  if (pct > 0.25) return "LOW";
-  return "CRIT";
-}
 
 export interface CombatantRowProps {
   combatant: Combatant;
@@ -119,7 +103,7 @@ export function CombatantRow({
     ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
     : 0;
   const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
-  const hpThresholdLabel = getHpThresholdLabel(combatant.current_hp, combatant.max_hp);
+  const hpThresholdKey = getHpThresholdKey(combatant.current_hp, combatant.max_hp);
   const hasTempHp = combatant.temp_hp > 0;
 
   // Look up full monster data for stat block expansion
@@ -323,9 +307,9 @@ export function CombatantRow({
                 {combatant.max_hp}
               </button>
             )}
-            {hpThresholdLabel && (
+            {hpThresholdKey && (
               <span className="text-[10px] font-mono ml-0.5 text-muted-foreground" data-testid={`hp-threshold-${combatant.id}`}>
-                {hpThresholdLabel === "CRIT" ? t("hp_crit") : hpThresholdLabel === "LOW" ? t("hp_low") : t("hp_ok")}
+                {t(hpThresholdKey as Parameters<typeof t>[0])}
               </span>
             )}
             {hasTempHp && (

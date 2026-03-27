@@ -106,9 +106,12 @@ describe("CombatantRow", () => {
       expect(screen.getByTestId("combatant-name-c1")).toHaveTextContent("Aragorn");
     });
 
-    it("renders HP display", () => {
+    it("renders HP display with current and max values", () => {
       render(<CombatantRow combatant={BASE_PLAYER} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-display-c1")).toHaveTextContent("40 / 40");
+      const hpDisplay = screen.getByTestId("hp-display-c1");
+      expect(hpDisplay).toHaveTextContent(/40/);
+      expect(screen.getByTestId("current-hp-btn-c1")).toHaveTextContent("40");
+      expect(screen.getByTestId("max-hp-btn-c1")).toHaveTextContent("40");
     });
 
     it("renders HP bar as progressbar ARIA role", () => {
@@ -171,23 +174,29 @@ describe("CombatantRow", () => {
     });
   });
 
-  describe("HP bar color", () => {
-    it("is green when HP is > 50%", () => {
+  describe("HP bar color (LIGHT >70% / MODERATE >40% / HEAVY >10% / CRITICAL ≤10%)", () => {
+    it("is green (LIGHT) when HP > 70%", () => {
       const c: Combatant = { ...BASE_PLAYER, current_hp: 30, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
       expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-green-500");
     });
 
-    it("is amber when HP is 25–50%", () => {
-      const c: Combatant = { ...BASE_PLAYER, current_hp: 15, max_hp: 40 };
+    it("is amber (MODERATE) when HP is 40–70%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 20, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
       expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-amber-400");
     });
 
-    it("is red when HP is < 25%", () => {
-      const c: Combatant = { ...BASE_PLAYER, current_hp: 5, max_hp: 40 };
+    it("is red (HEAVY) when HP is 10–40%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 6, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
       expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-red-500");
+    });
+
+    it("is dark (CRITICAL) when HP ≤ 10%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 3, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-gray-900");
     });
   });
 
@@ -281,22 +290,28 @@ describe("CombatantRow", () => {
   });
 
   describe("accessibility (NFR20–NFR24)", () => {
-    it("shows HP threshold label OK when HP > 50%", () => {
+    it("shows LIGHT label when HP > 70%", () => {
       const c: Combatant = { ...BASE_PLAYER, current_hp: 30, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_ok");
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_light");
     });
 
-    it("shows HP threshold label LOW when HP is 25–50%", () => {
-      const c: Combatant = { ...BASE_PLAYER, current_hp: 15, max_hp: 40 };
+    it("shows MODERATE label when HP is 40–70%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 20, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_low");
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_moderate");
     });
 
-    it("shows HP threshold label CRIT when HP < 25%", () => {
-      const c: Combatant = { ...BASE_PLAYER, current_hp: 5, max_hp: 40 };
+    it("shows HEAVY label when HP is 10–40%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 6, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_crit");
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_heavy");
+    });
+
+    it("shows CRITICAL label when HP ≤ 10%", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 3, max_hp: 40 };
+      render(<CombatantRow combatant={c} isCurrentTurn={false} />);
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_critical");
     });
 
     it("progressbar aria-label includes threshold label", () => {
@@ -323,10 +338,10 @@ describe("CombatantRow", () => {
       expect(screen.queryByTestId("hp-threshold-c1")).not.toBeInTheDocument();
     });
 
-    it("shows HP threshold label OK at exactly 50% HP (boundary, NFR21)", () => {
-      const c: Combatant = { ...BASE_PLAYER, current_hp: 20, max_hp: 40 };
+    it("shows MODERATE at exactly 70% HP boundary (not > 70%)", () => {
+      const c: Combatant = { ...BASE_PLAYER, current_hp: 28, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_ok");
+      expect(screen.getByTestId("hp-threshold-c1")).toHaveTextContent("combat.hp_moderate");
     });
   });
 });
