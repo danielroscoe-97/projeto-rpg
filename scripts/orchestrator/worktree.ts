@@ -245,15 +245,23 @@ export function createPRFromWorktree(
   writeFileSync(bodyFile, body);
 
   try {
+    // gh pr create does NOT support --json; it prints the PR URL to stdout
     const result = ghInWorktree(
       worktree,
       "pr", "create",
       "--title", title,
       "--body-file", bodyFile,
-      "--base", config.git.baseBranch,
-      "--json", "number,url"
+      "--base", config.git.baseBranch
     );
-    return JSON.parse(result) as { number: number; url: string };
+
+    // Parse PR number and URL from stdout (last line is the URL)
+    const urlMatch = result.match(/https:\/\/github\.com\/[^\s]+\/pull\/(\d+)/);
+    if (urlMatch) {
+      return { number: parseInt(urlMatch[1], 10), url: urlMatch[0] };
+    }
+
+    logger.warn("PR created but could not parse URL from output", { output: result });
+    return { number: 0, url: result.trim() };
   } catch (e) {
     logger.error("PR creation failed", { error: String(e) });
     return { number: 0, url: "" };

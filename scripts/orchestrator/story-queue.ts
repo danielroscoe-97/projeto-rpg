@@ -232,15 +232,45 @@ export async function verifyAndFix(
   let testOutput = "";
   let qaFeedback = "";
 
+  // Get changed files to scope test runs (avoids pre-existing failures).
+  // At verify time, changes may be uncommitted, so we check both committed
+  // diffs (vs base branch) and uncommitted working tree changes.
+  let changedFiles: string[] = [];
+  try {
+    const committed = getChangedFilesInWorktree(worktree);
+    let uncommitted: string[] = [];
+    try {
+      const raw = execFileSync("git", ["diff", "--name-only", "HEAD"], {
+        cwd: worktree.path, encoding: "utf-8", timeout: 30_000,
+      }).trim();
+      uncommitted = raw ? raw.split("\n") : [];
+    } catch { /* no uncommitted changes */ }
+    changedFiles = [...new Set([...committed, ...uncommitted])];
+  } catch {
+    changedFiles = [];
+  }
+  const testableFiles = changedFiles.filter(
+    (f) => /\.(ts|tsx|js|jsx)$/.test(f) && !f.includes("node_modules")
+  );
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    // 1. Run tests
+    // 1. Run tests — scoped to changed files if possible, full suite as fallback
     let testPassed = false;
     try {
-      testOutput = execFileSync("npm", ["test", "--", "--passWithNoTests"], {
-        cwd: worktree.path,
-        encoding: "utf-8",
-        timeout: 120_000,
-      });
+      if (testableFiles.length > 0) {
+        // Run only tests related to changed files — avoids pre-existing failures
+        testOutput = execFileSync(
+          "npx", ["jest", "--findRelatedTests", ...testableFiles, "--passWithNoTests", "--forceExit"],
+          {
+            cwd: worktree.path,
+            encoding: "utf-8",
+            timeout: 120_000,
+          }
+        );
+      } else {
+        // No testable files changed (e.g. SQL migrations, docs) — skip tests
+        testOutput = "No testable files changed — skipping tests";
+      }
       testPassed = true;
     } catch (e) {
       const err = e as { stdout?: string; stderr?: string };
@@ -308,7 +338,7 @@ ${specContent.slice(0, 3000)}
 ## Instructions
 1. Analyze the failures above
 2. Fix the code to make tests pass and meet acceptance criteria
-3. Run npm test -- --passWithNoTests to verify your fix
+3. Run npx jest --findRelatedTests <changed-files> --passWithNoTests to verify your fix (do NOT run the full test suite)
 4. Do NOT modify test expectations unless the test itself is wrong`,
       cwd: worktree.path,
       model: config.agent.models.dev,

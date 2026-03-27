@@ -60,6 +60,7 @@ type OrchestratorMode =
   | "plan"
   | "watch"
   | "queue"
+  | "smoke"
   | "idle";
 
 interface TaskContext {
@@ -87,6 +88,7 @@ export function quickParse(input: string): { mode: OrchestratorMode; target: str
   if (lower.includes("rodar queue") || lower.includes("iniciar queue") || lower.includes("comece a implementar") || lower.includes("implementar tudo")) return { mode: "queue", target: "start" };
   if (lower.includes("pausar") || lower.includes("pause queue")) return { mode: "queue", target: "pause" };
   if (lower.includes("retomar") || lower.includes("resume queue")) return { mode: "queue", target: "resume" };
+  if (lower === "smoke" || lower === "smoke test" || lower.includes("pre-flight") || lower.includes("testar pipeline")) return { mode: "smoke", target: "" };
   return null;
 }
 
@@ -636,6 +638,116 @@ async function executeWatch(input: string): Promise<void> {
 }
 
 /**
+ * Smoke test — validates the full pipeline without running a real story.
+ * Checks: worktree creation, scoped tests, commit, push, PR creation, cleanup.
+ * Run this BEFORE releasing the queue to catch infra issues early.
+ */
+async function executeSmokeTest(): Promise<void> {
+  await notify("🔬 *Smoke test iniciando...* Validando pipeline completo.");
+  const checks: { name: string; ok: boolean; detail: string }[] = [];
+  let worktree: ReturnType<typeof createWorktree> | null = null;
+
+  try {
+    // 1. Worktree creation
+    try {
+      worktree = createWorktree("smoke-test", "smoke-test");
+      checks.push({ name: "Worktree creation", ok: true, detail: worktree.path });
+    } catch (e) {
+      checks.push({ name: "Worktree creation", ok: false, detail: String(e) });
+      throw new Error("Smoke test aborted: cannot create worktree");
+    }
+
+    // 2. Scoped test run (should pass since no files changed)
+    try {
+      const { execFileSync } = await import("child_process");
+      // With no changed files, verify should skip tests gracefully
+      const result = execFileSync(
+        "npx", ["jest", "--passWithNoTests", "--forceExit", "--no-coverage", "--maxWorkers=1", "NONEXISTENT_FILE_SMOKE_TEST"],
+        { cwd: worktree.path, encoding: "utf-8", timeout: 30_000, stdio: ["pipe", "pipe", "pipe"] }
+      );
+      checks.push({ name: "Scoped test run", ok: true, detail: "jest --passWithNoTests works" });
+    } catch (e) {
+      const err = e as { stdout?: string; stderr?: string; status?: number };
+      // passWithNoTests should exit 0 even with no matching files
+      if (err.status === 0 || (err.stdout || "").includes("No tests found")) {
+        checks.push({ name: "Scoped test run", ok: true, detail: "No tests found (expected)" });
+      } else {
+        checks.push({ name: "Scoped test run", ok: false, detail: (err.stderr || err.stdout || String(e)).slice(0, 200) });
+      }
+    }
+
+    // 3. Commit (create a dummy file, commit, then we'll push)
+    try {
+      const { writeFileSync: wfs, unlinkSync: uls } = await import("fs");
+      const testFile = join(worktree.path, ".smoke-test");
+      wfs(testFile, `Smoke test at ${new Date().toISOString()}\n`);
+      const hash = commitInWorktree(worktree, "test: smoke test (will be deleted)");
+      checks.push({ name: "Git commit", ok: hash !== "no-changes", detail: `hash: ${hash}` });
+    } catch (e) {
+      checks.push({ name: "Git commit", ok: false, detail: String(e).slice(0, 200) });
+    }
+
+    // 4. Push
+    try {
+      pushWorktree(worktree);
+      checks.push({ name: "Git push", ok: true, detail: `branch: ${worktree.branch}` });
+    } catch (e) {
+      checks.push({ name: "Git push", ok: false, detail: String(e).slice(0, 200) });
+    }
+
+    // 5. PR creation (real PR — we'll close it immediately)
+    try {
+      const pr = createPRFromWorktree(
+        worktree,
+        "test: smoke test (auto-close)",
+        "🔬 Smoke test — validating orchestrator pipeline.\nThis PR will be closed automatically."
+      );
+      if (pr.number > 0) {
+        checks.push({ name: "PR creation", ok: true, detail: `PR #${pr.number}: ${pr.url}` });
+        // Close the smoke test PR immediately
+        try {
+          const { execFileSync } = await import("child_process");
+          execFileSync("gh", ["pr", "close", String(pr.number), "--delete-branch"], {
+            cwd: config.projectRoot, encoding: "utf-8", timeout: 30_000,
+          });
+          checks.push({ name: "PR cleanup", ok: true, detail: `PR #${pr.number} closed + branch deleted` });
+        } catch (e) {
+          checks.push({ name: "PR cleanup", ok: false, detail: String(e).slice(0, 200) });
+        }
+      } else {
+        checks.push({ name: "PR creation", ok: false, detail: "PR number is 0 — creation likely failed silently" });
+      }
+    } catch (e) {
+      checks.push({ name: "PR creation", ok: false, detail: String(e).slice(0, 200) });
+    }
+
+  } finally {
+    // 6. Cleanup worktree
+    if (worktree) {
+      try {
+        removeWorktree(worktree);
+        checks.push({ name: "Worktree cleanup", ok: true, detail: "removed" });
+      } catch (e) {
+        checks.push({ name: "Worktree cleanup", ok: false, detail: String(e).slice(0, 200) });
+      }
+    }
+  }
+
+  // Report results
+  const allPassed = checks.every((c) => c.ok);
+  const report = checks
+    .map((c) => `${c.ok ? "✅" : "❌"} *${c.name}*: ${c.detail.slice(0, 100)}`)
+    .join("\n");
+
+  const summary = allPassed
+    ? "🟢 *SMOKE TEST PASSED* — Pipeline está pronto para rodar a queue."
+    : "🔴 *SMOKE TEST FAILED* — Corrija os itens acima antes de rodar a queue.";
+
+  await notify(`🔬 *Smoke Test Results:*\n\n${report}\n\n${summary}`);
+  logger.info("Smoke test complete", { allPassed, checks });
+}
+
+/**
  * Conversational response — answer questions, greetings, project queries.
  */
 async function executeChat(input: string): Promise<void> {
@@ -787,6 +899,9 @@ export async function handleCommand(input: string): Promise<void> {
           break;
         case "watch":
           await executeWatch(target || input);
+          break;
+        case "smoke":
+          await executeSmokeTest();
           break;
         case "chat":
         case "idle":
