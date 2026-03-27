@@ -205,6 +205,8 @@
     "step_launch": "Launch",
     "campaign_name_required": "Campaign name is required.",
     "campaign_name_max": "Campaign name must be 50 characters or fewer.",
+    "encounter_name_required": "Encounter name is required.",
+    "encounter_name_max": "Encounter name must be 50 characters or fewer.",
     "campaign_name_title": "Name your campaign",
     "campaign_name_description": "Give your group a name — you can change it later.",
     "campaign_name_label": "Campaign name",
@@ -799,14 +801,7 @@
     "item_rarity_varies": "Varies",
     "item_rarity_unknown": "Unknown",
     "item_weapon_simple": "Simple",
-    "item_weapon_martial": "Martial",
-    "item_stealth_disadvantage": "Stealth Disadvantage",
-    "item_str_requirement": "Str {value}",
-    "item_versatile": "versatile {dmg}",
-    "item_bonus_weapon": "Weapon Bonus",
-    "item_bonus_ac": "AC Bonus",
-    "item_cursed": "Cursed",
-    "item_sentient": "Sentient"
+    "item_weapon_martial": "Martial"
   },
   "guest": {
     "guest_notice": "Guest mode — your combat won't be saved.",

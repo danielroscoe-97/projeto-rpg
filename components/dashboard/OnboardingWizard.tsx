@@ -165,11 +165,11 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   function handleStep3Next() {
     const trimmed = state.encounterName.trim();
     if (!trimmed) {
-      setState((s) => ({ ...s, error: "Encounter name is required.", fieldErrors: new Set(["encounter-name"]) }));
+      setState((s) => ({ ...s, error: t("encounter_name_required"), fieldErrors: new Set(["encounter-name"]) }));
       return;
     }
     if (trimmed.length > 50) {
-      setState((s) => ({ ...s, error: "Encounter name must be 50 characters or fewer.", fieldErrors: new Set(["encounter-name"]) }));
+      setState((s) => ({ ...s, error: t("encounter_name_max"), fieldErrors: new Set(["encounter-name"]) }));
       return;
     }
     setState((s) => ({ ...s, step: 4, error: null, fieldErrors: new Set() }));

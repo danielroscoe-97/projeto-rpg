@@ -300,10 +300,14 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   // Add combatant from the add-row
   const handleAddFromRow = useCallback(() => {
     const name = addRow.name.trim();
-    const hp = parseInt(addRow.hp, 10);
-    const ac = parseInt(addRow.ac, 10);
+    const hpValue = addRow.hp.trim();
+    const acValue = addRow.ac.trim();
+    const hp = hpValue ? parseInt(hpValue, 10) : NaN;
+    const ac = acValue ? parseInt(acValue, 10) : NaN;
     const errors = new Set<string>();
     if (!name) errors.add("name");
+    if (isNaN(hp) || hp < 1) errors.add("hp");
+    if (isNaN(ac) || ac < 1) errors.add("ac");
     if (errors.size > 0) {
       setAddRowErrors(errors);
       return;
@@ -320,10 +324,10 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     const displayName = getDefaultDisplayName(selType, useCombatStore.getState().combatants);
     addCombatant({
       name,
-      current_hp: isNaN(hp) || hp < 1 ? 0 : hp,
-      max_hp: isNaN(hp) || hp < 1 ? 0 : hp,
+      current_hp: hp,
+      max_hp: hp,
       temp_hp: 0,
-      ac: isNaN(ac) || ac < 1 ? 0 : ac,
+      ac: ac,
       spell_save_dc: null,
       initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
       initiative_order: null,

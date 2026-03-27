@@ -208,6 +208,8 @@
     "step_launch": "Lançar",
     "campaign_name_required": "O nome da campanha é obrigatório.",
     "campaign_name_max": "O nome da campanha deve ter no máximo 50 caracteres.",
+    "encounter_name_required": "O nome do encontro é obrigatório.",
+    "encounter_name_max": "O nome do encontro deve ter no máximo 50 caracteres.",
     "campaign_name_title": "Nomeie sua campanha",
     "campaign_name_description": "Dê um nome ao seu grupo — você pode mudar depois.",
     "campaign_name_label": "Nome da campanha",
@@ -786,7 +788,7 @@
     "item_charges": "Cargas",
     "item_recharge": "Recarga",
     "item_stealth_disadvantage": "Desvantagem em Furtividade",
-    "item_str_requirement": "For {value}",
+    "item_str_requirement": "Força {value}",
     "item_versatile": "versátil {dmg}",
     "item_bonus_weapon": "Bônus de Arma",
     "item_bonus_ac": "Bônus de CA",
@@ -802,14 +804,7 @@
     "item_rarity_varies": "Variável",
     "item_rarity_unknown": "Desconhecido",
     "item_weapon_simple": "Simples",
-    "item_weapon_martial": "Marcial",
-    "item_stealth_disadvantage": "Desvantagem em Furtividade",
-    "item_str_requirement": "Força {value}",
-    "item_versatile": "versátil {dmg}",
-    "item_bonus_weapon": "Bônus Arma",
-    "item_bonus_ac": "Bônus CA",
-    "item_cursed": "Amaldiçoado",
-    "item_sentient": "Senciente"
+    "item_weapon_martial": "Marcial"
   },
   "guest": {
     "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",

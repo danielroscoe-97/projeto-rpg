@@ -52,6 +52,7 @@ export function LoginForm({
       const msg = error instanceof Error ? error.message : "";
       const key = getAuthErrorKey(msg);
       setError(key ? te(key) : tc("error_generic"));
+      setPassword("");
     } finally {
       setIsLoading(false);
     }

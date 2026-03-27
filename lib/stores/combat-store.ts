@@ -90,7 +90,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
       let roundBumped = false;
       for (let i = 0; i < combatants.length; i++) {
         next = (next + 1) % combatants.length;
-        if (next === 0) roundBumped = true;
+        if (next === 0 && combatants.length > 1) roundBumped = true;
         if (!combatants[next].is_defeated) break;
       }
       if (combatants[next].is_defeated) return state;

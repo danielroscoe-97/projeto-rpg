@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import { claimPlayerToken, registerPlayerCombatant } from "@/lib/supabase/player-registration";
 import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
 import { PlayerLobby } from "@/components/player/PlayerLobby";
@@ -338,6 +339,7 @@ export function PlayerJoinClient({
                 })
                 .catch((err) => {
                   setLateJoinStatus("idle");
+                  toast.error(tRef.current("registerError"));
                   captureError(err, {
                     component: "PlayerJoinClient",
                     action: "registerAfterLateJoinAccept",
