@@ -10,6 +10,8 @@ import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
 import type { ConnectionStatus } from "@/lib/realtime/use-realtime-channel";
 import type { RulesetVersion } from "@/lib/types/database";
+import type { Plan } from "@/lib/types/subscription";
+import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
 
 
@@ -58,6 +60,8 @@ interface PlayerJoinClientProps {
   initialCombatants: PlayerCombatant[];
   /** Characters the authenticated player has in this campaign (auto-join) */
   prefilledCharacters?: PrefilledCharacter[];
+  /** DM's plan snapshotted on the session (Mesa model) */
+  dmPlan?: Plan;
 }
 
 export function PlayerJoinClient({
@@ -496,6 +500,26 @@ export function PlayerJoinClient({
     await registerPlayerCombatant(effectiveTokenId, sessionId, data);
     setIsRegistered(true);
     setRegisteredName(data.name);
+
+    // Track presence for DM's "Players Online" panel (B3-2)
+    try {
+      const supabase = createClient();
+      const presenceChannel = supabase.channel(`presence:${sessionId}`, {
+        config: { presence: { key: sessionId } },
+      });
+      presenceChannel.subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await presenceChannel.track({
+            id: effectiveTokenId,
+            name: data.name,
+            joined_at: Date.now(),
+          });
+        }
+      });
+    } catch {
+      // Presence is best-effort — don't block registration
+    }
+
     // Broadcast to other players and DM that this player joined
     if (channelRef.current) {
       channelRef.current.send({
