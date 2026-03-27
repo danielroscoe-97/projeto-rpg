@@ -10,6 +10,9 @@ import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords, Skull } from "lucide-react";
+import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
+import type { PlayerAudioFile } from "@/lib/types/audio";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 export interface CombatLogEntry {
   text: string;
@@ -140,6 +143,12 @@ interface PlayerInitiativeBoardProps {
   nextCombatantId?: string | null;
   /** Callback when a player edits their own character's note */
   onPlayerNote?: (combatantId: string, note: string) => void;
+  /** Realtime channel ref for broadcasting audio events */
+  channelRef?: React.RefObject<RealtimeChannel | null>;
+  /** Player's custom audio files */
+  customAudioFiles?: PlayerAudioFile[];
+  /** Signed URLs for custom audio files */
+  customAudioUrls?: Record<string, string>;
 }
 
 export function PlayerInitiativeBoard({
@@ -150,6 +159,9 @@ export function PlayerInitiativeBoard({
   combatLog,
   nextCombatantId,
   onPlayerNote,
+  channelRef,
+  customAudioFiles = [],
+  customAudioUrls = {},
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
@@ -510,6 +522,17 @@ export function PlayerInitiativeBoard({
             ruleset_version: primaryPlayerChar.ruleset_version,
           }}
           rulesetVersion={rulesetVersion}
+        />
+      )}
+
+      {/* Soundboard — visible only during active combat with channel */}
+      {channelRef && (
+        <PlayerSoundboard
+          isPlayerTurn={isPlayerTurn}
+          playerName={currentCombatant?.name ?? ""}
+          channelRef={channelRef}
+          customAudioFiles={customAudioFiles}
+          customAudioUrls={customAudioUrls}
         />
       )}
     </div>

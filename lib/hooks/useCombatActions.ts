@@ -18,6 +18,7 @@ import {
   persistPlayerNotes,
 } from "@/lib/supabase/session";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
+import { useAudioStore } from "@/lib/stores/audio-store";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { assignInitiativeOrder, sortByInitiative, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import type { Combatant } from "@/lib/types/combat";
@@ -46,6 +47,9 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     if (turnPendingRef.current) return;
     turnPendingRef.current = true;
     setTurnPending(true);
+
+    // Cut any playing audio immediately on turn advance
+    useAudioStore.getState().stopAllAudio();
 
     const snap = useCombatStore.getState();
     const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } = snap;

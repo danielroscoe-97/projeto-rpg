@@ -13,10 +13,10 @@ jest.mock("next/navigation", () => ({
 jest.mock("@/components/ui/alert-dialog", () => {
   const React = require("react");
 
-  const Ctx = React.createContext<{
-    open: boolean;
-    setOpen: (v: boolean) => void;
-  }>({ open: false, setOpen: () => {} });
+  const Ctx = (React.createContext as Function)({
+    open: false,
+    setOpen: () => {},
+  });
 
   function AlertDialog({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = React.useState(false);
@@ -28,7 +28,7 @@ jest.mock("@/components/ui/alert-dialog", () => {
     if (asChild) {
       return React.cloneElement(children, {
         onClick: (e: React.MouseEvent) => {
-          children.props.onClick?.(e);
+          (children as any).props.onClick?.(e);
           setOpen(true);
         },
       });

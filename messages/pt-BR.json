@@ -1011,5 +1011,36 @@
       "file_sharing": "Compartilhamento de arquivos",
       "email_invites": "Convites por email"
     }
+  },
+  "audio": {
+    "soundboard": "Sons de Combate",
+    "my_sounds": "Meus Sons",
+    "presets": "Efeitos Sonoros",
+    "upload": "Enviar Áudio",
+    "upload_success": "Áudio enviado com sucesso",
+    "upload_error": "Falha ao enviar áudio",
+    "delete_success": "Áudio removido",
+    "delete_confirm": "Remover este áudio?",
+    "error_format": "Formato inválido. Use MP3.",
+    "error_size": "Arquivo muito grande. Máximo: 3MB.",
+    "error_limit": "Limite de 6 áudios atingido. Remova um para adicionar outro.",
+    "cooldown": "Aguarde...",
+    "disabled_not_turn": "Disponível apenas no seu turno",
+    "dm_volume": "Volume dos jogadores",
+    "dm_muted": "Sons dos jogadores silenciados",
+    "dm_unmuted": "Sons dos jogadores ativados",
+    "last_sound": "Último som",
+    "preset_sword_hit": "Golpe de Espada",
+    "preset_fireball": "Bola de Fogo",
+    "preset_healing": "Cura Divina",
+    "preset_thunder": "Trovão",
+    "preset_death": "Morte do Monstro",
+    "preset_war_cry": "Grito de Guerra",
+    "preset_shield": "Escudo Mágico",
+    "preset_arrow": "Flecha Certeira",
+    "preset_critical_hit": "Acerto Crítico",
+    "preset_teleport": "Teleporte",
+    "slot_empty": "Slot vazio",
+    "replace_sound": "Substituir som"
   }
 }

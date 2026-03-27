@@ -121,8 +121,8 @@ function setupMocks(
 ) {
   mockedGetAllSpells.mockReturnValue(spells as ReturnType<typeof srdSearch.getAllSpells>);
   mockedGetAllConditions.mockReturnValue(conditions as ReturnType<typeof srdSearch.getAllConditions>);
-  mockedUsePinnedCardsStore.mockImplementation((selector: (s: { pinCard: typeof mockPinCard }) => unknown) =>
-    selector({ pinCard: mockPinCard }),
+  (mockedUsePinnedCardsStore as unknown as jest.Mock).mockImplementation((selector: (s: { pinCard: typeof mockPinCard; cards: never[]; nextZIndex: number }) => unknown) =>
+    selector({ pinCard: mockPinCard, cards: [], nextZIndex: 1 }),
   );
 }
 

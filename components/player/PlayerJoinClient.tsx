@@ -13,6 +13,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import type { Plan } from "@/lib/types/subscription";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
+import type { PlayerAudioFile } from "@/lib/types/audio";
 
 
 const SpellSearch = lazy(() =>
@@ -107,6 +108,37 @@ export function PlayerJoinClient({
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [playerAudioFiles, setPlayerAudioFiles] = useState<PlayerAudioFile[]>([]);
+  const [playerAudioUrls, setPlayerAudioUrls] = useState<Record<string, string>>({});
+
+  // Fetch player's custom audio files (authenticated players only)
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchPlayerAudio() {
+      try {
+        const res = await fetch("/api/player-audio");
+        if (!res.ok) return; // 401 for anonymous — expected
+        const { data } = await res.json();
+        if (!cancelled && data) {
+          setPlayerAudioFiles(data);
+          // Generate signed URLs for broadcasting to DM
+          const supabase = createClient();
+          const urls: Record<string, string> = {};
+          for (const file of data as PlayerAudioFile[]) {
+            const { data: signedData } = await supabase.storage
+              .from("player-audio")
+              .createSignedUrl(file.file_path, 3600);
+            if (signedData?.signedUrl) urls[file.id] = signedData.signedUrl;
+          }
+          if (!cancelled) setPlayerAudioUrls(urls);
+        }
+      } catch {
+        // Silent — audio is best-effort
+      }
+    }
+    if (authReady) fetchPlayerAudio();
+    return () => { cancelled = true; };
+  }, [authReady]);
 
   // Mesa model: seed session DM plan into subscription store
   useEffect(() => {
@@ -716,6 +748,9 @@ export function PlayerJoinClient({
               });
             }
           }}
+          channelRef={channelRef}
+          customAudioFiles={playerAudioFiles}
+          customAudioUrls={playerAudioUrls}
         />
       </div>
     </div>

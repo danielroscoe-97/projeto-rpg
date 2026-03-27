@@ -24,6 +24,7 @@ const base: Omit<Combatant, "id" | "name" | "initiative"> = {
   group_order: null,
   dm_notes: "",
   player_notes: "",
+  player_character_id: null,
 };
 
 function make(

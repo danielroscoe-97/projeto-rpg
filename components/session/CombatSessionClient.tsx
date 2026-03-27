@@ -26,6 +26,9 @@ import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
 import { DiceRollLog, type DiceRollEntry } from "@/components/combat/DiceRollLog";
+import { DmAudioControls } from "@/components/audio/DmAudioControls";
+import { useAudioStore } from "@/lib/stores/audio-store";
+import { getPresetById } from "@/lib/utils/audio-presets";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -421,6 +424,45 @@ export function CombatSessionClient({
     };
   }, [is_active, getSessionId, handleAddCombatant, t]);
 
+  // Listen for audio:play_sound events from players
+  useEffect(() => {
+    const sid = getSessionId();
+    if (!sid || !is_active) return;
+    const ch = getDmChannel(sid);
+    let active = true;
+
+    const handleAudioPlay = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { sound_id, source, player_name, audio_url } = payload as {
+        sound_id: string; source: "preset" | "custom"; player_name: string; audio_url?: string;
+      };
+
+      useAudioStore.getState().playSound(sound_id, source, player_name, audio_url);
+
+      // Discrete toast
+      const preset = source === "preset" ? getPresetById(sound_id) : null;
+      const label = preset ? `${preset.icon} ${preset.id}` : sound_id;
+      toast(`🔊 ${player_name}: ${label}`, { duration: 2000 });
+    };
+
+    // Clean stale audio bindings before adding new one
+    try {
+      const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
+      const broadcastBindings = bindings?.broadcast;
+      if (Array.isArray(broadcastBindings)) {
+        for (let i = broadcastBindings.length - 1; i >= 0; i--) {
+          if (broadcastBindings[i]?.filter?.event === "audio:play_sound") {
+            broadcastBindings.splice(i, 1);
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
+    ch.on("broadcast", { event: "audio:play_sound" }, handleAudioPlay);
+
+    return () => { active = false; };
+  }, [is_active, getSessionId]);
+
   // Show unified setup if not yet active
   if (!is_active) {
     return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
@@ -467,6 +509,7 @@ export function CombatSessionClient({
             {turnPending ? t("next_turn_saving") : t("next_turn")}
             <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
           </button>
+          <DmAudioControls />
           <button
             type="button"
             onClick={() => setCheatsheetOpen((v) => !v)}

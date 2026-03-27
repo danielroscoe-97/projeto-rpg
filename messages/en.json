@@ -1011,5 +1011,36 @@
       "file_sharing": "File sharing",
       "email_invites": "Email invites"
     }
+  },
+  "audio": {
+    "soundboard": "Combat Sounds",
+    "my_sounds": "My Sounds",
+    "presets": "Sound Effects",
+    "upload": "Upload Audio",
+    "upload_success": "Audio uploaded successfully",
+    "upload_error": "Audio upload failed",
+    "delete_success": "Audio removed",
+    "delete_confirm": "Remove this audio?",
+    "error_format": "Invalid format. Use MP3.",
+    "error_size": "File too large. Maximum: 3MB.",
+    "error_limit": "6 audio limit reached. Remove one to add another.",
+    "cooldown": "Wait...",
+    "disabled_not_turn": "Available only on your turn",
+    "dm_volume": "Player sounds volume",
+    "dm_muted": "Player sounds muted",
+    "dm_unmuted": "Player sounds enabled",
+    "last_sound": "Last sound",
+    "preset_sword_hit": "Sword Hit",
+    "preset_fireball": "Fireball",
+    "preset_healing": "Divine Healing",
+    "preset_thunder": "Thunder",
+    "preset_death": "Monster Death",
+    "preset_war_cry": "War Cry",
+    "preset_shield": "Magic Shield",
+    "preset_arrow": "Arrow Strike",
+    "preset_critical_hit": "Critical Hit",
+    "preset_teleport": "Teleport",
+    "slot_empty": "Empty slot",
+    "replace_sound": "Replace sound"
   }
 }

@@ -32,7 +32,7 @@ const baseCharacter = {
   max_hp: 45,
   current_hp: 45,
   ac: 16,
-  spell_save_dc: 14,
+  spell_save_dc: 14 as number | null,
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
 };
@@ -44,7 +44,7 @@ const secondCharacter = {
   max_hp: 60,
   current_hp: 50,
   ac: 12,
-  spell_save_dc: null,
+  spell_save_dc: null as number | null,
   created_at: "2026-01-02T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
 };
