@@ -19,6 +19,7 @@ import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
+import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 
 interface EncounterSetupProps {
   onStartCombat: (encounterName?: string) => Promise<void>;
@@ -48,15 +49,13 @@ const EMPTY_ADD_ROW: AddRowForm = {
 
 /** Generate a generic display_name for non-player combatants (anti-metagaming).
  *  Counts existing "Creature #N" display names to determine the next number. */
-function getDefaultDisplayName(template: string, existingCombatants: Combatant[]): string {
-  let maxN = 0;
-  for (const c of existingCombatants) {
-    if (!c.is_player && c.display_name) {
-      const match = c.display_name.match(/#(\d+)$/);
-      if (match) maxN = Math.max(maxN, parseInt(match[1], 10));
-    }
-  }
-  return template.replace("{n}", String(maxN + 1));
+function getDefaultDisplayName(creatureType: string | null | undefined, existingCombatants: Combatant[]): string {
+  const name = generateCreatureName(creatureType);
+  // Check for duplicates — if same fake name exists, append number
+  const sameNameCount = existingCombatants.filter(
+    (c) => c.display_name?.startsWith(name)
+  ).length;
+  return sameNameCount > 0 ? `${name} ${sameNameCount + 1}` : name;
 }
 
 export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId, onSessionCreated }: EncounterSetupProps) {
@@ -213,7 +212,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     (monster: SrdMonster) => {
       const currentCombatants = useCombatStore.getState().combatants;
       const numberedName = getNumberedName(monster.name, currentCombatants);
-      const displayName = getDefaultDisplayName(t("display_name_default"), currentCombatants);
+      const displayName = getDefaultDisplayName(monster.type, currentCombatants);
 
       // Roll initiative instantly using the monster's DEX
       const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
@@ -255,7 +254,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       const currentCombatants = useCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       for (let i = 1; i <= qty; i++) {
-        const displayName = getDefaultDisplayName(t("display_name_default"), [...currentCombatants, ...newCombatants as Combatant[]]);
+        const displayName = getDefaultDisplayName(monster?.type ?? null, [...currentCombatants, ...newCombatants as Combatant[]]);
         newCombatants.push({
           name: `${monster.name} ${i}`,
           current_hp: monster.hit_points,
@@ -317,7 +316,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       : null;
 
     const sel = lastSelectedMonster.current;
-    const displayName = getDefaultDisplayName(t("display_name_default"), useCombatStore.getState().combatants);
+    const displayName = getDefaultDisplayName(null, useCombatStore.getState().combatants);
     addCombatant({
       name,
       current_hp: isNaN(hp) || hp < 1 ? 0 : hp,
@@ -391,7 +390,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       presetMonsters.forEach((pm) => {
         for (let i = 0; i < pm.quantity; i++) {
           const numberedName = getNumberedName(pm.name, currentCombatants);
-          const displayName = getDefaultDisplayName(t("display_name_default"), currentCombatants);
+          const displayName = getDefaultDisplayName(null, currentCombatants);
           const newCombatant: Omit<Combatant, "id"> = {
             name: numberedName,
             current_hp: pm.hp,

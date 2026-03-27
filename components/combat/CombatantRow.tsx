@@ -243,8 +243,8 @@ export function CombatantRow({
           >
             <span>{combatant.name}</span>
             {combatant.display_name && !combatant.is_player && (
-              <span className="text-xs text-muted-foreground/60 font-normal">
-                ({combatant.display_name})
+              <span className="text-xs text-muted-foreground/40 font-normal ml-1">
+                — {combatant.display_name}
               </span>
             )}
           </button>
