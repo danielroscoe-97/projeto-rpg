@@ -40,6 +40,6 @@ CREATE POLICY session_files_view ON session_files
       SELECT 1 FROM sessions WHERE sessions.id = session_files.session_id AND sessions.owner_id = auth.uid()
     )
     OR EXISTS (
-      SELECT 1 FROM session_tokens WHERE session_tokens.session_id = session_files.session_id AND session_tokens.user_id = auth.uid()
+      SELECT 1 FROM session_tokens WHERE session_tokens.session_id = session_files.session_id AND session_tokens.anon_user_id = auth.uid()
     )
   );
