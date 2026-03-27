@@ -86,7 +86,7 @@ async function checkCondition(condition: WatchCondition): Promise<boolean> {
             ...readdirSync(dir)
               .filter((f: string) => f.endsWith(".md"))
               .map((f: string) => ({ name: f, mtime: statSync(join(dir, f)).mtimeMs }))
-              .filter((f: { mtime: number }) => f.mtime > Date.now() - 20 * 60 * 1000)
+              .filter((f: { mtime: number }) => f.mtime > Date.now() - 60 * 60 * 1000)
               .map((f: { name: string }) => f.name)
           );
         }
@@ -134,7 +134,18 @@ async function checkCondition(condition: WatchCondition): Promise<boolean> {
 
 export function addRule(rule: Omit<WatchRule, "id" | "createdAt" | "triggered">): string {
   const state = loadState();
-  const id = `rule-${Date.now()}`;
+
+  // Deduplicate: skip if a rule with the same condition type + action already exists
+  const conditionKey = JSON.stringify(rule.condition);
+  const duplicate = state.rules.find(
+    (r) => !r.triggered && JSON.stringify(r.condition) === conditionKey && r.action === rule.action
+  );
+  if (duplicate) {
+    logger.info(`Watch rule already exists: ${duplicate.id} — skipping duplicate`);
+    return duplicate.id;
+  }
+
+  const id = `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   state.rules.push({
     ...rule,
     id,
@@ -217,18 +228,20 @@ async function checkAllRules(): Promise<void> {
         logger.info(`Watch rule triggered: ${rule.description}`);
         await notify(`👁️ *Watcher:* Condição detectada!\n*Regra:* ${rule.description}\n*Ação:* Executando "${rule.action}"...`);
 
-        // Execute FIRST, then mark triggered (fix: was backwards before)
         try {
           if (commandHandler) {
             await commandHandler(rule.action);
           }
-          // Only mark triggered on success
+          // Mark triggered and persist — both must succeed
           rule.triggered = true;
-          saveState(state);
+          try {
+            saveState(state);
+          } catch (saveErr) {
+            logger.error(`Failed to persist triggered state for rule ${rule.id} — may re-execute next cycle`, { error: String(saveErr) });
+          }
         } catch (error) {
           logger.error(`Watch action failed: ${rule.action}`, { error: String(error) });
           await notify(`⚠️ *Watcher:* Ação falhou para regra "${rule.description}". Será tentada novamente no próximo ciclo.`);
-          // Rule stays un-triggered — will retry next cycle
         }
       }
     } catch (error) {

@@ -105,7 +105,11 @@ export async function runClaude(options: {
       logger.warn(`Claude timeout after ${timeoutMs / 1000}s — killing process`);
       proc.kill("SIGTERM");
       setTimeout(() => {
-        if (!proc.killed) proc.kill("SIGKILL");
+        // Check if process actually exited (exitCode is set when reaped)
+        if (proc.exitCode === null) {
+          logger.warn("SIGTERM did not terminate Claude — sending SIGKILL");
+          proc.kill("SIGKILL");
+        }
       }, 5000);
     }, timeoutMs);
 

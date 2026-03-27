@@ -19,25 +19,31 @@ let isProcessing = false;
 const commandQueue: string[] = [];
 
 async function enqueueCommand(input: string): Promise<void> {
+  // Atomic check-and-set: queue if already processing
   if (isProcessing) {
     logger.info(`Busy — queuing: ${input.slice(0, 50)}...`);
     commandQueue.push(input);
     return;
   }
 
+  // Set flag BEFORE any await to prevent race window
   isProcessing = true;
   try {
     await handleCommand(input);
   } catch (error) {
     logger.error("Command failed", { error: String(error) });
   } finally {
-    isProcessing = false;
-    // Process next in queue with proper await
-    const next = commandQueue.shift();
-    if (next) {
-      logger.info(`Processing next: ${next.slice(0, 50)}...`);
-      await enqueueCommand(next);
+    // Drain queue sequentially
+    while (commandQueue.length > 0) {
+      const next = commandQueue.shift()!;
+      logger.info(`Processing queued: ${next.slice(0, 50)}...`);
+      try {
+        await handleCommand(next);
+      } catch (error) {
+        logger.error("Queued command failed", { error: String(error) });
+      }
     }
+    isProcessing = false;
   }
 }
 
@@ -167,26 +173,33 @@ function connectWebSocket(
     }
   };
 
-  ws.onclose = () => {
-    logger.warn("Slack connection closed. Reconnecting in 5s...");
+  let reconnectAttempts = 0;
+  const MAX_RECONNECT_ATTEMPTS = 10;
+
+  function attemptReconnect(): void {
+    reconnectAttempts++;
+    if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
+      logger.error(`Reconnect failed after ${MAX_RECONNECT_ATTEMPTS} attempts — full restart`);
+      startSlackBot().catch(console.error);
+      return;
+    }
+
+    // Exponential backoff: 5s, 10s, 20s, 40s... capped at 120s
+    const backoffMs = Math.min(5000 * Math.pow(2, reconnectAttempts - 1), 120_000);
+    logger.warn(`Slack reconnecting in ${backoffMs / 1000}s (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+
     setTimeout(async () => {
       try {
         const newUrl = await getSocketModeUrl(appToken);
         connectWebSocket(newUrl, appToken, botToken, channelId);
       } catch (error) {
         logger.error("Reconnect failed", { error: String(error) });
-        setTimeout(async () => {
-          try {
-            const retryUrl = await getSocketModeUrl(appToken);
-            connectWebSocket(retryUrl, appToken, botToken, channelId);
-          } catch {
-            logger.error("Reconnect retry failed. Will try again in 30s...");
-            setTimeout(() => startSlackBot().catch(console.error), 30_000);
-          }
-        }, 10_000);
+        attemptReconnect();
       }
-    }, 5000);
-  };
+    }, backoffMs);
+  }
+
+  ws.onclose = () => attemptReconnect();
 
   ws.onerror = (error: Event) => {
     logger.error("WebSocket error", { error: String(error) });

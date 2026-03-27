@@ -136,7 +136,7 @@ const raw = {
   },
   worktree: {
     baseDir: join(tmpdir(), "bmad"),
-    maxConcurrent: 2,
+    maxConcurrent: 4,
     cleanupOnSuccess: true,
     rateLimitBackoffMs: 30_000,
     maxRateLimitRetries: 5,
@@ -176,5 +176,20 @@ const raw = {
 };
 
 // -- Validate & Export --
+
+import { existsSync as _existsSync } from "fs";
+import { resolve } from "path";
+
+// Resolve projectRoot to absolute and validate it exists
+raw.projectRoot = resolve(raw.projectRoot);
+if (!_existsSync(raw.projectRoot)) {
+  throw new Error(`PROJECT_ROOT does not exist: ${raw.projectRoot}`);
+}
+
+// Warn if Slack is "enabled" but no tokens are actually set
+if (raw.slack.enabled && !raw.slack.webhookUrl && !raw.slack.botToken) {
+  raw.slack.enabled = false;
+  console.warn("[config] Slack marked enabled but no webhook/bot token set — disabling");
+}
 
 export const config: Config = configSchema.parse(raw);

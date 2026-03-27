@@ -273,7 +273,7 @@ async function executeStory(storyId: string): Promise<void> {
     });
   } finally {
     if (config.worktree.cleanupOnSuccess) {
-      removeWorktree(worktree);
+      try { removeWorktree(worktree); } catch (e) { logger.warn("Worktree cleanup failed", { error: String(e) }); }
     }
   }
 }
@@ -343,7 +343,7 @@ ${description}
     });
   } finally {
     if (config.worktree.cleanupOnSuccess) {
-      removeWorktree(worktree);
+      try { removeWorktree(worktree); } catch (e) { logger.warn("Worktree cleanup failed", { error: String(e) }); }
     }
   }
 }
@@ -559,7 +559,7 @@ Se encontrar problemas críticos, corrija-os diretamente.`,
     });
   } finally {
     if (config.worktree.cleanupOnSuccess) {
-      removeWorktree(worktree);
+      try { removeWorktree(worktree); } catch (e) { logger.warn("Worktree cleanup failed", { error: String(e) }); }
     }
   }
 }

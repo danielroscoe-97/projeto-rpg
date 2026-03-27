@@ -9,7 +9,7 @@
  */
 
 import { execFileSync } from "child_process";
-import { existsSync, writeFileSync, unlinkSync, rmSync, mkdirSync, symlinkSync } from "fs";
+import { existsSync, writeFileSync, unlinkSync, rmSync, mkdirSync, symlinkSync, realpathSync } from "fs";
 import { join } from "path";
 import { config } from "./config.js";
 import { logger } from "./logger.js";
@@ -113,9 +113,15 @@ export function createWorktree(storyId: string, description: string, options?: {
     try {
       // On Windows, 'junction' works without admin privileges
       symlinkSync(mainNodeModules, wtNodeModules, "junction");
-      logger.info("Linked node_modules into worktree");
+      // Validate the symlink actually resolves
+      const resolved = realpathSync(wtNodeModules);
+      if (!existsSync(join(resolved, ".package-lock.json")) && !existsSync(join(resolved, "next"))) {
+        logger.warn("node_modules symlink created but looks empty — tests may fail");
+      } else {
+        logger.info("Linked node_modules into worktree");
+      }
     } catch (e) {
-      logger.warn("Failed to symlink node_modules — tests may fail in worktree", { error: String(e) });
+      logger.error("Failed to symlink node_modules — tests WILL fail in worktree. Check Windows developer mode or run as admin.", { error: String(e) });
     }
   }
 
