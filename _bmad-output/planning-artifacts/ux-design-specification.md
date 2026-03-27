@@ -1,9 +1,9 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 status: complete
-lastRevision: 2026-03-25
-revisionNotes: "Action Color Semantics overhaul: strict semantic color budget (gold=primary CTA, green=constructive, red=destructive, purple=magical, neutral=chrome). Contextual HP Apply button. Standardized 3-level opacity scale. Inspired by Kastark and 5e.tools reference patterns."
-inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md", "_bmad-output/planning-artifacts/architecture.md", "_bmad-output/planning-artifacts/epics.md", "referencia visual/ro-modern/css/theme.css", "referencia visual/ro-modern/preview.html", "referencia visual/ro-modern/header.php"]
+lastRevision: 2026-03-27
+revisionNotes: "V2 Addendum: UX specs para todas as features do PRD V2 — mid-combat add, display names, monster grouping, late-join, turn notifications (Novu), auto-join (Presence), GM notes, file sharing, freemium gating, CR calculator, homebrew, role selection. Integração com Magic UI + Framer Motion para player view."
+inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "docs/prd-v2.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md", "_bmad-output/planning-artifacts/architecture.md", "_bmad-output/planning-artifacts/epics.md", "docs/tech-stack-libraries.md", "referencia visual/ro-modern/css/theme.css", "referencia visual/ro-modern/preview.html", "referencia visual/ro-modern/header.php"]
 ---
 
 # UX Design Specification projeto-rpg
@@ -882,3 +882,451 @@ This product has two purpose-built views — NOT a responsive single layout:
 **Touch targets:** All interactive elements on mobile: min 44×44px. HP adjust buttons: 48×48px. "Next Turn" button: full-width, 56px height.
 
 **Reduced motion:** All animations wrapped in `@media (prefers-reduced-motion: no-preference)`. Fallback: instant state changes, no transitions.
+
+---
+
+## V2 Addendum — Novas Features (PRD V2)
+
+> **Contexto:** Este addendum cobre todas as features novas do PRD V2 (FR42–FR63, FR51b, NFR29–NFR38). Todas as decisões de design seguem os fundamentos visuais, color semantics, tipografia, e patterns estabelecidos nas seções anteriores. Referências de tech stack: `docs/tech-stack-libraries.md`.
+
+---
+
+### V2.1 Mid-Combat Add (FR42)
+
+**Contexto:** DM pode adicionar monstros ou jogadores durante combate ativo sem interromper o turno atual.
+
+**UX Pattern:**
+
+O botão "+ Adicionar" já existe no layout V1 (final da initiative list). Para V2:
+
+- **Trigger:** Botão subtle verde (`bg-emerald-900/30 text-emerald-400`) no footer da initiative list: `+ Adicionar ao combate`
+- **Ação:** Abre um `Sheet` (slide-over lateral, 400px) — NÃO um modal, para que o DM veja o combate atrás
+- **Conteúdo do Sheet:**
+  - Tabs: `Monstro` | `Jogador`
+  - Tab Monstro: campo de busca (reutiliza `OracleSearch` com filtro `type:monster`), selecionar → preenche automaticamente stats do SRD
+  - Tab Jogador: form simples (nome, HP, AC, iniciativa)
+  - Campo de iniciativa obrigatório — DM decide onde o novo combatante entra na ordem
+  - Botão "Adicionar" (`bg-emerald-600`) — ação construtiva
+- **Feedback:** Novo combatante aparece na lista com `AnimatePresence` (Framer Motion) — fade-in + slide-down suave (200ms). Jogadores conectados veem a adição em real-time.
+- **Constraint:** Sheet NÃO pausa o turno atual. O indicador de turno permanece no combatente ativo.
+
+**Layout do Sheet:**
+```
+┌─ Adicionar ao Combate ───────────┐
+│ [Monstro] [Jogador]              │
+│                                   │
+│ 🔍 Buscar monstro...            │
+│ ┌────────────────────────────┐   │
+│ │ Goblin        CR 1/4       │   │
+│ │ Goblin Boss   CR 1         │   │
+│ │ Hobgoblin     CR 1/2       │   │
+│ └────────────────────────────┘   │
+│                                   │
+│ Iniciativa: [___]                │
+│ Display name: [___] (opcional)   │
+│                                   │
+│     [Adicionar] (verde)          │
+└──────────────────────────────────┘
+```
+
+---
+
+### V2.2 Display Names para Monstros (FR43)
+
+**Contexto:** DM define nome visível para jogadores. Nome real do SRD fica visível apenas para o DM. Core anti-metagaming.
+
+**UX Pattern:**
+
+- **DM View (desktop):** Na row colapsada, mostra `Display Name` com nome real em `text-muted` entre parênteses: `"O Guardião" (Troll)`. Ao expandir, campo editável de display name com placeholder "Nome visível para jogadores".
+- **Player View (mobile):** Mostra APENAS o display name. Nunca o nome real. Se DM não definiu display name, mostra o nome genérico do SRD.
+- **Ponto de entrada:** Campo aparece no `Sheet` de mid-combat add E na row expandida do combatante existente.
+- **Sanitização:** Display name limitado a 40 caracteres, sanitizado contra XSS (NFR33).
+
+**Layout na CombatantRow (DM, colapsada):**
+```
+│ ▶ "O Guardião" (Troll)  ████░░░░ 28/80  [Prone] │
+```
+
+**Layout na CombatantRow (Player):**
+```
+│   O Guardião            ■■■□ HEAVY                │
+```
+
+---
+
+### V2.3 Monster Grouping (FR44–FR46)
+
+**Contexto:** DM agrupa múltiplos monstros sob uma única entrada de iniciativa. HP individual. Expand/collapse do grupo.
+
+**UX Pattern:**
+
+- **Criação do grupo:** No Sheet de mid-combat add (ou encounter setup), DM seleciona monstro e define quantidade (input numérico, 2–20). Botão "Adicionar como Grupo" (`bg-emerald-600`).
+- **Visualização colapsada (grupo):** Uma row que mostra: `▶ Goblins (×5)` + barra de HP agregada (média visual) + badges de condições comuns.
+- **Expand grupo:** Click na row → expande para mostrar cada monstro individual como sub-row indentada (padding-left +24px). Cada sub-row tem HP individual, conditions individuais, e display name individual.
+- **Collapse grupo:** Click no header do grupo → volta para row única.
+- **Iniciativa:** Uma única entrada. Ao avançar turno para o grupo, DM resolve cada monstro individual na ordem que quiser.
+- **Defeated individual:** Sub-row dimmed (`opacity-40`), strike-through no nome. Grupo atualiza contagem: `Goblins (×3/5)`.
+
+**Layout do Grupo (colapsado):**
+```
+│ ▶ Goblins (×5)        ████████░░  avg  [—]       │
+```
+
+**Layout do Grupo (expandido):**
+```
+│ ▼ Goblins (×5)                                    │
+│   ├ Goblin 1           ██████████ 7/7             │
+│   ├ Goblin 2           ████░░░░░░ 3/7  [Prone]   │
+│   ├ Goblin 3           ██████████ 7/7             │
+│   ├ Goblin 4           ░░░░░░░░░░ 0/7  DEFEATED  │
+│   └ Goblin 5           ████████░░ 5/7             │
+```
+
+**Player View:** Grupo aparece como uma única entrada com contagem: `Goblins (×5)`. Sub-rows NÃO expandem no player view — jogadores veem apenas o grupo como unidade. Display names se aplicam ao grupo (ex: `"Os Sentinelas" (×5)`).
+
+---
+
+### V2.4 Late-Join Player (FR47)
+
+**Contexto:** Jogador que entra na sessão depois do combate ter iniciado pode registrar dados e entrar na iniciativa.
+
+**UX Flow:**
+
+```
+Jogador abre link → PlayerLobby
+├─→ Sessão em combate ativo? → Sim
+│   ├─→ Mostra banner: "Combate em andamento — Round N"
+│   ├─→ Form: Nome, HP, AC, Iniciativa
+│   ├─→ Botão "Entrar no Combate" (gold, CTA primário)
+│   └─→ Enviado → DM recebe notificação
+│
+DM View:
+├─→ Toast (Novu in-app): "[Nome] quer entrar no combate (Init: 14)"
+├─→ Toast tem botões: [Aceitar ✓] (verde) [Recusar ✗] (neutral)
+├─→ Aceitar → jogador inserido na posição correta da iniciativa
+│   └─→ Jogador vê: PlayerInitiativeBoard (transição animada)
+└─→ Recusar → jogador vê: "O mestre recusou sua entrada. Aguarde."
+```
+
+**Design Notes:**
+- O toast do DM usa `Novu <Inbox />` integrado ao header do DM view.
+- Aceitar/recusar NÃO pausa o turno — é async.
+- `AnimatePresence` para inserir o novo jogador na lista suavemente.
+
+---
+
+### V2.5 Notificações de Turno (FR48–FR49)
+
+**Contexto:** Jogador recebe notificação visual quando falta 1 turno (FR48) e quando é sua vez (FR49).
+
+**UX Pattern — "Você é o próximo" (FR48):**
+
+- **Trigger:** Quando o combatente anterior ao jogador inicia seu turno.
+- **Visual:** Banner sutil no topo do PlayerInitiativeBoard:
+  - Background: `bg-amber-900/30`
+  - Texto: `⚔️ Prepare-se — você é o próximo!`
+  - Animação: slide-down (Framer Motion, 300ms) + fade-in
+  - Persiste até o turno do jogador começar
+- **Novu channel:** `in-app` notification (não email/push neste momento).
+
+**UX Pattern — "É sua vez!" (FR49):**
+
+- **Trigger:** Quando o turno avança para o jogador.
+- **Visual:** Takeover momentâneo do player view:
+  - Full-screen overlay (1.5s): fundo `bg-gold/20` com texto grande `Cinzel text-4xl`: **"É SUA VEZ!"**
+  - Animação: scale-in (Magic UI `fade-text` ou Framer Motion `scale: [0.8, 1]`) + golden `border-beam` (Magic UI) ao redor da tela
+  - Após 1.5s: overlay faz fade-out, revela PlayerInitiativeBoard com a row do jogador destacada (`accent` gold border + glow)
+- **Som:** Opcional, configurável nas settings. Default: off. Se ativado, toque curto tipo "ding" (Web Audio API, ≤100ms).
+- **Accessibility:** Texto do overlay é `aria-live="assertive"`. Screen readers anunciam "É sua vez" imediatamente.
+
+**Layout do Overlay "É sua vez":**
+```
+┌─────────────────────────┐
+│                         │
+│    ⚔️ É SUA VEZ! ⚔️    │  ← Cinzel, text-4xl, gold
+│                         │
+│    border-beam dourado  │
+│                         │
+└─────────────────────────┘
+       ↓ fade-out (1.5s)
+┌─────────────────────────┐
+│ Round 5                 │
+│ ┌─────────────────────┐ │
+│ │▶ LYRA (VOCÊ) ★      │ │ ← gold glow border
+│ │   HP: ████████ 38/38│ │
+│ └─────────────────────┘ │
+│   Goblin Boss           │
+│   Troll                 │
+│   Thorin                │
+└─────────────────────────┘
+```
+
+---
+
+### V2.6 Auto-Join — Jogador Logado (FR51b)
+
+**Contexto:** Jogador cadastrado que entra numa sessão ativa aparece automaticamente na tela do DM.
+
+**UX Pattern:**
+
+- **Implementação:** Supabase Realtime `Presence` — jogador faz `channel.track()` ao entrar, DM recebe evento `presence.sync`.
+- **DM View:** Toast informativo (3s, auto-dismiss): `"[Nome] entrou na sessão"`. Se jogador já está na initiative list (campanha), row atualiza com indicador online (dot verde ao lado do nome).
+- **Player View:** Transição suave do PlayerLobby para PlayerInitiativeBoard (sem form de iniciativa se já está na campanha).
+- **Indicador online:** Dot `8×8px` verde (`#2dd4bf` success) ao lado do nome na CombatantRow do DM view. Tooltip: "Online". Se desconectar: dot muda para `text-muted` cinza.
+
+---
+
+### V2.7 GM Private Notes (FR52)
+
+**Contexto:** DM pode criar, editar e visualizar notas privadas durante sessão ativa. Nunca broadcast.
+
+**UX Pattern:**
+
+- **Trigger:** Ícone `📝` no header do DM view, ao lado do oracle search. Neutral button (`bg-white/[0.06]`).
+- **Container:** `Sheet` lateral direito (360px) — não cobre a initiative list.
+- **Conteúdo:**
+  - Textarea com auto-save (debounce 1s)
+  - Markdown básico suportado (bold, italic, lists)
+  - Timestamp automático: `[14:32] nota do mestre...`
+  - Nunca enviado via Supabase Broadcast/Presence — persist local + Supabase DB (postgres_changes apenas para o DM)
+- **Visual:**
+  - Background: `surface-elevated` (`#222234`)
+  - Borda: `border-hover` (`rgba(255,255,255,0.15)`)
+  - Badge "PRIVADO" vermelho sutil no header do Sheet para reforçar que não é compartilhado
+
+---
+
+### V2.8 File Sharing em Sessão (FR53)
+
+**Contexto:** DM compartilha imagens e PDFs com jogadores conectados.
+
+**UX Pattern:**
+
+- **Trigger:** Ícone `📎` no header do DM view. Neutral button.
+- **Upload:** Dialog modal com drag-and-drop zone + botão "Selecionar arquivo".
+  - Tipos aceitos: `image/*`, `application/pdf`
+  - Limite: 10MB (NFR32). Progresso visual via barra de upload.
+  - Feedback: Toast sucesso `"Arquivo compartilhado com a mesa"` ou erro `"Arquivo muito grande (máx 10MB)"`
+- **Player View:** Arquivo aparece como card no topo do PlayerInitiativeBoard:
+  - Imagem: thumbnail clicável → abre em modal fullscreen
+  - PDF: ícone + nome do arquivo → abre em nova aba
+  - Animação: slide-down + fade-in (Framer Motion)
+  - DM pode remover: botão `✗` red subtle na DM view
+- **Storage:** Supabase Storage bucket `session-files`, com RLS vinculado à sessão.
+
+---
+
+### V2.9 Freemium Feature Gating (FR57–FR61)
+
+**Contexto:** Features Pro visíveis com cadeado no tier Free. Upsell contextual. Trial. Modelo "Mesa".
+
+**Design System de Gating:**
+
+**Ícone de cadeado:**
+- `🔒` (ou SVG lock icon) em `text-muted` (`#5c5a65`), 16×16px
+- Posicionado à direita do label da feature
+- Tooltip (desktop): `"Disponível no plano Pro"` — shadcn `Tooltip`
+- Tap (mobile): abre mini-card de upsell
+
+**Upsell contextual inline:**
+- NÃO é pop-up. É um card inline que substitui a feature bloqueada.
+- Background: `surface-elevated` + borda `accent` gold sutil
+- Conteúdo: "Esta feature é Pro. [Experimentar grátis por 14 dias →]"
+- CTA: botão gold shimmer (Magic UI `shimmer-button`): `"Teste grátis"` — leva para página de trial
+
+**Features com gating visual no tier Free:**
+
+| Feature | Onde aparece | Indicador |
+|---------|-------------|-----------|
+| Salvar campanha | Dashboard | Lock + tooltip |
+| Salvar preset | Encounter setup | Lock + tooltip |
+| Export PDF/JSON | Pós-sessão | Lock + upsell card |
+| Homebrew | Compendium | Lock + upsell card |
+| Analytics | Dashboard | Lock + upsell card |
+| CR Calculator | Encounter builder | Lock + tooltip |
+
+**Modelo "Mesa" (FR60):**
+- Badge `PRO` (gold, `bg-gold text-background`, 12px, bold) ao lado do nome do DM na session header.
+- Todos os jogadores conectados à sessão do DM Pro recebem features Pro automaticamente. Sem indicação visual para jogadores — a experiência é simplesmente "completa".
+- Se assinatura expira mid-session: nenhuma mudança visual até fim da sessão (graceful degradation NFR34).
+
+---
+
+### V2.10 Convite de Jogador via Email (FR54–FR55)
+
+**Contexto:** DM Pro convida jogadores para campanha via email. Jogador cria conta → personagem vinculado automaticamente.
+
+**UX Flow:**
+
+```
+DM → Dashboard → Campanha → Gerenciar Jogadores
+├─→ Botão "Convidar Jogador" (verde, construtivo)
+│   └─→ Dialog: campo de email + mensagem opcional
+│       └─→ Enviar → Novu email workflow
+│           └─→ Toast: "Convite enviado para [email]"
+│
+Jogador recebe email:
+├─→ CTA no email: "Aceitar convite" → /auth/sign-up?invite=[token]
+├─→ Signup com role selection (FR50): Jogador | Mestre | Ambos
+├─→ Conta criada → personagem auto-linked à campanha (FR55)
+└─→ Redirect → Dashboard com campanha visível
+```
+
+**Rate limiting visual (NFR30):** Após 15 convites no dia, o campo de email mostra hint: `"Você pode enviar mais 5 convites hoje"`. Ao atingir 20: botão desabilitado com tooltip.
+
+---
+
+### V2.11 Role Selection no Signup (FR50)
+
+**Contexto:** Jogador escolhe se é "Jogador", "Mestre" ou "Ambos" durante o cadastro.
+
+**UX Pattern:**
+
+- **Onde:** Tela de signup (`/auth/sign-up`), após campos de email/senha.
+- **UI:** Três cards selecionáveis (radio group visual):
+  - `⚔️ Jogador` — "Eu jogo nas mesas dos outros"
+  - `📋 Mestre` — "Eu comando as sessões"
+  - `⚔️📋 Ambos` — "Eu faço os dois"
+- **Visual:** Cards com border neutral. Selected: border gold + gold glow. Icon + label + descrição curta.
+- **Default:** Nenhum pré-selecionado — obrigatório.
+- **Impacto:** Define dashboard view (DM vê campanhas + encounters, Jogador vê convites + personagens, Ambos vê tudo).
+
+---
+
+### V2.12 CR Calculator (FR62)
+
+**Contexto:** DM Pro calcula dificuldade do encontro automaticamente.
+
+**UX Pattern:**
+
+- **Onde:** Encounter setup view, abaixo da lista de monstros adicionados.
+- **Visual:** Card com background `surface` que mostra:
+  - Party: `N jogadores, nível médio M`
+  - Encounter CR: calculado automaticamente (SRD 2014 ou 2024 conforme ruleset)
+  - Difficulty rating: badge colorida
+    - `Easy` → verde `bg-emerald-900/30 text-emerald-400`
+    - `Medium` → amber `bg-amber-900/30 text-amber-400`
+    - `Hard` → orange `bg-orange-900/30 text-orange-400`
+    - `Deadly` → vermelho `bg-red-900/20 text-red-400`
+  - XP total + threshold table reference
+- **Interação:** Atualiza em real-time conforme DM adiciona/remove monstros. Zero ação necessária.
+- **Gating:** Free vê o card com lock + tooltip. Pro vê completo.
+
+---
+
+### V2.13 Homebrew — Criar Conteúdo Customizado (FR63)
+
+**Contexto:** DM Pro cria monstros, magias e itens customizados.
+
+**UX Pattern:**
+
+- **Onde:** Compendium → tab "Homebrew" (com badge `PRO` gold).
+- **Tipos:** Monstros | Magias | Itens (tabs dentro da seção).
+- **Criação:** Botão "Criar [tipo]" (verde, construtivo) → Form em Dialog fullscreen:
+  - Form segue a estrutura do SRD stat block (para monstros), spell description (para magias), ou item description (para itens)
+  - Fields pré-populados com placeholders descritivos
+  - Preview live no lado direito do dialog (desktop) ou toggle view (mobile)
+- **Salvamento:** Supabase DB, vinculado ao user. Aparece no Oracle search com badge `Homebrew` (purple pill `bg-purple-900/30 text-purple-400`).
+- **Visual consistência:** Homebrew content usa exatamente a mesma formatação visual que SRD content — mesmas fonts, mesmos dividers ornamentais, mesma estrutura de stat block. A única diferença é o badge purple "Homebrew".
+
+---
+
+### V2.14 Player Character Linking (FR56)
+
+**Contexto:** DM Pro atribui personagem da campanha a jogador que entrou via QR.
+
+**UX Pattern:**
+
+- **Trigger:** Quando jogador anônimo entra na sessão e DM tem campanha com jogadores salvos.
+- **DM View:** Ao lado do jogador anônimo na initiative list, ícone `🔗` (link) neutral. Click → dropdown com lista de personagens da campanha não-linkados.
+- **Ação:** Selecionar personagem → jogador anônimo assume dados do personagem (nome, HP, AC). Row atualiza com `AnimatePresence`.
+- **Player View:** Transição suave — nome atualiza, HP sincroniza.
+- **Visual:** Badge `Linked ✓` em verde sutil aparece temporariamente (3s) no toast do DM.
+
+---
+
+### V2.15 Novos User Journey Flows (V2)
+
+#### Journey 5: Late-Join Player
+
+```
+[Recebe link do DM] → [Abre no celular]
+    → [PlayerLobby: "Combate em andamento — Round N"]
+    → [Preenche: nome, HP, AC, iniciativa]
+    → [Botão gold "Entrar no Combate"]
+    → [Aguarda aprovação do DM (loading subtle)]
+    → [Aceito → PlayerInitiativeBoard animado]
+    → [Ve turno atual, sabe quando é sua vez]
+```
+
+#### Journey 6: DM Free → Upsell → Pro
+
+```
+[DM logado, Free] → [Combat tracker normal]
+    → [Tenta salvar campanha] → [Lock + upsell card inline]
+    → [Click "Teste grátis"] → [Trial activation page]
+    → [Ativa trial 14 dias] → [Badge PRO no header]
+    → [Todas as features Pro desbloqueadas]
+    → [Dia 12: Novu email "Seu trial expira em 2 dias"]
+    → [Assina ou volta para Free — sem degradação]
+```
+
+#### Journey 7: DM Pro — Sessão Completa com Mesa
+
+```
+[Dashboard] → [Seleciona campanha] → [Players pré-carregados]
+    → [ShareSessionButton → QR code]
+    → [Jogadores scanneiam → auto-join via Presence]
+    → [DM vê toast "Jogador X entrou"]
+    → [Late-join: toast com Accept/Reject]
+    → [Combate com: notificações de turno, GM notes, file sharing]
+    → [Pós-sessão: analytics, export PDF]
+```
+
+---
+
+### V2.16 Novos Componentes (V2)
+
+| Componente | Base | Feature | Notas |
+|-----------|------|---------|-------|
+| `MonsterGroupRow` | `Collapsible` | FR44–46 | Expand/collapse com sub-rows individuais |
+| `MidCombatAddSheet` | `Sheet` | FR42 | Slide-over lateral com search + form |
+| `DisplayNameInput` | `Input` | FR43 | Inline editable com placeholder |
+| `TurnNotificationOverlay` | Framer Motion | FR49 | Full-screen gold overlay, 1.5s auto-dismiss |
+| `TurnUpcomingBanner` | `motion.div` | FR48 | Banner amber slide-down |
+| `LateJoinForm` | Custom | FR47 | Form no PlayerLobby para late-join |
+| `LateJoinApprovalToast` | Novu `<Inbox />` | FR47 | Toast no DM com Accept/Reject |
+| `GMNotesSheet` | `Sheet` | FR52 | Panel lateral com auto-save textarea |
+| `FileShareDialog` | `Dialog` | FR53 | Upload drag-and-drop + preview |
+| `SharedFileCard` | `Card` | FR53 | Thumbnail/icon no player view |
+| `FeatureLockBadge` | `Badge` + `Tooltip` | FR57 | Lock icon + tooltip "Pro" |
+| `UpsellCard` | `Card` | FR58 | Inline upsell com shimmer CTA |
+| `RoleSelectionCards` | Radio group | FR50 | Três cards selecionáveis no signup |
+| `CRCalculatorCard` | `Card` | FR62 | Auto-calculate com difficulty badge |
+| `HomebrewCreator` | `Dialog` fullscreen | FR63 | Form + live preview |
+| `PlayerLinkDropdown` | `DropdownMenu` | FR56 | Dropdown de personagens da campanha |
+| `OnlineIndicator` | Custom | FR51b | Dot verde 8px via Presence |
+| `PresenceTracker` | Supabase Presence | FR51b | Hook para track/sync jogadores online |
+
+---
+
+### V2.17 Animações V2 (Framer Motion + Magic UI)
+
+**Princípio inalterado:** Animações são funcionais, não decorativas. Zero animações no core combat loop que não comuniquem estado.
+
+| Animação | Lib | Onde | Duração | Purpose |
+|----------|-----|------|---------|---------|
+| Creature enter/exit | Framer `AnimatePresence` | Initiative list | 200ms | Feedback visual de add/remove |
+| Group expand/collapse | Framer `motion.div` | MonsterGroupRow | 150ms | Smooth disclosure |
+| "Você é o próximo" banner | Framer `motion.div` | Player view | 300ms slide-down | Awareness |
+| "É sua vez!" overlay | Framer + Magic `border-beam` | Player view | 1.5s total | Attention capture |
+| File shared card | Framer `motion.div` | Player view | 200ms slide-down | Notify content available |
+| Shimmer CTA (upsell) | Magic `shimmer-button` | Upsell cards | Continuous subtle | Draw attention to conversion |
+| Online dot pulse | CSS `@keyframes` | CombatantRow | 2s loop | Indicate live connection |
+| Late-join toast | Framer `motion.div` | DM header | 300ms + 5s persist | Require DM action |
+
+**Anti-patterns V2 (NUNCA fazer):**
+- ❌ Animação no overlay "É sua vez" que dure mais que 2s — deve sair do caminho rápido
+- ❌ Som ativado por default — sempre opt-in nas settings
+- ❌ Particles/efeitos visuais no combat tracker durante turno — distrai do HP/conditions
+- ❌ Shimmer/pulse em qualquer elemento que não seja conversion CTA

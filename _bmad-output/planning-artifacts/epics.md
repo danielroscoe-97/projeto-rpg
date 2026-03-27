@@ -1,1290 +1,1338 @@
 ---
 stepsCompleted: [1, 2, 3, 4]
 status: 'complete'
-completedAt: '2026-03-24'
-inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/architecture.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md"]
+completedAt: '2026-03-27'
+lastRevision: '2026-03-27'
+version: '2.0'
+revisionNotes: 'V2 completo — 9 Epics (0-8), 41 stories, 200+ acceptance criteria. Baseado em PRD V2, Architecture V2, UX Design V2. Substitui epics V1.'
+inputDocuments:
+  - docs/prd-v2.md
+  - _bmad-output/planning-artifacts/architecture.md
+  - _bmad-output/planning-artifacts/ux-design-specification.md
+  - docs/epics-and-sprints-spec.md
+  - docs/tech-stack-libraries.md
+workflowType: 'epics-and-stories'
+project_name: 'projeto-rpg'
+user_name: 'Dani_'
+date: '2026-03-27'
 ---
 
-# projeto-rpg - Epic Breakdown
+# projeto-rpg — Epic Breakdown V2
 
 ## Overview
 
-This document provides the complete epic and story breakdown for projeto-rpg, decomposing the requirements from the PRD and Architecture into implementable stories.
+Este documento contém o breakdown completo de epics e stories para o **Taverna do Mestre V2**. O MVP (V1) já está em produção com FR1–FR41 e NFR1–NFR28 implementados. Este documento cobre exclusivamente o trabalho V2: tech debt cleanup, novas features de combate, experiência do jogador, gestão de sessão/campanha, e modelo freemium.
+
+**Escopo:** 9 Epics (0–8), 41 stories, organizados em 3 sprints + backlog.
+
+---
 
 ## Requirements Inventory
 
-### Functional Requirements
+### Functional Requirements (V2 — FR42-FR63, FR51b)
 
-- FR1: DM can create a new encounter by searching and adding monsters from the SRD database
-- FR2: DM can add player characters to an encounter by entering name, HP, AC, and spell save DC
-- FR3: DM can load a saved player group into a new encounter without re-entering individual player data
-- FR4: DM can select a ruleset version (2014 or 2024) per session before combat begins
-- FR5: DM can save the current encounter state and resume it in a future session
-- FR6: DM can generate a shareable session link from within an active encounter that players use to join the player view
-- FR7: DM can enter initiative values for all combatants and have them automatically sorted in descending order
-- FR8: DM can manually resolve initiative ties by reordering combatants using drag-and-drop (mouse and touch) or manual position assignment
-- FR9: DM can advance the turn to the next combatant in initiative order
-- FR10: DM can adjust current HP for any combatant (damage or healing) at any point during combat
-- FR11: DM can mark a combatant as defeated and remove them from the active initiative order
-- FR12: DM can add or remove combatants from an active encounter mid-combat
-- FR13: DM can edit any combatant's stats (name, HP max, AC, DC) during combat
-- FR14: DM can apply named conditions to any combatant via a dropdown selector (Blinded, Charmed, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious)
-- FR15: DM can switch a monster's ruleset version (2014 ↔ 2024) for an individual combatant mid-combat without affecting other combatants or resetting encounter state
-- FR16: DM and players can search the SRD monster database by name, CR, and creature type
-- FR17: DM can expand a monster's full stat block inline within the combat tracker without navigating away
-- FR18: DM and players can search the SRD spell list by name, class, level, and school
-- FR19: DM and players can view a spell's full description in a modal overlay without leaving the current view
-- FR20: All SRD content (monsters and spells) is available in both 2014 and 2024 versions, clearly labeled by version
-- FR21: DM and players can look up condition rules (Stunned, Blinded, etc.) with full rules text accessible in-session
-- FR22: Users can create an account with email and password
-- FR23: Users can log in and log out of their account
-- FR24: DM can save a named player group (campaign) with all player character stats for reuse across sessions
-- FR25: DM can create, edit, and delete saved player groups
-- FR26: Users can delete their account and all associated data permanently
-- FR27: Players can join a session view using a shared link without creating an account
-- FR28: Player view displays the current initiative order in real time, reflecting DM changes as they happen
-- FR29: Player view displays each combatant's current HP, updating in real time when the DM makes changes
-- FR30: Player view indicates whose turn it is currently, updating automatically when the DM advances the turn
-- FR31: Player view provides access to the spell oracle (search + modal) without affecting the DM's view
-- FR32: Session state (initiative order, HP, conditions) is preserved and restored automatically if a connection is interrupted and re-established
-- FR33: Admin can view key usage metrics: new registrations, day-1 activation rate, week-2 retention rate, and players per DM
-- FR34: Admin can edit SRD monster and spell data (correct errors, update content) and publish changes that propagate to all active sessions
-- FR35: Admin can view and manage user accounts (for support purposes)
-- FR36: The application displays the required CC-BY-4.0 attribution statement for SRD 5.1 and SRD 5.2 content on a visible, persistent page
-- FR37: Users can access a Privacy Policy that describes data collection, retention, and their rights under LGPD/GDPR
-- FR38: Session state persists server-side after the DM closes the browser; DM can reopen and resume the session until it is explicitly ended
-- FR39: Active conditions on each combatant are visible at a glance in the combat tracker view; DM and players can see all conditions currently applied without additional navigation
-- FR40: A new DM is guided through creating their first encounter and generating a session link on first login
-- FR41: DM can set a temporary HP value for any combatant; temporary HP absorbs incoming damage before current HP is reduced, and is tracked separately from current and maximum HP
+- FR42: DM pode adicionar monstros/jogadores mid-combat sem interromper turno atual
+- FR43: DM pode definir display name para monstros (anti-metagaming). Nome real visível só para DM
+- FR44: DM pode agrupar múltiplos monstros sob uma única entrada de iniciativa
+- FR45: DM pode gerenciar grupos de monstros com HP individual
+- FR46: DM pode expandir/colapsar grupos na lista de combate
+- FR47: Late-join player pode registrar nome, HP, AC e iniciativa. DM aceita/rejeita
+- FR48: Jogador recebe notificação visual "Você é o próximo" 1 turno antes
+- FR49: Jogador recebe notificação visual "É sua vez!" com animação e som opcional
+- FR50: Jogador pode se identificar como Jogador/Mestre/Ambos no signup
+- FR51: Jogador cadastrado pode ter personagem vinculado a campanha via convite/QR
+- FR51b: Jogador cadastrado entra em sessão ativa → aparece automaticamente na tela do DM
+- FR52: DM pode criar/editar notas privadas na sessão (nunca broadcast)
+- FR53: DM pode compartilhar arquivos (imagens, PDFs) com jogadores na sessão
+- FR54: DM pode convidar jogadores para campanha via email
+- FR55: Jogador que aceita convite tem personagem vinculado automaticamente
+- FR56: DM Pro pode atribuir player character a jogador temporário (QR)
+- FR57: Usuário Free vê features Pro com cadeado + tooltip
+- FR58: Upsell contextual inline ao tentar usar feature Pro
+- FR59: Trial grátis 14 dias configurável
+- FR60: Modelo "Mesa" — assinatura do mestre desbloqueia Pro para mesa toda
+- FR61: Diferenciação consistente Pro/Free via ícones, tooltips, labels
+- FR62: CR calculator automático (SRD 2014 + 2024)
+- FR63: Homebrew — criar monstros, magias, itens customizados
 
-### NonFunctional Requirements
+### Functional Requirements (V1 — FR1-FR41, Já Implementados)
 
-- NFR1: First Contentful Paint (FCP) ≤1.5s on desktop (standard broadband)
-- NFR2: Time to Interactive (TTI) ≤3s on desktop — app must be usable before the first initiative roll
-- NFR3: WebSocket sync latency ≤500ms — DM action visible on player view within half a second
-- NFR4: Spell and monster modal open time ≤300ms — mid-combat lookup must feel instant
-- NFR5: Session setup (encounter creation + player group load) completable in ≤3 minutes by a first-time DM
-- NFR6: SRD content (monsters, spells) served from local cache after first load — oracle functions even if server connection is degraded
-- NFR7: Session state (initiative, HP, conditions) is never lost due to a browser refresh, tab close, or network interruption — state is persisted server-side and restored on reconnect
-- NFR8: Optimistic UI — all DM interactions (HP changes, turn advances, condition toggles) reflect immediately in the UI without waiting for server confirmation; server sync happens in background
-- NFR9: WebSocket connection degradation fallback — if WebSocket fails, player view falls back to polling (≤2s interval) to maintain sync
-- NFR10: Target uptime ≥99.5% (monthly) — session-night downtime is unacceptable; scheduled maintenance only during low-traffic windows (weekday daytime)
-- NFR11: All data transmitted over HTTPS — no HTTP fallback
-- NFR12: Passwords stored as bcrypt or Argon2 hashes — never plaintext
-- NFR13: JWT access tokens expire after 1 hour; refresh tokens expire after 30 days of inactivity
-- NFR14: Auth endpoints rate-limited to prevent brute-force attacks (max 10 attempts per 15 minutes per IP)
-- NFR15: Player session tokens are scoped to a single session and expire when the session is ended by the DM
-- NFR16: All user-generated inputs (player names, custom NPC data) are sanitized server-side before persistence
-- NFR17: Architecture supports horizontal scaling — no single-server state dependencies; session state stored in database, not in-process
-- NFR18: System handles ≥1,000 concurrent active sessions (DM + players) without performance degradation — validated before public launch
-- NFR19: SRD content delivery via CDN — static content (monster/spell JSON) served at edge, not from origin server
-- NFR20: WCAG 2.1 AA compliance on all user-facing routes
-- NFR21: No UI element uses color as the sole indicator of state — all status indicators (current turn, conditions, HP threshold) use icons or text labels in addition to color
-- NFR22: Dark mode is the default theme — background color #1a1a2e (dark gray, not pure black) to reduce halation for users with astigmatism
-- NFR23: Minimum body text size 16px on all breakpoints
-- NFR24: All interactive elements on mobile have minimum tap target size 44×44px (Apple HIG standard)
-- NFR25: DM view is fully keyboard-navigable — turn advance, HP edit, condition apply, and stat block open accessible without mouse
-- NFR26: SRD content versioning is lossless — adding 2024 content does not overwrite or modify existing 2014 content
-- NFR27: User data (player profiles, saved groups) survives Supabase infrastructure updates without migration loss
-- NFR28: Admin content edits propagate to all active sessions within 60 seconds of publish
+> Referência apenas. Todos implementados e em produção. Ver `_bmad-output/planning-artifacts/prd.md`.
 
-### Additional Requirements
+- FR1–FR6: Session & Encounter Management
+- FR7–FR15, FR39, FR41: Combat Tracking
+- FR16–FR21: Rules Oracle
+- FR22–FR27, FR40: User & Account
+- FR28–FR32, FR38: Real-Time Collaboration
+- FR33–FR35: Administration
+- FR36–FR37: Legal & Compliance
 
-- **Starter Template**: `npx create-next-app@latest projeto-rpg --template with-supabase` — must be Epic 1, Story 1
-- **Post-init packages**: @supabase/supabase-js@^2.99, fuse.js, @dnd-kit/core + @dnd-kit/sortable, zustand, idb — install immediately after project init
-- **Node.js 20+** required (Supabase JS v2.79+ drops Node 18 support)
-- **Database schema**: 10 tables (User, Campaign, PlayerCharacter, Session, Encounter, Combatant, Monster, Spell, ConditionType, SessionToken) with 5 migrations + RLS policies
-- **SRD data pipeline**: Seed from 5e-database JSON via SQL migration → build-time script exports to /public/srd/*.json → Vercel CDN serves at edge → client caches in IndexedDB via idb
-- **Three-role auth model**: DM (Supabase Auth email/password, cookie-based), Player (Supabase Anonymous Auth via /join/[token], path-based token), Admin (is_admin boolean flag + RLS)
-- **RLS policy model**: 3 policy types per protected table — DM (owner), Player (session token), Admin (is_admin flag)
-- **Dual-write realtime pattern**: All combat mutations follow: Zustand store update (optimistic) → channel.send() (instant broadcast) → supabase.update() (async persist) → on error: rollback + Toast
-- **Realtime channel design**: One channel per session `session:{id}`, DM broadcasts, players subscribe read-only
-- **Content propagation channel**: Global `content:update` Realtime channel for admin content edits (NFR28)
-- **Polling fallback**: If Realtime drops >3s, player view polls /api/session/[id]/state every 2s (NFR9)
-- **Client-side SRD search**: Fuse.js index on pre-loaded JSON, singleton module scope, no re-indexing per query
-- **Testing framework**: Jest + React Testing Library (not in starter, add manually)
-- **Monitoring**: Sentry free tier (error tracking) + Vercel Analytics (Web Vitals) + Supabase Dashboard
-- **Validation**: Zod schemas for all admin API route inputs; TypeScript types generated from Supabase schema via `supabase gen types`
-- **Environments**: Local (supabase start + next dev) + Production (Supabase cloud + Vercel) — no staging for V1
-- **CI/CD**: GitHub push → Vercel auto-deploy; Supabase migrations run manually via CLI before deploy
-- **Data convention**: snake_case throughout data layer (DB → Supabase client → Zustand stores → component props)
-- **Event naming**: `domain:action` in snake_case — combat:hp_update, combat:turn_advance, etc.
-- **Error handling**: Global Zustand error slice + shadcn/ui Toast; retry once on failed DB write, no retry on failed broadcast
+### Non-Functional Requirements (V2 — NFR29-NFR38)
 
-### UX Design Requirements
+- NFR29: Feature flags resolve ≤500ms, rollback ≤1min
+- NFR30: Email invite rate limit 20/dia/DM
+- NFR31: Turn notifications ≤200ms após ação do DM
+- NFR32: Upload 10MB limit + type validation + malicious content check
+- NFR33: Display names sanitizados contra XSS OWASP Top 10
+- NFR34: Modelo Mesa valida assinatura via RLS. Graceful degradation mid-session
+- NFR35: Browser support: Chrome/Firefox/Safari/Edge ≥120
+- NFR36: Core Web Vitals: LCP ≤2.5s, FID ≤100ms, CLS ≤0.1
+- NFR37: WCAG 2.1 AA, keyboard operável, aria-live para realtime
+- NFR38: Responsive breakpoints: mobile ≤768, tablet 769-1024, desktop ≥1025
 
-Source: `ux-design-specification.md` (complete, 14 steps)
+### Tech Debts
 
-- UX-DR1: DM view uses CombatantRow (Collapsible) with three-tier information hierarchy: zero-tap (name, HP bar, conditions), one-tap (stat block, AC, DC), search-only (oracle)
-- UX-DR2: Oracle search uses Command palette (Cmd+K / Ctrl+K) with Fuse.js instant results — accessible from anywhere in DM combat view
-- UX-DR3: SpellModal (Dialog) opens as overlay with dimmed backdrop; combat view remains visible behind
-- UX-DR4: HP displayed as horizontal progress bar with green→yellow→red gradient + text values; temp HP uses #9f7aea overlay
-- UX-DR5: Condition badges as colored pills with text labels (never color-only); 13 conditions with defined palette
-- UX-DR6: Color system: theme tokens in `globals.css` — background `#13131e`, surface `bg-card`, accent gold `#D4A853`, HP states (green/amber/red), condition palette. **Action Color Semantics**: gold=primary CTA (1/screen), green=constructive, red=destructive, purple=magical, neutral=chrome. See UX Design Specification for full rules. ~~Old `#e94560` pink-red accent is deprecated.~~
-- UX-DR7: Typography: Plus Jakarta Sans (primary) + Cinzel (display headings) + JetBrains Mono (numbers), 7-step scale from 12px to 30px, 16px minimum body (NFR23)
-- UX-DR8: DM view keyboard shortcuts: Cmd+K (oracle), Space (next turn), ↑/↓ (navigate rows), Enter (expand), H (HP adjust), C (conditions), Escape (close)
-- UX-DR9: Player view is purpose-built mobile layout: own character card prominent at top, initiative board below, floating oracle button
-- UX-DR10: Monster HP is DM-only — players see combatant names and initiative position but NOT monster HP
-- UX-DR11: No confirmation dialogs during combat — actions are instant and reversible. Confirmations only for destructive non-combat actions (delete campaign, end session)
-- UX-DR12: Loading states: no spinners for combat actions (optimistic UI); skeleton loader for initial session join (<1s); oracle search instant
-- UX-DR13: Error handling: Toast for sync failures (non-blocking, auto-retry once); SyncIndicator in header (green/amber/red); oracle works offline from cache
-- UX-DR14: Animations: 150–200ms transitions for HP bar, turn indicator, modal open/close. Respect `prefers-reduced-motion`
-- UX-DR15: ARIA implementation: list/listitem for initiative, aria-current for active turn, progressbar for HP, combobox for oracle, dialog for modals
+- TD1: Empty catch blocks (PlayerLobby, OracleAIModal) — falhas silenciosas
+- TD2: useEffect dependency arrays faltando (4 componentes) — stale closures
+- TD3: Rate limit in-memory — não funciona em serverless
+- TD4: 15+ eslint-disable comments — type safety comprometida
+- TD5: setTimeout sem cleanup — memory leaks
+- TD6: Math.random() para dice — inseguro cripto (baixo impacto)
+- TD7: Padrão error/loading duplicado em 5+ componentes
+- TD8: `any` type em Oracle AI response
+- TD9: Mutable global state (broadcast channel)
+- TD10: Hardcoded color strings — deveria ser design tokens
+- TD11: Falta testes E2E
+- TD12: Aria-live regions inconsistentes
 
-### FR Coverage Map
+### UX Design Requirements (V2 — UX-DR16 a UX-DR30)
 
-| FR | Epic | Description |
-|----|------|-------------|
-| FR1 | Epic 3 | Encounter creation with monster search |
-| FR2 | Epic 2 | Add player characters to encounter |
-| FR3 | Epic 2 | Load saved player group |
-| FR4 | Epic 3 | Select ruleset version per session |
-| FR5 | Epic 3 | Save/resume encounter state |
-| FR6 | Epic 5 | Generate shareable session link |
-| FR7 | Epic 3 | Initiative entry + auto-sort |
-| FR8 | Epic 3 | Tiebreaker drag-and-drop |
-| FR9 | Epic 3 | Advance turn |
-| FR10 | Epic 3 | Adjust HP (damage/heal) |
-| FR11 | Epic 3 | Mark defeated, remove from initiative |
-| FR12 | Epic 3 | Add/remove combatants mid-combat |
-| FR13 | Epic 3 | Edit combatant stats mid-combat |
-| FR14 | Epic 3 | Apply conditions via dropdown |
-| FR15 | Epic 3 | Switch monster ruleset version mid-combat |
-| FR16 | Epic 4 | Monster search (name, CR, type) |
-| FR17 | Epic 4 | Inline monster stat block expansion |
-| FR18 | Epic 4 | Spell search (name, class, level, school) |
-| FR19 | Epic 4 | Spell description modal overlay |
-| FR20 | Epic 4 | Dual-version SRD content labeling |
-| FR21 | Epic 4 | Condition rules lookup |
-| FR22 | Epic 1 | Account creation (email + password) |
-| FR23 | Epic 1 | Login / logout |
-| FR24 | Epic 2 | Save named player group (campaign) |
-| FR25 | Epic 2 | CRUD saved player groups |
-| FR26 | Epic 2 | Account deletion + data erasure |
-| FR27 | Epic 5 | Player join via shared link (no account) |
-| FR28 | Epic 5 | Real-time initiative display (player view) |
-| FR29 | Epic 5 | Real-time HP display (player view) |
-| FR30 | Epic 5 | Real-time turn indicator (player view) |
-| FR31 | Epic 5 | Player spell oracle access |
-| FR32 | Epic 5 | Session state reconnect/restore |
-| FR33 | Epic 6 | Admin usage metrics dashboard |
-| FR34 | Epic 6 | Admin SRD content editing + propagation |
-| FR35 | Epic 6 | Admin user management |
-| FR36 | Epic 1 | CC-BY-4.0 attribution page |
-| FR37 | Epic 1 | Privacy policy page |
-| FR38 | Epic 5 | Server-side session persistence after browser close |
-| FR39 | Epic 3 | Condition badges visible at a glance |
-| FR40 | Epic 2 | First-time DM onboarding flow |
-| FR41 | Epic 3 | Temporary HP tracking |
+Source: `_bmad-output/planning-artifacts/ux-design-specification.md` (V2 Addendum)
+
+- UX-DR16: Mid-combat add via MidCombatAddSheet — sheet deslizante com busca SRD
+- UX-DR17: Display name rendering — DM vê nome real + display name; player vê somente display name
+- UX-DR18: MonsterGroupRow — header colapsável com HP agregado e chevron
+- UX-DR19: LateJoinForm — formulário para jogador atrasado com status pending/approved/rejected
+- UX-DR20: TurnNotificationOverlay + TurnUpcomingBanner — overlay "É sua vez!" + banner "Você é o próximo"
+- UX-DR21: OnlineIndicator + Presence dots — indicador de presença para auto-join
+- UX-DR22: GMNotesSheet — panel colapsável com Markdown e auto-save
+- UX-DR23: SharedFileCard — card de arquivo compartilhado com thumbnail e download
+- UX-DR24: FeatureLockBadge + UpsellCard + TrialActivation — UI de freemium gating
+- UX-DR25: InvitePlayerDialog — dialog de convite por email
+- UX-DR26: RoleSelectionCards — seleção visual jogador/mestre/ambos
+- UX-DR27: CRCalculatorCard — badge de dificuldade do encontro
+- UX-DR28: HomebrewCreator + HomebrewBadge (purple pill)
+- UX-DR29: PlayerLinkDropdown — vincular player temporário a character
+- UX-DR30: Animações V2 via Framer Motion + Magic UI para player view
+
+### Additional Requirements (Architecture V2)
+
+- **DB Schema V2:** 18 tabelas (10 originais + 8 novas). Migrations 006–016.
+- **Novu:** Notification system (in-app + email) — workflows: turn-upcoming, turn-now, player-joined, late-join-request, campaign-invite, trial-expiring.
+- **Trigger.dev:** Background jobs — cleanup-guest-sessions, check-trial-expiry, process-session-analytics, send-campaign-invite.
+- **Supabase Storage:** Bucket `session-files` para FR53.
+- **Supabase Presence:** Tracking de jogadores online para FR51b.
+- **Stripe Checkout + Webhooks:** Pagamento para FR59–FR60.
+- **Feature flags via Supabase table** com cache client-side 5min.
+- **Dual-write pattern** mantido: Zustand → channel.send() → supabase.update().
+
+---
+
+## FR Coverage Map (V2)
+
+| FR | Epic | Descrição |
+|----|------|-----------|
+| FR42 | Epic 1 | Add mid-combat sem interromper turno |
+| FR43 | Epic 1 | Display name anti-metagaming |
+| FR44 | Epic 2 | Agrupar monstros sob uma iniciativa |
+| FR45 | Epic 2 | HP individual em grupos de monstros |
+| FR46 | Epic 2 | Expandir/colapsar grupos na lista |
+| FR47 | Epic 1 | Late-join player com DM approve/reject |
+| FR48 | Epic 3 | Notificação "Você é o próximo" |
+| FR49 | Epic 3 | Notificação "É sua vez!" com animação |
+| FR50 | Epic 3 | Role selection no signup |
+| FR51 | Epic 3 | Personagem vinculado via convite/QR |
+| FR51b | Epic 3 | Auto-join: jogador aparece na tela do DM |
+| FR52 | Epic 4 | Notas privadas do DM na sessão |
+| FR53 | Epic 4 | Compartilhar arquivos na sessão |
+| FR54 | Epic 4 | Convite por email para campanha |
+| FR55 | Epic 4 | Vínculo automático via convite aceito |
+| FR56 | Epic 3 | DM Pro atribui PC a jogador temporário |
+| FR57 | Epic 5 | Features Pro com cadeado + tooltip |
+| FR58 | Epic 5 | Upsell contextual inline |
+| FR59 | Epic 5 | Trial grátis 14 dias |
+| FR60 | Epic 5 | Modelo Mesa — assinatura do mestre |
+| FR61 | Epic 5 | Diferenciação Pro/Free consistente |
+| FR62 | Epic 4 | CR calculator automático |
+| FR63 | Epic 4 | Homebrew (monstros, magias, itens) |
+| TD1-TD5, TD8 | Epic 0 | Tech debt cleanup (Sprint 1) |
+
+### UX-DR Coverage Map
+
+| UX-DR | Epic | Componente Principal |
+|-------|------|---------------------|
+| UX-DR16 | Epic 1 | MidCombatAddSheet |
+| UX-DR17 | Epic 1 | DisplayNameInput / CombatantRow |
+| UX-DR18 | Epic 2 | MonsterGroupRow |
+| UX-DR19 | Epic 1 | LateJoinForm |
+| UX-DR20 | Epic 3 | TurnNotificationOverlay + TurnUpcomingBanner |
+| UX-DR21 | Epic 3 | OnlineIndicator + PresenceDots |
+| UX-DR22 | Epic 4 | GMNotesSheet |
+| UX-DR23 | Epic 4 | SharedFileCard |
+| UX-DR24 | Epic 5 | FeatureLockBadge + UpsellCard |
+| UX-DR25 | Epic 4 | InvitePlayerDialog |
+| UX-DR26 | Epic 3 | RoleSelectionCards |
+| UX-DR27 | Epic 4 | CRCalculatorCard |
+| UX-DR28 | Epic 4 | HomebrewCreator + HomebrewBadge |
+| UX-DR29 | Epic 3 | PlayerLinkDropdown |
+| UX-DR30 | Epic 3 | Framer Motion + Magic UI animations |
+
+---
 
 ## Epic List
 
-### Epic 1: Project Foundation & DM Authentication
-A DM can register, log in, and access a protected dashboard. The project is initialized with all infrastructure (database, auth, SRD data pipeline) ready for feature development.
-**FRs covered:** FR22, FR23, FR36, FR37
+### Epic 0: Tech Debt Cleanup (Sprint 1)
+Eliminar dívidas técnicas críticas que comprometem estabilidade, type safety e manutenibilidade antes de adicionar features V2.
+**TDs cobertos:** TD1, TD2, TD3, TD4, TD5, TD8
+**Stories:** 5
 
-### Epic 2: Campaign & Player Group Management
-A DM can create named campaigns, add player characters with stats, and manage saved groups — so session setup takes seconds, not minutes.
-**FRs covered:** FR2, FR3, FR24, FR25, FR26, FR40
+### Epic 1: Combat Core Improvements (Sprint 1)
+DM pode adicionar combatentes mid-combat, definir display names anti-metagaming, e aceitar jogadores atrasados.
+**FRs cobertos:** FR42, FR43, FR47
+**UX-DRs:** UX-DR16, UX-DR17, UX-DR19
+**Stories:** 3
 
-### Epic 3: Combat Tracker Core
-A DM can create an encounter, run a full combat (initiative, HP, conditions, temp HP, tiebreakers), and save/resume encounters — the core product loop.
-**FRs covered:** FR1, FR4, FR5, FR7, FR8, FR9, FR10, FR11, FR12, FR13, FR14, FR15, FR39, FR41
+### Epic 2: Monster Grouping & Initiative (Sprint 2)
+DM pode agrupar monstros sob uma única iniciativa, gerenciar HP individual, e expandir/colapsar grupos.
+**FRs cobertos:** FR44, FR45, FR46
+**UX-DRs:** UX-DR18
+**Stories:** 4
 
-### Epic 4: Rules Oracle (Spells, Monsters, Conditions)
-DM and players can search and view monster stat blocks, spell descriptions, and condition rules inline/modal — without leaving the combat view.
-**FRs covered:** FR16, FR17, FR18, FR19, FR20, FR21
+### Epic 3: Player Experience Upgrade (Sprint 2)
+Jogadores recebem notificações de turno, selecionam role no signup, e aparecem automaticamente na sessão. DM pode vincular jogadores temporários a characters.
+**FRs cobertos:** FR48, FR49, FR50, FR51, FR51b, FR56
+**UX-DRs:** UX-DR20, UX-DR21, UX-DR26, UX-DR29, UX-DR30
+**Stories:** 5
 
-### Epic 5: Real-Time Player View & Session Sharing
-DM generates a session link; players join on mobile with zero login, see live initiative/HP/turns, and access the spell oracle — the viral loop activator.
-**FRs covered:** FR6, FR27, FR28, FR29, FR30, FR31, FR32, FR38
+### Epic 4: Session & Campaign Management (Sprint 3)
+DM tem notas privadas, compartilha arquivos, convida jogadores por email, usa CR calculator e cria conteúdo homebrew.
+**FRs cobertos:** FR52, FR53, FR54, FR55, FR62, FR63
+**UX-DRs:** UX-DR22, UX-DR23, UX-DR25, UX-DR27, UX-DR28
+**Stories:** 6
 
-### Epic 6: Admin Panel & Content Management
-Admin can view usage metrics, edit SRD content (fix errors), and manage users — operational control for launch and beyond.
-**FRs covered:** FR33, FR34, FR35
+### Epic 5: Freemium Feature Gating (Sprint 3)
+Feature flags, indicadores Pro, upsell contextual, trial de 14 dias, modelo "Mesa", integração Stripe.
+**FRs cobertos:** FR57, FR58, FR59, FR60, FR61
+**NFRs:** NFR29, NFR34
+**UX-DRs:** UX-DR24
+**Stories:** 7
 
-### Epic 7: Performance, Accessibility & Production Hardening
-The app meets all performance targets, accessibility standards, and reliability guarantees — ready for real session nights.
-**FRs covered:** None (NFR-driven)
-**NFRs addressed:** NFR1–NFR28 (cross-cutting optimization, audit, and validation work)
+### Epic 6: Audio & Ambiance (Backlog V2+)
+Efeitos sonoros temáticos controlados pelos jogadores durante seus turnos, com áudio no PC do DM.
+**Stories:** 4
 
-## Epic 1: Project Foundation & DM Authentication
+### Epic 7: Battle Scenes & Maps (Backlog V3+)
+Cenários visuais temáticos, geração por IA, efeitos cinematográficos e presets combinados.
+**Stories:** 4
 
-A DM can register, log in, and access a protected dashboard. The project is initialized with all infrastructure (database, auth, SRD data pipeline) ready for feature development.
+### Epic 8: Hardware Kit (Backlog V5)
+Pesquisa de kit hardware (projetor + app) para projetar na mesa física.
+**Stories:** 3
 
-### Story 1.1: Initialize Project with Starter Template
+---
 
-As a **developer**,
-I want the project scaffolded with the official Supabase + Next.js starter template and all required dependencies installed,
-So that all subsequent development has a consistent, working foundation.
+> **Nota:** As stories detalhadas para cada Epic estão nos arquivos dedicados:
+> - Epics 0, 1, 2: `_bmad-output/implementation-artifacts/v2-epics-0-1-2-stories.md`
+> - Epics 3, 4, 5: `_bmad-output/planning-artifacts/epics-v2-stories.md`
+> - Epics 6, 7, 8: Inline abaixo (backlog, menos detalhadas)
+>
+> **Para stories completas com Given/When/Then AC, consulte os arquivos acima.**
+> Abaixo segue o resumo de cada story com referências.
 
-**Acceptance Criteria:**
+---
 
-**Given** a clean working directory
-**When** `npx create-next-app@latest projeto-rpg --template with-supabase` is executed
-**Then** the project initializes with Next.js 16 App Router, TypeScript strict, Tailwind CSS, and shadcn/ui
-**And** the following packages are installed: @supabase/supabase-js@^2.99, fuse.js, @dnd-kit/core, @dnd-kit/sortable, zustand, idb
-**And** Jest + React Testing Library are configured
-**And** Sentry client and server configs are scaffolded
-**And** the project builds successfully with `npm run build`
-**And** Node.js 20+ is documented as the minimum runtime requirement
+## Epic 0: Tech Debt Cleanup
 
-### Story 1.2: Database Schema & RLS Policies
+Resolver débitos técnicos críticos que causam bugs, falhas silenciosas ou UX ruim antes de adicionar features V2. Zero eslint-disable para type safety, zero catch blocks vazios, rate limit persistente em ambiente serverless.
 
-As a **developer**,
-I want all database tables, enums, and Row Level Security policies created via Supabase migrations,
-So that the data layer is ready for feature development with proper access control.
-
-**Acceptance Criteria:**
-
-**Given** a running Supabase local instance
-**When** all migrations (001–005) are applied
-**Then** 10 tables exist: users, campaigns, player_characters, sessions, encounters, combatants, monsters, spells, condition_types, session_tokens
-**And** `ruleset_version` ENUM('2014','2024') exists on monsters and spells tables
-**And** combatants table includes: current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, conditions (TEXT[]), is_defeated
-**And** RLS policies enforce: DM access via `auth.uid() = owner_id`, Player access via session_tokens, Admin access via `is_admin = true`
-**And** `supabase gen types` produces TypeScript types without errors
-**And** foreign key relationships are correct (campaign → player_characters, session → encounter → combatants, etc.)
-
-### Story 1.3: SRD Content Seeding & Static Bundle Generation
+### Story 0.1: Corrigir catch blocks vazios com feedback ao usuário
 
 As a **developer**,
-I want SRD 5.1 and 5.2 monster and spell data seeded into the database and exported as static JSON bundles,
-So that the rules oracle has complete, versioned content available via CDN and IndexedDB.
+I want to replace empty catch blocks with proper error handling and user feedback,
+So that users see meaningful error messages and errors are tracked in Sentry.
+
+**FRs/NFRs:** TD1
+**Dependências:** Nenhuma
 
 **Acceptance Criteria:**
 
-**Given** the database schema from Story 1.2 is applied
-**When** `seed.sql` is executed
-**Then** all SRD 5.1 (2014) monsters and spells are inserted with `ruleset_version = '2014'`
-**And** all SRD 5.2 (2024) monsters and spells are inserted with `ruleset_version = '2024'`
-**And** all 13 standard conditions are seeded into condition_types
-**And** the `scripts/generate-srd-bundles.ts` script produces: monsters-2014.json, monsters-2024.json, spells-2014.json, spells-2024.json, conditions.json in `/public/srd/`
-**And** each JSON file is valid and contains the expected entity count
-**And** 2014 and 2024 content coexist without overwriting (NFR26)
+**Given** um jogador preenchendo o formulário de registro no PlayerLobby
+**When** a chamada `onRegister()` lança uma exceção
+**Then** o catch exibe Toast com mensagem traduzível (`player.register_error`)
+**And** `isSubmitting` é resetado para `false`
+**And** o erro é reportado ao Sentry com contexto
 
-### Story 1.4: DM Registration & Login
+**Given** o Oracle AI recebe um chunk SSE malformado
+**When** `JSON.parse(data)` falha
+**Then** `console.warn` registra o chunk malformado
+**And** o streaming continua sem interrupção
+
+**Given** qualquer catch corrigido captura um erro (não AbortError)
+**When** o erro ocorre
+**Then** `Sentry.captureException(error)` é chamado com tags do componente
+
+---
+
+### Story 0.2: Corrigir useEffect dependency arrays
+
+As a **developer**,
+I want to fix all useEffect hooks that suppress `react-hooks/exhaustive-deps`,
+So that effects reagem corretamente a mudanças, prevenindo stale closures.
+
+**FRs/NFRs:** TD2
+**Dependências:** Nenhuma
+
+**Acceptance Criteria:**
+
+**Given** GuestCombatClient.tsx:76 com eslint-disable
+**When** a dependência `combatants` é corretamente declarada
+**Then** funções setter são reconhecidas como estáveis (useState), eslint-disable removido
+
+**Given** DiceHistoryPanel.tsx:41 com eslint-disable
+**When** `markRead` é incluída no dependency array via useCallback/useRef
+**Then** eslint-disable removido, comportamento preservado
+
+**Given** EncounterSetup.tsx:89 e MonsterSearchPanel.tsx:140
+**When** todas as dependências são corretamente declaradas
+**Then** zero `eslint-disable-next-line react-hooks/exhaustive-deps` nos 4 arquivos
+
+---
+
+### Story 0.3: Migrar rate limit do Oracle AI para Supabase
+
+As a **developer**,
+I want to replace the in-memory rate limit Map with Supabase `rate_limits` table + `check_rate_limit()` RPC,
+So that rate limiting funciona em ambiente multi-instance serverless.
+
+**FRs/NFRs:** TD3, NFR14
+**Dependências:** Nenhuma
+
+**Acceptance Criteria:**
+
+**Given** a migration é executada
+**When** a tabela `rate_limits` é criada
+**Then** a RPC `check_rate_limit(p_key, p_max_count, p_window_seconds)` existe
+**And** atomicamente incrementa ou reseta o contador
+
+**Given** um request chega ao `/api/oracle-ai`
+**When** o IP é extraído e a RPC é chamada
+**Then** retorna HTTP 429 se limite excedido, ou prossegue normalmente
+
+**Given** a RPC falha (timeout, conexão recusada)
+**When** o catch captura o erro
+**Then** o request prossegue (fail-open) e o erro é logado no Sentry
+
+---
+
+### Story 0.4: Cleanup de setTimeout leaks
+
+As a **developer**,
+I want to store setTimeout IDs in refs and clear them in useEffect cleanup,
+So that timeouts são cancelados no unmount, prevenindo memory leaks.
+
+**FRs/NFRs:** TD5
+**Dependências:** Nenhuma
+
+**Acceptance Criteria:**
+
+**Given** OracleAIModal.tsx com setTimeout para focus
+**When** o modal é fechado antes do timeout
+**Then** `clearTimeout` cancela via cleanup do useEffect
+
+**Given** code-block.tsx com setTimeout para reset de ícone
+**When** o componente é desmontado antes do timeout
+**Then** timeout cancelado, zero warnings de state update em unmounted component
+
+**Given** PlayerLobby.tsx
+**When** verificado para setTimeout sem cleanup
+**Then** todos os setTimeout encontrados são corrigidos ou documentados
+
+---
+
+### Story 0.5: Remover eslint-disable e tipar corretamente
+
+As a **developer**,
+I want to remove unnecessary `eslint-disable` comments and replace `any` types,
+So that o linter detecta bugs reais e type safety é enforced.
+
+**FRs/NFRs:** TD4, TD8
+**Dependências:** Nenhuma
+
+**Acceptance Criteria:**
+
+**Given** broadcast.ts com 4 eslint-disable para `no-unused-vars`
+**When** variáveis descartadas são renomeadas com prefixo `_`
+**Then** 4 eslint-disable removidos sem mudança funcional
+
+**Given** oracle-ai/route.ts com `any` em response parsing
+**When** interfaces `GeminiStreamChunk`, `GeminiCandidate` são criadas
+**Then** parsing usa type narrowing, zero `any` no arquivo
+
+**Given** generate-srd-bundles.ts com 3 `no-explicit-any`
+**When** interfaces `SrdMonsterRaw`, `SrdSpellRaw` são criadas
+**Then** 3 eslint-disable removidos, script gera bundles idênticos
+
+---
+
+## Epic 1: Combat Core Improvements
+
+Resolver os 3 problemas mais críticos de combate: impossibilidade de adicionar combatentes mid-combat, falta de display names para anti-metagaming, e jogadores atrasados não conseguem entrar.
+
+### Story 1.1: Adicionar combatente mid-combat
 
 As a **DM**,
-I want to create an account with email and password, log in, and log out,
-So that my campaigns and encounters are saved to my account.
+I want to add new monsters or players to an encounter already in progress,
+So that I can improvise freely — reinforcements arrive, NPCs join, players arrive late.
+
+**FRs/NFRs:** FR42, FR12
+**UX-DRs:** UX-DR16
+**Dependências:** Nenhuma
 
 **Acceptance Criteria:**
 
-**Given** the auth pages at `/signup` and `/login`
-**When** a new user submits a valid email and password
-**Then** an account is created via Supabase Auth and the user is redirected to `/app/dashboard`
-**And** passwords are hashed (never stored in plaintext) (NFR12)
+**Given** o DM está em combate ativo (`is_active === true`)
+**When** a interface é renderizada
+**Then** botão "Adicionar Combatente" é visível na toolbar (verde construtivo)
 
-**Given** a registered user
-**When** they log in with correct credentials
-**Then** they are authenticated and redirected to `/app/dashboard`
+**Given** o DM clica "Adicionar Combatente"
+**When** o formulário abre
+**Then** campos: Nome, HP, AC, DC (opcional), Initiative (obrigatório, editável)
+**And** DM pode buscar monstros SRD ou preencher custom
 
-**Given** a logged-in user
-**When** they click logout
-**Then** the session is destroyed and they are redirected to the landing page
+**Given** o DM submete com initiative = 15
+**When** o combatente é adicionado
+**Then** inserido na posição correta da ordem de iniciativa
+**And** `current_turn_index` ajustado se inserido antes do turno atual
 
-**Given** an unauthenticated user
-**When** they attempt to access `/app/*` routes
-**Then** they are redirected to `/login`
+**Given** novo combatente adicionado
+**When** store atualizado (optimistic)
+**Then** broadcast `combat:combatant_add` sanitizado para players
+**And** `persistNewCombatant` salva no DB
 
-**Given** auth endpoints
-**When** more than 10 login attempts are made from the same IP in 15 minutes
-**Then** subsequent attempts are rate-limited (NFR14)
+---
 
-### Story 1.5: Legal Pages (Attribution & Privacy Policy)
-
-As a **user**,
-I want to view the CC-BY-4.0 attribution and Privacy Policy pages,
-So that I understand the content licensing and my data rights.
-
-**Acceptance Criteria:**
-
-**Given** the marketing layout
-**When** a user navigates to `/legal/attribution`
-**Then** the CC-BY-4.0 attribution statement is displayed: "This product uses the System Reference Document 5.1 and 5.2, available under the Creative Commons Attribution 4.0 International License." (FR36)
-
-**Given** the marketing layout
-**When** a user navigates to `/legal/privacy`
-**Then** a Privacy Policy is displayed describing data collection, retention, and user rights under LGPD/GDPR (FR37)
-**And** both pages are accessible without authentication
-**And** both pages are server-side rendered for SEO
-
-## Epic 2: Campaign & Player Group Management
-
-A DM can create named campaigns, add player characters with stats, and manage saved groups — so session setup takes seconds, not minutes.
-
-### Story 2.1: First-Time DM Onboarding Flow
-
-As a **new DM**,
-I want to be guided through creating my first campaign and encounter on first login,
-So that I can start my first session quickly without confusion.
-
-**Acceptance Criteria:**
-
-**Given** a newly registered DM who has never created a campaign
-**When** they are redirected to `/app/dashboard` after login
-**Then** they are redirected to `/app/onboarding` instead
-
-**Given** the onboarding page
-**When** the DM follows the guided flow
-**Then** they are prompted to name their first campaign, add at least one player character (name, HP, AC, spell save DC), and create their first encounter
-**And** a session link is generated at the end of the flow
-**And** the DM is redirected to the dashboard with their new campaign visible
-
-**Given** a DM who has already completed onboarding
-**When** they log in again
-**Then** they go directly to `/app/dashboard` (onboarding is not shown again)
-
-### Story 2.2: Create & Manage Campaigns (Player Groups)
+### Story 1.2: Display name customizável para monstros
 
 As a **DM**,
-I want to create, rename, and delete named campaigns (player groups),
-So that I can organize my different play groups and reuse them across sessions.
+I want to set a custom display name for monsters visible to players,
+So that players cannot metagame by recognizing monster names.
+
+**FRs/NFRs:** FR43, NFR33
+**UX-DRs:** UX-DR17
+**Dependências:** Inclui migration 012 (display_name column + sanitize trigger)
 
 **Acceptance Criteria:**
 
-**Given** the DM dashboard at `/app/dashboard`
-**When** the DM clicks "New Campaign"
-**Then** they can enter a campaign name and save it
-**And** the new campaign appears in their campaign list
+**Given** migration executada
+**When** coluna `display_name` adicionada a `combatants`
+**Then** `TEXT NULL DEFAULT NULL` + trigger `trg_sanitize_display_name` (strip HTML, max 40 chars)
 
-**Given** an existing campaign
-**When** the DM selects "Edit" on the campaign
-**Then** they can rename the campaign
-**And** the updated name is persisted
+**Given** DM adiciona "Beholder" com display_name "Criatura Misteriosa"
+**When** lista de combate renderizada na DM view
+**Then** DM vê: "Beholder (Criatura Misteriosa)"
 
-**Given** an existing campaign
-**When** the DM selects "Delete" on the campaign
-**Then** a confirmation prompt is shown
-**And** upon confirmation, the campaign and all associated player characters are permanently deleted
+**Given** combatente com display_name definido
+**When** broadcast para players
+**Then** `sanitizePayload` substitui `name` por `display_name` no payload
+**And** nome real NUNCA enviado para players
 
-**Given** a DM with multiple campaigns
-**When** they view the dashboard
-**Then** all their campaigns are listed with player count per campaign
+**Given** DM insere `<script>alert('xss')</script>` como display_name
+**When** salvo no banco
+**Then** trigger de sanitização remove tags HTML/JavaScript
 
-### Story 2.3: Add & Edit Player Characters in a Campaign
+---
+
+### Story 1.3: Late-join — jogador entra em sessão ativa
+
+As a **player arriving late**,
+I want to join an already-active combat session and enter my initiative,
+So that the DM can add me without restarting the encounter.
+
+**FRs/NFRs:** FR47
+**UX-DRs:** UX-DR19
+**Dependências:** Story 1.1 (mid-combat add)
+
+**Acceptance Criteria:**
+
+**Given** jogador acessa link de sessão com `is_active === true`
+**When** PlayerLobby renderiza
+**Then** formulário com campos: Nome, HP, AC, Initiative + mensagem "Combate em andamento"
+
+**Given** jogador submete formulário
+**When** enviado
+**Then** broadcast `session:player_join_request` com `{ player_name, hp, ac, initiative }`
+**And** jogador vê "Aguardando aprovação do mestre..."
+
+**Given** DM recebe notificação de late-join
+**When** visualiza a notificação
+**Then** vê nome + initiative + botões [Aceitar] (verde) e [Rejeitar] (vermelho)
+
+**Given** DM clica [Aceitar]
+**When** processado
+**Then** combatente inserido via mid-combat add (Story 1.1)
+**And** jogador transiciona para PlayerInitiativeBoard
+
+**Given** DM clica [Rejeitar]
+**When** processado
+**Then** jogador vê "O mestre não aceitou sua entrada" e pode tentar novamente
+
+---
+
+## Epic 2: Monster Grouping & Initiative
+
+Facilitar combates com muitos monstros do mesmo tipo, agrupando-os sob uma única entrada de iniciativa com HP individual.
+
+### Story 2.1: UI de agrupamento de monstros
 
 As a **DM**,
-I want to add player characters to a campaign with name, HP, AC, and spell save DC, and edit them later,
-So that I never have to re-enter player data between sessions.
+I want to add multiple monsters as a named group with one action,
+So that adding 5 Goblins takes one action instead of five.
+
+**FRs/NFRs:** FR44
+**UX-DRs:** UX-DR18
+**Dependências:** Inclui migration 012 (monster_group_id, group_order columns)
 
 **Acceptance Criteria:**
 
-**Given** an existing campaign
-**When** the DM clicks "Add Player"
-**Then** they can enter: character name, max HP, AC, and spell save DC
-**And** the player character is saved to the campaign
+**Given** DM seleciona monstro no MonsterSearchPanel
+**When** monstro selecionado
+**Then** campo "Quantidade" (1-20, default: 1) aparece ao lado de "Adicionar"
 
-**Given** an existing player character
-**When** the DM clicks "Edit" on the character
-**Then** they can modify any field (name, HP, AC, DC)
-**And** changes are persisted immediately
+**Given** DM seleciona "Goblin" com Quantidade = 3
+**When** clica "Adicionar"
+**Then** 3 combatentes criados com mesmo `monster_group_id`, nomes "Goblin 1/2/3"
+**And** header de grupo renderizado: "Goblins (3)" com chevron
 
-**Given** an existing player character
-**When** the DM clicks "Remove" on the character
-**Then** the character is removed from the campaign after confirmation
+**Given** Quantidade = 1
+**When** DM adiciona
+**Then** comportamento V1 preservado (sem agrupamento)
 
-**Given** a campaign with player characters
-**When** the DM views the campaign
-**Then** all characters are listed with their stats (name, HP, AC, DC)
+---
 
-### Story 2.4: Load Saved Player Group into Encounter
+### Story 2.2: HP individual dentro do grupo
 
 As a **DM**,
-I want to load an entire saved campaign (player group) into a new encounter with one action,
-So that session setup takes seconds instead of manually re-entering each player.
+I want each monster in a group to maintain its own HP independently,
+So that I can damage and defeat monsters individually.
+
+**FRs/NFRs:** FR45
+**Dependências:** Story 2.1
 
 **Acceptance Criteria:**
 
-**Given** the encounter creation flow (from Epic 3)
-**When** the DM selects "Load Campaign"
-**Then** a list of their saved campaigns is displayed
+**Given** grupo de 3 Goblins (7/7 HP cada)
+**When** DM aplica 3 de dano ao Goblin 2
+**Then** Goblin 2 = 4/7 HP; Goblin 1 e 3 permanecem 7/7
 
-**Given** a selected campaign
-**When** the DM confirms the selection
-**Then** all player characters from that campaign are added to the encounter with their saved stats (name, HP as current/max, AC, DC)
-**And** the DM can still manually add or remove individual characters after loading
+**Given** DM marca Goblin 2 como derrotado
+**When** processado
+**Then** Goblin 2 visual de derrotado; 1 e 3 permanecem ativos
+**And** header atualiza para "Goblins (2/3 ativos)"
 
-### Story 2.5: Account Deletion & Data Erasure
+**Given** todos os membros derrotados
+**When** último membro marcado
+**Then** grupo inteiro visual de derrotado, skip no turn advance
 
-As a **user**,
-I want to permanently delete my account and all associated data,
-So that my right to data erasure under LGPD/GDPR is respected.
+---
 
-**Acceptance Criteria:**
-
-**Given** a logged-in user on the account settings page
-**When** they select "Delete Account"
-**Then** a confirmation prompt warns that all data (campaigns, player characters, encounters, sessions) will be permanently deleted
-
-**Given** the user confirms deletion
-**When** the deletion is processed
-**Then** the user's account, all campaigns, player characters, sessions, encounters, and combatant data are permanently removed from the database
-**And** the user is logged out and redirected to the landing page
-**And** the user cannot log in with the same credentials afterward
-
-## Epic 3: Combat Tracker Core
-
-A DM can create an encounter, run a full combat (initiative, HP, conditions, temp HP, tiebreakers), and save/resume encounters — the core product loop.
-
-### Story 3.1: Create Encounter & Add Monsters
+### Story 2.3: Expandir/colapsar grupos
 
 As a **DM**,
-I want to create a new encounter by searching and adding monsters from the SRD database,
-So that I can set up combat before the session starts.
+I want to expand and collapse monster groups in the combat list,
+So that I see a compact overview and expand when needed.
+
+**FRs/NFRs:** FR46
+**Dependências:** Story 2.1
 
 **Acceptance Criteria:**
 
-**Given** the DM is on the dashboard or session page
-**When** they click "New Encounter"
-**Then** the encounter builder opens
+**Given** grupo renderizado pela primeira vez
+**When** lista exibida
+**Then** grupo aparece colapsado: header "Goblins (3)" com chevron
 
-**Given** the encounter builder
-**When** the DM types a monster name in the search field
-**Then** matching SRD monsters are displayed (filtered by the session's selected ruleset version)
-**And** each result shows name, CR, and creature type
+**Given** DM clica no chevron/header
+**When** grupo expandido
+**Then** membros individuais visíveis com HpAdjuster; animação 150-200ms
 
-**Given** search results
-**When** the DM selects a monster
-**Then** a combatant is added to the encounter with the monster's stats (HP, AC, etc.)
-**And** the DM can add multiple instances of the same monster (auto-numbered: "Goblin 1", "Goblin 2")
+**Given** navegação via teclado
+**When** focus no header
+**Then** Enter/Space toggle; `aria-expanded` atualizado
 
-**Given** the encounter builder
-**When** the DM manually adds a custom NPC/combatant
-**Then** they can enter name, HP, AC, and spell save DC manually (FR2)
+**Given** estado de expand/collapse
+**When** armazenado
+**Then** client-side Zustand only (não DB, não broadcast)
 
-### Story 3.2: Ruleset Version Selection per Session
+---
+
+### Story 2.4: Roll coletivo de iniciativa
 
 As a **DM**,
-I want to select a ruleset version (2014 or 2024) per session before combat begins,
-So that all monster and spell lookups default to the correct version for my group.
+I want a monster group to roll a single initiative for all members,
+So that grouped monsters act on the same turn.
+
+**FRs/NFRs:** FR44
+**Dependências:** Story 2.1
 
 **Acceptance Criteria:**
 
-**Given** the encounter builder or session setup
-**When** the DM selects a ruleset version (2014 or 2024)
-**Then** the selection is persisted on the session record
-**And** all subsequent monster/spell searches default to the selected version
+**Given** grupo de 3 Goblins no setup
+**When** DM clica "Rolar Iniciativa" ou roll no header
+**Then** 1 d20 + DEX mod aplicado a todos os 3 membros
 
-**Given** a session with a selected ruleset version
-**When** the DM searches for monsters
-**Then** results are filtered to the selected version by default
-**And** the version is clearly labeled on each result (FR20)
+**Given** DM edita initiative do Goblin 2 para 18 (grupo = 14)
+**When** override aplicado
+**Then** Goblin 2 se separa na ordem mas mantém `monster_group_id`
 
-### Story 3.3: Initiative Entry, Sorting & Tiebreaker Resolution
+**Given** "Roll All NPCs" com 3 Goblins + 2 Esqueletos + 1 Dragão
+**When** executado
+**Then** 3 rolls (1 por grupo + 1 individual), não 6
 
-As a **DM**,
-I want to enter initiative values for all combatants, have them auto-sorted, and manually resolve ties,
-So that combat turn order is established quickly and accurately.
+---
 
-**Acceptance Criteria:**
+## Epic 3: Player Experience Upgrade
 
-**Given** an encounter with combatants added
-**When** the DM enters initiative values for each combatant
-**Then** combatants are automatically sorted in descending initiative order
+Tornar a experiência do jogador conectado engajadora e fluida. Notificações de turno, auto-join, role selection, vinculação de personagens.
 
-**Given** two or more combatants with the same initiative value
-**When** the sort completes
-**Then** tied combatants are visually indicated
-**And** the DM can drag-and-drop (mouse and touch) to reorder them manually (FR8)
-**And** the reordered positions persist for the duration of the encounter
-
-**Given** the initiative list
-**When** the DM clicks "Start Combat"
-**Then** the first combatant in initiative order is marked as the active turn
-
-### Story 3.4: Turn Advancement & Combat Flow
-
-As a **DM**,
-I want to advance turns through the initiative order,
-So that combat flows smoothly without manual tracking.
-
-**Acceptance Criteria:**
-
-**Given** an active combat with a current turn
-**When** the DM clicks "Next Turn"
-**Then** the active turn indicator moves to the next combatant in initiative order
-**And** defeated combatants are skipped automatically
-
-**Given** the last combatant in initiative order
-**When** the DM advances the turn
-**Then** the round counter increments and the turn returns to the first combatant
-
-**Given** the DM view
-**When** a turn is active
-**Then** the current combatant is visually highlighted
-**And** the round number is displayed
-
-### Story 3.5: HP Management (Damage, Healing & Temporary HP)
-
-As a **DM**,
-I want to adjust HP for any combatant (damage, healing, and temporary HP),
-So that I can track health status accurately throughout combat.
-
-**Acceptance Criteria:**
-
-**Given** any combatant in the initiative tracker
-**When** the DM applies damage
-**Then** current HP is reduced by the damage amount (minimum 0)
-
-**Given** any combatant in the initiative tracker
-**When** the DM applies healing
-**Then** current HP is increased (cannot exceed max HP)
-
-**Given** any combatant
-**When** the DM sets temporary HP
-**Then** temp HP is tracked separately from current/max HP (FR41)
-**And** temp HP is visually distinct in the UI
-
-**Given** a combatant with temporary HP
-**When** damage is applied
-**Then** temp HP absorbs damage first; remaining damage reduces current HP
-**And** temp HP cannot be healed — only replaced with a higher value
-
-**Given** HP changes
-**When** the DM submits the change
-**Then** the UI updates immediately (optimistic, NFR8)
-
-### Story 3.6: Conditions — Apply, Display & Remove
-
-As a **DM**,
-I want to apply, view, and remove conditions on any combatant,
-So that status effects are tracked visually and never forgotten.
-
-**Acceptance Criteria:**
-
-**Given** any combatant in the tracker
-**When** the DM clicks the condition control
-**Then** a dropdown displays all 13 standard conditions: Blinded, Charmed, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious (FR14)
-
-**Given** a selected condition
-**When** the DM applies it
-**Then** the condition is added to the combatant
-**And** a condition badge is immediately visible on the combatant card (FR39)
-
-**Given** a combatant with active conditions
-**When** viewing the combat tracker
-**Then** all active conditions are visible at a glance without additional navigation (FR39)
-
-**Given** a combatant with a condition
-**When** the DM removes the condition
-**Then** the condition badge disappears immediately
-
-### Story 3.7: Defeat, Remove & Add Combatants Mid-Combat
-
-As a **DM**,
-I want to mark combatants as defeated, remove them from initiative, and add new combatants mid-combat,
-So that I can handle dynamic combat scenarios (reinforcements, fleeing enemies).
-
-**Acceptance Criteria:**
-
-**Given** any combatant in the tracker
-**When** the DM marks them as defeated
-**Then** the combatant is visually marked as defeated (e.g., grayed out)
-**And** they are skipped during turn advancement (FR11)
-
-**Given** an active encounter
-**When** the DM adds a new combatant mid-combat
-**Then** they can search for a monster or enter custom stats
-**And** the new combatant is inserted into the initiative order at the correct position based on their initiative value (FR12)
-
-**Given** an active encounter
-**When** the DM removes a combatant
-**Then** the combatant is removed from the initiative order entirely
-**And** if the removed combatant was the active turn, the turn advances to the next combatant
-
-### Story 3.8: Edit Combatant Stats Mid-Combat
-
-As a **DM**,
-I want to edit any combatant's stats (name, max HP, AC, spell save DC) during combat,
-So that I can correct mistakes or apply mid-session adjustments.
-
-**Acceptance Criteria:**
-
-**Given** any combatant in the tracker
-**When** the DM selects "Edit"
-**Then** they can modify: name, max HP, AC, and spell save DC (FR13)
-**And** changes are saved immediately
-
-**Given** a combatant whose max HP is edited
-**When** max HP is reduced below current HP
-**Then** current HP is capped at the new max HP
-
-### Story 3.9: In-Combat Ruleset Version Switching
-
-As a **DM**,
-I want to switch a monster's ruleset version (2014 ↔ 2024) mid-combat per combatant,
-So that I can correct version mistakes without restarting the encounter.
-
-**Acceptance Criteria:**
-
-**Given** a monster combatant in the tracker
-**When** the DM clicks the version toggle
-**Then** the combatant's linked stat block switches between 2014 and 2024 versions (FR15)
-**And** the version label updates immediately
-
-**Given** a version switch on one combatant
-**When** the switch is applied
-**Then** no other combatants are affected
-**And** initiative order, HP, and conditions are preserved
-
-### Story 3.10: Save & Resume Encounter
-
-As a **DM**,
-I want to save the current encounter state and resume it in a future session,
-So that multi-session combats don't lose progress.
-
-**Acceptance Criteria:**
-
-**Given** an active encounter
-**When** the DM navigates away or closes the browser
-**Then** the encounter state (initiative order, HP, conditions, turn, round) is persisted server-side (FR38)
-
-**Given** the DM dashboard
-**When** the DM selects a previously saved encounter
-**Then** the encounter resumes with full state restored: initiative order, all combatant HP/conditions, current turn, round number (FR5)
-
-**Given** a saved encounter
-**When** the DM explicitly ends the encounter
-**Then** it is marked as completed and moved to encounter history
-
-## Epic 4: Rules Oracle (Spells, Monsters, Conditions)
-
-DM and players can search and view monster stat blocks, spell descriptions, and condition rules inline/modal — without leaving the combat view.
-
-### Story 4.1: SRD Client-Side Search Index & IndexedDB Cache
-
-As a **DM or player**,
-I want SRD content loaded and cached locally with a fast search index,
-So that spell and monster lookups are instant and work even if the connection degrades.
-
-**Acceptance Criteria:**
-
-**Given** a user loads the app for the first time
-**When** the SRD loader initializes
-**Then** monster and spell JSON bundles are fetched from `/public/srd/*.json`
-**And** the data is stored in IndexedDB via idb for offline access (NFR6)
-**And** a Fuse.js search index is built in module scope (singleton)
-
-**Given** the SRD data is already cached in IndexedDB
-**When** the user loads the app again
-**Then** the index is built from the cached data (no network request)
-
-**Given** the search index is initialized
-**When** a search query is executed
-**Then** results are returned in <5ms (no server round-trip)
-
-### Story 4.2: Monster Search & Inline Stat Block Expansion
-
-As a **DM**,
-I want to search the SRD monster database and expand full stat blocks inline within the combat tracker,
-So that I can reference monster abilities without leaving the combat view.
-
-**Acceptance Criteria:**
-
-**Given** the combat tracker or oracle view
-**When** the DM types in the monster search field
-**Then** results are filtered by name, CR, and creature type in real time (FR16)
-**And** results show monster name, CR, type, and ruleset version badge (FR20)
-
-**Given** a monster in the combat tracker's initiative list
-**When** the DM clicks/taps the monster name
-**Then** the full stat block expands inline: abilities, AC, HP, speed, actions, traits, legendary actions (FR17)
-**And** the stat block opens in ≤300ms (NFR4)
-**And** the stat block does not navigate away from the combat view
-
-**Given** an expanded stat block
-**When** the DM clicks/taps the monster name again
-**Then** the stat block collapses
-
-### Story 4.3: Spell Search & Description Modal Overlay
-
-As a **DM or player**,
-I want to search the SRD spell list and view full descriptions in a modal overlay,
-So that I can look up spell rules mid-combat without losing my place.
-
-**Acceptance Criteria:**
-
-**Given** the oracle or combat view
-**When** the user types in the spell search field
-**Then** results are filtered by name, class, level, and school in real time (FR18)
-**And** results show spell name, level, school, and ruleset version badge (FR20)
-
-**Given** a spell search result
-**When** the user clicks/taps a spell name
-**Then** a modal overlay opens with the full spell description: casting time, range, components, duration, description text (FR19)
-**And** the modal opens in ≤300ms (NFR4)
-**And** the combat view remains visible behind the modal
-
-**Given** an open spell modal
-**When** the user closes it (X button, Escape key, or click outside)
-**Then** the modal closes and the user returns to exactly where they were
-
-### Story 4.4: Condition Rules Lookup
-
-As a **DM or player**,
-I want to look up the full rules text for any condition (Stunned, Blinded, etc.),
-So that I can quickly resolve condition effects during combat.
-
-**Acceptance Criteria:**
-
-**Given** the oracle view or a condition badge on a combatant
-**When** the user clicks/taps a condition name or badge
-**Then** the full condition rules text is displayed (FR21)
-
-**Given** the condition lookup
-**When** viewing condition rules
-**Then** the rules text matches the SRD definition for the session's selected ruleset version
-**And** the version is clearly labeled
-
-### Story 4.5: Dual-Version Content Labeling
-
-As a **DM or player**,
-I want all SRD content clearly labeled with its ruleset version (2014 or 2024),
-So that I always know which version of a rule I'm reading.
-
-**Acceptance Criteria:**
-
-**Given** any monster stat block, spell description, or condition lookup
-**When** the content is displayed
-**Then** a version badge ("2014" or "2024") is prominently visible (FR20)
-
-**Given** the search results for monsters or spells
-**When** both versions of the same entity exist
-**Then** both are listed with distinct version labels
-**And** the session's default version is shown first
-
-## Epic 5: Real-Time Player View & Session Sharing
-
-DM generates a session link; players join on mobile with zero login, see live initiative/HP/turns, and access the spell oracle — the viral loop activator.
-
-### Story 5.1: Session Link Generation & Player Anonymous Auth
-
-As a **DM**,
-I want to generate a shareable session link that players can use to join without an account,
-So that my group can connect in seconds with zero friction.
-
-**Acceptance Criteria:**
-
-**Given** an active encounter
-**When** the DM clicks "Share Session" / "Generate Link"
-**Then** a unique session token is created in the `session_tokens` table
-**And** a shareable URL is generated in the format `/join/[token]` (path-based, not query param)
-**And** the DM can copy the link to clipboard (FR6)
-
-**Given** a player opening the `/join/[token]` link
-**When** the token is valid and the session is active
-**Then** the player is authenticated via Supabase Anonymous Auth (FR27)
-**And** the anonymous `auth.uid()` is linked to the session via `session_tokens`
-**And** no account creation or login is required
-
-**Given** an invalid or expired token
-**When** a player opens the link
-**Then** an error message is displayed: "Session not found or has ended"
-
-**Given** a session that the DM has explicitly ended
-**When** a player tries to join via the old token
-**Then** access is denied and the token is expired (NFR15)
-
-### Story 5.2: Player View — Live Initiative Board & Turn Indicator
+### Story 3.1: Notificação "Você é o próximo"
 
 As a **player**,
-I want to see the current initiative order and whose turn it is in real time,
-So that I can follow combat and prepare for my turn without asking the DM.
+I want a visual notification when it is one turn before my turn,
+So that I can prepare my action and keep combat flowing.
+
+**FRs/NFRs:** FR48, NFR31
+**UX-DRs:** UX-DR20
+**Dependências:** Nenhuma
 
 **Acceptance Criteria:**
 
-**Given** a player connected to a session via `/join/[token]`
-**When** the session view loads
-**Then** the initiative order is displayed with all combatant names and positions (FR28)
-**And** the current turn is visually highlighted (FR30)
+**Given** DM avança turno e broadcast inclui `next_combatant_id`
+**When** `next_combatant_id` = jogador
+**Then** banner "Você é o próximo!" em ≤200ms (NFR31)
+**And** `aria-live="polite"`, estilo amber/gold
 
-**Given** the DM advances the turn
-**When** the Realtime channel broadcasts the update
-**Then** the player view updates the turn indicator within ≤500ms (NFR3)
+**Given** próximo combatente é monstro
+**When** DM avança turno
+**Then** nenhuma notificação para nenhum jogador
 
-**Given** the DM reorders initiative (tiebreaker)
-**When** the change is broadcast
-**Then** the player view reflects the new order in real time
+---
 
-### Story 5.3: Player View — Live HP Display
+### Story 3.2: Notificação "É sua vez!"
 
 As a **player**,
-I want to see each combatant's current HP updating in real time,
-So that I can track the battle status without interrupting the DM.
+I want a prominent notification when it is my turn,
+So that I know immediately when to act.
+
+**FRs/NFRs:** FR49, NFR31
+**UX-DRs:** UX-DR20
+**Dependências:** Story 3.1
 
 **Acceptance Criteria:**
 
-**Given** the player view
-**When** the DM changes any combatant's HP (damage, heal, temp HP)
-**Then** the HP display updates on the player view within ≤500ms (FR29, NFR3)
+**Given** `current_turn_index` = combatant do jogador
+**When** broadcast recebido
+**Then** banner "É sua vez!" com pulse animation + background amber
+**And** `navigator.vibrate([200])` se disponível
+**And** `aria-live="assertive"`, persiste durante o turno
 
-**Given** the player view
-**When** a combatant is marked as defeated
-**Then** the combatant is visually marked as defeated on the player view
+**Given** turno avança para outro combatente
+**When** broadcast recebido
+**Then** banner removido, background retorna ao normal (transição 200ms)
 
-**Given** the player view
-**When** conditions are applied or removed by the DM
-**Then** condition badges update on the player view in real time
+---
 
-### Story 5.4: Player Spell Oracle Access
+### Story 3.3: Player auto-join (jogador cadastrado)
+
+As a **registered player**,
+I want my character to load automatically when I enter a session linked to my campaign,
+So that I can join instantly without re-entering stats.
+
+**FRs/NFRs:** FR51b
+**UX-DRs:** UX-DR21
+**Dependências:** Story 4.3 (campaign invites — jogador vinculado à campanha)
+
+**Acceptance Criteria:**
+
+**Given** jogador vinculado à campanha acessa `/join/[token]`
+**When** sistema detecta `player_character` na campanha
+**Then** dados pré-preenchidos (nome, HP, AC, DC), formulário editável, botão "Confirmar e Entrar"
+
+**Given** jogador confirma auto-join
+**When** combate em andamento
+**Then** inserido como late-join (FR47) com prompt de iniciativa
+
+**Given** Supabase Presence ativo
+**When** jogador entra
+**Then** `channel.track({ userId, characterName, status: 'online' })`
+**And** DM vê indicador de presença atualizado
+
+---
+
+### Story 3.4: Seleção de role no cadastro
+
+As a **new user**,
+I want to select my role (Player, DM, or Both) during signup,
+So that the app adapts to how I use it.
+
+**FRs/NFRs:** FR50
+**UX-DRs:** UX-DR26
+**Dependências:** Migration 013 (users.role column)
+
+**Acceptance Criteria:**
+
+**Given** novo usuário completa email/senha
+**When** signup processado
+**Then** step adicional: cards "Jogador" / "Mestre" / "Ambos" (default: Ambos)
+
+**Given** role selecionado
+**When** salvo
+**Then** `users.role` = `'player'|'dm'|'both'`, dashboard adapta layout
+
+**Given** role = 'dm'
+**When** acessa dashboard
+**Then** foco em campanhas criadas, encounter builder, onboarding wizard (FR40)
+
+---
+
+### Story 3.5: DM vincula jogador temporário a character da campanha
+
+As a **DM**,
+I want to link a temporary QR-joined player to a campaign character,
+So that their stats load from the campaign and the link persists.
+
+**FRs/NFRs:** FR56
+**UX-DRs:** UX-DR29
+**Dependências:** Campanhas existentes com player_characters
+
+**Acceptance Criteria:**
+
+**Given** jogador entra via QR code
+**When** DM visualiza o jogador
+**Then** dropdown "Vincular a personagem:" lista PCs não vinculados da campanha
+
+**Given** DM seleciona personagem
+**When** confirmado
+**Then** stats do player_character carregam para o combatant
+**And** `combatants.player_character_id` salvo
+
+**Given** jogador cria conta posteriormente
+**When** cadastro processado
+**Then** vinculação persiste (auto-join em futuras sessões)
+
+---
+
+## Epic 4: Session & Campaign Management
+
+Experiência completa para o mestre Pro: notas privadas, compartilhamento de arquivos, convites por email, CR calculator e homebrew.
+
+### Story 4.1: Notas privadas do GM
+
+As a **DM**,
+I want to write and save private notes during a session,
+So that I can track information without players seeing it.
+
+**FRs/NFRs:** FR52
+**UX-DRs:** UX-DR22
+**Dependências:** Migration 008 (session_notes table)
+
+**Acceptance Criteria:**
+
+**Given** DM em sessão ativa clica "Notas"
+**When** painel abre
+**Then** textarea com auto-save (debounce 1s), indicador "Salvo", Markdown support
+
+**Given** notas salvas
+**When** jogadores conectados
+**Then** notas NUNCA broadcast, NUNCA na player view, RLS: `auth.uid() = owner_id`
+
+**Given** DM fecha e reabre sessão
+**When** abre painel
+**Then** notas carregadas da tabela `session_notes`
+
+---
+
+### Story 4.2: Compartilhar arquivos na sessão
+
+As a **DM**,
+I want to upload and share images/PDFs with players,
+So that I can share maps and handouts in real-time.
+
+**FRs/NFRs:** FR53, NFR32
+**UX-DRs:** UX-DR23
+**Dependências:** Migration 009, Supabase Storage bucket
+
+**Acceptance Criteria:**
+
+**Given** DM clica "Compartilhar Arquivo"
+**When** file picker abre
+**Then** aceita: PNG, JPEG, WebP, PDF. Max: 10MB
+
+**Given** arquivo válido selecionado
+**When** upload completo
+**Then** salvo em Supabase Storage `session-files/{session_id}/`
+**And** broadcast `session:file_shared`, jogadores veem card com download
+
+**Given** arquivo inválido (tipo ou tamanho)
+**When** selecionado
+**Then** validação client + server (magic bytes) rejeita com mensagem
+
+---
+
+### Story 4.3: Convite de jogador via email
+
+As a **DM**,
+I want to invite a player to my campaign by email,
+So that they can create account and have character auto-linked.
+
+**FRs/NFRs:** FR54, NFR30
+**UX-DRs:** UX-DR25
+**Dependências:** Migration 010, Novu workflow
+
+**Acceptance Criteria:**
+
+**Given** DM na gestão de campanha clica "Convidar"
+**When** email inserido e enviado
+**Then** `campaign_invites` criado (token, expires_at = +7d), email via Novu
+
+**Given** DM já enviou 20 convites hoje
+**When** tenta o 21o
+**Then** bloqueado: "Limite de 20 convites por dia atingido" (NFR30)
+
+**Given** 7 dias sem aceite
+**When** token verificado
+**Then** status = 'expired', link não funciona
+
+---
+
+### Story 4.4: Auto-link personagem ao aceitar convite
+
+As a **invited player**,
+I want my character auto-linked to the campaign after signup via invite,
+So that I'm ready to join sessions without additional setup.
+
+**FRs/NFRs:** FR55
+**Dependências:** Story 4.3
+
+**Acceptance Criteria:**
+
+**Given** jogador clica link `/auth/sign-up?invite={token}&campaign={id}`
+**When** signup completo
+**Then** redirecionado para wizard "Criar Personagem", auto-vinculado à campanha
+
+**Given** jogador já tem conta
+**When** loga via link de convite
+**Then** opção: "Criar novo personagem" ou "Vincular existente"
+
+---
+
+### Story 4.5: CR Calculator automático
+
+As a **DM**,
+I want an automatic CR calculator during encounter setup,
+So that I can assess encounter difficulty for my party.
+
+**FRs/NFRs:** FR62
+**UX-DRs:** UX-DR27
+**Dependências:** Nenhuma (client-side)
+
+**Acceptance Criteria:**
+
+**Given** DM configurando encontro com monstros adicionados
+**When** party level e player count definidos
+**Then** badge: "Fácil" (verde) / "Médio" (amarelo) / "Difícil" (laranja) / "Mortal" (vermelho)
+
+**Given** ruleset 2014
+**When** calculado
+**Then** fórmula DMG 2014 (XP thresholds + multiplicador de grupo)
+
+**Given** ruleset 2024
+**When** calculado
+**Then** fórmula DMG 2024 (CR budget)
+
+**Given** monstros adicionados/removidos
+**When** lista muda
+**Then** recalcula em ≤50ms (client-side, sem server)
+
+---
+
+### Story 4.6: Homebrew — criar conteúdo customizado
+
+As a **DM (Pro)**,
+I want to create custom monsters, spells, and items,
+So that I can use homebrew content in sessions alongside SRD.
+
+**FRs/NFRs:** FR63
+**UX-DRs:** UX-DR28
+**Dependências:** Migration 011, Feature flag `homebrew`
+
+**Acceptance Criteria:**
+
+**Given** DM Pro no Compendium clica "Criar Homebrew"
+**When** formulário renderizado
+**Then** três abas: Monstro (stat block), Magia (description), Item (properties)
+
+**Given** homebrew salvo
+**When** DM usa search (Fuse.js)
+**Then** aparece nos resultados com badge "Homebrew" (roxa), scoped ao usuário
+
+**Given** DM Free tenta acessar
+**When** clica "Criar Homebrew"
+**Then** `ProGate` exibe `ProBadge` com lock + upsell contextual
+
+---
+
+## Epic 5: Freemium Feature Gating
+
+Implementar modelo de monetização sem degradar tier gratuito. Feature flags, indicadores Pro, upsell contextual, trial 14 dias, modelo Mesa, integração Stripe.
+
+### Story 5.1: Sistema de feature flags
+
+As a **developer / admin**,
+I want a feature flag system via Supabase table with client cache,
+So that Pro features can be gated and rolled back without redeploy.
+
+**FRs/NFRs:** NFR29
+**Dependências:** Migration 007
+
+**Acceptance Criteria:**
+
+**Given** migration 007 aplicada
+**When** schema verificado
+**Then** tabela `feature_flags` com seed: persistent_campaigns, saved_presets, export_data, homebrew, session_analytics, cr_calculator, file_sharing, email_invites
+
+**Given** `useFeatureGate('homebrew')` chamado
+**When** user plan = 'free'
+**Then** retorna `{ allowed: false }`
+**When** user plan = 'pro' ou 'mesa'
+**Then** retorna `{ allowed: true }`
+
+**Given** admin toggle flag
+**When** DB atualizado
+**Then** clients refletem em ≤5min (cache TTL)
+
+---
+
+### Story 5.2: Indicadores visuais Pro
+
+As a **Free user**,
+I want to see which features are Pro via lock icon + tooltip,
+So that I understand what requires upgrade.
+
+**FRs/NFRs:** FR57, FR61
+**UX-DRs:** UX-DR24
+**Dependências:** Story 5.1
+
+**Acceptance Criteria:**
+
+**Given** feature gated como Pro
+**When** user Free encontra
+**Then** `ProBadge` (lock icon + "Pro" + tooltip "Disponível no plano Pro")
+
+**Given** `ProGate` wraps feature
+**When** user Pro
+**Then** children renderizados normalmente
+**When** user Free
+**Then** `ProBadge` renderizado no lugar
+
+---
+
+### Story 5.3: Upsell contextual
+
+As a **Free user**,
+I want a contextual upsell when I try to use a Pro feature,
+So that I understand the value without random popups.
+
+**FRs/NFRs:** FR58
+**Dependências:** Story 5.2
+
+**Acceptance Criteria:**
+
+**Given** Free user clica ProBadge
+**When** ação interceptada
+**Then** modal `UpsellCard` com feature name, CTA "Iniciar Trial" / "Ver Planos"
+**And** max 1x por sessão por feature (sessionStorage)
+**And** NUNCA popup aleatório
+
+---
+
+### Story 5.4: Trial grátis (14 dias)
+
+As a **Free DM**,
+I want a 14-day free trial of Pro features,
+So that I can evaluate before subscribing.
+
+**FRs/NFRs:** FR59
+**Dependências:** Migration 006 (subscriptions table), Story 5.1
+
+**Acceptance Criteria:**
+
+**Given** DM Free que nunca usou trial
+**When** ativa trial
+**Then** `subscriptions: plan='pro', status='trialing', trial_ends_at=now+14d`
+**And** todas features Pro desbloqueadas, banner "Trial Pro: X dias"
+
+**Given** trial expirou
+**When** DM acessa app
+**Then** status = 'canceled', features Pro bloqueadas, dados PRESERVADOS (read-only)
+
+**Given** Trigger.dev cron detecta trial expirando em 2 dias
+**When** executado
+**Then** email via Novu `trial-expiring`
+
+---
+
+### Story 5.5: Modelo "Mesa"
+
+As a **DM Pro**,
+I want connected players to inherit Pro features during my session,
+So that the entire table benefits from one subscription.
+
+**FRs/NFRs:** FR60, NFR34
+**Dependências:** Story 5.1, Story 5.4 ou 5.6
+
+**Acceptance Criteria:**
+
+**Given** DM Pro inicia sessão
+**When** sessão criada
+**Then** `sessions.dm_plan = 'pro'`; jogadores herdam features Pro via RLS
+
+**Given** assinatura DM expira mid-session
+**When** webhook processa
+**Then** `dm_plan` na session atual mantido (graceful degradation — NFR34)
+**And** features Pro continuam até fim da sessão
+
+**Given** sessão encerrada, nova sessão iniciada
+**When** DM agora Free
+**Then** `dm_plan = 'free'`, features Pro não disponíveis
+
+---
+
+### Story 5.6: Integração Stripe
+
+As a **DM**,
+I want to subscribe via secure payment,
+So that I can unlock Pro with monthly or annual plan.
+
+**FRs/NFRs:** Infraestrutura
+**Dependências:** Story 5.4 (subscriptions table)
+
+**Acceptance Criteria:**
+
+**Given** DM clica "Assinar Pro"
+**When** Checkout session criada
+**Then** redirect para Stripe Checkout. Preços: R$14,90/mês ou R$119,90/ano
+
+**Given** pagamento completo
+**When** webhook `checkout.session.completed`
+**Then** `subscriptions: status='active'`, features Pro desbloqueadas
+
+**Given** webhook `customer.subscription.deleted`
+**When** processado
+**Then** `status='canceled'`, features Pro bloqueadas (graceful se em sessão)
+
+---
+
+### Story 5.7: Painel de assinatura
+
+As a **DM**,
+I want to view and manage my subscription in settings,
+So that I can see my plan, renewal date, and upgrade/cancel.
+
+**FRs/NFRs:** Complemento UX
+**Dependências:** Story 5.6
+
+**Acceptance Criteria:**
+
+**Given** DM acessa Settings → "Plano"
+**When** página carrega
+**Then** exibe plano atual, data renovação (se Pro), dias restantes (se Trial), CTA upgrade (se Free)
+
+**Given** DM Pro clica "Gerenciar Assinatura"
+**When** processado
+**Then** redirect para Stripe Customer Portal
+
+---
+
+## Epic 6: Audio & Ambiance (Backlog V2+)
+
+Jogadores podem disparar efeitos sonoros temáticos durante seus turnos. Áudio reproduzido no PC do DM via Supabase Realtime broadcast.
+
+### Story 6.1: Efeitos sonoros por turno
 
 As a **player**,
-I want to search spells and view descriptions from the player view,
-So that I can look up my abilities without interrupting the DM or leaving the session.
+I want sound effect buttons during my turn,
+So that I can add atmosphere to my combat actions.
+
+**FRs/NFRs:** —
+**Dependências:** Epic 3 (turn notifications), Epic 5 V1 (Realtime)
 
 **Acceptance Criteria:**
 
-**Given** the player view on mobile
-**When** the player opens the spell oracle
-**Then** the spell search and modal overlay work identically to the DM view (FR31)
-**And** the player's spell search does not affect the DM's view
+**Given** player view durante turno ativo
+**When** jogador visualiza controles
+**Then** barra de botões de som: melee, magia, ambiente, dramático
+**And** fora do turno: botões desabilitados
 
-**Given** a player searching spells
-**When** they open a spell modal
-**Then** the initiative board remains visible/accessible in the background
-**And** the modal respects 44×44px touch targets on mobile (NFR24)
+---
 
-### Story 5.5: Realtime Dual-Write & Channel Subscription
-
-As a **developer**,
-I want all combat mutations to follow the dual-write pattern (Zustand → broadcast → persist),
-So that player views update instantly while data remains durable.
-
-**Acceptance Criteria:**
-
-**Given** any DM combat action (HP change, turn advance, condition toggle, combatant add/remove)
-**When** the action is executed
-**Then** the Zustand store updates immediately (optimistic)
-**And** `channel.send()` broadcasts on `session:{id}` channel within ~50ms
-**And** `supabase.update()` persists to DB asynchronously
-
-**Given** a player connected to the session
-**When** a broadcast event is received
-**Then** the player's local state updates from the channel payload (not DB re-fetch)
-
-**Given** a failed DB persist
-**When** the async write returns an error
-**Then** the Zustand store rolls back to the previous state
-**And** a Toast notification is shown to the DM
-**And** the channel broadcast is not retried (DB is the durable fallback)
-
-### Story 5.6: Connection Resilience & State Reconnect
-
-As a **DM or player**,
-I want the session to survive connection interruptions and restore state automatically,
-So that a dropped WiFi signal doesn't destroy the combat.
-
-**Acceptance Criteria:**
-
-**Given** an active session with DM and players connected
-**When** the DM's connection drops and restores
-**Then** a "Reconnecting..." indicator is shown during the outage
-**And** on reconnect, the latest state is fetched from the DB and reconciled with local state (FR32)
-**And** no data is lost
-
-**Given** a player's connection drops for >3 seconds
-**When** the Realtime channel does not reconnect
-**Then** the player view falls back to polling `/api/session/[id]/state` every 2 seconds (NFR9)
-**And** a "Reconnecting..." indicator is shown
-
-**Given** the polling fallback is active
-**When** the Realtime channel reconnects
-**Then** polling stops and the player resumes receiving channel broadcasts
-
-**Given** the DM closes the browser
-**When** they reopen the session URL later
-**Then** the full session state is restored from the server (FR38)
-
-## Epic 6: Admin Panel & Content Management
-
-Admin can view usage metrics, edit SRD content (fix errors), and manage users — operational control for launch and beyond.
-
-### Story 6.1: Admin Authentication & Layout Guard
-
-As an **admin**,
-I want the admin panel protected by an is_admin check,
-So that only authorized users can access operational tools.
-
-**Acceptance Criteria:**
-
-**Given** a logged-in user where `is_admin = true`
-**When** they navigate to `/admin`
-**Then** the admin panel loads with the admin layout
-
-**Given** a logged-in user where `is_admin = false`
-**When** they attempt to access `/admin/*` routes
-**Then** they are redirected to `/app/dashboard` with no admin UI visible
-
-**Given** an unauthenticated user
-**When** they attempt to access `/admin/*`
-**Then** they are redirected to `/login`
-
-### Story 6.2: Usage Metrics Dashboard
-
-As an **admin**,
-I want to view key usage metrics (registrations, activation, retention, players per DM),
-So that I can monitor product health and make data-driven decisions.
-
-**Acceptance Criteria:**
-
-**Given** the admin dashboard at `/admin`
-**When** the page loads
-**Then** the following metrics are displayed: new registrations (total + last 7/30 days), day-1 activation rate (% of DMs who ran at least one session within 24h of signup), week-2 retention rate (% of DMs who returned within 14 days), average players per DM (FR33)
-
-**Given** the metrics dashboard
-**When** data is available
-**Then** metrics are queried from Supabase via admin API routes (service-role key)
-**And** the dashboard refreshes on page load (no real-time streaming needed for V1)
-
-### Story 6.3: SRD Content Editing & Live Propagation
-
-As an **admin**,
-I want to edit SRD monster and spell data and have changes propagate to active sessions,
-So that content errors are fixed without requiring users to refresh or restart.
-
-**Acceptance Criteria:**
-
-**Given** the admin content page at `/admin/content/monsters` or `/admin/content/spells`
-**When** the admin searches for a monster or spell
-**Then** the matching entity is displayed with all editable fields
-
-**Given** an entity being edited
-**When** the admin saves changes
-**Then** the data is updated in Supabase via `/api/admin/content` (service-role key) (FR34)
-**And** a broadcast is sent on the global `content:update` Realtime channel with `{ entity_type, entity_id, ruleset_version }`
-**And** active sessions subscribed to `content:update` refetch the specific entity (bypassing IndexedDB cache)
-
-**Given** a content edit is published
-**When** 60 seconds have elapsed
-**Then** all active sessions reflect the updated content (NFR28)
-
-### Story 6.4: User Account Management
-
-As an **admin**,
-I want to view and manage user accounts for support purposes,
-So that I can assist users and handle account issues.
-
-**Acceptance Criteria:**
-
-**Given** the admin users page at `/admin/users`
-**When** the page loads
-**Then** a list of user accounts is displayed with: email, registration date, last login, campaign count (FR35)
-
-**Given** the user list
-**When** the admin searches by email
-**Then** matching users are filtered
-
-**Given** a user account
-**When** the admin needs to take a support action
-**Then** they can view the user's campaigns and session history
-**And** all admin actions are performed via `/api/admin/users` (service-role key)
-
-## Epic 7: Performance, Accessibility & Production Hardening
-
-The app meets all performance targets, accessibility standards, and reliability guarantees — ready for real session nights.
-
-### Story 7.1: Performance Optimization & Web Vitals
-
-As a **user**,
-I want the app to load fast and feel responsive,
-So that session setup and combat don't stall waiting for the UI.
-
-**Acceptance Criteria:**
-
-**Given** the DM dashboard on desktop (standard broadband)
-**When** measured with Lighthouse or Vercel Analytics
-**Then** First Contentful Paint (FCP) ≤1.5s (NFR1)
-**And** Time to Interactive (TTI) ≤3s (NFR2)
-
-**Given** the SRD oracle (spell/monster modal)
-**When** a user triggers a lookup
-**Then** the modal opens in ≤300ms (NFR4)
-
-**Given** static SRD content
-**When** served via Vercel
-**Then** files in `/public/srd/` are served with long-TTL Cache-Control headers (CDN edge, NFR19)
-
-**Given** the production build
-**When** analyzed for bundle size
-**Then** code splitting is applied for route-based chunks (marketing, app, join, admin)
-
-### Story 7.2: Accessibility Audit & WCAG 2.1 AA Compliance
-
-As a **user with accessibility needs**,
-I want the app to meet WCAG 2.1 AA standards,
-So that the product is usable regardless of visual, motor, or cognitive differences.
-
-**Acceptance Criteria:**
-
-**Given** all user-facing routes
-**When** audited for WCAG 2.1 AA compliance
-**Then** no critical or major violations are found (NFR20)
-
-**Given** any status indicator (current turn, conditions, HP threshold)
-**When** displayed in the UI
-**Then** color is never the sole indicator — icons or text labels are used alongside color (NFR21)
-
-**Given** the default theme
-**When** the app loads
-**Then** dark mode is active with background color #1a1a2e (NFR22)
-**And** minimum body text size is 16px on all breakpoints (NFR23)
-
-**Given** the mobile player view
-**When** interactive elements are rendered
-**Then** all tap targets are minimum 44×44px (NFR24)
-
-**Given** the DM view on desktop
-**When** the DM uses keyboard only
-**Then** turn advance, HP edit, condition apply, stat block open, and spell search are all accessible without mouse (NFR25)
-
-### Story 7.3: Load Testing & Scalability Validation
-
-As an **operator**,
-I want the system validated for ≥1,000 concurrent sessions,
-So that session-night traffic doesn't cause degradation.
-
-**Acceptance Criteria:**
-
-**Given** a load test scenario
-**When** 1,000 concurrent sessions are simulated (DM + up to 6 players each)
-**Then** WebSocket sync latency remains ≤500ms (NFR3)
-**And** no single-server state dependencies exist (NFR17)
-**And** response times do not degrade beyond acceptable thresholds (NFR18)
-
-**Given** the Supabase project
-**When** connection limits are reviewed
-**Then** the Realtime connection pool supports the target load
-**And** DB connection pooling is configured appropriately
-
-### Story 7.4: Error Tracking & Monitoring Setup
-
-As an **operator**,
-I want error tracking and monitoring in place,
-So that production issues are detected and diagnosed quickly.
-
-**Acceptance Criteria:**
-
-**Given** the production deployment
-**When** a JavaScript error occurs in the browser
-**Then** it is captured by Sentry with session context (user role, session ID)
-
-**Given** the production deployment
-**When** a server-side error occurs
-**Then** it is captured by Sentry with request context
-
-**Given** Vercel Analytics
-**When** enabled
-**Then** Web Vitals (FCP, LCP, CLS, FID) are tracked for all routes
-
-**Given** the monitoring stack
-**When** the app is in production
-**Then** Sentry + Vercel Analytics + Supabase Dashboard provide coverage for errors, performance, and database health
-
-### Story 7.5: Security Hardening & Input Validation
-
-As an **operator**,
-I want all security baselines enforced,
-So that the app is safe for production use.
-
-**Acceptance Criteria:**
-
-**Given** all data transmission
-**When** any request is made
-**Then** HTTPS is enforced with no HTTP fallback (NFR11)
-
-**Given** JWT tokens
-**When** issued by Supabase Auth
-**Then** access tokens expire after 1 hour; refresh tokens after 30 days of inactivity (NFR13)
-
-**Given** any user-generated input (player names, custom NPC data)
-**When** submitted
-**Then** the input is sanitized server-side before persistence (NFR16)
-
-**Given** admin API routes
-**When** input is received
-**Then** Zod schemas validate all payloads before processing
-
-**Given** the target uptime
-**When** measured monthly
-**Then** uptime is ≥99.5% (NFR10)
-
-## Epic 8: Combat Tracker UX Refactor — "Kastark Simplicity"
-
-Merge the multi-step combat setup (EncounterBuilder → InitiativeTracker → Active Combat) into a single-page, list-first experience with inline editing, universal drag reorder, and dual notes — matching the fluid simplicity of the Kastark encounter tracker while preserving all power features and real-time infrastructure.
-
-**Reference:** [Kastark Encounter Tracker](https://kastark.co.uk/rpgs/encounter-tracker/)
-
-**Key Design Decisions:**
-- Single-page experience — setup and combat on the same screen, no navigation
-- Spreadsheet-style pre-combat rows (Init | Name | HP | AC | Notes) with bottom add-row
-- No auto-sort during entry — insertion/drag order until "Start Combat"
-- Universal drag reorder (any row, anytime) replaces tie-specific TiebreakerDragList
-- Seamless in-place transition from setup to active combat
-- Compact card layout in active combat with click-to-edit and overflow menu
-- Dual notes: DM-only notes (🔒 private) + player-visible notes (📝 broadcast)
-
-### Story 8.1: Schema & Store — Dual Notes Fields + Universal Reorder
+### Story 6.2: Audio lock (1 jogador por vez)
 
 As a **DM**,
-I want combatants to have separate DM-only and player-visible notes fields,
-So that I can track private tactical info alongside public info that players can see.
+I want only the current turn player to trigger sounds,
+So that there's no audio chaos.
+
+**FRs/NFRs:** —
+**Dependências:** Story 6.1
 
 **Acceptance Criteria:**
 
-**Given** the combatants table
-**When** the migration is applied
-**Then** two new columns exist: `dm_notes TEXT DEFAULT ''` and `player_notes TEXT DEFAULT ''`
+**Given** combate ativo com múltiplos jogadores
+**When** DM avança turno
+**Then** lock transferido automaticamente para novo jogador ativo
 
-**Given** the combat store
-**When** `updateDmNotes(id, notes)` or `updatePlayerNotes(id, notes)` is called
-**Then** the respective notes field is updated in the store and persisted to DB
+---
 
-**Given** a `player_notes` change
-**When** broadcast
-**Then** the player board receives the update; `dm_notes` is NEVER broadcast
+### Story 6.3: Áudio remoto (som no PC do DM)
 
-### Story 8.2: CombatantSetupRow — Inline Editable Spreadsheet Row
+As a **player**,
+I want the sound I trigger to play on the DM's PC,
+So that the whole table hears it.
+
+**FRs/NFRs:** —
+**Dependências:** Story 6.1, Supabase Realtime
+
+**Acceptance Criteria:**
+
+**Given** jogador ativo pressiona botão de som
+**When** disparado
+**Then** broadcast `audio:play` com `sound_id`; DM client reproduz
+**And** sons pré-carregados em IndexedDB (<100ms latência)
+
+---
+
+### Story 6.4: Biblioteca de sons pré-construída
 
 As a **DM**,
-I want each combatant in the pre-combat list to be an inline editable row (Init, Name, HP, AC, Notes),
-So that I can rapidly build an encounter by tabbing through fields like a spreadsheet.
+I want a curated combat sound library,
+So that players have quality options without uploading.
+
+**FRs/NFRs:** —
+**Dependências:** Story 6.3
 
 **Acceptance Criteria:**
 
-**Given** a combatant in pre-combat mode
-**When** displayed
-**Then** it renders as: `[DragHandle] [Init] [Name] [HP] [AC] [Notes] [✕]` with all fields editable inline
+**Given** biblioteca de sons
+**When** visualizada
+**Then** categorias: Melee, Magia, Ambiente, Dramático. Licença: CC0.
 
-**Given** the DM tabbing through fields
-**When** Tab is pressed
-**Then** focus moves left-to-right through Init → Name → HP → AC → Notes
+---
 
-### Story 8.3: EncounterSetup — Unified Pre-Combat View
+## Epic 7: Battle Scenes & Maps (Backlog V3+)
+
+DM pode selecionar cenas temáticas, gerar cenários via IA, aplicar efeitos visuais e usar presets combinados.
+
+### Story 7.1: Compêndio de cenas temáticas
 
 As a **DM**,
-I want a single-page view with combatant list, bottom add-row, SRD search, and campaign loader,
-So that encounter setup is as fast and fluid as the Kastark tracker.
+I want to select a thematic background from a curated library,
+So that the player view shows a visual scene.
+
+**FRs/NFRs:** —
+**Dependências:** Epic 5 V1 (Realtime player view)
 
 **Acceptance Criteria:**
 
-**Given** the encounter page
-**When** loaded
-**Then** a single view shows: combatant list, always-visible bottom add-row, SRD search, campaign loader, and "Start Combat" button
+**Given** DM abre seletor de cenas
+**When** seleciona uma cena
+**Then** player view exibe background via broadcast. Transição fade 300ms.
 
-**Given** the bottom add-row
-**When** the DM fills fields and presses Enter
-**Then** a new combatant is added to the list and fields are cleared
+---
 
-**Given** SRD search
-**When** a monster is selected
-**Then** the add-row is auto-filled with the monster's stats
-
-**Given** the list
-**When** combatants are added
-**Then** they appear in insertion order (NOT sorted by initiative)
-
-### Story 8.4: Universal Drag Reorder with @dnd-kit
+### Story 7.2: Geração de cena por IA
 
 As a **DM**,
-I want to drag any combatant row to reorder it freely in both setup and active combat,
-So that I have full control over initiative order without being limited to tie-resolution.
+I want to generate scenes with AI from a text prompt,
+So that I have unique backgrounds without depending on a fixed library.
+
+**FRs/NFRs:** —
+**Dependências:** Story 7.1, API de geração (Gemini/DALL-E)
 
 **Acceptance Criteria:**
 
-**Given** any combatant row in either mode
-**When** the DM drags it by the handle
-**Then** the row moves to the new position and order is updated
+**Given** DM clica "Gerar Cena" e insere prompt
+**When** imagem gerada
+**Then** preview exibido. DM pode aceitar, regenerar ou cancelar.
+**And** imagem otimizada (WebP, ≤500KB) antes de broadcast.
 
-**Given** a reorder during active combat
-**When** completed
-**Then** `initiative_order` is reassigned, persisted, and broadcast
+---
 
-**Given** the `TiebreakerDragList` component
-**When** this story is complete
-**Then** it is deleted and replaced by universal drag
-
-### Story 8.5: Seamless Combat Transition — Start Combat In-Place
+### Story 7.3: Efeitos visuais cinematográficos
 
 As a **DM**,
-I want "Start Combat" to sort by initiative, persist to Supabase, and transform the list into active combat mode on the same page,
-So that the transition is instant with no navigation.
+I want to apply animated visual effects over scenes,
+So that dramatic moments have visual impact.
+
+**FRs/NFRs:** —
+**Dependências:** Story 7.1
 
 **Acceptance Criteria:**
 
-**Given** the pre-combat view with all initiatives set
-**When** "Start Combat" is clicked
-**Then** combatants are sorted by initiative descending, encounter is persisted to DB, and the view transforms to active combat in-place
+**Given** cena ativa na player view
+**When** DM seleciona efeito
+**Then** overlay animado: chuva, neve, névoa, relâmpago, fogo, aura mágica
+**And** respeita `prefers-reduced-motion`
 
-**Given** a persist failure
-**When** it occurs
-**Then** the view stays in pre-combat mode with an error message
+---
 
-**Given** the URL
-**When** combat starts successfully
-**Then** it updates to `/app/session/[id]` via `router.replace()` for reload resilience
-
-### Story 8.6: CombatantRow Refactor — Compact Card + Inline Edit + Dual Notes
+### Story 7.4: Presets de cena com música + efeitos
 
 As a **DM**,
-I want each active combat combatant as a compact card with click-to-edit, visible dual notes, and an overflow action menu,
-So that I can manage combat at a glance.
+I want bundled presets combining background + music + effects,
+So that I can set the scene with one click.
+
+**FRs/NFRs:** —
+**Dependências:** Story 7.1, 7.3, Epic 6
 
 **Acceptance Criteria:**
 
-**Given** an active combatant
-**When** displayed
-**Then** it renders as a compact card with HP bar, action buttons, and a second line with 📝 player notes, 🔒 DM notes, and condition badges
+**Given** DM seleciona preset
+**When** aplicado
+**Then** background + música + efeitos ativados na player view
+**And** DM pode desativar componentes individuais
 
-**Given** any field (Name, HP, AC)
-**When** clicked
-**Then** it transforms to an inline input for editing
+---
 
-**Given** the `[···]` overflow menu
-**When** opened
-**Then** it shows: Temp HP, Conditions, Defeat, Edit DC, Remove, Version Switch
+## Epic 8: Hardware Kit (Backlog V5)
 
-**Given** the player board
-**When** rendering combatants
-**Then** it shows `player_notes` but NEVER `dm_notes`
+Pesquisa e prototipagem de kit hardware para projetar cenas na mesa física.
 
-### Story 8.7: Routing, Navigation & Cleanup
+### Story 8.1: Pesquisa de especificação do kit
+
+As a **product team**,
+I want a complete hardware spec,
+So that we have validated BOM and target cost.
+
+**FRs/NFRs:** —
+**Dependências:** Epic 7
+
+**Acceptance Criteria:**
+
+**Given** necessidade de projetar cenas na mesa
+**When** pesquisa concluída
+**Then** spec define: projetor, cabos, suporte. Custo ≤R$2.000.
+
+---
+
+### Story 8.2: Integração app ↔ projetor
 
 As a **DM**,
-I want all entry points to lead to the unified combat experience with no dead routes,
-So that navigation is clean and consistent.
+I want the selected scene projected on the physical table,
+So that players see the map directly on the playing surface.
+
+**FRs/NFRs:** —
+**Dependências:** Story 8.1, Epic 7
 
 **Acceptance Criteria:**
 
-**Given** the dashboard
-**When** "New Combat Session" is clicked
-**Then** the unified encounter page loads in pre-combat mode
+**Given** app rodando com projetor conectado
+**When** DM seleciona cena
+**Then** projetada via segunda tela / casting WiFi. Atualiza em tempo real.
 
-**Given** the old components (EncounterBuilder, InitiativeTracker, TiebreakerDragList)
-**When** this story completes
-**Then** they are deleted with zero dead imports
+---
 
-**Given** `next build`
-**When** run
-**Then** it succeeds with zero TypeScript errors
+### Story 8.3: Pesquisa de modelo de negócio
 
-### Story 8.8: QA Regression & E2E Validation
+As a **product team**,
+I want validated go-to-market strategy for the hardware kit,
+So that we have a viable business model.
 
-As the **QA team**,
-I want comprehensive regression testing of the refactored combat tracker,
-So that all existing features work correctly in the new unified flow.
+**FRs/NFRs:** —
+**Dependências:** Story 8.1, 8.2
 
 **Acceptance Criteria:**
 
-**Given** the refactored flow
-**When** all test suites run
-**Then** all existing combat features pass: HP, conditions, defeat, add/remove, turns, rounds, realtime sync
+**Given** necessidade de definir pricing
+**When** pesquisa concluída
+**Then** comparação: venda avulsa vs kit+Pro bundled vs lease
+**And** unit economics e timeline de viabilidade
 
-**Given** the new features
-**When** tested
-**Then** inline editing, drag reorder, dual notes, and seamless transition all work correctly
+---
 
-**Given** DM notes
-**When** tested against the player board
-**Then** they are confirmed as NEVER visible to players
+## Dependências entre Stories
+
+```
+Epic 0 (Sprint 1):
+  Story 0.1 ─── independente
+  Story 0.2 ─── independente
+  Story 0.3 ─── independente
+  Story 0.4 ─── independente
+  Story 0.5 ─── após 0.2
+
+Epic 1 (Sprint 1):
+  Story 1.1 ─── independente (base para 1.3)
+  Story 1.2 ─── independente (inclui migration 012)
+  Story 1.3 ─── após 1.1
+
+Epic 2 (Sprint 2):
+  Story 2.1 ─── independente (inclui migration 012 columns)
+  Story 2.2 ─── após 2.1
+  Story 2.3 ─── após 2.1
+  Story 2.4 ─── após 2.1
+
+Epic 3 (Sprint 2):
+  Story 3.1 ─── independente
+  Story 3.2 ─── após 3.1
+  Story 3.3 ─── após 4.3 (campaign invites)
+  Story 3.4 ─── independente (migration 013)
+  Story 3.5 ─── independente
+
+Epic 4 (Sprint 3):
+  Story 4.1 ─── independente (migration 008)
+  Story 4.2 ─── independente (migration 009 + Storage)
+  Story 4.3 ─── independente (migration 010 + Novu)
+  Story 4.4 ─── após 4.3
+  Story 4.5 ─── independente (client-side)
+  Story 4.6 ─── independente (migration 011)
+
+Epic 5 (Sprint 3, paralelo com Epic 4):
+  Story 5.1 ─── independente (migration 007, base para 5.2-5.7)
+  Story 5.2 ─── após 5.1
+  Story 5.3 ─── após 5.2
+  Story 5.4 ─── após 5.1 (migration 006)
+  Story 5.5 ─── após 5.1
+  Story 5.6 ─── independente (Stripe account)
+  Story 5.7 ─── após 5.6
+```
+
+## Sequência de Migrations
+
+```
+Migration 006: subscriptions table
+Migration 007: feature_flags table + seed
+Migration 008: session_notes table
+Migration 009: session_files table
+Migration 010: campaign_invites table
+Migration 011: homebrew_monsters/spells/items tables
+Migration 012: combatants V2 columns (display_name, monster_group_id, group_order)
+Migration 013: users.role column + subscription_id
+Migration 014: rate_limits table + check_rate_limit RPC
+Migration 015: sanitize_display_name trigger
+Migration 016: RLS V2 policies para novas tabelas
+```
+
+## Sprint Planning
+
+| Sprint | Épics | Duração | Stories |
+|--------|-------|---------|---------|
+| Sprint 1 | Epic 0 + Epic 1 | 5 dias | 8 stories |
+| Sprint 2 | Epic 2 + Epic 3 | 5 dias | 9 stories |
+| Sprint 3 | Epic 4 + Epic 5 | 10 dias | 13 stories |
+| **Total** | **Epics 0-5** | **20 dias (~4 semanas)** | **30 stories** |
+| Backlog V2+ | Epic 6 | ~7-10 dias | 4 stories |
+| Backlog V3+ | Epic 7 | ~15-20 dias | 4 stories |
+| Backlog V5 | Epic 8 | TBD | 3 stories |
+
+---
+
+> **Para acceptance criteria detalhados (Given/When/Then completos) de cada story, consulte:**
+> - Epics 0-2: `_bmad-output/implementation-artifacts/v2-epics-0-1-2-stories.md`
+> - Epics 3-5: `_bmad-output/planning-artifacts/epics-v2-stories.md`

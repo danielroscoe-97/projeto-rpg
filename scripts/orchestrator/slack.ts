@@ -20,15 +20,52 @@ interface SlackBlock {
   elements?: Array<{ type: string; text?: { type: string; text: string }; url?: string }>;
 }
 
+// -- Markdown → Slack mrkdwn --
+
+function toSlack(md: string): string {
+  // Extract and protect code blocks first
+  const codeBlocks: string[] = [];
+  let result = md.replace(/```[\s\S]*?```/g, (m) => {
+    codeBlocks.push(m);
+    return `__CODEBLOCK_${codeBlocks.length - 1}__`;
+  });
+
+  // Apply markdown → mrkdwn conversions
+  result = result
+    .replace(/\*\*(.+?)\*\*/g, "*$1*")
+    .replace(/^### (.+)$/gm, "*$1*")
+    .replace(/^## (.+)$/gm, "*$1*")
+    .replace(/^# (.+)$/gm, "*$1*")
+    .replace(/\[(.+?)\]\((.+?)\)/g, "<$2|$1>")
+    .replace(/^- /gm, "• ");
+
+  // Restore code blocks
+  for (let i = 0; i < codeBlocks.length; i++) {
+    result = result.replace(`__CODEBLOCK_${i}__`, codeBlocks[i]);
+  }
+
+  return result;
+}
+
+/**
+ * Truncate message to Slack's limit with indicator.
+ */
+function truncateForSlack(text: string, maxLen: number = 3900): string {
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen) + "\n\n_...(mensagem truncada)_";
+}
+
 // -- Send Notifications --
 
 export async function notify(message: string): Promise<void> {
+  const formatted = truncateForSlack(toSlack(message));
+
   if (!config.slack.enabled) {
-    console.log(`[SLACK] ${message}`);
+    console.log(`[SLACK] ${formatted}`);
     return;
   }
 
-  await sendWebhook({ text: message });
+  await sendWebhook({ text: formatted });
 }
 
 export async function notifyPRReady(pr: {
@@ -49,7 +86,7 @@ export async function notifyPRReady(pr: {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Story:* ${pr.story}\n*Resumo:* ${pr.summary}`,
+          text: `*Story:* ${pr.story}\n*Resumo:* ${truncateForSlack(pr.summary, 500)}`,
         },
       },
       {
@@ -182,13 +219,39 @@ export async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 // -- Internal --
 
 async function sendWebhook(message: SlackMessage): Promise<void> {
-  const response = await fetch(config.slack.webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(message),
-  });
-
-  if (!response.ok) {
-    console.error(`Slack webhook failed: ${response.statusText}`);
+  if (config.slack.webhookUrl) {
+    try {
+      const response = await fetch(config.slack.webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(message),
+      });
+      if (!response.ok) {
+        console.error(`Slack webhook failed: ${response.statusText}`);
+      }
+    } catch (e) {
+      console.error("Slack webhook error:", e);
+    }
+  } else if (config.slack.botToken && config.slack.channelId) {
+    try {
+      const response = await fetch("https://slack.com/api/chat.postMessage", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.slack.botToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          channel: config.slack.channelId,
+          text: message.text,
+          blocks: message.blocks,
+        }),
+      });
+      const data = (await response.json()) as { ok: boolean; error?: string };
+      if (!data.ok) {
+        console.error(`Slack API failed: ${data.error}`);
+      }
+    } catch (e) {
+      console.error("Slack API error:", e);
+    }
   }
 }

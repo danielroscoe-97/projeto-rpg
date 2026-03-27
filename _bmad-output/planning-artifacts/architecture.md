@@ -1,12 +1,14 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
 status: 'complete'
-completedAt: '2026-03-24'
-inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md"]
+completedAt: '2026-03-27'
+lastRevision: '2026-03-27'
+revisionNotes: 'V2 Addendum — Crítica do V1, novas decisões para PRD V2 (FR42-63, NFR29-38). Feature flags, Novu, Trigger.dev, Supabase Presence/Storage, monster grouping, freemium gating, homebrew.'
+inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "docs/prd-v2.md", "_bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md", "docs/tech-stack-libraries.md", "_bmad-output/planning-artifacts/ux-design-specification.md"]
 workflowType: 'architecture'
 project_name: 'projeto-rpg'
 user_name: 'Dani_'
-date: '2026-03-24'
+date: '2026-03-27'
 ---
 
 # Architecture Decision Document
@@ -780,3 +782,732 @@ Anti-patterns documented to prevent common implementation mistakes.
 npx create-next-app@latest projeto-rpg --template with-supabase
 ```
 Then: Supabase project setup → schema migration → RLS policies → SRD data seeding
+
+---
+
+## V2 Architecture Addendum
+
+> **Contexto:** Este addendum cobre todas as decisões arquiteturais novas necessárias para o PRD V2 (FR42–FR63, FR51b, NFR29–NFR38). Referências: `docs/prd-v2.md`, `docs/tech-stack-libraries.md`, `_bmad-output/planning-artifacts/ux-design-specification.md`.
+
+---
+
+### V2.1 Crítica da Architecture V1 — O Que Funciona e O Que Não Escala
+
+**O que funciona bem (manter):**
+- Dual-write pattern (Zustand → Broadcast → DB persist) — sólido, escalável
+- Supabase RLS como enforcement layer — seguro, zero middleware custom
+- SRD client-side search (Fuse.js + IndexedDB) — rápido, offline-capable
+- Feature-grouped components — organização clara
+- Anonymous auth para players — zero-friction join
+
+**O que precisa de correção (tech debt identificado no PRD V2):**
+
+| # | Problema V1 | Impacto | Fix V2 |
+|---|-------------|---------|--------|
+| TD3 | Rate limit in-memory (Oracle AI) — não funciona em serverless | Rate limit bypass em prod | Migrar para Upstash Redis ou Supabase rate_limits table |
+| TD1 | Empty catch blocks | Falhas silenciosas | Error boundary + Sentry capture em todo catch |
+| TD2 | useEffect dependency arrays quebradas | Stale closures, bugs | ESLint strict, zero suppressions |
+| TD4 | 15+ eslint-disable comments | Type safety comprometida | Remover todos, tipar corretamente |
+| TD9 | Mutable global state (broadcast channel) | Frágil para scaling | Encapsular em hooks com cleanup |
+
+**O que não existe e é necessário para V2:**
+
+| Gap | Necessário para | Decisão V2 |
+|-----|----------------|------------|
+| Notification system | FR48-49 (turn notifs), FR54 (email invite) | Novu (`@novu/react` + `@novu/node`) |
+| Background jobs | Trial expiry, session cleanup, email scheduling | Trigger.dev (`@trigger.dev/sdk`) |
+| File storage | FR53 (file sharing) | Supabase Storage |
+| Presence tracking | FR51b (auto-join), online indicators | Supabase Realtime Presence |
+| Feature flag system | FR57-61 (freemium gating) | Supabase `feature_flags` table + RLS |
+| Subscription/payment | FR59-60 (trial, Pro, Mesa) | Stripe Checkout + Supabase `subscriptions` table |
+| Monster grouping data model | FR44-46 | New `monster_group_id` + `group_initiative` |
+| Homebrew content | FR63 | User-scoped tables `homebrew_monsters`, `homebrew_spells`, `homebrew_items` |
+| GM notes | FR52 | `session_notes` table, never broadcast |
+
+---
+
+### V2.2 Schema Expansion
+
+**Novas tabelas (adicionais às 10 existentes):**
+
+```sql
+-- Subscription & billing
+CREATE TABLE subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  plan TEXT NOT NULL CHECK (plan IN ('free', 'pro', 'mesa')),
+  status TEXT NOT NULL CHECK (status IN ('active', 'trialing', 'canceled', 'past_due')),
+  stripe_subscription_id TEXT,
+  stripe_customer_id TEXT,
+  trial_ends_at TIMESTAMPTZ,
+  current_period_end TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Feature flags (server-side, NFR29)
+CREATE TABLE feature_flags (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  key TEXT UNIQUE NOT NULL,
+  enabled BOOLEAN DEFAULT true,
+  plan_required TEXT CHECK (plan_required IN ('free', 'pro', 'mesa')),
+  description TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- GM session notes (FR52, never broadcast)
+CREATE TABLE session_notes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id),
+  content TEXT DEFAULT '',
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Session files (FR53)
+CREATE TABLE session_files (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  uploaded_by UUID REFERENCES users(id),
+  file_name TEXT NOT NULL,
+  file_path TEXT NOT NULL,
+  file_type TEXT NOT NULL CHECK (file_type IN ('image', 'pdf')),
+  file_size_bytes INTEGER NOT NULL CHECK (file_size_bytes <= 10485760),
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Campaign invites (FR54-55)
+CREATE TABLE campaign_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id UUID REFERENCES campaigns(id) ON DELETE CASCADE,
+  invited_by UUID REFERENCES users(id),
+  email TEXT NOT NULL,
+  token TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'expired')),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  expires_at TIMESTAMPTZ DEFAULT (now() + interval '7 days')
+);
+
+-- Homebrew content (FR63)
+CREATE TABLE homebrew_monsters (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  data JSONB NOT NULL,
+  ruleset_version TEXT DEFAULT '2024',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE homebrew_spells (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  data JSONB NOT NULL,
+  ruleset_version TEXT DEFAULT '2024',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE homebrew_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  data JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**Alterações em tabelas existentes:**
+
+```sql
+-- users: adicionar role e subscription reference
+ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'player'
+  CHECK (role IN ('player', 'dm', 'both'));
+ALTER TABLE users ADD COLUMN subscription_id UUID REFERENCES subscriptions(id);
+
+-- combatants: adicionar display_name e group support
+ALTER TABLE combatants ADD COLUMN display_name TEXT;
+ALTER TABLE combatants ADD COLUMN monster_group_id UUID;
+ALTER TABLE combatants ADD COLUMN group_order INTEGER;
+
+-- sessions: adicionar DM subscription validation
+ALTER TABLE sessions ADD COLUMN dm_plan TEXT DEFAULT 'free';
+```
+
+**Total de tabelas V2:** 18 (10 originais + 8 novas)
+
+---
+
+### V2.3 Feature Flag System (NFR29)
+
+**Decisão:** Feature flags via tabela Supabase (não terceiro).
+
+**Rationale:** Simples, sem dependência externa, controlável via admin panel. Para o scale atual (<1000 usuários), uma tabela com cache client-side é suficiente.
+
+**Padrão de uso:**
+
+```typescript
+// lib/feature-flags.ts
+import { createClient } from '@/lib/supabase/client';
+
+// Cache em memória, refresh a cada 5 min
+let flagCache: Record<string, { enabled: boolean; plan_required: string }> = {};
+let lastFetch = 0;
+
+export async function getFeatureFlags() {
+  if (Date.now() - lastFetch < 300_000 && Object.keys(flagCache).length > 0) {
+    return flagCache;
+  }
+  const supabase = createClient();
+  const { data } = await supabase.from('feature_flags').select('key, enabled, plan_required');
+  flagCache = Object.fromEntries((data ?? []).map(f => [f.key, f]));
+  lastFetch = Date.now();
+  return flagCache;
+}
+
+export function canAccess(flagKey: string, userPlan: string): boolean {
+  const flag = flagCache[flagKey];
+  if (!flag || !flag.enabled) return false;
+  if (!flag.plan_required || flag.plan_required === 'free') return true;
+  if (flag.plan_required === 'pro') return userPlan === 'pro' || userPlan === 'mesa';
+  if (flag.plan_required === 'mesa') return userPlan === 'mesa';
+  return false;
+}
+```
+
+**React hook:**
+```typescript
+// lib/hooks/use-feature-gate.ts
+export function useFeatureGate(flagKey: string): { allowed: boolean; loading: boolean } {
+  const userPlan = useSubscriptionStore(s => s.plan);
+  const [flags, setFlags] = useState(flagCache);
+  // ... returns { allowed: canAccess(flagKey, userPlan), loading }
+}
+```
+
+**Admin UI:** Feature flags editáveis no admin panel existente. Toggle enabled/disabled + select plan_required.
+
+---
+
+### V2.4 Subscription & Payment (FR59–FR60)
+
+**Decisão:** Stripe Checkout + Supabase webhooks.
+
+**Rationale:** Stripe é o padrão para SaaS. Checkout hosted elimina PCI compliance do nosso lado. Webhooks sincronizam estado com Supabase.
+
+**Arquitetura:**
+
+```
+[User] → [Stripe Checkout] → [Stripe]
+                                  ↓ webhook
+                          [/api/webhooks/stripe]
+                                  ↓
+                          [Supabase: subscriptions table]
+                                  ↓
+                          [RLS: plan check em real-time]
+```
+
+**Novas rotas:**
+- `/api/checkout/route.ts` — cria Stripe Checkout session
+- `/api/webhooks/stripe/route.ts` — processa `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
+- `/app/app/settings/billing/page.tsx` — painel de assinatura
+
+**Modelo "Mesa" (FR60):**
+- DM com plano `mesa` → `dm_plan = 'mesa'` na session
+- RLS policy: jogadores na session de um DM mesa herdam plano pro
+- Validação real-time: `sessions.dm_plan` verificado via RLS em cada query de feature gated
+
+**Trial (FR59):**
+- `subscriptions.status = 'trialing'`, `trial_ends_at` = now + 14 days
+- Trigger.dev cron verifica trials expirando → envia email via Novu 2 dias antes
+- Após expiração: status muda para `canceled`, features Pro bloqueadas
+
+---
+
+### V2.5 Notification System — Novu (FR48–49, FR54)
+
+**Decisão:** Novu para todas as notificações (in-app, email).
+
+**Canais configurados:**
+
+| Workflow Novu | Canal | Trigger | Payload |
+|--------------|-------|---------|---------|
+| `turn-upcoming` | in-app | 1 turno antes do player | `{ playerName, sessionCode }` |
+| `turn-now` | in-app | Turno do player | `{ playerName, sessionCode }` |
+| `player-joined` | in-app | Player entra na session | `{ playerName }` |
+| `late-join-request` | in-app | Player pede para entrar mid-combat | `{ playerName, initiative }` |
+| `campaign-invite` | email | DM convida jogador | `{ campaignName, inviteLink, dmName }` |
+| `trial-expiring` | email | 2 dias antes do trial acabar | `{ daysLeft, upgradeLink }` |
+
+**Integração no layout:**
+
+```typescript
+// app/app/layout.tsx (DM layout)
+<NovuProvider applicationIdentifier={NOVU_APP_ID} subscriberId={userId}>
+  <Inbox />  {/* Renders notification bell in header */}
+</NovuProvider>
+```
+
+**Trigger server-side:**
+
+```typescript
+// lib/notifications/turn-notify.ts
+import { Novu } from '@novu/node';
+const novu = new Novu(process.env.NOVU_SECRET_KEY!);
+
+export async function notifyTurnUpcoming(playerId: string, playerName: string) {
+  await novu.trigger('turn-upcoming', {
+    to: { subscriberId: playerId },
+    payload: { playerName },
+  });
+}
+```
+
+---
+
+### V2.6 Background Jobs — Trigger.dev
+
+**Decisão:** Trigger.dev para jobs assíncronos e cron.
+
+**Jobs configurados:**
+
+| Task ID | Tipo | Schedule | Ação |
+|---------|------|----------|------|
+| `cleanup-guest-sessions` | Cron | `*/30 * * * *` | Deleta sessions guest com >60min |
+| `check-trial-expiry` | Cron | `0 9 * * *` | Identifica trials expirando em 2 dias → Novu email |
+| `process-session-analytics` | Event | Post-session | Calcula métricas (duração, magias, frequência) |
+| `send-campaign-invite` | Event | DM action | Envia email de convite via Novu |
+
+**Diretório:** `trigger/` na raiz do projeto (convenção Trigger.dev).
+
+---
+
+### V2.7 File Storage — Supabase Storage (FR53)
+
+**Decisão:** Supabase Storage bucket `session-files`.
+
+**Políticas:**
+- Upload: apenas DM da session (`auth.uid() = sessions.owner_id`)
+- Download: qualquer participante da session (DM + players com token)
+- Delete: apenas DM
+- Limite: 10MB por arquivo (NFR32), validação de tipo server-side
+
+**Verificação de conteúdo malicioso (NFR32):**
+- Supabase Storage não tem scan nativo
+- Implementar validação básica: magic bytes check no upload handler (`/api/session/[id]/files/route.ts`)
+- Tipos permitidos: `image/png`, `image/jpeg`, `image/webp`, `application/pdf`
+- Rejeitar qualquer outro MIME type
+
+---
+
+### V2.8 Presence & Auto-Join — Supabase Realtime Presence (FR51b)
+
+**Decisão:** Supabase Realtime Presence para tracking de jogadores online.
+
+**Padrão:**
+
+```typescript
+// lib/realtime/presence.ts
+export function useSessionPresence(sessionId: string, playerInfo: PlayerPresence) {
+  const channel = supabase.channel(`session:${sessionId}`);
+
+  useEffect(() => {
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState();
+      setOnlinePlayers(Object.values(state).flat());
+    });
+
+    channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await channel.track(playerInfo);
+      }
+    });
+
+    return () => { channel.untrack(); channel.unsubscribe(); };
+  }, [sessionId]);
+}
+```
+
+**Nota:** Reutiliza o canal `session:{id}` existente (V1). Presence é adicionado ao mesmo canal — não cria canal separado. Isso mantém uma única conexão WebSocket por player.
+
+---
+
+### V2.9 Monster Grouping — Data Model (FR44–46)
+
+**Decisão:** Group via `monster_group_id` nullable na tabela `combatants`.
+
+**Lógica:**
+- `combatants` com mesmo `monster_group_id` pertencem ao grupo
+- O combatant com `group_order = 0` é o "header" do grupo (carrega o display_name do grupo)
+- Initiative é compartilhada: todos no grupo têm mesmo `initiative` value
+- HP é individual: cada combatant mantém seu próprio `current_hp`, `max_hp`
+- Expand/collapse é client-side (Zustand toggle por `monster_group_id`)
+
+**Não cria tabela separada** — evita join desnecessário. O agrupamento é um atributo dos combatants existentes.
+
+---
+
+### V2.10 Display Name & Sanitization (FR43, NFR33)
+
+**Decisão:** `display_name` como coluna nullable em `combatants`.
+
+**Sanitização (NFR33):**
+- Server-side via Supabase RPC ou DB trigger:
+```sql
+CREATE OR REPLACE FUNCTION sanitize_display_name()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.display_name := regexp_replace(
+    NEW.display_name,
+    '<[^>]*>|javascript:|on\w+=',
+    '',
+    'gi'
+  );
+  NEW.display_name := left(NEW.display_name, 40);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_sanitize_display_name
+  BEFORE INSERT OR UPDATE ON combatants
+  FOR EACH ROW
+  WHEN (NEW.display_name IS NOT NULL)
+  EXECUTE FUNCTION sanitize_display_name();
+```
+
+**Client-side:** Adicionalmente, React escapa output via JSX default (`{displayName}` — já sanitizado pelo React DOM).
+
+---
+
+### V2.11 Homebrew Content (FR63)
+
+**Decisão:** Tabelas separadas (`homebrew_monsters`, `homebrew_spells`, `homebrew_items`) com `data JSONB`.
+
+**Rationale:**
+- Separar de SRD content evita contaminação do dataset canônico
+- JSONB permite schema flexível para homebrew sem migrations
+- RLS: `user_id = auth.uid()` — cada DM vê apenas seu próprio homebrew
+- Oracle search: Fuse.js index reconstrói incluindo homebrew do user logado
+
+**Padrão de merge no search:**
+```typescript
+// lib/srd/srd-search.ts
+export function buildSearchIndex(srdMonsters: Monster[], homebrewMonsters: HomebrewMonster[]) {
+  const merged = [
+    ...srdMonsters.map(m => ({ ...m, source: 'srd' as const })),
+    ...homebrewMonsters.map(m => ({ ...m.data, id: m.id, source: 'homebrew' as const })),
+  ];
+  return new Fuse(merged, { keys: ['name', 'type', 'cr'], threshold: 0.3 });
+}
+```
+
+---
+
+### V2.12 Rate Limit Fix (TD3)
+
+**Decisão:** Migrar rate limit do Oracle AI de in-memory para Supabase.
+
+**Opção escolhida:** Tabela `rate_limits` com cleanup via Trigger.dev cron.
+
+```sql
+CREATE TABLE rate_limits (
+  key TEXT PRIMARY KEY,
+  count INTEGER DEFAULT 1,
+  window_start TIMESTAMPTZ DEFAULT now()
+);
+
+-- Função para check + increment
+CREATE OR REPLACE FUNCTION check_rate_limit(p_key TEXT, p_max INTEGER, p_window_seconds INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  INSERT INTO rate_limits (key, count, window_start)
+  VALUES (p_key, 1, now())
+  ON CONFLICT (key) DO UPDATE SET
+    count = CASE
+      WHEN rate_limits.window_start + (p_window_seconds || ' seconds')::interval < now()
+      THEN 1
+      ELSE rate_limits.count + 1
+    END,
+    window_start = CASE
+      WHEN rate_limits.window_start + (p_window_seconds || ' seconds')::interval < now()
+      THEN now()
+      ELSE rate_limits.window_start
+    END
+  RETURNING count INTO v_count;
+
+  RETURN v_count <= p_max;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+**Uso no API route:**
+```typescript
+const { data: allowed } = await supabase.rpc('check_rate_limit', {
+  p_key: `oracle_ai:${userId}`,
+  p_max: 20,
+  p_window_seconds: 3600,
+});
+if (!allowed) return NextResponse.json({ error: 'Rate limited' }, { status: 429 });
+```
+
+---
+
+### V2.13 Project Structure Expansion
+
+**Novos diretórios e arquivos:**
+
+```
+projeto-rpg/
+├── trigger/                              # Trigger.dev tasks
+│   ├── cleanup-guest-sessions.ts
+│   ├── check-trial-expiry.ts
+│   ├── process-session-analytics.ts
+│   └── send-campaign-invite.ts
+│
+├── app/
+│   ├── (auth)/
+│   │   └── signup/page.tsx               # + Role selection (FR50)
+│   │
+│   ├── app/
+│   │   ├── settings/
+│   │   │   └── billing/page.tsx          # Subscription management
+│   │   └── session/
+│   │       └── [id]/
+│   │           └── page.tsx              # + GM Notes, File Share, Mid-combat add
+│   │
+│   └── api/
+│       ├── checkout/route.ts             # Stripe Checkout session
+│       ├── webhooks/
+│       │   └── stripe/route.ts           # Stripe webhook handler
+│       └── session/
+│           └── [id]/
+│               └── files/route.ts        # File upload/download (Supabase Storage)
+│
+├── components/
+│   ├── combat/
+│   │   ├── MonsterGroupRow.tsx           # FR44-46: grouped monsters
+│   │   ├── MidCombatAddSheet.tsx         # FR42: add mid-combat
+│   │   ├── DisplayNameInput.tsx          # FR43: editable display name
+│   │   └── GMNotesSheet.tsx              # FR52: private notes panel
+│   │
+│   ├── player/
+│   │   ├── TurnNotificationOverlay.tsx   # FR49: "É sua vez!" overlay
+│   │   ├── TurnUpcomingBanner.tsx        # FR48: "Você é o próximo" banner
+│   │   ├── LateJoinForm.tsx              # FR47: late-join form
+│   │   ├── SharedFileCard.tsx            # FR53: file display for players
+│   │   └── OnlineIndicator.tsx           # FR51b: presence dot
+│   │
+│   ├── freemium/
+│   │   ├── FeatureLockBadge.tsx          # FR57: lock icon + tooltip
+│   │   ├── UpsellCard.tsx               # FR58: inline upsell
+│   │   ├── TrialActivation.tsx          # FR59: trial start flow
+│   │   └── PlanBadge.tsx                # FR60: PRO badge on DM
+│   │
+│   ├── campaign/
+│   │   ├── InvitePlayerDialog.tsx        # FR54: email invite
+│   │   ├── PlayerLinkDropdown.tsx        # FR56: link PC to anon player
+│   │   └── CRCalculatorCard.tsx          # FR62: CR calculator
+│   │
+│   ├── homebrew/
+│   │   ├── HomebrewCreator.tsx           # FR63: create custom content
+│   │   └── HomebrewBadge.tsx            # Purple "Homebrew" pill
+│   │
+│   └── auth/
+│       └── RoleSelectionCards.tsx         # FR50: player/dm/both selection
+│
+├── lib/
+│   ├── stores/
+│   │   ├── subscription-store.ts         # Zustand: user plan, feature access
+│   │   └── presence-store.ts             # Zustand: online players
+│   │
+│   ├── realtime/
+│   │   └── presence.ts                   # Supabase Presence hooks
+│   │
+│   ├── notifications/
+│   │   ├── turn-notify.ts               # Turn notification triggers
+│   │   └── invite-notify.ts             # Campaign invite emails
+│   │
+│   ├── feature-flags.ts                  # Feature flag system
+│   ├── stripe.ts                         # Stripe client helpers
+│   │
+│   ├── hooks/
+│   │   ├── use-feature-gate.ts          # React hook for gating
+│   │   └── use-session-presence.ts      # React hook for presence
+│   │
+│   └── types/
+│       ├── subscription.ts               # Plan, subscription types
+│       ├── homebrew.ts                   # Homebrew content types
+│       └── notifications.ts             # Novu payload types
+│
+└── supabase/
+    └── migrations/
+        ├── 006_subscriptions.sql         # subscriptions table
+        ├── 007_feature_flags.sql         # feature_flags table + seed
+        ├── 008_session_notes.sql         # session_notes table
+        ├── 009_session_files.sql         # session_files table
+        ├── 010_campaign_invites.sql      # campaign_invites table
+        ├── 011_homebrew_tables.sql       # homebrew_monsters/spells/items
+        ├── 012_combatant_v2_columns.sql  # display_name, monster_group_id, group_order
+        ├── 013_user_v2_columns.sql       # role, subscription_id
+        ├── 014_rate_limits.sql           # rate_limits table + function
+        ├── 015_sanitize_trigger.sql      # display_name sanitization trigger
+        └── 016_rls_v2_policies.sql       # RLS para novas tabelas
+```
+
+---
+
+### V2.14 RLS Policies V2
+
+**Novas policies (adicionais às V1):**
+
+```sql
+-- Subscriptions: user vê apenas a própria
+CREATE POLICY "Users view own subscription"
+  ON subscriptions FOR SELECT USING (auth.uid() = user_id);
+
+-- Session notes: apenas DM da session
+CREATE POLICY "DM manages own session notes"
+  ON session_notes FOR ALL USING (
+    auth.uid() = user_id
+    AND session_id IN (SELECT id FROM sessions WHERE owner_id = auth.uid())
+  );
+
+-- Session files: DM upload, todos na session download
+CREATE POLICY "DM uploads session files"
+  ON session_files FOR INSERT WITH CHECK (
+    auth.uid() = uploaded_by
+    AND session_id IN (SELECT id FROM sessions WHERE owner_id = auth.uid())
+  );
+CREATE POLICY "Session participants view files"
+  ON session_files FOR SELECT USING (
+    session_id IN (
+      SELECT session_id FROM session_tokens WHERE user_id = auth.uid()
+      UNION SELECT id FROM sessions WHERE owner_id = auth.uid()
+    )
+  );
+
+-- Homebrew: user CRUD próprio
+CREATE POLICY "Users manage own homebrew"
+  ON homebrew_monsters FOR ALL USING (auth.uid() = user_id);
+-- (repeat for homebrew_spells, homebrew_items)
+
+-- Campaign invites: DM cria, convidado aceita
+CREATE POLICY "DM creates invites"
+  ON campaign_invites FOR INSERT WITH CHECK (auth.uid() = invited_by);
+CREATE POLICY "Anyone views own invite by token"
+  ON campaign_invites FOR SELECT USING (true); -- token validation em app layer
+
+-- Feature flags: read-only para todos
+CREATE POLICY "Anyone reads feature flags"
+  ON feature_flags FOR SELECT USING (true);
+CREATE POLICY "Admin manages feature flags"
+  ON feature_flags FOR ALL USING (
+    auth.uid() IN (SELECT id FROM users WHERE is_admin = true)
+  );
+
+-- "Mesa" model: players em session de DM pro herdam acesso
+CREATE POLICY "Mesa model pro access"
+  ON feature_flags FOR SELECT USING (true); -- flags são públicas, gating é client+RLS
+```
+
+---
+
+### V2.15 Realtime Events V2
+
+**Novos eventos no canal `session:{id}`:**
+
+| Evento | Direção | Payload | Trigger |
+|--------|---------|---------|---------|
+| `combat:monster_group_add` | DM → Players | `{ group_id, monsters[], initiative }` | DM adiciona grupo |
+| `combat:display_name_change` | DM → Players | `{ combatant_id, display_name }` | DM muda display name |
+| `session:player_join_request` | Player → DM | `{ player_name, hp, ac, initiative }` | Late-join request |
+| `session:player_join_approved` | DM → Player | `{ combatant_id, position }` | DM aceita late-join |
+| `session:player_join_rejected` | DM → Player | `{ reason? }` | DM recusa late-join |
+| `session:file_shared` | DM → Players | `{ file_id, file_name, file_type, url }` | DM compartilha arquivo |
+| `session:file_removed` | DM → Players | `{ file_id }` | DM remove arquivo |
+
+**Presence events (automáticos via Supabase):**
+- `presence.sync` — estado completo dos players online
+- `presence.join` — player entrou
+- `presence.leave` — player saiu
+
+---
+
+### V2.16 New Realtime Event Naming Convention
+
+**Atualização da convenção V1:** Novos domínios adicionados.
+
+| Domínio | Eventos |
+|---------|---------|
+| `combat:*` | hp_update, turn_advance, condition_change, combatant_add, combatant_remove, initiative_reorder, version_switch, **monster_group_add, display_name_change** |
+| `session:*` | state_sync, **player_join_request, player_join_approved, player_join_rejected, file_shared, file_removed** |
+| `content:*` | update (admin SRD edit — existente V1) |
+
+---
+
+### V2.17 Implementation Sequence V2
+
+**Epics em ordem de dependência arquitetural:**
+
+```
+Epic 0: Tech Debt Cleanup
+  └─→ Prerequisito para tudo — fix rate limit, catch blocks, useEffect deps
+
+Epic 1: Combat Core (FR42-43, FR47)
+  └─→ Depende de: schema V2 (display_name, mid-combat add)
+
+Epic 2: Monster Grouping (FR44-46)
+  └─→ Depende de: schema V2 (monster_group_id, group_order)
+
+Epic 3: Player Experience (FR48-49, FR50, FR51b, FR56)
+  └─→ Depende de: Novu setup, Supabase Presence, schema V2 (user role)
+
+Epic 5: Freemium Gating (FR57-61)
+  └─→ Depende de: feature_flags table, subscriptions table, Stripe setup
+  └─→ Pode rodar em paralelo com Epic 4
+
+Epic 4: Session & Campaign (FR52-55, FR62-63)
+  └─→ Depende de: Supabase Storage, Novu email, homebrew tables
+  └─→ Pode rodar em paralelo com Epic 5
+```
+
+**Migrations devem rodar ANTES dos Epics:** 006–016 em sequência.
+
+---
+
+### V2.18 Architecture Validation V2
+
+**Requirements Coverage V2:**
+
+| FR Range | Architectural Coverage |
+|----------|----------------------|
+| FR42-46 | Schema (display_name, monster_group_id) + Realtime events + Components |
+| FR47 | Realtime events (join_request/approved/rejected) + Novu (in-app) |
+| FR48-49 | Novu (turn-upcoming, turn-now) + Realtime broadcast |
+| FR50 | Schema (users.role) + Auth flow |
+| FR51, FR51b | Supabase Presence + Realtime channel reuse |
+| FR52 | session_notes table + RLS (DM only) |
+| FR53 | Supabase Storage + session_files table + RLS |
+| FR54-55 | campaign_invites table + Novu email + Trigger.dev |
+| FR56 | Client-side linking via existing session_tokens |
+| FR57-61 | feature_flags table + subscription_store + useFeatureGate hook |
+| FR62 | Client-side computation (no backend needed) |
+| FR63 | homebrew_* tables + Fuse.js merge + RLS |
+
+**NFR Coverage V2:**
+
+| NFR | Solution |
+|-----|----------|
+| NFR29 | feature_flags table, ≤500ms resolve via cache, admin toggle |
+| NFR30 | campaign_invites + DB constraint + app-level count check |
+| NFR31 | Reuse existing Realtime channel, Novu in-app |
+| NFR32 | Supabase Storage + file_size_bytes CHECK + MIME validation |
+| NFR33 | DB trigger sanitize_display_name() + React DOM escaping |
+| NFR34 | subscriptions table + RLS + graceful degradation logic |
+| NFR35-38 | Infra (Vercel + responsive breakpoints) — não requer mudança arquitetural |
+
+**Overall Status V2: READY FOR IMPLEMENTATION**

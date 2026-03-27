@@ -38,15 +38,17 @@ CREATE POLICY "Admin deletes feature flags"
   );
 
 -- Seed 8 Pro-gated features
+-- All features available to everyone for now (plan_required = 'free')
+-- When monetization is activated, UPDATE plan_required to 'pro' for gated features
 INSERT INTO feature_flags (key, enabled, plan_required, description) VALUES
-  ('persistent_campaigns', true, 'pro', 'Persistent campaigns across sessions'),
-  ('saved_presets', true, 'pro', 'Save and load monster presets'),
-  ('export_data', true, 'pro', 'Export encounter and session data'),
-  ('homebrew', true, 'pro', 'Create custom monsters, spells, and items'),
-  ('session_analytics', true, 'pro', 'Session analytics and statistics'),
-  ('cr_calculator', true, 'pro', 'Challenge rating calculator'),
-  ('file_sharing', true, 'pro', 'Share files within sessions'),
-  ('email_invites', true, 'pro', 'Send email invitations for campaigns');
+  ('persistent_campaigns', true, 'free', 'Persistent campaigns across sessions'),
+  ('saved_presets', true, 'free', 'Save and load monster presets'),
+  ('export_data', true, 'free', 'Export encounter and session data'),
+  ('homebrew', true, 'free', 'Create custom monsters, spells, and items'),
+  ('session_analytics', true, 'free', 'Session analytics and statistics'),
+  ('cr_calculator', true, 'free', 'Challenge rating calculator'),
+  ('file_sharing', true, 'free', 'Share files within sessions'),
+  ('email_invites', true, 'free', 'Send email invitations for campaigns');
 
 -- Updated_at trigger
 CREATE OR REPLACE FUNCTION update_feature_flags_updated_at()
