@@ -20,6 +20,7 @@ import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
+import { getMonsterById } from "@/lib/srd/srd-search";
 
 interface EncounterSetupProps {
   onStartCombat: (encounterName?: string) => Promise<void>;
@@ -50,12 +51,10 @@ const EMPTY_ADD_ROW: AddRowForm = {
 /** Generate a generic display_name for non-player combatants (anti-metagaming).
  *  Counts existing "Creature #N" display names to determine the next number. */
 function getDefaultDisplayName(creatureType: string | null | undefined, existingCombatants: Combatant[]): string {
-  const name = generateCreatureName(creatureType);
-  // Check for duplicates — if same fake name exists, append number
-  const sameNameCount = existingCombatants.filter(
-    (c) => c.display_name?.startsWith(name)
-  ).length;
-  return sameNameCount > 0 ? `${name} ${sameNameCount + 1}` : name;
+  const existingNames = existingCombatants
+    .filter((c) => !c.is_player && c.display_name)
+    .map((c) => c.display_name!);
+  return generateCreatureName(creatureType, existingNames);
 }
 
 export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId, onSessionCreated }: EncounterSetupProps) {
@@ -316,7 +315,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       : null;
 
     const sel = lastSelectedMonster.current;
-    const displayName = getDefaultDisplayName(null, useCombatStore.getState().combatants);
+    // Use selected monster's creature type for thematic name, null for manual add
+    const selType = sel ? (getMonsterById(sel.id, sel.version)?.type ?? null) : null;
+    const displayName = getDefaultDisplayName(selType, useCombatStore.getState().combatants);
     addCombatant({
       name,
       current_hp: isNaN(hp) || hp < 1 ? 0 : hp,
@@ -473,7 +474,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         monster_id: source.monster_id,
         token_url: source.token_url,
         creature_type: source.creature_type,
-        display_name: source.display_name,
+        display_name: source.is_player ? null : getDefaultDisplayName(source.creature_type, useCombatStore.getState().combatants),
         monster_group_id: source.monster_group_id,
         group_order: null,
         dm_notes: "",

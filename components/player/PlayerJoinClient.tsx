@@ -9,6 +9,7 @@ import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
 import type { ConnectionStatus } from "@/lib/realtime/use-realtime-channel";
 import type { RulesetVersion } from "@/lib/types/database";
+import { captureError } from "@/lib/errors/capture";
 
 
 const SpellSearch = lazy(() =>
@@ -335,7 +336,15 @@ export function PlayerJoinClient({
                   setIsRegistered(true);
                   setRegisteredName(lateJoinDataRef.current?.name);
                 })
-                .catch(() => {});
+                .catch((err) => {
+                  setLateJoinStatus("idle");
+                  captureError(err, {
+                    component: "PlayerJoinClient",
+                    action: "registerAfterLateJoinAccept",
+                    category: "realtime",
+                    sessionId,
+                  });
+                });
             }
           } else {
             setLateJoinStatus("rejected");

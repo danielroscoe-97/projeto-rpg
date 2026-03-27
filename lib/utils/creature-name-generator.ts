@@ -70,12 +70,32 @@ const GENERIC_NAMES = [
 ];
 
 /**
- * Generate a thematic fake name for a creature.
+ * Generate a thematic fake name for a creature, avoiding duplicates.
+ * Exhausts the pool before reusing names, then appends numbers.
+ *
  * @param creatureType - The creature's type (e.g. "dragon", "undead")
- * @returns A random thematic display name
+ * @param existingNames - Display names already in use (for dedup)
+ * @returns A unique thematic display name
  */
-export function generateCreatureName(creatureType?: string | null): string {
+export function generateCreatureName(
+  creatureType?: string | null,
+  existingNames: string[] = []
+): string {
   const key = creatureType?.toLowerCase();
-  const pool = (key && NAMES_BY_TYPE[key]) || GENERIC_NAMES;
-  return pool[Math.floor(Math.random() * pool.length)];
+  const pool = (key && Object.prototype.hasOwnProperty.call(NAMES_BY_TYPE, key) && NAMES_BY_TYPE[key]) || GENERIC_NAMES;
+
+  // Find names from this pool not yet used
+  const usedSet = new Set(existingNames);
+  const available = pool.filter((n) => !usedSet.has(n));
+
+  if (available.length > 0) {
+    // Pick random from available (unused) names
+    return available[Math.floor(Math.random() * available.length)];
+  }
+
+  // Pool exhausted — pick random and append number
+  const base = pool[Math.floor(Math.random() * pool.length)];
+  let suffix = 2;
+  while (usedSet.has(`${base} ${suffix}`)) suffix++;
+  return `${base} ${suffix}`;
 }
