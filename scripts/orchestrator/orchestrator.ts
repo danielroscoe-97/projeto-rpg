@@ -35,7 +35,7 @@ import {
   getChangedFilesInWorktree,
 } from "./worktree.js";
 import { verifyAndFix } from "./story-queue.js";
-import { runQueue, pauseQueue, resumeQueue, getQueueStatus, buildQueue, retryStory, skipStory } from "./story-queue.js";
+import { runQueue, pauseQueue, resumeQueue, getQueueStatus, buildQueue, retryStory, skipStory, isQueueRunning } from "./story-queue.js";
 import {
   startWatcher,
   stopWatcher,
@@ -146,7 +146,8 @@ User message: ${input}`,
       target: parsed.target || "",
     };
   } catch {
-    return { mode: "quickfix", target: input };
+    logger.warn("parseCommand JSON parse failed — falling back to chat", { input: input.slice(0, 80) });
+    return { mode: "chat", target: input };
   }
 }
 
@@ -154,11 +155,16 @@ User message: ${input}`,
  * Build the project context string for prompts.
  */
 function getProjectContext(): string {
-  const sprintSpec = readFileSync(
-    join(config.projectRoot, config.paths.sprintSpec),
-    "utf-8"
-  );
-  return sprintSpec.slice(0, 8000);
+  try {
+    const sprintSpec = readFileSync(
+      join(config.projectRoot, config.paths.sprintSpec),
+      "utf-8"
+    );
+    return sprintSpec.slice(0, 8000);
+  } catch {
+    logger.warn("Sprint spec not found — continuing without project context");
+    return "";
+  }
 }
 
 /**
@@ -866,8 +872,14 @@ async function executeFullBmadFlow(description: string): Promise<void> {
       model: config.agent.models.orchestrator,
     });
 
+    if (pmResult.exitCode !== 0) {
+      if (pmResult.isRateLimited) throw new Error("RATE_LIMITED: Claude rate limited during PM step");
+      throw new Error(`PM step failed (exit ${pmResult.exitCode}): ${pmResult.output.slice(-300)}`);
+    }
     const pmPath = join(ctx.runDir, "01-pm-brief.md");
-    if (!existsSync(pmPath)) writeFileSync(pmPath, pmResult.output);
+    if (!existsSync(pmPath)) {
+      throw new Error(`PM agent did not produce brief at expected path: ${pmPath}`);
+    }
     ctx.pmBrief = readFileSync(pmPath, "utf-8");
     ctx.stepStatus.pm = "done";
     saveManifest(ctx);
@@ -889,8 +901,14 @@ async function executeFullBmadFlow(description: string): Promise<void> {
       model: config.agent.models.orchestrator,
     });
 
+    if (archResult.exitCode !== 0) {
+      if (archResult.isRateLimited) throw new Error("RATE_LIMITED: Claude rate limited during Architect step");
+      throw new Error(`Architect step failed (exit ${archResult.exitCode}): ${archResult.output.slice(-300)}`);
+    }
     const archPath = join(ctx.runDir, "02-architect-spec.md");
-    if (!existsSync(archPath)) writeFileSync(archPath, archResult.output);
+    if (!existsSync(archPath)) {
+      throw new Error(`Architect agent did not produce spec at expected path: ${archPath}`);
+    }
     ctx.architectSpec = readFileSync(archPath, "utf-8");
     ctx.stepStatus.architect = "done";
     saveManifest(ctx);
@@ -912,6 +930,11 @@ async function executeFullBmadFlow(description: string): Promise<void> {
       maxTurns: config.bmadFlow.maxTurnsPerSm,
       model: config.agent.models.spec,
     });
+
+    if (smResult.exitCode !== 0) {
+      if (smResult.isRateLimited) throw new Error("RATE_LIMITED: Claude rate limited during SM step");
+      throw new Error(`SM step failed (exit ${smResult.exitCode}): ${smResult.output.slice(-300)}`);
+    }
 
     // Parse story IDs
     const storyJsonMatch = smResult.output.match(/\{"stories":\s*\[([^\]]+)\]\}/);
@@ -983,6 +1006,10 @@ async function executeFullBmadFlow(description: string): Promise<void> {
       model: config.agent.models.qa,
     });
 
+    if (qaResult.exitCode !== 0) {
+      if (qaResult.isRateLimited) throw new Error("RATE_LIMITED: Claude rate limited during QA step");
+      throw new Error(`QA step failed (exit ${qaResult.exitCode}): ${qaResult.output.slice(-300)}`);
+    }
     const qaPath = join(ctx.runDir, "05-qa-report.md");
     if (!existsSync(qaPath)) writeFileSync(qaPath, qaResult.output);
     ctx.stepStatus.qa = "done";
@@ -1076,13 +1103,27 @@ export async function handleCommand(input: string): Promise<void> {
       if (target === "resume") {
         resumeQueue();
         await notify("▶️ Queue retomada. Reiniciando processamento...");
-        runQueue().catch((e: Error) => notify(`❌ Queue error: ${e.message}`));
+        if (!isQueueRunning()) {
+          runQueue().catch((e: Error) => notify(`❌ Queue error: ${e.message}`));
+        } else {
+          await notify("▶️ Queue já está ativa — processamento continuando.");
+        }
         return;
       }
       if (target.startsWith("retry:")) {
         const storyId = target.slice(6);
         const ok = retryStory(storyId);
-        await notify(ok ? `🔄 Story *${storyId}* resetada para retry.` : `❌ Story *${storyId}* não encontrada ou não retryable.`);
+        if (!ok) {
+          await notify(`❌ Story *${storyId}* não encontrada ou não está em estado retryable (failed/stuck).`);
+          return;
+        }
+        await notify(`🔄 Story *${storyId}* resetada para retry.`);
+        if (!isQueueRunning()) {
+          await notify(`🚀 Reiniciando queue para processar retry...`);
+          runQueue().catch((e: Error) => notify(`❌ Queue error no retry: ${e.message}`));
+        } else {
+          await notify(`_Queue já está rodando — story será processada no próximo ciclo._`);
+        }
         return;
       }
       if (target.startsWith("skip:")) {
@@ -1091,9 +1132,13 @@ export async function handleCommand(input: string): Promise<void> {
         await notify(ok ? `⏭️ Story *${storyId}* marcada como skipped.` : `❌ Story *${storyId}* não encontrada.`);
         return;
       }
-      buildQueue();
-      await notify("🚀 Queue construída! Iniciando processamento de todas as specs...");
-      runQueue().catch((e: Error) => notify(`❌ Queue error: ${e.message}`));
+      if (!isQueueRunning()) {
+        buildQueue();
+        await notify("🚀 Queue construída! Iniciando processamento de todas as specs...");
+        runQueue().catch((e: Error) => notify(`❌ Queue error: ${e.message}`));
+      } else {
+        await notify("▶️ Queue já está ativa — processamento continuando.");
+      }
       return;
     }
 

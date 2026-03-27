@@ -193,7 +193,7 @@ export function buildQueue(storyIds?: string[]): QueueState {
     if (storyIds && storyIds.length > 0) {
       files = storyIds.map((id) => id.endsWith(".md") ? id : `${id}.md`).filter((f) => existsSync(join(specsDir, f)));
     } else {
-      files = readdirSync(specsDir).filter((f) => /^(a\d|b\d|c\d|v2-)/.test(f) && f.endsWith(".md")).sort();
+      files = readdirSync(specsDir).filter((f) => /^(a\d|b\d|c\d|v2-|bmad-)/.test(f) && f.endsWith(".md")).sort();
     }
     const stories: StoryEntry[] = files.map((f) => ({ id: f.replace(".md", ""), specPath: `_bmad-output/implementation-artifacts/${f}`, status: "pending" as const, attempts: 0 }));
     const state: QueueState = { version: 3, stories, runningStories: [], startedAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), isPaused: false, metrics: { ...EMPTY_METRICS } };
@@ -291,15 +291,27 @@ async function monitorAndFixCI(worktree: Worktree, prNumber: number, specContent
     }
     if (ciStatus === "success") return { fixed: true, attempts: attempt };
     if (ciStatus === "unknown") return { fixed: false, attempts: 0 }; // No CI configured
+    if (ciStatus === "pending") {
+      logger.warn(`CI still pending after polling timeout for PR #${prNumber} — skipping fix`);
+      await notify(`⏳ *CI ainda rodando* para PR #${prNumber} após 10min de polling. Verifique manualmente.`);
+      return { fixed: false, attempts: attempt };
+    }
+    // Only reaches here if ciStatus === "failure"
     logger.warn(`CI failed for PR #${prNumber} — auto-fixing (attempt ${attempt + 1}/${maxCIFixes})`);
     await notify(`🔴 *CI failed* PR #${prNumber} — Auto-fixing (tentativa ${attempt + 1}/${maxCIFixes})...`);
     const changedFiles = getAllChangedFiles(worktree);
     const testableFiles = getTestableFiles(changedFiles);
     const testCmd = testableFiles.length > 0 ? `npx jest --findRelatedTests ${testableFiles.join(" ")} --passWithNoTests --forceExit` : "npx jest --passWithNoTests --forceExit";
     await runClaude({
-      prompt: `CI checks failed on the PR. Fix the issues.\n\n## CI Failure Logs\n${ciLogs}\n\n## Changed Files\n${changedFiles.join("\n")}\n\n## Instructions\n1. Analyze CI failure logs\n2. Fix code\n3. Run locally: ${testCmd}\n4. Stage and commit: git add -A && git commit -m "fix: resolve CI failure"\n5. Push: git push`,
+      prompt: `CI checks failed on the PR. Fix the issues.\n\n## CI Failure Logs\n${ciLogs}\n\n## Changed Files\n${changedFiles.join("\n")}\n\n## Instructions\n1. Analyze CI failure logs\n2. Fix code\n3. Run locally: ${testCmd}\n4. Stage and commit: git add -A && git commit -m "fix: resolve CI failure"\n   IMPORTANT: Do NOT push. The orchestrator will push via its own git serializer.`,
       cwd: worktree.path, model: config.agent.models.dev, maxTurns: 20, allowedTools: ["Read", "Edit", "Write", "Bash", "Glob", "Grep"],
     });
+    // Push via mutex after Claude commits
+    try {
+      await withGitMutex(() => pushWorktree(worktree));
+    } catch (e) {
+      logger.warn(`CI fix push failed for PR #${prNumber}`, { error: String(e) });
+    }
   }
   return { fixed: false, attempts: maxCIFixes };
 }
@@ -414,8 +426,19 @@ async function executeStorySpec(entry: StoryEntry, slotId: number): Promise<bool
   }
 }
 
+// -- Queue Running Guard --
+let queueIsRunning = false;
+export function isQueueRunning(): boolean { return queueIsRunning; }
+
 // -- Main Queue Runner --
 export async function runQueue(): Promise<void> {
+  if (queueIsRunning) {
+    logger.warn("runQueue called while already running — ignoring");
+    await notify("⚠️ Queue já está rodando. Aguarde a conclusão ou envie 'status'.");
+    return;
+  }
+  queueIsRunning = true;
+  try {
   await recoverCrashedEntries();
   let state = await withLock(() => { const s = loadQueue(); if (s.stories.length === 0) return buildQueue(); return s; });
   const total = state.stories.length;
@@ -498,6 +521,9 @@ export async function runQueue(): Promise<void> {
   const totalElapsed = getDuration(state.startedAt, new Date().toISOString());
   logger.info(`Queue complete: ${finalDone} done, ${finalFailed} failed, ${finalSkipped} skipped`, { metrics: state.metrics });
   await notify(`🏁 *Queue completa!*\n✅ *Done:* ${finalDone}/${total}\n❌ *Failed:* ${finalFailed}\n⏭️ *Skipped:* ${finalSkipped}\n⏱️ *Tempo:* ${totalElapsed}\n📊 Retries: ${state.metrics.totalRetries} | CI fixes: ${state.metrics.totalCIFixes} | Avg: ${Math.round(state.metrics.avgStoryDurationMs / 60_000)}min`);
+  } finally {
+    queueIsRunning = false;
+  }
 }
 
 // -- Helpers --

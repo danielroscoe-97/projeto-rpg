@@ -31,6 +31,23 @@ describe("quickParse", () => {
     expect(quickParse("resume queue")).toEqual({ mode: "queue", target: "resume" });
   });
 
+  it("should parse retry commands (EN + PT-BR)", () => {
+    expect(quickParse("retry a0-1")).toEqual({ mode: "queue", target: "retry:a0-1" });
+    expect(quickParse("retentar a0-1")).toEqual({ mode: "queue", target: "retry:a0-1" });
+    expect(quickParse("refazer b1-2")).toEqual({ mode: "queue", target: "retry:b1-2" });
+  });
+
+  it("should parse skip commands (EN + PT-BR)", () => {
+    expect(quickParse("skip a0-1")).toEqual({ mode: "queue", target: "skip:a0-1" });
+    expect(quickParse("pular b1-2")).toEqual({ mode: "queue", target: "skip:b1-2" });
+  });
+
+  it("should parse smoke commands", () => {
+    expect(quickParse("smoke")).toEqual({ mode: "smoke", target: "" });
+    expect(quickParse("smoke test")).toEqual({ mode: "smoke", target: "" });
+    expect(quickParse("testar pipeline")).toEqual({ mode: "smoke", target: "" });
+  });
+
   it("should return null for unrecognized commands", () => {
     expect(quickParse("implementa a story 1.1")).toBeNull();
     expect(quickParse("oi")).toBeNull();

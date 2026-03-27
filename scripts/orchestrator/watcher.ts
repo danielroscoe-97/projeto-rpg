@@ -210,7 +210,15 @@ export function stopWatcher(): void {
   logger.info("Watcher stopped");
 }
 
+let isCheckingRules = false;
+
 async function checkAllRules(): Promise<void> {
+  if (isCheckingRules) {
+    logger.debug("checkAllRules already in flight — skipping this tick");
+    return;
+  }
+  isCheckingRules = true;
+  try {
   const state = loadState();
   state.lastCheck = new Date().toISOString();
   saveState(state);
@@ -247,6 +255,9 @@ async function checkAllRules(): Promise<void> {
     } catch (error) {
       logger.error(`Error checking rule ${rule.id}`, { error: String(error) });
     }
+  }
+  } finally {
+    isCheckingRules = false;
   }
 }
 
