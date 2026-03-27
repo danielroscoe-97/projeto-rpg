@@ -878,7 +878,8 @@ async function executeFullBmadFlow(description: string): Promise<void> {
     }
     const pmPath = join(ctx.runDir, "01-pm-brief.md");
     if (!existsSync(pmPath)) {
-      throw new Error(`PM agent did not produce brief at expected path: ${pmPath}`);
+      logger.warn(`PM agent did not write file to ${pmPath} — using stdout output as fallback`);
+      writeFileSync(pmPath, pmResult.output);
     }
     ctx.pmBrief = readFileSync(pmPath, "utf-8");
     ctx.stepStatus.pm = "done";
@@ -907,7 +908,8 @@ async function executeFullBmadFlow(description: string): Promise<void> {
     }
     const archPath = join(ctx.runDir, "02-architect-spec.md");
     if (!existsSync(archPath)) {
-      throw new Error(`Architect agent did not produce spec at expected path: ${archPath}`);
+      logger.warn(`Architect agent did not write file to ${archPath} — using stdout output as fallback`);
+      writeFileSync(archPath, archResult.output);
     }
     ctx.architectSpec = readFileSync(archPath, "utf-8");
     ctx.stepStatus.architect = "done";
@@ -982,6 +984,14 @@ async function executeFullBmadFlow(description: string): Promise<void> {
     saveManifest(ctx);
     await notify(`💻 *[4/5] Development* — Amelia implementando ${ctx.stories.length} stories em paralelo...`);
 
+    if (isQueueRunning()) {
+      logger.warn("Queue already running — waiting for it to finish before BMAD dev step");
+      await notify("⚠️ Queue já está rodando. Aguardando conclusão antes de iniciar dev step...");
+      // Poll until queue finishes
+      while (isQueueRunning()) {
+        await new Promise((r) => setTimeout(r, 15_000));
+      }
+    }
     buildQueue(ctx.stories.map((s) => s.id));
     await runQueue();
 
