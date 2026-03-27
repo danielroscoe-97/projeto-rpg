@@ -1,6 +1,6 @@
 # Tech Stack & Bibliotecas Disponíveis
 
-**Projeto:** Taverna do Mestre
+**Projeto:** Pocket DM
 **Atualizado:** 2026-03-27
 **Referência:** PRD V2 (`docs/prd-v2.md`)
 
@@ -80,7 +80,7 @@ Biblioteca de componentes animados que extende shadcn/ui. Componentes sao copy-p
 npx shadcn@latest add "https://magicui.design/r/[componente]"
 ```
 
-**Componentes recomendados para Taverna do Mestre:**
+**Componentes recomendados para Pocket DM:**
 - `animated-list` — log de combate com entradas animadas
 - `number-ticker` — HP e initiative com transicao numerica
 - `shimmer-button` — CTAs de conversao (upgrade pro, iniciar combate)

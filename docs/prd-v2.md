@@ -13,7 +13,7 @@ version: '2.0'
 status: Draft
 ---
 
-# Product Requirements Document V2 — Taverna do Mestre
+# Product Requirements Document V2 — Pocket DM
 
 **Autor:** Dani_
 **Data:** 2026-03-27
@@ -48,7 +48,7 @@ DMs e jogadores em mesas presenciais não têm uma ferramenta unificada para ger
 
 ### O Que É
 
-Taverna do Mestre é um **combat tracker gratuito para D&D 5e**, focado em jogo presencial. O DM gerencia combate no laptop; jogadores acompanham pelo celular em tempo real. Não é um VTT — é o cérebro do mestre: estado de combate + referência de regras + dados dos jogadores, tudo numa tela.
+Pocket DM é um **combat tracker gratuito para D&D 5e**, focado em jogo presencial. O DM gerencia combate no laptop; jogadores acompanham pelo celular em tempo real. Não é um VTT — é o cérebro do mestre: estado de combate + referência de regras + dados dos jogadores, tudo numa tela.
 
 ### Diferenciadores
 

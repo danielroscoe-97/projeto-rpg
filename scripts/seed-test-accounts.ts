@@ -37,7 +37,7 @@ interface TestAccount {
 const TEST_ACCOUNTS: TestAccount[] = [
   // ── DM Accounts ──
   {
-    email: "dm.primary@test-taverna.com",
+    email: "dm.primary@test-pocketdm.com",
     password: "TestDM_Primary!1",
     display_name: "Mestre Primário",
     role: "dm",
@@ -46,7 +46,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "DM principal — cria sessões, gerencia combate, testa soundboard do lado DM",
   },
   {
-    email: "dm.pro@test-taverna.com",
+    email: "dm.pro@test-pocketdm.com",
     password: "TestDM_Pro!2",
     display_name: "Mestre Pro",
     role: "dm",
@@ -55,7 +55,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "DM com plano Pro — testa features premium, Mesa model (jogadores herdam Pro)",
   },
   {
-    email: "dm.english@test-taverna.com",
+    email: "dm.english@test-pocketdm.com",
     password: "TestDM_English!3",
     display_name: "English DM",
     role: "dm",
@@ -66,7 +66,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
 
   // ── Player Accounts (Authenticated) ──
   {
-    email: "player.warrior@test-taverna.com",
+    email: "player.warrior@test-pocketdm.com",
     password: "TestPlayer_War!1",
     display_name: "Thorin Guerreiro",
     role: "player",
@@ -74,7 +74,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "Jogador autenticado #1 — testa join, soundboard, upload de áudios custom, notas",
   },
   {
-    email: "player.mage@test-taverna.com",
+    email: "player.mage@test-pocketdm.com",
     password: "TestPlayer_Mage!2",
     display_name: "Elara Maga",
     role: "player",
@@ -82,7 +82,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "Jogador autenticado #2 — testa multi-player na mesma sessão, late-join",
   },
   {
-    email: "player.healer@test-taverna.com",
+    email: "player.healer@test-pocketdm.com",
     password: "TestPlayer_Heal!3",
     display_name: "Lyra Curandeira",
     role: "player",
@@ -90,7 +90,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "Jogador autenticado #3 — testa 3+ jogadores simultâneos, condições, HP",
   },
   {
-    email: "player.english@test-taverna.com",
+    email: "player.english@test-pocketdm.com",
     password: "TestPlayer_EN!4",
     display_name: "John Ranger",
     role: "player",
@@ -98,7 +98,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "Jogador com idioma EN — testa i18n no player view, soundboard labels",
   },
   {
-    email: "player.fresh@test-taverna.com",
+    email: "player.fresh@test-pocketdm.com",
     password: "TestPlayer_Fresh!5",
     display_name: "Novato",
     role: "player",
@@ -106,7 +106,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "Conta limpa sem histórico — testa onboarding, primeiro join, HP legend overlay",
   },
   {
-    email: "player.maxaudio@test-taverna.com",
+    email: "player.maxaudio@test-pocketdm.com",
     password: "TestPlayer_Audio!6",
     display_name: "DJ Bardo",
     role: "player",
@@ -116,7 +116,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
 
   // ── Edge Case Accounts ──
   {
-    email: "player.trial@test-taverna.com",
+    email: "player.trial@test-pocketdm.com",
     password: "TestPlayer_Trial!7",
     display_name: "Trial Player",
     role: "player",

@@ -30,7 +30,7 @@ function createRatelimit(): Ratelimit | null {
       redis,
       limiter: Ratelimit.slidingWindow(MAX_REQUESTS, WINDOW_DURATION),
       analytics: true,
-      prefix: "taverna:ratelimit",
+      prefix: "pocketdm:ratelimit",
     });
   } catch (err) {
     console.warn("[rate-limit] Failed to initialize Upstash Redis — rate limiting disabled (fail-open)", err);

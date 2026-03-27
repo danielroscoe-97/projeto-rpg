@@ -200,7 +200,7 @@ export function commitInWorktree(worktree: Worktree, message: string): string {
     return "no-changes";
   }
 
-  const fullMessage = `${message}\n\nCo-Authored-By: BMAD Orchestrator <bmad@taverna.dev>`;
+  const fullMessage = `${message}\n\nCo-Authored-By: BMAD Orchestrator <bmad@pocketdm.app>`;
 
   // Write commit message to temp file — never pass via args
   const msgFile = join(worktree.path, ".git-commit-msg-tmp");

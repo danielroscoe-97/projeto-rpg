@@ -71,7 +71,7 @@ describe("buildAgentPrompt", () => {
 
   it("should include project-specific rules", () => {
     const prompt = buildAgentPrompt(mockAgent);
-    expect(prompt).toContain("Taverna do Mestre");
+    expect(prompt).toContain("Pocket DM");
     expect(prompt).toContain("anti-metagaming");
     expect(prompt).toContain("Zod schemas");
   });

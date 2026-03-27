@@ -114,7 +114,7 @@ function D20Icon({ className, style }: { className?: string; style?: React.CSSPr
 
 
 export const metadata = {
-  title: "Taverna do Mestre — D&D 5e Combat Tracker",
+  title: "Pocket DM — D&D 5e Combat Tracker",
   description:
     "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias — tudo em tempo real para você e seus jogadores. Grátis.",
 };
@@ -358,7 +358,7 @@ function SocialProofSection() {
       role: "Campanha semanal, 5 jogadores",
     },
     {
-      quote: "Eu usava Roll20 só pelo tracker e odiava a lentidão. Taverna resolve em 30 segundos o que demorava 5 minutos.",
+      quote: "Eu usava Roll20 só pelo tracker e odiava a lentidão. Pocket DM resolve em 30 segundos o que demorava 5 minutos.",
       author: "DM veterano",
       role: "Migrou do Roll20",
     },
@@ -708,7 +708,7 @@ function ComparisonSection() {
     feature: string;
     roll20: CellValue;
     beyond: CellValue;
-    taverna: CellValue;
+    pocketdm: CellValue;
     knockout?: boolean;
   }[] = [
       {
@@ -716,35 +716,35 @@ function ComparisonSection() {
         feature: "Combat tracker",
         roll20: { type: "partial", label: "Pesado" },
         beyond: { type: "partial", label: "Básico" },
-        taverna: { type: "check", label: "Otimizado para mestrar" },
+        pocketdm: { type: "check", label: "Otimizado para mestrar" },
       },
       {
         icon: "📱",
         feature: "Player view no celular",
         roll20: { type: "cross", label: "Requer app + conta" },
         beyond: { type: "cross", label: "Indisponível" },
-        taverna: { type: "check", label: "Link direto, zero conta" },
+        pocketdm: { type: "check", label: "Link direto, zero conta" },
       },
       {
         icon: "🎯",
         feature: "Foco na Mesa Física",
         roll20: { type: "cross", label: "Online-first" },
         beyond: { type: "cross", label: "Digital-first" },
-        taverna: { type: "check", label: "Pensado para a mesa real" },
+        pocketdm: { type: "check", label: "Pensado para a mesa real" },
       },
       {
         icon: "📚",
         feature: "Compendium 2014 + 2024",
         roll20: { type: "partial", label: "Módulo pago" },
         beyond: { type: "partial", label: "Pago" },
-        taverna: { type: "check", label: "Grátis, sempre atualizado" },
+        pocketdm: { type: "check", label: "Grátis, sempre atualizado" },
       },
       {
         icon: "💰",
         feature: "Preço",
         roll20: { type: "cross", label: "$5–50/mês" },
         beyond: { type: "cross", label: "$6/mês" },
-        taverna: { type: "check", label: "Comece grátis" },
+        pocketdm: { type: "check", label: "Comece grátis" },
         knockout: true,
       },
     ];
@@ -801,7 +801,7 @@ function ComparisonSection() {
               }}
             >
               <span className="text-[11px] font-bold text-gold uppercase tracking-widest">
-                🏆 Taverna do Mestre
+                🏆 Pocket DM
               </span>
               <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gold/15 text-gold/80 border border-gold/25">
                 Recomendado
@@ -833,7 +833,7 @@ function ComparisonSection() {
                   className={`px-6 border-l border-l-gold/15 group-hover:brightness-110 transition-all duration-150 ${isLast ? "" : "border-b border-b-gold/10"}`}
                   style={{ background: row.knockout ? "rgba(212,168,83,0.12)" : "rgba(212,168,83,0.07)" }}
                 >
-                  <CompCell val={row.taverna} highlight />
+                  <CompCell val={row.pocketdm} highlight />
                 </div>
               </div>
             );
@@ -873,8 +873,8 @@ function ComparisonSection() {
                     borderTop: "1px solid rgba(212,168,83,0.15)",
                   }}
                 >
-                  <span className="text-[11px] font-bold text-gold/80 uppercase tracking-wider">Taverna</span>
-                  <CompCell val={row.taverna} highlight />
+                  <span className="text-[11px] font-bold text-gold/80 uppercase tracking-wider">Pocket DM</span>
+                  <CompCell val={row.pocketdm} highlight />
                 </div>
               </div>
             </div>
@@ -955,7 +955,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar
-        brand="Taverna do Mestre"
+        brand="Pocket DM"
         brandHref="/"
         links={[
           { href: "#features", label: "Features" },

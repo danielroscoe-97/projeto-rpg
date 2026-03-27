@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const BASE_URL =
-  process.env.E2E_BASE_URL ?? "https://tavernadomestre.vercel.app";
+  process.env.E2E_BASE_URL ?? "https://pocketdm.app";
 
 export default defineConfig({
   testDir: "./e2e",

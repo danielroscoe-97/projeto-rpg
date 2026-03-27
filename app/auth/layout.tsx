@@ -7,7 +7,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen">
-      <Navbar brand="Taverna do Mestre" brandHref="/" />
+      <Navbar brand="Pocket DM" brandHref="/" />
       <div className="pt-[72px]">{children}</div>
     </div>
   );

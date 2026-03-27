@@ -290,7 +290,7 @@ reproduzíveis em uso normal e devem ser corrigidos antes de qualquer execução
 
   :start
   echo ========================================
-  echo   BMAD Orchestrator - Taverna do Mestre
+  echo   BMAD Orchestrator - Pocket DM
   echo ========================================
   echo.
   echo Verificando dependencias...

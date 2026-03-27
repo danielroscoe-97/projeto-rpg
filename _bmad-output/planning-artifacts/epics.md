@@ -21,7 +21,7 @@ date: '2026-03-27'
 
 ## Overview
 
-Este documento contém o breakdown completo de epics e stories para o **Taverna do Mestre V2**. O MVP (V1) já está em produção com FR1–FR41 e NFR1–NFR28 implementados. Este documento cobre exclusivamente o trabalho V2: tech debt cleanup, novas features de combate, experiência do jogador, gestão de sessão/campanha, e modelo freemium.
+Este documento contém o breakdown completo de epics e stories para o **Pocket DM V2**. O MVP (V1) já está em produção com FR1–FR41 e NFR1–NFR28 implementados. Este documento cobre exclusivamente o trabalho V2: tech debt cleanup, novas features de combate, experiência do jogador, gestão de sessão/campanha, e modelo freemium.
 
 **Escopo:** 9 Epics (0–8), 41 stories, organizados em 3 sprints + backlog.
 

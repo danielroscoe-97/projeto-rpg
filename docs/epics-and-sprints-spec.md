@@ -1,6 +1,6 @@
 # Especificação Completa — Epics & Sprints
 
-**Projeto:** Taverna do Mestre
+**Projeto:** Pocket DM
 **Autor:** BMAD Team (John, Mary, Winston, Sally, Bob)
 **Data:** 2026-03-27
 **Referência:** PRD V2 (`docs/prd-v2.md`)

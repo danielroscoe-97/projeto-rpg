@@ -91,7 +91,7 @@ ${agent.communicationStyle}
 ${agent.principles}
 
 ## Project Context
-You are working on "Taverna do Mestre", a D&D 5e combat tracker.
+You are working on "Pocket DM", a D&D 5e combat tracker.
 - Language: Brazilian Portuguese (code comments and git in English)
 - Stack: Next.js 16, React 19, TypeScript, Supabase, Zustand, Tailwind
 - PRD: docs/prd-v2.md

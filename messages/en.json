@@ -24,7 +24,7 @@
     "clear_all": "Clear all"
   },
   "nav": {
-    "brand": "Taverna do Mestre",
+    "brand": "Pocket DM",
     "dashboard": "Dashboard",
     "compendium": "Compendium",
     "monsters": "Monsters",
@@ -38,7 +38,7 @@
     "skip_content": "Skip to main content",
     "open_menu": "Open menu",
     "close_menu": "Close menu",
-    "footer_brand": "Taverna do Mestre",
+    "footer_brand": "Pocket DM",
     "footer_subtitle": "Combat tracker for D&D 5e Dungeon Masters",
     "footer_signup": "Sign Up",
     "footer_srd_notice": "Uses the System Reference Document 5.1 and 5.2 under the",
@@ -101,7 +101,7 @@
     "tab_signup": "Sign Up"
   },
   "signup": {
-    "role_selection_title": "How will you use Taverna do Mestre?",
+    "role_selection_title": "How will you use Pocket DM?",
     "role_selection_subtitle": "You can change this later in settings",
     "role_player": "Player",
     "role_dm": "Dungeon Master",

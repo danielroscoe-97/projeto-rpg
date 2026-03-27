@@ -7,7 +7,23 @@
  * Respects Do Not Track. Generates persistent anonymous ID.
  */
 
-const ANON_ID_KEY = "taverna_anon_id";
+// Migration: carry over old anon ID so analytics history is preserved
+const LEGACY_ANON_ID_KEY = "taverna_anon_id";
+const ANON_ID_KEY = "pocketdm_anon_id";
+
+function migrateAnonId(): void {
+  try {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem(ANON_ID_KEY)) return;
+    const legacy = localStorage.getItem(LEGACY_ANON_ID_KEY);
+    if (legacy) {
+      localStorage.setItem(ANON_ID_KEY, legacy);
+      localStorage.removeItem(LEGACY_ANON_ID_KEY);
+    }
+  } catch { /* ignore */ }
+}
+
+if (typeof window !== "undefined") migrateAnonId();
 const TRACK_ENDPOINT = "/api/track";
 
 // Session-scoped fallback when localStorage is unavailable (Safari ITP, iframes)

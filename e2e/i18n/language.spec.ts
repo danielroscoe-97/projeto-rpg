@@ -6,14 +6,20 @@ test.describe("P3 — i18n (English)", () => {
   test("English DM sees English labels", async ({ page }) => {
     await loginAs(page, DM_ENGLISH);
 
-    // Dashboard should be in English
     await expect(page).toHaveURL(/\/app/);
+    await page.waitForLoadState("domcontentloaded");
 
-    // Check for English text in the page
-    const pageText = await page.locator("main, [role='main']").textContent();
-    // English DM should see English interface elements
-    // Common English strings: "Dashboard", "Session", "Campaign"
-    expect(pageText).toBeTruthy();
+    // English DM navbar should have English text
+    const nav = page.locator("nav");
+    await expect(nav).toBeVisible({ timeout: 5_000 });
+
+    // Should see English nav items (Dashboard, Settings, Logout, etc.)
+    const navText = await nav.textContent();
+    const hasEnglish =
+      navText?.includes("Dashboard") ||
+      navText?.includes("Settings") ||
+      navText?.includes("Logout");
+    expect(hasEnglish).toBeTruthy();
   });
 
   test("English player sees English soundboard labels", async ({ browser }) => {

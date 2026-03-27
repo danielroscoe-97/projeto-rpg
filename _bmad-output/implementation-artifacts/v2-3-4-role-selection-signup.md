@@ -11,7 +11,7 @@ so that the app adapts its dashboard and features to how I use it.
 ## Acceptance Criteria
 
 1. Migration 013 adds `role TEXT DEFAULT 'both' CHECK (role IN ('player', 'dm', 'both'))` to `users`. Existing users get `'both'`.
-2. After email/password signup, new step: "Como você vai usar o Taverna do Mestre?" with 3 selectable cards: "Jogador", "Mestre", "Ambos". Default: "Ambos".
+2. After email/password signup, new step: "Como você vai usar o Pocket DM?" with 3 selectable cards: "Jogador", "Mestre", "Ambos". Default: "Ambos".
 3. Selected role saved to `users.role`. User redirected to dashboard.
 4. Dashboard adapts: Player sees campaigns/characters. DM sees encounter builder/management. Both sees everything + context switcher.
 5. "Pular" (skip) option defaults to `'both'`.
@@ -57,7 +57,7 @@ so that the app adapts its dashboard and features to how I use it.
 - Modify: Settings page (role change)
 
 ### i18n Keys
-- `signup.role_selection.title`: "Como você vai usar o Taverna do Mestre?"
+- `signup.role_selection.title`: "Como você vai usar o Pocket DM?"
 - `signup.role_selection.player`: "Jogador"
 - `signup.role_selection.dm`: "Mestre"
 - `signup.role_selection.both`: "Ambos"

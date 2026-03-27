@@ -112,7 +112,7 @@ Create the `app/try/` route. This is a public page that renders the full combat 
 - [ ] Route is accessible when logged out — no redirect to `/auth/login`
 - [ ] Route is accessible when logged in — no redirect away
 - [ ] Page renders the `GuestCombatLayout` wrapper with guest-mode banner
-- [ ] Page title: `"Taverna do Mestre — Combat Tracker (Modo Visitante)"`
+- [ ] Page title: `"Pocket DM — Combat Tracker (Modo Visitante)"`
 - [ ] Middleware `proxy.ts` has no changes needed — `/try` is not under `/app/` so it is already public
 - [ ] Vercel/Next.js build passes with new route
 

@@ -1,6 +1,6 @@
-# Relatorio de Auditoria QA — Taverna do Mestre
+# Relatorio de Auditoria QA — Pocket DM
 
-**Projeto:** projeto-rpg (Taverna do Mestre)
+**Projeto:** projeto-rpg (Pocket DM)
 **Auditor:** Quinn (QA Engineer)
 **Data:** 2026-03-27
 **Metodo:** Revisao estatica de codigo (code-level audit) em todos os modulos criticos

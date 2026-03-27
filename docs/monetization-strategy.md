@@ -1,4 +1,4 @@
-# Estratégia de Monetização — Taverna do Mestre
+# Estratégia de Monetização — Pocket DM
 
 **Autor:** Dani_
 **Data:** 2026-03-26

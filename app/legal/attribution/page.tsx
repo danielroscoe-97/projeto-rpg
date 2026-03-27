@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Attribution | Taverna do Mestre",
-  description: "Content licensing and SRD attribution for Taverna do Mestre.",
+  title: "Attribution | Pocket DM",
+  description: "Content licensing and SRD attribution for Pocket DM.",
 };
 
 export default function AttributionPage() {
@@ -56,8 +56,8 @@ export default function AttributionPage() {
           <p className="text-foreground/80 leading-relaxed">
             Content not included in the SRD (proprietary monsters, spells,
             settings, and characters) is not present in this application. The
-            Taverna do Mestre software itself, interface design, and original
-            code are © 2026 Taverna do Mestre and are not covered by the
+            Pocket DM software itself, interface design, and original
+            code are © 2026 Pocket DM and are not covered by the
             CC-BY-4.0 license.
           </p>
         </section>

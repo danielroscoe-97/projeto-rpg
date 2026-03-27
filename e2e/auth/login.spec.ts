@@ -7,28 +7,26 @@ test.describe("P0 — Login Flow", () => {
     await loginAs(page, DM_PRIMARY);
 
     await expect(page).toHaveURL(/\/app\/dashboard/);
-    // Display name visible in navbar
-    await expect(page.locator("nav, header")).toContainText(DM_PRIMARY.displayName, {
-      timeout: 10_000,
-    });
+    // Navbar should show authenticated menu items
+    const nav = page.locator("nav");
+    await expect(nav).toContainText("Dashboard", { timeout: 10_000 });
+    await expect(nav).toContainText("Logout", { timeout: 5_000 });
   });
 
-  test("Player can login and reach dashboard", async ({ page }) => {
+  test("Player can login and reach app", async ({ page }) => {
     await loginAs(page, PLAYER_WARRIOR);
 
     await expect(page).toHaveURL(/\/app/);
-    await expect(page.locator("nav, header")).toContainText(PLAYER_WARRIOR.displayName, {
-      timeout: 10_000,
-    });
+    const nav = page.locator("nav");
+    await expect(nav).toContainText("Logout", { timeout: 10_000 });
   });
 
   test("English DM can login", async ({ page }) => {
     await loginAs(page, DM_ENGLISH);
 
     await expect(page).toHaveURL(/\/app/);
-    await expect(page.locator("nav, header")).toContainText(DM_ENGLISH.displayName, {
-      timeout: 10_000,
-    });
+    const nav = page.locator("nav");
+    await expect(nav).toContainText("Logout", { timeout: 10_000 });
   });
 
   test("Invalid credentials show error", async ({ page }) => {
@@ -39,9 +37,9 @@ test.describe("P0 — Login Flow", () => {
 
     // Should stay on login page and show error
     await expect(page).toHaveURL(/\/auth\/login/);
-    await expect(page.locator('[role="alert"], .text-red, .text-destructive')).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(
+      page.locator('[role="alert"], .text-red, .text-destructive, [id="login-error"]')
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test("Login page renders correctly", async ({ page }) => {

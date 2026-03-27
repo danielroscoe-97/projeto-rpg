@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Política de Privacidade | Taverna do Mestre",
-  description: "Política de privacidade da Taverna do Mestre.",
+  title: "Política de Privacidade | Pocket DM",
+  description: "Política de privacidade do Pocket DM.",
 };
 
 export default function PrivacyPage() {
@@ -99,10 +99,10 @@ export default function PrivacyPage() {
               Para exercer qualquer desses direitos, entre em contato pelo
               e-mail:{" "}
               <a
-                href="mailto:privacidade@tavernadomestre.com.br"
+                href="mailto:privacidade@pocketdm.app"
                 className="text-gold underline underline-offset-4"
               >
-                privacidade@tavernadomestre.com.br
+                privacidade@pocketdm.app
               </a>
             </p>
           </section>

@@ -18,7 +18,7 @@ _bmad-output/implementation-artifacts/tech-spec-player-sound-effects.md
 
 ## Contexto do Projeto
 
-- **Projeto:** Taverna do Mestre — Combat tracker para D&D 5e, presencial-first
+- **Projeto:** Pocket DM — Combat tracker para D&D 5e, presencial-first
 - **Stack:** Next.js 15, React 19, Supabase (auth, DB, Storage, Realtime), Zustand, Framer Motion, next-intl, Tailwind CSS
 - **Tech stack completo:** `docs/tech-stack-libraries.md`
 - **PRD:** `docs/prd-v2.md` (Epic 6 — Audio & Ambiance)

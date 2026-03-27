@@ -11,7 +11,7 @@
  *   - Set environment variables:
  *     K6_SUPABASE_URL    — Supabase project URL
  *     K6_SUPABASE_ANON_KEY — Supabase anon/publishable key
- *     K6_BASE_URL        — App base URL (e.g., https://projeto-rpg.vercel.app)
+ *     K6_BASE_URL        — App base URL (e.g., https://pocketdm.app)
  *
  * Usage:
  *   k6 run scripts/load-test/k6-session-load.js

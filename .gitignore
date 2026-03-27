@@ -56,3 +56,7 @@ scripts/orchestrator/.watcher-state.json
 scripts/orchestrator/.queue-state.json
 scripts/orchestrator/logs/
 scripts/orchestrator/node_modules/
+.playwright-mcp/
+scripts/audios/
+scripts/audiosv2/
+e2e/results/

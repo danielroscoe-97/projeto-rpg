@@ -1,157 +1,107 @@
 import { test, expect } from "@playwright/test";
-import { loginAs } from "../helpers/auth";
+import { dmSetupCombatSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 test.describe("P2 — DM Audio Controls", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, DM_PRIMARY);
-  });
+  test("DM audio controls button visible in active combat", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-  test("DM audio controls button is visible in combat toolbar", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Fighter", hp: "45", ac: "18", init: "15" },
+      { name: "Goblin", hp: "7", ac: "15", init: "10" },
+    ]);
 
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session");
-      return;
-    }
-
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-    const activeCombat = page.locator('[data-testid="active-combat"]');
-    if (!(await activeCombat.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active combat");
-      return;
-    }
-
-    // DM audio controls button should be in the toolbar
     await expect(
-      page.locator('[data-testid="dm-audio-controls-btn"]')
+      dmPage.locator('[data-testid="dm-audio-controls-btn"]')
     ).toBeVisible({ timeout: 5_000 });
+
+    await dmContext.close();
   });
 
-  test("DM audio popover opens on click", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
+  test("DM audio popover opens with volume and mute", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session");
-      return;
-    }
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Hero", hp: "40", ac: "16", init: "12" },
+    ]);
 
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-    const audioBtn = page.locator('[data-testid="dm-audio-controls-btn"]');
-    if (!(await audioBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No audio controls button");
-      return;
-    }
-
+    const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
+    await expect(audioBtn).toBeVisible({ timeout: 5_000 });
     await audioBtn.click();
 
-    // Popover should open with volume slider and mute toggle
-    await expect(page.locator('[data-testid="dm-audio-popover"]')).toBeVisible({
-      timeout: 3_000,
-    });
-    await expect(page.locator('[data-testid="dm-volume-slider"]')).toBeVisible();
-    await expect(page.locator('[data-testid="dm-mute-toggle"]')).toBeVisible();
+    await expect(dmPage.locator('[data-testid="dm-audio-popover"]')).toBeVisible({ timeout: 3_000 });
+    await expect(dmPage.locator('[data-testid="dm-volume-slider"]')).toBeVisible();
+    await expect(dmPage.locator('[data-testid="dm-mute-toggle"]')).toBeVisible();
+
+    await dmContext.close();
   });
 
-  test("DM volume slider changes value", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
+  test("DM volume slider changes value", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session");
-      return;
-    }
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "NPC", hp: "20", ac: "12", init: "8" },
+    ]);
 
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-    const audioBtn = page.locator('[data-testid="dm-audio-controls-btn"]');
-    if (!(await audioBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No audio controls");
-      return;
-    }
-
+    const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
     await audioBtn.click();
-    await expect(page.locator('[data-testid="dm-audio-popover"]')).toBeVisible();
+    await expect(dmPage.locator('[data-testid="dm-audio-popover"]')).toBeVisible();
 
-    const slider = page.locator('[data-testid="dm-volume-slider"]');
-    // Set volume to 30%
+    const slider = dmPage.locator('[data-testid="dm-volume-slider"]');
     await slider.fill("30");
 
-    // Verify the value changed
-    await expect(page.locator("text=30%")).toBeVisible({ timeout: 3_000 });
+    await expect(dmPage.locator("text=30%")).toBeVisible({ timeout: 3_000 });
+
+    await dmContext.close();
   });
 
-  test("DM mute toggle works", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
+  test("DM mute toggle works", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session");
-      return;
-    }
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Orc", hp: "15", ac: "13", init: "6" },
+    ]);
 
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-    const audioBtn = page.locator('[data-testid="dm-audio-controls-btn"]');
-    if (!(await audioBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No audio controls");
-      return;
-    }
-
+    const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
     await audioBtn.click();
-    await expect(page.locator('[data-testid="dm-audio-popover"]')).toBeVisible();
+    await expect(dmPage.locator('[data-testid="dm-audio-popover"]')).toBeVisible();
 
-    const muteToggle = page.locator('[data-testid="dm-mute-toggle"]');
+    const muteToggle = dmPage.locator('[data-testid="dm-mute-toggle"]');
     await muteToggle.click();
 
-    // Should show muted state — look for muted text or icon change
-    await expect(
-      page.locator('text=/silenciado|Muted|🔇/i')
-    ).toBeVisible({ timeout: 3_000 });
+    // Mute toggle button should show muted state text
+    await expect(muteToggle).toContainText(/silenciado|Muted/i, { timeout: 3_000 });
 
-    // Click again to unmute
+    // Unmute
     await muteToggle.click();
+    await dmPage.waitForTimeout(500);
 
-    // Should revert to unmuted
-    await page.waitForTimeout(500);
+    await dmContext.close();
   });
 
-  test("DM audio popover closes on click outside", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
+  test("Popover closes on click outside", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session");
-      return;
-    }
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Rat", hp: "4", ac: "10", init: "2" },
+    ]);
 
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-    const audioBtn = page.locator('[data-testid="dm-audio-controls-btn"]');
-    if (!(await audioBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No audio controls");
-      return;
-    }
-
-    // Open popover
+    const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
     await audioBtn.click();
-    await expect(page.locator('[data-testid="dm-audio-popover"]')).toBeVisible();
+    await expect(dmPage.locator('[data-testid="dm-audio-popover"]')).toBeVisible();
 
     // Click outside
-    await page.locator("body").click({ position: { x: 10, y: 10 } });
+    await dmPage.locator('[data-testid="active-combat"]').click({ position: { x: 10, y: 10 } });
 
-    // Popover should close
-    await expect(page.locator('[data-testid="dm-audio-popover"]')).not.toBeVisible({
+    await expect(dmPage.locator('[data-testid="dm-audio-popover"]')).not.toBeVisible({
       timeout: 3_000,
     });
+
+    await dmContext.close();
   });
 });

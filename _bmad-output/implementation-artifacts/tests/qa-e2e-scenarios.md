@@ -1,6 +1,6 @@
 # Documentacao Completa de QA — Cenarios E2E para Agente de IA
 
-**Projeto:** Taverna do Mestre (projeto-rpg)
+**Projeto:** Pocket DM (projeto-rpg)
 **Autor:** Quinn (QA Engineer) + Perspectiva UX Designer
 **Data:** 2026-03-27
 **Formato:** Given-When-Then (GWT) — otimizado para execucao por agente de IA no navegador

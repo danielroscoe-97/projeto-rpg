@@ -1,4 +1,4 @@
-# PRD: Estabilização & Simplificação da Taverna do Mestre
+# PRD: Estabilização & Simplificação da Pocket DM
 
 **Versão:** 1.0
 **Data:** 2026-03-27

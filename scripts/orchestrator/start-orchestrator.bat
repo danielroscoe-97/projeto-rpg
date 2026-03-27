@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 :start
 echo ========================================
-echo   BMAD Orchestrator - Taverna do Mestre
+echo   BMAD Orchestrator - Pocket DM
 echo ========================================
 echo.
 echo Verificando dependencias...

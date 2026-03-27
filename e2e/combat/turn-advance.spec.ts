@@ -1,110 +1,81 @@
 import { test, expect } from "@playwright/test";
 import { loginAs } from "../helpers/auth";
+import { dmSetupCombatSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 test.describe("P1 — Turn Advance & HP", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, DM_PRIMARY);
-  });
+  test("DM can advance turn in active combat", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-  test("DM can see active combat with initiative list", async ({ page }) => {
-    // Navigate to dashboard and find an active session
-    await page.goto("/app/dashboard");
-    await page.waitForLoadState("domcontentloaded");
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Fighter", hp: "45", ac: "18", init: "15" },
+      { name: "Goblin", hp: "7", ac: "15", init: "10" },
+    ]);
 
-    // Look for session link/card
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
-
-    if (await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await sessionLink.click();
-      await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-      // Check for active combat
-      const activeCombat = page.locator('[data-testid="active-combat"]');
-      if (await activeCombat.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        await expect(page.locator('[data-testid="initiative-list"]')).toBeVisible();
-      }
-    }
-  });
-
-  test("DM can advance turn", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
-
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session found");
-      return;
-    }
-
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
-
-    const nextTurnBtn = page.locator('[data-testid="next-turn-btn"]');
-
-    if (!(await nextTurnBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active combat — next turn button not visible");
-      return;
-    }
+    // Next turn button should be visible in active combat
+    const nextTurnBtn = dmPage.locator('[data-testid="next-turn-btn"]');
+    await expect(nextTurnBtn).toBeVisible({ timeout: 5_000 });
 
     // Click next turn
     await nextTurnBtn.click();
 
-    // Active combat should still be visible (turn just advanced)
-    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible();
-    await expect(page.locator('[data-testid="initiative-list"]')).toBeVisible();
+    // Active combat should still be visible
+    await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible();
+    await expect(dmPage.locator('[data-testid="initiative-list"]')).toBeVisible();
+
+    await dmContext.close();
   });
 
-  test("DM can open HP adjuster", async ({ page }) => {
-    await page.goto("/app/dashboard");
-    const sessionLink = page.locator('a[href*="/app/session/"]').first();
+  test("DM can open HP adjuster on a combatant", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-    if (!(await sessionLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No active session found");
-      return;
-    }
-
-    await sessionLink.click();
-    await page.waitForURL("**/app/session/**", { timeout: 10_000 });
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Warrior", hp: "50", ac: "16", init: "12" },
+      { name: "Orc", hp: "15", ac: "13", init: "8" },
+    ]);
 
     // Find HP button on any combatant
-    const hpBtn = page.locator('[data-testid^="hp-btn-"]').first();
-
-    if (!(await hpBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      test.skip(true, "No combatants with HP buttons");
-      return;
-    }
+    const hpBtn = dmPage.locator('[data-testid^="hp-btn-"]').first();
+    await expect(hpBtn).toBeVisible({ timeout: 5_000 });
 
     await hpBtn.click();
 
-    // HP adjuster modal/popover should appear
+    // HP adjuster should open
     await expect(
-      page.locator('[data-testid="hp-adjuster"], [data-testid="hp-adjust-input"], [role="dialog"]')
+      dmPage.locator('[data-testid="hp-adjuster"], [role="dialog"], .hp-adjust')
     ).toBeVisible({ timeout: 5_000 });
+
+    await dmContext.close();
   });
 
-  test("DM can end encounter", async ({ page }) => {
-    // Create a fresh session to test ending
-    await page.goto("/app/session/new");
-    await page.waitForURL("**/app/session/**", { timeout: 15_000 });
+  test("DM can end encounter", async ({ browser }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
 
-    const endBtn = page.locator('[data-testid="end-encounter-btn"]');
+    await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+      { name: "Hero", hp: "40", ac: "16", init: "18" },
+      { name: "Villain", hp: "50", ac: "14", init: "10" },
+    ]);
 
-    // End encounter may only be visible during active combat
-    if (await endBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await endBtn.click();
+    const endBtn = dmPage.locator('[data-testid="end-encounter-btn"]');
+    await expect(endBtn).toBeVisible({ timeout: 5_000 });
+    await endBtn.click();
 
-      // Confirmation dialog may appear
-      const confirmBtn = page.locator(
-        '[data-testid="confirm-end-encounter"], button:has-text("Confirmar"), button:has-text("Confirm"), button:has-text("Sim"), button:has-text("Yes")'
-      );
-      if (await confirmBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-        await confirmBtn.click();
-      }
-
-      // Active combat should disappear
-      await expect(page.locator('[data-testid="active-combat"]')).not.toBeVisible({
-        timeout: 10_000,
-      });
+    // Confirmation dialog may appear
+    const confirmBtn = dmPage.locator(
+      'button:has-text("Confirmar"), button:has-text("Confirm"), button:has-text("Sim"), button:has-text("Yes"), button:has-text("Finalizar")'
+    );
+    if (await confirmBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await confirmBtn.click();
     }
+
+    // Active combat should disappear
+    await expect(dmPage.locator('[data-testid="active-combat"]')).not.toBeVisible({
+      timeout: 10_000,
+    });
+
+    await dmContext.close();
   });
 });

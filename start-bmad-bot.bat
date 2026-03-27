@@ -1,8 +1,8 @@
 @echo off
-title BMAD Orchestrator - Taverna do Mestre
+title BMAD Orchestrator - Pocket DM
 echo.
 echo  ========================================
-echo   BMAD Orchestrator - Taverna do Mestre
+echo   BMAD Orchestrator - Pocket DM
 echo  ========================================
 echo.
 echo  NAO feche esta janela.

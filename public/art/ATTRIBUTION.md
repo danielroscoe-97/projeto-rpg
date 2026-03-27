@@ -1,7 +1,7 @@
 # Art Asset Attribution
 
 All visual assets in this directory are sourced from the Ragnarok Online reference material
-located in `/referencia visual/ro-modern/`. These assets are used for the "Taverna do Mestre"
+located in `/referencia visual/ro-modern/`. These assets are used for the "Pocket DM"
 D&D 5e combat tracker to provide RPG atmosphere.
 
 ## Asset Sources

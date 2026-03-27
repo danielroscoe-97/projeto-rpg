@@ -151,9 +151,9 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "https://tavernadomestre.vercel.app"
+site_url = "https://pocketdm.app"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://localhost:3000/**", "https://tavernadomestre.vercel.app/**"]
+additional_redirect_urls = ["http://localhost:3000/**", "https://pocketdm.app/**", "https://tavernadomestre.vercel.app/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -225,27 +225,27 @@ otp_expiry = 3600
 # port = 465
 # user = "resend"
 # pass = "env(RESEND_API_KEY)"
-# admin_email = "contato@tavernadomestre.vercel.app"
-# sender_name = "Taverna do Mestre"
+# admin_email = "contato@pocketdm.com.br"
+# sender_name = "Pocket DM"
 
 [auth.email.template.invite]
-subject = "Você foi convidado — Taverna do Mestre"
+subject = "Você foi convidado — Pocket DM"
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.confirmation]
-subject = "Confirme sua conta — Taverna do Mestre"
+subject = "Confirme sua conta — Pocket DM"
 content_path = "./supabase/templates/confirm-signup.html"
 
 [auth.email.template.recovery]
-subject = "Redefinir senha — Taverna do Mestre"
+subject = "Redefinir senha — Pocket DM"
 content_path = "./supabase/templates/reset-password.html"
 
 [auth.email.template.magic_link]
-subject = "Seu link de acesso — Taverna do Mestre"
+subject = "Seu link de acesso — Pocket DM"
 content_path = "./supabase/templates/magic-link.html"
 
 [auth.email.template.email_change]
-subject = "Confirmar novo email — Taverna do Mestre"
+subject = "Confirmar novo email — Pocket DM"
 content_path = "./supabase/templates/change-email.html"
 
 [auth.sms]

@@ -58,7 +58,7 @@ so that I can focus on the physical table and still know when to act.
 
 ### Context
 
-This is the #1 DIFFERENTIATOR of Taverna do Mestre. Players at physical tables look at their phones only when needed. `TurnNotificationOverlay.tsx` and `TurnUpcomingBanner.tsx` exist but Novu is not configured. Framer Motion is installed.
+This is the #1 DIFFERENTIATOR of Pocket DM. Players at physical tables look at their phones only when needed. `TurnNotificationOverlay.tsx` and `TurnUpcomingBanner.tsx` exist but Novu is not configured. Framer Motion is installed.
 
 ### Anti-Patterns
 

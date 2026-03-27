@@ -2,7 +2,7 @@
 
 ## Epic Overview
 
-Implementar o funil completo de aquisição → ativação → conversão → retenção para o modelo freemium da Taverna do Mestre. Isso inclui: discovery e integração de plataforma de pagamento (Stripe), sistema de tiers (Free/Pro), gates de features Pro, momentos de upsell contextual ("aha moments"), página de pricing, gerenciamento de assinatura, e webhooks de billing.
+Implementar o funil completo de aquisição → ativação → conversão → retenção para o modelo freemium da Pocket DM. Isso inclui: discovery e integração de plataforma de pagamento (Stripe), sistema de tiers (Free/Pro), gates de features Pro, momentos de upsell contextual ("aha moments"), página de pricing, gerenciamento de assinatura, e webhooks de billing.
 
 O mestre Free usa o combat tracker efêmero. Quando tenta salvar campanha, exportar, ou usar features avançadas, encontra nudges contextuais que o levam à assinatura Pro (R$ 14,90/mês ou R$ 119,90/ano).
 

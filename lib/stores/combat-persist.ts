@@ -1,6 +1,23 @@
 import type { EncounterState } from "@/lib/types/combat";
 
-const STORAGE_KEY = "taverna_combat_backup";
+// Migration: read old key on first access, copy to new key, delete old
+const LEGACY_STORAGE_KEY = "taverna_combat_backup";
+const STORAGE_KEY = "pocketdm_combat_backup";
+
+function migrateStorageKey(): void {
+  try {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem(STORAGE_KEY)) return;
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacy) {
+      localStorage.setItem(STORAGE_KEY, legacy);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    }
+  } catch { /* ignore */ }
+}
+
+// Run migration eagerly on module load (client only)
+if (typeof window !== "undefined") migrateStorageKey();
 
 /** Persist combat state to localStorage for crash/offline recovery. */
 export function saveCombatBackup(state: EncounterState): void {

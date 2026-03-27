@@ -182,7 +182,7 @@ So that the app adapts its dashboard and features to how I use it.
 
 **Given** um novo usuário no fluxo de signup em `/auth/sign-up`
 **When** o usuário completa email e senha e clica em "Criar Conta"
-**Then** uma etapa adicional é apresentada: "Como você vai usar o Taverna do Mestre?"
+**Then** uma etapa adicional é apresentada: "Como você vai usar o Pocket DM?"
 **And** três opções são exibidas como cards selecionáveis: "Jogador", "Mestre", "Ambos"
 **And** a opção "Ambos" está selecionada por padrão
 

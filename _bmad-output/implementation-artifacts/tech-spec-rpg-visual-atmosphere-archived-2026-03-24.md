@@ -18,7 +18,7 @@ test_patterns: ['Jest 30 + @testing-library/react 16', 'Lighthouse performance >
 
 ### Problem Statement
 
-The Taverna do Mestre has a solid dark RPG CSS theme (gold/navy, noise texture, radial gradients) but zero actual artwork — no images, no sprites, no illustrations. The `public/` folder contains only SRD JSON data. Feature cards on the landing page use plain emojis (⚔️📱📖). The app feels functional but not immersive. It lacks the fantasy atmosphere that draws DMs in and makes the tool feel like it belongs in their RPG world.
+The Pocket DM has a solid dark RPG CSS theme (gold/navy, noise texture, radial gradients) but zero actual artwork — no images, no sprites, no illustrations. The `public/` folder contains only SRD JSON data. Feature cards on the landing page use plain emojis (⚔️📱📖). The app feels functional but not immersive. It lacks the fantasy atmosphere that draws DMs in and makes the tool feel like it belongs in their RPG world.
 
 ### Solution
 
@@ -239,7 +239,7 @@ Tasks are ordered by dependency (infrastructure first, then integration points f
     ```tsx
     <div className="flex items-center gap-2">
       <Image src="/art/icons/d20.png" alt="" width={20} height={20} className="pixel-art opacity-60" aria-hidden="true" />
-      <span className="font-display text-gold text-lg">Taverna do Mestre</span>
+      <span className="font-display text-gold text-lg">Pocket DM</span>
     </div>
     ```
   - Notes: Slightly smaller (20x20) and lower opacity than navbar to maintain footer subtlety.

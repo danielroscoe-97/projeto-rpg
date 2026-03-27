@@ -16,7 +16,7 @@ techniques_used:
 context_file: ""
 ---
 
-# Radiografia Completa — Taverna do Mestre V1+V2
+# Radiografia Completa — Pocket DM V1+V2
 
 **Facilitador:** Dani_
 **Data:** 2026-03-27
@@ -26,7 +26,7 @@ context_file: ""
 
 ## 1. Proposta de Valor (Âncora de Decisão)
 
-> O Taverna do Mestre **NÃO é um VTT completo**. É o sweet spot perfeito entre experiência física e digital — tanto para o mestre quanto para os jogadores.
+> O Pocket DM **NÃO é um VTT completo**. É o sweet spot perfeito entre experiência física e digital — tanto para o mestre quanto para os jogadores.
 
 **Implicações para toda decisão:**
 

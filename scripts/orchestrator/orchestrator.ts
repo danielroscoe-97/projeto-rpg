@@ -766,7 +766,7 @@ async function executeSmokeTest(): Promise<void> {
  */
 async function executeChat(input: string): Promise<void> {
   const result = await runClaude({
-    prompt: `Você é o BMAD Orchestrator do projeto "Taverna do Mestre" (combat tracker D&D 5e).
+    prompt: `Você é o BMAD Orchestrator do projeto "Pocket DM" (combat tracker D&D 5e).
 Responda em português brasileiro, conciso e útil. Você tem acesso ao codebase.
 
 ## Seu Time BMAD (você pode assumir a persona de qualquer um)

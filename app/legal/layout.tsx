@@ -16,7 +16,7 @@ export default function LegalLayout({
         Skip to main content
       </a>
       <Navbar
-        brand="Taverna do Mestre"
+        brand="Pocket DM"
         brandHref="/"
         rightSlot={
           <>

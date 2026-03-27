@@ -15,7 +15,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Taverna do Mestre — Combat Tracker D&D 5e",
+  title: "Pocket DM — Combat Tracker D&D 5e",
   description: "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP e condições em tempo real.",
 };
 

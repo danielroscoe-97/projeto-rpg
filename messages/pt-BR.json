@@ -24,7 +24,7 @@
     "slow_update_mode": "Modo de atualização lenta ativado"
   },
   "nav": {
-    "brand": "Taverna do Mestre",
+    "brand": "Pocket DM",
     "dashboard": "Dashboard",
     "compendium": "Compêndio",
     "monsters": "Monstros",
@@ -38,7 +38,7 @@
     "skip_content": "Pular para conteúdo principal",
     "open_menu": "Abrir menu",
     "close_menu": "Fechar menu",
-    "footer_brand": "Taverna do Mestre",
+    "footer_brand": "Pocket DM",
     "footer_subtitle": "Combat tracker para mestres de D&D 5e",
     "footer_signup": "Criar Conta",
     "footer_srd_notice": "Utiliza o System Reference Document 5.1 e 5.2 sob a",
@@ -101,7 +101,7 @@
     "tab_signup": "Criar Conta"
   },
   "signup": {
-    "role_selection_title": "Como você vai usar o Taverna do Mestre?",
+    "role_selection_title": "Como você vai usar o Pocket DM?",
     "role_selection_subtitle": "Você pode alterar isso depois nas configurações",
     "role_player": "Jogador",
     "role_dm": "Mestre",
@@ -852,7 +852,7 @@
     "import_discard": "Descartar",
     "import_encounter_name": "Encontro Importado",
     "import_error": "Falha ao importar encontro. Tente novamente.",
-    "footer_enjoyed": "Curtiu a Taverna?",
+    "footer_enjoyed": "Curtiu o Pocket DM?",
     "footer_create_account": "Crie sua conta e salve suas campanhas →",
     "save_requires_account": "Salvar (requer conta)",
     "share_requires_account": "Compartilhar (requer conta)"

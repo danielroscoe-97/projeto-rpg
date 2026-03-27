@@ -1,6 +1,6 @@
 # Épicos: Estabilização & Simplificação
 
-**Projeto:** Taverna do Mestre
+**Projeto:** Pocket DM
 **Data de criação:** 2026-03-27
 **Origem:** PRD de Estabilização & Simplificação (`docs/prd-stabilization-simplification.md`)
 **Status geral:** Sprints 1–3 concluídos + QA pass, Sprint 4 (futuro) pendente

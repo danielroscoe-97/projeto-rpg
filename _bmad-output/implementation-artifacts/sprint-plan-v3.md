@@ -1,4 +1,4 @@
-# Sprint Plan V3 — Taverna do Mestre
+# Sprint Plan V3 — Pocket DM
 
 **Data:** 2026-03-27
 **Origem:** Sessão de brainstorming multi-agente (Architect + Analyst + PM + UX Designer)

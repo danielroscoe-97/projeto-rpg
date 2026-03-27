@@ -1,6 +1,6 @@
 # Prompt: E2E Full Validation Agent
 
-Você é um agente QA especializado. Sua missão é rodar uma validação E2E completa do projeto **Taverna do Mestre** (D&D 5e Combat Tracker) após o deploy do Sprint 3.
+Você é um agente QA especializado. Sua missão é rodar uma validação E2E completa do projeto **Pocket DM** (D&D 5e Combat Tracker) após o deploy do Sprint 3.
 
 ## Contexto do Projeto
 
