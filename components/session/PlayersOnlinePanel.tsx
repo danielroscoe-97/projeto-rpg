@@ -2,6 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { Users } from "lucide-react";
+import { LinkPlayerCharacterDialog } from "@/components/session/LinkPlayerCharacterDialog";
+import type { PlayerCharacter } from "@/lib/types/database";
 
 export interface OnlinePlayer {
   id: string;
@@ -9,18 +11,25 @@ export interface OnlinePlayer {
   isOnline: boolean;
   characterName?: string;
   joinedAt: string;
+  linkedCharacterId?: string | null;
 }
 
 interface PlayersOnlinePanelProps {
   players: OnlinePlayer[];
+  /** Campaign characters available for linking (DM only) */
+  availableCharacters?: PlayerCharacter[];
+  /** Called when DM links/unlinks a player to a character */
+  onLinkCharacter?: (tokenId: string, characterId: string | null) => Promise<void>;
 }
 
-export function PlayersOnlinePanel({ players }: PlayersOnlinePanelProps) {
+export function PlayersOnlinePanel({ players, availableCharacters, onLinkCharacter }: PlayersOnlinePanelProps) {
   const t = useTranslations("combat");
 
   if (players.length === 0) return null;
 
   const onlineCount = players.filter((p) => p.isOnline).length;
+  // Characters already linked to other players — exclude from available list
+  const linkedCharIds = new Set(players.map((p) => p.linkedCharacterId).filter(Boolean));
 
   return (
     <div
@@ -46,13 +55,25 @@ export function PlayersOnlinePanel({ players }: PlayersOnlinePanelProps) {
               }`}
               aria-label={player.isOnline ? t("player_status_online") : t("player_status_offline")}
             />
-            <span className={player.isOnline ? "text-foreground" : "text-muted-foreground"}>
+            <span className={`flex-1 ${player.isOnline ? "text-foreground" : "text-muted-foreground"}`}>
               {player.characterName || player.name}
             </span>
-            {!player.characterName && (
+            {!player.characterName && !player.linkedCharacterId && (
               <span className="text-muted-foreground/60 text-xs">
                 ({t("player_guest_label")})
               </span>
+            )}
+            {/* DM link/unlink button */}
+            {onLinkCharacter && availableCharacters && (
+              <LinkPlayerCharacterDialog
+                tokenId={player.id}
+                playerName={player.name}
+                availableCharacters={availableCharacters.filter(
+                  (c) => c.id === player.linkedCharacterId || !linkedCharIds.has(c.id)
+                )}
+                linkedCharacterId={player.linkedCharacterId ?? null}
+                onLink={onLinkCharacter}
+              />
             )}
           </li>
         ))}

@@ -240,3 +240,33 @@ export async function persistTurnAdvance(
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) throw new Error("Encounter not found.");
 }
+
+/**
+ * Link a guest player's session token to a campaign character.
+ * This allows the DM to assign a character to a temp/QR player.
+ */
+export async function linkPlayerToCharacter(
+  tokenId: string,
+  characterId: string
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("session_tokens")
+    .update({ player_character_id: characterId })
+    .eq("id", tokenId);
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * Unlink a guest player's session token from a campaign character.
+ */
+export async function unlinkPlayerFromCharacter(
+  tokenId: string
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("session_tokens")
+    .update({ player_character_id: null })
+    .eq("id", tokenId);
+  if (error) throw new Error(error.message);
+}

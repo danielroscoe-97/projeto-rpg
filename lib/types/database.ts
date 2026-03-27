@@ -500,6 +500,7 @@ export interface Database {
           is_active: boolean;
           created_at: string;
           last_seen_at: string | null;
+          player_character_id: string | null;
         };
         Insert: {
           id?: string;
@@ -510,6 +511,7 @@ export interface Database {
           is_active?: boolean;
           created_at?: string;
           last_seen_at?: string | null;
+          player_character_id?: string | null;
         };
         Update: {
           session_id?: string;
@@ -518,6 +520,7 @@ export interface Database {
           anon_user_id?: string | null;
           is_active?: boolean;
           last_seen_at?: string | null;
+          player_character_id?: string | null;
         };
       };
     };
