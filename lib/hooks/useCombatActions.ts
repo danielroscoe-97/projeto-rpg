@@ -309,6 +309,23 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [onNavigate, setError, getSessionId]);
 
+  const handleUndoLastAdd = useCallback(() => {
+    const removedId = useCombatStore.getState().undoLastAdd();
+    if (!removedId) return;
+
+    const postState = useCombatStore.getState();
+    const reordered = assignInitiativeOrder(postState.combatants);
+    postState.hydrateCombatants(reordered);
+
+    broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: removedId });
+    persistRemoveCombatant(removedId).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    if (reordered.length > 0) {
+      persistInitiativeOrder(
+        reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+      ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    }
+  }, [setError, getSessionId]);
+
   return {
     turnPending,
     handleAdvanceTurn,
@@ -325,6 +342,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     handleSwitchVersion,
     handleUpdateDmNotes,
     handleUpdatePlayerNotes,
+    handleUndoLastAdd,
     handleEndEncounter,
     getSessionId,
   };

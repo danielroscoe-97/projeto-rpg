@@ -53,6 +53,8 @@ export interface EncounterState {
   is_loading: boolean;
   error: string | null;
   hpUndoStack: HpUndoEntry[];
+  /** ID of the last combatant added mid-combat (for undo). */
+  lastAddedCombatantId: string | null;
   /** Client-side only: which monster groups are expanded (default collapsed). */
   expandedGroups: Record<string, boolean>;
 }
@@ -108,4 +110,6 @@ export interface CombatActions {
   linkCharacter: (combatantId: string, characterId: string, stats: { name: string; max_hp: number; ac: number; spell_save_dc: number | null }) => void;
   /** Unlink a player from their campaign character. */
   unlinkCharacter: (combatantId: string) => void;
+  /** Undo the last mid-combat combatant addition (removes combatant). Returns removed ID or null. */
+  undoLastAdd: () => string | null;
 }

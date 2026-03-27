@@ -27,6 +27,7 @@ const baseCombatant: Omit<Combatant, "id"> = {
   group_order: null,
   dm_notes: "",
   player_notes: "",
+  player_character_id: null,
 };
 
 describe("useCombatStore – addCombatant", () => {
@@ -479,5 +480,71 @@ describe("useCombatStore – setRulesetVersion", () => {
     const id = useCombatStore.getState().combatants[0].id;
     useCombatStore.getState().setRulesetVersion(id, "2024");
     expect(useCombatStore.getState().combatants[1].ruleset_version).toBe("2014");
+  });
+});
+
+// === Story B1-1: Add Combatant Mid-Combat ===
+describe("useCombatStore – addCombatant mid-combat (lastAddedCombatantId)", () => {
+  it("tracks lastAddedCombatantId when combat is active", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Hero", initiative: 10 });
+    useCombatStore.getState().startCombat();
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Reinforcement", initiative: 15 });
+    const state = useCombatStore.getState();
+    expect(state.lastAddedCombatantId).toBeTruthy();
+    const added = state.combatants.find((c) => c.id === state.lastAddedCombatantId);
+    expect(added?.name).toBe("Reinforcement");
+  });
+
+  it("does not track lastAddedCombatantId when combat is not active", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    expect(useCombatStore.getState().lastAddedCombatantId).toBeNull();
+  });
+
+  it("updates lastAddedCombatantId on subsequent adds", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Hero", initiative: 10 });
+    useCombatStore.getState().startCombat();
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "First", initiative: 12 });
+    const firstId = useCombatStore.getState().lastAddedCombatantId;
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Second", initiative: 8 });
+    const secondId = useCombatStore.getState().lastAddedCombatantId;
+    expect(secondId).not.toBe(firstId);
+    const added = useCombatStore.getState().combatants.find((c) => c.id === secondId);
+    expect(added?.name).toBe("Second");
+  });
+});
+
+describe("useCombatStore – undoLastAdd", () => {
+  it("removes the last added combatant and returns its id", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Hero", initiative: 10 });
+    useCombatStore.getState().startCombat();
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Reinforcement", initiative: 15 });
+    expect(useCombatStore.getState().combatants).toHaveLength(2);
+
+    const removedId = useCombatStore.getState().undoLastAdd();
+    expect(removedId).toBeTruthy();
+    expect(useCombatStore.getState().combatants).toHaveLength(1);
+    expect(useCombatStore.getState().combatants[0].name).toBe("Hero");
+  });
+
+  it("clears lastAddedCombatantId after undo", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Hero", initiative: 10 });
+    useCombatStore.getState().startCombat();
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Reinforcement", initiative: 15 });
+    useCombatStore.getState().undoLastAdd();
+    expect(useCombatStore.getState().lastAddedCombatantId).toBeNull();
+  });
+
+  it("returns null when nothing to undo", () => {
+    const result = useCombatStore.getState().undoLastAdd();
+    expect(result).toBeNull();
+  });
+
+  it("returns null on second call (only one undo)", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Hero", initiative: 10 });
+    useCombatStore.getState().startCombat();
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "Reinforcement", initiative: 15 });
+    useCombatStore.getState().undoLastAdd();
+    const result = useCombatStore.getState().undoLastAdd();
+    expect(result).toBeNull();
   });
 });
