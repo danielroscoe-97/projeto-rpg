@@ -1,3 +1,18 @@
+---
+classification:
+  domain: consumer_app
+  projectType: web_app
+inputDocuments:
+  - _bmad-output/planning-artifacts/prd.md
+  - _bmad-output/planning-artifacts/product-brief-projeto-rpg-2026-03-23.md
+  - docs/monetization-strategy.md
+  - docs/analytics-technical-spec.md
+date: 2026-03-27
+author: Dani_
+version: '2.0'
+status: Draft
+---
+
 # Product Requirements Document V2 — Taverna do Mestre
 
 **Autor:** Dani_
@@ -27,9 +42,21 @@
 
 ## 1. Executive Summary
 
+### O Problema
+
+DMs e jogadores em mesas presenciais não têm uma ferramenta unificada para gerenciar combate. Rodar uma sessão exige alternar entre combat tracker, referências de monstros, fichas de personagens e lookup de regras — nenhum deles se comunica. A carga cognitiva recai sobre o DM, quebra a imersão, e é o principal ponto de fricção no jogo presencial.
+
 ### O Que É
 
 Taverna do Mestre é um **combat tracker gratuito para D&D 5e**, focado em jogo presencial. O DM gerencia combate no laptop; jogadores acompanham pelo celular em tempo real. Não é um VTT — é o cérebro do mestre: estado de combate + referência de regras + dados dos jogadores, tudo numa tela.
+
+### Diferenciadores
+
+1. **Visão unificada de combate** — monstros e jogadores na mesma tela, sem trocar de aba
+2. **Oracle in-session** — referência de regras dentro da experiência de combate
+3. **Presencial-first** — UX otimizada para tablet/laptop na mesa física
+4. **Anti-metagaming** — jogadores NUNCA veem dados numéricos exatos de monstros (HP, AC, DC). Veem apenas labels de status (LIGHT/MODERATE/HEAVY/CRITICAL)
+5. **Speed-to-play** — abrir app, iniciar sessão, zero fricção
 
 ### O Que Mudou Desde V1
 
@@ -58,10 +85,6 @@ O MVP foi **entregue e está em produção**. O app já tem:
 - **Free:** Combat tracker completo, player view, compendium SRD, spell oracle, guest mode
 - **Pro (R$ 14,90/mês):** Campanhas persistentes, encounter builder avançado, player view premium, export, homebrew, analytics de sessão
 - **Modelo "Mesa":** Uma assinatura do mestre → features Pro para toda a mesa conectada
-
-### Proposta de Valor (Inalterada)
-
-**Anti-metagaming** — jogadores NUNCA veem dados numéricos exatos de monstros (HP, AC, DC). Veem apenas labels de status (LIGHT/MODERATE/HEAVY/CRITICAL). Isso é o core e não muda.
 
 ---
 
@@ -144,7 +167,7 @@ Landing Page (/)
 └─→ [Scan QR / Link] → /join/[token] (Player)
     └─→ Anon sign-in → PlayerLobby
         └─→ Registrar nome + iniciativa
-            └─→ PlayerInitiativeBoard (combate ativo)
+            └─→ PlayerInitiativeBoard (combate ativo) + capacidade de linkar players anon com monstros no combate ou na campanha naquela sessão
 ```
 
 ### 3.2. Fluxo de Free Combat
@@ -276,32 +299,33 @@ Jogador recebe link/QR do mestre
 - **FR42:** DM pode adicionar novos monstros ou jogadores a um encontro que já está em andamento (mid-combat add), sem interromper o turno atual
 - **FR43:** DM pode definir um "display name" para cada monstro, que é o nome visível para jogadores. O nome real do monstro (do SRD) fica visível apenas para o DM
 - **FR44:** DM pode agrupar múltiplos monstros sob uma única entrada de iniciativa (ex: "3 Goblins" rolam juntos)
-- **FR45:** Grupos de monstros compartilham a mesma iniciativa mas mantêm HP individual
+- **FR45:** DM pode gerenciar grupos de monstros que compartilham a mesma iniciativa mas mantêm HP individual
 - **FR46:** DM pode expandir/colapsar grupos de monstros na lista de combate
 
 ### Player Experience
 
 - **FR47:** Jogador que entra em uma sessão já iniciada (late-join) pode registrar seu nome, HP, AC e iniciativa — o mestre recebe notificação e pode aceitar a inserção na ordem de iniciativa
-- **FR48:** Quando o turno de um jogador se aproxima (1 turno antes), a interface do jogador exibe uma notificação visual "Você é o próximo"
-- **FR49:** Quando é a vez do jogador, a interface exibe uma notificação visual proeminente "É sua vez!" com destaque visual (animação, cor, som opcional)
+- **FR48:** Jogador recebe uma notificação visual "Você é o próximo" quando falta 1 turno para sua vez
+- **FR49:** Jogador recebe uma notificação visual "É sua vez!" com animação de destaque, mudança de cor de fundo, e som opcional configurável
 - **FR50:** Jogador que se cadastra pode se identificar como "Jogador", "Mestre" ou "Ambos" durante o signup
-- **FR51:** Jogador cadastrado pode ter seu personagem vinculado a uma campanha do mestre automaticamente
+- **FR51:** Jogador cadastrado pode ter seu personagem vinculado a uma campanha do mestre ao aceitar convite ou entrar via QR code
+- **FR51b:** Jogador cadastrado que entra em uma sessão ativa aparece automaticamente na tela do DM sem necessidade de ação manual do mestre (auto-join)
 
 ### Session & Campaign Management
 
 - **FR52:** DM pode criar, editar e visualizar notas privadas dentro de uma sessão ativa (visíveis apenas para o DM, nunca broadcast)
 - **FR53:** DM pode compartilhar arquivos (imagens, PDFs) com jogadores conectados na sessão
 - **FR54:** DM pode convidar jogadores para uma campanha via email — o convite inclui link para criar conta
-- **FR55:** Quando um jogador aceita o convite e cria conta, seu personagem é automaticamente vinculado à campanha do mestre
+- **FR55:** Jogador que aceita o convite e cria conta tem seu personagem vinculado à campanha do mestre automaticamente
 - **FR56:** DM Pro pode atribuir um player character da campanha a um jogador que entrou via QR code (jogador temporário → personagem persistente)
 
 ### Feature Gating (Freemium)
 
-- **FR57:** Features exclusivas Pro são visíveis no tier Free com indicador visual de cadeado + tooltip explicativo
-- **FR58:** Ao tentar usar uma feature Pro no tier Free, o sistema exibe um upsell contextual (nunca pop-up aleatório)
-- **FR59:** O sistema suporta trial grátis com duração configurável (default: 14 dias)
-- **FR60:** Uma assinatura Pro do mestre desbloqueia features Pro para todos os jogadores conectados à sessão ativa (modelo "Mesa")
-- **FR61:** O sistema diferencia claramente entre funcionalidades que exigem Pro e aquelas disponíveis no Free
+- **FR57:** Usuário Free pode ver features exclusivas Pro com ícone de cadeado e tooltip "Disponível no plano Pro" em cada feature bloqueada
+- **FR58:** Usuário Free que tenta usar uma feature Pro recebe um upsell contextual inline (nunca pop-up aleatório ou não-solicitado)
+- **FR59:** DM pode ativar um trial grátis com duração configurável (default: 14 dias) que desbloqueia todas as features Pro
+- **FR60:** DM Pro pode desbloquear features Pro para todos os jogadores conectados à sessão ativa com uma única assinatura (modelo "Mesa")
+- **FR61:** Usuário Free pode distinguir features Pro de features Free por meio de ícones de cadeado, tooltips, e labels "Pro" consistentes em toda a interface
 
 ### Encounter Builder (Pro)
 
@@ -310,14 +334,21 @@ Jogador recebe link/QR do mestre
 
 ---
 
-## 5. Non-Functional Requirements (Novos — NFR29 a NFR34)
+## 5. Non-Functional Requirements (Novos — NFR29 a NFR38)
 
-- **NFR29:** Feature flags implementadas via configuração server-side para controle granular de funcionalidades Pro vs Free, sem necessidade de redeploy
-- **NFR30:** Sistema de convite por email com rate limiting (máximo 20 convites por DM por dia) para prevenir spam
-- **NFR31:** Notificações visuais de turno (FR48, FR49) devem aparecer em ≤200ms após o broadcast do DM, sem polling adicional — usar o canal realtime existente
-- **NFR32:** Upload de arquivos em sessão (FR53) limitado a 10MB por arquivo, com validação de tipo (imagens + PDF apenas) e scan de malware
-- **NFR33:** Display names de monstros (FR43) são sanitizados server-side antes de broadcast para prevenir XSS
-- **NFR34:** O modelo "Mesa" (FR60) valida a assinatura do DM em real-time via Supabase RLS — se a assinatura expirar mid-session, features Pro continuam até o fim da sessão ativa (graceful degradation)
+- **NFR29:** Feature flags devem resolver em ≤500ms, sem downtime para alterar configuração de funcionalidades Pro vs Free. Rollback de uma flag em ≤1 minuto. Medido via logs de deploy e latência de feature resolution.
+- **NFR30:** Sistema de convite por email com rate limiting (máximo 20 convites por DM por dia) para prevenir spam. Medido via contagem de convites por DM no período de 24h.
+- **NFR31:** Notificações visuais de turno (FR48, FR49) devem aparecer em ≤200ms após a ação do DM, via canal de comunicação existente sem requests adicionais do cliente. Medido via timestamp delta entre ação do DM e renderização no cliente.
+- **NFR32:** Upload de arquivos em sessão (FR53) limitado a 10MB por arquivo, com validação de tipo (imagens + PDF apenas) e verificação de conteúdo malicioso antes de disponibilizar para download. Medido via testes de upload com arquivos acima do limite e tipos inválidos.
+- **NFR33:** 100% dos display names de monstros (FR43) são sanitizados contra OWASP XSS Top 10 antes de serem visíveis para outros usuários. Verificado via testes automatizados com payloads XSS conhecidos.
+- **NFR34:** O modelo "Mesa" (FR60) valida a assinatura do DM em real-time via row-level security policies. Se a assinatura expirar mid-session, features Pro continuam até o fim da sessão ativa (graceful degradation). Verificado via integration test com expiração de assinatura simulada.
+
+### Platform & Quality Requirements
+
+- **NFR35:** Browsers suportados: Chrome ≥120, Firefox ≥120, Safari ≥17, Edge ≥120. Funcionalidade core (combat tracker, player view) deve funcionar sem degradação nesses browsers.
+- **NFR36:** Performance targets (Core Web Vitals): LCP ≤2.5s, FID ≤100ms, CLS ≤0.1 para páginas principais (dashboard, combat view, player view). Medido via Lighthouse CI em cada deploy.
+- **NFR37:** Acessibilidade: WCAG 2.1 AA como target mínimo. Todos os controles de combate devem ser operáveis via teclado. Aria-live regions para updates realtime. Medido via axe-core em CI.
+- **NFR38:** Responsive breakpoints: mobile (≤768px), tablet (769–1024px), desktop (≥1025px). Player view otimizada para mobile; DM view otimizada para desktop/tablet.
 
 ---
 
@@ -415,7 +446,7 @@ Jogador recebe link/QR do mestre
 |-------|-----------|-----|---------|
 | 3.1 | Notificação visual "você é o próximo" | FR48, NFR31 | 3h |
 | 3.2 | Notificação visual "é sua vez!" | FR49, NFR31 | 3h |
-| 3.3 | Player auto-join (loga → aparece na tela do mestre) | FR51 | 6h |
+| 3.3 | Player auto-join (loga → aparece na tela do mestre) | FR51b | 6h |
 | 3.4 | Diferenciação de cadastro jogador vs mestre | FR50 | 4h |
 | 3.5 | Mestre atribui player da campanha ao jogador temporário | FR56 | 5h |
 
@@ -442,7 +473,7 @@ Jogador recebe link/QR do mestre
 
 | Story | Descrição | FRs/NFRs | Esforço |
 |-------|-----------|----------|---------|
-| 5.1 | Sistema de feature flags (server-side) | NFR29 | 6h |
+| 5.1 | Sistema de feature flags com rollback rápido | NFR29 | 6h |
 | 5.2 | Indicadores visuais Pro no tier Free (cadeado + tooltip) | FR57 | 4h |
 | 5.3 | Upsell contextual ao tentar usar feature Pro | FR58 | 4h |
 | 5.4 | Trial grátis (14 dias configurável) | FR59 | 6h |
@@ -567,11 +598,11 @@ Estas ideias vieram das transcrições de áudio e ficam no backlog de longo pra
 
 ## 12. Functional Requirements Completos (V1 Mantidos)
 
-Todos os FRs do PRD V1 (FR1–FR41) continuam válidos e implementados. Os novos FRs (FR42–FR63) foram adicionados na Seção 4 acima.
+Todos os FRs do PRD V1 (FR1–FR41) continuam válidos e implementados. Os novos FRs (FR42–FR63, FR51b) foram adicionados na Seção 4 acima.
 
 ## 13. Non-Functional Requirements Completos (V1 Mantidos)
 
-Todos os NFRs do PRD V1 (NFR1–NFR28) continuam válidos. Os novos NFRs (NFR29–NFR34) foram adicionados na Seção 5 acima.
+Todos os NFRs do PRD V1 (NFR1–NFR28) continuam válidos. Os novos NFRs (NFR29–NFR38) foram adicionados na Seção 5 acima.
 
 ---
 
