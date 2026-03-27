@@ -647,7 +647,16 @@ function transformMonster(
     special_abilities = [...(traits || []), ...(spellcastingActions || [])];
   }
 
-  const tokenUrl = `${TOKEN_BASE_URL}/${sourceCode}/${encodeURIComponent(name)}.webp`;
+  // 5etools-img filenames strip quotes, expand ligatures, and normalize accents
+  const tokenName = name
+    .replace(/[""]/g, "")
+    .replace(/æ/g, "ae")
+    .replace(/Æ/g, "AE")
+    .replace(/œ/g, "oe")
+    .replace(/Œ/g, "OE")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const tokenUrl = `${TOKEN_BASE_URL}/${sourceCode}/${encodeURIComponent(tokenName)}.webp`;
 
   return {
     id,

@@ -1,0 +1,1 @@
+Não está dando para adicionar monstro no meio do combate, a gente tem que também conseguir esconder o nome dos monstro dentro do combate e o mestre. Ele tem que considerar o nome do monstro que os jogadores vão ver. Vota a fé na tela deles, eles não saberem que monstro é. Que malas.
