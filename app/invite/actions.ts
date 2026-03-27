@@ -42,7 +42,7 @@ export async function acceptInviteAction(data: AcceptInviteData) {
   const { error: charError } = await service
     .from("player_characters")
     .insert({
-      campaign_id: data.campaignId,
+      campaign_id: invite.campaign_id,
       name: data.name,
       max_hp: data.maxHp,
       current_hp: data.currentHp,

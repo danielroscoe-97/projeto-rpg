@@ -156,23 +156,20 @@ export function getAllItems(): SrdItem[] {
  */
 export function mergeHomebrewMonsters(homebrew: SrdMonster[]): void {
   if (!monsterIndex) return;
-  const all = [...Array.from(monsterMap.values()), ...homebrew];
-  monsterIndex = new Fuse(all, MONSTER_OPTIONS);
   homebrew.forEach((m) => monsterMap.set(`${m.id}:${m.ruleset_version}`, m));
+  monsterIndex = new Fuse(Array.from(monsterMap.values()), MONSTER_OPTIONS);
 }
 
 export function mergeHomebrewSpells(homebrew: SrdSpell[]): void {
   if (!spellIndex) return;
-  const all = [...Array.from(spellMap.values()), ...homebrew];
-  spellIndex = new Fuse(all, SPELL_OPTIONS);
   homebrew.forEach((s) => spellMap.set(`${s.id}:${s.ruleset_version}`, s));
+  spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
 }
 
 export function mergeHomebrewItems(homebrew: SrdItem[]): void {
   if (!itemIndex) return;
-  const all = [...Array.from(itemMap.values()), ...homebrew];
-  itemIndex = new Fuse(all, ITEM_OPTIONS);
   homebrew.forEach((i) => itemMap.set(i.id, i));
+  itemIndex = new Fuse(Array.from(itemMap.values()), ITEM_OPTIONS);
 }
 
 /** Resets singleton indexes — for testing only. */

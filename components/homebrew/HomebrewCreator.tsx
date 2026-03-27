@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Pencil, Trash2, Sword, Sparkles, Package } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -188,9 +188,9 @@ function HomebrewCreatorInner() {
   }, [loadEntries]);
 
   // Load on first render
-  if (loaded === null) {
-    loadEntries(tab);
-  }
+  useEffect(() => {
+    if (loaded === null) loadEntries(tab);
+  }, [loaded, tab, loadEntries]);
 
   const handleSave = async () => {
     if (!name.trim()) {

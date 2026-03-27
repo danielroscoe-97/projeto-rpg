@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Link2, Unlink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -35,6 +35,19 @@ export function PlayerLinkDropdown({
   const [characters, setCharacters] = useState<PlayerCharacterOption[]>([]);
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close on click outside
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
 
   // Already-linked character IDs in this encounter
   const linkedCharIds = new Set(
@@ -82,7 +95,7 @@ export function PlayerLinkDropdown({
   if (!combatant.is_player) return null;
 
   return (
-    <div className="relative inline-block">
+    <div ref={dropdownRef} className="relative inline-block">
       <button
         type="button"
         onClick={() => setOpen(!open)}

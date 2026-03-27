@@ -22,6 +22,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     group_order: null,
     dm_notes: "",
     player_notes: "Exemplo — edite ou remova à vontade",
+    player_character_id: null,
   },
   {
     name: "Goblin 2",
@@ -44,6 +45,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     group_order: null,
     dm_notes: "",
     player_notes: "Exemplo — edite ou remova à vontade",
+    player_character_id: null,
   },
   {
     name: "Goblin 3",
@@ -66,6 +68,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     group_order: null,
     dm_notes: "",
     player_notes: "Exemplo — edite ou remova à vontade",
+    player_character_id: null,
   },
   {
     name: "Herói 1",
@@ -88,6 +91,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     group_order: null,
     dm_notes: "",
     player_notes: "",
+    player_character_id: null,
   },
   {
     name: "Herói 2",
@@ -110,5 +114,6 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     group_order: null,
     dm_notes: "",
     player_notes: "",
+    player_character_id: null,
   },
 ];

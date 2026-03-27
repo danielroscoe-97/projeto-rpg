@@ -103,8 +103,14 @@ export function crToNum(cr: string): number {
   return parseFloat(cr) || 0;
 }
 
+// Reverse map: numeric CR → canonical string for fractional CRs
+const NUM_TO_CR: Record<number, string> = { 0.125: "1/8", 0.25: "1/4", 0.5: "1/2" };
+
 function crToXP(cr: string): number {
-  return CR_XP_MAP[cr] ?? CR_XP_MAP[String(Math.round(crToNum(cr)))] ?? 0;
+  if (CR_XP_MAP[cr] !== undefined) return CR_XP_MAP[cr];
+  const num = crToNum(cr);
+  const canonical = NUM_TO_CR[num] ?? String(Math.round(num));
+  return CR_XP_MAP[canonical] ?? 0;
 }
 
 // ── Calculate 2014 ────────────────────────────────────────────────────────────

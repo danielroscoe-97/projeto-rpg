@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Shield, ChevronDown, ChevronUp } from "lucide-react";
 import { ProGate } from "@/components/billing/ProGate";
 import { useCombatStore } from "@/lib/stores/combat-store";
+import { getMonsterById } from "@/lib/srd/srd-search";
 import {
   calculateDifficulty,
   type DifficultyLevel,
@@ -37,11 +38,14 @@ function CRCalculatorInner({ rulesetVersion }: CRCalculatorProps) {
   // Extract non-player combatants with CR data
   const monsters = useMemo(() => {
     return combatants
-      .filter((c) => !c.is_player && !c.is_defeated && c.monster_id)
+      .filter((c) => !c.is_player && !c.is_defeated)
       .map((c) => {
-        // We don't have CR stored on combatant — estimate from XP/HP heuristic
-        // For SRD monsters, we use the monster_id lookup approach
-        // Fallback: use a rough HP→CR mapping
+        // Use actual CR from SRD data when monster_id is available
+        if (c.monster_id && c.ruleset_version) {
+          const srd = getMonsterById(c.monster_id, c.ruleset_version as RulesetVersion);
+          if (srd?.cr) return { cr: srd.cr };
+        }
+        // Fallback: rough HP→CR heuristic for custom NPCs
         return { cr: estimateCRFromHP(c.max_hp) };
       });
   }, [combatants]);
