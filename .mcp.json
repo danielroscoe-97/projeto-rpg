@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--browser", "chromium",
+        "--caps", "vision",
+        "--viewport-size", "1280x720"
+      ],
+      "env": {
+        "PLAYWRIGHT_BROWSERS_PATH": "C:\\Users\\dani_\\AppData\\Local\\ms-playwright"
+      }
+    }
+  }
+}

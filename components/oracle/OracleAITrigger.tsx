@@ -21,7 +21,7 @@ export function OracleAITrigger() {
       aria-label={t("trigger_label")}
     >
       <span aria-hidden="true">✨</span>
-      <span className="hidden md:inline">{t("trigger_label")}</span>
+      <span className="hidden xl:inline">{t("trigger_label")}</span>
     </button>
   );
 }

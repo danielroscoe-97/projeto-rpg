@@ -61,7 +61,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-1 ml-6">
+          <div className="hidden lg:flex items-center gap-1 ml-6">
             {links.map((link) =>
               link.children ? (
                 <DropdownMenu key={link.label?.toString()}>
@@ -99,14 +99,14 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
           </div>
 
           {/* Right slot (desktop) */}
-          <div className="hidden md:flex items-center gap-3 ml-auto">
+          <div className="hidden lg:flex items-center gap-3 ml-auto">
             {rightSlot}
           </div>
 
           {/* Hamburger (mobile) */}
           <button
             type="button"
-            className="md:hidden ml-auto flex flex-col gap-[5px] p-2 min-h-[44px] min-w-[44px] items-center justify-center"
+            className="lg:hidden ml-auto flex flex-col gap-[5px] p-2 min-h-[44px] min-w-[44px] items-center justify-center"
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-label={mobileOpen ? t("close_menu") : t("open_menu")}
             aria-expanded={mobileOpen}
@@ -132,7 +132,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
 
       {/* Mobile menu drawer */}
       {mobileOpen && (
-        <div className="fixed inset-x-0 top-[72px] z-40 glass-nav border-b border-white/[0.08] p-4 md:hidden">
+        <div className="fixed inset-x-0 top-[72px] z-40 glass-nav border-b border-white/[0.08] p-4 lg:hidden">
           <div className="flex flex-col gap-1">
             {links.map((link) =>
               link.children ? (

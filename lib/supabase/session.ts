@@ -131,7 +131,7 @@ export async function persistNewCombatant(
   const supabase = createClient();
   const { error } = await supabase
     .from("combatants")
-    .insert({
+    .upsert({
       id: combatant.id,
       encounter_id: encounterId,
       name: combatant.name,

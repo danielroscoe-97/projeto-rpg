@@ -37,8 +37,8 @@ export function OracleSearchTrigger() {
         <circle cx="11" cy="11" r="8" />
         <path d="m21 21-4.35-4.35" />
       </svg>
-      <span className="hidden md:inline">{t("trigger_aria")}</span>
-      <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">
+      <span className="hidden xl:inline">{t("trigger_aria")}</span>
+      <kbd className="hidden xl:inline text-[10px] font-mono px-1 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">
         Ctrl+K
       </kbd>
     </button>
