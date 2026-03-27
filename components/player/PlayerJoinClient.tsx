@@ -75,6 +75,7 @@ export function PlayerJoinClient({
   currentTurnIndex,
   initialCombatants,
   prefilledCharacters,
+  dmPlan = "free",
 }: PlayerJoinClientProps) {
   const t = useTranslations("player");
   const tRef = useRef(t);
@@ -100,11 +101,20 @@ export function PlayerJoinClient({
   const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
   const lateJoinRequestIdRef = useRef<string | null>(null);
   const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
+  const presenceChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Mesa model: seed session DM plan into subscription store
+  useEffect(() => {
+    useSubscriptionStore.getState().setSessionDmPlan(dmPlan);
+    return () => {
+      useSubscriptionStore.getState().setSessionDmPlan(null);
+    };
+  }, [dmPlan]);
 
   // Anonymous auth + claim token via server action (bypasses RLS)
   useEffect(() => {
@@ -218,6 +228,12 @@ export function PlayerJoinClient({
       }
       if (data.combatants) {
         updateCombatants(data.combatants);
+      }
+      // Mesa model: update DM plan from API response
+      if (data.dm_plan) {
+        useSubscriptionStore.getState().setSessionDmPlan(
+          (["free","pro","mesa"].includes(data.dm_plan) ? data.dm_plan : "free") as Plan
+        );
       }
     } catch {
       // Silent failure — will retry
@@ -442,6 +458,10 @@ export function PlayerJoinClient({
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
       }
+      if (presenceChannelRef.current) {
+        supabase.removeChannel(presenceChannelRef.current);
+        presenceChannelRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
@@ -509,18 +529,19 @@ export function PlayerJoinClient({
     // Track presence for DM's "Players Online" panel (B3-2)
     try {
       const supabase = createClient();
-      const presenceChannel = supabase.channel(`presence:${sessionId}`, {
+      const ch = supabase.channel(`presence:${sessionId}`, {
         config: { presence: { key: sessionId } },
       });
-      presenceChannel.subscribe(async (status) => {
+      ch.subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          await presenceChannel.track({
+          await ch.track({
             id: effectiveTokenId,
             name: data.name,
             joined_at: Date.now(),
           });
         }
       });
+      presenceChannelRef.current = ch;
     } catch {
       // Presence is best-effort — don't block registration
     }

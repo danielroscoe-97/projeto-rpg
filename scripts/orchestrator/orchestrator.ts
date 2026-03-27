@@ -34,7 +34,7 @@ import {
   getChangedFilesInWorktree,
 } from "./worktree.js";
 import { verifyAndFix } from "./story-queue.js";
-import { runQueue, pauseQueue, resumeQueue, getQueueStatus, buildQueue } from "./story-queue.js";
+import { runQueue, pauseQueue, resumeQueue, getQueueStatus, buildQueue, retryStory, skipStory } from "./story-queue.js";
 import {
   startWatcher,
   stopWatcher,
@@ -89,6 +89,10 @@ export function quickParse(input: string): { mode: OrchestratorMode; target: str
   if (lower.includes("pausar") || lower.includes("pause queue")) return { mode: "queue", target: "pause" };
   if (lower.includes("retomar") || lower.includes("resume queue")) return { mode: "queue", target: "resume" };
   if (lower === "smoke" || lower === "smoke test" || lower.includes("pre-flight") || lower.includes("testar pipeline")) return { mode: "smoke", target: "" };
+  const retryMatch = lower.match(/^(?:retry|retentar|refazer)\s+(\S+)/);
+  if (retryMatch) return { mode: "queue", target: `retry:${retryMatch[1]}` };
+  const skipMatch = lower.match(/^(?:skip|pular)\s+(\S+)/);
+  if (skipMatch) return { mode: "queue", target: `skip:${skipMatch[1]}` };
   return null;
 }
 
@@ -857,6 +861,18 @@ export async function handleCommand(input: string): Promise<void> {
         resumeQueue();
         await notify("▶️ Queue retomada. Reiniciando processamento...");
         runQueue().catch((e: Error) => notify(`❌ Queue error: ${e.message}`));
+        return;
+      }
+      if (target.startsWith("retry:")) {
+        const storyId = target.slice(6);
+        const ok = retryStory(storyId);
+        await notify(ok ? `🔄 Story *${storyId}* resetada para retry.` : `❌ Story *${storyId}* não encontrada ou não retryable.`);
+        return;
+      }
+      if (target.startsWith("skip:")) {
+        const storyId = target.slice(5);
+        const ok = skipStory(storyId);
+        await notify(ok ? `⏭️ Story *${storyId}* marcada como skipped.` : `❌ Story *${storyId}* não encontrada.`);
         return;
       }
       buildQueue();

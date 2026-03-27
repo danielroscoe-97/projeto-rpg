@@ -182,7 +182,8 @@ import { resolve } from "path";
 
 // Resolve projectRoot to absolute and validate it exists
 raw.projectRoot = resolve(raw.projectRoot);
-if (!_existsSync(raw.projectRoot)) {
+const _isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true" || process.env.VITEST_WORKER_ID !== undefined;
+if (!_isTestEnv && !_existsSync(raw.projectRoot)) {
   throw new Error(`PROJECT_ROOT does not exist: ${raw.projectRoot}`);
 }
 

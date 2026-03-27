@@ -13,7 +13,7 @@ vi.mock("fs", () => ({
   rmSync: vi.fn(),
   mkdirSync: vi.fn(),
   readFileSync: vi.fn(() => "{}"),
-  appendFileSync: vi.fn(),
+  appendFileSync: vi.fn(), renameSync: vi.fn(), symlinkSync: vi.fn(), realpathSync: vi.fn((p: string) => p),
 }));
 
 import { execFileSync } from "child_process";
