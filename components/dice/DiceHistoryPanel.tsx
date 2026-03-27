@@ -34,11 +34,12 @@ export function DiceHistoryPanel() {
   }, [entries.length, isOpen]);
 
   // Mark as read when panel opens (only react to isOpen changes)
+  const markReadRef = useRef(markRead);
+  markReadRef.current = markRead;
   useEffect(() => {
     if (isOpen) {
-      markRead();
+      markReadRef.current();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   if (!isOpen) {

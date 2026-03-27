@@ -94,9 +94,8 @@ export default async function JoinPage({ params }: JoinPageProps) {
     // Strip sensitive monster stats — players only see HP status label
     combatants = (combatantRows ?? []).map((c) => {
       if (c.is_player) return c;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { current_hp, max_hp, temp_hp, ac, ...safe } = c;
-      return { ...safe, hp_status: getHpStatus(current_hp, max_hp) };
+      const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, ...safe } = c;
+      return { ...safe, hp_status: getHpStatus(_current_hp, _max_hp) };
     });
   }
 

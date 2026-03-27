@@ -26,8 +26,7 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
 
 /** Strip DM-only fields before broadcasting to players. */
 function stripDmFields<T extends { dm_notes?: unknown }>(c: T): Omit<T, "dm_notes"> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { dm_notes, ...safe } = c;
+  const { dm_notes: _dm_notes, ...safe } = c;
   return safe;
 }
 
@@ -37,11 +36,10 @@ function stripMonsterStats<T extends { is_player?: boolean; current_hp?: number;
   c: T
 ): Record<string, unknown> {
   if (c.is_player) return c as Record<string, unknown>;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { current_hp, max_hp, temp_hp, ac, spell_save_dc, ...safe } = c;
+  const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _spell_save_dc, ...safe } = c;
   return {
     ...safe,
-    hp_status: getHpStatus(current_hp ?? 0, max_hp ?? 0),
+    hp_status: getHpStatus(_current_hp ?? 0, _max_hp ?? 0),
   };
 }
 
@@ -66,8 +64,7 @@ function sanitizePayload(event: RealtimeEvent): RealtimeEvent {
   if (event.type === "combat:hp_update") {
     if (event.is_player) {
       // Player characters — send full HP data including max_hp
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { is_player, ...rest } = event;
+      const { is_player: _is_player, ...rest } = event;
       return rest as unknown as RealtimeEvent;
     }
     // Monster/NPC — strip exact HP, send only status label
@@ -81,8 +78,7 @@ function sanitizePayload(event: RealtimeEvent): RealtimeEvent {
     // Strip AC, spell_save_dc, HP from broadcast — only name changes reach players.
     // Note: applies to all combatants (no is_player context available here).
     // Player HP/AC updates reach via combat:hp_update instead.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { ac, spell_save_dc, max_hp, current_hp, ...safe } = event;
+    const { ac: _ac2, spell_save_dc: _spell_save_dc2, max_hp: _max_hp2, current_hp: _current_hp2, ...safe } = event;
     return { ...safe, type: event.type } as unknown as RealtimeEvent;
   }
   return event;

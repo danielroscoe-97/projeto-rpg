@@ -86,7 +86,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   useEffect(() => {
     if (submitError) setSubmitError(null);
     if (invalidInitIds.size > 0) setInvalidInitIds(new Set());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combatants]);
 
   // Auto-load preloaded players from campaign selection (runs once on mount)

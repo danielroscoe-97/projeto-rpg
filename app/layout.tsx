@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 import "./globals.css";
@@ -66,6 +67,7 @@ export default async function RootLayout({
           <PageViewTracker />
         </Suspense>
         <Analytics />
+        <Toaster richColors position="top-right" />
         <div id="floating-cards-root" />
       </body>
     </html>

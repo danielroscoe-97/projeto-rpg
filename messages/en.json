@@ -475,7 +475,8 @@
     "turn_not_reached": "Waiting for your turn...",
     "lobby_error_name": "Character name is required",
     "lobby_error_initiative": "Enter your initiative roll (1-30)",
-    "lobby_auto_update": "This screen updates automatically"
+    "lobby_auto_update": "This screen updates automatically",
+    "registerError": "Failed to register player. Please try again."
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",

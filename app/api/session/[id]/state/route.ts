@@ -61,9 +61,8 @@ export async function GET(
   // Strip sensitive data from monsters — players see only HP status label
   const playerCombatants = (combatants ?? []).map((c) => {
     if (c.is_player) return c;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { current_hp, max_hp, temp_hp, ac, ...rest } = c;
-    return { ...rest, hp_status: getHpStatus(current_hp, max_hp) };
+    const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, ...rest } = c;
+    return { ...rest, hp_status: getHpStatus(_current_hp, _max_hp) };
   });
 
   return NextResponse.json({

@@ -478,7 +478,8 @@
     "turn_not_reached": "Aguardando seu turno...",
     "lobby_error_name": "Nome do personagem é obrigatório",
     "lobby_error_initiative": "Digite sua rolagem de iniciativa (1-30)",
-    "lobby_auto_update": "Esta tela atualiza automaticamente"
+    "lobby_auto_update": "Esta tela atualiza automaticamente",
+    "registerError": "Erro ao registrar jogador. Tente novamente."
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",

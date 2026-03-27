@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 
 const CopyIcon = () => (
@@ -38,11 +38,17 @@ const CheckIcon = () => (
 
 export function CodeBlock({ code }: { code: string }) {
   const [icon, setIcon] = useState(CopyIcon);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => clearTimeout(resetTimerRef.current);
+  }, []);
 
   const copy = async () => {
     await navigator?.clipboard?.writeText(code);
     setIcon(CheckIcon);
-    setTimeout(() => setIcon(CopyIcon), 2000);
+    clearTimeout(resetTimerRef.current);
+    resetTimerRef.current = setTimeout(() => setIcon(CopyIcon), 2000);
   };
 
   return (

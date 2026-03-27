@@ -73,7 +73,6 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   useEffect(() => {
     if (submitError) setSubmitError(null);
     if (invalidInitIds.size > 0) setInvalidInitIds(new Set());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [combatants]);
 
   const handleSelectMonster = useCallback(

@@ -137,8 +137,7 @@ export function MonsterSearchPanel({
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rulesetVersion]);
+  }, [rulesetVersion, t]);
 
   // Filter + search with debounce
   useEffect(() => {

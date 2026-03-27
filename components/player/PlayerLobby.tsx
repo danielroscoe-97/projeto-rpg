@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Swords, Users } from "lucide-react";
+import { toast } from "sonner";
+import * as Sentry from "@sentry/nextjs";
 
 interface PlayerLobbyProps {
   sessionName: string;
@@ -61,10 +63,15 @@ export function PlayerLobby({
         hp: hpVal && !isNaN(hpVal) && hpVal > 0 ? hpVal : null,
         ac: acVal && !isNaN(acVal) && acVal > 0 ? acVal : null,
       });
-    } catch {
+    } catch (error) {
       setIsSubmitting(false);
+      toast.error(t('registerError'));
+      Sentry.captureException(error, {
+        tags: { component: 'PlayerLobby', flow: 'player-registration' },
+        extra: { sessionName },
+      });
     }
-  }, [name, initiative, hp, ac, onRegister]);
+  }, [name, initiative, hp, ac, onRegister, t]);
 
   const inputClass =
     "w-full bg-card border border-border rounded-lg px-4 py-3 text-foreground text-base placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-gold/50 min-h-[48px]";

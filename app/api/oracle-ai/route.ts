@@ -1,30 +1,54 @@
 import { ORACLE_SYSTEM_PROMPT } from "@/lib/oracle-ai/system-prompt";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 20;
-const RATE_LIMIT_MAX_ENTRIES = 1_000;
+// ── Gemini API response types (TD8) ────────────────────────────────
 
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-
-  // Evict expired entries to prevent unbounded memory growth
-  if (rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES) {
-    for (const [key, val] of rateLimitMap) {
-      if (now > val.resetAt) rateLimitMap.delete(key);
-    }
-  }
-
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT_MAX;
+interface GeminiGroundingSource {
+  web?: {
+    uri: string;
+    title: string;
+  };
 }
+
+interface GeminiCandidate {
+  content?: {
+    parts?: Array<{
+      text?: string;
+    }>;
+  };
+  groundingMetadata?: {
+    groundingChunks?: GeminiGroundingSource[];
+    webSearchQueries?: string[];
+  };
+  finishReason?: string;
+}
+
+interface GeminiStreamChunk {
+  candidates?: GeminiCandidate[];
+  usageMetadata?: {
+    promptTokenCount?: number;
+    candidatesTokenCount?: number;
+    totalTokenCount?: number;
+  };
+}
+
+// ── Supabase service client for rate limiting (lazy init) ──────────
+
+let _supabase: SupabaseClient | null = null;
+function getSupabase() {
+  if (!_supabase && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+    );
+  }
+  return _supabase;
+}
+
+// ── Gemini config ──────────────────────────────────────────────────
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -51,11 +75,28 @@ export async function POST(request: Request) {
     request.headers.get("x-real-ip") ||
     "unknown";
 
-  if (isRateLimited(ip)) {
-    return Response.json(
-      { error: "Rate limit exceeded. Try again in a minute." },
-      { status: 429 },
-    );
+  // Rate limit via Supabase RPC (works across serverless instances)
+  const supabase = getSupabase();
+  try {
+    if (!supabase) throw new Error("Supabase not configured for rate limiting");
+    const { data: allowed, error } = await supabase.rpc("check_rate_limit", {
+      p_key: `oracle:${ip}`,
+      p_max: 20,
+      p_window_seconds: 3600,
+    });
+    if (error) throw error;
+    if (!allowed) {
+      return Response.json(
+        { error: "Rate limit exceeded. Try again later." },
+        { status: 429 },
+      );
+    }
+  } catch (error) {
+    // Fail-open: allow request if rate limit check fails
+    console.error("[Oracle AI] Rate limit check failed:", error);
+    Sentry.captureException(error, {
+      tags: { component: "oracle-ai", flow: "rate-limit" },
+    });
   }
 
   let question: string;
@@ -136,20 +177,21 @@ export async function POST(request: Request) {
                 if (!json || json === "[DONE]") continue;
 
                 try {
-                  const parsed = JSON.parse(json);
-                  const text = parsed?.candidates?.[0]?.content?.parts
-                    ?.map((p: any) => p.text || "")
+                  const parsed: GeminiStreamChunk = JSON.parse(json);
+                  const candidate = parsed?.candidates?.[0];
+                  const text = candidate?.content?.parts
+                    ?.map((p) => p.text || "")
                     .join("") || "";
 
                   if (text) {
                     ctrl.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
                   }
 
-                  const groundingMeta = parsed?.candidates?.[0]?.groundingMetadata;
+                  const groundingMeta = candidate?.groundingMetadata;
                   if (groundingMeta?.groundingChunks?.length) {
                     const sources = groundingMeta.groundingChunks
-                      .filter((c: any) => c.web)
-                      .map((c: any) => ({
+                      .filter((c) => c.web)
+                      .map((c) => ({
                         title: c.web?.title || "",
                         uri: c.web?.uri || "",
                       }));
@@ -158,7 +200,7 @@ export async function POST(request: Request) {
                     }
                   }
                 } catch {
-                  // Skip malformed chunks
+                  console.warn("[Oracle AI] Malformed Gemini SSE chunk skipped:", json);
                 }
               }
             }

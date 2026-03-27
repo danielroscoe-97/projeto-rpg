@@ -24,11 +24,24 @@ const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const OUTPUT_DIR = join(process.cwd(), "public", "srd");
 
+// ── Types for raw DB rows ──────────────────────────────────────────
+interface SrdMonsterRaw {
+  name: string;
+  hp: number;
+  ac: number;
+  challenge_rating: number;
+  [key: string]: unknown;
+}
+
+interface SrdRowGeneric {
+  name: string;
+  [key: string]: unknown;
+}
+
 // ── DB → Client field mapping ──────────────────────────────────────
 // The DB uses: hp, ac, challenge_rating
 // The client (SrdMonster) expects: hit_points, armor_class, cr
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapMonster(row: any) {
+function mapMonster(row: SrdMonsterRaw) {
   const { hp, ac, challenge_rating, ...rest } = row;
   return {
     ...rest,
@@ -41,11 +54,9 @@ function mapMonster(row: any) {
 async function fetchAll(
   tableName: "monsters" | "spells",
   version: "2014" | "2024"
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any[]> {
+): Promise<SrdRowGeneric[]> {
   const PAGE_SIZE = 1000;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows: any[] = [];
+  const rows: SrdRowGeneric[] = [];
   let from = 0;
 
   while (true) {
@@ -73,7 +84,7 @@ async function main() {
   for (const version of ["2014", "2024"] as const) {
     console.log(`Fetching monsters (${version})...`);
     const rawMonsters = await fetchAll("monsters", version);
-    const monsters = rawMonsters.map(mapMonster);
+    const monsters = (rawMonsters as SrdMonsterRaw[]).map(mapMonster);
     writeFileSync(
       join(OUTPUT_DIR, `monsters-${version}.json`),
       JSON.stringify(monsters, null, 2)

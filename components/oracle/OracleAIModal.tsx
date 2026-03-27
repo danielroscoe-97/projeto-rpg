@@ -41,10 +41,12 @@ export function OracleAIModal() {
   }, []);
 
   // Focus input when opened
+  const focusTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => {
     if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      focusTimerRef.current = setTimeout(() => inputRef.current?.focus(), 50);
     }
+    return () => clearTimeout(focusTimerRef.current);
   }, [open]);
 
   const resetState = useCallback(() => {
@@ -148,7 +150,7 @@ export function OracleAIModal() {
               setError(parsed.error);
             }
           } catch {
-            // Skip malformed
+            console.warn('[OracleAI] Malformed SSE chunk skipped:', data);
           }
         }
       }
