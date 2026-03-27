@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
 import { Upload, Loader2 } from "lucide-react";
-import { broadcastEvent } from "@/lib/realtime/broadcast";
+
 import { SharedFileCard } from "./SharedFileCard";
 
 const ACCEPT = "image/png,image/jpeg,image/webp,application/pdf";
@@ -83,14 +83,8 @@ export function FileShareButton({ sessionId }: FileShareButtonProps) {
       const newFile: SharedFile = { ...fileRecord };
       setFiles((prev) => [...prev, newFile]);
 
-      // Broadcast to players
-      broadcastEvent(sessionId, {
-        type: "session:state_sync",
-        combatants: [],
-        current_turn_index: -1,
-        round_number: 0,
-      });
-
+      // Note: no combat broadcast needed for file sharing —
+      // players load shared files from DB on page load/refresh
       toast.success(t("files_uploaded"));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";
