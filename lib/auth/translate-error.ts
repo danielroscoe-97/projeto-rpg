@@ -46,6 +46,17 @@ const ERROR_MAP: Array<{ pattern: RegExp | string; key: string }> = [
   { pattern: /flow state.*not found/i, key: "link_invalid" },
   { pattern: /pkce/i, key: "link_invalid" },
 
+  // Network / unexpected
+  { pattern: /fetch failed/i, key: "network_error" },
+  { pattern: /failed to fetch/i, key: "network_error" },
+  { pattern: /network/i, key: "network_error" },
+  { pattern: /unexpected/i, key: "unexpected_error" },
+  { pattern: /server error/i, key: "server_error" },
+  { pattern: /database error/i, key: "server_error" },
+  { pattern: /502/i, key: "server_error" },
+  { pattern: /503/i, key: "server_error" },
+  { pattern: /signups not allowed/i, key: "signups_disabled" },
+
   // Account
   { pattern: /user.*banned/i, key: "user_banned" },
   { pattern: "No token hash or type", key: "link_invalid" },

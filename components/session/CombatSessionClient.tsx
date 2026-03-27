@@ -8,9 +8,12 @@ import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
+import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
-import { assignInitiativeOrder, sortByInitiative } from "@/lib/utils/initiative";
-import { ShareSessionButton } from "@/components/session/ShareSessionButton";
+import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant } from "@/lib/utils/initiative";
+import { getNumberedName } from "@/lib/stores/combat-store";
+import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
@@ -21,6 +24,8 @@ import { setLastHpMode } from "@/components/combat/HpAdjuster";
 import { broadcastEvent, getDmChannel } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
+import { loadCombatBackup } from "@/lib/stores/combat-persist";
+import { DiceRollLog, type DiceRollEntry } from "@/components/combat/DiceRollLog";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -47,11 +52,12 @@ export function CombatSessionClient({
 }: CombatSessionClientProps) {
   const router = useRouter();
   const t = useTranslations("combat");
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [addMode, setAddMode] = useState<"choose" | "monster" | "manual" | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
+  const [diceLog, setDiceLog] = useState<DiceRollEntry[]>([]);
 
   const { combatants, is_active, setError } =
     useCombatStore();
@@ -93,6 +99,19 @@ export function CombatSessionClient({
             ? Math.max(0, Math.min(currentTurnIndex, initialCombatants.length - 1))
             : 0;
         store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
+      }
+      // Fallback: if server returned no combatants, try localStorage backup
+      if (initialCombatants.length === 0) {
+        const backup = loadCombatBackup();
+        if (backup && backup.encounter_id === encounterId && backup.combatants.length > 0) {
+          store.hydrateCombatants(backup.combatants);
+          if (backup.is_active) {
+            store.hydrateActiveState(
+              backup.current_turn_index,
+              backup.round_number
+            );
+          }
+        }
       }
     } else {
       store.clearEncounter();
@@ -152,8 +171,106 @@ export function CombatSessionClient({
 
   const handleAddCombatant = useCallback((newCombatant: Parameters<typeof addCombatantAction>[0]) => {
     addCombatantAction(newCombatant);
-    setShowAddForm(false);
+    setAddMode(null);
   }, [addCombatantAction]);
+
+  // Convert an SRD monster into a combatant and add it mid-combat
+  const handleSelectMonster = useCallback((monster: SrdMonster) => {
+    const currentCombatants = useCombatStore.getState().combatants;
+    const numberedName = getNumberedName(monster.name, currentCombatants);
+    const existingNames = currentCombatants
+      .filter((c) => !c.is_player && c.display_name)
+      .map((c) => c.display_name!);
+    const displayName = generateCreatureName(monster.type, existingNames);
+    const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+
+    addCombatantAction({
+      name: numberedName,
+      current_hp: monster.hit_points,
+      max_hp: monster.hit_points,
+      temp_hp: 0,
+      ac: monster.armor_class,
+      spell_save_dc: null,
+      initiative: rollResult.total,
+      initiative_order: null,
+      conditions: [],
+      ruleset_version: monster.ruleset_version,
+      is_defeated: false,
+      is_player: false,
+      monster_id: monster.id,
+      token_url: monster.token_url ?? null,
+      creature_type: monster.type ?? null,
+      display_name: displayName,
+      monster_group_id: null,
+      group_order: null,
+      dm_notes: "",
+      player_notes: "",
+      player_character_id: null,
+    });
+  }, [addCombatantAction]);
+
+  // Add a group of N monsters mid-combat
+  const handleSelectMonsterGroup = useCallback((monster: SrdMonster, qty: number) => {
+    const groupId = crypto.randomUUID();
+    const currentCombatants = useCombatStore.getState().combatants;
+    const newCombatants: Omit<Combatant, "id">[] = [];
+    for (let i = 1; i <= qty; i++) {
+      const existingNames = [...currentCombatants, ...newCombatants as Combatant[]]
+        .filter((c) => !c.is_player && c.display_name)
+        .map((c) => c.display_name!);
+      const displayName = generateCreatureName(monster.type ?? null, existingNames);
+      newCombatants.push({
+        name: `${monster.name} ${i}`,
+        current_hp: monster.hit_points,
+        max_hp: monster.hit_points,
+        temp_hp: 0,
+        ac: monster.armor_class,
+        spell_save_dc: null,
+        initiative: null,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: monster.ruleset_version,
+        is_defeated: false,
+        is_player: false,
+        monster_id: monster.id,
+        token_url: monster.token_url ?? null,
+        creature_type: monster.type ?? null,
+        display_name: displayName,
+        monster_group_id: groupId,
+        group_order: i,
+        dm_notes: "",
+        player_notes: "",
+        player_character_id: null,
+      });
+    }
+    for (const c of newCombatants) {
+      addCombatantAction(c);
+    }
+  }, [addCombatantAction]);
+
+  const addDiceRoll = useCallback((entry: Omit<DiceRollEntry, "id" | "timestamp">) => {
+    setDiceLog((prev) => {
+      const next = [...prev, { ...entry, id: crypto.randomUUID(), timestamp: Date.now() }];
+      return next.length > 50 ? next.slice(-50) : next;
+    });
+  }, []);
+
+  // Listen for dice-roll-result events from ClickableRoll and feed into DiceRollLog
+  useEffect(() => {
+    function handleDiceRollEvent(e: Event) {
+      const r = (e as CustomEvent).detail;
+      if (!r || !r.notation) return;
+      addDiceRoll({
+        label: r.label || r.notation,
+        expression: r.notation,
+        rolls: (r.dice ?? []).map((d: { value: number }) => d.value),
+        modifier: r.modifier ?? 0,
+        total: r.total ?? 0,
+      });
+    }
+    window.addEventListener("dice-roll-result", handleDiceRollEvent);
+    return () => window.removeEventListener("dice-roll-result", handleDiceRollEvent);
+  }, [addDiceRoll]);
 
   // Keyboard shortcuts for DM combat view (NFR25)
   useCombatKeyboardShortcuts({
@@ -216,8 +333,11 @@ export function CombatSessionClient({
     const activeToastIds: string[] = [];
     let active = true;
 
+    console.log("[DM] Late-join listener setup", { sid, state: (ch as unknown as { state: string }).state });
+
     const handleLateJoin = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
+      console.log("[DM] Late-join request received", payload);
       const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id } = payload as {
         player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string;
       };
@@ -275,11 +395,26 @@ export function CombatSessionClient({
       activeToastIds.push(toastId as string);
     };
 
+    // Remove any stale late-join bindings before adding the new one.
+    // When this effect re-runs (e.g. handleAddCombatant changes), the old
+    // .on() binding can't be removed via public API, so we clean it up via
+    // the public `bindings` record to prevent duplicate handlers.
+    try {
+      const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
+      const broadcastBindings = bindings?.broadcast;
+      if (Array.isArray(broadcastBindings)) {
+        for (let i = broadcastBindings.length - 1; i >= 0; i--) {
+          if (broadcastBindings[i]?.filter?.event === "combat:late_join_request") {
+            broadcastBindings.splice(i, 1);
+          }
+        }
+      }
+    } catch { /* bindings structure may differ across versions — ignore */ }
+
     ch.on("broadcast", { event: "combat:late_join_request" }, handleLateJoin);
 
     return () => {
       // Flag the handler as inactive so future events are ignored
-      // (RealtimeChannel does not expose a per-listener remove method)
       active = false;
       // Dismiss any pending late-join toasts on unmount / combat end
       activeToastIds.forEach((id) => toast.dismiss(id));
@@ -300,7 +435,6 @@ export function CombatSessionClient({
           {t("round")} <span className="font-mono text-gold">{round_number}</span>
         </h2>
         <div className="flex items-center gap-3 flex-wrap">
-          <ShareSessionButton sessionId={getSessionId()} />
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
           </span>
@@ -315,7 +449,7 @@ export function CombatSessionClient({
           </button>
           <button
             type="button"
-            onClick={() => setShowAddForm((prev) => !prev)}
+            onClick={() => setAddMode((prev) => (prev ? null : "choose"))}
             className="px-3 py-2 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
             aria-label="Add combatant"
             data-testid="add-combatant-btn"
@@ -345,11 +479,79 @@ export function CombatSessionClient({
         </div>
       </div>
 
-      {showAddForm && (
-        <AddCombatantForm
-          onAdd={handleAddCombatant}
-          onClose={() => setShowAddForm(false)}
-        />
+      {addMode && (
+        <div className="p-3 bg-white/[0.04] rounded-md space-y-3" data-testid="add-combatant-panel">
+          {/* Mode chooser */}
+          {addMode === "choose" && (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setAddMode("monster")}
+                className="flex-1 px-4 py-3 bg-purple-900/30 text-purple-300 font-medium rounded-md hover:bg-purple-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
+                data-testid="add-mode-monster"
+              >
+                {t("add_mid_combat_monster")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddMode("manual")}
+                className="flex-1 px-4 py-3 bg-blue-900/30 text-blue-300 font-medium rounded-md hover:bg-blue-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
+                data-testid="add-mode-manual"
+              >
+                {t("add_mid_combat_manual")}
+              </button>
+            </div>
+          )}
+
+          {/* Monster search mode */}
+          {addMode === "monster" && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setAddMode("choose")}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="add-back-btn"
+                >
+                  &larr; {t("add_mid_combat_back")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAddMode(null)}
+                  className="text-xs text-muted-foreground hover:text-foreground/80 transition-colors"
+                  data-testid="add-close-btn"
+                >
+                  &times;
+                </button>
+              </div>
+              <MonsterSearchPanel
+                rulesetVersion={rulesetVersion}
+                onSelectMonster={handleSelectMonster}
+                onSelectMonsterGroup={handleSelectMonsterGroup}
+              />
+            </div>
+          )}
+
+          {/* Manual entry mode */}
+          {addMode === "manual" && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setAddMode("choose")}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="add-back-btn"
+                >
+                  &larr; {t("add_mid_combat_back")}
+                </button>
+              </div>
+              <AddCombatantForm
+                onAdd={handleAddCombatant}
+                onClose={() => setAddMode(null)}
+              />
+            </div>
+          )}
+        </div>
       )}
 
       <CombatList
@@ -380,6 +582,8 @@ export function CombatSessionClient({
         }}
         t={t}
       />
+
+      <DiceRollLog entries={diceLog} className="max-h-[300px]" />
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
     </div>

@@ -575,6 +575,8 @@ export function PlayerJoinClient({
     lateJoinDataRef.current = data;
     setLateJoinStatus("waiting");
     if (channelRef.current) {
+      const chState = (channelRef.current as unknown as { state: string }).state;
+      console.log("[Player] Sending late-join request", { requestId, channelState: chState });
       channelRef.current.send({
         type: "broadcast",
         event: "combat:late_join_request",
@@ -586,6 +588,8 @@ export function PlayerJoinClient({
           request_id: requestId,
         },
       });
+    } else {
+      console.warn("[Player] Cannot send late-join request — channel not available");
     }
     // Auto-reject after 60s if DM doesn't respond (B1-3 AC #6)
     if (lateJoinTimeoutRef.current) clearTimeout(lateJoinTimeoutRef.current);

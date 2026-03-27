@@ -30,6 +30,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
     if (!name.trim()) errors.add("name");
     if (isNaN(parsedMaxHp) || parsedMaxHp < 1) errors.add("hp");
     if (isNaN(parsedAc) || parsedAc < 0) errors.add("ac");
+    if (isNaN(parsedInit)) errors.add("initiative");
     if (errors.size > 0) {
       setFieldErrors(errors);
       return;
@@ -46,7 +47,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
         if (match) maxN = Math.max(maxN, parseInt(match[1], 10));
       }
     }
-    const autoDisplay = trimmedDisplay || t("display_name_default").replace("{n}", String(maxN + 1));
+    const autoDisplay = trimmedDisplay || t("display_name_default", { n: maxN + 1 });
 
     onAdd({
       name: name.trim(),
@@ -126,9 +127,10 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
             min="-5"
             max="50"
             value={initiative}
-            onChange={(e) => setInitiative(e.target.value)}
+            onChange={(e) => { setInitiative(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("initiative"); return n; }); }}
             onFocus={(e) => e.target.select()}
-            className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className={`w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${fieldErrors.has("initiative") ? " field-error" : ""}`}
+            aria-invalid={fieldErrors.has("initiative") || undefined}
             data-testid="add-initiative-input"
           />
         </div>

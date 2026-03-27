@@ -121,6 +121,11 @@ export function CombatantSetupRow({
           aria-label={t("setup_name_aria")}
           data-testid={`setup-name-${combatant.id}`}
         />
+        {combatant.display_name && !combatant.is_player && (
+          <span className="text-xs text-muted-foreground/40 font-normal ml-1">
+            — {combatant.display_name}
+          </span>
+        )}
         {combatant.is_player && (
           <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider flex-shrink-0">
             {t("setup_player_badge")}

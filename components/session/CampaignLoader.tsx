@@ -95,7 +95,7 @@ export function CampaignLoader({ onLoad }: Props) {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground bg-white/[0.06] border border-border rounded-lg hover:bg-white/10 transition-colors min-h-[40px]"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground bg-white/[0.06] border border-border rounded-lg hover:bg-white/10 transition-colors min-h-[44px]"
           data-testid="load-campaign-btn"
         >
           <Users className="w-4 h-4" />

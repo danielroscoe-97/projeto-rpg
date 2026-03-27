@@ -142,7 +142,11 @@
     "email_rate_limit": "Limite de envio de emails atingido. Aguarde alguns minutos.",
     "link_expired": "Este link expirou. Solicite um novo.",
     "link_invalid": "Este link é inválido. Solicite um novo.",
-    "user_banned": "Esta conta foi suspensa."
+    "user_banned": "Esta conta foi suspensa.",
+    "network_error": "Erro de conexão. Verifique sua internet e tente novamente.",
+    "unexpected_error": "Erro inesperado. Tente novamente em alguns instantes.",
+    "server_error": "Erro no servidor. Tente novamente em alguns instantes.",
+    "signups_disabled": "Cadastro temporariamente desativado. Tente novamente mais tarde."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -369,6 +373,9 @@
     "round": "Rodada",
     "end_session": "Fim",
     "add_mid_combat": "+ Adicionar",
+    "add_mid_combat_monster": "Monstro (SRD)",
+    "add_mid_combat_manual": "Jogador / NPC",
+    "add_mid_combat_back": "Voltar",
     "next_turn": "Próximo Turno →",
     "next_turn_saving": "Salvando…",
     "initiative_order": "Ordem de iniciativa",
@@ -440,7 +447,9 @@
     "player_unlinked": "Personagem desvinculado",
     "player_link_none": "Nenhum personagem disponível",
     "player_link_already": "Já vinculado a {name}",
-    "player_link_in_use": "em uso"
+    "player_link_in_use": "em uso",
+    "no_rolls_yet": "Nenhuma rolagem ainda",
+    "dice_log_title": "Histórico de Rolagens"
   },
   "conditions": {
     "blinded": "Cego",

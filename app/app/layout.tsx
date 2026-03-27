@@ -12,7 +12,7 @@ import { OracleAIModal } from "@/components/oracle/OracleAIModal";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { LayoutDashboard, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
+import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -44,10 +44,15 @@ export default async function AppLayout({
         brandHref="/app/dashboard"
         links={[
           { href: "/app/dashboard", label: <span className="inline-flex items-center gap-1.5"><LayoutDashboard className="w-4 h-4" aria-hidden="true" />{t("dashboard")}</span> },
-          { href: "/app/compendium?tab=monsters", label: <span className="inline-flex items-center gap-1.5"><Skull className="w-4 h-4" aria-hidden="true" />{t("monsters")}</span> },
-          { href: "/app/compendium?tab=spells", label: <span className="inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" aria-hidden="true" />{t("spells")}</span> },
-          { href: "/app/compendium?tab=items", label: <span className="inline-flex items-center gap-1.5"><Backpack className="w-4 h-4" aria-hidden="true" />{t("items")}</span> },
-          { href: "/app/compendium?tab=conditions", label: <span className="inline-flex items-center gap-1.5"><HeartPulse className="w-4 h-4" aria-hidden="true" />{t("conditions")}</span> },
+          {
+            label: <span className="inline-flex items-center gap-1.5"><BookOpen className="w-4 h-4" aria-hidden="true" />{t("compendium")}</span>,
+            children: [
+              { href: "/app/compendium?tab=monsters", label: <span className="inline-flex items-center gap-1.5"><Skull className="w-4 h-4" aria-hidden="true" />{t("monsters")}</span> },
+              { href: "/app/compendium?tab=spells", label: <span className="inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" aria-hidden="true" />{t("spells")}</span> },
+              { href: "/app/compendium?tab=items", label: <span className="inline-flex items-center gap-1.5"><Backpack className="w-4 h-4" aria-hidden="true" />{t("items")}</span> },
+              { href: "/app/compendium?tab=conditions", label: <span className="inline-flex items-center gap-1.5"><HeartPulse className="w-4 h-4" aria-hidden="true" />{t("conditions")}</span> },
+            ],
+          },
           { href: "/app/presets", label: <span className="inline-flex items-center gap-1.5"><Package className="w-4 h-4" aria-hidden="true" />{t("presets")}</span> },
           { href: "/app/settings", label: <span className="inline-flex items-center gap-1.5"><Settings className="w-4 h-4" aria-hidden="true" />{t("settings")}</span> },
         ]}

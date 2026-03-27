@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Shield, ChevronDown, ChevronUp } from "lucide-react";
+import { Shield, ChevronDown } from "lucide-react";
 import { ProGate } from "@/components/billing/ProGate";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import { getMonsterById } from "@/lib/srd/srd-search";
@@ -32,8 +32,21 @@ function CRCalculatorInner({ rulesetVersion }: CRCalculatorProps) {
   const [partySize, setPartySize] = useState(4);
   const [formulaOverride, setFormulaOverride] = useState<FormulaVersion | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const formula: FormulaVersion = formulaOverride ?? rulesetVersion;
+
+  // Close popover on outside click
+  useEffect(() => {
+    if (!expanded) return;
+    const handleClick = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [expanded]);
 
   // Extract non-player combatants with CR data
   const monsters = useMemo(() => {
@@ -66,96 +79,83 @@ function CRCalculatorInner({ rulesetVersion }: CRCalculatorProps) {
   const style = DIFFICULTY_STYLES[result.difficulty];
 
   if (monsters.length === 0) {
-    return (
-      <div className="text-xs text-muted-foreground/50 px-3 py-2">
-        {t("cr_no_monsters")}
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className={`rounded-md border ${style.border} ${style.bg} transition-colors`}>
-      {/* Header — always visible */}
+    <div className="relative inline-flex" ref={popoverRef}>
+      {/* Compact badge — always visible */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between px-3 py-2 text-sm"
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold transition-colors ${style.bg} ${style.text} ${style.border} hover:brightness-125`}
         aria-expanded={expanded}
         data-testid="cr-calculator-toggle"
       >
-        <div className="flex items-center gap-2">
-          <Shield className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-          <span className="text-muted-foreground">{t("cr_difficulty")}:</span>
-          <span className={`font-bold ${style.text}`} data-testid="cr-difficulty-badge">
-            {t(`cr_${result.difficulty}`)}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground/60">
-            {formula === "2014"
-              ? `${result.totalValue} XP`
-              : `CR ${result.totalValue}`}
-          </span>
-          {expanded ? (
-            <ChevronUp className="w-3.5 h-3.5 text-muted-foreground/50" />
-          ) : (
-            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/50" />
-          )}
-        </div>
+        <Shield className="w-3 h-3" aria-hidden="true" />
+        <span data-testid="cr-difficulty-badge">
+          {t(`cr_${result.difficulty}`)}
+        </span>
+        <span className="font-normal opacity-60 text-[10px]">
+          {formula === "2014"
+            ? `${result.totalValue} XP`
+            : `CR ${result.totalValue}`}
+        </span>
+        <ChevronDown className={`w-3 h-3 opacity-50 transition-transform ${expanded ? "rotate-180" : ""}`} />
       </button>
 
-      {/* Expanded details */}
+      {/* Expanded popover details */}
       {expanded && (
-        <div className="px-3 pb-3 space-y-2 border-t border-border/30">
-          {/* Party config */}
-          <div className="flex items-center gap-3 pt-2">
-            <label className="text-xs text-muted-foreground flex items-center gap-1.5">
-              {t("cr_party_level")}
-              <input
-                type="number"
-                value={partyLevel}
-                onChange={(e) => setPartyLevel(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-                min={1}
-                max={20}
-                className="w-12 bg-card border border-border rounded px-1.5 py-0.5 text-foreground text-xs text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-testid="cr-party-level"
-              />
-            </label>
-            <label className="text-xs text-muted-foreground flex items-center gap-1.5">
-              {t("cr_party_size")}
-              <input
-                type="number"
-                value={effectiveSize}
-                onChange={(e) => setPartySize(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
-                min={1}
-                max={10}
-                disabled={playerCount > 0}
-                className="w-12 bg-card border border-border rounded px-1.5 py-0.5 text-foreground text-xs text-center font-mono disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-testid="cr-party-size"
-              />
-            </label>
-          </div>
+        <div className={`absolute top-full left-0 mt-1.5 z-50 w-72 rounded-md border ${style.border} ${style.bg} bg-card shadow-lg backdrop-blur-sm`}>
+          <div className="px-3 py-2.5 space-y-2">
+            {/* Party config */}
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                {t("cr_party_level")}
+                <input
+                  type="number"
+                  value={partyLevel}
+                  onChange={(e) => setPartyLevel(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
+                  min={1}
+                  max={20}
+                  className="w-12 bg-card border border-border rounded px-1.5 py-0.5 text-foreground text-xs text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  data-testid="cr-party-level"
+                />
+              </label>
+              <label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                {t("cr_party_size")}
+                <input
+                  type="number"
+                  value={effectiveSize}
+                  onChange={(e) => setPartySize(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                  min={1}
+                  max={10}
+                  disabled={playerCount > 0}
+                  className="w-12 bg-card border border-border rounded px-1.5 py-0.5 text-foreground text-xs text-center font-mono disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  data-testid="cr-party-size"
+                />
+              </label>
+            </div>
 
-          {/* Formula toggle */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{t("cr_formula")}:</span>
-            <button
-              type="button"
-              onClick={() => setFormulaOverride(formula === "2014" ? "2024" : "2014")}
-              className={`text-xs px-2 py-0.5 rounded border transition-colors ${
-                formula === "2014"
-                  ? "bg-blue-900/30 text-blue-400 border-blue-500/40"
-                  : "bg-purple-900/30 text-purple-400 border-purple-500/40"
-              }`}
-              data-testid="cr-formula-toggle"
-            >
-              DMG {formula}
-            </button>
-          </div>
+            {/* Formula toggle */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">{t("cr_formula")}:</span>
+              <button
+                type="button"
+                onClick={() => setFormulaOverride(formula === "2014" ? "2024" : "2014")}
+                className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                  formula === "2014"
+                    ? "bg-blue-900/30 text-blue-400 border-blue-500/40"
+                    : "bg-purple-900/30 text-purple-400 border-purple-500/40"
+                }`}
+                data-testid="cr-formula-toggle"
+              >
+                DMG {formula}
+              </button>
+            </div>
 
-          {/* Thresholds bar */}
-          <div className="space-y-1">
-            <div className="flex justify-between text-[10px] text-muted-foreground/60">
+            {/* Thresholds */}
+            <div className="flex justify-between text-[10px] text-muted-foreground/60 pt-1 border-t border-border/30">
               <span>{t("cr_easy")}: {result.thresholds[0]}</span>
               <span>{t("cr_medium")}: {result.thresholds[1]}</span>
               <span>{t("cr_hard")}: {result.thresholds[2]}</span>
@@ -169,7 +169,8 @@ function CRCalculatorInner({ rulesetVersion }: CRCalculatorProps) {
 }
 
 /**
- * CR Calculator wrapped with Pro gate.
+ * CR Calculator wrapped with Pro gate — renders as a compact inline badge.
+ * Click the badge to expand party/formula configuration.
  * Free users see ProBadge instead.
  */
 export function CRCalculator({ rulesetVersion }: CRCalculatorProps) {

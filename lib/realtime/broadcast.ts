@@ -19,10 +19,21 @@ let channel: RealtimeChannel | null = null;
 let currentSessionId: string | null = null;
 
 /** Get or create the DM broadcast channel for a session.
- *  Recreates the channel when the session ID changes (guards stale singleton). */
+ *  Recreates the channel when the session ID changes (guards stale singleton).
+ *  Also recreates when the existing channel was externally removed/closed
+ *  (e.g. by EncounterSetup calling supabase.removeChannel). */
 export function getDmChannel(sessionId: string): RealtimeChannel {
-  if (channel && currentSessionId === sessionId) return channel;
-  // Session changed — tear down old channel first
+  if (channel && currentSessionId === sessionId) {
+    // Guard against stale channel that was removed externally
+    const state = (channel as unknown as { state: string }).state;
+    if (state !== "closed" && state !== "leaving" && state !== "errored") {
+      return channel;
+    }
+    // Channel is dead — fall through to recreate
+    console.warn("[broadcast] DM channel was in stale state:", state, "— recreating");
+    channel = null;
+  }
+  // Session changed or channel is stale — tear down old channel first
   if (channel) {
     channel.unsubscribe();
     channel = null;
@@ -43,6 +54,13 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
   });
   currentSessionId = sessionId;
   return channel;
+}
+
+/** Invalidate the DM channel singleton so the next getDmChannel call recreates it.
+ *  Call this when the channel has been externally removed (e.g. via supabase.removeChannel). */
+export function resetDmChannel(): void {
+  channel = null;
+  currentSessionId = null;
 }
 
 /** Sanitize a full combatant for player broadcast.
@@ -93,6 +111,9 @@ function validateEvent(event: SanitizedEvent): boolean {
 /** Sanitize a DM event for player-safe broadcast.
  *  Removes sensitive data and returns a properly typed SanitizedEvent. */
 function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
+  // Audio events pass through unchanged — no sensitive data (no monster stats/HP)
+  if (event.type === "audio:play_sound") return event;
+
   if (event.type === "combat:combatant_add") {
     const result: SanitizedCombatantAdd = {
       type: event.type,

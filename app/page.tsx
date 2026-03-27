@@ -928,13 +928,22 @@ function FinalCtaSection() {
             Começar Agora — é Grátis
             <ArrowRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
-          <Link
-            href="/try"
-            className="text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
-          >
-            Ou teste agora sem criar conta
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <Link
+              href="/try"
+              className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
+            >
+              Testar sem conta
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-white/20">|</span>
+            <Link
+              href="/auth/login"
+              className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
+            >
+              Já tenho conta
+            </Link>
+          </div>
         </div>
       </div>
     </section>

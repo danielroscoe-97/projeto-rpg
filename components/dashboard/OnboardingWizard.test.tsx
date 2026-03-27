@@ -75,6 +75,12 @@ function renderWizard() {
   return render(<OnboardingWizard userId={USER_ID} />);
 }
 
+/** Navigate past the choose screen into the campaign wizard flow */
+async function goToCampaignFlow() {
+  renderWizard();
+  fireEvent.click(screen.getByText(/onboarding\.choose_campaign_title/i));
+}
+
 async function fillStep1(campaignName = "Curse of Strahd") {
   const input = screen.getByLabelText(/onboarding\.campaign_name_label/i);
   await userEvent.clear(input);
@@ -108,25 +114,30 @@ describe("OnboardingWizard", () => {
 
   // ── Step 1: Campaign ───────────────────────────────────────────────────────
 
-  it("renders Step 1 by default", () => {
+  it("renders choose screen by default", () => {
     renderWizard();
+    expect(screen.getByText(/onboarding\.choose_title/i)).toBeInTheDocument();
+  });
+
+  it("renders Step 1 after choosing campaign path", async () => {
+    await goToCampaignFlow();
     expect(screen.getByText(/onboarding\.campaign_name_title/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/onboarding\.campaign_name_label/i)).toBeInTheDocument();
   });
 
-  it("Next button is disabled when campaign name is empty", () => {
-    renderWizard();
+  it("Next button is disabled when campaign name is empty", async () => {
+    await goToCampaignFlow();
     expect(screen.getByRole("button", { name: /^common\.next$/i })).toBeDisabled();
   });
 
   it("Next button becomes enabled when campaign name is filled", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await userEvent.type(screen.getByLabelText(/onboarding\.campaign_name_label/i), "My Campaign");
     expect(screen.getByRole("button", { name: /^common\.next$/i })).not.toBeDisabled();
   });
 
   it("Next button remains disabled when campaign name is whitespace-only", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await userEvent.type(screen.getByLabelText(/onboarding\.campaign_name_label/i), "   ");
     expect(screen.getByRole("button", { name: /^common\.next$/i })).toBeDisabled();
   });
@@ -134,26 +145,26 @@ describe("OnboardingWizard", () => {
   // ── Step 2: Players ────────────────────────────────────────────────────────
 
   it("advances to Step 2 after valid campaign name", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     expect(screen.getByLabelText(/onboarding\.players_name_label/i)).toBeInTheDocument();
   });
 
   it("Back button on Step 2 returns to Step 1", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     fireEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(screen.getByText(/onboarding\.campaign_name_title/i)).toBeInTheDocument();
   });
 
   it("Next on Step 2 is not disabled when at least 1 player exists", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     expect(screen.getByRole("button", { name: /^common\.next$/i })).not.toBeDisabled();
   });
 
   it("shows error when advancing from Step 2 with empty player name", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     fireEvent.click(screen.getByRole("button", { name: /^common\.next$/i }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -162,7 +173,7 @@ describe("OnboardingWizard", () => {
   });
 
   it("can add a second player", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     fireEvent.click(screen.getByRole("button", { name: /onboarding\.players_add_another/i }));
     expect(screen.getAllByLabelText(/onboarding\.players_name_label/i)).toHaveLength(2);
@@ -171,7 +182,7 @@ describe("OnboardingWizard", () => {
   // ── Step 3: Encounter ──────────────────────────────────────────────────────
 
   it("advances to Step 3 (encounter) after valid player entry", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     expect(screen.getByLabelText(/onboarding\.encounter_name_label/i)).toBeInTheDocument();
@@ -179,7 +190,7 @@ describe("OnboardingWizard", () => {
   });
 
   it("encounter name is pre-filled with default", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     expect(screen.getByLabelText(/onboarding\.encounter_name_label/i)).toHaveValue(
@@ -188,7 +199,7 @@ describe("OnboardingWizard", () => {
   });
 
   it("Next on Step 3 is disabled when encounter name is cleared", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     await userEvent.clear(screen.getByLabelText(/onboarding\.encounter_name_label/i));
@@ -196,7 +207,7 @@ describe("OnboardingWizard", () => {
   });
 
   it("Back button on Step 3 returns to Step 2", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     fireEvent.click(screen.getByRole("button", { name: /back/i }));
@@ -204,7 +215,7 @@ describe("OnboardingWizard", () => {
   });
 
   it("advances to Step 4 after setting encounter name", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     await fillStep3("Goblin Ambush");
@@ -214,7 +225,7 @@ describe("OnboardingWizard", () => {
   // ── Step 4: Confirm ────────────────────────────────────────────────────────
 
   it("shows campaign, player, and encounter summary on Step 4", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1("Dragon Campaign");
     await fillStep2("Aria");
     await fillStep3("Forest Ambush");
@@ -224,7 +235,7 @@ describe("OnboardingWizard", () => {
   });
 
   it("Back button on Step 4 returns to Step 3", async () => {
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     await fillStep3();
@@ -258,7 +269,7 @@ describe("OnboardingWizard", () => {
 
     (createClient as jest.Mock).mockReturnValue({ from: fromMock });
 
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1("Test Campaign");
     await fillStep2("Hero");
     await fillStep3("Dragon Fight");
@@ -287,7 +298,7 @@ describe("OnboardingWizard", () => {
   it("shows the session link after successful submission", async () => {
     makeSupabaseMock();
 
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1("My Campaign");
     await fillStep2("Warrior");
     await fillStep3();
@@ -305,7 +316,7 @@ describe("OnboardingWizard", () => {
   it("shows error message on campaign creation failure", async () => {
     makeSupabaseMock({ campaignError: true });
 
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1("Failing Campaign");
     await fillStep2("Player");
     await fillStep3();
@@ -337,7 +348,7 @@ describe("OnboardingWizard", () => {
       }),
     });
 
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1();
     await fillStep2();
     await fillStep3();
@@ -364,7 +375,7 @@ describe("OnboardingWizard", () => {
   it("navigates to dashboard when 'Go to Dashboard' is clicked", async () => {
     makeSupabaseMock();
 
-    renderWizard();
+    await goToCampaignFlow();
     await fillStep1("Campaign");
     await fillStep2("Player");
     await fillStep3();

@@ -296,6 +296,9 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
 // Auto-persist combat state to localStorage on changes.
 // shallow equality prevents firing when unrelated state slices update.
+// Debounced (500ms) to avoid micro-jank from JSON.stringify + localStorage.setItem
+// on rapid successive changes (e.g. HP adjustments, condition toggles).
+let _backupDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 useCombatStore.subscribe(
   (state) => ({
     encounter_id: state.encounter_id,
@@ -305,8 +308,12 @@ useCombatStore.subscribe(
     is_active: state.is_active,
   }),
   (slice) => {
-    if (slice.is_active && slice.encounter_id) {
-      saveCombatBackup(useCombatStore.getState());
+    if (slice.encounter_id || slice.combatants.length > 0) {
+      if (_backupDebounceTimer) clearTimeout(_backupDebounceTimer);
+      _backupDebounceTimer = setTimeout(() => {
+        saveCombatBackup(useCombatStore.getState());
+        _backupDebounceTimer = null;
+      }, 500);
     }
   },
   { equalityFn: shallow }

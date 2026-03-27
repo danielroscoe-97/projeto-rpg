@@ -5,7 +5,7 @@
  *   LIGHT    > 70%   — green
  *   MODERATE > 40%   — yellow / amber
  *   HEAVY    > 10%   — red
- *   CRITICAL ≤ 10%   — black / skull
+ *   CRITICAL ≤ 10%   — dark red
  *
  * These tiers, thresholds and colors apply to ALL combat surfaces
  * (DM view, player view, logged, unlogged).
@@ -30,7 +30,7 @@ export function getHpBarColor(currentHp: number, maxHp: number): string {
     case "LIGHT":    return "bg-green-500";
     case "MODERATE": return "bg-amber-400";
     case "HEAVY":    return "bg-red-500";
-    case "CRITICAL": return "bg-gray-900";
+    case "CRITICAL": return "bg-red-900";
   }
 }
 

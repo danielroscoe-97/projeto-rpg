@@ -4,10 +4,18 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface NavLink {
-  href: string;
+  href?: string;
   label: React.ReactNode;
+  children?: { href: string; label: React.ReactNode }[];
 }
 
 interface NavbarProps {
@@ -54,15 +62,40 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1 ml-6">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-muted-foreground font-medium px-3 py-2 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {links.map((link) =>
+              link.children ? (
+                <DropdownMenu key={link.label?.toString()}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="text-sm text-muted-foreground font-medium px-3 py-2 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] inline-flex items-center gap-1"
+                    >
+                      {link.label}
+                      <ChevronDown className="w-3 h-3 opacity-60" aria-hidden="true" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="bg-surface border-white/10">
+                    {link.children.map((child) => (
+                      <DropdownMenuItem key={child.href} asChild>
+                        <Link
+                          href={child.href}
+                          className="flex items-center gap-2 text-foreground/80 hover:text-foreground"
+                        >
+                          {child.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href!}
+                  className="text-sm text-muted-foreground font-medium px-3 py-2 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </div>
 
           {/* Right slot (desktop) */}
@@ -101,16 +134,34 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
       {mobileOpen && (
         <div className="fixed inset-x-0 top-[72px] z-40 glass-nav border-b border-white/[0.08] p-4 md:hidden">
           <div className="flex flex-col gap-1">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-muted-foreground font-medium px-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {links.map((link) =>
+              link.children ? (
+                <div key={link.label?.toString()}>
+                  <span className="text-muted-foreground font-medium px-4 py-3 min-h-[44px] flex items-center text-sm">
+                    {link.label}
+                  </span>
+                  {link.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      className="text-muted-foreground font-medium pl-8 pr-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href!}
+                  className="text-muted-foreground font-medium px-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </div>
           {rightSlot && (
             <div className="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-3">

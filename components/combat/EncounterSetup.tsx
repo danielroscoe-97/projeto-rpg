@@ -21,6 +21,7 @@ import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/
 import type { Combatant } from "@/lib/types/combat";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { getMonsterById } from "@/lib/srd/srd-search";
+import { resetDmChannel } from "@/lib/realtime/broadcast";
 
 interface EncounterSetupProps {
   onStartCombat: (encounterName?: string) => Promise<void>;
@@ -203,6 +204,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
     return () => {
       supabase.removeChannel(channel);
+      // Invalidate the broadcast singleton so CombatSessionClient recreates
+      // a fresh channel instead of reusing the now-removed one.
+      resetDmChannel();
     };
   }, [sessionId, onDemandSessionId, addCombatant]);
 
@@ -243,7 +247,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       lastSelectedMonster.current = null;
       setAddRow(EMPTY_ADD_ROW);
     },
-    [addCombatant, t]
+    [addCombatant]
   );
 
   // Add a group of N monsters with shared group ID
@@ -281,7 +285,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       useCombatStore.getState().addMonsterGroup(newCombatants);
       setAddRow(EMPTY_ADD_ROW);
     },
-    [t]
+    []
   );
 
   // Trigger golden glow on the add row after monster selection
@@ -350,7 +354,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     setAddRow(EMPTY_ADD_ROW);
     setSubmitError(null);
     initInputRef.current?.focus();
-  }, [addRow, addCombatant, t]);
+  }, [addRow, addCombatant]);
 
   // Load campaign players
   const handleLoadCampaign = useCallback(
@@ -424,7 +428,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         }
       });
     },
-    [addCombatant, rulesetVersion, t]
+    [addCombatant, rulesetVersion]
   );
 
   // Row edit handlers
@@ -558,26 +562,29 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         )}
       </div>
 
-      {/* Encounter name */}
+      {/* Encounter name + difficulty badge (inline) */}
       <div>
         <label htmlFor="encounter-name" className="text-sm font-medium text-foreground">
           {t("encounter_name_label")} <span className="text-red-400">*</span>
         </label>
-        <input
-          id="encounter-name"
-          type="text"
-          value={encounterName}
-          onChange={(e) => {
-            setEncounterName(e.target.value);
-            if (nameError) setNameError(false);
-          }}
-          placeholder={t("encounter_name_placeholder")}
-          maxLength={60}
-          className={`mt-1 w-full max-w-md ${inputClass}${nameError ? " field-error" : ""}`}
-          aria-invalid={nameError || undefined}
-          aria-describedby={nameError ? "encounter-name-error" : undefined}
-          data-testid="encounter-name-input"
-        />
+        <div className="mt-1 flex items-center gap-3 flex-wrap">
+          <input
+            id="encounter-name"
+            type="text"
+            value={encounterName}
+            onChange={(e) => {
+              setEncounterName(e.target.value);
+              if (nameError) setNameError(false);
+            }}
+            placeholder={t("encounter_name_placeholder")}
+            maxLength={60}
+            className={`w-full max-w-md ${inputClass}${nameError ? " field-error" : ""}`}
+            aria-invalid={nameError || undefined}
+            aria-describedby={nameError ? "encounter-name-error" : undefined}
+            data-testid="encounter-name-input"
+          />
+          <CRCalculator rulesetVersion={rulesetVersion} />
+        </div>
         {nameError && (
           <p id="encounter-name-error" className="text-red-400 text-xs mt-1">
             {t("error_encounter_name_required")}
@@ -599,9 +606,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         onMonsterAdded={handleMonsterAdded}
         onSelectMonsterGroup={handleSelectMonsterGroup}
       />
-
-      {/* CR Calculator (Pro-gated) */}
-      <CRCalculator rulesetVersion={rulesetVersion} />
 
       {/* Column headers — always visible, aligned with both rows and add-row */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">

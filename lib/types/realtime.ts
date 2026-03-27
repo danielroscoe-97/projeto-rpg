@@ -16,7 +16,8 @@ export type RealtimeEventType =
   | "combat:late_join_request"
   | "combat:late_join_response"
   | "session:state_sync"
-  | "session:player_linked";
+  | "session:player_linked"
+  | "audio:play_sound";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -112,6 +113,15 @@ export interface RealtimeStateSync {
   round_number: number;
 }
 
+export interface RealtimeAudioPlay {
+  type: "audio:play_sound";
+  sound_id: string;
+  source: "preset" | "custom";
+  player_name: string;
+  /** Signed URL for custom sounds */
+  audio_url?: string;
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -125,7 +135,8 @@ export type RealtimeEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
-  | RealtimeStateSync;
+  | RealtimeStateSync
+  | RealtimeAudioPlay;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -203,4 +214,5 @@ export type SanitizedEvent =
   | RealtimeDefeatedChange
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
-  | RealtimeLateJoinResponse;
+  | RealtimeLateJoinResponse
+  | RealtimeAudioPlay;

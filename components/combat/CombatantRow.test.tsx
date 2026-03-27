@@ -34,6 +34,24 @@ jest.mock("@/components/oracle/MonsterStatBlock", () => ({
   ),
 }));
 
+// Disable Framer Motion animations in jsdom — AnimatePresence buffers exit
+// animations preventing immediate DOM removal which breaks collapse assertions.
+jest.mock("framer-motion", () => {
+  const actual = jest.requireActual<typeof import("framer-motion")>("framer-motion");
+  return {
+    ...actual,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    motion: {
+      ...actual.motion,
+      div: React.forwardRef(
+        ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => (
+          <div ref={ref} {...props}>{children}</div>
+        )
+      ),
+    },
+  };
+});
+
 const mockGetMonsterById = srdSearch.getMonsterById as jest.Mock;
 
 const BASE_PLAYER: Combatant = {
@@ -58,6 +76,7 @@ const BASE_PLAYER: Combatant = {
   group_order: null,
   dm_notes: "",
   player_notes: "",
+  player_character_id: null,
 };
 
 const MONSTER_COMBATANT: Combatant = {
@@ -82,6 +101,7 @@ const MONSTER_COMBATANT: Combatant = {
   group_order: null,
   dm_notes: "",
   player_notes: "",
+  player_character_id: null,
 };
 
 const GOBLIN_FULL: SrdMonster = {
@@ -202,7 +222,7 @@ describe("CombatantRow", () => {
     it("is dark (CRITICAL) when HP ≤ 10%", () => {
       const c: Combatant = { ...BASE_PLAYER, current_hp: 3, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-gray-900");
+      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-red-900");
     });
   });
 

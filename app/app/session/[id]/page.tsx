@@ -5,8 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
-import { GMNotesSheet } from "@/components/session/GMNotesSheet";
-import { FileShareButton } from "@/components/session/FileShareButton";
 import type { Combatant } from "@/lib/types/combat";
 
 interface SessionPageProps {
@@ -46,7 +44,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     ? await supabase
         .from("combatants")
         .select(
-          "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes"
+          "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id"
         )
         .eq("encounter_id", encounter.id)
         .order("initiative_order", { ascending: true })
@@ -99,8 +97,6 @@ export default async function SessionPage({ params }: SessionPageProps) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <FileShareButton sessionId={sessionId} />
-          <GMNotesSheet sessionId={sessionId} userId={user.id} />
           <ShareSessionButton sessionId={sessionId} />
           <Link
             href="/app/dashboard"

@@ -9,9 +9,9 @@ const STORAGE_KEY = "hp_legend_dismissed";
 
 const TIERS = [
   { key: "light", color: "bg-green-500", pct: ">70%" },
-  { key: "moderate", color: "bg-yellow-500", pct: ">40%" },
+  { key: "moderate", color: "bg-amber-400", pct: ">40%" },
   { key: "heavy", color: "bg-red-500", pct: ">10%" },
-  { key: "critical", color: "bg-zinc-500", pct: "≤10%" },
+  { key: "critical", color: "bg-red-900", pct: "≤10%" },
 ] as const;
 
 interface HPLegendOverlayProps {

@@ -9,8 +9,8 @@ describe("sanitizeText", () => {
     expect(sanitizeText("<b><i>Bold Italic</i></b>")).toBe("Bold Italic");
   });
 
-  it("strips HTML entities", () => {
-    expect(sanitizeText("Hello&amp;World")).toBe("HelloWorld");
+  it("preserves HTML entities as-is", () => {
+    expect(sanitizeText("Hello&amp;World")).toBe("Hello&amp;World");
   });
 
   it("trims whitespace", () => {

@@ -99,8 +99,8 @@ describe("PlayerCharacterManager", () => {
     expect(screen.getAllByText("45")).toHaveLength(2); // max_hp and current_hp both 45 for Thorin
     expect(screen.getByText("16")).toBeInTheDocument();
     expect(screen.getByText("14")).toBeInTheDocument();
-    // Gandalf has no spell_save_dc → "—"
-    expect(screen.getByText("common.dash")).toBeInTheDocument();
+    // Gandalf has no spell_save_dc → badge is not rendered
+    expect(screen.getByText("14")).toBeInTheDocument(); // Thorin's DC renders
   });
 
   it("renders 'Add Player' button", () => {

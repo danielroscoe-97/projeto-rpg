@@ -20,7 +20,8 @@
     "dash": "—",
     "reconnecting": "Reconnecting...",
     "reconnected": "Reconnected! Data updated.",
-    "slow_update_mode": "Slow update mode active"
+    "slow_update_mode": "Slow update mode active",
+    "clear_all": "Clear all"
   },
   "nav": {
     "brand": "Taverna do Mestre",
@@ -141,7 +142,11 @@
     "email_rate_limit": "Email sending limit reached. Please wait a few minutes.",
     "link_expired": "This link has expired. Please request a new one.",
     "link_invalid": "This link is invalid. Please request a new one.",
-    "user_banned": "This account has been suspended."
+    "user_banned": "This account has been suspended.",
+    "network_error": "Connection error. Check your internet and try again.",
+    "unexpected_error": "Unexpected error. Please try again in a moment.",
+    "server_error": "Server error. Please try again in a moment.",
+    "signups_disabled": "Sign-up temporarily disabled. Try again later."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -157,6 +162,8 @@
     "campaigns_empty": "No campaigns yet. Create your first campaign!",
     "campaigns_players_plural": "players",
     "campaigns_players_singular": "player",
+    "back_to_dashboard": "\u2190 Back to Dashboard",
+    "manage_players_description": "Manage the player characters for this campaign.",
     "campaigns_manage_players": "Manage Players",
     "campaigns_delete": "Delete Campaign",
     "campaigns_delete_confirm": "Are you sure you want to delete",
@@ -364,6 +371,9 @@
     "round": "Round",
     "end_session": "End",
     "add_mid_combat": "+ Add",
+    "add_mid_combat_monster": "Monster (SRD)",
+    "add_mid_combat_manual": "Player / NPC",
+    "add_mid_combat_back": "Back",
     "next_turn": "Next Turn →",
     "next_turn_saving": "Saving…",
     "initiative_order": "Initiative order",
@@ -437,7 +447,9 @@
     "player_unlinked": "Character unlinked",
     "player_link_none": "No characters available",
     "player_link_already": "Already linked to {name}",
-    "player_link_in_use": "in use"
+    "player_link_in_use": "in use",
+    "no_rolls_yet": "No rolls yet",
+    "dice_log_title": "Dice Roll History"
   },
   "conditions": {
     "blinded": "Blinded",

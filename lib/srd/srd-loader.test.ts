@@ -1,9 +1,10 @@
-import { loadMonsters, loadSpells, loadConditions } from "./srd-loader";
+import { loadMonsters, loadSpells, loadConditions, _clearMonsterCache } from "./srd-loader";
 
 const mockJson = jest.fn();
 
 beforeEach(() => {
   mockJson.mockReset();
+  _clearMonsterCache();
   global.fetch = jest.fn().mockResolvedValue({
     ok: true,
     json: mockJson,

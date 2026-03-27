@@ -6,7 +6,7 @@ export default async function Page() {
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-lg">
         {/* Heading — Liberty RO style */}
         <div className="text-center mb-8">
           <h1 className="font-display text-3xl md:text-4xl text-foreground tracking-wide">

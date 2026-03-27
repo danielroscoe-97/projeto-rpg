@@ -247,7 +247,7 @@ describe("MonsterSearch", () => {
 
       await waitFor(() => screen.getByTestId("add-monster-goblin"));
       expect(
-        screen.getByRole("button", { name: "Add Goblin to combat" })
+        screen.getByRole("button", { name: "oracle.add_to_combat_aria" })
       ).toBeInTheDocument();
     });
 

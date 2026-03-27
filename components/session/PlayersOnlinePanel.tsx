@@ -75,12 +75,13 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
       })
       .subscribe();
 
+    const timers = offlineTimersRef.current;
     return () => {
       supabase.removeChannel(channel);
-      for (const timer of offlineTimersRef.current.values()) {
+      for (const timer of timers.values()) {
         clearTimeout(timer);
       }
-      offlineTimersRef.current.clear();
+      timers.clear();
     };
   }, [sessionId]);
 

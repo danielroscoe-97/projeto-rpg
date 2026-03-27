@@ -25,7 +25,7 @@ describe("ConditionBadge", () => {
 
   it("has correct aria-label", () => {
     render(<ConditionBadge condition="Stunned" />);
-    expect(screen.getByLabelText("View Stunned rules")).toBeInTheDocument();
+    expect(screen.getByLabelText("combat.condition_view_aria")).toBeInTheDocument();
   });
 
   it("calls pinCard with condition id on click (defaults to 2014)", async () => {

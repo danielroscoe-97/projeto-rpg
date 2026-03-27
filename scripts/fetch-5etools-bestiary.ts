@@ -135,6 +135,8 @@ function stripTags(text: string): string {
 
   // Iteratively resolve nested tags from the inside out
   let result = text;
+  // Strip self-closing / empty-content tags like {@h} before the main loop
+  result = result.replace(/\{@h\}/g, "");
   let prev = "";
   while (result !== prev) {
     prev = result;

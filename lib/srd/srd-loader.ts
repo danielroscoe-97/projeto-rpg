@@ -157,6 +157,11 @@ export interface SrdCondition {
 
 const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();
 
+/** @internal — exposed only for test isolation */
+export function _clearMonsterCache() {
+  monsterCache.clear();
+}
+
 /** Fetches the SRD monster bundle for a given ruleset version.
  *  Promise is cached so multiple callers share one fetch+parse. */
 export function loadMonsters(

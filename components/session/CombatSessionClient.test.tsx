@@ -57,9 +57,16 @@ jest.mock("@/components/combat/AddCombatantForm", () => ({
   AddCombatantForm: () => <div data-testid="add-combatant-form-mock" />,
 }));
 
+const mockChannel = {
+  on: jest.fn().mockReturnThis(),
+  subscribe: jest.fn().mockReturnThis(),
+  unsubscribe: jest.fn(),
+  send: jest.fn(),
+};
 jest.mock("@/lib/realtime/broadcast", () => ({
   broadcastEvent: jest.fn(),
   cleanupDmChannel: jest.fn(),
+  getDmChannel: jest.fn(() => mockChannel),
 }));
 
 jest.mock("@/components/session/ShareSessionButton", () => ({
@@ -96,6 +103,7 @@ const makeC = (id: string, name: string): Combatant => ({
   group_order: null,
   dm_notes: "",
   player_notes: "",
+  player_character_id: null,
 });
 
 const TWO_COMBATANTS = [makeC("c1", "Goblin"), makeC("c2", "Orc")];

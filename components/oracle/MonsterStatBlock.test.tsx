@@ -14,6 +14,10 @@ jest.mock("./LinkedText", () => ({
   LinkedText: ({ text }: { text: string }) => <span>{text}</span>,
 }));
 
+jest.mock("@/components/dice/ClickableRoll", () => ({
+  ClickableRoll: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+}));
+
 // ---------------------------------------------------------------------------
 // Mock srd-search singletons (empty by default — no links rendered)
 // ---------------------------------------------------------------------------
@@ -133,7 +137,8 @@ describe("MonsterStatBlock", () => {
 
   it("renders HP with formula", () => {
     render(<MonsterStatBlock monster={GOBLIN} />);
-    expect(screen.getByText(/7 \(2d6\)/)).toBeInTheDocument();
+    const hpValue = screen.getByText("HP").closest(".prop-line")!.querySelector(".prop-value")!;
+    expect(hpValue.textContent).toMatch(/7.*2d6/);
   });
 
   it("renders HP without formula when hp_formula is undefined", () => {
@@ -150,7 +155,8 @@ describe("MonsterStatBlock", () => {
   it("renders initiative line", () => {
     // Goblin DEX=14 → mod=+2, 10+2=12
     render(<MonsterStatBlock monster={GOBLIN} />);
-    expect(screen.getByText(/\+2 \(12\)/)).toBeInTheDocument();
+    const initValue = screen.getByText("Initiative").closest(".prop-line")!.querySelector(".prop-value")!;
+    expect(initValue.textContent).toMatch(/\+2.*12/);
   });
 
   it("renders speed", () => {

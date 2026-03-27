@@ -10,6 +10,7 @@ import type { SrdCondition } from "@/lib/srd/srd-loader";
 
 jest.mock("@/lib/srd/srd-search", () => ({
   getAllConditions: jest.fn(),
+  getCoreConditions: jest.fn(),
 }));
 
 jest.mock("@/components/oracle/ConditionRulesModal", () => ({
@@ -31,7 +32,7 @@ const CONDITIONS: SrdCondition[] = [
   { id: "poisoned", name: "Poisoned", description: "A poisoned creature has disadvantage..." },
 ];
 
-const mockGetAll = srdSearch.getAllConditions as jest.Mock;
+const mockGetAll = srdSearch.getCoreConditions as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -30,6 +30,10 @@ jest.mock("@/lib/srd/srd-loader", () => ({
   loadMonsters: jest.fn().mockResolvedValue([]),
 }));
 
+jest.mock("@/lib/hooks/use-feature-gate", () => ({
+  useFeatureGate: () => ({ allowed: true, loading: false }),
+}));
+
 jest.mock("@/lib/srd/srd-search", () => ({
   buildMonsterIndex: jest.fn(),
   searchMonsters: jest.fn().mockReturnValue([]),
@@ -98,6 +102,7 @@ describe("EncounterSetup", () => {
       group_order: null,
       dm_notes: "",
       player_notes: "",
+      player_character_id: null,
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
     const rows = useCombatStore.getState().combatants;
@@ -126,6 +131,7 @@ describe("EncounterSetup", () => {
       group_order: null,
       dm_notes: "",
       player_notes: "",
+      player_character_id: null,
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
     expect(screen.getByTestId("start-combat-btn")).not.toBeDisabled();
@@ -153,8 +159,10 @@ describe("EncounterSetup", () => {
       group_order: null,
       dm_notes: "",
       player_notes: "",
+      player_character_id: null,
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
+    await userEvent.type(screen.getByTestId("encounter-name-input"), "Test Encounter");
     await userEvent.click(screen.getByTestId("start-combat-btn"));
     expect(screen.getByText(/combat\.error_missing_init/)).toBeInTheDocument();
     expect(mockOnStartCombat).not.toHaveBeenCalled();

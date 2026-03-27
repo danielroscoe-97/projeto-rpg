@@ -51,7 +51,7 @@ export function SignUpForm({
       // Preserve invite params through email confirmation redirect (Story 4.4)
       let redirectUrl = `${window.location.origin}/auth/confirm`;
       if (inviteToken && inviteCampaignId) {
-        redirectUrl += `?invite=${inviteToken}&campaign=${inviteCampaignId}`;
+        redirectUrl += `?invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
 
       const { error } = await supabase.auth.signUp({
@@ -69,6 +69,7 @@ export function SignUpForm({
       router.push(successUrl);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "";
+      console.error("[signup]", msg);
       const key = getAuthErrorKey(msg);
       setError(key ? te(key) : tc("error_generic"));
     } finally {

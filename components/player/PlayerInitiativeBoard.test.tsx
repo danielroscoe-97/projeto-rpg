@@ -5,6 +5,9 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { PlayerInitiativeBoard } from "./PlayerInitiativeBoard";
 
+// jsdom does not implement scrollIntoView
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
 jest.mock("@/lib/srd/srd-search", () => ({
   findCondition: jest.fn(),
 }));
@@ -67,9 +70,9 @@ describe("PlayerInitiativeBoard", () => {
         rulesetVersion="2014"
       />
     );
-    expect(screen.getByText("Aragorn")).toBeInTheDocument();
-    expect(screen.getByText("Goblin")).toBeInTheDocument();
-    expect(screen.getByText("Orc")).toBeInTheDocument();
+    expect(screen.getAllByText("Aragorn").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Goblin").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Orc").length).toBeGreaterThan(0);
   });
 
   it("highlights current turn with aria-current", () => {
@@ -99,7 +102,7 @@ describe("PlayerInitiativeBoard", () => {
         rulesetVersion="2014"
       />
     );
-    expect(screen.getByText("40")).toBeTruthy();
+    expect(screen.getAllByText("40").length).toBeGreaterThan(0);
   });
 
   it("shows HP status label for monsters", () => {
@@ -175,7 +178,7 @@ describe("PlayerInitiativeBoard", () => {
       />
     );
     // Only first combatant (index 0) should be visible
-    expect(screen.getByText("Aragorn")).toBeInTheDocument();
+    expect(screen.getAllByText("Aragorn").length).toBeGreaterThan(0);
     expect(screen.queryByTestId("player-combatant-c2")).not.toBeInTheDocument();
     expect(screen.queryByTestId("player-combatant-c3")).not.toBeInTheDocument();
   });
