@@ -144,11 +144,15 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
   }
 
   if (event.type === "combat:stats_update") {
-    // Only name changes reach players — strip AC, spell_save_dc, HP, display_name
+    // For non-players: only send display_name as visible name, never the real name
+    // For players: forward name changes directly
+    const visibleName = event.is_player
+      ? event.name
+      : (event.display_name !== undefined ? (event.display_name || undefined) : undefined);
     const result: SanitizedStatsUpdate = {
       type: event.type,
       combatant_id: event.combatant_id,
-      name: event.name,
+      name: visibleName,
     };
     return result;
   }

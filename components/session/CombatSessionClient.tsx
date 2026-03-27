@@ -225,7 +225,7 @@ export function CombatSessionClient({
       const toastId = toast(
         t("late_join_notification", { name: player_name, initiative: pInit }),
         {
-          duration: Infinity,
+          duration: 60_000,
           action: {
             label: t("late_join_accept"),
             onClick: () => {

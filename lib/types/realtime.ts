@@ -76,6 +76,8 @@ export interface RealtimeStatsUpdate {
   type: "combat:stats_update";
   combatant_id: string;
   name?: string;
+  display_name?: string | null;
+  is_player?: boolean;
   max_hp?: number;
   current_hp?: number;
   ac?: number;

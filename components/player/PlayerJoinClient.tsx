@@ -332,6 +332,11 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:late_join_response" }, ({ payload }) => {
           if (payload.request_id !== lateJoinRequestIdRef.current) return;
+          // Clear the 60s timeout since DM responded
+          if (lateJoinTimeoutRef.current) {
+            clearTimeout(lateJoinTimeoutRef.current);
+            lateJoinTimeoutRef.current = null;
+          }
           if (payload.accepted) {
             setLateJoinStatus("accepted");
             // Register the player in DB now that DM accepted
@@ -537,6 +542,7 @@ export function PlayerJoinClient({
   }, [effectiveTokenId, sessionId]);
 
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
+  const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleLateJoinRequest = useCallback(async (data: {
     name: string;
     initiative: number;
@@ -560,6 +566,14 @@ export function PlayerJoinClient({
         },
       });
     }
+    // Auto-reject after 60s if DM doesn't respond (B1-3 AC #6)
+    if (lateJoinTimeoutRef.current) clearTimeout(lateJoinTimeoutRef.current);
+    lateJoinTimeoutRef.current = setTimeout(() => {
+      if (lateJoinRequestIdRef.current === requestId) {
+        setLateJoinStatus("rejected");
+        lateJoinRequestIdRef.current = null;
+      }
+    }, 60_000);
   }, []);
 
   if (error) {

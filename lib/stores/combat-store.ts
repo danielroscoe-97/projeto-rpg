@@ -28,19 +28,24 @@ const initialState: EncounterState = {
   is_loading: false,
   error: null,
   hpUndoStack: [],
+  lastAddedCombatantId: null,
   expandedGroups: {},
 };
 
-export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) => ({
+export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, get) => ({
   ...initialState,
 
   addCombatant: (combatant) =>
-    set((state) => ({
-      combatants: [
-        ...state.combatants,
-        { ...combatant, id: crypto.randomUUID() },
-      ],
-    })),
+    set((state) => {
+      const id = crypto.randomUUID();
+      return {
+        combatants: [
+          ...state.combatants,
+          { ...combatant, id },
+        ],
+        lastAddedCombatantId: state.is_active ? id : state.lastAddedCombatantId,
+      };
+    }),
 
   removeCombatant: (id) =>
     set((state) => ({
@@ -277,6 +282,16 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
           : c
       ),
     })),
+
+  undoLastAdd: () => {
+    const id = get().lastAddedCombatantId;
+    if (!id) return null;
+    set((s) => ({
+      combatants: s.combatants.filter((c) => c.id !== id),
+      lastAddedCombatantId: null,
+    }));
+    return id;
+  },
 })));
 
 // Auto-persist combat state to localStorage on changes.
