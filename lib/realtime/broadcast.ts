@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import type { RealtimeEvent } from "@/lib/types/realtime";
+import type { RealtimeEvent, RealtimeStatsUpdate } from "@/lib/types/realtime";
 import { getHpStatus } from "@/lib/utils/hp-status";
 
 let channel: RealtimeChannel | null = null;
@@ -88,7 +88,8 @@ function sanitizePayload(event: RealtimeEvent): RealtimeEvent {
     // Strip AC, spell_save_dc, HP, and display_name from broadcast — only name changes reach players.
     // display_name is a DM-only anti-metagaming alias — must never reach the player.
     // Player HP/AC updates reach via combat:hp_update instead.
-    const { ac: _ac2, spell_save_dc: _sdc2, max_hp: _mhp2, current_hp: _chp2, display_name: _dn2, ...safe } = event;
+    const statsPayload = event as RealtimeStatsUpdate & { display_name?: string | null };
+    const { ac: _ac2, spell_save_dc: _sdc2, max_hp: _mhp2, current_hp: _chp2, display_name: _dn2, ...safe } = statsPayload;
     return { ...safe, type: event.type } as unknown as RealtimeEvent;
   }
   return event;

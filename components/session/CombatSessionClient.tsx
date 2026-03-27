@@ -213,8 +213,10 @@ export function CombatSessionClient({
     if (!sid || !is_active) return;
     const ch = getDmChannel(sid);
     const activeToastIds: string[] = [];
+    let active = true;
 
     const handleLateJoin = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
       const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id } = payload as {
         player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string;
       };
@@ -274,8 +276,9 @@ export function CombatSessionClient({
     ch.on("broadcast", { event: "combat:late_join_request" }, handleLateJoin);
 
     return () => {
-      // Remove only this listener — do NOT unsubscribe the shared channel
-      ch.off("broadcast", { event: "combat:late_join_request" });
+      // Flag the handler as inactive so future events are ignored
+      // (RealtimeChannel does not expose a per-listener remove method)
+      active = false;
       // Dismiss any pending late-join toasts on unmount / combat end
       activeToastIds.forEach((id) => toast.dismiss(id));
     };

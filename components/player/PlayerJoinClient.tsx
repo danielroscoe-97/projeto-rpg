@@ -79,6 +79,9 @@ export function PlayerJoinClient({
   const [joinedPlayers, setJoinedPlayers] = useState<Array<{ id: string; name: string }>>([]);
   const [nextCombatantId, setNextCombatantId] = useState<string | null>(null);
   const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
+  const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
+  const lateJoinRequestIdRef = useRef<string | null>(null);
+  const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
@@ -309,6 +312,23 @@ export function PlayerJoinClient({
             updateCombatants(payload.combatants);
           }
         })
+        .on("broadcast", { event: "combat:late_join_response" }, ({ payload }) => {
+          if (payload.request_id !== lateJoinRequestIdRef.current) return;
+          if (payload.accepted) {
+            setLateJoinStatus("accepted");
+            // Register the player in DB now that DM accepted
+            if (lateJoinDataRef.current) {
+              registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current)
+                .then(() => {
+                  setIsRegistered(true);
+                  setRegisteredName(lateJoinDataRef.current?.name);
+                })
+                .catch(() => {});
+            }
+          } else {
+            setLateJoinStatus("rejected");
+          }
+        })
         .on("broadcast", { event: "player:joined" }, ({ payload }) => {
           if (payload.id && payload.name) {
             setJoinedPlayers((prev) => {
@@ -468,6 +488,32 @@ export function PlayerJoinClient({
     }
   }, [effectiveTokenId, sessionId]);
 
+  // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
+  const handleLateJoinRequest = useCallback(async (data: {
+    name: string;
+    initiative: number;
+    hp: number | null;
+    ac: number | null;
+  }) => {
+    const requestId = crypto.randomUUID();
+    lateJoinRequestIdRef.current = requestId;
+    lateJoinDataRef.current = data;
+    setLateJoinStatus("waiting");
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "combat:late_join_request",
+        payload: {
+          player_name: data.name,
+          hp: data.hp,
+          ac: data.ac,
+          initiative: data.initiative,
+          request_id: requestId,
+        },
+      });
+    }
+  }, []);
+
   if (error) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -489,7 +535,7 @@ export function PlayerJoinClient({
     );
   }
 
-  // Show lobby when combat isn't active yet
+  // Show lobby when combat isn't active yet (normal join)
   if (!active || !currentEncounterId) {
     return (
       <PlayerLobby
@@ -498,6 +544,22 @@ export function PlayerJoinClient({
         onRegister={handleRegister}
         isRegistered={isRegistered}
         registeredName={registeredName}
+      />
+    );
+  }
+
+  // Show late-join lobby when combat is active but player hasn't registered yet
+  if (!isRegistered) {
+    return (
+      <PlayerLobby
+        sessionName={sessionName}
+        joinedPlayers={joinedPlayers}
+        onRegister={handleRegister}
+        isRegistered={isRegistered}
+        registeredName={registeredName}
+        isCombatActive={true}
+        onLateJoinRequest={handleLateJoinRequest}
+        lateJoinStatus={lateJoinStatus}
       />
     );
   }
