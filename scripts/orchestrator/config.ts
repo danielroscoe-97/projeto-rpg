@@ -76,6 +76,13 @@ const configSchema = z.object({
     maxTurnsPerFix: z.number().int().positive(),
     runQACheck: z.boolean(),
   }),
+  bmadFlow: z.object({
+    maxTurnsPerPm: z.number().int().positive(),
+    maxTurnsPerArchitect: z.number().int().positive(),
+    maxTurnsPerSm: z.number().int().positive(),
+    maxTurnsPerQa: z.number().int().positive(),
+    runsDir: z.string(),
+  }),
   escalation: z.object({
     criticalPaths: z.array(z.string()),
     alwaysEscalate: z.array(z.string()),
@@ -146,6 +153,13 @@ const raw = {
     maxAttempts: 3,
     maxTurnsPerFix: 30,
     runQACheck: true,
+  },
+  bmadFlow: {
+    maxTurnsPerPm: 30,
+    maxTurnsPerArchitect: 30,
+    maxTurnsPerSm: 40,
+    maxTurnsPerQa: 40,
+    runsDir: "_bmad-output/bmad-runs",
   },
   escalation: {
     criticalPaths: [

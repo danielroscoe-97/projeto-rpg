@@ -12,8 +12,9 @@
  *   npx tsx scripts/orchestrator/orchestrator.ts
  */
 
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { join } from "path";
+import { getAgent, buildAgentPrompt, getToolsForAgent } from "./agents.js";
 import { config } from "./config.js";
 import { runClaude } from "./claude-runner.js";
 import { logger } from "./logger.js";
@@ -61,6 +62,7 @@ type OrchestratorMode =
   | "watch"
   | "queue"
   | "smoke"
+  | "bmad"
   | "idle";
 
 interface TaskContext {
@@ -122,6 +124,8 @@ Rules:
 - Complex ideas with multiple features, long descriptions, or full workflow requests → {"mode": "plan", "target": "the full message"}
 - "quando as specs ficarem prontas comece a codar" or "acompanha o sprint" or "watch" → {"mode": "watch", "target": "the full message"}
 - "lista as regras" or "quais watches" → {"mode": "watch", "target": "list"}
+- "roda o pipeline bmad pra X" or "executa o fluxo completo pra X" or "faz tudo pra X" → {"mode": "bmad", "target": "X"}
+- If user describes a complete feature and wants end-to-end (spec + dev + QA) → use "bmad"
 - "para de acompanhar" or "remove watches" → {"mode": "watch", "target": "clear"}
 - If it's a question about the project, a greeting, or general conversation → use "chat"
 - Only use "quickfix" if the user clearly describes a specific bug to fix
@@ -797,6 +801,218 @@ Mensagem do usuário: ${input}`,
   await notify(result.output);
 }
 
+// -- Full BMAD Pipeline --
+
+interface BmadFlowContext {
+  runId: string;
+  runDir: string;
+  description: string;
+  pmBrief: string;
+  architectSpec: string;
+  stories: Array<{ id: string; specPath: string }>;
+  startedAt: Date;
+  stepStatus: Record<string, "pending" | "running" | "done" | "failed">;
+}
+
+function initFlowContext(description: string): BmadFlowContext {
+  const slug = description.slice(0, 30).replace(/[^a-z0-9]/gi, "-").toLowerCase();
+  const ts = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 19);
+  const runId = `bmad-${slug}-${ts}`;
+  const runDir = join(config.projectRoot, config.bmadFlow.runsDir, runId);
+  mkdirSync(runDir, { recursive: true });
+  mkdirSync(join(runDir, "stories"), { recursive: true });
+
+  return {
+    runId, runDir, description,
+    pmBrief: "", architectSpec: "", stories: [],
+    startedAt: new Date(),
+    stepStatus: { pm: "pending", architect: "pending", sm: "pending", dev: "pending", qa: "pending" },
+  };
+}
+
+function saveManifest(ctx: BmadFlowContext): void {
+  writeFileSync(join(ctx.runDir, "run-manifest.json"), JSON.stringify({
+    runId: ctx.runId, description: ctx.description,
+    startedAt: ctx.startedAt.toISOString(), updatedAt: new Date().toISOString(),
+    stepStatus: ctx.stepStatus, storiesCount: ctx.stories.length,
+  }, null, 2));
+}
+
+async function executeFullBmadFlow(description: string): Promise<void> {
+  const ctx = initFlowContext(description);
+
+  await notify(
+    `🚀 *BMAD Pipeline iniciando!*\n\n` +
+    `📝 _"${description.slice(0, 200)}"_\n\n` +
+    `*Run ID:* ${ctx.runId}\n` +
+    `*Passos:* PM → Architect → SM → Dev → QA\n` +
+    `_Artifacts em: ${config.bmadFlow.runsDir}/${ctx.runId}_`
+  );
+
+  try {
+    // ── Step 1: PM ──
+    ctx.stepStatus.pm = "running";
+    saveManifest(ctx);
+    await notify("📋 *[1/5] PM Analysis* — John está analisando a feature...");
+
+    const pmAgent = getAgent("pm");
+    if (!pmAgent) throw new Error("PM agent not found in manifest");
+
+    const pmResult = await runClaude({
+      prompt: `## Your Task\nAnalyze the following feature request and produce a Product Brief.\n\n## Feature Request\n${description}\n\n## Instructions\n1. Read docs/prd-v2.md for existing product context\n2. Read _bmad-output/project-context.md for project rules\n3. Read docs/epics-and-sprints-spec.md to understand existing features\n4. Produce a Product Brief with:\n   - Problem Statement\n   - User Stories (as a DM/player, I want... so that...)\n   - Acceptance Criteria (testable, specific)\n   - Priority and Dependencies\n   - Out of Scope\n5. Write the brief to: ${ctx.runDir}/01-pm-brief.md\n6. Be specific and actionable.`,
+      systemPrompt: buildAgentPrompt(pmAgent),
+      allowedTools: getToolsForAgent("pm"),
+      maxTurns: config.bmadFlow.maxTurnsPerPm,
+      model: config.agent.models.orchestrator,
+    });
+
+    const pmPath = join(ctx.runDir, "01-pm-brief.md");
+    if (!existsSync(pmPath)) writeFileSync(pmPath, pmResult.output);
+    ctx.pmBrief = readFileSync(pmPath, "utf-8");
+    ctx.stepStatus.pm = "done";
+    saveManifest(ctx);
+    await notify(`✅ *PM Brief gerado!*\n${ctx.pmBrief.slice(0, 300)}...`);
+
+    // ── Step 2: Architect ──
+    ctx.stepStatus.architect = "running";
+    saveManifest(ctx);
+    await notify("🏗️ *[2/5] Architecture* — Winston está desenhando a solução técnica...");
+
+    const archAgent = getAgent("architect");
+    if (!archAgent) throw new Error("Architect agent not found in manifest");
+
+    const archResult = await runClaude({
+      prompt: `## Your Task\nDesign the technical architecture for this feature.\n\n## PM Brief\n${ctx.pmBrief.slice(0, 4000)}\n\n## Instructions\n1. Read _bmad-output/project-context.md for project rules\n2. Explore the codebase structure\n3. Produce a Technical Spec with:\n   - Architecture Overview (components to create/modify)\n   - Data Model Changes (Supabase tables, Zustand stores)\n   - API Changes (routes, middleware)\n   - UI Components\n   - Realtime/Broadcast considerations\n   - Security (anti-metagaming, auth)\n   - Migration plan\n4. Write to: ${ctx.runDir}/02-architect-spec.md\n5. Be precise with file paths.`,
+      systemPrompt: buildAgentPrompt(archAgent),
+      allowedTools: getToolsForAgent("architect"),
+      maxTurns: config.bmadFlow.maxTurnsPerArchitect,
+      model: config.agent.models.orchestrator,
+    });
+
+    const archPath = join(ctx.runDir, "02-architect-spec.md");
+    if (!existsSync(archPath)) writeFileSync(archPath, archResult.output);
+    ctx.architectSpec = readFileSync(archPath, "utf-8");
+    ctx.stepStatus.architect = "done";
+    saveManifest(ctx);
+    await notify(`✅ *Architecture spec gerado!*\n${ctx.architectSpec.slice(0, 300)}...`);
+
+    // ── Step 3: SM (Story Breakdown) ──
+    ctx.stepStatus.sm = "running";
+    saveManifest(ctx);
+    await notify("🏃 *[3/5] Story Breakdown* — Bob está quebrando em stories...");
+
+    const smAgent = getAgent("sm");
+    if (!smAgent) throw new Error("SM agent not found in manifest");
+
+    const storySlug = description.slice(0, 20).replace(/[^a-z0-9]/gi, "-").toLowerCase();
+    const smResult = await runClaude({
+      prompt: `## Your Task\nBreak the PM Brief and Architecture Spec into implementation-ready stories.\n\n## PM Brief\n${ctx.pmBrief.slice(0, 3000)}\n\n## Architecture Spec\n${ctx.architectSpec.slice(0, 3000)}\n\n## Instructions\n1. Read existing specs in _bmad-output/implementation-artifacts/ for format reference\n2. Create 3-8 stories, each independently implementable\n3. Each story MUST include: title, acceptance criteria, tasks with file paths, dev notes\n4. Write EACH story as: _bmad-output/implementation-artifacts/bmad-${storySlug}-1.md, bmad-${storySlug}-2.md, etc.\n5. Also copy to: ${ctx.runDir}/stories/\n6. Order by dependency\n7. CRITICAL: After writing all stories, output this JSON:\n\`\`\`json\n{"stories": ["bmad-${storySlug}-1", "bmad-${storySlug}-2"]}\n\`\`\``,
+      systemPrompt: buildAgentPrompt(smAgent),
+      allowedTools: [...getToolsForAgent("sm"), "Edit"],
+      maxTurns: config.bmadFlow.maxTurnsPerSm,
+      model: config.agent.models.spec,
+    });
+
+    // Parse story IDs
+    const storyJsonMatch = smResult.output.match(/\{"stories":\s*\[([^\]]+)\]\}/);
+    if (storyJsonMatch) {
+      try {
+        const parsed = JSON.parse(storyJsonMatch[0]);
+        ctx.stories = parsed.stories.map((id: string) => ({
+          id: id.replace(".md", ""),
+          specPath: `_bmad-output/implementation-artifacts/${id.replace(".md", "")}.md`,
+        }));
+      } catch { /* fallback below */ }
+    }
+
+    // Fallback: scan for files
+    if (ctx.stories.length === 0) {
+      const implDir = join(config.projectRoot, "_bmad-output/implementation-artifacts");
+      if (existsSync(implDir)) {
+        const { readdirSync } = await import("fs");
+        const storyFiles = readdirSync(implDir)
+          .filter((f: string) => f.startsWith(`bmad-${storySlug}`) && f.endsWith(".md"))
+          .sort();
+        ctx.stories = storyFiles.map((f: string) => ({
+          id: f.replace(".md", ""),
+          specPath: `_bmad-output/implementation-artifacts/${f}`,
+        }));
+      }
+    }
+
+    writeFileSync(join(ctx.runDir, "03-sm-stories.md"),
+      `# Stories\n\n${ctx.stories.map((s, i) => `${i + 1}. ${s.id}`).join("\n")}\n\n---\n\n${smResult.output}`);
+    ctx.stepStatus.sm = "done";
+    saveManifest(ctx);
+    await notify(`✅ *${ctx.stories.length} stories criadas!*\n${ctx.stories.map((s, i) => `  ${i + 1}. ${s.id}`).join("\n")}`);
+
+    if (ctx.stories.length === 0) {
+      await notify("⚠️ *SM não produziu stories!* Pipeline interrompido.");
+      ctx.stepStatus.dev = "failed";
+      ctx.stepStatus.qa = "failed";
+      saveManifest(ctx);
+      return;
+    }
+
+    // ── Step 4: Dev (via queue) ──
+    ctx.stepStatus.dev = "running";
+    saveManifest(ctx);
+    await notify(`💻 *[4/5] Development* — Amelia implementando ${ctx.stories.length} stories em paralelo...`);
+
+    buildQueue(ctx.stories.map((s) => s.id));
+    await runQueue();
+
+    const qStatus = getQueueStatus();
+    ctx.stepStatus.dev = "done";
+    saveManifest(ctx);
+    await notify(`✅ *Dev phase completa!*\n${qStatus}`);
+
+    // ── Step 5: QA ──
+    ctx.stepStatus.qa = "running";
+    saveManifest(ctx);
+    await notify("🧪 *[5/5] QA Review* — Quinn revisando...");
+
+    const qaAgent = getAgent("qa");
+    if (!qaAgent) throw new Error("QA agent not found in manifest");
+
+    const qaResult = await runClaude({
+      prompt: `## Your Task\nReview the full BMAD pipeline output.\n\n## Feature\n${description}\n\n## PM Brief\n${ctx.pmBrief.slice(0, 2000)}\n\n## Stories\n${ctx.stories.map((s) => s.id).join(", ")}\n\n## Queue Status\n${qStatus}\n\n## Instructions\n1. Check each story against acceptance criteria\n2. Run scoped tests\n3. Check: security, i18n, anti-metagaming, accessibility\n4. Write report to: ${ctx.runDir}/05-qa-report.md`,
+      systemPrompt: buildAgentPrompt(qaAgent),
+      allowedTools: getToolsForAgent("qa"),
+      maxTurns: config.bmadFlow.maxTurnsPerQa,
+      model: config.agent.models.qa,
+    });
+
+    const qaPath = join(ctx.runDir, "05-qa-report.md");
+    if (!existsSync(qaPath)) writeFileSync(qaPath, qaResult.output);
+    ctx.stepStatus.qa = "done";
+    saveManifest(ctx);
+
+    // Final summary
+    const elapsed = getElapsed();
+    await notify(
+      `🏁 *BMAD Pipeline completo!*\n\n` +
+      `📝 *Feature:* ${description.slice(0, 100)}\n` +
+      `📋 PM: ✅ | 🏗️ Arch: ✅ | 🏃 Stories: ${ctx.stories.length} | 💻 Dev: ✅ | 🧪 QA: ✅\n` +
+      `⏱️ Tempo: ${elapsed}\n` +
+      `📁 Artifacts: ${config.bmadFlow.runsDir}/${ctx.runId}/`
+    );
+
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error("BMAD Pipeline failed", { error: err.message, runId: ctx.runId });
+    const failedStep = Object.entries(ctx.stepStatus).find(([, s]) => s === "running");
+    if (failedStep) ctx.stepStatus[failedStep[0]] = "failed";
+    saveManifest(ctx);
+    await notifyError({
+      task: `BMAD: ${description.slice(0, 50)}`,
+      message: `Falhou no passo ${failedStep?.[0] || "unknown"}: ${err.message.slice(0, 300)}`,
+      recoverable: true,
+    });
+  }
+}
+
+
 // -- Utilities --
 
 function getElapsed(): string {
@@ -915,6 +1131,9 @@ export async function handleCommand(input: string): Promise<void> {
           break;
         case "watch":
           await executeWatch(target || input);
+          break;
+        case "bmad":
+          await executeFullBmadFlow(target || input);
           break;
         case "smoke":
           await executeSmokeTest();
