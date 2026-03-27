@@ -191,6 +191,11 @@ export function PlayerInitiativeBoard({
   const isPlayerTurn = currentCombatant?.is_player ?? false;
 
   // "É sua vez!" overlay — shows on turn start, dismissible
+  // Player can disable via localStorage (B2-1 AC #8)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("turn_notifications_disabled") !== "true";
+  });
   const [overlayDismissed, setOverlayDismissed] = useState(false);
   // Reset dismissed state when turn changes (so overlay shows again on next turn)
   const prevTurnRef = useRef(currentTurnIndex);
@@ -218,7 +223,7 @@ export function PlayerInitiativeBoard({
     <div className="bg-black lg:bg-transparent min-h-screen lg:min-h-0 space-y-3 pb-32 lg:pb-0">
       {/* Story 3.2: "É sua vez!" — full-screen overlay with spring animation, auto-dismiss 3s */}
       <TurnNotificationOverlay
-        visible={isPlayerTurn && !overlayDismissed}
+        visible={isPlayerTurn && !overlayDismissed && notificationsEnabled}
         playerName={currentCombatant?.name ?? ""}
         onDismiss={() => setOverlayDismissed(true)}
       />
@@ -469,6 +474,22 @@ export function PlayerInitiativeBoard({
           );
         })}
       </ul>
+
+      {/* Notification toggle */}
+      <div className="flex justify-center py-2">
+        <button
+          type="button"
+          onClick={() => {
+            const next = !notificationsEnabled;
+            setNotificationsEnabled(next);
+            localStorage.setItem("turn_notifications_disabled", next ? "false" : "true");
+          }}
+          className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+          data-testid="notification-toggle"
+        >
+          {notificationsEnabled ? t("notifications_on") : t("notifications_off")}
+        </button>
+      </div>
 
       {/* Bottom-anchored bar for player's own character (mobile only) */}
       {primaryPlayerChar && primaryPlayerChar.current_hp != null && primaryPlayerChar.max_hp != null && (

@@ -608,6 +608,8 @@
     "late_join_waiting": "Waiting for the DM to approve your entry...",
     "late_join_rejected": "The DM did not accept your entry at this time.",
     "late_join_retry": "Try Again",
+    "notifications_on": "🔔 Turn notifications ON",
+    "notifications_off": "🔕 Turn notifications OFF",
     "bottom_bar_your_character": "Your Character",
     "bottom_bar_ac_label": "AC",
     "bottom_bar_conditions_label": "Conditions",

@@ -614,6 +614,8 @@
     "auto_join_select_character": "Selecione seu personagem",
     "auto_join_confirm": "Confirmar e Entrar",
     "auto_join_prefilled": "Seus dados foram carregados automaticamente. Confira e entre!",
+    "notifications_on": "🔔 Notificações de turno LIGADAS",
+    "notifications_off": "🔕 Notificações de turno DESLIGADAS",
     "bottom_bar_your_character": "Seu Personagem",
     "bottom_bar_ac_label": "CA",
     "bottom_bar_conditions_label": "Condições"
