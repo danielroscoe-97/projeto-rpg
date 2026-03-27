@@ -1,3 +1,4 @@
+-- 019_mesa_model.sql
 -- Migration 019: Mesa Model — dm_plan snapshot on sessions (Epic 5, Story 5.5)
 -- dm_plan is a SNAPSHOT at session creation time (never updated when subscription changes)
 
