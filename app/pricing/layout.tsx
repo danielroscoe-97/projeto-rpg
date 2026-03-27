@@ -1,16 +1,23 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
-import { SrdInitializer } from "@/components/srd/SrdInitializer";
-import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
-import { GuestBanner } from "@/components/guest/GuestBanner";
+import { Footer } from "@/components/marketing/Footer";
 
-export default function TryLayout({ children }: { children: React.ReactNode }) {
+export default function PricingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="min-h-screen flex flex-col">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-gold focus:text-surface-primary focus:rounded-lg focus:text-sm focus:font-semibold"
+      >
+        Skip to main content
+      </a>
       <Navbar
         brand="Pocket DM"
         brandHref="/"
-        links={[{ href: "/pricing", label: "Preços" }]}
         rightSlot={
           <>
             <Link
@@ -28,14 +35,8 @@ export default function TryLayout({ children }: { children: React.ReactNode }) {
           </>
         }
       />
-      <SrdInitializer />
-      <FloatingCardContainer />
-      <main className="flex-1 pt-[72px] isolate">
-        <GuestBanner />
-        <div className="p-6">
-          {children}
-        </div>
-      </main>
+      <main id="main-content" className="flex-1 pt-[72px]">{children}</main>
+      <Footer />
     </div>
   );
 }

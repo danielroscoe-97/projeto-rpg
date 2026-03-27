@@ -938,6 +938,13 @@ function FinalCtaSection() {
             </Link>
             <span className="text-white/20">|</span>
             <Link
+              href="/pricing"
+              className="text-gold hover:text-gold/80 underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
+            >
+              Ver planos Pro
+            </Link>
+            <span className="text-white/20">|</span>
+            <Link
               href="/auth/login"
               className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
             >
@@ -961,6 +968,7 @@ export default function LandingPage() {
           { href: "#features", label: "Features" },
           { href: "#como-funciona", label: "Como Funciona" },
           { href: "#comparativo", label: "Comparativo" },
+          { href: "/pricing", label: "Preços" },
         ]}
         rightSlot={
           <>

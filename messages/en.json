@@ -41,6 +41,7 @@
     "footer_brand": "Pocket DM",
     "footer_subtitle": "Combat tracker for D&D 5e Dungeon Masters",
     "footer_signup": "Sign Up",
+    "footer_pricing": "Pricing",
     "footer_srd_notice": "Uses the System Reference Document 5.1 and 5.2 under the",
     "footer_srd_license": "CC-BY-4.0 License"
   },
@@ -1013,7 +1014,56 @@
       "cr_calculator": "CR calculator",
       "file_sharing": "File sharing",
       "email_invites": "Email invites"
-    }
+    },
+    "checkout_success_title": "Welcome to Pro! 🎉",
+    "checkout_success_subtitle": "Your subscription is active. Enjoy all features.",
+    "checkout_success_unlocked": "You unlocked:",
+    "checkout_success_create_campaign": "Create Campaign",
+    "checkout_success_dashboard": "Go to Dashboard",
+    "checkout_success_redirect": "Redirecting in {seconds}s..."
+  },
+  "pricing": {
+    "title": "Plans & Pricing",
+    "subtitle": "Start free. Upgrade when you need to.",
+    "free_title": "Free",
+    "pro_title": "Pro",
+    "free_price": "R$ 0",
+    "pro_price_monthly": "R$ 14.90",
+    "pro_price_yearly": "R$ 119.90",
+    "per_month": "/mo",
+    "per_year": "/yr",
+    "save_badge": "Save ~33%",
+    "free_cta": "Get Started Free",
+    "pro_cta": "Subscribe Pro",
+    "most_popular": "Most popular",
+    "free_features": {
+      "combat_tracker": "Full combat tracker (guest mode)",
+      "oracle_srd": "Oracle SRD (monsters + spells)",
+      "clickable_dice": "Clickable dice with advantage/disadvantage"
+    },
+    "pro_features": {
+      "persistent_campaigns": "Persistent campaigns",
+      "saved_presets": "Saved presets",
+      "export_data": "Data export",
+      "homebrew": "Homebrew content",
+      "cr_calculator": "CR calculator",
+      "file_sharing": "File sharing",
+      "email_invites": "Email invites",
+      "soundboard": "Combat soundboard",
+      "dm_notes": "Private DM notes",
+      "session_analytics": "Session analytics"
+    },
+    "includes_free": "Everything in Free, plus:",
+    "faq_title": "Frequently Asked Questions",
+    "faq_1_q": "Can I use Pocket DM without paying?",
+    "faq_1_a": "Yes! The Free plan includes the full combat tracker, the Oracle SRD with monsters and spells, and clickable dice. Perfect for one-off sessions.",
+    "faq_2_q": "Can I cancel anytime?",
+    "faq_2_a": "Yes. No commitment, no penalties. You keep Pro access until the end of your paid period.",
+    "faq_3_q": "What happens if my subscription expires?",
+    "faq_3_a": "Your data stays saved. You go back to the Free plan and can reactivate Pro whenever you want, without losing anything.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearly_equivalent": "~R$ 9.99/mo"
   },
   "audio": {
     "soundboard": "Combat Sounds",

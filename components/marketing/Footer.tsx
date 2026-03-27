@@ -28,6 +28,12 @@ export async function Footer() {
               {t("footer_signup")}
             </Link>
             <Link
+              href="/pricing"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              {t("footer_pricing")}
+            </Link>
+            <Link
               href="/legal/attribution"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
             >

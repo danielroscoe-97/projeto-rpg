@@ -114,13 +114,33 @@ export async function POST(request: NextRequest) {
         const userId = subscription.metadata?.user_id;
         if (!userId) break;
 
-        await supabase
-          .from("subscriptions")
-          .update({
-            status: "canceled",
-            plan: "free",
-          })
-          .eq("user_id", userId);
+        // Grace period: keep Pro features until period end
+        const periodEnd = subscription.items?.data?.[0]?.current_period_end;
+        const periodEndDate = periodEnd ? new Date(periodEnd * 1000) : null;
+        const isStillActive = periodEndDate && periodEndDate > new Date();
+
+        if (isStillActive) {
+          // Grace period — keep pro until period ends
+          await supabase
+            .from("subscriptions")
+            .update({
+              status: "canceled",
+              plan: "pro",
+              cancel_at_period_end: true,
+              current_period_end: periodEndDate.toISOString(),
+            })
+            .eq("user_id", userId);
+        } else {
+          // Period already ended — downgrade immediately
+          await supabase
+            .from("subscriptions")
+            .update({
+              status: "canceled",
+              plan: "free",
+              cancel_at_period_end: false,
+            })
+            .eq("user_id", userId);
+        }
         break;
       }
     }

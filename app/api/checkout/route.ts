@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
       ...customerOptions,
-      success_url: `${origin}/app/settings?tab=billing&success=true`,
+      success_url: `${origin}/app/checkout/success`,
       cancel_url: `${origin}/app/settings?tab=billing&canceled=true`,
       metadata: {
         user_id: user.id,
