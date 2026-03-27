@@ -125,6 +125,7 @@ export async function persistNewCombatant(
     group_order?: number | null;
     dm_notes?: string;
     player_notes?: string;
+    player_character_id?: string | null;
   }
 ): Promise<void> {
   const supabase = createClient();
@@ -151,6 +152,7 @@ export async function persistNewCombatant(
       group_order: combatant.group_order ?? null,
       dm_notes: combatant.dm_notes ?? '',
       player_notes: combatant.player_notes ?? '',
+      player_character_id: combatant.player_character_id ?? null,
     });
   if (error) throw new Error(error.message);
 }

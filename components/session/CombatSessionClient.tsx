@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
-import { persistInitiativeAndStartCombat, persistInitiativeOrder } from "@/lib/supabase/session";
+import { persistInitiativeAndStartCombat, persistInitiativeOrder, persistNewCombatant } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 
@@ -133,6 +133,15 @@ export function CombatSessionClient({
 
     if (store.encounter_id) {
       try {
+        // Insert any combatants added client-side (e.g. campaign players)
+        // that don't exist in the DB yet (Bug #56)
+        const existingIds = new Set(initialCombatants.map((c) => c.id));
+        const brandNew = sorted.filter((c) => !existingIds.has(c.id));
+        if (brandNew.length > 0) {
+          await Promise.all(
+            brandNew.map((c) => persistNewCombatant(store.encounter_id!, c))
+          );
+        }
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
         // Notify players that combat has started

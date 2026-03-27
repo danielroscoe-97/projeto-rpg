@@ -139,7 +139,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         group_order: null,
         dm_notes: "",
         player_notes: "",
-        player_character_id: null,
+        player_character_id: pc.id,
       };
       addCombatant(newCombatant);
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -341,7 +341,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       is_player: false,
       monster_id: sel?.id ?? null,
       token_url: null,
-      creature_type: null,
+      creature_type: selType,
       display_name: displayName,
       monster_group_id: null,
       group_order: null,
@@ -383,7 +383,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           group_order: null,
           dm_notes: "",
           player_notes: "",
-          player_character_id: null,
+          player_character_id: pc.id,
         };
         addCombatant(newCombatant);
         currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -545,20 +545,22 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             {t("encounter_description")}
           </p>
         </div>
-        {/* Share button — creates session on-demand if needed */}
-        {effectiveSessionId ? (
-          <ShareSessionButton sessionId={effectiveSessionId} />
-        ) : (
-          <button
-            type="button"
-            onClick={handlePrepareShare}
-            disabled={isCreatingSession}
-            className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[44px] flex items-center gap-1.5"
-            data-testid="share-prepare-btn"
-          >
-            <Share2 className="w-4 h-4" aria-hidden="true" />
-            {isCreatingSession ? t("starting") : t("share_session")}
-          </button>
+        {/* Share button — only show here when not inside /app/session/[id] (which has its own) */}
+        {!sessionId && (
+          effectiveSessionId ? (
+            <ShareSessionButton sessionId={effectiveSessionId} />
+          ) : (
+            <button
+              type="button"
+              onClick={handlePrepareShare}
+              disabled={isCreatingSession}
+              className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[44px] flex items-center gap-1.5"
+              data-testid="share-prepare-btn"
+            >
+              <Share2 className="w-4 h-4" aria-hidden="true" />
+              {isCreatingSession ? t("starting") : t("share_session")}
+            </button>
+          )
         )}
       </div>
 

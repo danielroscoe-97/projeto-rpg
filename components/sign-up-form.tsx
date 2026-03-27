@@ -54,7 +54,7 @@ export function SignUpForm({
         redirectUrl += `?invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -62,16 +62,22 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
+      // Supabase returns identities=[] when a user already exists (fake signup)
+      if (data.user && data.user.identities?.length === 0) {
+        setError(te("user_already_registered"));
+        setIsLoading(false);
+        return;
+      }
       let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}`;
       if (inviteToken && inviteCampaignId) {
         successUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
       router.push(successUrl);
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : "";
-      console.error("[signup]", msg);
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error("[signup] error:", msg, error);
       const key = getAuthErrorKey(msg);
-      setError(key ? te(key) : tc("error_generic"));
+      setError(key ? te(key) : `${tc("error_generic")} (${msg})`);
     } finally {
       setIsLoading(false);
     }

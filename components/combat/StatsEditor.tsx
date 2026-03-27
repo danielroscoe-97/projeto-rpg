@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Combatant } from "@/lib/types/combat";
+import { generateCreatureName } from "@/lib/utils/creature-name-generator";
+import { useCombatStore } from "@/lib/stores/combat-store";
 
 interface StatsEditorProps {
   combatant: Combatant;
@@ -14,7 +16,15 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
   const t = useTranslations("combat");
   const tc = useTranslations("common");
   const [name, setName] = useState(combatant.name);
-  const [displayName, setDisplayName] = useState(combatant.display_name ?? "");
+  // Auto-generate display_name if null for non-player combatants (Bug #28)
+  const [displayName, setDisplayName] = useState(() => {
+    if (combatant.display_name) return combatant.display_name;
+    if (combatant.is_player) return "";
+    const existingNames = useCombatStore.getState().combatants
+      .filter((c) => !c.is_player && c.display_name && c.id !== combatant.id)
+      .map((c) => c.display_name!);
+    return generateCreatureName(combatant.creature_type, existingNames);
+  });
   const [maxHp, setMaxHp] = useState(String(combatant.max_hp));
   const [ac, setAc] = useState(String(combatant.ac));
   const [dc, setDc] = useState(combatant.spell_save_dc !== null ? String(combatant.spell_save_dc) : "");
