@@ -7,6 +7,7 @@ import { PlayerBottomBar } from "@/components/player/PlayerBottomBar";
 import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
 import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOverlay";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
+import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords, Skull } from "lucide-react";
 
@@ -357,6 +358,9 @@ export function PlayerInitiativeBoard({
           </p>
         </div>
       )}
+
+      {/* HP legend for first-time players (B2-6) */}
+      <HPLegendOverlay />
 
       {/* Initiative Order */}
       <ul
