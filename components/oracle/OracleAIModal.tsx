@@ -185,13 +185,13 @@ export function OracleAIModal() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-150"
+        className="fixed inset-0 z-[10001] bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-150"
         onClick={handleDismiss}
         aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-[61] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4">
+      <div className="fixed inset-0 z-[10002] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4">
         <div className="w-full max-w-[640px] rounded-xl border border-[#c9a959]/30 bg-[#1a1a28] shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150">
           {/* Input */}
           <div className="flex items-center border-b border-[#c9a959]/20 px-4">

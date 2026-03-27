@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { getConditionsByCategory } from "@/lib/srd/srd-search";
+import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { ConditionCard } from "@/components/oracle/ConditionCard";
 
@@ -15,13 +15,14 @@ const CATEGORY_BORDER: Record<string, string> = {
 export function ConditionReference() {
   const t = useTranslations("compendium");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+  const srdConditions = useSrdStore((s) => s.conditions);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [nameFilter, setNameFilter] = useState("");
   const [activeTab, setActiveTab] = useState<"condition" | "disease" | "status">("condition");
 
-  const conditions = getConditionsByCategory("condition");
-  const diseases = getConditionsByCategory("disease");
-  const statuses = getConditionsByCategory("status");
+  const conditions = useMemo(() => srdConditions.filter((c) => c.category === "condition"), [srdConditions]);
+  const diseases = useMemo(() => srdConditions.filter((c) => c.category === "disease"), [srdConditions]);
+  const statuses = useMemo(() => srdConditions.filter((c) => c.category === "status"), [srdConditions]);
 
   const tabs = [
     { key: "condition" as const, label: t("conditions_tab"), count: conditions.length },

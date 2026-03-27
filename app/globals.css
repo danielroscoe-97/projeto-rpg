@@ -109,6 +109,26 @@ html {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
   }
+
+  /* Custom scrollbars — dark/gold theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(201, 169, 89, 0.25);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 169, 89, 0.5);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201, 169, 89, 0.25) transparent;
+  }
 }
 
 @layer components {

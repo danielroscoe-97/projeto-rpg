@@ -98,14 +98,16 @@ export function CombatantSetupRow({
         )}
       </div>
 
-      {/* Monster token */}
-      {combatant.monster_id && (
+      {/* Monster token (or spacer to keep alignment) */}
+      {combatant.monster_id ? (
         <MonsterToken
           tokenUrl={combatant.token_url ?? undefined}
           creatureType={combatant.creature_type ?? undefined}
           name={combatant.name}
           size={32}
         />
+      ) : (
+        <span className="w-8 flex-shrink-0" />
       )}
 
       {/* Name */}

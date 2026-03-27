@@ -324,7 +324,7 @@ export function MonsterStatBlock({
               notation={`1d20${dexMod >= 0 ? "+" : ""}${dexMod}`}
               label={`${monster.name} Initiative`}
             >
-              {signedStr(dexMod)} ({10 + dexMod})
+              {signedStr(dexMod)} (<span title="Passive Initiative">{ 10 + dexMod}</span>)
             </ClickableRoll>
           </span>
         </p>

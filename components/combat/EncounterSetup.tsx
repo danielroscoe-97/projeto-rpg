@@ -503,6 +503,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
         <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
         <span className="w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
+        <span className="w-8 flex-shrink-0" /> {/* monster token spacer */}
         <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
         <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
@@ -565,6 +566,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />
+        <span className="w-8 flex-shrink-0" /> {/* monster token spacer */}
         <input
           type="text"
           value={addRow.name}
