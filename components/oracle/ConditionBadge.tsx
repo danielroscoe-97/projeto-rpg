@@ -70,7 +70,7 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }:
         aria-label={t("condition_view_aria", { name: localizedName })}
       >
         {IconComponent && <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />}
-        {condition}
+        {localizedName}
       </button>
       {onRemove && (
         <button

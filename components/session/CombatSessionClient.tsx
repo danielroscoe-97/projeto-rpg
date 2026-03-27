@@ -486,12 +486,12 @@ export function CombatSessionClient({
   // Active combat view
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-foreground font-semibold">
           {encounter_name && <span className="mr-2">{encounter_name}</span>}
           {t("round")} <span className="font-mono text-gold">{round_number}</span>
         </h2>
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
           </span>
