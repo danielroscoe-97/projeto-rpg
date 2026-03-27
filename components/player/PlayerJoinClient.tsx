@@ -399,6 +399,11 @@ export function PlayerJoinClient({
           }
         });
 
+      // Register player presence for DM visibility
+      channel.on("presence", { event: "sync" }, () => {
+        // Presence synced — no action needed client-side
+      });
+
       channelRef.current = channel;
       return channel;
     }
@@ -497,6 +502,12 @@ export function PlayerJoinClient({
           hp: data.hp,
           ac: data.ac,
         },
+      });
+      // Track presence so DM sees this player online
+      channelRef.current.track({
+        player_id: effectiveTokenId,
+        name: data.name,
+        joined_at: new Date().toISOString(),
       });
     }
   }, [effectiveTokenId, sessionId]);

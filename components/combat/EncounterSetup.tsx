@@ -28,6 +28,8 @@ interface EncounterSetupProps {
   sessionId?: string | null;
   /** Called when an on-demand session is created for sharing */
   onSessionCreated?: (sessionId: string) => void;
+  /** Number of players currently online (for soft gate) */
+  playersOnline?: number;
 }
 
 interface AddRowForm {
@@ -59,7 +61,7 @@ function getDefaultDisplayName(template: string, existingCombatants: Combatant[]
   return template.replace("{n}", String(maxN + 1));
 }
 
-export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId, onSessionCreated }: EncounterSetupProps) {
+export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId, onSessionCreated, playersOnline = 0 }: EncounterSetupProps) {
   const t = useTranslations("combat");
   const {
     combatants,
@@ -77,6 +79,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [softGateDismissed, setSoftGateDismissed] = useState(false);
   const [addRowGlow, setAddRowGlow] = useState(false);
   const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
   const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
@@ -761,15 +764,31 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             </div>
           )}
         </div>
-        <button
-          type="button"
-          onClick={handleStartCombat}
-          disabled={combatants.length === 0 || isPending}
-          className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
-          data-testid="start-combat-btn"
-        >
-          {isPending ? t("starting") : t("start_combat")}
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Soft gate: warn if no players online (dismissible) */}
+          {sessionId && playersOnline === 0 && !softGateDismissed && combatants.length > 0 && (
+            <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-900/20 border border-amber-900/40 rounded px-2 py-1">
+              <span>{t("no_players_online_warning")}</span>
+              <button
+                type="button"
+                onClick={() => setSoftGateDismissed(true)}
+                className="text-amber-400/60 hover:text-amber-400 underline"
+                data-testid="dismiss-soft-gate"
+              >
+                {t("dismiss")}
+              </button>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleStartCombat}
+            disabled={combatants.length === 0 || isPending}
+            className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+            data-testid="start-combat-btn"
+          >
+            {isPending ? t("starting") : t("start_combat")}
+          </button>
+        </div>
       </div>
     </div>
   );

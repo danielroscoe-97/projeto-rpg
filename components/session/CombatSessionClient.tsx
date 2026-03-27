@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import { persistInitiativeAndStartCombat, persistInitiativeOrder } from "@/lib/supabase/session";
@@ -21,6 +21,7 @@ import { setLastHpMode } from "@/components/combat/HpAdjuster";
 import { broadcastEvent, getDmChannel } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
+import { PlayersOnlinePanel, type OnlinePlayer } from "@/components/session/PlayersOnlinePanel";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -52,6 +53,9 @@ export function CombatSessionClient({
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
+  // Players online via Supabase Presence
+  const [onlinePlayers, setOnlinePlayers] = useState<OnlinePlayer[]>([]);
+  const presenceTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const { combatants, is_active, setError } =
     useCombatStore();
@@ -208,6 +212,80 @@ export function CombatSessionClient({
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
   });
 
+  // Track player presence via Supabase Presence (DM sees who's online)
+  useEffect(() => {
+    const sid = sessionId ?? onDemandSessionId;
+    if (!sid) return;
+    const ch = getDmChannel(sid);
+    const timers = presenceTimersRef.current;
+
+    const handlePresenceSync = () => {
+      const presenceState = ch.presenceState();
+      const players: OnlinePlayer[] = [];
+      const activeIds = new Set<string>();
+
+      for (const [, presences] of Object.entries(presenceState)) {
+        for (const p of presences as Array<{ player_id?: string; name?: string; joined_at?: string }>) {
+          if (p.player_id && p.name) {
+            activeIds.add(p.player_id);
+            // Clear any pending offline timer
+            const timer = timers.get(p.player_id);
+            if (timer) {
+              clearTimeout(timer);
+              timers.delete(p.player_id);
+            }
+            // Match to campaign character if possible
+            const character = preloadedPlayers?.find(
+              (pc) => pc.name.toLowerCase() === p.name!.toLowerCase()
+            );
+            players.push({
+              id: p.player_id,
+              name: p.name,
+              isOnline: true,
+              characterName: character?.name,
+              joinedAt: p.joined_at || new Date().toISOString(),
+            });
+          }
+        }
+      }
+
+      setOnlinePlayers((prev) => {
+        // Merge: keep previously known players that left, mark offline after 5s
+        const merged = [...players];
+        for (const old of prev) {
+          if (!activeIds.has(old.id)) {
+            // Player left — start 5s timer to mark offline
+            if (!timers.has(old.id)) {
+              timers.set(old.id, setTimeout(() => {
+                timers.delete(old.id);
+                setOnlinePlayers((current) =>
+                  current.map((p) => p.id === old.id ? { ...p, isOnline: false } : p)
+                );
+              }, 5000));
+            }
+            merged.push({ ...old, isOnline: old.isOnline });
+          }
+        }
+        return merged;
+      });
+    };
+
+    ch.on("presence", { event: "sync" }, handlePresenceSync);
+
+    // Also notify DM via toast when player auto-joins
+    ch.on("broadcast", { event: "player:joined" }, ({ payload }) => {
+      if (payload?.name) {
+        toast.info(t("player_auto_joined", { name: payload.name }));
+      }
+    });
+
+    return () => {
+      // Cleanup timers
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    };
+  }, [sessionId, onDemandSessionId, preloadedPlayers, t]);
+
   // Listen for late-join requests from players
   useEffect(() => {
     const sid = getSessionId();
@@ -288,7 +366,23 @@ export function CombatSessionClient({
 
   // Show unified setup if not yet active
   if (!is_active) {
-    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
+    return (
+      <>
+        {onlinePlayers.length > 0 && (
+          <div className="w-full max-w-6xl mx-auto px-2 mb-4">
+            <PlayersOnlinePanel players={onlinePlayers} />
+          </div>
+        )}
+        <EncounterSetup
+          onStartCombat={handleStartCombat}
+          campaignId={campaignId}
+          preloadedPlayers={preloadedPlayers}
+          sessionId={sessionId}
+          onSessionCreated={setOnDemandSessionId}
+          playersOnline={onlinePlayers.filter((p) => p.isOnline).length}
+        />
+      </>
+    );
   }
 
   // Active combat view
