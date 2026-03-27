@@ -43,11 +43,21 @@ function stripMonsterStats<T extends { is_player?: boolean; current_hp?: number;
   };
 }
 
+/** Replace real name with display_name for non-player combatants (anti-metagaming). */
+function applyDisplayName(c: Record<string, unknown>): Record<string, unknown> {
+  if (!c.is_player && c.display_name) {
+    return { ...c, name: c.display_name, display_name: undefined };
+  }
+  // Always strip display_name from player broadcast — DM-only field
+  const { display_name: _display_name, ...safe } = c;
+  return safe;
+}
+
 /** Sanitize a full combatant object for player broadcast. */
 function sanitizeCombatant<T extends { dm_notes?: unknown; is_player?: boolean; current_hp?: number; max_hp?: number; temp_hp?: number; ac?: number; spell_save_dc?: number | null }>(
   c: T
 ): Record<string, unknown> {
-  return stripMonsterStats(stripDmFields(c) as T);
+  return applyDisplayName(stripMonsterStats(stripDmFields(c) as T));
 }
 
 /** Remove sensitive data from any combatant objects in the event payload. */
@@ -75,10 +85,10 @@ function sanitizePayload(event: RealtimeEvent): RealtimeEvent {
     } as unknown as RealtimeEvent;
   }
   if (event.type === "combat:stats_update") {
-    // Strip AC, spell_save_dc, HP from broadcast — only name changes reach players.
-    // Note: applies to all combatants (no is_player context available here).
+    // Strip AC, spell_save_dc, HP, and display_name from broadcast — only name changes reach players.
+    // display_name is a DM-only anti-metagaming alias — must never reach the player.
     // Player HP/AC updates reach via combat:hp_update instead.
-    const { ac: _ac2, spell_save_dc: _spell_save_dc2, max_hp: _max_hp2, current_hp: _current_hp2, ...safe } = event;
+    const { ac: _ac2, spell_save_dc: _sdc2, max_hp: _mhp2, current_hp: _chp2, display_name: _dn2, ...safe } = event;
     return { ...safe, type: event.type } as unknown as RealtimeEvent;
   }
   return event;

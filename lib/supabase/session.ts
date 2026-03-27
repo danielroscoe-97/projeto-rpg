@@ -120,6 +120,9 @@ export async function persistNewCombatant(
     is_defeated: boolean;
     is_player: boolean;
     monster_id: string | null;
+    display_name?: string | null;
+    monster_group_id?: string | null;
+    group_order?: number | null;
     dm_notes?: string;
     player_notes?: string;
   }
@@ -143,6 +146,9 @@ export async function persistNewCombatant(
       is_defeated: combatant.is_defeated,
       is_player: combatant.is_player,
       monster_id: combatant.monster_id,
+      display_name: combatant.display_name ?? null,
+      monster_group_id: combatant.monster_group_id ?? null,
+      group_order: combatant.group_order ?? null,
       dm_notes: combatant.dm_notes ?? '',
       player_notes: combatant.player_notes ?? '',
     });

@@ -77,6 +77,7 @@ export function PlayerJoinClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredName, setRegisteredName] = useState<string | undefined>();
   const [joinedPlayers, setJoinedPlayers] = useState<Array<{ id: string; name: string }>>([]);
+  const [nextCombatantId, setNextCombatantId] = useState<string | null>(null);
   const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
@@ -220,6 +221,7 @@ export function PlayerJoinClient({
           if (payload.combatants) updateCombatants(payload.combatants);
           if (payload.round_number !== undefined) setRound(payload.round_number);
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
+          setNextCombatantId(null); // Clear on state sync / combat end
           // state_sync means combat is active — update state to exit lobby
           setActive(true);
           if (payload.encounter_id) setCurrentEncounterId(payload.encounter_id);
@@ -227,6 +229,7 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
           if (payload.round_number !== undefined) setRound(payload.round_number);
+          setNextCombatantId(payload.next_combatant_id ?? null);
         })
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
           if (payload.combatant_id) {
@@ -551,6 +554,7 @@ export function PlayerJoinClient({
           roundNumber={round}
           rulesetVersion={rulesetVersion}
           combatLog={combatLog}
+          nextCombatantId={nextCombatantId}
           onPlayerNote={(combatantId, note) => {
             // Broadcast player note to DM via realtime channel
             if (channelRef.current) {

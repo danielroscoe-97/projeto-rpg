@@ -91,6 +91,9 @@ const makeC = (id: string, name: string): Combatant => ({
   monster_id: null,
   token_url: null,
   creature_type: null,
+  display_name: null,
+  monster_group_id: null,
+  group_order: null,
   dm_notes: "",
   player_notes: "",
 });

@@ -112,6 +112,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         monster_id: null,
         token_url: null,
         creature_type: null,
+        display_name: null,
+        monster_group_id: null,
+        group_order: null,
         dm_notes: "",
         player_notes: "",
       };
@@ -166,6 +169,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           monster_id: null,
           token_url: null,
           creature_type: null,
+          display_name: null,
+          monster_group_id: null,
+          group_order: null,
           dm_notes: "",
           player_notes: `token:${payload.id}`,
         });
@@ -201,6 +207,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         monster_id: monster.id,
         token_url: monster.token_url ?? null,
         creature_type: monster.type ?? null,
+        display_name: null,
+        monster_group_id: null,
+        group_order: null,
         dm_notes: "",
         player_notes: "",
       });
@@ -209,6 +218,41 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       setAddRow(EMPTY_ADD_ROW);
     },
     [addCombatant]
+  );
+
+  // Add a group of N monsters with shared group ID
+  const handleSelectMonsterGroup = useCallback(
+    (monster: SrdMonster, qty: number) => {
+      const groupId = crypto.randomUUID();
+      const newCombatants: Omit<Combatant, "id">[] = [];
+      for (let i = 1; i <= qty; i++) {
+        newCombatants.push({
+          name: `${monster.name} ${i}`,
+          current_hp: monster.hit_points,
+          max_hp: monster.hit_points,
+          temp_hp: 0,
+          ac: monster.armor_class,
+          spell_save_dc: null,
+          initiative: null,
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: monster.ruleset_version,
+          is_defeated: false,
+          is_player: false,
+          monster_id: monster.id,
+          token_url: monster.token_url ?? null,
+          creature_type: monster.type ?? null,
+          display_name: null,
+          monster_group_id: groupId,
+          group_order: i,
+          dm_notes: "",
+          player_notes: "",
+        });
+      }
+      useCombatStore.getState().addMonsterGroup(newCombatants);
+      setAddRow(EMPTY_ADD_ROW);
+    },
+    []
   );
 
   // Trigger golden glow on the add row after monster selection
@@ -254,6 +298,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       monster_id: sel?.id ?? null,
       token_url: null,
       creature_type: null,
+      display_name: null,
+      monster_group_id: null,
+      group_order: null,
       dm_notes: "",
       player_notes: addRow.notes.trim(),
     });
@@ -286,6 +333,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           monster_id: null,
           token_url: null,
           creature_type: null,
+          display_name: null,
+          monster_group_id: null,
+          group_order: null,
           dm_notes: "",
           player_notes: "",
         };
@@ -319,6 +369,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             monster_id: pm.monster_id,
             token_url: null,
             creature_type: null,
+            display_name: null,
+            monster_group_id: null,
+            group_order: null,
             dm_notes: "",
             player_notes: "",
           };
@@ -381,6 +434,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         monster_id: source.monster_id,
         token_url: source.token_url,
         creature_type: source.creature_type,
+        display_name: source.display_name,
+        monster_group_id: source.monster_group_id,
+        group_order: null,
         dm_notes: "",
         player_notes: "",
       });
@@ -496,6 +552,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         rulesetVersion={rulesetVersion}
         onSelectMonster={handleSelectMonster}
         onMonsterAdded={handleMonsterAdded}
+        onSelectMonsterGroup={handleSelectMonsterGroup}
       />
 
       {/* Column headers — always visible, aligned with both rows and add-row */}

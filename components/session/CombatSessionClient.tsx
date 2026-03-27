@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
-import { persistInitiativeAndStartCombat } from "@/lib/supabase/session";
+import { persistInitiativeAndStartCombat, persistInitiativeOrder } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
@@ -16,8 +16,11 @@ import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
+import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode } from "@/components/combat/HpAdjuster";
-import { broadcastEvent } from "@/lib/realtime/broadcast";
+import { broadcastEvent, getDmChannel } from "@/lib/realtime/broadcast";
+import { toast } from "sonner";
+import type { Combatant } from "@/lib/types/combat";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -204,6 +207,80 @@ export function CombatSessionClient({
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
   });
 
+  // Listen for late-join requests from players
+  useEffect(() => {
+    const sid = getSessionId();
+    if (!sid || !is_active) return;
+    const ch = getDmChannel(sid);
+    const activeToastIds: string[] = [];
+
+    const handleLateJoin = ({ payload }: { payload: Record<string, unknown> }) => {
+      const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id } = payload as {
+        player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string;
+      };
+
+      const toastId = toast(
+        t("late_join_notification", { name: player_name, initiative: pInit }),
+        {
+          duration: Infinity,
+          action: {
+            label: t("late_join_accept"),
+            onClick: () => {
+              // Accept: add as player combatant via mid-combat add
+              handleAddCombatant({
+                name: player_name,
+                current_hp: pHp ?? 0,
+                max_hp: pHp ?? 0,
+                temp_hp: 0,
+                ac: pAc ?? 0,
+                spell_save_dc: null,
+                initiative: pInit,
+                initiative_order: null,
+                conditions: [],
+                ruleset_version: null,
+                is_defeated: false,
+                is_player: true,
+                monster_id: null,
+                token_url: null,
+                creature_type: null,
+                display_name: null,
+                monster_group_id: null,
+                group_order: null,
+                dm_notes: "",
+                player_notes: "",
+              } as Omit<Combatant, "id">);
+              broadcastEvent(sid, {
+                type: "combat:late_join_response",
+                request_id,
+                accepted: true,
+              } as import("@/lib/types/realtime").RealtimeEvent);
+            },
+          },
+          cancel: {
+            label: t("late_join_reject"),
+            onClick: () => {
+              broadcastEvent(sid, {
+                type: "combat:late_join_response",
+                request_id,
+                accepted: false,
+              } as import("@/lib/types/realtime").RealtimeEvent);
+            },
+          },
+        }
+      );
+      activeToastIds.push(toastId as string);
+    };
+
+    ch.on("broadcast", { event: "combat:late_join_request" }, handleLateJoin);
+
+    return () => {
+      // Remove only this listener — do NOT unsubscribe the shared channel
+      ch.off("broadcast", { event: "combat:late_join_request" });
+      // Dismiss any pending late-join toasts on unmount / combat end
+      activeToastIds.forEach((id) => toast.dismiss(id));
+    };
+  }, [is_active, getSessionId, handleAddCombatant, t]);
+
   // Show unified setup if not yet active
   if (!is_active) {
     return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
@@ -270,43 +347,160 @@ export function CombatSessionClient({
         />
       )}
 
-      <div
-        role="list"
-        aria-label={t("initiative_order")}
-        data-testid="initiative-list"
-        className="space-y-2"
-      >
-        <SortableCombatantList
-          combatants={combatants}
-          onReorder={handleReorderCombatants}
-          renderItem={(c, dragHandleProps) => {
-            const index = combatants.findIndex((x) => x.id === c.id);
-            return (
-              <div className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
-                <CombatantRow
-                  combatant={c}
-                  isCurrentTurn={index === current_turn_index}
-                  showActions
-                  dragHandleProps={dragHandleProps}
-                  onApplyDamage={handleApplyDamage}
-                  onApplyHealing={handleApplyHealing}
-                  onSetTempHp={handleSetTempHp}
-                  onToggleCondition={handleToggleCondition}
-                  onSetDefeated={handleSetDefeated}
-                  onRemoveCombatant={handleRemoveCombatant}
-                  onUpdateStats={handleUpdateStats}
-                  onSetInitiative={handleSetInitiative}
-                  onSwitchVersion={handleSwitchVersion}
-                  onUpdateDmNotes={handleUpdateDmNotes}
-                  onUpdatePlayerNotes={handleUpdatePlayerNotes}
-                />
-              </div>
-            );
-          }}
-        />
-      </div>
+      <CombatList
+        combatants={combatants}
+        currentTurnIndex={current_turn_index}
+        focusedIndex={focusedIndex}
+        expandedGroups={useCombatStore((s) => s.expandedGroups)}
+        onReorder={handleReorderCombatants}
+        onApplyDamage={handleApplyDamage}
+        onApplyHealing={handleApplyHealing}
+        onSetTempHp={handleSetTempHp}
+        onToggleCondition={handleToggleCondition}
+        onSetDefeated={handleSetDefeated}
+        onRemoveCombatant={handleRemoveCombatant}
+        onUpdateStats={handleUpdateStats}
+        onSetInitiative={handleSetInitiative}
+        onSwitchVersion={handleSwitchVersion}
+        onUpdateDmNotes={handleUpdateDmNotes}
+        onUpdatePlayerNotes={handleUpdatePlayerNotes}
+        onToggleGroupExpanded={(gid) => useCombatStore.getState().toggleGroupExpanded(gid)}
+        onSetGroupInitiative={(gid, val) => {
+          useCombatStore.getState().setGroupInitiative(gid, val);
+          const updated = useCombatStore.getState().combatants;
+          broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: updated });
+          persistInitiativeOrder(
+            updated.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
+          ).catch(() => {});
+        }}
+        t={t}
+      />
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
+    </div>
+  );
+}
+
+// ─── Grouped combat list ────────────────────────────────────────────────────
+
+interface CombatListProps {
+  combatants: Combatant[];
+  currentTurnIndex: number;
+  focusedIndex: number;
+  expandedGroups: Record<string, boolean>;
+  onReorder: (newOrder: Combatant[], movedId?: string) => void;
+  onApplyDamage: (id: string, amount: number) => void;
+  onApplyHealing: (id: string, amount: number) => void;
+  onSetTempHp: (id: string, value: number) => void;
+  onToggleCondition: (id: string, condition: string) => void;
+  onSetDefeated: (id: string, isDefeated: boolean) => void;
+  onRemoveCombatant: (id: string) => void;
+  onUpdateStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  onSetInitiative: (id: string, value: number | null) => void;
+  onSwitchVersion: (id: string, version: import("@/lib/types/database").RulesetVersion) => void;
+  onUpdateDmNotes: (id: string, notes: string) => void;
+  onUpdatePlayerNotes: (id: string, notes: string) => void;
+  onToggleGroupExpanded: (groupId: string) => void;
+  onSetGroupInitiative: (groupId: string, value: number) => void;
+  t: ReturnType<typeof import("next-intl").useTranslations>;
+}
+
+/** Organizes combatants into groups and ungrouped items for rendering. */
+function buildRenderItems(combatants: Combatant[]) {
+  type RenderItem =
+    | { kind: "single"; combatant: Combatant; index: number }
+    | { kind: "group"; groupId: string; members: { combatant: Combatant; index: number }[] };
+
+  const items: RenderItem[] = [];
+  const seenGroups = new Set<string>();
+
+  combatants.forEach((c, index) => {
+    if (!c.monster_group_id) {
+      items.push({ kind: "single", combatant: c, index });
+      return;
+    }
+    if (seenGroups.has(c.monster_group_id)) return;
+    seenGroups.add(c.monster_group_id);
+    const members = combatants
+      .map((m, i) => ({ combatant: m, index: i }))
+      .filter((m) => m.combatant.monster_group_id === c.monster_group_id)
+      .sort((a, b) => (a.combatant.group_order ?? 0) - (b.combatant.group_order ?? 0));
+    items.push({ kind: "group", groupId: c.monster_group_id, members });
+  });
+
+  return items;
+}
+
+function CombatList({
+  combatants,
+  currentTurnIndex,
+  focusedIndex,
+  expandedGroups,
+  onApplyDamage,
+  onApplyHealing,
+  onSetTempHp,
+  onToggleCondition,
+  onSetDefeated,
+  onRemoveCombatant,
+  onUpdateStats,
+  onSetInitiative,
+  onSwitchVersion,
+  onUpdateDmNotes,
+  onUpdatePlayerNotes,
+  onToggleGroupExpanded,
+  onSetGroupInitiative,
+  t,
+}: CombatListProps) {
+  const renderItems = buildRenderItems(combatants);
+
+  const renderCombatantRow = (c: Combatant, index: number) => (
+    <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+      <CombatantRow
+        combatant={c}
+        isCurrentTurn={index === currentTurnIndex}
+        showActions
+        onApplyDamage={onApplyDamage}
+        onApplyHealing={onApplyHealing}
+        onSetTempHp={onSetTempHp}
+        onToggleCondition={onToggleCondition}
+        onSetDefeated={onSetDefeated}
+        onRemoveCombatant={onRemoveCombatant}
+        onUpdateStats={onUpdateStats}
+        onSetInitiative={onSetInitiative}
+        onSwitchVersion={onSwitchVersion}
+        onUpdateDmNotes={onUpdateDmNotes}
+        onUpdatePlayerNotes={onUpdatePlayerNotes}
+      />
+    </div>
+  );
+
+  return (
+    <div
+      role="list"
+      aria-label={t("initiative_order")}
+      data-testid="initiative-list"
+      className="space-y-2"
+    >
+      {renderItems.map((item) => {
+        if (item.kind === "single") {
+          return renderCombatantRow(item.combatant, item.index);
+        }
+        const members = item.members.map((m) => m.combatant);
+        const groupName = getGroupBaseName(members);
+        return (
+          <MonsterGroupHeader
+            key={item.groupId}
+            groupName={groupName}
+            members={members}
+            isExpanded={!!expandedGroups[item.groupId]}
+            onToggle={() => onToggleGroupExpanded(item.groupId)}
+            groupInitiative={getGroupInitiative(members)}
+            onSetGroupInitiative={(val) => onSetGroupInitiative(item.groupId, val)}
+          >
+            {item.members.map((m) => renderCombatantRow(m.combatant, m.index))}
+          </MonsterGroupHeader>
+        );
+      })}
     </div>
   );
 }

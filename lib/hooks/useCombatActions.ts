@@ -56,7 +56,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
 
     advanceTurn();
-    const { current_turn_index: nextIdx, round_number: nextRound } =
+    const { current_turn_index: nextIdx, round_number: nextRound, combatants } =
       useCombatStore.getState();
     if (nextIdx === prevIdx && nextRound === prevRound) {
       turnPendingRef.current = false;
@@ -64,7 +64,19 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       return;
     }
 
-    broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound });
+    // Compute next_combatant_id: the non-defeated combatant after the current one (Story 3.1)
+    let nextCombatantId: string | undefined;
+    if (combatants.length > 1) {
+      for (let i = 1; i < combatants.length; i++) {
+        const candidate = combatants[(nextIdx + i) % combatants.length];
+        if (!candidate.is_defeated) {
+          nextCombatantId = candidate.id;
+          break;
+        }
+      }
+    }
+
+    broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound, next_combatant_id: nextCombatantId });
 
     try {
       await persistTurnAdvance(encounter_id, nextIdx, nextRound);
@@ -147,12 +159,22 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
   const handleAddCombatant = useCallback((newCombatant: Omit<Combatant, "id">) => {
     const store = useCombatStore.getState();
+    const prevTurnIndex = store.current_turn_index;
+    const currentTurnCombatant = store.combatants[prevTurnIndex];
     const existingIds = new Set(store.combatants.map((c) => c.id));
-    store.addCombatant(newCombatant);
 
+    store.addCombatant(newCombatant);
     const allCombatants = useCombatStore.getState().combatants;
     const sorted = assignInitiativeOrder(sortByInitiative(allCombatants));
     useCombatStore.getState().hydrateCombatants(sorted);
+
+    // Adjust current_turn_index: find where the current-turn combatant ended up after re-sort
+    if (store.is_active && currentTurnCombatant) {
+      const newIdx = sorted.findIndex((c) => c.id === currentTurnCombatant.id);
+      if (newIdx !== -1 && newIdx !== prevTurnIndex) {
+        useCombatStore.getState().hydrateActiveState(newIdx, store.round_number);
+      }
+    }
 
     const added = useCombatStore.getState().combatants.find(
       (c) => !existingIds.has(c.id)
@@ -166,12 +188,13 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [setError]);
 
-  const handleUpdateStats = useCallback((id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
+  const handleUpdateStats = useCallback((id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
     useCombatStore.getState().updateCombatantStats(id, stats);
     const c = useCombatStore.getState().combatants.find((x) => x.id === id);
     if (c) {
       const dbStats: Record<string, unknown> = {};
       if (stats.name !== undefined) dbStats.name = stats.name;
+      if (stats.display_name !== undefined) dbStats.display_name = stats.display_name;
       if (stats.max_hp !== undefined) {
         dbStats.max_hp = stats.max_hp;
         dbStats.current_hp = c.current_hp;

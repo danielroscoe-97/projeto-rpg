@@ -45,29 +45,39 @@ export function useInitiativeRolling(
     [store]
   );
 
-  const handleRollAll = useCallback(() => {
-    const state = store.getState();
-    const entries = state.combatants
-      .filter((c) => c.initiative === null)
-      .map((c) => {
+  /** Roll initiative for a list of combatants. Groups share one roll (D&D 5e PHB p.189). */
+  const rollForCombatants = useCallback((combatants: Combatant[]) => {
+    const entries: Array<{ id: string; value: number }> = [];
+    const groupRolls = new Map<string, number>();
+
+    for (const c of combatants) {
+      if (c.initiative !== null) continue;
+
+      // For grouped monsters, roll once per group and share the result
+      if (c.monster_group_id) {
+        if (!groupRolls.has(c.monster_group_id)) {
+          const dex = getDexScore(c, monsterIndexRef.current);
+          const result = rollInitiativeForCombatant(c.id, dex);
+          groupRolls.set(c.monster_group_id, result.total);
+        }
+        entries.push({ id: c.id, value: groupRolls.get(c.monster_group_id)! });
+      } else {
         const dex = getDexScore(c, monsterIndexRef.current);
         const result = rollInitiativeForCombatant(c.id, dex);
-        return { id: c.id, value: result.total };
-      });
-    if (entries.length > 0) state.batchSetInitiatives(entries);
+        entries.push({ id: c.id, value: result.total });
+      }
+    }
+
+    if (entries.length > 0) store.getState().batchSetInitiatives(entries);
   }, [store]);
 
+  const handleRollAll = useCallback(() => {
+    rollForCombatants(store.getState().combatants);
+  }, [store, rollForCombatants]);
+
   const handleRollNpcs = useCallback(() => {
-    const state = store.getState();
-    const entries = state.combatants
-      .filter((c) => c.initiative === null && !c.is_player)
-      .map((c) => {
-        const dex = getDexScore(c, monsterIndexRef.current);
-        const result = rollInitiativeForCombatant(c.id, dex);
-        return { id: c.id, value: result.total };
-      });
-    if (entries.length > 0) state.batchSetInitiatives(entries);
-  }, [store]);
+    rollForCombatants(store.getState().combatants.filter((c) => !c.is_player));
+  }, [store, rollForCombatants]);
 
   return { handleRollOne, handleRollAll, handleRollNpcs };
 }

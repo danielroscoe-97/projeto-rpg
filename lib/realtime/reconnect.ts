@@ -28,7 +28,7 @@ export async function fetchSessionSnapshot(
   const { data: rawCombatants } = await supabase
     .from("combatants")
     .select(
-      "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, dm_notes, player_notes"
+      "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes"
     )
     .eq("encounter_id", encounterId)
     .order("initiative_order", { ascending: true });
@@ -50,6 +50,9 @@ export async function fetchSessionSnapshot(
     monster_id: row.monster_id ?? null,
     token_url: null,
     creature_type: null,
+    display_name: row.display_name ?? null,
+    monster_group_id: row.monster_group_id ?? null,
+    group_order: row.group_order ?? null,
     dm_notes: row.dm_notes ?? '',
     player_notes: row.player_notes ?? '',
   }));

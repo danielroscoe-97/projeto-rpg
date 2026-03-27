@@ -27,7 +27,7 @@ export interface CombatantRowProps {
   onToggleCondition?: (id: string, condition: string) => void;
   onSetDefeated?: (id: string, isDefeated: boolean) => void;
   onRemoveCombatant?: (id: string) => void;
-  onUpdateStats?: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  onUpdateStats?: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   onSetInitiative?: (id: string, value: number | null) => void;
   onSwitchVersion?: (id: string, version: RulesetVersion) => void;
   onUpdateDmNotes?: (id: string, notes: string) => void;
@@ -225,7 +225,7 @@ export function CombatantRow({
                 pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
               }
             }}
-            className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] flex items-center ${
+            className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] flex items-center gap-1.5 ${
               canExpand
                 ? "text-foreground hover:text-gold cursor-pointer"
                 : "text-foreground cursor-default"
@@ -233,7 +233,12 @@ export function CombatantRow({
             disabled={!canExpand}
             data-testid={`combatant-name-${combatant.id}`}
           >
-            {combatant.name}
+            <span>{combatant.name}</span>
+            {combatant.display_name && !combatant.is_player && (
+              <span className="text-xs text-muted-foreground/60 font-normal">
+                ({combatant.display_name})
+              </span>
+            )}
           </button>
 
           {/* HP display — inline with name */}

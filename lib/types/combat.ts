@@ -21,6 +21,12 @@ export interface Combatant {
   token_url: string | null;
   /** Creature type for emoji fallback (e.g. "dragon", "undead"), null for players */
   creature_type: string | null;
+  /** Custom display name visible to players (anti-metagaming). Null = use real name. */
+  display_name: string | null;
+  /** Group ID for monster grouping. Null = ungrouped. */
+  monster_group_id: string | null;
+  /** Order within a monster group (1-based). Null = ungrouped. */
+  group_order: number | null;
   /** Private DM notes — never broadcast to players */
   dm_notes: string;
   /** Player-visible notes — broadcast via realtime */
@@ -45,6 +51,8 @@ export interface EncounterState {
   is_loading: boolean;
   error: string | null;
   hpUndoStack: HpUndoEntry[];
+  /** Client-side only: which monster groups are expanded (default collapsed). */
+  expandedGroups: Record<string, boolean>;
 }
 
 export interface CombatActions {
@@ -78,8 +86,8 @@ export interface CombatActions {
   toggleCondition: (id: string, condition: string) => void;
   /** Mark a combatant as defeated (or un-defeat). */
   setDefeated: (id: string, is_defeated: boolean) => void;
-  /** Update a combatant's editable stats (name, max_hp, ac, spell_save_dc). Caps current_hp to new max_hp. */
-  updateCombatantStats: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  /** Update a combatant's editable stats (name, display_name, max_hp, ac, spell_save_dc). Caps current_hp to new max_hp. */
+  updateCombatantStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   /** Switch a combatant's ruleset version. */
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
   /** Update DM-only notes for a combatant. */
@@ -88,4 +96,10 @@ export interface CombatActions {
   updatePlayerNotes: (id: string, notes: string) => void;
   /** Undo the last HP change from the undo stack. */
   undoLastHpChange: () => void;
+  /** Add multiple monsters of the same type as a named group. */
+  addMonsterGroup: (combatants: Omit<Combatant, "id">[]) => void;
+  /** Set initiative for all members of a monster group at once. */
+  setGroupInitiative: (groupId: string, value: number) => void;
+  /** Toggle expand/collapse state for a monster group (client-side only). */
+  toggleGroupExpanded: (groupId: string) => void;
 }

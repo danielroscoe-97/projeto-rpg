@@ -26,6 +26,11 @@ export function SignUpForm({
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const router = useRouter();
 
+  // Capture invite params from URL (Story 4.4)
+  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const inviteToken = searchParams?.get("invite") ?? null;
+  const inviteCampaignId = searchParams?.get("campaign") ?? null;
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -43,11 +48,17 @@ export function SignUpForm({
     trackEvent("auth:signup_start");
 
     try {
+      // Preserve invite params through email confirmation redirect (Story 4.4)
+      let redirectUrl = `${window.location.origin}/auth/confirm`;
+      if (inviteToken && inviteCampaignId) {
+        redirectUrl += `?invite=${inviteToken}&campaign=${inviteCampaignId}`;
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          emailRedirectTo: redirectUrl,
         },
       });
       if (error) throw error;

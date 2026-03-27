@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
+import { GMNotesSheet } from "@/components/session/GMNotesSheet";
+import { FileShareButton } from "@/components/session/FileShareButton";
 import type { Combatant } from "@/lib/types/combat";
 
 interface SessionPageProps {
@@ -44,7 +46,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     ? await supabase
         .from("combatants")
         .select(
-          "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, dm_notes, player_notes"
+          "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes"
         )
         .eq("encounter_id", encounter.id)
         .order("initiative_order", { ascending: true })
@@ -69,6 +71,9 @@ export default async function SessionPage({ params }: SessionPageProps) {
     monster_id: row.monster_id ?? null,
     token_url: null,
     creature_type: null,
+    display_name: (row as Record<string, unknown>).display_name as string | null ?? null,
+    monster_group_id: (row as Record<string, unknown>).monster_group_id as string | null ?? null,
+    group_order: (row as Record<string, unknown>).group_order as number | null ?? null,
     dm_notes: row.dm_notes ?? '',
     player_notes: row.player_notes ?? '',
   }));
@@ -93,6 +98,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <FileShareButton sessionId={sessionId} />
+          <GMNotesSheet sessionId={sessionId} userId={user.id} />
           <ShareSessionButton sessionId={sessionId} />
           <Link
             href="/app/dashboard"

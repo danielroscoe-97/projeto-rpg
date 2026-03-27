@@ -48,3 +48,11 @@ story-4-2-diff.txt
 supabase/.temp/
 
 .vercel
+scripts/orchestrator/.env
+
+# BMAD Orchestrator
+scripts/orchestrator/.env
+scripts/orchestrator/.watcher-state.json
+scripts/orchestrator/.queue-state.json
+scripts/orchestrator/logs/
+scripts/orchestrator/node_modules/

@@ -3,6 +3,7 @@ import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { trackEvent } from "@/lib/analytics/track";
+import type { Plan } from "@/lib/types/subscription";
 
 export interface CreateEncounterResult {
   session_id: string;
@@ -15,7 +16,8 @@ export interface CreateEncounterResult {
  */
 export async function createSessionOnly(
   ruleset_version: RulesetVersion,
-  campaignId?: string | null
+  campaignId?: string | null,
+  dmPlan?: Plan
 ): Promise<string> {
   const supabase = createClient();
   const {
@@ -31,6 +33,7 @@ export async function createSessionOnly(
       owner_id: user.id,
       name: "Quick Encounter",
       ruleset_version,
+      dm_plan: dmPlan ?? "free",
     })
     .select("id")
     .single();
@@ -55,7 +58,9 @@ export async function createEncounterWithCombatants(
   campaignId?: string | null,
   encounterName?: string,
   /** If provided, reuses this session instead of creating a new one. */
-  existingSessionId?: string | null
+  existingSessionId?: string | null,
+  /** DM's current plan — snapshotted into session for Mesa model */
+  dmPlan?: Plan
 ): Promise<CreateEncounterResult> {
   const supabase = createClient();
 
@@ -82,6 +87,7 @@ export async function createEncounterWithCombatants(
         owner_id: user.id,
         name: "Quick Encounter",
         ruleset_version,
+        dm_plan: dmPlan ?? "free",
       })
       .select("id")
       .single();
@@ -120,6 +126,9 @@ export async function createEncounterWithCombatants(
     is_defeated: c.is_defeated,
     is_player: c.is_player,
     monster_id: c.monster_id,
+    display_name: c.display_name ?? null,
+    monster_group_id: c.monster_group_id ?? null,
+    group_order: c.group_order ?? null,
     dm_notes: c.dm_notes ?? '',
     player_notes: c.player_notes ?? '',
   }));
@@ -164,6 +173,9 @@ export function monsterToCombatant(
     monster_id: monster.id,
     token_url: monster.token_url ?? null,
     creature_type: monster.type ?? null,
+    display_name: null,
+    monster_group_id: null,
+    group_order: null,
     dm_notes: '',
     player_notes: '',
   };

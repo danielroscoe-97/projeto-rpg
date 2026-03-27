@@ -28,6 +28,7 @@ const initialState: EncounterState = {
   is_loading: false,
   error: null,
   hpUndoStack: [],
+  expandedGroups: {},
 };
 
 export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) => ({
@@ -226,6 +227,30 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
         ),
       };
     }),
+
+  addMonsterGroup: (newCombatants) =>
+    set((state) => ({
+      combatants: [
+        ...state.combatants,
+        ...newCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
+      ],
+    })),
+
+  setGroupInitiative: (groupId, value) =>
+    set((state) => {
+      const updated = state.combatants.map((c) =>
+        c.monster_group_id === groupId ? { ...c, initiative: value } : c
+      );
+      return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
+    }),
+
+  toggleGroupExpanded: (groupId) =>
+    set((state) => ({
+      expandedGroups: {
+        ...state.expandedGroups,
+        [groupId]: !state.expandedGroups[groupId],
+      },
+    })),
 })));
 
 // Auto-persist combat state to localStorage on changes.

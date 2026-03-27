@@ -96,6 +96,33 @@
     "tab_login": "Login",
     "tab_signup": "Sign Up"
   },
+  "signup": {
+    "role_selection_title": "How will you use Taverna do Mestre?",
+    "role_selection_subtitle": "You can change this later in settings",
+    "role_player": "Player",
+    "role_dm": "Dungeon Master",
+    "role_both": "Both",
+    "role_continue": "Continue",
+    "role_skip": "Skip",
+    "role_saving": "Saving...",
+    "role_save_error": "Failed to save preference. Please try again."
+  },
+  "campaign": {
+    "invite_button": "Invite Player",
+    "invite_title": "Invite Player to Campaign",
+    "invite_email_placeholder": "player@example.com",
+    "invite_send": "Send Invite",
+    "invite_sent": "Invite sent to {email}",
+    "invite_limit_reached": "Daily invite limit reached (20/day).",
+    "invite_already_pending": "This email already has a pending invite.",
+    "invite_error": "Failed to send invite",
+    "invite_cancel_error": "Failed to cancel invite",
+    "invite_list_title": "Sent Invites",
+    "invite_expired": "This invite has expired. Ask your DM for a new one.",
+    "invite_used": "This invite has already been used.",
+    "invite_welcome": "You've been invited to campaign \"{campaignName}\" by {dmName}",
+    "invite_accepted": "Character created! Welcome to the campaign."
+  },
   "auth_errors": {
     "invalid_credentials": "Incorrect email or password.",
     "email_not_confirmed": "Please confirm your email before logging in. Check your inbox.",
@@ -360,7 +387,19 @@
     "setup_init_aria": "Set Initiative",
     "setup_name_aria": "Combatant name",
     "combatant": "combatant",
-    "combatants": "combatants"
+    "combatants": "combatants",
+    "display_name_label": "Display name (visible to players)",
+    "display_name_placeholder": "e.g. Mysterious Creature (empty = real name)",
+    "monster_quantity": "Quantity",
+    "monster_quantity_decrease": "Decrease quantity",
+    "monster_quantity_increase": "Increase quantity",
+    "monster_quantity_group_hint": "Will be added as a group",
+    "group_active": "active",
+    "group_edit_initiative_title": "Edit group initiative",
+    "group_edit_initiative_aria": "Edit initiative for {name} group",
+    "late_join_notification": "{name} wants to join combat (Init: {initiative})",
+    "late_join_accept": "Accept",
+    "late_join_reject": "Reject"
   },
   "conditions": {
     "blinded": "Blinded",
@@ -409,7 +448,21 @@
     "pick_campaign_players": "{count} players",
     "pick_campaign_players_one": "1 player",
     "pick_loading": "Loading campaigns…",
-    "pick_error": "Failed to load campaigns."
+    "pick_error": "Failed to load campaigns.",
+    "notes_title": "Session Notes",
+    "notes_placeholder": "Write your notes here...",
+    "notes_saved": "Saved",
+    "notes_preview": "Preview",
+    "notes_edit": "Edit",
+    "notes_save_error": "Failed to save notes",
+    "files_upload": "Share File",
+    "files_view": "View",
+    "files_uploaded": "File shared successfully",
+    "files_error_type": "Invalid file type. Use images (PNG, JPG, WebP) or PDF.",
+    "files_error_size": "File too large. Maximum: 10MB.",
+    "files_upload_error": "File upload failed",
+    "files_view_error": "Failed to open file",
+    "files_remove_error": "Failed to remove file"
   },
   "player": {
     "connecting": "Connecting to session...",
@@ -451,6 +504,8 @@
     "log_condition_add": "{name} is {condition}",
     "log_condition_remove": "{name} is no longer {condition}",
     "your_turn_banner": "It's your turn!",
+    "turn_upcoming": "You're up next!",
+    "turn_now": "It's your turn, {playerName}!",
     "log_time_now": "now",
     "log_time_minutes": "{min}min ago",
     "hp_status_light": "Light",
@@ -478,7 +533,14 @@
     "lobby_error_name": "Character name is required",
     "lobby_error_initiative": "Enter your initiative roll (1-30)",
     "lobby_auto_update": "This screen updates automatically",
-    "registerError": "Failed to register player. Please try again."
+    "registerError": "Failed to register player. Please try again.",
+    "combat_in_progress": "Combat in progress",
+    "late_join_title": "Join Active Combat",
+    "late_join_info": "Combat is already in progress. Enter your info and the DM will approve your entry.",
+    "late_join_submit": "Request to Join",
+    "late_join_waiting": "Waiting for the DM to approve your entry...",
+    "late_join_rejected": "The DM did not accept your entry at this time.",
+    "late_join_retry": "Try Again"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",
@@ -520,6 +582,7 @@
     "description": "Preferences, SRD reference, and account.",
     "tab_preferences": "Preferences",
     "tab_wiki": "SRD Wiki",
+    "tab_billing": "Plan",
     "tab_account": "Account",
     "profile_title": "Profile",
     "profile_description": "Your account information.",
@@ -777,5 +840,86 @@
     "how_it_works_cta": "Start Now — It's Free",
     "no_account_needed": "No account needed",
     "cta_primary": "Start Free"
+  },
+  "pro": {
+    "badge": {
+      "label": "Pro",
+      "tooltip": "Available on the Pro plan",
+      "tooltip_description": "Exclusive Pro plan feature"
+    }
+  },
+  "upsell": {
+    "start_trial": "Start Free Trial",
+    "see_plans": "See Plans",
+    "not_now": "Not now",
+    "persistent_campaigns": {
+      "title": "Unlock Persistent Campaigns",
+      "description": "Keep your campaigns saved across sessions and access full encounter history."
+    },
+    "saved_presets": {
+      "title": "Unlock Saved Presets",
+      "description": "Save favorite monster combinations and load encounters in seconds."
+    },
+    "export_data": {
+      "title": "Unlock Data Export",
+      "description": "Export encounter and session data for backup or analysis."
+    },
+    "homebrew": {
+      "title": "Unlock Homebrew Content",
+      "description": "Create custom monsters, spells, and items for your sessions."
+    },
+    "session_analytics": {
+      "title": "Unlock Session Analytics",
+      "description": "View detailed combat statistics, duration, and performance insights."
+    },
+    "cr_calculator": {
+      "title": "Unlock CR Calculator",
+      "description": "Calculate the ideal challenge rating for your adventuring party."
+    },
+    "file_sharing": {
+      "title": "Unlock File Sharing",
+      "description": "Share maps, images, and documents during sessions."
+    },
+    "email_invites": {
+      "title": "Unlock Email Invites",
+      "description": "Send email invitations for players to join your campaign."
+    }
+  },
+  "billing": {
+    "plan_title": "Your Plan",
+    "plan": {
+      "free": "Free Plan",
+      "pro": "Pro Plan",
+      "trial": "Pro Trial"
+    },
+    "renewal_date": "Renews on {date}",
+    "trial_days_left": "{days} days remaining",
+    "trial_expired": "Your trial has expired. Subscribe to continue.",
+    "subscribe_now": "Subscribe now",
+    "manage": "Manage Subscription",
+    "history": "Payment History",
+    "upgrade_cta": "Subscribe Pro",
+    "trial_cta": "Start Free Trial",
+    "trial_activated": "Trial activated! Enjoy 14 days of Pro.",
+    "trial_already_used": "You've already used your free trial.",
+    "trial_error": "Failed to activate trial. Please try again.",
+    "checkout_error": "Failed to create payment session.",
+    "portal_error": "Failed to open subscription portal.",
+    "cancels_on": "Cancels on {date}",
+    "cancel_info": "Your Pro features remain active until the end of the billing period.",
+    "your_features": "Your Pro Features",
+    "month": "month",
+    "year": "year",
+    "or": "or",
+    "features": {
+      "persistent_campaigns": "Persistent campaigns",
+      "saved_presets": "Saved presets",
+      "export_data": "Data export",
+      "homebrew": "Homebrew content",
+      "session_analytics": "Session analytics",
+      "cr_calculator": "CR calculator",
+      "file_sharing": "File sharing",
+      "email_invites": "Email invites"
+    }
   }
 }

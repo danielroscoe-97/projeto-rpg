@@ -25,11 +25,32 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
+  // Determine redirect: new signups go to role selection, otherwise to specified next
+  async function getRedirectTarget(): Promise<string> {
+    // If invite params present, preserve them
+    const invite = searchParams.get("invite");
+    const campaign = searchParams.get("campaign");
+    if (invite && campaign) {
+      return `/auth/sign-up?invite=${invite}&campaign=${campaign}`;
+    }
+    // Check if user has selected a role yet — if not, redirect to role selection
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      // New user heuristic: no campaigns created yet → show role selection
+      const { count } = await supabase.from("campaigns").select("id", { count: "exact", head: true }).eq("owner_id", user.id);
+      if (count === 0) {
+        return "/app/onboarding/role";
+      }
+    }
+    return next;
+  }
+
   // PKCE flow: Supabase redirects with ?code=... after email verification
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      await syncLocaleAndRedirect(next);
+      const target = await getRedirectTarget();
+      await syncLocaleAndRedirect(target);
     } else {
       redirect(`/auth/error?error=${encodeURIComponent(error.message)}`);
     }
@@ -42,7 +63,8 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
-      await syncLocaleAndRedirect(next);
+      const target = await getRedirectTarget();
+      await syncLocaleAndRedirect(target);
     } else {
       redirect(`/auth/error?error=${encodeURIComponent(error.message)}`);
     }

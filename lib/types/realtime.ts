@@ -12,6 +12,8 @@ export type RealtimeEventType =
   | "combat:defeated_change"
   | "combat:stats_update"
   | "combat:player_notes_update"
+  | "combat:late_join_request"
+  | "combat:late_join_response"
   | "session:state_sync";
 
 export interface RealtimeHpUpdate {
@@ -31,6 +33,8 @@ export interface RealtimeTurnAdvance {
   type: "combat:turn_advance";
   current_turn_index: number;
   round_number: number;
+  /** ID of the next non-defeated combatant after the current one (Story 3.1) */
+  next_combatant_id?: string;
 }
 
 export interface RealtimeConditionChange {
@@ -82,6 +86,21 @@ export interface RealtimePlayerNotesUpdate {
   player_notes: string;
 }
 
+export interface RealtimeLateJoinRequest {
+  type: "combat:late_join_request";
+  player_name: string;
+  hp: number | null;
+  ac: number | null;
+  initiative: number;
+  request_id: string;
+}
+
+export interface RealtimeLateJoinResponse {
+  type: "combat:late_join_response";
+  request_id: string;
+  accepted: boolean;
+}
+
 export interface RealtimeStateSync {
   type: "session:state_sync";
   combatants: Combatant[];
@@ -100,4 +119,6 @@ export type RealtimeEvent =
   | RealtimeDefeatedChange
   | RealtimeStatsUpdate
   | RealtimePlayerNotesUpdate
+  | RealtimeLateJoinRequest
+  | RealtimeLateJoinResponse
   | RealtimeStateSync;

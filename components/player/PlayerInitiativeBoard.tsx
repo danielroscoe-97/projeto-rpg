@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
+import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
+import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOverlay";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords, Skull } from "lucide-react";
@@ -132,6 +134,8 @@ interface PlayerInitiativeBoardProps {
   roundNumber: number;
   rulesetVersion: RulesetVersion;
   combatLog?: CombatLogEntry[];
+  /** ID of the next combatant after the current one (Story 3.1) */
+  nextCombatantId?: string | null;
   /** Callback when a player edits their own character's note */
   onPlayerNote?: (combatantId: string, note: string) => void;
 }
@@ -142,13 +146,11 @@ export function PlayerInitiativeBoard({
   roundNumber,
   rulesetVersion,
   combatLog,
+  nextCombatantId,
   onPlayerNote,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
-  const prevTurnIndexRef = useRef(currentTurnIndex);
-  const [showYourTurn, setShowYourTurn] = useState(false);
-  const yourTurnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
 
@@ -183,50 +185,31 @@ export function PlayerInitiativeBoard({
     ? combatants.length
     : Math.min(maxRevealedIndex + 1, combatants.length);
 
-  // TASK 2: Turn notification with vibration
-  useEffect(() => {
-    if (prevTurnIndexRef.current === currentTurnIndex) return;
-    prevTurnIndexRef.current = currentTurnIndex;
+  // Story 3.1 + 3.2: Turn notification state
+  // "É sua vez!" — persistent while it's a player combatant's turn
+  const currentCombatant = combatants[currentTurnIndex];
+  const isPlayerTurn = currentCombatant?.is_player ?? false;
 
-    const currentCombatant = combatants[currentTurnIndex];
-    if (!currentCombatant?.is_player) return;
-
-    // Vibrate
-    try {
-      if (navigator.vibrate) navigator.vibrate(200);
-    } catch {
-      // vibrate not supported
-    }
-
-    // Show banner
-    setShowYourTurn(true);
-    if (yourTurnTimerRef.current) clearTimeout(yourTurnTimerRef.current);
-    yourTurnTimerRef.current = setTimeout(() => {
-      yourTurnTimerRef.current = null;
-      setShowYourTurn(false);
-    }, 3000);
-
-    return () => {
-      if (yourTurnTimerRef.current) clearTimeout(yourTurnTimerRef.current);
-    };
-  }, [currentTurnIndex, combatants]);
-
-  // Check if it's currently the player's turn (for pulse animation)
-  const isPlayerTurn = combatants[currentTurnIndex]?.is_player ?? false;
+  // "Você é o próximo!" — show when next_combatant_id matches a player combatant
+  const isPlayerUpcoming = !!(
+    nextCombatantId &&
+    !isPlayerTurn &&
+    playerChars.some((c) => c.id === nextCombatantId)
+  );
 
   // Last 5 log entries for display
   const visibleLog = combatLog?.slice(-5) ?? [];
 
   return (
     <div className="space-y-3">
-      {/* Your Turn Banner */}
-      {showYourTurn && (
-        <div className="bg-gold/20 border border-gold rounded-lg px-4 py-3 text-center animate-pulse">
-          <span className="text-gold font-semibold text-sm">
-            🎯 {t("your_turn_banner")}
-          </span>
-        </div>
-      )}
+      {/* Story 3.2: "É sua vez!" — persistent overlay with pulse animation */}
+      <TurnNotificationOverlay
+        visible={isPlayerTurn}
+        playerName={currentCombatant?.name ?? ""}
+      />
+
+      {/* Story 3.1: "Você é o próximo!" — shown when player is next (not current) */}
+      <TurnUpcomingBanner visible={isPlayerUpcoming} />
 
       {/* Combat Log */}
       {visibleLog.length > 0 && (

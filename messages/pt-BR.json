@@ -97,6 +97,33 @@
     "tab_login": "Entrar",
     "tab_signup": "Criar Conta"
   },
+  "signup": {
+    "role_selection_title": "Como você vai usar o Taverna do Mestre?",
+    "role_selection_subtitle": "Você pode alterar isso depois nas configurações",
+    "role_player": "Jogador",
+    "role_dm": "Mestre",
+    "role_both": "Ambos",
+    "role_continue": "Continuar",
+    "role_skip": "Pular",
+    "role_saving": "Salvando...",
+    "role_save_error": "Erro ao salvar preferência. Tente novamente."
+  },
+  "campaign": {
+    "invite_button": "Convidar Jogador",
+    "invite_title": "Convidar Jogador para Campanha",
+    "invite_email_placeholder": "email@exemplo.com",
+    "invite_send": "Enviar Convite",
+    "invite_sent": "Convite enviado para {email}",
+    "invite_limit_reached": "Limite de convites atingido. Máximo: 20 por dia.",
+    "invite_already_pending": "Este email já possui um convite pendente.",
+    "invite_error": "Erro ao enviar convite",
+    "invite_cancel_error": "Erro ao cancelar convite",
+    "invite_list_title": "Convites Enviados",
+    "invite_expired": "Este convite expirou. Peça ao seu mestre para enviar um novo.",
+    "invite_used": "Este convite já foi utilizado.",
+    "invite_welcome": "Você foi convidado para a campanha \"{campaignName}\" por {dmName}",
+    "invite_accepted": "Personagem criado! Bem-vindo à campanha."
+  },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",
     "email_not_confirmed": "Confirme seu email antes de fazer login. Verifique sua caixa de entrada.",
@@ -363,7 +390,19 @@
     "error_encounter_name_required": "Dê um nome ao encontro antes de iniciar.",
     "shortcut_damage": "Dano (HP)",
     "shortcut_heal": "Cura (HP)",
-    "shortcut_undo": "Desfazer HP"
+    "shortcut_undo": "Desfazer HP",
+    "display_name_label": "Nome visível para jogadores",
+    "display_name_placeholder": "Ex: Criatura Misteriosa (vazio = nome real)",
+    "monster_quantity": "Quantidade",
+    "monster_quantity_decrease": "Diminuir quantidade",
+    "monster_quantity_increase": "Aumentar quantidade",
+    "monster_quantity_group_hint": "Serão adicionados como grupo",
+    "group_active": "ativos",
+    "group_edit_initiative_title": "Editar iniciativa do grupo",
+    "group_edit_initiative_aria": "Editar iniciativa do grupo {name}",
+    "late_join_notification": "{name} quer entrar no combate (Inic: {initiative})",
+    "late_join_accept": "Aceitar",
+    "late_join_reject": "Rejeitar"
   },
   "conditions": {
     "blinded": "Cego",
@@ -412,7 +451,21 @@
     "pick_campaign_players": "{count} jogadores",
     "pick_campaign_players_one": "1 jogador",
     "pick_loading": "Carregando campanhas…",
-    "pick_error": "Falha ao carregar campanhas."
+    "pick_error": "Falha ao carregar campanhas.",
+    "notes_title": "Notas da Sessão",
+    "notes_placeholder": "Escreva suas notas aqui...",
+    "notes_saved": "Salvo",
+    "notes_preview": "Preview",
+    "notes_edit": "Editar",
+    "notes_save_error": "Erro ao salvar notas",
+    "files_upload": "Compartilhar Arquivo",
+    "files_view": "Visualizar",
+    "files_uploaded": "Arquivo compartilhado com sucesso",
+    "files_error_type": "Tipo de arquivo não permitido. Use imagens (PNG, JPG, WebP) ou PDF.",
+    "files_error_size": "Arquivo muito grande. Máximo: 10MB.",
+    "files_upload_error": "Falha no upload do arquivo",
+    "files_view_error": "Falha ao abrir arquivo",
+    "files_remove_error": "Falha ao remover arquivo"
   },
   "player": {
     "connecting": "Conectando à sessão...",
@@ -454,6 +507,8 @@
     "log_condition_add": "{name} está {condition}",
     "log_condition_remove": "{name} não está mais {condition}",
     "your_turn_banner": "É a sua vez!",
+    "turn_upcoming": "Você é o próximo!",
+    "turn_now": "É sua vez, {playerName}!",
     "log_time_now": "agora",
     "log_time_minutes": "{min}min atrás",
     "hp_status_light": "Leve",
@@ -481,7 +536,14 @@
     "lobby_error_name": "Nome do personagem é obrigatório",
     "lobby_error_initiative": "Digite sua rolagem de iniciativa (1-30)",
     "lobby_auto_update": "Esta tela atualiza automaticamente",
-    "registerError": "Erro ao registrar jogador. Tente novamente."
+    "registerError": "Erro ao registrar jogador. Tente novamente.",
+    "combat_in_progress": "Combate em andamento",
+    "late_join_title": "Entrar no Combate Ativo",
+    "late_join_info": "O combate já está em andamento. Preencha seus dados e o mestre aprovará sua entrada.",
+    "late_join_submit": "Solicitar Entrada",
+    "late_join_waiting": "Aguardando aprovação do mestre...",
+    "late_join_rejected": "O mestre não aceitou sua entrada neste momento.",
+    "late_join_retry": "Tentar Novamente"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",
@@ -523,6 +585,7 @@
     "description": "Preferências, referência SRD e conta.",
     "tab_preferences": "Preferências",
     "tab_wiki": "Wiki SRD",
+    "tab_billing": "Plano",
     "tab_account": "Conta",
     "profile_title": "Perfil",
     "profile_description": "Informações da sua conta.",
@@ -780,5 +843,86 @@
     "how_it_works_cta": "Começar Agora — é Grátis",
     "no_account_needed": "Sem cadastro necessário",
     "cta_primary": "Começar Grátis"
+  },
+  "pro": {
+    "badge": {
+      "label": "Pro",
+      "tooltip": "Disponível no plano Pro",
+      "tooltip_description": "Funcionalidade exclusiva do plano Pro"
+    }
+  },
+  "upsell": {
+    "start_trial": "Iniciar Trial Grátis",
+    "see_plans": "Ver Planos",
+    "not_now": "Agora não",
+    "persistent_campaigns": {
+      "title": "Desbloqueie Campanhas Persistentes",
+      "description": "Mantenha suas campanhas salvas entre sessões e acesse o histórico completo de encontros."
+    },
+    "saved_presets": {
+      "title": "Desbloqueie Presets Salvos",
+      "description": "Salve combinações de monstros favoritas e carregue encontros em segundos."
+    },
+    "export_data": {
+      "title": "Desbloqueie Exportação de Dados",
+      "description": "Exporte dados de encontros e sessões para backup ou análise."
+    },
+    "homebrew": {
+      "title": "Desbloqueie Conteúdo Homebrew",
+      "description": "Crie monstros, magias e itens customizados para suas sessões."
+    },
+    "session_analytics": {
+      "title": "Desbloqueie Análise de Sessão",
+      "description": "Visualize estatísticas detalhadas de combate, duração e desempenho."
+    },
+    "cr_calculator": {
+      "title": "Desbloqueie Calculadora de CR",
+      "description": "Calcule o nível de desafio ideal para o grupo de aventureiros."
+    },
+    "file_sharing": {
+      "title": "Desbloqueie Compartilhamento de Arquivos",
+      "description": "Compartilhe mapas, imagens e documentos durante a sessão."
+    },
+    "email_invites": {
+      "title": "Desbloqueie Convites por Email",
+      "description": "Envie convites por email para jogadores entrarem na campanha."
+    }
+  },
+  "billing": {
+    "plan_title": "Seu Plano",
+    "plan": {
+      "free": "Plano Gratuito",
+      "pro": "Plano Pro",
+      "trial": "Trial Pro"
+    },
+    "renewal_date": "Renova em {date}",
+    "trial_days_left": "{days} dias restantes",
+    "trial_expired": "Seu trial expirou. Assine para continuar.",
+    "subscribe_now": "Assinar agora",
+    "manage": "Gerenciar Assinatura",
+    "history": "Histórico de Pagamentos",
+    "upgrade_cta": "Assinar Pro",
+    "trial_cta": "Iniciar Trial Grátis",
+    "trial_activated": "Trial ativado! Aproveite 14 dias de Pro.",
+    "trial_already_used": "Você já utilizou seu trial gratuito.",
+    "trial_error": "Falha ao ativar trial. Tente novamente.",
+    "checkout_error": "Falha ao criar sessão de pagamento.",
+    "portal_error": "Falha ao abrir portal de assinatura.",
+    "cancels_on": "Cancela em {date}",
+    "cancel_info": "Suas funcionalidades Pro continuam ativas até o fim do período.",
+    "your_features": "Suas Funcionalidades Pro",
+    "month": "mês",
+    "year": "ano",
+    "or": "ou",
+    "features": {
+      "persistent_campaigns": "Campanhas persistentes",
+      "saved_presets": "Presets salvos",
+      "export_data": "Exportação de dados",
+      "homebrew": "Conteúdo homebrew",
+      "session_analytics": "Análise de sessão",
+      "cr_calculator": "Calculadora de CR",
+      "file_sharing": "Compartilhamento de arquivos",
+      "email_invites": "Convites por email"
+    }
   }
 }

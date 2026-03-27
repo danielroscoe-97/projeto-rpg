@@ -115,6 +115,7 @@ export interface Database {
           name: string;
           ruleset_version: RulesetVersion;
           is_active: boolean;
+          dm_plan: string;
           created_at: string;
           updated_at: string;
         };
@@ -125,6 +126,7 @@ export interface Database {
           name: string;
           ruleset_version?: RulesetVersion;
           is_active?: boolean;
+          dm_plan?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -134,6 +136,7 @@ export interface Database {
           name?: string;
           ruleset_version?: RulesetVersion;
           is_active?: boolean;
+          dm_plan?: string;
           updated_at?: string;
         };
       };
@@ -424,6 +427,66 @@ export interface Database {
           name?: string;
           monsters?: MonsterPresetEntry[];
           ruleset_version?: RulesetVersion;
+          updated_at?: string;
+        };
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan: string;
+          status: string;
+          stripe_subscription_id: string | null;
+          stripe_customer_id: string | null;
+          trial_ends_at: string | null;
+          current_period_end: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          plan?: string;
+          status?: string;
+          stripe_subscription_id?: string | null;
+          stripe_customer_id?: string | null;
+          trial_ends_at?: string | null;
+          current_period_end?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          plan?: string;
+          status?: string;
+          stripe_subscription_id?: string | null;
+          stripe_customer_id?: string | null;
+          trial_ends_at?: string | null;
+          current_period_end?: string | null;
+          updated_at?: string;
+        };
+      };
+      feature_flags: {
+        Row: {
+          id: string;
+          key: string;
+          enabled: boolean;
+          plan_required: string;
+          description: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          key: string;
+          enabled?: boolean;
+          plan_required?: string;
+          description?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          enabled?: boolean;
+          plan_required?: string;
+          description?: string | null;
           updated_at?: string;
         };
       };

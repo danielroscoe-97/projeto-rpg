@@ -21,6 +21,17 @@ interface PlayerLobbyProps {
   isRegistered: boolean;
   /** Name the player registered with */
   registeredName?: string;
+  /** Whether combat is already active (late-join mode) */
+  isCombatActive?: boolean;
+  /** Called when player requests to join active combat (late-join). Returns true if accepted. */
+  onLateJoinRequest?: (data: {
+    name: string;
+    initiative: number;
+    hp: number | null;
+    ac: number | null;
+  }) => Promise<void>;
+  /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" */
+  lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected";
 }
 
 export function PlayerLobby({
@@ -29,6 +40,9 @@ export function PlayerLobby({
   onRegister,
   isRegistered,
   registeredName,
+  isCombatActive = false,
+  onLateJoinRequest,
+  lateJoinStatus = "idle",
 }: PlayerLobbyProps) {
   const t = useTranslations("player");
   const [name, setName] = useState("");
@@ -38,40 +52,7 @@ export function PlayerLobby({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Set<string>>(new Set());
 
-  const handleSubmit = useCallback(async () => {
-    const trimmedName = name.trim();
-    const initVal = parseInt(initiative, 10);
-    const newErrors = new Set<string>();
-
-    if (!trimmedName) newErrors.add("name");
-    if (!initiative.trim() || isNaN(initVal) || initVal < 1 || initVal > 30) newErrors.add("initiative");
-
-    if (newErrors.size > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors(new Set());
-    setIsSubmitting(true);
-
-    try {
-      const hpVal = hp.trim() ? parseInt(hp, 10) : null;
-      const acVal = ac.trim() ? parseInt(ac, 10) : null;
-      await onRegister({
-        name: trimmedName,
-        initiative: initVal,
-        hp: hpVal && !isNaN(hpVal) && hpVal > 0 ? hpVal : null,
-        ac: acVal && !isNaN(acVal) && acVal > 0 ? acVal : null,
-      });
-    } catch (error) {
-      setIsSubmitting(false);
-      toast.error(t('registerError'));
-      Sentry.captureException(error, {
-        tags: { component: 'PlayerLobby', flow: 'player-registration' },
-        extra: { sessionName },
-      });
-    }
-  }, [name, initiative, hp, ac, onRegister, t]);
+  // Original handleSubmit is replaced by handleFormSubmit in the render body
 
   const inputClass =
     "w-full bg-card border border-border rounded-lg px-4 py-3 text-foreground text-base placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-gold/50 min-h-[48px]";
@@ -130,14 +111,106 @@ export function PlayerLobby({
     );
   }
 
-  // Registration form
+  // Late-join waiting state
+  if (lateJoinStatus === "waiting") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-sm mx-auto w-full space-y-6 text-center">
+          <Swords className="w-8 h-8 text-gold mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
+          <div className="py-8">
+            <div className="flex items-center justify-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:0ms]" />
+              <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:150ms]" />
+              <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:300ms]" />
+            </div>
+            <p className="text-muted-foreground text-sm mt-4">
+              {t("late_join_waiting")}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Late-join rejected state
+  if (lateJoinStatus === "rejected") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-sm mx-auto w-full space-y-6 text-center">
+          <Swords className="w-8 h-8 text-red-400 mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-xl font-semibold">{sessionName}</h1>
+          <p className="text-red-400 text-sm">{t("late_join_rejected")}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-card border border-border rounded-lg text-foreground text-sm hover:bg-white/[0.06] transition-colors"
+          >
+            {t("late_join_retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Registration form (handles both normal and late-join)
+  const handleFormSubmit = async () => {
+    const trimmedName = name.trim();
+    const initVal = parseInt(initiative, 10);
+    const newErrors = new Set<string>();
+
+    if (!trimmedName) newErrors.add("name");
+    if (!initiative.trim() || isNaN(initVal) || initVal < 1 || initVal > 30) newErrors.add("initiative");
+
+    if (newErrors.size > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors(new Set());
+    setIsSubmitting(true);
+
+    try {
+      const hpVal = hp.trim() ? parseInt(hp, 10) : null;
+      const acVal = ac.trim() ? parseInt(ac, 10) : null;
+      const data = {
+        name: trimmedName,
+        initiative: initVal,
+        hp: hpVal && !isNaN(hpVal) && hpVal > 0 ? hpVal : null,
+        ac: acVal && !isNaN(acVal) && acVal > 0 ? acVal : null,
+      };
+
+      if (isCombatActive && onLateJoinRequest) {
+        await onLateJoinRequest(data);
+      } else {
+        await onRegister(data);
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      toast.error(t('registerError'));
+      Sentry.captureException(error, {
+        tags: { component: 'PlayerLobby', flow: isCombatActive ? 'late-join' : 'player-registration' },
+        extra: { sessionName },
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-sm mx-auto w-full space-y-6">
         <div className="text-center">
           <Swords className="w-8 h-8 text-gold mx-auto mb-3" aria-hidden="true" />
-          <h1 className="text-foreground text-xl font-semibold">{t("lobby_title")}</h1>
-          <p className="text-muted-foreground text-sm mt-1">{t("lobby_subtitle")}</p>
+          <h1 className="text-foreground text-xl font-semibold">
+            {isCombatActive ? t("late_join_title") : t("lobby_title")}
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            {isCombatActive ? t("late_join_info") : t("lobby_subtitle")}
+          </p>
+          {isCombatActive && (
+            <span className="inline-block mt-2 px-2 py-0.5 text-xs font-medium bg-amber-900/40 text-amber-400 rounded">
+              {t("combat_in_progress")}
+            </span>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -230,12 +303,12 @@ export function PlayerLobby({
         {/* Submit */}
         <button
           type="button"
-          onClick={handleSubmit}
+          onClick={handleFormSubmit}
           disabled={isSubmitting}
           className="w-full px-4 py-3 bg-gold text-foreground font-semibold rounded-lg transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[48px] text-base"
           data-testid="lobby-submit"
         >
-          {isSubmitting ? "..." : t("lobby_submit")}
+          {isSubmitting ? "..." : isCombatActive ? t("late_join_submit") : t("lobby_submit")}
         </button>
 
         {/* Players already at the table */}

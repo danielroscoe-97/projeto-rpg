@@ -6,7 +6,7 @@ import type { Combatant } from "@/lib/types/combat";
 
 interface StatsEditorProps {
   combatant: Combatant;
-  onSave: (stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  onSave: (stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   onClose: () => void;
 }
 
@@ -14,13 +14,20 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
   const t = useTranslations("combat");
   const tc = useTranslations("common");
   const [name, setName] = useState(combatant.name);
+  const [displayName, setDisplayName] = useState(combatant.display_name ?? "");
   const [maxHp, setMaxHp] = useState(String(combatant.max_hp));
   const [ac, setAc] = useState(String(combatant.ac));
   const [dc, setDc] = useState(combatant.spell_save_dc !== null ? String(combatant.spell_save_dc) : "");
 
+  const showDisplayName = !combatant.is_player;
+
   const handleSave = () => {
-    const stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null } = {};
+    const stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null } = {};
     if (name !== combatant.name) stats.name = name;
+    if (showDisplayName) {
+      const trimmed = displayName.trim() || null;
+      if (trimmed !== combatant.display_name) stats.display_name = trimmed;
+    }
     const parsedMaxHp = parseInt(maxHp, 10);
     if (!isNaN(parsedMaxHp) && parsedMaxHp > 0 && parsedMaxHp !== combatant.max_hp) stats.max_hp = parsedMaxHp;
     const parsedAc = parseInt(ac, 10);
@@ -53,6 +60,20 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
             data-testid="stats-name-input"
           />
         </div>
+        {showDisplayName && (
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">{t("display_name_label")}</label>
+            <input
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              maxLength={50}
+              placeholder={t("display_name_placeholder")}
+              className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm min-h-[32px]"
+              data-testid="stats-display-name-input"
+            />
+          </div>
+        )}
         <div>
           <label className="text-xs text-muted-foreground block mb-1">{t("stats_max_hp_label")}</label>
           <input

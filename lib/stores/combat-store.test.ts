@@ -22,6 +22,9 @@ const baseCombatant: Omit<Combatant, "id"> = {
   monster_id: "goblin",
   token_url: null,
   creature_type: null,
+  display_name: null,
+  monster_group_id: null,
+  group_order: null,
   dm_notes: "",
   player_notes: "",
 };

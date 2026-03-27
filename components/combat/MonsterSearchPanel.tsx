@@ -83,6 +83,8 @@ interface MonsterSearchPanelProps {
   onSelectMonster: (monster: SrdMonster) => void;
   /** Fired after a monster is selected — parent uses this to trigger glow */
   onMonsterAdded?: () => void;
+  /** Called when quantity > 1 to add a monster group */
+  onSelectMonsterGroup?: (monster: SrdMonster, quantity: number) => void;
 }
 
 const DEBOUNCE_MS = 200;
@@ -93,6 +95,7 @@ export function MonsterSearchPanel({
   rulesetVersion,
   onSelectMonster,
   onMonsterAdded,
+  onSelectMonsterGroup,
 }: MonsterSearchPanelProps) {
   const t = useTranslations("combat");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
@@ -107,6 +110,7 @@ export function MonsterSearchPanel({
   const [crMin, setCrMin] = useState("");
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [quantity, setQuantity] = useState(1);
 
   const [activeIndex, setActiveIndex] = useState(-1);
   const listRef = useRef<HTMLUListElement>(null);
@@ -180,13 +184,18 @@ export function MonsterSearchPanel({
 
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
-      onSelectMonster(monster);
+      if (quantity > 1 && onSelectMonsterGroup) {
+        onSelectMonsterGroup(monster, quantity);
+      } else {
+        onSelectMonster(monster);
+      }
       onMonsterAdded?.();
       setQuery("");
       setResults([]);
       setActiveIndex(-1);
+      setQuantity(1);
     },
-    [onSelectMonster, onMonsterAdded]
+    [onSelectMonster, onMonsterAdded, onSelectMonsterGroup, quantity]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -354,6 +363,43 @@ export function MonsterSearchPanel({
                 )}
               </div>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Quantity stepper */}
+      {onSelectMonsterGroup && (
+        <div className="flex items-center gap-2">
+          <label className="text-foreground/80 text-xs font-medium">
+            {t("monster_quantity")}
+          </label>
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              disabled={quantity <= 1}
+              className="w-7 h-7 flex items-center justify-center text-sm font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              aria-label={t("monster_quantity_decrease")}
+            >
+              -
+            </button>
+            <span className="w-8 text-center text-sm font-mono text-foreground" data-testid="quantity-display">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+              disabled={quantity >= 20}
+              className="w-7 h-7 flex items-center justify-center text-sm font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              aria-label={t("monster_quantity_increase")}
+            >
+              +
+            </button>
+          </div>
+          {quantity > 1 && (
+            <span className="text-[11px] text-gold/80">
+              {t("monster_quantity_group_hint")}
+            </span>
           )}
         </div>
       )}

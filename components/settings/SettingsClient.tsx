@@ -7,18 +7,29 @@ import { AccountDeletion } from "@/components/settings/AccountDeletion";
 import { SpellSearch } from "@/components/oracle/SpellSearch";
 import { MonsterSearch } from "@/components/oracle/MonsterSearch";
 import { ConditionLookup } from "@/components/oracle/ConditionLookup";
+import { SubscriptionPanel } from "@/components/billing/SubscriptionPanel";
 
-type Tab = "preferences" | "wiki" | "account";
+type Tab = "preferences" | "wiki" | "billing" | "account";
 type WikiTab = "spells" | "monsters" | "conditions";
 
 export function SettingsClient({ email }: { email: string }) {
   const t = useTranslations("settings");
-  const [activeTab, setActiveTab] = useState<Tab>("preferences");
+
+  // Support ?tab=billing query param for deep linking from billing CTAs
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab === "billing") return "billing";
+    }
+    return "preferences";
+  });
   const [wikiTab, setWikiTab] = useState<WikiTab>("spells");
 
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: "preferences", label: t("tab_preferences"), icon: "⚙" },
     { id: "wiki", label: t("tab_wiki"), icon: "📖" },
+    { id: "billing", label: t("tab_billing"), icon: "💳" },
     { id: "account", label: t("tab_account"), icon: "👤" },
   ];
 
@@ -56,6 +67,7 @@ export function SettingsClient({ email }: { email: string }) {
       {activeTab === "wiki" && (
         <WikiReferenceTab wikiTab={wikiTab} setWikiTab={setWikiTab} />
       )}
+      {activeTab === "billing" && <SubscriptionPanel />}
       {activeTab === "account" && <AccountTab />}
     </div>
   );
