@@ -3,7 +3,7 @@
 **Data:** 2026-03-27
 **Base:** Market Research (market-vtt-rpg-features-go-to-market-2026-03-27.md)
 **Escopo:** 5 jornadas criticas + 3 jornadas de suporte
-**Target:** pocketdm.app (producao) + localhost:3000 (dev)
+**Target:** pocketdm.com.br (producao) + localhost:3000 (dev)
 **Framework:** Playwright (Chromium + Mobile Chrome)
 
 ---

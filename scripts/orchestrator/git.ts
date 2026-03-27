@@ -98,7 +98,7 @@ export function commit(message: string): string {
     return "no-changes";
   }
 
-  const fullMessage = `${message}\n\nCo-Authored-By: BMAD Orchestrator <bmad@pocketdm.app>`;
+  const fullMessage = `${message}\n\nCo-Authored-By: BMAD Orchestrator <bmad@pocketdm.com.br>`;
 
   // Write commit message to temp file — never pass via args
   const msgFile = join(config.projectRoot, ".git", "BMAD_COMMIT_MSG");

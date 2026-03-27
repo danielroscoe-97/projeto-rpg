@@ -99,10 +99,10 @@ export default function PrivacyPage() {
               Para exercer qualquer desses direitos, entre em contato pelo
               e-mail:{" "}
               <a
-                href="mailto:privacidade@pocketdm.app"
+                href="mailto:privacidade@pocketdm.com.br"
                 className="text-gold underline underline-offset-4"
               >
-                privacidade@pocketdm.app
+                privacidade@pocketdm.com.br
               </a>
             </p>
           </section>
