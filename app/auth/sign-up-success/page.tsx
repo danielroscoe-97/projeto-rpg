@@ -18,17 +18,23 @@ export default function Page() {
   const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const inviteToken = searchParams.get("invite");
+  const inviteCampaignId = searchParams.get("campaign");
   const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
 
   const handleResend = async () => {
     if (!email) return;
     setResendStatus("loading");
     const supabase = createClient();
+    let redirectUrl = `${window.location.origin}/auth/confirm`;
+    if (inviteToken && inviteCampaignId) {
+      redirectUrl += `?invite=${inviteToken}&campaign=${inviteCampaignId}`;
+    }
     const { error } = await supabase.auth.resend({
       type: "signup",
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        emailRedirectTo: redirectUrl,
       },
     });
     setResendStatus(error ? "error" : "sent");

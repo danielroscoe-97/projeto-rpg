@@ -152,7 +152,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set) 
         hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
         combatants: state.combatants.map((c) =>
           c.id === id
-            ? { ...c, temp_hp: Math.max(c.temp_hp, value) }
+            ? { ...c, temp_hp: Math.min(9999, Math.max(c.temp_hp, value)) }
             : c
         ),
       };

@@ -264,6 +264,10 @@ export function CombatantRow({
                     const delta = desired - combatant.current_hp;
                     if (delta < 0) onApplyDamage?.(combatant.id, Math.abs(delta));
                     else if (delta > 0) onApplyHealing?.(combatant.id, delta);
+                    // If HP set to 0, mark as defeated
+                    if (desired === 0 && !combatant.is_defeated) {
+                      onSetDefeated?.(combatant.id, true);
+                    }
                   }
                   closeInlineEdit();
                 }}

@@ -62,7 +62,11 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
-      router.push(`/auth/sign-up-success?email=${encodeURIComponent(email)}`);
+      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}`;
+      if (inviteToken && inviteCampaignId) {
+        successUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
+      }
+      router.push(successUrl);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "";
       const key = getAuthErrorKey(msg);

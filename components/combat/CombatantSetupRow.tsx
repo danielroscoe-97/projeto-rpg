@@ -139,7 +139,7 @@ export function CombatantSetupRow({
         value={combatant.max_hp || ""}
         onChange={(e) => {
           const val = parseInt(e.target.value, 10);
-          if (!isNaN(val) && val >= 0) {
+          if (!isNaN(val) && val >= 1) {
             onHpChange(combatant.id, val);
           }
         }}
@@ -157,7 +157,7 @@ export function CombatantSetupRow({
         value={combatant.ac || ""}
         onChange={(e) => {
           const val = parseInt(e.target.value, 10);
-          if (!isNaN(val) && val >= 0) {
+          if (!isNaN(val) && val >= 1) {
             onAcChange(combatant.id, val);
           }
         }}

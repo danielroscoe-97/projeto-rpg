@@ -154,7 +154,7 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       setTempHp: (id, value) =>
         set((state) => ({
           combatants: state.combatants.map((c) =>
-            c.id === id ? { ...c, temp_hp: Math.max(0, value) } : c
+            c.id === id ? { ...c, temp_hp: Math.min(9999, Math.max(0, value)) } : c
           ),
         })),
 
