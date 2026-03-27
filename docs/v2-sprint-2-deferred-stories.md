@@ -131,8 +131,39 @@
 
 ## Deploy Checklist
 
-- [ ] `npx supabase db push` — migrations 026-027
+- [x] `npx supabase db push` — migrations 026-027 ✅
+- [x] `git push origin master` — commits e959c97, 2a1f3b9, 7e0cd51 ✅
 - [ ] Verificar feature flags `cr_calculator` e `homebrew` em `feature_flags` table
 - [ ] Testar auto-join com um player autenticado em campanha
 - [ ] Verificar que anônimos continuam com formulário vazio
 - [ ] Testar PlayerLinkDropdown no combat view com campanha que tem characters
+
+---
+
+## Feature Extra: Auto-Mascaramento de Nomes (Anti-Metagaming)
+
+**Commits:** `2a1f3b9`, `7e0cd51`
+
+**O que faz:** Toda criatura adicionada ao combate recebe automaticamente um `display_name` temático baseado no `creature_type`. O DM vê o nome real + fake, jogadores veem só o fake.
+
+**Exemplo:**
+- DM vê: `Kraken 1 — Serpente das Profundezas` (fake em cinza)
+- Player vê: `Serpente das Profundezas`
+
+**Arquivos criados:**
+- `lib/utils/creature-name-generator.ts` — Pool de nomes temáticos por tipo (14 tipos, 6+ nomes cada). Exaure o pool antes de reutilizar, depois numera.
+
+**Arquivos modificados:**
+- `components/combat/EncounterSetup.tsx` — `getDefaultDisplayName` reescrito para usar gerador temático ao invés de "Criatura #N". handleDuplicate gera novo nome ao invés de copiar.
+- `components/combat/CombatantRow.tsx` — Formato `Nome — FakeName` com separador em-dash e opacity /40.
+
+**Code Review:** 12 findings, 6 patches aplicados:
+
+| ID | Sev | Fix |
+|----|-----|-----|
+| CR-01 | CRITICAL | `startsWith` → pool exhaustion com dedup set |
+| CR-02 | CRITICAL | Random collision → exhaust pool, then number |
+| CR-03 | HIGH | handleDuplicate gera novo display_name |
+| CR-04 | HIGH | Preset loader passa null (aceito — sem creature_type em presets) |
+| CR-05 | HIGH | Manual-add usa `getMonsterById` para lookup de type |
+| CR-10 | LOW | `hasOwnProperty` check no lookup de NAMES_BY_TYPE |
