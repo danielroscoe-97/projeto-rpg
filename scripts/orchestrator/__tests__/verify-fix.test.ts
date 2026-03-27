@@ -1,5 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// Mock config before anything else to avoid PROJECT_ROOT check
+vi.mock("../config.js", () => ({
+  config: {
+    projectRoot: "/mock-project",
+    paths: { orchestratorLog: "/mock-log" },
+    agent: { models: { orchestrator: "opus", dev: "opus", qa: "sonnet" }, timeoutMs: 60000, maxTurnsPerStory: 50 },
+    git: { baseBranch: "master", branchPrefix: "feat/", autoCommit: true, autoPush: true, autoCreatePR: true },
+    worktree: { baseDir: "/tmp/bmad", maxConcurrent: 4, cleanupOnSuccess: true, rateLimitBackoffMs: 30000, maxRateLimitRetries: 5 },
+    verifyFix: { enabled: true, maxAttempts: 3, maxTurnsPerFix: 30, runQACheck: true },
+    slack: { enabled: false },
+  },
+}));
+
 // Mock child_process
 vi.mock("child_process", () => ({
   execFileSync: vi.fn(() => ""),
@@ -16,6 +29,11 @@ vi.mock("fs", () => ({
   readFileSync: vi.fn(() => "{}"),
   readdirSync: vi.fn(() => []),
   appendFileSync: vi.fn(),
+}));
+
+// Mock logger to suppress output
+vi.mock("../logger.js", () => ({
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(), git: vi.fn(), claude: vi.fn(), taskComplete: vi.fn() },
 }));
 
 // Mock slack

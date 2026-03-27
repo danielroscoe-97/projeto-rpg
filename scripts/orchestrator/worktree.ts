@@ -13,6 +13,7 @@ import { existsSync, writeFileSync, unlinkSync, rmSync, mkdirSync, symlinkSync, 
 import { join } from "path";
 import { config } from "./config.js";
 import { logger } from "./logger.js";
+import { validateBranchName, validateStoryId, toBranchSafeSlug } from "./validation.js";
 
 const GIT_TIMEOUT = 120_000; // worktree ops can be slower
 
@@ -52,13 +53,8 @@ function ghInWorktree(worktree: Worktree, ...args: string[]): string {
   }).trim();
 }
 
-function toBranchSlug(storyId: string, description: string): string {
-  const slug = description
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-    .slice(0, 40);
-  return slug;
+function toWorktreeSlug(description: string): string {
+  return toBranchSafeSlug(description);
 }
 
 // -- Public API --
@@ -68,8 +64,9 @@ function toBranchSlug(storyId: string, description: string): string {
  * If the worktree directory already exists (from a previous run), removes it first.
  */
 export function createWorktree(storyId: string, description: string, options?: { skipFetch?: boolean }): Worktree {
-  const slug = toBranchSlug(storyId, description);
-  const branch = `${config.git.branchPrefix}${slug}`;
+  validateStoryId(storyId);
+  const slug = toWorktreeSlug(description);
+  const branch = validateBranchName(`${config.git.branchPrefix}${slug}`);
   const worktreePath = join(config.worktree.baseDir, slug);
 
   // Clean up stale worktree if it exists

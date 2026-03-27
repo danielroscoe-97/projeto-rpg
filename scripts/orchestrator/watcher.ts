@@ -177,6 +177,7 @@ export function clearRules(): void {
 // -- Polling Loop --
 
 let pollInterval: ReturnType<typeof setInterval> | null = null;
+let isProcessing = false;
 
 export function startWatcher(intervalMs: number = 15 * 60 * 1000): void {
   if (pollInterval) {
@@ -211,6 +212,21 @@ export function stopWatcher(): void {
 }
 
 async function checkAllRules(): Promise<void> {
+  // Guard: skip if a previous check cycle is still running
+  if (isProcessing) {
+    logger.debug("Skipping watch cycle — previous check still running");
+    return;
+  }
+  isProcessing = true;
+
+  try {
+    await checkAllRulesInner();
+  } finally {
+    isProcessing = false;
+  }
+}
+
+async function checkAllRulesInner(): Promise<void> {
   const state = loadState();
   state.lastCheck = new Date().toISOString();
   saveState(state);

@@ -21,6 +21,7 @@ import { execFileSync } from "child_process";
 import { join } from "path";
 import { config } from "./config.js";
 import { runClaude } from "./claude-runner.js";
+import { validateStoryId } from "./validation.js";
 import { notify, notifyComplete, notifyError } from "./slack.js";
 import { logger } from "./logger.js";
 import { Semaphore, Mutex } from "./semaphore.js";
@@ -74,21 +75,23 @@ function acquireFileLock(maxWaitMs: number = 5000): boolean {
   const start = Date.now();
   while (existsSync(LOCK_PATH)) {
     try {
-      const lockAge = Date.now() - Number(readFileSync(LOCK_PATH, "utf-8").trim());
-      if (lockAge > 60_000) {
-        logger.warn("Breaking stale queue lock");
+      const lockContent = readFileSync(LOCK_PATH, "utf-8").trim();
+      const lockAge = Date.now() - Number(lockContent);
+      if (isNaN(lockAge) || lockAge > 60_000) {
+        logger.warn("Breaking stale/corrupt queue lock", { lockAge: isNaN(lockAge) ? "NaN" : lockAge });
+        try { unlinkSync(LOCK_PATH); } catch { /* race: another process may have removed it */ }
         break;
       }
     } catch {
+      // Lock file disappeared or unreadable — proceed
       break;
     }
     if (Date.now() - start > maxWaitMs) {
       logger.error("Failed to acquire queue file lock — timeout");
       return false;
     }
-    // Brief sync wait — only hit when cross-process contention (rare)
-    const end = Date.now() + 50;
-    while (Date.now() < end) { /* spin */ }
+    // Brief sync sleep — only hit when cross-process contention (rare)
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
   }
   writeFileSync(LOCK_PATH, String(Date.now()));
   return true;
@@ -190,12 +193,16 @@ export function buildQueue(storyIds?: string[]): QueueState {
         .sort();
     }
 
-    const stories: StoryEntry[] = files.map((f) => ({
-      id: f.replace(".md", ""),
-      specPath: `_bmad-output/implementation-artifacts/${f}`,
-      status: "pending" as const,
-      attempts: 0,
-    }));
+    const stories: StoryEntry[] = files.map((f) => {
+      const id = f.replace(".md", "");
+      validateStoryId(id);
+      return {
+        id,
+        specPath: `_bmad-output/implementation-artifacts/${f}`,
+        status: "pending" as const,
+        attempts: 0,
+      };
+    });
 
     const state: QueueState = {
       stories,

@@ -1,5 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// Mock config before anything else to avoid PROJECT_ROOT check
+vi.mock("../config.js", () => ({
+  config: {
+    projectRoot: "/mock-project",
+    paths: { orchestratorLog: "/mock-log" },
+    git: { baseBranch: "master", branchPrefix: "feat/", autoCommit: true, autoPush: true, autoCreatePR: true },
+    worktree: { baseDir: "/tmp/bmad", maxConcurrent: 4, cleanupOnSuccess: true },
+    slack: { enabled: false },
+  },
+}));
+
 // Mock child_process before importing worktree
 vi.mock("child_process", () => ({
   execFileSync: vi.fn(() => ""),
@@ -14,6 +25,13 @@ vi.mock("fs", () => ({
   mkdirSync: vi.fn(),
   readFileSync: vi.fn(() => "{}"),
   appendFileSync: vi.fn(),
+  realpathSync: vi.fn((p: string) => p),
+  symlinkSync: vi.fn(),
+}));
+
+// Mock logger to suppress output
+vi.mock("../logger.js", () => ({
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(), git: vi.fn() },
 }));
 
 import { execFileSync } from "child_process";

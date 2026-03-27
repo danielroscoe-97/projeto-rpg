@@ -10,6 +10,7 @@ import { writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
 import { config } from "./config.js";
 import { logger } from "./logger.js";
+import { validateBranchName, validateStoryId, toBranchSafeSlug } from "./validation.js";
 
 const GIT_TIMEOUT = 60_000;
 
@@ -51,13 +52,10 @@ function ensureCleanState(): void {
  * Returns the branch name.
  */
 export function createBranch(storyId: string, description: string): string {
-  const slug = description
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-    .slice(0, 40);
+  validateStoryId(storyId);
 
-  const branchName = `${config.git.branchPrefix}${slug}`;
+  const slug = toBranchSafeSlug(description);
+  const branchName = validateBranchName(`${config.git.branchPrefix}${slug}`);
 
   ensureCleanState();
   git("checkout", config.git.baseBranch);
