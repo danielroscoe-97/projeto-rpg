@@ -36,6 +36,13 @@ export async function GET(
     return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
+  // Fetch dm_plan from sessions table (Mesa model)
+  const { data: sessionRow } = await serviceClient
+    .from("sessions")
+    .select("dm_plan")
+    .eq("id", sessionId)
+    .single();
+
   // Fetch active encounter + combatants
   const { data: encounter } = await serviceClient
     .from("encounters")
@@ -47,7 +54,7 @@ export async function GET(
     .single();
 
   if (!encounter) {
-    return NextResponse.json({ data: { encounter: null, combatants: [] } });
+    return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null } });
   }
 
   const { data: combatants } = await serviceClient
@@ -69,6 +76,7 @@ export async function GET(
     data: {
       encounter,
       combatants: playerCombatants,
+      dm_plan: sessionRow?.dm_plan ?? null,
     },
   });
 }

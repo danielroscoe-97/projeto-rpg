@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
 
 const MAX_INVITES_PER_DAY = 20;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(
   request: NextRequest,
@@ -26,7 +27,7 @@ export async function POST(
 
   const body = await request.json();
   const email = body.email?.trim()?.toLowerCase();
-  if (!email || !email.includes("@")) {
+  if (!email || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email" }, { status: 400 });
   }
 
@@ -72,7 +73,8 @@ export async function POST(
 
     // TODO: Trigger Novu campaign-invite workflow here
     // For now, return the invite link for the DM to share manually
-    const inviteLink = `/auth/sign-up?invite=${token}&campaign=${campaignId}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    const inviteLink = `${baseUrl}/auth/sign-up?invite=${token}&campaign=${campaignId}`;
 
     return NextResponse.json({
       data: {

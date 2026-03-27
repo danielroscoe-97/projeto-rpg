@@ -2,6 +2,7 @@ import { createClient as createAuthClient, createServiceClient } from "@/lib/sup
 import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";
 import { getHpStatus } from "@/lib/utils/hp-status";
+import type { Plan } from "@/lib/types/subscription";
 
 interface JoinPageProps {
   params: Promise<{ token: string }>;
@@ -38,7 +39,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
   // Verify session is active
   const { data: session } = await supabase
     .from("sessions")
-    .select("id, name, is_active, ruleset_version")
+    .select("id, name, is_active, ruleset_version, dm_plan")
     .eq("id", tokenRow.session_id)
     .eq("is_active", true)
     .single();
@@ -137,6 +138,8 @@ export default async function JoinPage({ params }: JoinPageProps) {
     // Auth check failed — continue as anonymous (standard empty form)
   }
 
+  const dmPlan = (["free","pro","mesa"].includes(session.dm_plan) ? session.dm_plan : "free") as Plan;
+
   return (
     <PlayerJoinClient
       tokenId={tokenRow.id}
@@ -149,6 +152,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       currentTurnIndex={encounter?.current_turn_index ?? 0}
       initialCombatants={combatants}
       prefilledCharacters={prefilledCharacters}
+      dmPlan={dmPlan}
     />
   );
 }

@@ -483,6 +483,69 @@ describe("useCombatStore – setRulesetVersion", () => {
   });
 });
 
+// === AC4: Undo Stack (HP) ===
+
+describe("useCombatStore – undoLastHpChange", () => {
+  it("pushes entry on damage and restores on undo", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 3);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+  });
+
+  it("pushes entry on healing", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, current_hp: 3 });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyHealing(id, 2);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(5);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(3);
+  });
+
+  it("supports multiple levels of undo", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 1); // 7 -> 6
+    useCombatStore.getState().applyDamage(id, 2); // 6 -> 4
+    useCombatStore.getState().applyDamage(id, 1); // 4 -> 3
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(3);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(6);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+  });
+
+  it("is a no-op when stack is empty", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+  });
+
+  it("restores temp HP after damage absorbed by temp HP", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setTempHp(id, 5);
+    useCombatStore.getState().applyDamage(id, 8);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
+    expect(useCombatStore.getState().combatants[0].temp_hp).toBe(0);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+    expect(useCombatStore.getState().combatants[0].temp_hp).toBe(5);
+  });
+
+  it("clearEncounter resets undo stack", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 3);
+    useCombatStore.getState().clearEncounter();
+    expect(useCombatStore.getState().hpUndoStack).toEqual([]);
+  });
+});
+
 // === Story B1-1: Add Combatant Mid-Combat ===
 describe("useCombatStore – addCombatant mid-combat (lastAddedCombatantId)", () => {
   it("tracks lastAddedCombatantId when combat is active", () => {
