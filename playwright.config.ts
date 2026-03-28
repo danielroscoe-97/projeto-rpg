@@ -29,6 +29,10 @@ export default defineConfig({
       name: "mobile-chrome",
       use: { ...devices["Pixel 5"] },
     },
+    {
+      name: "iphone",
+      use: { ...devices["iPhone 14"] },
+    },
   ],
   outputDir: "./e2e/results",
 });
