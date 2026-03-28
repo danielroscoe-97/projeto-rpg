@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(*)",
-      "mcp__playwright__*"
+      "mcp__playwright__*",
+      "WebFetch"
     ],
     "defaultMode": "bypassPermissions"
   },
