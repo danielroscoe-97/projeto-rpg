@@ -763,6 +763,7 @@
     "late_join_info": "Combat is already in progress. Enter your info and the DM will approve your entry.",
     "late_join_submit": "Request to Join",
     "late_join_waiting": "Waiting for the DM to approve your entry...",
+    "late_join_polling_hint": "Checking automatically... You'll join as soon as the DM accepts.",
     "late_join_rejected": "The DM did not accept your entry at this time.",
     "late_join_retry": "Try Again",
     "notifications_on": "🔔 Turn notifications ON",

@@ -39,8 +39,8 @@ interface PlayerLobbyProps {
     hp: number | null;
     ac: number | null;
   }) => Promise<void>;
-  /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" */
-  lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected";
+  /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" | "polling" */
+  lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected" | "polling";
   /** Characters the authenticated player has in this campaign (auto-join pre-fill) */
   prefilledCharacters?: PrefilledCharacter[];
 }
@@ -138,8 +138,8 @@ export function PlayerLobby({
     );
   }
 
-  // Late-join waiting state
-  if (lateJoinStatus === "waiting") {
+  // Late-join waiting or polling state
+  if (lateJoinStatus === "waiting" || lateJoinStatus === "polling") {
     return (
       <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
         <div className="max-w-sm mx-auto w-full space-y-6 text-center">
@@ -154,13 +154,18 @@ export function PlayerLobby({
             <p className="text-muted-foreground text-base lg:text-sm mt-4">
               {t("late_join_waiting")}
             </p>
+            {lateJoinStatus === "polling" && (
+              <p className="text-muted-foreground/60 text-xs mt-2">
+                {t("late_join_polling_hint")}
+              </p>
+            )}
           </div>
         </div>
       </div>
     );
   }
 
-  // Late-join rejected state
+  // Late-join rejected state (DM explicitly rejected)
   if (lateJoinStatus === "rejected") {
     return (
       <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">

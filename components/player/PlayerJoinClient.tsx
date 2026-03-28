@@ -101,7 +101,7 @@ export function PlayerJoinClient({
   // TODO: include weatherEffect in session:state_sync for reconnect support
   const [weatherEffect, setWeatherEffect] = useState<string>("none");
   const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
-  const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
+  const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected" | "polling">("idle");
   const lateJoinRequestIdRef = useRef<string | null>(null);
   const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const lateJoinRegisteredRef = useRef(false);
@@ -153,16 +153,30 @@ export function PlayerJoinClient({
 
   // Anonymous auth + claim token via server action (bypasses RLS)
   useEffect(() => {
+    let cancelled = false;
     const initAuth = async () => {
       try {
         const supabase = createClient();
+
+        // Timeout guard — iOS WebKit can hang on auth calls indefinitely
+        const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T> =>
+          Promise.race([
+            promise,
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error("Auth timeout")), ms)
+            ),
+          ]);
+
         const {
           data: { session },
-        } = await supabase.auth.getSession();
+        } = await withTimeout(supabase.auth.getSession(), 8000);
 
         let userId: string;
         if (!session) {
-          const { data, error: authError } = await supabase.auth.signInAnonymously();
+          const { data, error: authError } = await withTimeout(
+            supabase.auth.signInAnonymously(),
+            10000
+          );
           if (authError) throw new Error(`anon-auth: ${authError.message}`);
           if (!data.user) throw new Error("anon-auth: no user returned");
           userId = data.user.id;
@@ -171,15 +185,24 @@ export function PlayerJoinClient({
         }
 
         // Server action — creates per-player token if shared one is taken
-        const claimedTokenId = await claimPlayerToken(tokenId, userId);
-        setEffectiveTokenId(claimedTokenId);
-        setAuthReady(true);
-      } catch {
-        setError(t("connection_error_detail"));
+        const claimedTokenId = await withTimeout(claimPlayerToken(tokenId, userId), 10000);
+        if (!cancelled) {
+          setEffectiveTokenId(claimedTokenId);
+          setAuthReady(true);
+        }
+      } catch (err) {
+        captureError(err instanceof Error ? err : new Error(String(err)), {
+          context: "player-join-auth",
+          extra: { tokenId },
+        });
+        if (!cancelled) {
+          setError(tRef.current("connection_error_detail"));
+        }
       }
     };
     initAuth();
-  }, [tokenId, t]);
+    return () => { cancelled = true; };
+  }, [tokenId]);
 
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
@@ -527,12 +550,16 @@ export function PlayerJoinClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
 
-  // Polling fallback for late-join: if broadcast doesn't arrive, check server
+  // Polling fallback for late-join: if broadcast doesn't arrive, check server.
+  // Runs while "waiting" OR "rejected" (timeout fired but DM may still accept later).
+  // Stops only when "accepted" or "idle" (user cancelled).
   useEffect(() => {
-    if (lateJoinStatus !== "waiting" || !sessionId) return;
+    const shouldPoll = (lateJoinStatus === "waiting" || lateJoinStatus === "polling" || lateJoinStatus === "rejected") && !!sessionId && !!lateJoinDataRef.current;
+    if (!shouldPoll) return;
 
     const poll = async () => {
       try {
+        if (lateJoinRegisteredRef.current) return; // Already resolved
         const res = await fetch(`/api/session/${sessionId}/state`);
         if (!res.ok) return;
         const { data } = await res.json();
@@ -618,7 +645,7 @@ export function PlayerJoinClient({
   // Clears any previous interval before starting so second-disconnect restarts correctly.
   const startPolling = (eid: string) => {
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    const isMobile = typeof navigator !== "undefined" && /Mobi|Android/i.test(navigator.userAgent);
+    const isMobile = typeof navigator !== "undefined" && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const interval = isMobile ? 5000 : 2000;
     pollIntervalRef.current = setInterval(() => fetchFullState(eid), interval);
   };
@@ -678,7 +705,9 @@ export function PlayerJoinClient({
     hp: number | null;
     ac: number | null;
   }) => {
-    const requestId = crypto.randomUUID();
+    const requestId = typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
     lateJoinRequestIdRef.current = requestId;
     lateJoinDataRef.current = data;
     lateJoinRegisteredRef.current = false;
@@ -702,14 +731,14 @@ export function PlayerJoinClient({
         category: "realtime",
       });
     }
-    // Auto-reject after 60s if DM doesn't respond (B1-3 AC #6)
+    // After 15s without broadcast response, switch to polling-only mode.
+    // Don't reject — DM may still accept; polling will pick it up.
     if (lateJoinTimeoutRef.current) clearTimeout(lateJoinTimeoutRef.current);
     lateJoinTimeoutRef.current = setTimeout(() => {
-      if (lateJoinRequestIdRef.current === requestId) {
-        setLateJoinStatus("rejected");
-        lateJoinRequestIdRef.current = null;
+      if (lateJoinRequestIdRef.current === requestId && !lateJoinRegisteredRef.current) {
+        setLateJoinStatus("polling");
       }
-    }, 60_000);
+    }, 15_000);
   }, []);
 
   if (error) {

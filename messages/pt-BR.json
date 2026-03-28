@@ -763,6 +763,7 @@
     "late_join_info": "O combate já está em andamento. Preencha seus dados e o mestre aprovará sua entrada.",
     "late_join_submit": "Solicitar Entrada",
     "late_join_waiting": "Aguardando aprovação do mestre...",
+    "late_join_polling_hint": "Verificando automaticamente... Você entrará assim que o mestre aceitar.",
     "late_join_rejected": "O mestre não aceitou sua entrada neste momento.",
     "late_join_retry": "Tentar Novamente",
     "auto_join_select_character": "Selecione seu personagem",
