@@ -60,7 +60,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         .from("subscriptions")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!data) {
         set({ plan: "free", status: null, subscription: null, loading: false, initialized: true });

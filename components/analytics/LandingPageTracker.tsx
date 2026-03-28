@@ -70,7 +70,9 @@ export function LandingPageTracker() {
 
   // CTA click tracking via event delegation
   const handleCtaClick = useCallback((e: MouseEvent) => {
-    const link = (e.target as HTMLElement).closest("a[href]") as HTMLAnchorElement | null;
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
+    const link = target.closest("a[href]") as HTMLAnchorElement | null;
     if (!link) return;
 
     const href = link.getAttribute("href");

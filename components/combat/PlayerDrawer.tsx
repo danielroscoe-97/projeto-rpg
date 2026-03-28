@@ -113,7 +113,7 @@ function NotesField({
 
 export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
   const [characters, setCharacters] = useState<PlayerCharacter[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!open || !campaignId) return;
