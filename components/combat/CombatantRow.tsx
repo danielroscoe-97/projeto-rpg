@@ -114,12 +114,18 @@ export function CombatantRow({
     prevHp.current = combatant.current_hp;
   }, [combatant.current_hp]);
 
-  const hpPct = combatant.max_hp > 0
-    ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
-    : 0;
+  // HP bar: tiers calculated on normal HP only (immutable rule)
   const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
   const hpThresholdKey = getHpThresholdKey(combatant.current_hp, combatant.max_hp);
   const hasTempHp = combatant.temp_hp > 0;
+  // Visual bar widths: temp HP extends the bar beyond normal max
+  const totalPool = combatant.max_hp + combatant.temp_hp;
+  const hpPctOfTotal = totalPool > 0 ? Math.max(0, Math.min(1, combatant.current_hp / totalPool)) : 0;
+  const tempPctOfTotal = totalPool > 0 ? Math.max(0, Math.min(1, combatant.temp_hp / totalPool)) : 0;
+  // Legacy pct for aria (based on max_hp only)
+  const hpPct = combatant.max_hp > 0
+    ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
+    : 0;
 
   // HP bar tooltip: DM sees exact numbers, players see only tier name
   const hpTierTooltipKey = hpThresholdKey ? `hp_tooltip_${hpThresholdKey.replace("hp_", "")}` as const : null;
@@ -409,22 +415,29 @@ export function CombatantRow({
           )}
         </div>
 
-        {/* HP bar with tooltip */}
+        {/* HP bar with tooltip — purple segment for temp HP */}
         <div className="mb-1">
           <div
-            className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden cursor-help"
+            className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden cursor-help flex"
             role="progressbar"
             aria-valuenow={combatant.current_hp}
             aria-valuemin={0}
             aria-valuemax={combatant.max_hp}
             aria-label={t("hp_aria", { name: combatant.name })}
-            title={hpTooltip}
+            title={hasTempHp ? `${hpTooltip ?? ""} (+${combatant.temp_hp} temp)` : hpTooltip}
           >
             <div
-              className={`h-full rounded-full transition-all ${hpBarColor}`}
-              style={{ width: `${hpPct * 100}%` }}
+              className={`h-full transition-all ${hpBarColor} ${hasTempHp ? "" : "rounded-full"} ${hasTempHp ? "rounded-l-full" : ""}`}
+              style={{ width: `${hpPctOfTotal * 100}%` }}
               data-testid={`hp-bar-${combatant.id}`}
             />
+            {hasTempHp && (
+              <div
+                className="h-full bg-purple-500 rounded-r-full transition-all"
+                style={{ width: `${tempPctOfTotal * 100}%` }}
+                data-testid={`temp-hp-bar-${combatant.id}`}
+              />
+            )}
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import { persistInitiativeAndStartCombat, persistInitiativeOrder, persistNewCombatant } from "@/lib/supabase/session";
@@ -35,6 +35,8 @@ import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { AnimatePresence } from "framer-motion";
 import { BackgroundSelector } from "@/components/combat/BackgroundSelector";
+import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
+import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 
 interface CombatSessionClientProps {
@@ -72,6 +74,7 @@ export function CombatSessionClient({
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [showWeatherSelector, setShowWeatherSelector] = useState(false);
+  const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
 
   const { combatants, is_active, setError } =
     useCombatStore();
@@ -676,6 +679,23 @@ export function CombatSessionClient({
           >
             {weatherEffect === "rain" ? "\uD83C\uDF27\uFE0F" : weatherEffect === "snow" ? "\u2744\uFE0F" : weatherEffect === "fog" ? "\uD83C\uDF2B\uFE0F" : weatherEffect === "storm" ? "\u26C8\uFE0F" : weatherEffect === "ash" ? "\uD83C\uDF0B" : "\uD83C\uDF24\uFE0F"}
           </button>
+          {campaignId && (
+            <button
+              type="button"
+              onClick={() => setPlayerDrawerOpen((v) => !v)}
+              className={`px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1.5 rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                playerDrawerOpen
+                  ? "bg-gold/10 text-gold border border-gold/30"
+                  : "text-muted-foreground hover:text-foreground bg-white/[0.04]"
+              }`}
+              aria-label="Players"
+              title="Players"
+              data-testid="player-drawer-toggle"
+            >
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline text-xs">Players</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setCheatsheetOpen((v) => !v)}
@@ -823,6 +843,12 @@ export function CombatSessionClient({
           />
         )}
       </AnimatePresence>
+
+      <PlayerDrawer
+        campaignId={campaignId}
+        open={playerDrawerOpen}
+        onClose={() => setPlayerDrawerOpen(false)}
+      />
     </div>
   );
 }
@@ -901,6 +927,19 @@ function CombatList({
   onSetGroupInitiative,
   t,
 }: CombatListProps) {
+  // Auto-scroll to active combatant when turn advances (skip initial mount)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    requestAnimationFrame(() => {
+      const activeCard = document.querySelector('[aria-current="true"]') as HTMLElement | null;
+      activeCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, [currentTurnIndex]);
+
   const renderItems = buildRenderItems(combatants);
 
   const renderCombatantRow = (c: Combatant, index: number) => (
@@ -949,6 +988,7 @@ function CombatList({
             onToggle={() => onToggleGroupExpanded(item.groupId)}
             groupInitiative={getGroupInitiative(members)}
             onSetGroupInitiative={(val) => onSetGroupInitiative(item.groupId, val)}
+            isCurrentTurn={item.members.some((m) => m.index === currentTurnIndex)}
           >
             {item.members.map((m) => renderCombatantRow(m.combatant, m.index))}
           </MonsterGroupHeader>

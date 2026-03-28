@@ -126,7 +126,16 @@
     "invite_expired": "Este convite expirou. Peça ao seu mestre para enviar um novo.",
     "invite_used": "Este convite já foi utilizado.",
     "invite_welcome": "Você foi convidado para a campanha \"{campaignName}\" por {dmName}",
-    "invite_accepted": "Personagem criado! Bem-vindo à campanha."
+    "invite_accepted": "Personagem criado! Bem-vindo à campanha.",
+    "summary_players": "jogadores",
+    "summary_sessions": "sessoes",
+    "summary_encounters": "combates finalizados",
+    "section_players": "Jogadores",
+    "section_notes": "Notas da Campanha",
+    "section_encounters": "Combates Anteriores",
+    "notes_placeholder": "Escreva notas da campanha, resumos de sessao, ganchos de enredo...",
+    "encounters_empty": "Nenhum combate finalizado ainda.",
+    "encounters_rounds": "{count} rodadas"
   },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",
@@ -321,6 +330,8 @@
     "setup_notes_aria": "Notas de {name}",
     "setup_remove": "Remover",
     "setup_remove_aria": "Remover {name}",
+    "setup_alias_tooltip": "Barreira Anti-Metagame — Nome que seus jogadores verão na iniciativa",
+    "setup_alias_placeholder": "Nome para jogadores...",
     "encounter_title": "Novo Encontro",
     "encounter_description": "Adicione combatentes, defina iniciativa e inicie o combate.",
     "search_monsters": "Pesquisar Monstros SRD",
@@ -962,6 +973,7 @@
     "import_error": "Falha ao importar encontro. Tente novamente.",
     "footer_enjoyed": "Curtiu o Pocket DM?",
     "footer_create_account": "Crie sua conta e salve suas campanhas →",
+    "try_encounter_name": "Combate de Teste",
     "save_requires_account": "Salvar (requer conta)",
     "share_requires_account": "Compartilhar (requer conta)"
   },

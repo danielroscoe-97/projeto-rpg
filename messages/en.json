@@ -126,7 +126,16 @@
     "invite_expired": "This invite has expired. Ask your DM for a new one.",
     "invite_used": "This invite has already been used.",
     "invite_welcome": "You've been invited to campaign \"{campaignName}\" by {dmName}",
-    "invite_accepted": "Character created! Welcome to the campaign."
+    "invite_accepted": "Character created! Welcome to the campaign.",
+    "summary_players": "players",
+    "summary_sessions": "sessions",
+    "summary_encounters": "encounters finished",
+    "section_players": "Players",
+    "section_notes": "Campaign Notes",
+    "section_encounters": "Past Encounters",
+    "notes_placeholder": "Write campaign notes, session recaps, plot hooks...",
+    "encounters_empty": "No finished encounters yet.",
+    "encounters_rounds": "{count} rounds"
   },
   "auth_errors": {
     "invalid_credentials": "Incorrect email or password.",
@@ -321,6 +330,8 @@
     "setup_notes_aria": "Notes for {name}",
     "setup_remove": "Remove",
     "setup_remove_aria": "Remove {name}",
+    "setup_alias_tooltip": "Anti-Metagame Barrier — Name your players will see in the initiative tracker",
+    "setup_alias_placeholder": "Player-visible name...",
     "encounter_title": "New Encounter",
     "encounter_description": "Add combatants, set initiative, then start combat.",
     "search_monsters": "Search SRD Monsters",
@@ -962,6 +973,7 @@
     "import_error": "Failed to import encounter. Please try again.",
     "footer_enjoyed": "Enjoying the Tavern?",
     "footer_create_account": "Create your account and save your campaigns →",
+    "try_encounter_name": "Test Combat",
     "save_requires_account": "Save (requires account)",
     "share_requires_account": "Share (requires account)"
   },

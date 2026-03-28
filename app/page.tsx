@@ -451,7 +451,7 @@ function HowItWorksSection() {
       step: 3,
       emoji: "🔗",
       title: "Compartilhe o Link",
-      description: "Gere o link da sessão. Jogadores abrem no celular — sem conta necessária.",
+      description: "Gere o link da sessão. Jogadores entram pelo celular — sem cadastro para eles.",
       time: "~10 seg",
     },
     {

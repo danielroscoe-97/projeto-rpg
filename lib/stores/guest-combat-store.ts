@@ -11,6 +11,7 @@ interface GuestCombatState {
   combatants: Combatant[];
   currentTurnIndex: number;
   roundNumber: number;
+  combatStartTime: number | null;
 }
 
 interface GuestCombatActions {
@@ -21,7 +22,7 @@ interface GuestCombatActions {
   batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
   setGroupInitiative: (groupId: string, value: number) => void;
   reorderCombatants: (newOrder: Combatant[]) => void;
-  updateCombatantStats: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  updateCombatantStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   updatePlayerNotes: (id: string, notes: string) => void;
   updateDmNotes: (id: string, notes: string) => void;
   startCombat: () => void;
@@ -43,6 +44,7 @@ const initialState: GuestCombatState = {
   combatants: [],
   currentTurnIndex: 0,
   roundNumber: 1,
+  combatStartTime: null,
 };
 
 export const useGuestCombatStore = create<GuestCombatStore>()(
@@ -126,7 +128,7 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       startCombat: () =>
         set((state) => {
           const sorted = assignInitiativeOrder(sortByInitiative(state.combatants));
-          return { phase: "combat", combatants: sorted, currentTurnIndex: 0, roundNumber: 1 };
+          return { phase: "combat", combatants: sorted, currentTurnIndex: 0, roundNumber: 1, combatStartTime: Date.now() };
         }),
 
       advanceTurn: () =>

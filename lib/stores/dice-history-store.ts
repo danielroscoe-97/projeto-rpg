@@ -57,10 +57,10 @@ export const useDiceHistoryStore = create<DiceHistoryStore>()(
           timestamp: Date.now(),
         };
         set((state) => {
-          const entries = [...state.entries, entry];
-          // FIFO eviction
+          const entries = [entry, ...state.entries];
+          // Trim oldest entries from the end
           if (entries.length > MAX_ENTRIES) {
-            entries.splice(0, entries.length - MAX_ENTRIES);
+            entries.length = MAX_ENTRIES;
           }
           return {
             entries,

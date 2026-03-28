@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Copy } from "lucide-react";
+import { Copy, Shield } from "lucide-react";
 import type { Combatant } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { MonsterToken } from "@/components/srd/MonsterToken";
@@ -19,6 +20,8 @@ interface CombatantSetupRowProps {
   onDuplicate?: (combatant: Combatant) => void;
   /** Roll initiative for this combatant (1d20 + DEX mod if available) */
   onRollInitiative?: (id: string) => void;
+  /** Update the anti-metagame display name for this combatant */
+  onDisplayNameChange?: (id: string, displayName: string | null) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
   /** Highlight the initiative field as invalid */
@@ -35,11 +38,14 @@ export function CombatantSetupRow({
   onRemove,
   onDuplicate,
   onRollInitiative,
+  onDisplayNameChange,
   dragHandleProps,
   highlightInit,
 }: CombatantSetupRowProps) {
   const t = useTranslations("combat");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+  const [editingAlias, setEditingAlias] = useState(false);
+  const [aliasValue, setAliasValue] = useState(combatant.display_name ?? "");
   const inputClass =
     "bg-transparent border border-transparent hover:border-border focus:border-ring focus:outline-none rounded px-1.5 py-1 text-foreground text-sm transition-colors min-h-[32px]";
 
@@ -134,10 +140,40 @@ export function CombatantSetupRow({
           aria-label={t("setup_name_aria")}
           data-testid={`setup-name-${combatant.id}`}
         />
-        {combatant.display_name && !combatant.is_player && (
-          <span className="text-xs text-muted-foreground/40 font-normal ml-1">
-            — {combatant.display_name}
-          </span>
+        {!combatant.is_player && combatant.display_name && !editingAlias && (
+          <button
+            type="button"
+            onClick={() => {
+              setAliasValue(combatant.display_name ?? "");
+              setEditingAlias(true);
+            }}
+            className="flex items-center gap-0.5 text-xs text-muted-foreground/40 hover:text-purple-400 font-normal ml-1 transition-colors"
+            title={t("setup_alias_tooltip")}
+            data-testid={`alias-btn-${combatant.id}`}
+          >
+            <Shield className="w-3 h-3" />
+            <span className="truncate max-w-[120px]">{combatant.display_name}</span>
+          </button>
+        )}
+        {!combatant.is_player && editingAlias && (
+          <input
+            type="text"
+            value={aliasValue}
+            onChange={(e) => setAliasValue(e.target.value)}
+            onBlur={() => {
+              const trimmed = aliasValue.trim();
+              onDisplayNameChange?.(combatant.id, trimmed || null);
+              setEditingAlias(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+              if (e.key === "Escape") setEditingAlias(false);
+            }}
+            placeholder={t("setup_alias_placeholder")}
+            className={`${inputClass} w-28 text-xs text-purple-400 ml-1`}
+            autoFocus
+            data-testid={`alias-input-${combatant.id}`}
+          />
         )}
         {combatant.is_player && (
           <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider flex-shrink-0">

@@ -257,6 +257,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   const handleSelectMonsterGroup = useCallback(
     (monster: SrdMonster, qty: number) => {
       const groupId = crypto.randomUUID();
+      // Roll initiative once for the whole group (D&D 5e PHB p.189)
+      const groupInitResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
+      const groupInit = groupInitResult.total;
       const currentCombatants = useCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       for (let i = 1; i <= qty; i++) {
@@ -268,7 +271,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           temp_hp: 0,
           ac: monster.armor_class,
           spell_save_dc: null,
-          initiative: null,
+          initiative: groupInit,
           initiative_order: null,
           conditions: [],
           ruleset_version: monster.ruleset_version,
@@ -705,6 +708,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}
+              onDisplayNameChange={(id, dn) => updateCombatantStats(id, { display_name: dn })}
               dragHandleProps={dragHandleProps}
               highlightInit={invalidInitIds.has(c.id)}
             />

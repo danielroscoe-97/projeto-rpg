@@ -19,19 +19,12 @@ export function DiceHistoryPanel() {
   const locale = useLocale();
   const { entries, isOpen, unreadCount, togglePanel, clear, markRead } =
     useDiceHistoryStore();
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   // Init the CustomEvent listener for roll results
   useEffect(() => {
     return initDiceHistoryListener();
   }, []);
 
-  // Auto-scroll to bottom on new entry when panel is open
-  useEffect(() => {
-    if (isOpen && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [entries.length, isOpen]);
+  // Newest-first: no auto-scroll needed — new entries appear at the top
 
   // Mark as read when panel opens (only react to isOpen changes)
   const markReadRef = useRef(markRead);
@@ -43,12 +36,16 @@ export function DiceHistoryPanel() {
   }, [isOpen]);
 
   if (!isOpen) {
+    const lastEntry = entries[0]; // First = newest (prepend order)
+    const lastLabel = lastEntry
+      ? `${lastEntry.result.total}${lastEntry.result.label ? ` — ${lastEntry.result.label}` : ""}${lastEntry.result.mode === "advantage" ? " (ADV)" : lastEntry.result.mode === "disadvantage" ? " (DIS)" : ""}`
+      : null;
     return (
       <button
         type="button"
         className="dice-history-pill"
         onClick={togglePanel}
-        title={t("history_title")}
+        title={lastLabel ?? t("history_title")}
         aria-label={`${t("history_title")}${unreadCount > 0 ? ` (${unreadCount} ${t("history_new")})` : ""}`}
       >
         <svg
@@ -69,6 +66,9 @@ export function DiceHistoryPanel() {
           <circle cx="16" cy="16" r="1.5" fill="currentColor" />
           <circle cx="12" cy="12" r="1.5" fill="currentColor" />
         </svg>
+        {lastEntry && (
+          <span className="dice-history-pill-preview">{lastEntry.result.total}</span>
+        )}
         {unreadCount > 0 && (
           <span className="dice-history-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>
         )}
@@ -103,7 +103,7 @@ export function DiceHistoryPanel() {
         </div>
       </div>
 
-      <div className="dice-history-scroll" ref={scrollRef}>
+      <div className="dice-history-scroll">
         {entries.length === 0 ? (
           <div className="dice-history-empty">{t("empty_message")}</div>
         ) : (
@@ -144,7 +144,10 @@ function HistoryEntryRow({ entry, locale }: { entry: HistoryEntry; locale: strin
       <div className="dice-history-entry-top">
         <span className="dice-history-time">{time}</span>
         {result.label && (
-          <span className="dice-history-label">{result.label}</span>
+          <span className="dice-history-label">
+            {result.label}
+            {result.mode === "advantage" ? " — Advantage" : result.mode === "disadvantage" ? " — Disadvantage" : ""}
+          </span>
         )}
         <ModeBadge mode={result.mode} />
       </div>

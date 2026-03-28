@@ -507,6 +507,17 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 6px rgba(201, 169, 89, 0.2);
 }
 
+.dice-history-pill-preview {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  color: #c9a959;
+  max-width: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .dice-history-badge {
   background: #922610;
   color: #e8e4d0;

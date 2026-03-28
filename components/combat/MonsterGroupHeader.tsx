@@ -20,6 +20,8 @@ interface MonsterGroupHeaderProps {
   groupInitiative: number | null;
   /** Called when DM edits the group initiative */
   onSetGroupInitiative?: (value: number) => void;
+  /** Whether it's the turn of any member in this group */
+  isCurrentTurn?: boolean;
   /** Children — the expanded member rows */
   children: React.ReactNode;
 }
@@ -31,6 +33,7 @@ export function MonsterGroupHeader({
   onToggle,
   groupInitiative,
   onSetGroupInitiative,
+  isCurrentTurn = false,
   children,
 }: MonsterGroupHeaderProps) {
   const t = useTranslations("combat");
@@ -79,8 +82,8 @@ export function MonsterGroupHeader({
   return (
     <div
       className={`border rounded-md overflow-hidden transition-colors border-l-4 border-l-orange-500/60 ${
-        allDefeated ? "opacity-50 border-border" : "border-border"
-      }`}
+        isCurrentTurn && !allDefeated ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : ""
+      } ${allDefeated ? "opacity-50 border-border" : "border-border"}`}
       data-testid={`monster-group-${groupName}`}
     >
       {/* Header bar */}

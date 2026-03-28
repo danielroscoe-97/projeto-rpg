@@ -9,6 +9,10 @@ import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
+import { CombatTimer } from "@/components/combat/CombatTimer";
+import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
+import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
@@ -17,6 +21,7 @@ import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
+import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
 
 interface AddRowForm {
@@ -134,6 +139,9 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   const handleSelectMonsterGroup = useCallback(
     (monster: SrdMonster, qty: number) => {
       const groupId = crypto.randomUUID();
+      // Roll initiative once for the whole group (D&D 5e PHB p.189)
+      const groupInitResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
+      const groupInit = groupInitResult.total;
       const currentCombatants = useGuestCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       for (let i = 1; i <= qty; i++) {
@@ -148,7 +156,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           temp_hp: 0,
           ac: monster.armor_class,
           spell_save_dc: null,
-          initiative: null,
+          initiative: groupInit,
           initiative_order: null,
           conditions: [],
           ruleset_version: monster.ruleset_version,
@@ -432,6 +440,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}
+              onDisplayNameChange={(id, dn) => updateCombatantStats(id, { display_name: dn })}
               dragHandleProps={dragHandleProps}
               highlightInit={invalidInitIds.has(c.id)}
             />
@@ -587,12 +596,14 @@ export function GuestCombatClient() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
+  const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
 
   const {
     phase,
     combatants,
     currentTurnIndex,
     roundNumber,
+    combatStartTime,
     startCombat,
     advanceTurn,
     applyDamage,
@@ -629,6 +640,20 @@ export function GuestCombatClient() {
     setUpsellTrigger(trigger);
     setUpsellOpen(true);
   }, []);
+
+  // Auto-scroll to active combatant when turn advances (skip initial mount)
+  const isFirstTurnRef = useRef(true);
+  useEffect(() => {
+    if (phase !== "combat") return;
+    if (isFirstTurnRef.current) {
+      isFirstTurnRef.current = false;
+      return;
+    }
+    requestAnimationFrame(() => {
+      const activeCard = document.querySelector('[aria-current="true"]') as HTMLElement | null;
+      activeCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, [currentTurnIndex, phase]);
 
   const handleStartCombat = useCallback(() => {
     startCombat();
@@ -671,11 +696,33 @@ export function GuestCombatClient() {
   );
 
   const handleApplyDamage = useCallback(
-    (id: string, amount: number) => applyDamage(id, amount),
+    (id: string, amount: number) => {
+      const store = useGuestCombatStore.getState();
+      const actor = store.combatants[store.currentTurnIndex];
+      const target = store.combatants.find((c) => c.id === id);
+      // Calculate effective damage (clamped by temp_hp + current_hp)
+      const effectiveDamage = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
+      applyDamage(id, amount);
+      if (actor && target) {
+        const stats = useGuestCombatStats.getState();
+        stats.trackDamage(actor.display_name ?? actor.name, target.display_name ?? target.name, effectiveDamage);
+      }
+    },
     [applyDamage]
   );
   const handleApplyHealing = useCallback(
-    (id: string, amount: number) => applyHealing(id, amount),
+    (id: string, amount: number) => {
+      const store = useGuestCombatStore.getState();
+      const actor = store.combatants[store.currentTurnIndex];
+      const target = store.combatants.find((c) => c.id === id);
+      // Calculate effective healing (clamped by max_hp - current_hp)
+      const effectiveHealing = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
+      applyHealing(id, amount);
+      if (actor) {
+        const stats = useGuestCombatStats.getState();
+        stats.trackHealing(actor.display_name ?? actor.name, effectiveHealing);
+      }
+    },
     [applyHealing]
   );
   const handleSetTempHp = useCallback(
@@ -687,7 +734,17 @@ export function GuestCombatClient() {
     [toggleCondition]
   );
   const handleSetDefeated = useCallback(
-    (id: string, isDefeated: boolean) => setDefeated(id, isDefeated),
+    (id: string, isDefeated: boolean) => {
+      setDefeated(id, isDefeated);
+      // Track kills when a combatant is defeated
+      if (isDefeated) {
+        const store = useGuestCombatStore.getState();
+        const actor = store.combatants[store.currentTurnIndex];
+        if (actor) {
+          useGuestCombatStats.getState().trackKill(actor.display_name ?? actor.name);
+        }
+      }
+    },
     [setDefeated]
   );
   const handleUpdateStats = useCallback(
@@ -743,7 +800,43 @@ export function GuestCombatClient() {
     [updatePlayerNotes]
   );
 
+  const handleApplyToMultiple = useCallback(
+    (targetIds: string[], amount: number, mode: HpMode) => {
+      const store = useGuestCombatStore.getState();
+      const actor = store.combatants[store.currentTurnIndex];
+      const actorName = actor ? (actor.display_name ?? actor.name) : "Unknown";
+      for (const id of targetIds) {
+        const target = store.combatants.find((c) => c.id === id);
+        if (mode === "damage") {
+          const effective = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
+          applyDamage(id, amount);
+          if (target) useGuestCombatStats.getState().trackDamage(actorName, target.display_name ?? target.name, effective);
+        } else if (mode === "heal") {
+          const effective = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
+          applyHealing(id, amount);
+          useGuestCombatStats.getState().trackHealing(actorName, effective);
+        } else {
+          setTempHp(id, amount);
+        }
+      }
+    },
+    [applyDamage, applyHealing, setTempHp]
+  );
+
   const handleEndEncounter = useCallback(() => {
+    // Show leaderboard with accumulated stats before resetting
+    const stats = useGuestCombatStats.getState().getStats();
+    if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
+      setLeaderboardStats(stats);
+    } else {
+      useGuestCombatStats.getState().reset();
+      resetCombat();
+    }
+  }, [resetCombat]);
+
+  const handleLeaderboardClose = useCallback(() => {
+    setLeaderboardStats(null);
+    useGuestCombatStats.getState().reset();
     resetCombat();
   }, [resetCombat]);
 
@@ -768,9 +861,12 @@ export function GuestCombatClient() {
     <>
       <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
         <div className="flex items-center justify-between">
-          <h2 className="text-foreground font-semibold">
-            {t("round")} <span className="font-mono text-gold">{roundNumber}</span>
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-foreground font-semibold">
+              {t("round")} <span className="font-mono text-gold">{roundNumber}</span>
+            </h2>
+            {combatStartTime && <CombatTimer startTime={combatStartTime} />}
+          </div>
           <div className="flex items-center gap-3 flex-wrap">
             {/* Encerrar combate */}
             <button
@@ -856,6 +952,8 @@ export function GuestCombatClient() {
                   onSwitchVersion={handleSwitchVersion}
                   onUpdateDmNotes={handleUpdateDmNotes}
                   onUpdatePlayerNotes={handleUpdatePlayerNotes}
+                  allCombatants={combatants}
+                  onApplyToMultiple={handleApplyToMultiple}
                 />
               );
             }}
@@ -880,6 +978,15 @@ export function GuestCombatClient() {
         onClose={() => setUpsellOpen(false)}
         trigger={upsellTrigger}
       />
+
+      {leaderboardStats && (
+        <CombatLeaderboard
+          stats={leaderboardStats}
+          encounterName={tg("try_encounter_name")}
+          rounds={roundNumber}
+          onClose={handleLeaderboardClose}
+        />
+      )}
     </>
   );
 }
