@@ -193,7 +193,7 @@ test.describe("J12 — Combat Resilience", () => {
 
     // Player view should come back — either player-view or late-join form (both acceptable)
     const playerView = playerPage.locator('[data-testid="player-view"]');
-    const joinForm = playerPage.locator('input[name="name"]').first();
+    const joinForm = playerPage.locator('[data-testid="lobby-name"]');
     await expect(playerView.or(joinForm)).toBeVisible({ timeout: 15_000 });
 
     // NOT a login page

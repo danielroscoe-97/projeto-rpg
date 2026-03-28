@@ -359,19 +359,11 @@ test.describe("J11 — Player View Completa", () => {
     );
     await expect(adjuster).toBeVisible({ timeout: 5_000 });
 
-    const dmgInput = dmPage
-      .locator(
-        'input[type="number"], input[data-testid="hp-adjust-value"]'
-      )
-      .first();
+    const dmgInput = dmPage.locator('[data-testid="hp-amount-input"]');
     await expect(dmgInput).toBeVisible({ timeout: 5_000 });
     await dmgInput.fill("90"); // Giant goes from 100 → 10 HP (CRITICAL tier)
 
-    const applyBtn = dmPage
-      .locator(
-        'button:has-text("Dano"), button:has-text("Damage"), button:has-text("Aplicar"), button:has-text("Apply")'
-      )
-      .first();
+    const applyBtn = dmPage.locator('[data-testid="hp-apply-btn"]');
     await expect(applyBtn).toBeVisible({ timeout: 5_000 });
     await applyBtn.click();
 
