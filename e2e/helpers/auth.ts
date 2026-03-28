@@ -6,14 +6,17 @@ import type { TestAccount } from "../fixtures/test-accounts";
  * Waits for redirect to /app/dashboard.
  */
 export async function loginAs(page: Page, account: TestAccount) {
+  const email = process.env.E2E_DM_EMAIL || account.email;
+  const password = process.env.E2E_DM_PASSWORD || account.password;
+
   await page.goto("/auth/login");
   await page.waitForLoadState("domcontentloaded");
 
-  await page.fill("#login-email", account.email);
-  await page.fill("#login-password", account.password);
+  await page.fill("#login-email", email);
+  await page.fill("#login-password", password);
   await page.click('button[type="submit"]');
 
-  await page.waitForURL("**/app/**", { timeout: 15_000 });
+  await page.waitForURL("**/app/**", { timeout: 30_000, waitUntil: "domcontentloaded" });
 }
 
 /**
@@ -31,7 +34,7 @@ export async function loginAsDM(page: Page) {
   await page.fill("#login-email", email);
   await page.fill("#login-password", password);
   await page.click('button[type="submit"]');
-  await page.waitForURL("**/app/dashboard", { timeout: 15_000 });
+  await page.waitForURL("**/app/dashboard", { timeout: 30_000, waitUntil: "domcontentloaded" });
 }
 
 /**

@@ -34,6 +34,8 @@ import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { AnimatePresence } from "framer-motion";
+import { BackgroundSelector } from "@/components/combat/BackgroundSelector";
+import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -68,6 +70,8 @@ export function CombatSessionClient({
   const [diceLog, setDiceLog] = useState<DiceRollEntry[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
+  const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
+  const [showWeatherSelector, setShowWeatherSelector] = useState(false);
 
   const { combatants, is_active, setError } =
     useCombatStore();
@@ -609,6 +613,20 @@ export function CombatSessionClient({
           <DmAudioControls />
           <button
             type="button"
+            onClick={() => setShowWeatherSelector((v) => !v)}
+            className={`px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              weatherEffect !== "none"
+                ? "bg-gold/10 text-gold border border-gold/30"
+                : "text-muted-foreground hover:text-foreground bg-white/[0.04]"
+            }`}
+            aria-label={t("weather_title")}
+            title={t("weather_title")}
+            data-testid="weather-toggle-btn"
+          >
+            {weatherEffect === "rain" ? "\uD83C\uDF27\uFE0F" : weatherEffect === "snow" ? "\u2744\uFE0F" : weatherEffect === "fog" ? "\uD83C\uDF2B\uFE0F" : weatherEffect === "storm" ? "\u26C8\uFE0F" : weatherEffect === "ash" ? "\uD83C\uDF0B" : "\uD83C\uDF24\uFE0F"}
+          </button>
+          <button
+            type="button"
             onClick={() => setCheatsheetOpen((v) => !v)}
             className="px-2 py-2 text-muted-foreground hover:text-foreground transition-colors text-sm min-h-[44px] min-w-[44px] hidden md:inline-flex items-center justify-center"
             aria-label={t("shortcut_title")}
@@ -618,6 +636,21 @@ export function CombatSessionClient({
           </button>
         </div>
       </div>
+
+      {showWeatherSelector && (
+        <div className="p-3 bg-white/[0.04] rounded-md" data-testid="weather-selector-panel">
+          <BackgroundSelector
+            currentWeather={weatherEffect}
+            onWeatherChange={(effect) => {
+              setWeatherEffect(effect);
+              broadcastEvent(getSessionId(), {
+                type: "session:weather_change",
+                effect,
+              });
+            }}
+          />
+        </div>
+      )}
 
       {addMode && (
         <div className="p-3 bg-white/[0.04] rounded-md space-y-3" data-testid="add-combatant-panel">

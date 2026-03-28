@@ -111,8 +111,9 @@ function validateEvent(event: SanitizedEvent): boolean {
 /** Sanitize a DM event for player-safe broadcast.
  *  Removes sensitive data and returns a properly typed SanitizedEvent. */
 function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
-  // Audio events pass through unchanged — no sensitive data (no monster stats/HP)
+  // Audio and weather events pass through unchanged — no sensitive data (no monster stats/HP)
   if (event.type === "audio:play_sound") return event;
+  if (event.type === "session:weather_change") return event;
 
   // Combat stats pass through unchanged — aggregated data, no sensitive fields
   if (event.type === "session:combat_stats") return event;

@@ -465,7 +465,6 @@
     "player_link_in_use": "in use",
     "no_rolls_yet": "No rolls yet",
     "dice_log_title": "Dice Roll History",
-<<<<<<< HEAD
     "background_title": "Scene Background",
     "background_url_placeholder": "Paste image URL...",
     "background_clear": "Clear Background",
@@ -550,7 +549,14 @@
     "leaderboard_rounds": "{rounds} rounds",
     "leaderboard_tank": "Tank",
     "leaderboard_healer": "Healer",
-    "leaderboard_copied": "Results copied to clipboard"
+    "leaderboard_copied": "Results copied to clipboard",
+    "weather_title": "Weather Effect",
+    "weather_none": "None",
+    "weather_rain": "Rain",
+    "weather_snow": "Snow",
+    "weather_fog": "Fog",
+    "weather_storm": "Storm",
+    "weather_ash": "Ash"
   },
   "conditions": {
     "blinded": "Blinded",
