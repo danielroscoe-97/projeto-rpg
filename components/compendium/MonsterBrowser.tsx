@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { List as VirtualList, type RowComponentProps } from "react-window";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
@@ -103,7 +104,8 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
 
 export function MonsterBrowser() {
   const t = useTranslations("compendium");
-  const monsters = useSrdStore((s) => s.monsters);
+  const allMonsters = useSrdStore((s) => s.monsters);
+  const { filtered: monsters } = useSrdContentFilter(allMonsters);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
   // Filters

@@ -13,22 +13,32 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /** Default flags used as fallback when Supabase is unreachable */
 const DEFAULT_FLAGS: FeatureFlag[] = [
-  "persistent_campaigns",
-  "saved_presets",
-  "export_data",
-  "homebrew",
-  "session_analytics",
-  "cr_calculator",
-  "file_sharing",
-  "email_invites",
-].map((key) => ({
-  id: "",
-  key,
-  enabled: true,
-  plan_required: "pro" as Plan,
-  description: null,
-  updated_at: "",
-}));
+  ...[
+    "persistent_campaigns",
+    "saved_presets",
+    "export_data",
+    "homebrew",
+    "session_analytics",
+    "cr_calculator",
+    "file_sharing",
+    "email_invites",
+  ].map((key) => ({
+    id: "",
+    key,
+    enabled: true,
+    plan_required: "pro" as Plan,
+    description: null,
+    updated_at: "",
+  })),
+  {
+    id: "",
+    key: "show_non_srd_content",
+    enabled: true,
+    plan_required: "free" as Plan,
+    description: null,
+    updated_at: "",
+  },
+];
 
 async function fetchFlags(): Promise<FeatureFlag[]> {
   const supabase = createClient();

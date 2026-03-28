@@ -14,7 +14,8 @@
     "higher_levels": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "aid-xphb-2024",
@@ -31,7 +32,8 @@
     "higher_levels": "Each target's Hit Points increase by 5 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "alarm-xphb-2024",
@@ -48,7 +50,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "alter-self-xphb-2024",
@@ -65,7 +68,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "animal-friendship-xphb-2024",
@@ -82,7 +86,8 @@
     "higher_levels": "You can target one additional Beast for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "animal-messenger-xphb-2024",
@@ -99,7 +104,8 @@
     "higher_levels": "The spell's duration increases by 48 hours for each spell slot level above 2.",
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "animal-shapes-xphb-2024",
@@ -116,7 +122,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "animate-dead-xphb-2024",
@@ -133,7 +140,8 @@
     "higher_levels": "You animate or reassert control over two additional Undead creatures for each spell slot level above 3. Each of the creatures must come from a different corpse or pile of bones.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "animate-objects-xphb-2024",
@@ -150,7 +158,8 @@
     "higher_levels": "The creature's Slam damage increases by 1d4 (Medium or smaller), 1d6 (Large), or 1d12 (Huge) for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "antilife-shell-xphb-2024",
@@ -167,7 +176,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "antimagic-field-xphb-2024",
@@ -184,7 +194,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "antipathy-sympathy-xphb-2024",
@@ -201,7 +212,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "arcane-eye-xphb-2024",
@@ -218,7 +230,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "arcane-gate-xphb-2024",
@@ -235,7 +248,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "arcane-lock-xphb-2024",
@@ -252,7 +266,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "arcane-vigor-xphb-2024",
@@ -269,7 +284,8 @@
     "higher_levels": "The number of unexpended Hit Dice you can roll increases by one for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "armor-of-agathys-xphb-2024",
@@ -286,7 +302,8 @@
     "higher_levels": "The Temporary Hit Points and the Cold damage both increase by 5 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "arms-of-hadar-xphb-2024",
@@ -303,7 +320,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "astral-projection-xphb-2024",
@@ -320,7 +338,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "augury-xphb-2024",
@@ -337,7 +356,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "aura-of-life-xphb-2024",
@@ -354,7 +374,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "aura-of-purity-xphb-2024",
@@ -371,7 +392,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "aura-of-vitality-xphb-2024",
@@ -388,7 +410,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "awaken-xphb-2024",
@@ -405,7 +428,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "bane-xphb-2024",
@@ -422,7 +446,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "banishing-smite-xphb-2024",
@@ -439,7 +464,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "banishment-xphb-2024",
@@ -456,7 +482,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "barkskin-xphb-2024",
@@ -473,7 +500,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "beacon-of-hope-xphb-2024",
@@ -490,7 +518,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "beast-sense-xphb-2024",
@@ -507,7 +536,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "befuddlement-xphb-2024",
@@ -524,7 +554,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "bestow-curse-xphb-2024",
@@ -541,7 +572,8 @@
     "higher_levels": "If you cast this spell using a level 4 spell slot, you can maintain Concentration on it for up to 10 minutes. If you use a level 5+ spell slot, the spell doesn't require Concentration, and the duration becomes 8 hours (level 5-6 slot) or 24 hours (level 7-8 slot). If you use a level 9 spell slot, the spell lasts until dispelled.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "bigby-s-hand-xphb-2024",
@@ -558,7 +590,8 @@
     "higher_levels": "The damage of the Clenched Fist increases by 2d8 and the damage of the Grasping Hand increases by 2d6 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "blade-barrier-xphb-2024",
@@ -575,7 +608,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "blade-ward-xphb-2024",
@@ -592,7 +626,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "bless-xphb-2024",
@@ -609,7 +644,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "blight-xphb-2024",
@@ -626,7 +662,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "blinding-smite-xphb-2024",
@@ -643,7 +680,8 @@
     "higher_levels": "The extra damage increases by 1d8 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "blindness-deafness-xphb-2024",
@@ -660,7 +698,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "blink-xphb-2024",
@@ -677,7 +716,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "blur-xphb-2024",
@@ -694,7 +734,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "burning-hands-xphb-2024",
@@ -711,7 +752,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "call-lightning-xphb-2024",
@@ -728,7 +770,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "calm-emotions-xphb-2024",
@@ -745,7 +788,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "chain-lightning-xphb-2024",
@@ -762,7 +806,8 @@
     "higher_levels": "One additional bolt leaps from the first target to another target for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "charm-monster-xphb-2024",
@@ -779,7 +824,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "charm-person-xphb-2024",
@@ -796,7 +842,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "chill-touch-xphb-2024",
@@ -813,7 +860,8 @@
     "higher_levels": "The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "chromatic-orb-xphb-2024",
@@ -830,7 +878,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "circle-of-death-xphb-2024",
@@ -847,7 +896,8 @@
     "higher_levels": "The damage increases by 2d8 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "circle-of-power-xphb-2024",
@@ -864,7 +914,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "clairvoyance-xphb-2024",
@@ -881,7 +932,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "clone-xphb-2024",
@@ -898,7 +950,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "cloud-of-daggers-xphb-2024",
@@ -915,7 +968,8 @@
     "higher_levels": "The damage increases by 2d4 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "cloudkill-xphb-2024",
@@ -932,7 +986,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "color-spray-xphb-2024",
@@ -949,7 +1004,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "command-xphb-2024",
@@ -966,7 +1022,8 @@
     "higher_levels": "You can affect one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "commune-xphb-2024",
@@ -983,7 +1040,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "commune-with-nature-xphb-2024",
@@ -1000,7 +1058,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "compelled-duel-xphb-2024",
@@ -1017,7 +1076,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "comprehend-languages-xphb-2024",
@@ -1034,7 +1094,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "compulsion-xphb-2024",
@@ -1051,7 +1112,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "cone-of-cold-xphb-2024",
@@ -1068,7 +1130,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "confusion-xphb-2024",
@@ -1085,7 +1148,8 @@
     "higher_levels": "The Sphere [Area of Effect]'s radius increases by 5 feet for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "conjure-animals-xphb-2024",
@@ -1102,7 +1166,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "conjure-barrage-xphb-2024",
@@ -1119,7 +1184,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "conjure-celestial-xphb-2024",
@@ -1136,7 +1202,8 @@
     "higher_levels": "The healing and damage increase by 1d12 for each spell slot level above 7.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "conjure-elemental-xphb-2024",
@@ -1153,7 +1220,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "conjure-fey-xphb-2024",
@@ -1170,7 +1238,8 @@
     "higher_levels": "The damage increases by 1d12 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "conjure-minor-elementals-xphb-2024",
@@ -1187,7 +1256,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "conjure-volley-xphb-2024",
@@ -1204,7 +1274,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "conjure-woodland-beings-xphb-2024",
@@ -1221,7 +1292,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "contact-other-plane-xphb-2024",
@@ -1238,7 +1310,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "contagion-xphb-2024",
@@ -1255,7 +1328,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "contingency-xphb-2024",
@@ -1272,7 +1346,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "continual-flame-xphb-2024",
@@ -1289,7 +1364,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "control-water-xphb-2024",
@@ -1306,7 +1382,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "control-weather-xphb-2024",
@@ -1323,7 +1400,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "cordon-of-arrows-xphb-2024",
@@ -1340,7 +1418,8 @@
     "higher_levels": "The amount of ammunition that can be affected increases by two for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "counterspell-xphb-2024",
@@ -1357,7 +1436,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "create-food-and-water-xphb-2024",
@@ -1374,7 +1454,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "create-or-destroy-water-xphb-2024",
@@ -1391,7 +1472,8 @@
     "higher_levels": "You create or destroy 10 additional gallons of water, or the size of the Cube [Area of Effect] increases by 5 feet, for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "create-undead-xphb-2024",
@@ -1408,7 +1490,8 @@
     "higher_levels": "If you use a level 7 spell slot, you can animate or reassert control over four Ghoul. If you use a level 8 spell slot, you can animate or reassert control over five Ghoul or two Ghast or Wight. If you use a level 9 spell slot, you can animate or reassert control over six Ghoul, three Ghast or Wight, or two Mummy. See the Monster Manual for these stat blocks.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "creation-xphb-2024",
@@ -1425,7 +1508,8 @@
     "higher_levels": "The Cube [Area of Effect] increases by 5 feet for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "crown-of-madness-xphb-2024",
@@ -1442,7 +1526,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "crusader-s-mantle-xphb-2024",
@@ -1459,7 +1544,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "cure-wounds-xphb-2024",
@@ -1476,7 +1562,8 @@
     "higher_levels": "The healing increases by 2d8 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "dancing-lights-xphb-2024",
@@ -1493,7 +1580,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "darkness-xphb-2024",
@@ -1510,7 +1598,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "darkvision-xphb-2024",
@@ -1527,7 +1616,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "daylight-xphb-2024",
@@ -1544,7 +1634,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "death-ward-xphb-2024",
@@ -1561,7 +1652,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "delayed-blast-fireball-xphb-2024",
@@ -1578,7 +1670,8 @@
     "higher_levels": "The base damage increases by 1d6 for each spell slot level above 7.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "demiplane-xphb-2024",
@@ -1595,7 +1688,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "destructive-wave-xphb-2024",
@@ -1612,7 +1706,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "detect-evil-and-good-xphb-2024",
@@ -1629,7 +1724,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "detect-magic-xphb-2024",
@@ -1646,7 +1742,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "detect-poison-and-disease-xphb-2024",
@@ -1663,7 +1760,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "detect-thoughts-xphb-2024",
@@ -1680,7 +1778,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "dimension-door-xphb-2024",
@@ -1697,7 +1796,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "disguise-self-xphb-2024",
@@ -1714,7 +1814,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "disintegrate-xphb-2024",
@@ -1731,7 +1832,8 @@
     "higher_levels": "The damage increases by 3d6 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "dispel-evil-and-good-xphb-2024",
@@ -1748,7 +1850,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "dispel-magic-xphb-2024",
@@ -1765,7 +1868,8 @@
     "higher_levels": "You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "dissonant-whispers-xphb-2024",
@@ -1782,7 +1886,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "divination-xphb-2024",
@@ -1799,7 +1904,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "divine-favor-xphb-2024",
@@ -1816,7 +1922,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "divine-smite-xphb-2024",
@@ -1833,7 +1940,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "divine-word-xphb-2024",
@@ -1850,7 +1958,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "dominate-beast-xphb-2024",
@@ -1867,7 +1976,8 @@
     "higher_levels": "Your Concentration can last longer with a spell slot of level 5 (up to 10 minutes), 6 (up to 1 hour), or 7+ (up to 8 hours).",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "dominate-monster-xphb-2024",
@@ -1884,7 +1994,8 @@
     "higher_levels": "Your Concentration can last longer with a level 9 spell slot (up to 8 hours).",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "dominate-person-xphb-2024",
@@ -1901,7 +2012,8 @@
     "higher_levels": "Your Concentration can last longer with a spell slot of level 6 (up to 10 minutes), 7 (up to 1 hour), or 8+ (up to 8 hours).",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "dragon-s-breath-xphb-2024",
@@ -1918,7 +2030,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "drawmij-s-instant-summons-xphb-2024",
@@ -1935,7 +2048,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "dream-xphb-2024",
@@ -1952,7 +2066,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "druidcraft-xphb-2024",
@@ -1969,7 +2084,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "earthquake-xphb-2024",
@@ -1986,7 +2102,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "eldritch-blast-xphb-2024",
@@ -2003,7 +2120,8 @@
     "higher_levels": "The spell creates two beams at level 5, three beams at level 11, and four beams at level 17. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "elemental-weapon-xphb-2024",
@@ -2020,7 +2138,8 @@
     "higher_levels": "If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4. If you use a level 7+ spell slot, the bonus increases to +3, and the extra damage increases to 3d4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "elementalism-xphb-2024",
@@ -2037,7 +2156,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "enhance-ability-xphb-2024",
@@ -2054,7 +2174,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "enlarge-reduce-xphb-2024",
@@ -2071,7 +2192,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "ensnaring-strike-xphb-2024",
@@ -2088,7 +2210,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "entangle-xphb-2024",
@@ -2105,7 +2228,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "enthrall-xphb-2024",
@@ -2122,7 +2246,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "etherealness-xphb-2024",
@@ -2139,7 +2264,8 @@
     "higher_levels": "You can target up to three willing creatures (including yourself) for each spell slot level above 7. The creatures must be within 10 feet of you when you cast the spell.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "evard-s-black-tentacles-xphb-2024",
@@ -2156,7 +2282,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "expeditious-retreat-xphb-2024",
@@ -2173,7 +2300,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "eyebite-xphb-2024",
@@ -2190,7 +2318,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "fabricate-xphb-2024",
@@ -2207,7 +2336,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "faerie-fire-xphb-2024",
@@ -2224,7 +2354,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "false-life-xphb-2024",
@@ -2241,7 +2372,8 @@
     "higher_levels": "You gain 5 additional Temporary Hit Points for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "fear-xphb-2024",
@@ -2258,7 +2390,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "feather-fall-xphb-2024",
@@ -2275,7 +2408,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "feign-death-xphb-2024",
@@ -2292,7 +2426,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "find-familiar-xphb-2024",
@@ -2309,7 +2444,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "find-steed-xphb-2024",
@@ -2326,7 +2462,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "find-the-path-xphb-2024",
@@ -2343,7 +2480,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "find-traps-xphb-2024",
@@ -2360,7 +2498,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "finger-of-death-xphb-2024",
@@ -2377,7 +2516,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "fire-bolt-xphb-2024",
@@ -2394,7 +2534,8 @@
     "higher_levels": "The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "fire-shield-xphb-2024",
@@ -2411,7 +2552,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "fire-storm-xphb-2024",
@@ -2428,7 +2570,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "fireball-xphb-2024",
@@ -2445,7 +2588,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "flame-blade-xphb-2024",
@@ -2462,7 +2606,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "flame-strike-xphb-2024",
@@ -2479,7 +2624,8 @@
     "higher_levels": "The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "flaming-sphere-xphb-2024",
@@ -2496,7 +2642,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "flesh-to-stone-xphb-2024",
@@ -2513,7 +2660,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "fly-xphb-2024",
@@ -2530,7 +2678,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "fog-cloud-xphb-2024",
@@ -2547,7 +2696,8 @@
     "higher_levels": "The fog's radius increases by 20 feet for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "forbiddance-xphb-2024",
@@ -2564,7 +2714,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "forcecage-xphb-2024",
@@ -2581,7 +2732,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "foresight-xphb-2024",
@@ -2598,7 +2750,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "fount-of-moonlight-xphb-2024",
@@ -2615,7 +2768,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "freedom-of-movement-xphb-2024",
@@ -2632,7 +2786,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "friends-xphb-2024",
@@ -2649,7 +2804,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "gaseous-form-xphb-2024",
@@ -2666,7 +2822,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "gate-xphb-2024",
@@ -2683,7 +2840,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "geas-xphb-2024",
@@ -2700,7 +2858,8 @@
     "higher_levels": "If you use a level 7 or 8 spell slot, the duration is 365 days. If you use a level 9 spell slot, the spell lasts until it is ended by one of the spells mentioned above.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "gentle-repose-xphb-2024",
@@ -2717,7 +2876,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "giant-insect-xphb-2024",
@@ -2734,7 +2894,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "glibness-xphb-2024",
@@ -2751,7 +2912,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "globe-of-invulnerability-xphb-2024",
@@ -2768,7 +2930,8 @@
     "higher_levels": "The barrier blocks spells of 1 level higher for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "glyph-of-warding-xphb-2024",
@@ -2785,7 +2948,8 @@
     "higher_levels": "The damage of an explosive rune increases by 1d8 for each spell slot level above 3. If you create a spell glyph, you can store any spell of up to the same level as the spell slot you use for the Glyph of Warding.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "goodberry-xphb-2024",
@@ -2802,7 +2966,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "grasping-vine-xphb-2024",
@@ -2819,7 +2984,8 @@
     "higher_levels": "The number of creatures the vine can grapple increases by one for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "grease-xphb-2024",
@@ -2836,7 +3002,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "greater-invisibility-xphb-2024",
@@ -2853,7 +3020,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "greater-restoration-xphb-2024",
@@ -2870,7 +3038,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "guardian-of-faith-xphb-2024",
@@ -2887,7 +3056,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "guards-and-wards-xphb-2024",
@@ -2904,7 +3074,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "guidance-xphb-2024",
@@ -2921,7 +3092,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "guiding-bolt-xphb-2024",
@@ -2938,7 +3110,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "gust-of-wind-xphb-2024",
@@ -2955,7 +3128,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hail-of-thorns-xphb-2024",
@@ -2972,7 +3146,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "hallow-xphb-2024",
@@ -2989,7 +3164,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "hallucinatory-terrain-xphb-2024",
@@ -3006,7 +3182,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "harm-xphb-2024",
@@ -3023,7 +3200,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "haste-xphb-2024",
@@ -3040,7 +3218,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "heal-xphb-2024",
@@ -3057,7 +3236,8 @@
     "higher_levels": "The healing increases by 10 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "healing-word-xphb-2024",
@@ -3074,7 +3254,8 @@
     "higher_levels": "The healing increases by 2d4 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "heat-metal-xphb-2024",
@@ -3091,7 +3272,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hellish-rebuke-xphb-2024",
@@ -3108,7 +3290,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "heroes-feast-xphb-2024",
@@ -3125,7 +3308,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "heroism-xphb-2024",
@@ -3142,7 +3326,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hex-xphb-2024",
@@ -3159,7 +3344,8 @@
     "higher_levels": "Your Concentration can last longer with a spell slot of level 2 (up to 4 hours), 3-4 (up to 8 hours), or 5+ (24 hours).",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hold-monster-xphb-2024",
@@ -3176,7 +3362,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hold-person-xphb-2024",
@@ -3193,7 +3380,8 @@
     "higher_levels": "You can target one additional Humanoid for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "holy-aura-xphb-2024",
@@ -3210,7 +3398,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hunger-of-hadar-xphb-2024",
@@ -3227,7 +3416,8 @@
     "higher_levels": "The Cold or Acid damage (your choice) increases by 1d6 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hunter-s-mark-xphb-2024",
@@ -3244,7 +3434,8 @@
     "higher_levels": "Your Concentration can last longer with a spell slot of level 3-4 (up to 8 hours) or 5+ (up to 24 hours).",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "hypnotic-pattern-xphb-2024",
@@ -3261,7 +3452,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "ice-knife-xphb-2024",
@@ -3278,7 +3470,8 @@
     "higher_levels": "The Cold damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "ice-storm-xphb-2024",
@@ -3295,7 +3488,8 @@
     "higher_levels": "The Bludgeoning damage increases by 1d10 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "identify-xphb-2024",
@@ -3312,7 +3506,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "illusory-script-xphb-2024",
@@ -3329,7 +3524,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "imprisonment-xphb-2024",
@@ -3346,7 +3542,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "incendiary-cloud-xphb-2024",
@@ -3363,7 +3560,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "inflict-wounds-xphb-2024",
@@ -3380,7 +3578,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "insect-plague-xphb-2024",
@@ -3397,7 +3596,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "invisibility-xphb-2024",
@@ -3414,7 +3614,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "jallarzi-s-storm-of-radiance-xphb-2024",
@@ -3431,7 +3632,8 @@
     "higher_levels": "The Radiant and Thunder damage increase by 1d10 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "jump-xphb-2024",
@@ -3448,7 +3650,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "knock-xphb-2024",
@@ -3465,7 +3668,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "legend-lore-xphb-2024",
@@ -3482,7 +3686,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "leomund-s-secret-chest-xphb-2024",
@@ -3499,7 +3704,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "leomund-s-tiny-hut-xphb-2024",
@@ -3516,7 +3722,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "lesser-restoration-xphb-2024",
@@ -3533,7 +3740,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "levitate-xphb-2024",
@@ -3550,7 +3758,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "light-xphb-2024",
@@ -3567,7 +3776,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "lightning-arrow-xphb-2024",
@@ -3584,7 +3794,8 @@
     "higher_levels": "The damage for both effects of the spell increases by 1d8 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "lightning-bolt-xphb-2024",
@@ -3601,7 +3812,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "locate-animals-or-plants-xphb-2024",
@@ -3618,7 +3830,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "locate-creature-xphb-2024",
@@ -3635,7 +3848,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "locate-object-xphb-2024",
@@ -3652,7 +3866,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "longstrider-xphb-2024",
@@ -3669,7 +3884,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mage-armor-xphb-2024",
@@ -3686,7 +3902,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mage-hand-xphb-2024",
@@ -3703,7 +3920,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "magic-circle-xphb-2024",
@@ -3720,7 +3938,8 @@
     "higher_levels": "The duration increases by 1 hour for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "magic-jar-xphb-2024",
@@ -3737,7 +3956,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "magic-missile-xphb-2024",
@@ -3754,7 +3974,8 @@
     "higher_levels": "The spell creates one more dart for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "magic-mouth-xphb-2024",
@@ -3771,7 +3992,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "magic-weapon-xphb-2024",
@@ -3788,7 +4010,8 @@
     "higher_levels": "The bonus increases to +2 with a level 3-5 spell slot. The bonus increases to +3 with a level 6+ spell slot.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "major-image-xphb-2024",
@@ -3805,7 +4028,8 @@
     "higher_levels": "The spell lasts until dispelled, without requiring Concentration, if cast with a level 4+ spell slot.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "mass-cure-wounds-xphb-2024",
@@ -3822,7 +4046,8 @@
     "higher_levels": "The healing increases by 1d8 for each spell slot level above 5.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mass-heal-xphb-2024",
@@ -3839,7 +4064,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mass-healing-word-xphb-2024",
@@ -3856,7 +4082,8 @@
     "higher_levels": "The healing increases by 1d4 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mass-suggestion-xphb-2024",
@@ -3873,7 +4100,8 @@
     "higher_levels": "The duration is longer with a spell slot of level 7 (10 days), 8 (30 days), or 9 (366 days).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "maze-xphb-2024",
@@ -3890,7 +4118,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "meld-into-stone-xphb-2024",
@@ -3907,7 +4136,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "melf-s-acid-arrow-xphb-2024",
@@ -3924,7 +4154,8 @@
     "higher_levels": "The damage (both initial and later) increases by 1d4 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mending-xphb-2024",
@@ -3941,7 +4172,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "message-xphb-2024",
@@ -3958,7 +4190,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "meteor-swarm-xphb-2024",
@@ -3975,7 +4208,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mind-blank-xphb-2024",
@@ -3992,7 +4226,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mind-sliver-xphb-2024",
@@ -4009,7 +4244,8 @@
     "higher_levels": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mind-spike-xphb-2024",
@@ -4026,7 +4262,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "minor-illusion-xphb-2024",
@@ -4043,7 +4280,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mirage-arcane-xphb-2024",
@@ -4060,7 +4298,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mirror-image-xphb-2024",
@@ -4077,7 +4316,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mislead-xphb-2024",
@@ -4094,7 +4334,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "misty-step-xphb-2024",
@@ -4111,7 +4352,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "modify-memory-xphb-2024",
@@ -4128,7 +4370,8 @@
     "higher_levels": "You can alter the target's memories of an event that took place up to 7 days ago (level 6 spell slot), 30 days ago (level 7 spell slot), 365 days ago (level 8 spell slot), or any time in the creature's past (level 9 spell slot).",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "moonbeam-xphb-2024",
@@ -4145,7 +4388,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "mordenkainen-s-faithful-hound-xphb-2024",
@@ -4162,7 +4406,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mordenkainen-s-magnificent-mansion-xphb-2024",
@@ -4179,7 +4424,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mordenkainen-s-private-sanctum-xphb-2024",
@@ -4196,7 +4442,8 @@
     "higher_levels": "You can increase the size of the Cube [Area of Effect] by 100 feet for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "mordenkainen-s-sword-xphb-2024",
@@ -4213,7 +4460,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "move-earth-xphb-2024",
@@ -4230,7 +4478,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "nondetection-xphb-2024",
@@ -4247,7 +4496,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "nystul-s-magic-aura-xphb-2024",
@@ -4264,7 +4514,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "otiluke-s-freezing-sphere-xphb-2024",
@@ -4281,7 +4532,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "otiluke-s-resilient-sphere-xphb-2024",
@@ -4298,7 +4550,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "otto-s-irresistible-dance-xphb-2024",
@@ -4315,7 +4568,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "pass-without-trace-xphb-2024",
@@ -4332,7 +4586,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "passwall-xphb-2024",
@@ -4349,7 +4604,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "phantasmal-force-xphb-2024",
@@ -4366,7 +4622,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "phantasmal-killer-xphb-2024",
@@ -4383,7 +4640,8 @@
     "higher_levels": "The damage increases by 1d10 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "phantom-steed-xphb-2024",
@@ -4400,7 +4658,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "planar-ally-xphb-2024",
@@ -4417,7 +4676,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "planar-binding-xphb-2024",
@@ -4434,7 +4694,8 @@
     "higher_levels": "The duration increases with a spell slot of level 6 (10 days), 7 (30 days), 8 (180 days), and 9 (366 days).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "plane-shift-xphb-2024",
@@ -4451,7 +4712,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "plant-growth-xphb-2024",
@@ -4468,7 +4730,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "poison-spray-xphb-2024",
@@ -4485,7 +4748,8 @@
     "higher_levels": "The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "polymorph-xphb-2024",
@@ -4502,7 +4766,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "power-word-fortify-xphb-2024",
@@ -4519,7 +4784,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "power-word-heal-xphb-2024",
@@ -4536,7 +4802,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "power-word-kill-xphb-2024",
@@ -4553,7 +4820,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "power-word-stun-xphb-2024",
@@ -4570,7 +4838,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "prayer-of-healing-xphb-2024",
@@ -4587,7 +4856,8 @@
     "higher_levels": "The healing increases by 1d8 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "prestidigitation-xphb-2024",
@@ -4604,7 +4874,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "prismatic-spray-xphb-2024",
@@ -4621,7 +4892,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "prismatic-wall-xphb-2024",
@@ -4638,7 +4910,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "produce-flame-xphb-2024",
@@ -4655,7 +4928,8 @@
     "higher_levels": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "programmed-illusion-xphb-2024",
@@ -4672,7 +4946,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "project-image-xphb-2024",
@@ -4689,7 +4964,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "protection-from-energy-xphb-2024",
@@ -4706,7 +4982,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "protection-from-evil-and-good-xphb-2024",
@@ -4723,7 +5000,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "protection-from-poison-xphb-2024",
@@ -4740,7 +5018,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "purify-food-and-drink-xphb-2024",
@@ -4757,7 +5036,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "raise-dead-xphb-2024",
@@ -4774,7 +5054,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "rary-s-telepathic-bond-xphb-2024",
@@ -4791,7 +5072,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "ray-of-enfeeblement-xphb-2024",
@@ -4808,7 +5090,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "ray-of-frost-xphb-2024",
@@ -4825,7 +5108,8 @@
     "higher_levels": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "ray-of-sickness-xphb-2024",
@@ -4842,7 +5126,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "regenerate-xphb-2024",
@@ -4859,7 +5144,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "reincarnate-xphb-2024",
@@ -4876,7 +5162,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "remove-curse-xphb-2024",
@@ -4893,7 +5180,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "resistance-xphb-2024",
@@ -4910,7 +5198,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "resurrection-xphb-2024",
@@ -4927,7 +5216,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "reverse-gravity-xphb-2024",
@@ -4944,7 +5234,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "revivify-xphb-2024",
@@ -4961,7 +5252,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "rope-trick-xphb-2024",
@@ -4978,7 +5270,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "sacred-flame-xphb-2024",
@@ -4995,7 +5288,8 @@
     "higher_levels": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "sanctuary-xphb-2024",
@@ -5012,7 +5306,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "scorching-ray-xphb-2024",
@@ -5029,7 +5324,8 @@
     "higher_levels": "You create one additional ray for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "scrying-xphb-2024",
@@ -5046,7 +5342,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "searing-smite-xphb-2024",
@@ -5063,7 +5360,8 @@
     "higher_levels": "All the damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "see-invisibility-xphb-2024",
@@ -5080,7 +5378,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "seeming-xphb-2024",
@@ -5097,7 +5396,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "sending-xphb-2024",
@@ -5114,7 +5414,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "sequester-xphb-2024",
@@ -5131,7 +5432,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "shapechange-xphb-2024",
@@ -5148,7 +5450,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "shatter-xphb-2024",
@@ -5165,7 +5468,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "shield-xphb-2024",
@@ -5182,7 +5486,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "shield-of-faith-xphb-2024",
@@ -5199,7 +5504,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "shillelagh-xphb-2024",
@@ -5216,7 +5522,8 @@
     "higher_levels": "The damage die changes when you reach levels 5 (d10), 11 (d12), and 17 (2d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "shining-smite-xphb-2024",
@@ -5233,7 +5540,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "shocking-grasp-xphb-2024",
@@ -5250,7 +5558,8 @@
     "higher_levels": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "silence-xphb-2024",
@@ -5267,7 +5576,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "silent-image-xphb-2024",
@@ -5284,7 +5594,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "simulacrum-xphb-2024",
@@ -5301,7 +5612,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "sleep-xphb-2024",
@@ -5318,7 +5630,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "sleet-storm-xphb-2024",
@@ -5335,7 +5648,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "slow-xphb-2024",
@@ -5352,7 +5666,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "sorcerous-burst-xphb-2024",
@@ -5369,7 +5684,8 @@
     "higher_levels": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "spare-the-dying-xphb-2024",
@@ -5386,7 +5702,8 @@
     "higher_levels": "The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "speak-with-animals-xphb-2024",
@@ -5403,7 +5720,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "speak-with-dead-xphb-2024",
@@ -5420,7 +5738,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "speak-with-plants-xphb-2024",
@@ -5437,7 +5756,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "spider-climb-xphb-2024",
@@ -5454,7 +5774,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "spike-growth-xphb-2024",
@@ -5471,7 +5792,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "spirit-guardians-xphb-2024",
@@ -5488,7 +5810,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "spiritual-weapon-xphb-2024",
@@ -5505,7 +5828,8 @@
     "higher_levels": "The damage increases by 1d8 for every slot level above 2.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "staggering-smite-xphb-2024",
@@ -5522,7 +5846,8 @@
     "higher_levels": "The extra damage increases by 1d6 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "starry-wisp-xphb-2024",
@@ -5539,7 +5864,8 @@
     "higher_levels": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "steel-wind-strike-xphb-2024",
@@ -5556,7 +5882,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "stinking-cloud-xphb-2024",
@@ -5573,7 +5900,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "stone-shape-xphb-2024",
@@ -5590,7 +5918,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "stoneskin-xphb-2024",
@@ -5607,7 +5936,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "storm-of-vengeance-xphb-2024",
@@ -5624,7 +5954,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "suggestion-xphb-2024",
@@ -5641,7 +5972,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-aberration-xphb-2024",
@@ -5658,7 +5990,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-beast-xphb-2024",
@@ -5675,7 +6008,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-celestial-xphb-2024",
@@ -5692,7 +6026,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-construct-xphb-2024",
@@ -5709,7 +6044,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-dragon-xphb-2024",
@@ -5726,7 +6062,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-elemental-xphb-2024",
@@ -5743,7 +6080,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-fey-xphb-2024",
@@ -5760,7 +6098,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-fiend-xphb-2024",
@@ -5777,7 +6116,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "summon-undead-xphb-2024",
@@ -5794,7 +6134,8 @@
     "higher_levels": "Use the spell slot's level for the spell's level in the stat block.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "sunbeam-xphb-2024",
@@ -5811,7 +6152,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "sunburst-xphb-2024",
@@ -5828,7 +6170,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "swift-quiver-xphb-2024",
@@ -5845,7 +6188,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "symbol-xphb-2024",
@@ -5862,7 +6206,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "synaptic-static-xphb-2024",
@@ -5879,7 +6224,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "tasha-s-bubbling-cauldron-xphb-2024",
@@ -5896,7 +6242,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "tasha-s-hideous-laughter-xphb-2024",
@@ -5913,7 +6260,8 @@
     "higher_levels": "You can target one additional creature for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "telekinesis-xphb-2024",
@@ -5930,7 +6278,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "telepathy-xphb-2024",
@@ -5947,7 +6296,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "teleport-xphb-2024",
@@ -5964,7 +6314,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "teleportation-circle-xphb-2024",
@@ -5981,7 +6332,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "tenser-s-floating-disk-xphb-2024",
@@ -5998,7 +6350,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "thaumaturgy-xphb-2024",
@@ -6015,7 +6368,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "thorn-whip-xphb-2024",
@@ -6032,7 +6386,8 @@
     "higher_levels": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "thunderclap-xphb-2024",
@@ -6049,7 +6404,8 @@
     "higher_levels": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "thunderous-smite-xphb-2024",
@@ -6066,7 +6422,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "thunderwave-xphb-2024",
@@ -6083,7 +6440,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "time-stop-xphb-2024",
@@ -6100,7 +6458,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "toll-the-dead-xphb-2024",
@@ -6117,7 +6476,8 @@
     "higher_levels": "The damage increases by one die when you reach levels 5 (2d8 or 2d12), 11 (3d8 or 3d12), and 17 (4d8 or 4d12).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "tongues-xphb-2024",
@@ -6134,7 +6494,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "transport-via-plants-xphb-2024",
@@ -6151,7 +6512,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "tree-stride-xphb-2024",
@@ -6168,7 +6530,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "true-polymorph-xphb-2024",
@@ -6185,7 +6548,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "true-resurrection-xphb-2024",
@@ -6202,7 +6566,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "true-seeing-xphb-2024",
@@ -6219,7 +6584,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "true-strike-xphb-2024",
@@ -6236,7 +6602,8 @@
     "higher_levels": "Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "tsunami-xphb-2024",
@@ -6253,7 +6620,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "unseen-servant-xphb-2024",
@@ -6270,7 +6638,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "vampiric-touch-xphb-2024",
@@ -6287,7 +6656,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 3.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "vicious-mockery-xphb-2024",
@@ -6304,7 +6674,8 @@
     "higher_levels": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "vitriolic-sphere-xphb-2024",
@@ -6321,7 +6692,8 @@
     "higher_levels": "The initial damage increases by 2d4 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "wall-of-fire-xphb-2024",
@@ -6338,7 +6710,8 @@
     "higher_levels": "The damage increases by 1d8 for each spell slot level above 4.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "wall-of-force-xphb-2024",
@@ -6355,7 +6728,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "wall-of-ice-xphb-2024",
@@ -6372,7 +6746,8 @@
     "higher_levels": "The damage the wall deals when it appears increases by 2d6 and the damage from passing through the sheet of frigid air increases by 1d6 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "wall-of-stone-xphb-2024",
@@ -6389,7 +6764,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "wall-of-thorns-xphb-2024",
@@ -6406,7 +6782,8 @@
     "higher_levels": "Both types of damage increase by 1d8 for each spell slot level above 6.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "warding-bond-xphb-2024",
@@ -6423,7 +6800,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "water-breathing-xphb-2024",
@@ -6440,7 +6818,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "water-walk-xphb-2024",
@@ -6457,7 +6836,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": true,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "web-xphb-2024",
@@ -6474,7 +6854,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "weird-xphb-2024",
@@ -6491,7 +6872,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "wind-walk-xphb-2024",
@@ -6508,7 +6890,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "wind-wall-xphb-2024",
@@ -6525,7 +6908,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "wish-xphb-2024",
@@ -6542,7 +6926,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "witch-bolt-xphb-2024",
@@ -6559,7 +6944,8 @@
     "higher_levels": "The initial damage increases by 1d12 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "word-of-radiance-xphb-2024",
@@ -6576,7 +6962,8 @@
     "higher_levels": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "word-of-recall-xphb-2024",
@@ -6593,7 +6980,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "wrathful-smite-xphb-2024",
@@ -6610,7 +6998,8 @@
     "higher_levels": "The damage increases by 1d6 for each spell slot level above 1.",
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   },
   {
     "id": "yolande-s-regal-presence-xphb-2024",
@@ -6627,7 +7016,8 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": true
+    "concentration": true,
+    "is_srd": false
   },
   {
     "id": "zone-of-truth-xphb-2024",
@@ -6644,6 +7034,7 @@
     "higher_levels": null,
     "classes": [],
     "ritual": false,
-    "concentration": false
+    "concentration": false,
+    "is_srd": false
   }
 ]

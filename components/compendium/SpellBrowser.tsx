@@ -4,6 +4,7 @@ import { useMemo, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { SpellCard } from "@/components/oracle/SpellCard";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -51,7 +52,8 @@ const rowKey = (s: SrdSpell) => `${s.id}:${s.ruleset_version}`;
 
 export function SpellBrowser() {
   const t = useTranslations("compendium");
-  const spells = useSrdStore((s) => s.spells);
+  const allSpells = useSrdStore((s) => s.spells);
+  const { filtered: spells } = useSrdContentFilter(allSpells);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
   // Filters
