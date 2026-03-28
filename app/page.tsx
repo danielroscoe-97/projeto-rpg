@@ -813,8 +813,10 @@ function ComparisonSection() {
                 borderTop: "2px solid rgba(212,168,83,0.65)",
               }}
             >
-              <span className="text-[11px] font-bold text-gold uppercase tracking-widest">
-                🏆 Pocket DM
+              <span className="text-[11px] font-bold text-gold uppercase tracking-widest inline-flex items-center gap-1.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/art/brand/logo-icon.svg" alt="" width={18} height={18} className="drop-shadow-[0_0_6px_rgba(212,168,83,0.4)]" aria-hidden="true" />
+                Pocket DM
               </span>
               <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gold/15 text-gold/80 border border-gold/25">
                 Recomendado
