@@ -20,7 +20,7 @@ import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcu
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
-import { setLastHpMode } from "@/components/combat/HpAdjuster";
+import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
 import { broadcastEvent, getDmChannel } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
@@ -266,6 +266,28 @@ export function CombatSessionClient({
       return next.length > 50 ? next.slice(-50) : next;
     });
   }, []);
+
+  /** Apply HP change to multiple targets (AoE). Each target is independent (fail-safe). */
+  const handleApplyToMultiple = useCallback((targetIds: string[], amount: number, mode: HpMode) => {
+    let appliedCount = 0;
+    for (const id of targetIds) {
+      try {
+        if (mode === "damage") {
+          handleApplyDamage(id, amount);
+        } else if (mode === "heal") {
+          handleApplyHealing(id, amount);
+        } else {
+          handleSetTempHp(id, amount);
+        }
+        appliedCount++;
+      } catch {
+        // Fail-safe: skip this target and continue with others
+      }
+    }
+    if (appliedCount > 1) {
+      toast(t("hp_applied_multiple", { count: appliedCount }), { duration: 2000 });
+    }
+  }, [handleApplyDamage, handleApplyHealing, handleSetTempHp, t]);
 
   // Listen for dice-roll-result events from ClickableRoll and feed into DiceRollLog
   useEffect(() => {
@@ -629,6 +651,7 @@ export function CombatSessionClient({
         onSwitchVersion={handleSwitchVersion}
         onUpdateDmNotes={handleUpdateDmNotes}
         onUpdatePlayerNotes={handleUpdatePlayerNotes}
+        onApplyToMultiple={handleApplyToMultiple}
         onToggleGroupExpanded={(gid) => useCombatStore.getState().toggleGroupExpanded(gid)}
         onSetGroupInitiative={(gid, val) => {
           useCombatStore.getState().setGroupInitiative(gid, val);
@@ -667,6 +690,7 @@ interface CombatListProps {
   onSwitchVersion: (id: string, version: import("@/lib/types/database").RulesetVersion) => void;
   onUpdateDmNotes: (id: string, notes: string) => void;
   onUpdatePlayerNotes: (id: string, notes: string) => void;
+  onApplyToMultiple: (targetIds: string[], amount: number, mode: HpMode) => void;
   onToggleGroupExpanded: (groupId: string) => void;
   onSetGroupInitiative: (groupId: string, value: number) => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
@@ -714,6 +738,7 @@ function CombatList({
   onSwitchVersion,
   onUpdateDmNotes,
   onUpdatePlayerNotes,
+  onApplyToMultiple,
   onToggleGroupExpanded,
   onSetGroupInitiative,
   t,
@@ -737,6 +762,8 @@ function CombatList({
         onSwitchVersion={onSwitchVersion}
         onUpdateDmNotes={onUpdateDmNotes}
         onUpdatePlayerNotes={onUpdatePlayerNotes}
+        allCombatants={combatants}
+        onApplyToMultiple={onApplyToMultiple}
       />
     </div>
   );
