@@ -69,13 +69,16 @@ html {
     line-height: 1.6;
   }
 
-  /* Noise texture overlay */
+  /* Noise texture overlay — uses tiny base64 PNG instead of SVG feTurbulence
+     which crashes iOS WebKit due to GPU-intensive filter rendering */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.025;
+    background-image: url("/art/noise-64.png");
+    background-repeat: repeat;
+    background-size: 64px 64px;
+    opacity: 0.03;
     pointer-events: none;
     z-index: 0;
   }
