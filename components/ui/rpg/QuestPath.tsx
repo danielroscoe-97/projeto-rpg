@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import { FIRE_GRADIENT, getFireStepColor } from "@/lib/design/rpg-tokens";
 import { cn } from "@/lib/utils";
 
@@ -10,20 +7,11 @@ interface QuestPathProps {
   className?: string;
 }
 
-export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+// Delay before fire animations start (gives user time to scroll down)
+const FIRE_DELAY = "4s";
+const FIRE_DELAY_NUM = 4;
 
-  useEffect(() => {
-    const el = svgRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
   const width = 1000;
   const height = 90;
   const pad = 125;
@@ -69,7 +57,6 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
 
   return (
     <svg
-      ref={svgRef}
       className={cn("w-full pointer-events-none", className)}
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
@@ -107,20 +94,18 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
       {/* Faint background curve */}
       <path d={curvePath} stroke="rgba(212,168,83,0.08)" strokeWidth="2" fill="none" />
 
-      {/* Fire gradient curve (dashed, flowing) — only animates after scroll */}
-      {isVisible && (
-        <path
-          d={curvePath}
-          stroke="url(#fire-path-grad)"
-          strokeWidth="2"
-          fill="none"
-          strokeDasharray="14 14"
-          className="animate-flow-dash motion-reduce:animate-none"
-        />
-      )}
+      {/* Fire gradient curve (dashed, flowing) */}
+      <path
+        d={curvePath}
+        stroke="url(#fire-path-grad)"
+        strokeWidth="2"
+        fill="none"
+        strokeDasharray="14 14"
+        className="animate-flow-dash motion-reduce:animate-none"
+      />
 
-      {/* Static embers — only appear after scroll trigger */}
-      {isVisible && staticEmbers.map((e, i) => (
+      {/* Static embers — appear as the firebolt passes */}
+      {staticEmbers.map((e, i) => (
         <rect
           key={`se-${i}`}
           x={e.cx - e.r}
@@ -138,9 +123,8 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
         </rect>
       ))}
 
-      {/* === Traveling Pixel Firebolt (ONE trip, triggered on scroll) === */}
-
-      {isVisible && (<><g className="motion-reduce:hidden" shapeRendering="crispEdges">
+      {/* === Traveling Pixel Firebolt (ONE trip) === */}
+      <g className="motion-reduce:hidden" shapeRendering="crispEdges">
         {/* Ambient glow */}
         <circle r="20" fill="url(#firebolt-glow)" filter="url(#fb-blur)" opacity="0">
           <animate attributeName="opacity" from="0" to="0.6" dur="0.3s" fill="freeze" />
@@ -212,10 +196,9 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
           </g>
         </g>
       </g>
-      </>) }
 
-      {/* === BONFIRE at step 04 — behind the circle, smaller to not leak above === */}
-      {isVisible && (<g className="motion-reduce:hidden" shapeRendering="crispEdges">
+      {/* === BONFIRE at step 04 === */}
+      <g className="motion-reduce:hidden" shapeRendering="crispEdges">
         {/* Large warm glow centered on step 04 */}
         <circle cx={lastPt.x} cy={lastPt.y - 5} r="30" fill="url(#bonfire-glow)" filter="url(#bonfire-blur)" opacity="0">
           <animate attributeName="opacity" from="0" to="0.7" dur="1s" begin={travelDur} fill="freeze" />
@@ -291,7 +274,7 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
             <rect x="1.5" y="-9" width="4" height="4" fill="#991b1b" />
           </g>
         </g>
-      </g>)}
+      </g>
 
       {/* Step dots on the curve */}
       {stepPoints.map((pt, i) => {
