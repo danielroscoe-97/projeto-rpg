@@ -688,29 +688,34 @@ type CellValue =
   | { type: "partial"; label: string };
 
 function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
-  const iconColor = highlight ? "#D4A853" : "rgba(255,255,255,0.35)";
   const textClass = highlight && val.type === "check"
-    ? "text-white font-medium text-sm leading-snug"
+    ? "text-white font-semibold text-sm leading-snug"
     : "text-white/70 text-sm leading-snug";
 
   return (
     <div className="flex items-center gap-2.5 py-5">
-      {val.type === "check" && (
+      {val.type === "check" && highlight && (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0 drop-shadow-[0_0_6px_rgba(74,158,92,0.5)]">
+          <circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" strokeWidth="1.5" />
+          <path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {val.type === "check" && !highlight && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke={iconColor} strokeWidth="1.5" />
-          <path d="M5.5 9l2.5 2.5 4.5-5" stroke={iconColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" />
+          <path d="M5.5 9l2.5 2.5 4.5-5" stroke="rgba(255,255,255,0.30)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )}
       {val.type === "cross" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.30)" strokeWidth="1.5" />
-          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="9" r="8.25" fill="rgba(196,60,60,0.08)" stroke="rgba(196,60,60,0.4)" strokeWidth="1.5" />
+          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(196,60,60,0.5)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       {val.type === "partial" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.30)" strokeWidth="1.5" />
-          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.40)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="9" r="8.25" fill="rgba(232,155,45,0.06)" stroke="rgba(232,155,45,0.35)" strokeWidth="1.5" />
+          <path d="M5.5 9h7" stroke="rgba(232,155,45,0.5)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       <span className={textClass}>{val.label}</span>
@@ -784,11 +789,11 @@ function ComparisonSection() {
 
         {/* ── Desktop table (hidden on mobile) ── */}
         <div
-          className="hidden md:block overflow-hidden rounded-2xl animate-fade-in-up"
+          className="hidden md:block overflow-hidden rounded-2xl animate-fade-in-up relative"
           style={{
             background: "#181825",
             border: "1px solid rgba(255,255,255,0.12)",
-            boxShadow: "0 0 0 1px rgba(212,168,83,0.08), 0 32px 80px rgba(0,0,0,0.5)",
+            boxShadow: "0 0 0 1px rgba(212,168,83,0.1), 0 0 40px rgba(212,168,83,0.06), 0 32px 80px rgba(0,0,0,0.5)",
             animationDelay: "0.1s",
           }}
         >
@@ -805,21 +810,24 @@ function ComparisonSection() {
                 D&amp;D Beyond
               </span>
             </div>
-            {/* TdM header */}
+            {/* Pocket DM header — gold gradient with glow */}
             <div
-              className="px-6 py-5 text-center border-b border-l border-l-gold/20 border-b-gold/15 flex flex-col items-center gap-2"
+              className="px-6 py-5 text-center flex flex-col items-center gap-2 relative overflow-hidden"
               style={{
-                background: "rgba(212,168,83,0.09)",
-                borderTop: "2px solid rgba(212,168,83,0.65)",
+                background: "linear-gradient(180deg, rgba(212,168,83,0.15) 0%, rgba(212,168,83,0.07) 100%)",
+                borderTop: "2px solid rgba(212,168,83,0.7)",
+                borderLeft: "1px solid rgba(212,168,83,0.25)",
+                borderBottom: "1px solid rgba(212,168,83,0.2)",
+                boxShadow: "inset 0 0 30px rgba(212,168,83,0.05)",
               }}
             >
-              <span className="text-[11px] font-bold text-gold uppercase tracking-widest inline-flex items-center gap-1.5">
+              <span className="text-[11px] font-bold text-gold uppercase tracking-widest inline-flex items-center gap-1.5 drop-shadow-[0_0_8px_rgba(212,168,83,0.3)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/art/brand/logo-icon.svg" alt="" width={18} height={18} className="drop-shadow-[0_0_6px_rgba(212,168,83,0.4)]" aria-hidden="true" />
+                <img src="/art/brand/logo-icon.svg" alt="" width={20} height={20} className="drop-shadow-[0_0_8px_rgba(212,168,83,0.5)]" aria-hidden="true" />
                 Pocket DM
               </span>
-              <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gold/15 text-gold/80 border border-gold/25">
-                Recomendado
+              <span className="text-[9px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-gold/20 text-gold border border-gold/30 shadow-[0_0_12px_rgba(212,168,83,0.15)]">
+                Feito pra sua mesa
               </span>
             </div>
           </div>
@@ -831,22 +839,30 @@ function ComparisonSection() {
             return (
               <div
                 key={row.feature}
-                className={`grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-all duration-200 hover:bg-white/[0.05] ${row.knockout ? "border-t-2 border-t-gold/25" : ""}`}
-                style={{ background: row.knockout ? "rgba(212,168,83,0.06)" : isEven ? "transparent" : "rgba(255,255,255,0.025)" }}
+                className={`grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-all duration-300 hover:scale-[1.005] ${row.knockout ? "border-t-2 border-t-gold/30" : ""}`}
+                style={{ background: row.knockout ? "rgba(212,168,83,0.06)" : isEven ? "transparent" : "rgba(255,255,255,0.02)" }}
               >
-                <div className={`px-7 py-1 flex items-center gap-3 transition-colors duration-200 ${isLast ? "" : "border-b border-white/[0.07]"}`}>
-                  <span className="text-xl leading-none shrink-0">{row.icon}</span>
-                  <span className="text-[15px] font-semibold text-white/90">{row.feature}</span>
+                {/* Feature name — gold left border on hover */}
+                <div className={`px-7 py-1 flex items-center gap-3 transition-all duration-300 border-l-2 border-l-transparent group-hover:border-l-gold/60 group-hover:bg-white/[0.03] ${isLast ? "" : "border-b border-white/[0.07]"}`}>
+                  <span className="text-xl leading-none shrink-0 transition-transform duration-300 group-hover:scale-110">{row.icon}</span>
+                  <span className="text-[15px] font-semibold text-white/90 transition-colors duration-300 group-hover:text-white">{row.feature}</span>
                 </div>
-                <div className={`px-6 border-l border-white/[0.07] transition-colors duration-200 ${isLast ? "" : "border-b"}`}>
+                {/* Competitor cells — dim on hover to contrast with Pocket DM */}
+                <div className={`px-6 border-l border-white/[0.07] transition-all duration-300 group-hover:bg-white/[0.02] group-hover:opacity-70 ${isLast ? "" : "border-b"}`}>
                   <CompCell val={row.roll20} />
                 </div>
-                <div className={`px-6 border-l border-white/[0.07] transition-colors duration-200 ${isLast ? "" : "border-b"}`}>
+                <div className={`px-6 border-l border-white/[0.07] transition-all duration-300 group-hover:bg-white/[0.02] group-hover:opacity-70 ${isLast ? "" : "border-b"}`}>
                   <CompCell val={row.beyond} />
                 </div>
+                {/* Pocket DM cell — glow brighter on hover */}
                 <div
-                  className={`px-6 border-l border-l-gold/20 group-hover:brightness-125 transition-all duration-200 ${isLast ? "" : "border-b border-b-gold/15"}`}
-                  style={{ background: row.knockout ? "rgba(212,168,83,0.14)" : "rgba(212,168,83,0.09)" }}
+                  className={`px-6 transition-all duration-300 group-hover:brightness-150 group-hover:shadow-[inset_0_0_20px_rgba(212,168,83,0.1)] ${isLast ? "" : "border-b border-b-gold/15"}`}
+                  style={{
+                    background: row.knockout
+                      ? "linear-gradient(90deg, rgba(212,168,83,0.16), rgba(212,168,83,0.10))"
+                      : "linear-gradient(90deg, rgba(212,168,83,0.10), rgba(212,168,83,0.06))",
+                    borderLeft: "1px solid rgba(212,168,83,0.25)",
+                  }}
                 >
                   <CompCell val={row.pocketdm} highlight />
                 </div>
