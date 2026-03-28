@@ -139,7 +139,10 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
       timeout: 5_000,
     });
 
-    await page.click('[data-testid="start-combat-btn"]');
+    // Scroll start button into view — on Pixel 5, 4 combatants push it below the fold
+    const startBtn = page.locator('[data-testid="start-combat-btn"]');
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
       timeout: 10_000,
     });

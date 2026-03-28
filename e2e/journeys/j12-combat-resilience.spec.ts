@@ -142,14 +142,14 @@ test.describe("J12 — Combat Resilience", () => {
     await playerContext.setOffline(true);
     await playerPage.waitForTimeout(3_000);
 
-    // Reconnect
+    // Reconnect — Supabase Realtime may take 5-10s to re-establish channel
     await playerContext.setOffline(false);
     await playerPage.waitForTimeout(5_000);
 
-    // Player view should recover
+    // Player view should recover (generous timeout for Realtime reconnect)
     await expect(
       playerPage.locator('[data-testid="player-view"]')
-    ).toBeVisible({ timeout: 15_000 });
+    ).toBeVisible({ timeout: 30_000 });
 
     // No errors
     const bodyText = await playerPage.textContent("body");
