@@ -181,7 +181,10 @@ export function OracleAIModal() {
     }
   }, [handleAsk, query, streaming]);
 
-  if (!open) return null;
+  // Render hidden instead of returning null so local state survives across soft dismiss/reopen cycles (BUG-1 fix)
+  if (!open) {
+    return <div className="hidden" aria-hidden="true" />;
+  }
 
   return (
     <>

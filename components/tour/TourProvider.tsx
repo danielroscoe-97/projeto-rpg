@@ -96,6 +96,42 @@ export function TourProvider() {
     }
   }, [isActive, currentStep, smartAdvance]);
 
+  // Elevate target element above overlay for interactive steps
+  const prevTargetRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Restore previous target's styles
+    if (prevTargetRef.current) {
+      prevTargetRef.current.style.removeProperty("position");
+      prevTargetRef.current.style.removeProperty("z-index");
+      prevTargetRef.current = null;
+    }
+
+    if (!isActive || currentStep >= TOUR_STEPS.length) return;
+
+    const step = TOUR_STEPS[currentStep];
+    if (step.type !== "interactive") return;
+
+    const target = document.querySelector<HTMLElement>(step.targetSelector);
+    if (!target) return;
+
+    // Only set position if not already positioned
+    const computed = getComputedStyle(target);
+    if (computed.position === "static") {
+      target.style.position = "relative";
+    }
+    target.style.zIndex = "10001";
+    prevTargetRef.current = target;
+
+    return () => {
+      if (prevTargetRef.current) {
+        prevTargetRef.current.style.removeProperty("position");
+        prevTargetRef.current.style.removeProperty("z-index");
+        prevTargetRef.current = null;
+      }
+    };
+  }, [isActive, currentStep]);
+
   // Calculate target position
   const updateTargetRect = useCallback(() => {
     if (!isActive || currentStep >= TOUR_STEPS.length) return;

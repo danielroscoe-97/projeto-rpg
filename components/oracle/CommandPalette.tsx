@@ -173,6 +173,12 @@ export function CommandPalette() {
           className="w-full max-w-[640px] rounded-xl border border-white/10 bg-[#1a1a28] shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150 pointer-events-auto"
           label={t("label")}
           shouldFilter={false}
+          onKeyDown={(e) => {
+            // Guard against cmdk calling .closest() on non-Element targets (BUG-4)
+            if (e.target && !(e.target instanceof HTMLElement)) {
+              e.preventDefault();
+            }
+          }}
         >
           <div className="flex items-center border-b border-white/[0.08] px-4">
             <svg

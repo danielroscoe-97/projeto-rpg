@@ -152,7 +152,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black/40 z-[50] transition-opacity duration-200 ${
+        className={`fixed inset-0 bg-black/40 z-[51] transition-opacity duration-200 ${
           open
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -166,7 +166,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
         role="dialog"
         aria-label="Player Characters"
         data-testid="player-drawer"
-        className={`fixed top-0 right-0 h-full w-full sm:w-[320px] bg-card border-l border-border z-[50] shadow-xl transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[320px] bg-card border-l border-border z-[51] shadow-xl transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >

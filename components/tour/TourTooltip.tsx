@@ -51,22 +51,23 @@ function computePosition(
   const style: React.CSSProperties = { maxWidth: tooltipWidth };
 
   const centerX = targetRect.left + targetRect.width / 2;
+  const safeMargin = 16;
 
   switch (chosen) {
     case "bottom":
-      style.top = targetRect.bottom + padding;
-      style.left = Math.max(16, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16));
+      style.top = Math.min(targetRect.bottom + padding, window.innerHeight - safeMargin - 100);
+      style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
       break;
     case "top":
       style.bottom = window.innerHeight - targetRect.top + padding;
-      style.left = Math.max(16, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16));
+      style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
       break;
     case "right":
-      style.top = targetRect.top + targetRect.height / 2 - 60;
+      style.top = Math.max(safeMargin, targetRect.top + targetRect.height / 2 - 60);
       style.left = targetRect.right + padding;
       break;
     case "left":
-      style.top = targetRect.top + targetRect.height / 2 - 60;
+      style.top = Math.max(safeMargin, targetRect.top + targetRect.height / 2 - 60);
       style.right = window.innerWidth - targetRect.left + padding;
       break;
   }
@@ -144,8 +145,8 @@ export function TourTooltip({
         aria-label={t(titleKey)}
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
-        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4"
-        style={{ ...style, pointerEvents: "auto" }}
+        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
+        style={{ ...style, pointerEvents: "auto", maxHeight: "calc(100vh - 32px)" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0 }}

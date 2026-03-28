@@ -533,15 +533,15 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                     className="w-full bg-transparent border border-border/50 rounded-md px-3 py-2 text-sm text-muted-foreground placeholder:text-muted-foreground/30 resize-y focus:outline-none focus:border-border/80 transition-colors"
                     style={{ fontSize: 16, minHeight: "3.5rem", maxHeight: "9rem" }}
                   />
-                  <div className="flex justify-end h-4">
+                  <div className="flex justify-end h-4 mt-0.5">
                     {notesSaveStatus[character.id] === "saving" && (
-                      <span className="text-[11px] text-muted-foreground/50">Salvando...</span>
+                      <span className="text-[10px] text-muted-foreground animate-pulse">Salvando...</span>
                     )}
                     {notesSaveStatus[character.id] === "saved" && (
-                      <span className="text-[11px] text-green-500/70">Salvo</span>
+                      <span className="text-[10px] text-emerald-400">Salvo</span>
                     )}
                     {notesSaveStatus[character.id] === "error" && (
-                      <span className="text-[11px] text-red-400/70">Erro ao salvar</span>
+                      <span className="text-[10px] text-red-400">Erro ao salvar</span>
                     )}
                   </div>
                 </div>
