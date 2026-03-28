@@ -20,6 +20,8 @@ export interface SrdMonster {
   ruleset_version: RulesetVersion;
   /** Source book abbreviation (e.g. "MM", "VGM", "MTF") */
   source?: string;
+  /** Whether this monster is part of the SRD 5.1 (free to distribute) */
+  is_srd?: boolean;
   /** URL to the monster's token image (webp) */
   token_url?: string;
   /** Fallback token URL (cross-version or similar creature) */
@@ -57,6 +59,8 @@ export interface SrdSpell {
   ruleset_version: RulesetVersion;
   /** Source book abbreviation (e.g. "PHB", "XGE", "TCE") */
   source?: string;
+  /** Whether this spell is part of the SRD 5.1 (free to distribute) */
+  is_srd?: boolean;
   level: number;
   school: string;
   casting_time: string;

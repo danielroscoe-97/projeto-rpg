@@ -103,7 +103,7 @@ describe("getFeatureFlags", () => {
     const result = await getFeatureFlags();
 
     // Should return DEFAULT_FLAGS (all pro-gated)
-    expect(result.length).toBe(8);
+    expect(result.length).toBe(9);
     expect(result[0].key).toBe("persistent_campaigns");
     expect(result[0].plan_required).toBe("pro");
   });
@@ -120,7 +120,7 @@ describe("getFeatureFlags", () => {
 
     // After invalidation, cache is null, so fetchFlags returns DEFAULT_FLAGS
     const result = await getFeatureFlags();
-    expect(result.length).toBe(8); // defaults
+    expect(result.length).toBe(9); // defaults
   });
 });
 
