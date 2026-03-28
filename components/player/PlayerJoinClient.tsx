@@ -104,6 +104,7 @@ export function PlayerJoinClient({
   const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
   const lateJoinRequestIdRef = useRef<string | null>(null);
   const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
+  const lateJoinRegisteredRef = useRef(false);
   const presenceChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
@@ -344,6 +345,25 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
           if (payload.combatant) {
             updateCombatants((prev) => [...prev, payload.combatant]);
+            // Detect late-join acceptance: DM added our player combatant
+            if (lateJoinRequestIdRef.current && !lateJoinRegisteredRef.current &&
+                payload.combatant.is_player &&
+                payload.combatant.name === lateJoinDataRef.current?.name) {
+              lateJoinRegisteredRef.current = true;
+              if (lateJoinTimeoutRef.current) {
+                clearTimeout(lateJoinTimeoutRef.current);
+                lateJoinTimeoutRef.current = null;
+              }
+              lateJoinRequestIdRef.current = null;
+              setLateJoinStatus("accepted");
+              setIsRegistered(true);
+              setRegisteredName(payload.combatant.name);
+              // Mark token with player_name (combatant already created by DM)
+              if (lateJoinDataRef.current) {
+                registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current)
+                  .catch(() => { /* Token may already be marked — ignore */ });
+              }
+            }
           }
         })
         .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }) => {
@@ -387,7 +407,8 @@ export function PlayerJoinClient({
             clearTimeout(lateJoinTimeoutRef.current);
             lateJoinTimeoutRef.current = null;
           }
-          if (payload.accepted) {
+          if (payload.accepted && !lateJoinRegisteredRef.current) {
+            lateJoinRegisteredRef.current = true;
             setLateJoinStatus("accepted");
             // Register the player in DB now that DM accepted
             if (lateJoinDataRef.current) {
@@ -398,6 +419,7 @@ export function PlayerJoinClient({
                 })
                 .catch((err) => {
                   setLateJoinStatus("idle");
+                  lateJoinRegisteredRef.current = false;
                   toast.error(tRef.current("registerError"));
                   captureError(err, {
                     component: "PlayerJoinClient",
@@ -504,6 +526,52 @@ export function PlayerJoinClient({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
+
+  // Polling fallback for late-join: if broadcast doesn't arrive, check server
+  useEffect(() => {
+    if (lateJoinStatus !== "waiting" || !sessionId) return;
+
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/session/${sessionId}/state`);
+        if (!res.ok) return;
+        const { data } = await res.json();
+        if (!data?.combatants || !lateJoinDataRef.current) return;
+
+        const playerName = lateJoinDataRef.current.name;
+        const found = data.combatants.find(
+          (c: { is_player?: boolean; name?: string }) =>
+            c.is_player && c.name === playerName
+        );
+
+        if (found && !lateJoinRegisteredRef.current) {
+          lateJoinRegisteredRef.current = true;
+          if (lateJoinTimeoutRef.current) {
+            clearTimeout(lateJoinTimeoutRef.current);
+            lateJoinTimeoutRef.current = null;
+          }
+          lateJoinRequestIdRef.current = null;
+          setLateJoinStatus("accepted");
+          setIsRegistered(true);
+          setRegisteredName(playerName);
+          registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current!)
+            .catch(() => { /* Token may already be marked — ignore */ });
+        }
+      } catch {
+        /* silent — will retry on next poll */
+      }
+    };
+
+    // First poll after 3s, then every 5s
+    const firstPoll = setTimeout(poll, 3000);
+    const interval = setInterval(poll, 5000);
+
+    return () => {
+      clearTimeout(firstPoll);
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- effectiveTokenId is stable after auth init
+  }, [lateJoinStatus, sessionId, effectiveTokenId]);
 
   // Visibility change handler — reconnect when phone unlocks / tab regains focus
   useEffect(() => {
@@ -612,6 +680,7 @@ export function PlayerJoinClient({
     const requestId = crypto.randomUUID();
     lateJoinRequestIdRef.current = requestId;
     lateJoinDataRef.current = data;
+    lateJoinRegisteredRef.current = false;
     setLateJoinStatus("waiting");
     if (channelRef.current) {
       const chState = (channelRef.current as unknown as { state: string }).state;
