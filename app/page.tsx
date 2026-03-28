@@ -146,7 +146,7 @@ function HeroSection() {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cool/[0.05] rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative max-w-3xl mx-auto text-center space-y-8">
+      <div className="relative max-w-3xl mx-auto text-center space-y-5">
         {/* Crown d20 Logo */}
         <div className="animate-fade-in flex flex-col items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -158,7 +158,7 @@ function HeroSection() {
             height={96}
           />
           <span className="font-display text-gold text-lg sm:text-xl tracking-[0.15em] uppercase font-bold">Pocket DM</span>
-          <span className="text-gold/40 text-xs sm:text-sm italic font-light tracking-[0.15em] -mt-1">— Master your table.</span>
+          <span className="text-gold/40 text-xs sm:text-sm italic font-light tracking-[0.15em] -mt-1">Master your table.</span>
         </div>
 
         {/* Live badge */}
@@ -176,7 +176,7 @@ function HeroSection() {
         </h1>
 
         {/* Subheading */}
-        <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           O combat tracker definitivo para D&D 5e. Iniciativa, HP e condições em tempo real — tudo no celular dos seus jogadores.
         </p>
 
