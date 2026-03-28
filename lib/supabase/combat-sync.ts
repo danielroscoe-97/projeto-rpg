@@ -5,8 +5,13 @@ import type { Combatant } from "@/lib/types/combat";
  * Full state reconciliation — pushes the entire DM Zustand state to Supabase.
  * Used when reconnecting after an offline period to ensure DB matches DM's UI.
  *
- * Strategy: upsert all combatants (covers any HP/condition/defeated changes)
- * + update encounter turn/round state. Single bulk operation.
+ * Strategy:
+ * 1. Upsert all combatants from Zustand (covers HP/condition/defeated changes)
+ * 2. Delete combatants removed during offline (present in DB but not in Zustand)
+ * 3. Update encounter turn/round state
+ *
+ * Note: Steps 1-3 are not atomic (Supabase doesn't support client-side multi-table
+ * transactions). Upsert is idempotent, so retries are safe.
  */
 export async function reconcileFullState(
   encounterId: string,
@@ -18,7 +23,7 @@ export async function reconcileFullState(
   const supabase = createClient();
 
   try {
-    // 1. Bulk upsert all combatants — this covers every possible field change
+    // 1. Bulk upsert all combatants — covers every possible field change
     if (combatants.length > 0) {
       const rows = combatants.map((c) => ({
         id: c.id,
@@ -53,7 +58,23 @@ export async function reconcileFullState(
       }
     }
 
-    // 2. Update encounter state (turn, round, active)
+    // 2. Delete combatants removed during offline (in DB but not in Zustand)
+    const localIds = combatants.map((c) => c.id);
+    if (localIds.length > 0) {
+      // Delete any DB combatants for this encounter that aren't in the local state
+      const { error: deleteError } = await supabase
+        .from("combatants")
+        .delete()
+        .eq("encounter_id", encounterId)
+        .not("id", "in", `(${localIds.join(",")})`);
+
+      if (deleteError) {
+        // Non-fatal: upsert succeeded, deletions failed. Log but don't fail overall.
+        console.warn("[combat-sync] Failed to clean up removed combatants:", deleteError.message);
+      }
+    }
+
+    // 3. Update encounter state (turn, round, active)
     const { error: encounterError } = await supabase
       .from("encounters")
       .update({
