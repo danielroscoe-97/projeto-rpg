@@ -164,7 +164,7 @@ function HeroSection() {
         {/* Live badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-xs text-muted-foreground animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          5e.tools Compendium — 2014 &amp; 2024 Rules
+          SRD 5.1 &amp; 5.2 Compendium — 2014 &amp; 2024 Rules
         </div>
 
         {/* Headline */}
