@@ -18,6 +18,7 @@ import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
 import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
+import { useCombatResilience } from "@/lib/hooks/useCombatResilience";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
@@ -367,6 +368,9 @@ export function CombatSessionClient({
     window.addEventListener("dice-roll-result", handleDiceRollEvent);
     return () => window.removeEventListener("dice-roll-result", handleDiceRollEvent);
   }, [addDiceRoll]);
+
+  // Combat resilience: beforeunload flush + offline→online reconciliation
+  useCombatResilience();
 
   // Keyboard shortcuts for DM combat view (NFR25)
   useCombatKeyboardShortcuts({
