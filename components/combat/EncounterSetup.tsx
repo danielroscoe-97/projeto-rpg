@@ -4,7 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
-import { Share2 } from "lucide-react";
+import { Info, Share2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
 import { createSessionOnly } from "@/lib/supabase/encounter";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
@@ -685,7 +686,19 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
         <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
         <span className="hidden md:block w-8 flex-shrink-0" /> {/* monster token spacer */}
-        <span className="flex-1 min-w-0 cursor-help" title={t("setup_col_name_tooltip")}>{t("setup_col_name")}</span>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="flex-1 min-w-0 inline-flex items-center gap-1 cursor-help">
+                {t("setup_col_name")}
+                <Info className="w-3 h-3 text-muted-foreground/40" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-[240px] text-[11px] leading-snug">
+              {t("setup_col_name_tooltip")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-10 md:w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
         <span className="hidden md:block flex-1 min-w-0">{t("setup_col_notes")}</span>
