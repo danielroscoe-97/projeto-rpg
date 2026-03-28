@@ -25,7 +25,11 @@ export interface ConditionCardProps {
   condition: { id: string; name: string; description: string; source?: string };
   variant?: "inline" | "card" | "reference";
   onClose?: () => void;
+  /** @deprecated Use onFocus instead */
   onPin?: () => void;
+  onFocus?: () => void;
+  onLock?: () => void;
+  isLocked?: boolean;
   onMinimize?: () => void;
   /** Reference variant: whether expanded */
   expanded?: boolean;
@@ -40,6 +44,9 @@ export function ConditionCard({
   variant = "inline",
   onClose,
   onPin,
+  onFocus,
+  onLock,
+  isLocked = false,
   onMinimize,
   expanded,
   onToggle,
@@ -105,9 +112,14 @@ export function ConditionCard({
     >
       {isCard && (
         <div className="card-toolbar">
-          {onPin && (
-            <button type="button" onClick={onPin} aria-label="Pin condition card" data-testid="condition-pin-btn">
-              📌
+          {onLock && (
+            <button type="button" onClick={onLock} aria-label={isLocked ? "Unlock card position" : "Lock card position"} title={isLocked ? "Desbloquear posição" : "Travar posição"} data-testid="condition-lock-btn">
+              {isLocked ? "🔒" : "🔓"}
+            </button>
+          )}
+          {(onFocus ?? onPin) && (
+            <button type="button" onClick={(onFocus ?? onPin)!} aria-label="Bring card to front" title="Trazer para frente" data-testid="condition-focus-btn">
+              ⬆️
             </button>
           )}
           {onMinimize && (

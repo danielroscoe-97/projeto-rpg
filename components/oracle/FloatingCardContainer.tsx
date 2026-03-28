@@ -10,8 +10,16 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { usePinnedCardsStore, type PinnedCard } from "@/lib/stores/pinned-cards-store";
-import { getMonsterById, getSpellById, getItemById, findCondition } from "@/lib/srd/srd-search";
+import {
+  usePinnedCardsStore,
+  type PinnedCard,
+} from "@/lib/stores/pinned-cards-store";
+import {
+  getMonsterById,
+  getSpellById,
+  getItemById,
+  findCondition,
+} from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "./MonsterStatBlock";
 import { SpellCard } from "./SpellCard";
 import { ItemCard } from "./ItemCard";
@@ -36,8 +44,13 @@ function DraggableCard({
   onClose: () => void;
   onMinimize: () => void;
 }) {
-  const { attributes: { role: _role, tabIndex: _tabIndex, ...attributes }, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id: card.id });
+  const {
+    attributes: { role: _role, tabIndex: _tabIndex, ...attributes },
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging,
+  } = useDraggable({ id: card.id, disabled: card.isLocked });
 
   const style: React.CSSProperties = {
     position: "fixed",
@@ -78,10 +91,18 @@ function DraggableCard({
 // ---------------------------------------------------------------------------
 
 function resolveDisplayName(card: PinnedCard): string {
-  if (card.type === "monster") return getMonsterById(card.entityId, card.rulesetVersion)?.name ?? card.entityId;
-  if (card.type === "spell") return getSpellById(card.entityId, card.rulesetVersion)?.name ?? card.entityId;
-  if (card.type === "item") return getItemById(card.entityId)?.name ?? card.entityId;
-  if (card.type === "oracle-ai") return card.oracleData?.question?.slice(0, 40) ?? "Oracle AI";
+  if (card.type === "monster")
+    return (
+      getMonsterById(card.entityId, card.rulesetVersion)?.name ?? card.entityId
+    );
+  if (card.type === "spell")
+    return (
+      getSpellById(card.entityId, card.rulesetVersion)?.name ?? card.entityId
+    );
+  if (card.type === "item")
+    return getItemById(card.entityId)?.name ?? card.entityId;
+  if (card.type === "oracle-ai")
+    return card.oracleData?.question?.slice(0, 40) ?? "Oracle AI";
   return findCondition(card.entityId)?.name ?? card.entityId;
 }
 
@@ -98,7 +119,16 @@ function MinimizedCard({
   onClose: () => void;
   onFocus: () => void;
 }) {
-  const typeIcon = card.type === "monster" ? "👹" : card.type === "spell" ? "✨" : card.type === "item" ? "⚔️" : card.type === "oracle-ai" ? "🔮" : "⚡";
+  const typeIcon =
+    card.type === "monster"
+      ? "👹"
+      : card.type === "spell"
+        ? "✨"
+        : card.type === "item"
+          ? "⚔️"
+          : card.type === "oracle-ai"
+            ? "🔮"
+            : "⚡";
   const displayName = resolveDisplayName(card);
   const typeClass =
     card.type === "spell"
@@ -123,10 +153,20 @@ function MinimizedCard({
       data-testid={`minimized-card-${card.id}`}
     >
       <div className="card-toolbar">
-        <button type="button" onClick={onRestore} aria-label="Restore card" title="Restore">
+        <button
+          type="button"
+          onClick={onRestore}
+          aria-label="Restore card"
+          title="Restore"
+        >
           +
         </button>
-        <button type="button" onClick={onClose} aria-label="Close card" title="Close">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close card"
+          title="Close"
+        >
           ×
         </button>
       </div>
@@ -143,12 +183,14 @@ function MinimizedCard({
 
 function PinnedMonsterCard({
   card,
-  onPin,
+  onFocus,
+  onLock,
   onClose,
   onMinimize,
 }: {
   card: PinnedCard;
-  onPin: () => void;
+  onFocus: () => void;
+  onLock: () => void;
   onClose: () => void;
   onMinimize: () => void;
 }) {
@@ -157,7 +199,9 @@ function PinnedMonsterCard({
     return (
       <div className="stat-card-5e card-floating" data-testid="card-not-found">
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">×</button>
+          <button type="button" onClick={onClose} aria-label="Close card">
+            ×
+          </button>
         </div>
         <p className="card-name">Monster not found</p>
         <p className="card-subtitle">{card.entityId}</p>
@@ -168,7 +212,9 @@ function PinnedMonsterCard({
     <MonsterStatBlock
       monster={monster}
       variant="card"
-      onPin={onPin}
+      onFocus={onFocus}
+      onLock={onLock}
+      isLocked={card.isLocked}
       onClose={onClose}
       onMinimize={onMinimize}
     />
@@ -181,21 +227,28 @@ function PinnedMonsterCard({
 
 function PinnedSpellCard({
   card,
-  onPin,
+  onFocus,
+  onLock,
   onClose,
   onMinimize,
 }: {
   card: PinnedCard;
-  onPin: () => void;
+  onFocus: () => void;
+  onLock: () => void;
   onClose: () => void;
   onMinimize: () => void;
 }) {
   const spell = getSpellById(card.entityId, card.rulesetVersion);
   if (!spell) {
     return (
-      <div className="stat-card-5e card-type-spell card-floating" data-testid="card-not-found">
+      <div
+        className="stat-card-5e card-type-spell card-floating"
+        data-testid="card-not-found"
+      >
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">×</button>
+          <button type="button" onClick={onClose} aria-label="Close card">
+            ×
+          </button>
         </div>
         <p className="card-name">Spell not found</p>
         <p className="card-subtitle">{card.entityId}</p>
@@ -206,7 +259,9 @@ function PinnedSpellCard({
     <SpellCard
       spell={spell}
       variant="card"
-      onPin={onPin}
+      onFocus={onFocus}
+      onLock={onLock}
+      isLocked={card.isLocked}
       onClose={onClose}
       onMinimize={onMinimize}
     />
@@ -219,21 +274,28 @@ function PinnedSpellCard({
 
 function PinnedConditionCard({
   card,
-  onPin,
+  onFocus,
+  onLock,
   onClose,
   onMinimize,
 }: {
   card: PinnedCard;
-  onPin: () => void;
+  onFocus: () => void;
+  onLock: () => void;
   onClose: () => void;
   onMinimize: () => void;
 }) {
   const condition = findCondition(card.entityId);
   if (!condition) {
     return (
-      <div className="stat-card-5e card-type-condition card-floating" data-testid="card-not-found">
+      <div
+        className="stat-card-5e card-type-condition card-floating"
+        data-testid="card-not-found"
+      >
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">×</button>
+          <button type="button" onClick={onClose} aria-label="Close card">
+            ×
+          </button>
         </div>
         <p className="card-name">Condition not found</p>
         <p className="card-subtitle">{card.entityId}</p>
@@ -244,7 +306,9 @@ function PinnedConditionCard({
     <ConditionCard
       condition={condition}
       variant="card"
-      onPin={onPin}
+      onFocus={onFocus}
+      onLock={onLock}
+      isLocked={card.isLocked}
       onClose={onClose}
       onMinimize={onMinimize}
     />
@@ -257,12 +321,14 @@ function PinnedConditionCard({
 
 function PinnedItemCard({
   card,
-  onPin,
+  onFocus,
+  onLock,
   onClose,
   onMinimize,
 }: {
   card: PinnedCard;
-  onPin: () => void;
+  onFocus: () => void;
+  onLock: () => void;
   onClose: () => void;
   onMinimize: () => void;
 }) {
@@ -271,7 +337,9 @@ function PinnedItemCard({
     return (
       <div className="stat-card-5e card-floating" data-testid="card-not-found">
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">×</button>
+          <button type="button" onClick={onClose} aria-label="Close card">
+            ×
+          </button>
         </div>
         <p className="card-name">Item not found</p>
         <p className="card-subtitle">{card.entityId}</p>
@@ -281,9 +349,40 @@ function PinnedItemCard({
   return (
     <div className="stat-card-5e card-floating">
       <div className="card-toolbar">
-        <button type="button" onClick={onPin} aria-label="Focus card" title="Focus">📌</button>
-        <button type="button" onClick={onMinimize} aria-label="Minimize card" title="Minimize">−</button>
-        <button type="button" onClick={onClose} aria-label="Close card" title="Close">×</button>
+        <button
+          type="button"
+          onClick={onLock}
+          aria-label={
+            card.isLocked ? "Unlock card position" : "Lock card position"
+          }
+          title={card.isLocked ? "Desbloquear posição" : "Travar posição"}
+        >
+          {card.isLocked ? "🔒" : "🔓"}
+        </button>
+        <button
+          type="button"
+          onClick={onFocus}
+          aria-label="Bring card to front"
+          title="Trazer para frente"
+        >
+          ⬆️
+        </button>
+        <button
+          type="button"
+          onClick={onMinimize}
+          aria-label="Minimize card"
+          title="Minimize"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close card"
+          title="Close"
+        >
+          ×
+        </button>
       </div>
       <ItemCard item={item} variant="inline" />
     </div>
@@ -304,6 +403,7 @@ export function FloatingCardContainer() {
   const focusCard = usePinnedCardsStore((s) => s.focusCard);
   const unpinCard = usePinnedCardsStore((s) => s.unpinCard);
   const toggleMinimize = usePinnedCardsStore((s) => s.toggleMinimize);
+  const toggleLock = usePinnedCardsStore((s) => s.toggleLock);
   const unpinAll = usePinnedCardsStore((s) => s.unpinAll);
 
   const sensors = useSensors(
@@ -351,39 +451,90 @@ export function FloatingCardContainer() {
     (event: DragEndEvent) => {
       const { active, delta } = event;
       const card = cards.find((c) => c.id === active.id);
-      if (!card) return;
+      if (!card || card.isLocked) return;
 
       // Clamp to viewport — keep at least 300px of card width / 44px toolbar visible
-      const newX = Math.max(0, Math.min(window.innerWidth - 300, card.position.x + delta.x));
-      const newY = Math.max(0, Math.min(window.innerHeight - 44, card.position.y + delta.y));
+      const newX = Math.max(
+        0,
+        Math.min(window.innerWidth - 300, card.position.x + delta.x),
+      );
+      const newY = Math.max(
+        0,
+        Math.min(window.innerHeight - 44, card.position.y + delta.y),
+      );
       moveCard(card.id, { x: newX, y: newY });
     },
     [cards, moveCard],
   );
 
-  const expandedCards = useMemo(() => cards.filter((c) => !c.isMinimized), [cards]);
-  const minimizedCards = useMemo(() => cards.filter((c) => c.isMinimized), [cards]);
+  const expandedCards = useMemo(
+    () => cards.filter((c) => !c.isMinimized),
+    [cards],
+  );
+  const minimizedCards = useMemo(
+    () => cards.filter((c) => c.isMinimized),
+    [cards],
+  );
 
   if (!portalRoot || cards.length === 0) return null;
 
-  function renderCard(card: PinnedCard, onClose: () => void, onMinimize: () => void) {
-    const onPin = () => focusCard(card.id);
+  function renderCard(
+    card: PinnedCard,
+    onClose: () => void,
+    onMinimize: () => void,
+  ) {
+    const onFocusCard = () => focusCard(card.id);
+    const onLock = () => toggleLock(card.id);
     switch (card.type) {
       case "monster":
-        return <PinnedMonsterCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
+        return (
+          <PinnedMonsterCard
+            card={card}
+            onFocus={onFocusCard}
+            onLock={onLock}
+            onClose={onClose}
+            onMinimize={onMinimize}
+          />
+        );
       case "spell":
-        return <PinnedSpellCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
+        return (
+          <PinnedSpellCard
+            card={card}
+            onFocus={onFocusCard}
+            onLock={onLock}
+            onClose={onClose}
+            onMinimize={onMinimize}
+          />
+        );
       case "condition":
-        return <PinnedConditionCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
+        return (
+          <PinnedConditionCard
+            card={card}
+            onFocus={onFocusCard}
+            onLock={onLock}
+            onClose={onClose}
+            onMinimize={onMinimize}
+          />
+        );
       case "item":
-        return <PinnedItemCard card={card} onPin={onPin} onClose={onClose} onMinimize={onMinimize} />;
+        return (
+          <PinnedItemCard
+            card={card}
+            onFocus={onFocusCard}
+            onLock={onLock}
+            onClose={onClose}
+            onMinimize={onMinimize}
+          />
+        );
       case "oracle-ai":
         if (!card.oracleData) return null;
         return (
           <OracleAICard
             data={card.oracleData}
             variant="card"
-            onPin={onPin}
+            onFocus={onFocusCard}
+            onLock={onLock}
+            isLocked={card.isLocked}
             onClose={onClose}
             onMinimize={onMinimize}
           />
@@ -479,8 +630,8 @@ export function FloatingCardContainer() {
         ))}
 
         {/* Unpin All button / inline confirm */}
-        {cards.length >= 2 && (
-          confirmingUnpinAll ? (
+        {cards.length >= 2 &&
+          (confirmingUnpinAll ? (
             <div
               style={{
                 position: "fixed",
@@ -504,8 +655,18 @@ export function FloatingCardContainer() {
               <span>Close all {cards.length} cards?</span>
               <button
                 type="button"
-                onClick={() => { unpinAll(); setConfirmingUnpinAll(false); }}
-                style={{ cursor: "pointer", color: "#922610", background: "none", border: "none", font: "inherit", fontSize: 12 }}
+                onClick={() => {
+                  unpinAll();
+                  setConfirmingUnpinAll(false);
+                }}
+                style={{
+                  cursor: "pointer",
+                  color: "#922610",
+                  background: "none",
+                  border: "none",
+                  font: "inherit",
+                  fontSize: 12,
+                }}
                 autoFocus
               >
                 Yes
@@ -513,7 +674,14 @@ export function FloatingCardContainer() {
               <button
                 type="button"
                 onClick={() => setConfirmingUnpinAll(false)}
-                style={{ cursor: "pointer", color: "#e8e4d0", background: "none", border: "none", font: "inherit", fontSize: 12 }}
+                style={{
+                  cursor: "pointer",
+                  color: "#e8e4d0",
+                  background: "none",
+                  border: "none",
+                  font: "inherit",
+                  fontSize: 12,
+                }}
               >
                 No
               </button>
@@ -541,8 +709,7 @@ export function FloatingCardContainer() {
             >
               Unpin All
             </button>
-          )
-        )}
+          ))}
       </div>
     </DndContext>,
     portalRoot,

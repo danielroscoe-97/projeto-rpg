@@ -8,7 +8,11 @@ export interface SpellCardProps {
   spell: SrdSpell;
   variant?: "inline" | "card";
   onClose?: () => void;
+  /** @deprecated Use onFocus instead */
   onPin?: () => void;
+  onFocus?: () => void;
+  onLock?: () => void;
+  isLocked?: boolean;
   onMinimize?: () => void;
 }
 
@@ -34,6 +38,9 @@ export function SpellCard({
   variant = "inline",
   onClose,
   onPin,
+  onFocus,
+  onLock,
+  isLocked = false,
   onMinimize,
 }: SpellCardProps) {
   const isCard = variant === "card";
@@ -49,9 +56,14 @@ export function SpellCard({
     >
       {isCard && (
         <div className="card-toolbar">
-          {onPin && (
-            <button type="button" onClick={onPin} aria-label="Pin spell card" data-testid="spell-pin-btn">
-              📌
+          {onLock && (
+            <button type="button" onClick={onLock} aria-label={isLocked ? "Unlock card position" : "Lock card position"} title={isLocked ? "Desbloquear posição" : "Travar posição"} data-testid="spell-lock-btn">
+              {isLocked ? "🔒" : "🔓"}
+            </button>
+          )}
+          {(onFocus ?? onPin) && (
+            <button type="button" onClick={(onFocus ?? onPin)!} aria-label="Bring card to front" title="Trazer para frente" data-testid="spell-focus-btn">
+              ⬆️
             </button>
           )}
           {onMinimize && (

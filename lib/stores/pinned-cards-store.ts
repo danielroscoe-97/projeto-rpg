@@ -16,6 +16,7 @@ export interface PinnedCard {
   position: { x: number; y: number };
   zIndex: number;
   isMinimized: boolean;
+  isLocked: boolean;
   pinnedAt: number;
   /** Only present for oracle-ai cards */
   oracleData?: OracleAIData;
@@ -37,6 +38,7 @@ interface PinnedCardsActions {
   moveCard: (cardId: string, position: { x: number; y: number }) => void;
   focusCard: (cardId: string) => void;
   toggleMinimize: (cardId: string) => void;
+  toggleLock: (cardId: string) => void;
   unpinAll: () => void;
 }
 
@@ -97,6 +99,7 @@ export const usePinnedCardsStore = create<PinnedCardsStore>()(
           position,
           zIndex: state.nextZIndex,
           isMinimized: false,
+          isLocked: false,
           pinnedAt: Date.now(),
         };
 
@@ -128,6 +131,7 @@ export const usePinnedCardsStore = create<PinnedCardsStore>()(
           position,
           zIndex: state.nextZIndex,
           isMinimized: false,
+          isLocked: false,
           pinnedAt: Date.now(),
           oracleData: data,
         };
@@ -164,6 +168,13 @@ export const usePinnedCardsStore = create<PinnedCardsStore>()(
         set((state) => ({
           cards: state.cards.map((c) =>
             c.id === cardId ? { ...c, isMinimized: !c.isMinimized } : c,
+          ),
+        })),
+
+      toggleLock: (cardId) =>
+        set((state) => ({
+          cards: state.cards.map((c) =>
+            c.id === cardId ? { ...c, isLocked: !c.isLocked } : c,
           ),
         })),
 

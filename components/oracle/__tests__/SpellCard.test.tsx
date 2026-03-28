@@ -164,7 +164,7 @@ describe("SpellCard", () => {
 
     it("does not render toolbar in inline variant", () => {
       render(<SpellCard spell={baseSpell} />);
-      expect(screen.queryByTestId("spell-pin-btn")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("spell-focus-btn")).not.toBeInTheDocument();
       expect(screen.queryByTestId("spell-minimize-btn")).not.toBeInTheDocument();
       expect(screen.queryByTestId("spell-close-btn")).not.toBeInTheDocument();
     });
@@ -176,12 +176,12 @@ describe("SpellCard", () => {
         <SpellCard
           spell={baseSpell}
           variant="card"
-          onPin={jest.fn()}
+          onFocus={jest.fn()}
           onMinimize={jest.fn()}
           onClose={jest.fn()}
         />
       );
-      expect(screen.getByTestId("spell-pin-btn")).toBeInTheDocument();
+      expect(screen.getByTestId("spell-focus-btn")).toBeInTheDocument();
       expect(screen.getByTestId("spell-minimize-btn")).toBeInTheDocument();
       expect(screen.getByTestId("spell-close-btn")).toBeInTheDocument();
     });
@@ -195,11 +195,11 @@ describe("SpellCard", () => {
       expect(onClose).toHaveBeenCalledTimes(1);
     });
 
-    it("calls onPin when pin button clicked", async () => {
-      const onPin = jest.fn();
-      render(<SpellCard spell={baseSpell} variant="card" onPin={onPin} />);
-      await userEvent.click(screen.getByTestId("spell-pin-btn"));
-      expect(onPin).toHaveBeenCalledTimes(1);
+    it("calls onFocus when focus button clicked", async () => {
+      const onFocus = jest.fn();
+      render(<SpellCard spell={baseSpell} variant="card" onFocus={onFocus} />);
+      await userEvent.click(screen.getByTestId("spell-focus-btn"));
+      expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
     it("calls onMinimize when minimize button clicked", async () => {

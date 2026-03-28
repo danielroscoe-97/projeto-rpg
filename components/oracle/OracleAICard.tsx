@@ -9,7 +9,11 @@ export interface OracleAICardProps {
   data: OracleAIData;
   variant?: "inline" | "card";
   onClose?: () => void;
+  /** @deprecated Use onFocus instead */
   onPin?: () => void;
+  onFocus?: () => void;
+  onLock?: () => void;
+  isLocked?: boolean;
   onMinimize?: () => void;
 }
 
@@ -78,6 +82,9 @@ export function OracleAICard({
   variant = "inline",
   onClose,
   onPin,
+  onFocus,
+  onLock,
+  isLocked = false,
   onMinimize,
 }: OracleAICardProps) {
   const t = useTranslations("oracle_ai");
@@ -102,9 +109,14 @@ export function OracleAICard({
     >
       {isCard && (
         <div className="card-toolbar">
-          {onPin && (
-            <button type="button" onClick={onPin} aria-label={t("pin")} data-testid="oracle-ai-pin-btn">
-              📌
+          {onLock && (
+            <button type="button" onClick={onLock} aria-label={isLocked ? "Unlock card position" : "Lock card position"} title={isLocked ? "Desbloquear posição" : "Travar posição"} data-testid="oracle-ai-lock-btn">
+              {isLocked ? "🔒" : "🔓"}
+            </button>
+          )}
+          {(onFocus ?? onPin) && (
+            <button type="button" onClick={(onFocus ?? onPin)!} aria-label="Bring card to front" title="Trazer para frente" data-testid="oracle-ai-focus-btn">
+              ⬆️
             </button>
           )}
           {onMinimize && (

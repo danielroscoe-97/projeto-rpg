@@ -281,24 +281,27 @@ describe("MonsterStatBlock", () => {
   describe("variant prop", () => {
     it("renders inline variant by default (no toolbar)", () => {
       render(<MonsterStatBlock monster={GOBLIN} />);
-      // No toolbar buttons unless onPin/onMinimize/onClose provided
-      expect(screen.queryByRole("button", { name: "Pin card" })).not.toBeInTheDocument();
+      // No toolbar buttons unless onFocus/onLock/onMinimize/onClose provided
+      expect(screen.queryByRole("button", { name: "Bring card to front" })).not.toBeInTheDocument();
     });
 
     it("renders card variant toolbar buttons when callbacks are provided", () => {
-      const onPin = jest.fn();
+      const onFocus = jest.fn();
+      const onLock = jest.fn();
       const onMinimize = jest.fn();
       const onClose = jest.fn();
       render(
         <MonsterStatBlock
           monster={GOBLIN}
           variant="card"
-          onPin={onPin}
+          onFocus={onFocus}
+          onLock={onLock}
           onMinimize={onMinimize}
           onClose={onClose}
         />,
       );
-      expect(screen.getByRole("button", { name: "Pin card" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Bring card to front" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Lock card position" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Minimize card" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Close card" })).toBeInTheDocument();
     });
