@@ -29,9 +29,13 @@ function computePosition(
   const safeMargin = 16;
 
   // Mobile bottom-sheet: when target is too tall (>50% viewport) or
-  // tooltip would be clipped, pin to bottom of viewport
+  // target is in the bottom half and there's not enough room below,
+  // pin tooltip to bottom of viewport as a bottom-sheet
   const targetTooTall = targetRect.height > window.innerHeight * 0.5;
-  if (isMobile && targetTooTall) {
+  const spaceBelow = window.innerHeight - targetRect.bottom;
+  const targetInBottomHalf = targetRect.top > window.innerHeight * 0.4;
+  const insufficientSpaceBelow = spaceBelow < 200;
+  if (isMobile && (targetTooTall || (targetInBottomHalf && insufficientSpaceBelow))) {
     return {
       position: "bottom",
       style: {
@@ -52,7 +56,7 @@ function computePosition(
       : ["bottom", "top", "right", "left"];
 
   const spaceAbove = targetRect.top;
-  const spaceBelow = window.innerHeight - targetRect.bottom;
+  // spaceBelow already computed above
   const spaceLeft = targetRect.left;
   const spaceRight = window.innerWidth - targetRect.right;
 
@@ -317,7 +321,7 @@ export function TourTooltip({
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
         className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
-        style={{ ...style, pointerEvents: "auto" }}
+        style={{ ...style, pointerEvents: isInteractive ? "none" : "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0 }}
@@ -355,8 +359,8 @@ export function TourTooltip({
             </p>
           )}
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-1">
+          {/* Footer — pointer-events:auto so skip button is clickable even when tooltip is pass-through */}
+          <div className="flex items-center justify-between pt-1" style={{ pointerEvents: "auto" }}>
             <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
 
             <div className="flex items-center gap-2">
