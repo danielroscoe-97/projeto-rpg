@@ -73,6 +73,8 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
 
   test("J1.3 — Quick Combat bypasses campaign picker", async ({ page }) => {
     await goToNewSession(page);
+
+    // Setup screen must be visible without selecting a campaign
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible();
   });
 
@@ -133,6 +135,9 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
       timeout: 10_000,
     });
+
+    // Capture session URL
+    const sessionUrl = page.url();
 
     // Hard refresh
     await page.reload({ waitUntil: "domcontentloaded" });

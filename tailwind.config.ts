@@ -68,6 +68,8 @@ export default {
         },
         warm: "#E8593C",
         cool: "#5B8DEF",
+        "brand-red": "#C43C3C",
+        "brand-green": "#4A9E5C",
         surface: {
           primary: "#13131E",
           secondary: "#1A1A28",

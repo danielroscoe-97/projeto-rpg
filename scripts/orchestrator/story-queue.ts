@@ -31,6 +31,13 @@ import {
   createPRFromWorktree, getChangedFilesInWorktree, type Worktree,
 } from "./worktree.js";
 
+// -- Testable Intervals (reduced in test env to avoid 30s waits) --
+const _isTest = !!(process.env.VITEST || process.env.NODE_ENV === "test");
+const DEP_POLL_MS = _isTest ? 20 : 30_000;
+const CI_POLL_MS = _isTest ? 10 : 30_000;
+const RETRY_BACKOFF_BASE_MS = _isTest ? 10 : 10_000;
+const RATE_LIMIT_BACKOFF_BASE_MS = _isTest ? 10 : config.worktree.rateLimitBackoffMs;
+
 // -- Types --
 
 export type SessionStatus =
@@ -169,19 +176,56 @@ export async function recoverCrashedEntries(): Promise<number> {
 }
 
 // -- Dependency Resolution --
+
+// Sprint-level gate dependencies (cross-stream barriers)
+// Keys are short prefixes (stream-num), values are dep prefixes that must be "done".
+const SPRINT_GATES: Record<string, string[]> = {
+  // Sprint 0: tests wait for infra to finish
+  "a1-1": ["a0-8"],
+  // Sprint 1: wait for Sprint 0 tests to finish
+  "b1-1": ["a1-4"],
+  "b2-1": ["a1-4"],
+  "b3-1": ["a1-4"],
+  // Sprint 3: wait for Sprint 2 to finish
+  "c1-1": ["b3-5"],
+  "c2-1": ["b3-5"],
+};
+
+// Stories where sprint ordering differs from sequential numbering
+// b2-3 is Sprint 1 but b2-2 is Sprint 2, so b2-3 should depend on b2-1 (not b2-2)
+const STREAM_DEP_OVERRIDES: Record<string, string> = {
+  "b2-3": "b2-1",
+};
+
 function inferDependencies(storyId: string): string[] {
   const match = storyId.match(/^([a-z]\d+)-(\d+)/);
   if (!match) return [];
-  const [, stream, numStr] = match;
+  const [prefix, stream, numStr] = match;
   const num = parseInt(numStr, 10);
-  if (num <= 1) return [];
-  return [`${stream}-${num - 1}`];
+
+  const deps: string[] = [];
+
+  // Within-stream sequential dependency
+  if (num > 1) {
+    const override = STREAM_DEP_OVERRIDES[prefix];
+    deps.push(override ?? `${stream}-${num - 1}`);
+  }
+
+  // Sprint gate dependencies
+  const gates = SPRINT_GATES[prefix];
+  if (gates) deps.push(...gates);
+
+  return deps;
+}
+
+function findStoryByPrefix(stories: StoryEntry[], depPrefix: string): StoryEntry | undefined {
+  return stories.find((s) => s.id === depPrefix || s.id.startsWith(depPrefix + "-"));
 }
 
 function areDependenciesMet(storyId: string, stories: StoryEntry[]): boolean {
   const deps = inferDependencies(storyId);
   if (deps.length === 0) return true;
-  return deps.every((depId) => { const dep = stories.find((s) => s.id === depId); return !dep || dep.status === "done"; });
+  return deps.every((depPrefix) => { const dep = findStoryByPrefix(stories, depPrefix); return !dep || dep.status === "done"; });
 }
 
 // -- Build Queue --
@@ -193,7 +237,9 @@ export function buildQueue(storyIds?: string[]): QueueState {
     if (storyIds && storyIds.length > 0) {
       files = storyIds.map((id) => id.endsWith(".md") ? id : `${id}.md`).filter((f) => existsSync(join(specsDir, f)));
     } else {
-      files = readdirSync(specsDir).filter((f) => /^(a\d|b\d|c\d|v2-|bmad-)/.test(f) && f.endsWith(".md")).sort();
+      // Match Sprint V3 naming: a0-*, a1-*, b1-*, b2-*, b3-*, c1-*, c2-*, d1-*
+      // Excludes legacy v2-* duplicates and bmad-* non-story files
+      files = readdirSync(specsDir).filter((f) => /^[a-d]\d+-\d+/.test(f) && f.endsWith(".md")).sort();
     }
     const stories: StoryEntry[] = files.map((f) => ({ id: f.replace(".md", ""), specPath: `_bmad-output/implementation-artifacts/${f}`, status: "pending" as const, attempts: 0 }));
     const state: QueueState = { version: 3, stories, runningStories: [], startedAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), isPaused: false, metrics: { ...EMPTY_METRICS } };
@@ -276,7 +322,7 @@ async function monitorAndFixCI(worktree: Worktree, prNumber: number, specContent
     let ciStatus: "success" | "failure" | "pending" | "unknown" = "pending";
     let ciLogs = "";
     for (let poll = 0; poll < 20; poll++) {
-      await new Promise((r) => setTimeout(r, 30_000));
+      await new Promise((r) => setTimeout(r, CI_POLL_MS));
       try {
         const result = execFileSync("gh", ["pr", "checks", String(prNumber), "--json", "name,state,conclusion"], { cwd: worktree.path, encoding: "utf-8", timeout: 30_000 }).trim();
         const checks = JSON.parse(result || "[]") as Array<{ name: string; state: string; conclusion: string }>;
@@ -326,7 +372,7 @@ function isStuck(entry: StoryEntry): boolean {
 
 let stuckDetectorInterval: ReturnType<typeof setInterval> | null = null;
 function startStuckDetector(): void {
-  if (stuckDetectorInterval) return;
+  if (stuckDetectorInterval || _isTest) return;
   stuckDetectorInterval = setInterval(async () => {
     try {
       const stuckIds: string[] = [];
@@ -348,14 +394,26 @@ function startStuckDetector(): void {
 }
 function stopStuckDetector(): void { if (stuckDetectorInterval) { clearInterval(stuckDetectorInterval); stuckDetectorInterval = null; } }
 
+// -- Persist entry status to disk (so getQueueStatus reflects intermediate states) --
+async function persistEntryStatus(entry: StoryEntry): Promise<void> {
+  try {
+    await loadAndSave((state) => {
+      const target = state.stories.find((s) => s.id === entry.id);
+      if (target) Object.assign(target, { status: entry.status, startedAt: entry.startedAt, attempts: entry.attempts, slotId: entry.slotId, branch: entry.branch, worktreePath: entry.worktreePath, lastActivityAt: entry.lastActivityAt });
+    });
+  } catch { /* best effort — don't block execution */ }
+}
+
 // -- Execute Single Story --
 async function executeStorySpec(entry: StoryEntry, slotId: number): Promise<boolean> {
   logger.info(`[Slot ${slotId}] Starting: ${entry.id} (attempt ${entry.attempts + 1})`);
   entry.status = "spawning"; entry.startedAt = new Date().toISOString(); entry.attempts++; entry.slotId = slotId; updateHeartbeat(entry);
+  await persistEntryStatus(entry);
   let worktree: Worktree | null = null;
   try {
     worktree = createWorktree(entry.id, entry.id, { skipFetch: true });
     entry.branch = worktree.branch; entry.worktreePath = worktree.path; entry.status = "working"; updateHeartbeat(entry);
+    await persistEntryStatus(entry);
     await notify(`💻 *[Slot ${slotId}] Implementando:* ${entry.id}\n_Branch: ${worktree.branch}_`);
     const specContent = readFileSync(join(config.projectRoot, entry.specPath), "utf-8");
     let retryContext = "";
@@ -410,7 +468,7 @@ async function executeStorySpec(entry: StoryEntry, slotId: number): Promise<bool
     if (worktree) { try { removeWorktree(worktree); } catch (e) { logger.error("Worktree cleanup failed", { error: String(e) }); } }
     const isRateLimit = err.message.startsWith("RATE_LIMITED");
     if (entry.attempts < 3) {
-      const backoffMs = isRateLimit ? config.worktree.rateLimitBackoffMs * Math.pow(2, entry.attempts - 1) : 10_000 * Math.pow(3, entry.attempts - 1);
+      const backoffMs = isRateLimit ? RATE_LIMIT_BACKOFF_BASE_MS * Math.pow(2, entry.attempts - 1) : RETRY_BACKOFF_BASE_MS * Math.pow(3, entry.attempts - 1);
       const reason = isRateLimit ? "rate limited" : err.message.slice(0, 200);
       logger.warn(`[Slot ${slotId}] Failed: ${entry.id} — ${reason}. Retrying in ${backoffMs / 1000}s.`);
       entry.status = "pending";
@@ -429,6 +487,8 @@ async function executeStorySpec(entry: StoryEntry, slotId: number): Promise<bool
 // -- Queue Running Guard --
 let queueIsRunning = false;
 export function isQueueRunning(): boolean { return queueIsRunning; }
+/** @internal Test-only: reset module state between test runs */
+export function _resetForTest(): void { queueIsRunning = false; stopStuckDetector(); }
 
 // -- Main Queue Runner --
 export async function runQueue(): Promise<void> {
@@ -456,15 +516,17 @@ export async function runQueue(): Promise<void> {
     if (story.status === "failed" && story.attempts >= 3) continue;
     const storyId = story.id;
     const storyPromise = semaphore.run(async () => {
+      logger.info(`[DEBUG] ${storyId} — semaphore slot acquired, loading queue...`);
       const current = await withLock(() => loadQueue());
+      logger.info(`[DEBUG] ${storyId} — queue loaded, checking state...`);
       if (current.isPaused) { logger.info(`Queue paused — skipping ${storyId}`); return; }
       const freshEntry = current.stories.find((s) => s.id === storyId);
-      if (!freshEntry || freshEntry.status === "done" || freshEntry.status === "skipped") return;
-      if (freshEntry.status === "failed" && freshEntry.attempts >= 3) return;
+      if (!freshEntry || freshEntry.status === "done" || freshEntry.status === "skipped") { logger.info(`[DEBUG] ${storyId} — skipping (status=${freshEntry?.status})`); return; }
+      if (freshEntry.status === "failed" && freshEntry.attempts >= 3) { logger.info(`[DEBUG] ${storyId} — skipping (failed 3x)`); return; }
       if (!areDependenciesMet(storyId, current.stories)) {
         logger.info(`${storyId} waiting on dependencies`);
         for (let waitRound = 0; waitRound < 180; waitRound++) {
-          await new Promise((r) => setTimeout(r, 30_000));
+          await new Promise((r) => setTimeout(r, DEP_POLL_MS));
           const updated = await withLock(() => loadQueue());
           if (updated.isPaused) return;
           if (areDependenciesMet(storyId, updated.stories)) break;
@@ -486,10 +548,13 @@ export async function runQueue(): Promise<void> {
         if (entry) entry.slotId = slot;
         s.runningStories.push(storyId);
       });
+      logger.info(`[DEBUG] ${storyId} — deps met, slot=${slot}, entering retry loop`);
       const MAX_RETRIES = 3;
       for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
         try {
+          logger.info(`[DEBUG] ${storyId} — attempt ${attempt + 1}, acquiring lock to read entry...`);
           const entry = (await withLock(() => loadQueue())).stories.find((s) => s.id === storyId)!;
+          logger.info(`[DEBUG] ${storyId} — entry loaded, status=${entry?.status}, calling executeStorySpec...`);
           if (entry.status === "done" || entry.status === "failed") break;
           const success = await executeStorySpec(entry, slot);
           await loadAndSave((s) => {
@@ -549,8 +614,15 @@ export function getQueueStatus(): string {
     const failed = state.stories.filter((s) => s.status === "failed").length;
     const pending = state.stories.filter((s) => s.status === "pending").length;
     const stuck = state.stories.filter((s) => s.status === "stuck").length;
-    const working = state.stories.filter((s) => s.status === "working" || s.status === "spawning" || s.status === "verifying" || s.status === "pr_open");
-    const workingList = working.map((s) => `  • ${s.id} [${s.status}]${s.slotId ? " Slot " + s.slotId : ""}`).join("\n");
+    // Check both status field AND runningStories (status may not be persisted to disk during execution)
+    let working = state.stories.filter((s) => s.status === "working" || s.status === "spawning" || s.status === "verifying" || s.status === "pr_open");
+    if (working.length === 0 && state.runningStories.length > 0) {
+      working = state.stories.filter((s) => state.runningStories.includes(s.id));
+    }
+    const workingList = working.map((s) => {
+      const label = state.runningStories.includes(s.id) && s.status === "pending" ? "working" : s.status;
+      return `  • ${s.id} [${label}]${s.slotId ? " Slot " + s.slotId : ""}`;
+    }).join("\n");
     return `📊 *Queue Status*\n*Total:* ${state.stories.length}\n✅ Done: ${done}\n💻 Active: ${working.length}/${config.worktree.maxConcurrent}\n${workingList || "  (nenhuma)"}\n⏳ Pending: ${pending}\n❌ Failed: ${failed}${stuck ? "\n🔴 Stuck: " + stuck : ""}\n${state.isPaused ? "⏸️ PAUSADA" : "▶️ Rodando"}\n_Iniciada: ${state.startedAt}_\n📊 Avg: ${Math.round(state.metrics.avgStoryDurationMs / 60_000)}min | Retries: ${state.metrics.totalRetries} | CI fixes: ${state.metrics.totalCIFixes}`;
   } finally { releaseFileLock(); }
 }

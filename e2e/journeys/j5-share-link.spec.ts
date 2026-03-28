@@ -74,7 +74,7 @@ test.describe("J5 — Compartilhamento Organico", () => {
 
     // DM should see at least 3 combatants (Dragon + Thorin + Elara)
     const dmCombatants = dmPage.locator(
-      '[data-testid="initiative-list"] [data-testid^="combatant-"]'
+      '[data-testid="initiative-list"] [data-testid^="combatant-row-"]'
     );
     await expect(dmCombatants).toHaveCount(3, { timeout: 15_000 });
 

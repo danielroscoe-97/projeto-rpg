@@ -31,11 +31,10 @@ export class Semaphore {
   }
 
   release(): void {
+    this._running = Math.max(0, this._running - 1);
     const next = this._queue.shift();
     if (next) {
-      next(); // transfers the slot to the next waiter
-    } else {
-      this._running = Math.max(0, this._running - 1);
+      next(); // waiter callback increments _running, net effect: count stays same
     }
   }
 

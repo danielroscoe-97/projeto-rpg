@@ -43,19 +43,22 @@ describe("story-queue", () => {
       vi.clearAllMocks();
     });
 
-    it("should include bmad- prefixed files in auto-discovery", () => {
+    it("should auto-discover Sprint V3 naming (a-d prefix) and exclude legacy v2-/bmad- files", () => {
       // Setup mocks for buildQueue
       mockExistsSync.mockReturnValue(false as any);
-      mockReaddirSync.mockReturnValue(["bmad-feat-1.md", "a0-1.md", "other.txt", "b1-1.md"] as any);
+      mockReaddirSync.mockReturnValue(["bmad-feat-1.md", "a0-1-story.md", "other.txt", "b1-1-story.md", "d1-1-worktrees.md", "v2-0-1-legacy.md", "c1-2-stripe.md"] as any);
       mockWriteFileSync.mockImplementation(() => {});
       mockReadFileSync.mockReturnValue("{}" as any);
       mockUnlinkSync.mockImplementation(() => {});
 
       const state = buildQueue();
       const ids = state.stories.map((s) => s.id);
-      expect(ids).toContain("a0-1");
-      expect(ids).toContain("b1-1");
-      expect(ids).toContain("bmad-feat-1");
+      expect(ids).toContain("a0-1-story");
+      expect(ids).toContain("b1-1-story");
+      expect(ids).toContain("d1-1-worktrees");
+      expect(ids).toContain("c1-2-stripe");
+      expect(ids).not.toContain("bmad-feat-1");
+      expect(ids).not.toContain("v2-0-1-legacy");
       expect(ids).not.toContain("other");
     });
   });

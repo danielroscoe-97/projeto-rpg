@@ -147,7 +147,7 @@ test.describe("J2 — Player Recebe o Link", () => {
       '[data-testid="turn-notification"], [data-testid="your-turn"], .turn-overlay'
     );
     const activeTurnHighlight = playerPage.locator(
-      '[data-testid^="combatant-"][class*="active"], [data-testid^="combatant-"][class*="current"]'
+      '[data-testid^="combatant-row-"][class*="active"], [data-testid="current-turn-indicator"], [aria-current="true"]'
     );
 
     // At least one indicator should be visible

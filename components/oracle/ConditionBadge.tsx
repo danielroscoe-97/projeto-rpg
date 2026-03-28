@@ -7,6 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   EyeOff, Heart, AlertTriangle, Grip, CircleX, Eye,
   Zap, Mountain, Droplet, ArrowDown, Link, Star, Moon,
+  Focus,
 } from "lucide-react";
 
 /** Condition icon mapping for WCAG 2.1 AA 1.4.1 — not color-only */
@@ -54,31 +55,44 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }:
   const t = useTranslations("combat");
   const tc = useTranslations("conditions");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
-  const colorClass = CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]";
-  const localizedName = tc(condition.toLowerCase());
-  const IconComponent = CONDITION_ICONS[condition.toLowerCase()];
+
+  // Handle "concentrating" and "concentrating:SpellName" as a special condition
+  const isConcentration = condition === "concentrating" || condition.startsWith("concentrating:");
+  const concentrationSpell = isConcentration && condition.includes(":")
+    ? condition.split(":")[1]
+    : null;
+
+  const colorClass = isConcentration
+    ? "bg-purple-600"
+    : (CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]");
+  const displayName = isConcentration
+    ? (concentrationSpell ? `Concentrating: ${concentrationSpell}` : "Concentrating")
+    : tc(condition.toLowerCase());
+  const IconComponent = isConcentration ? Focus : CONDITION_ICONS[condition.toLowerCase()];
 
   return (
     <span
       className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs text-white font-medium ${colorClass}`}
-      data-testid={`condition-badge-${condition.toLowerCase()}`}
+      data-testid={`condition-badge-${isConcentration ? "concentrating" : condition.toLowerCase()}`}
     >
       <button
         type="button"
-        onClick={() => pinCard("condition", condition.toLowerCase(), rulesetVersion)}
+        onClick={() => {
+          if (!isConcentration) pinCard("condition", condition.toLowerCase(), rulesetVersion);
+        }}
         className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer"
-        aria-label={t("condition_view_aria", { name: localizedName })}
+        aria-label={isConcentration ? displayName : t("condition_view_aria", { name: displayName })}
       >
         {IconComponent && <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />}
-        {localizedName}
+        {displayName}
       </button>
       {onRemove && (
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onRemove(condition); }}
           className="ml-0.5 hover:text-red-300 transition-colors text-white/70 text-[10px] leading-none min-w-[16px] min-h-[16px] flex items-center justify-center"
-          aria-label={t("condition_remove_aria", { name: localizedName })}
-          data-testid={`condition-remove-${condition.toLowerCase()}`}
+          aria-label={t("condition_remove_aria", { name: displayName })}
+          data-testid={`condition-remove-${isConcentration ? "concentrating" : condition.toLowerCase()}`}
         >
           ✕
         </button>

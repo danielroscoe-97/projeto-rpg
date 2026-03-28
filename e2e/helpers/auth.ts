@@ -3,9 +3,11 @@ import type { TestAccount } from "../fixtures/test-accounts";
 
 /**
  * Login as any test account via the UI login form.
- * Waits for redirect to /app/dashboard.
+ * Falls back to E2E_DM_EMAIL/E2E_DM_PASSWORD env vars when
+ * the test account fails to authenticate (e.g. not seeded in prod).
  */
 export async function loginAs(page: Page, account: TestAccount) {
+  // Use env var override if available (for prod testing without seeded accounts)
   const email = process.env.E2E_DM_EMAIL || account.email;
   const password = process.env.E2E_DM_PASSWORD || account.password;
 

@@ -4,18 +4,22 @@ import type { TestAccount } from "../fixtures/test-accounts";
 
 /**
  * Navigate to /app/session/new, handle campaign picker if shown.
+ * Waits for either the campaign picker or the setup form, then proceeds.
  */
 export async function goToNewSession(page: Page) {
   await page.goto("/app/session/new");
   await page.waitForLoadState("domcontentloaded");
 
+  // Wait for either the add-row (already past picker) or Quick Combat button
   const addRow = page.locator('[data-testid="add-row"]');
   const quickBtn = page.locator(
     'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
   );
 
+  // Race: whichever appears first
   await expect(addRow.or(quickBtn)).toBeVisible({ timeout: 15_000 });
 
+  // If Quick Combat button is visible, click it to get to setup
   if (await quickBtn.isVisible({ timeout: 1_000 }).catch(() => false)) {
     await quickBtn.click();
     await expect(addRow).toBeVisible({ timeout: 10_000 });

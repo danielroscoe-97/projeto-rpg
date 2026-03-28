@@ -31,6 +31,14 @@ interface CombatKeyboardShortcutsOptions {
   onUndoHp?: () => void;
   /** Callback to reorder the focused combatant — receives (fromIndex, toIndex) */
   onReorder?: (fromIndex: number, toIndex: number) => void;
+  /** Toggle combat action log */
+  onToggleCombatLog?: () => void;
+  /** Toggle advantage mode */
+  onToggleAdvantage?: () => void;
+  /** Toggle disadvantage mode */
+  onToggleDisadvantage?: () => void;
+  /** Toggle concentration on focused combatant */
+  onToggleConcentration?: () => void;
 }
 
 /**
@@ -56,6 +64,10 @@ export function useCombatKeyboardShortcuts({
   onUndo,
   onUndoHp,
   onReorder,
+  onToggleCombatLog,
+  onToggleAdvantage,
+  onToggleDisadvantage,
+  onToggleConcentration,
 }: CombatKeyboardShortcutsOptions) {
   const optionsRef = useRef({
     onNextTurn,
@@ -71,6 +83,10 @@ export function useCombatKeyboardShortcuts({
     onUndo,
     onUndoHp,
     onReorder,
+    onToggleCombatLog,
+    onToggleAdvantage,
+    onToggleDisadvantage,
+    onToggleConcentration,
   });
 
   optionsRef.current = {
@@ -87,6 +103,10 @@ export function useCombatKeyboardShortcuts({
     onUndo,
     onUndoHp,
     onReorder,
+    onToggleCombatLog,
+    onToggleAdvantage,
+    onToggleDisadvantage,
+    onToggleConcentration,
   };
 
   const handleKeyDown = useCallback(
@@ -181,6 +201,38 @@ export function useCombatKeyboardShortcuts({
           if (!e.ctrlKey && !e.metaKey) {
             e.preventDefault();
             opts.onOpenConditions();
+          }
+          break;
+
+        case "l":
+        case "L":
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            opts.onToggleCombatLog?.();
+          }
+          break;
+
+        case "a":
+        case "A":
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            opts.onToggleAdvantage?.();
+          }
+          break;
+
+        case "s":
+        case "S":
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            opts.onToggleDisadvantage?.();
+          }
+          break;
+
+        case "x":
+        case "X":
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            opts.onToggleConcentration?.();
           }
           break;
 

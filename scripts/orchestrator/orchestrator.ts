@@ -85,11 +85,11 @@ let isProcessing = false; // Concurrency lock for all entry points
  */
 export function quickParse(input: string): { mode: OrchestratorMode; target: string } | null {
   const lower = input.toLowerCase().trim();
-  if (lower === "status" || lower === "qual o status" || lower.includes("status da queue")) return { mode: "status", target: "queue" };
+  if (lower === "status" || lower === "qual o status" || lower.includes("status da queue") || lower.includes("status da fila")) return { mode: "status", target: "queue" };
   if (lower === "para tudo" || lower === "stop" || lower === "parar") return { mode: "stop", target: "" };
-  if (lower.includes("rodar queue") || lower.includes("iniciar queue") || lower.includes("comece a implementar") || lower.includes("implementar tudo")) return { mode: "queue", target: "start" };
-  if (lower.includes("pausar") || lower.includes("pause queue")) return { mode: "queue", target: "pause" };
-  if (lower.includes("retomar") || lower.includes("resume queue")) return { mode: "queue", target: "resume" };
+  if (lower.includes("rodar queue") || lower.includes("rodar fila") || lower.includes("iniciar queue") || lower.includes("iniciar fila") || lower.includes("comece a implementar") || lower.includes("implementar tudo")) return { mode: "queue", target: "start" };
+  if (lower.includes("pausar") || lower.includes("pause queue") || lower.includes("pausar fila")) return { mode: "queue", target: "pause" };
+  if (lower.includes("retomar") || lower.includes("resume queue") || lower.includes("retomar fila")) return { mode: "queue", target: "resume" };
   if (lower === "smoke" || lower === "smoke test" || lower.includes("pre-flight") || lower.includes("testar pipeline")) return { mode: "smoke", target: "" };
   const retryMatch = lower.match(/^(?:retry|retentar|refazer)\s+(\S+)/);
   if (retryMatch) return { mode: "queue", target: `retry:${retryMatch[1]}` };
@@ -1143,8 +1143,13 @@ export async function handleCommand(input: string): Promise<void> {
         return;
       }
       if (!isQueueRunning()) {
-        buildQueue();
-        await notify("🚀 Queue construída! Iniciando processamento de todas as specs...");
+        const existing = getQueueStatus();
+        if (existing.includes("Nenhuma")) {
+          buildQueue();
+          await notify("🚀 Queue construída do zero! Iniciando processamento...");
+        } else {
+          await notify("🚀 Usando queue existente. Iniciando processamento...");
+        }
         runQueue().catch((e: Error) => notify(`❌ Queue error: ${e.message}`));
       } else {
         await notify("▶️ Queue já está ativa — processamento continuando.");

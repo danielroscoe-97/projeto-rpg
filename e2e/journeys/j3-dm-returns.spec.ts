@@ -24,12 +24,12 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
     await expect(page).toHaveURL(/\/app\/dashboard/, { timeout: 15_000 });
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to render
+    // Wait for dashboard to render content
     await page.waitForTimeout(3_000);
 
-    // Dashboard must NOT be completely blank
+    // Look for saved encounters, encounter links, or action buttons
     const contentLocator = page.locator(
-      '[data-testid="saved-encounters"], [data-testid^="encounter-link-"], a[href*="/app/session/"], a[href*="session/new"], nav'
+      '[data-testid="saved-encounters"], [data-testid^="encounter-link-"], a[href*="/app/session/"], a[href*="session/new"], button:has-text("Nova"), button:has-text("New"), button:has-text("Criar"), nav'
     ).first();
     await expect(contentLocator).toBeVisible({ timeout: 10_000 });
   });
@@ -98,7 +98,7 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
     expect(bodyText).not.toContain("Internal Server Error");
     expect(bodyText).not.toContain("404");
 
-    // Page should have content
+    // Page should have some structure — wait for render
     await page.waitForTimeout(3_000);
     const bodyLen = (await page.textContent("body"))?.length ?? 0;
     expect(bodyLen).toBeGreaterThan(100);
