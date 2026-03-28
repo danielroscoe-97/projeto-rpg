@@ -725,7 +725,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
       {/* Bottom add-row — always visible */}
       <div
-        className={`flex items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
+        className={`flex flex-wrap items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
         data-testid="add-row"
         onKeyDown={addRowKeyDown}
       >
@@ -754,7 +754,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             if (addRowErrors.has("name")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("name"); return n; });
           }}
           placeholder={t("setup_col_name")}
-          className={`${inputClass} flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
+          className={`${inputClass} basis-full md:basis-auto flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
           aria-label={t("setup_name_aria")}
           aria-invalid={addRowErrors.has("name") || undefined}
           data-testid="add-row-name"

@@ -448,7 +448,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
       {/* Add row */}
       <div
-        className={`flex items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
+        className={`flex flex-wrap items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
         data-testid="add-row"
         onKeyDown={addRowKeyDown}
       >
@@ -474,7 +474,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
             if (addRowErrors.has("name")) setAddRowErrors(new Set());
           }}
           placeholder={t("setup_col_name")}
-          className={`${inputClass} flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
+          className={`${inputClass} basis-full md:basis-auto flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
           aria-invalid={addRowErrors.has("name") || undefined}
           data-testid="add-row-name"
         />
