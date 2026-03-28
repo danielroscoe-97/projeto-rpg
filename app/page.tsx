@@ -8,7 +8,7 @@ import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
 import { LpPricingSection } from "@/components/marketing/LpPricingSection";
 import { Button } from "@/components/ui/button";
-import { RuneCircle, QuestPath, TorchGlow } from "@/components/ui/rpg";
+import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
 import { getFireStepColor } from "@/lib/design/rpg-tokens";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
@@ -488,6 +488,9 @@ function HowItWorksSection() {
 
         {/* Desktop: horizontal flow */}
         <div className="hidden md:block relative">
+          {/* ── Full-width fire trail (edge-to-edge, behind everything) ── */}
+          <FireTrail className="z-[5] top-0" />
+
           {/* ── Fire gradient quest path connector ── */}
           <div className="absolute top-0 left-0 w-full z-10">
             <QuestPath steps={TOTAL_STEPS} currentStep={TOTAL_STEPS} />
