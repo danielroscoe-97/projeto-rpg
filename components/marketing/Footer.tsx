@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 export async function Footer() {
@@ -11,7 +10,8 @@ export async function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2">
-              <Image src="/art/icons/pet-poring.png" alt="" width={22} height={22} className="pixel-art opacity-60" aria-hidden="true" unoptimized />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/art/brand/logo-icon.svg" alt="" width={22} height={22} className="opacity-80 drop-shadow-[0_0_6px_rgba(212,168,83,0.3)]" aria-hidden="true" />
               <span className="font-display text-gold text-lg">{t("footer_brand")}</span>
             </div>
             <p className="text-muted-foreground text-xs mt-1">
