@@ -17,6 +17,7 @@ export type RealtimeEventType =
   | "combat:late_join_response"
   | "session:state_sync"
   | "session:player_linked"
+  | "session:weather_change"
   | "audio:play_sound";
 
 export interface RealtimeHpUpdate {
@@ -113,6 +114,11 @@ export interface RealtimeStateSync {
   round_number: number;
 }
 
+export interface RealtimeWeatherChange {
+  type: "session:weather_change";
+  effect: string;
+}
+
 export interface RealtimeAudioPlay {
   type: "audio:play_sound";
   sound_id: string;
@@ -136,6 +142,7 @@ export type RealtimeEvent =
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
   | RealtimeStateSync
+  | RealtimeWeatherChange
   | RealtimeAudioPlay;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
@@ -215,4 +222,5 @@ export type SanitizedEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
+  | RealtimeWeatherChange
   | RealtimeAudioPlay;

@@ -98,6 +98,8 @@ export function PlayerJoinClient({
   const [registeredName, setRegisteredName] = useState<string | undefined>();
   const [joinedPlayers, setJoinedPlayers] = useState<Array<{ id: string; name: string }>>([]);
   const [nextCombatantId, setNextCombatantId] = useState<string | null>(null);
+  // TODO: include weatherEffect in session:state_sync for reconnect support
+  const [weatherEffect, setWeatherEffect] = useState<string>("none");
   const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
   const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
   const lateJoinRequestIdRef = useRef<string | null>(null);
@@ -415,6 +417,11 @@ export function PlayerJoinClient({
               if (prev.some((p) => p.id === payload.id)) return prev;
               return [...prev, { id: payload.id, name: payload.name }];
             });
+          }
+        })
+        .on("broadcast", { event: "session:weather_change" }, ({ payload }) => {
+          if (payload.effect !== undefined) {
+            setWeatherEffect(payload.effect);
           }
         })
         .on("broadcast", { event: "combat:started" }, ({ payload }) => {
@@ -738,6 +745,7 @@ export function PlayerJoinClient({
           rulesetVersion={rulesetVersion}
           combatLog={combatLog}
           nextCombatantId={nextCombatantId}
+          weatherEffect={weatherEffect}
           onPlayerNote={(combatantId, note) => {
             // Broadcast player note to DM via realtime channel
             if (channelRef.current) {

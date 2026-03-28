@@ -453,7 +453,14 @@
     "player_link_already": "Already linked to {name}",
     "player_link_in_use": "in use",
     "no_rolls_yet": "No rolls yet",
-    "dice_log_title": "Dice Roll History"
+    "dice_log_title": "Dice Roll History",
+    "weather_title": "Weather Effect",
+    "weather_none": "None",
+    "weather_rain": "Rain",
+    "weather_snow": "Snow",
+    "weather_fog": "Fog",
+    "weather_storm": "Storm",
+    "weather_ash": "Ash"
   },
   "conditions": {
     "blinded": "Blinded",
