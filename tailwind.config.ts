@@ -75,6 +75,15 @@ export default {
           secondary: "#1A1A28",
           tertiary: "#222234",
         },
+        rpg: {
+          "fire-dark": "#7f1d1d",
+          "fire-mid": "#c2410c",
+          "fire-warm": "#E8593C",
+          ember: "#f59e0b",
+          torch: "#fbbf24",
+          parchment: "#2a2520",
+          stone: "#1e1e2a",
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -95,6 +104,25 @@ export default {
       },
       transitionTimingFunction: {
         theme: "cubic-bezier(0.4, 0, 0.2, 1)",
+      },
+      keyframes: {
+        "torch-flicker": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.85" },
+        },
+        "ember-float": {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "0.6" },
+          "100%": { transform: "translateY(-20px) scale(0.5)", opacity: "0" },
+        },
+        "rune-pulse": {
+          "0%, 100%": { boxShadow: "0 0 8px rgba(212,168,83,0.3)" },
+          "50%": { boxShadow: "0 0 20px rgba(212,168,83,0.6)" },
+        },
+      },
+      animation: {
+        "torch-flicker": "torch-flicker 3s ease-in-out infinite",
+        "ember-float": "ember-float 4s ease-out infinite",
+        "rune-pulse": "rune-pulse 2s ease-in-out infinite",
       },
     },
   },

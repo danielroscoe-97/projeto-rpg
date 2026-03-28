@@ -8,6 +8,8 @@ import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
 import { LpPricingSection } from "@/components/marketing/LpPricingSection";
 import { Button } from "@/components/ui/button";
+import { RuneCircle, QuestPath, TorchGlow } from "@/components/ui/rpg";
+import { getFireStepColor } from "@/lib/design/rpg-tokens";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
 function ArrowRight({ className }: { className?: string }) {
@@ -428,54 +430,32 @@ function SocialProofSection() {
 }
 
 // ── How It Works ──────────────────────────────────────────────────────────────
-function StepCircle({ number }: { number: string }) {
-  return (
-    <div className="relative w-14 h-14 shrink-0">
-      <svg width="56" height="56" viewBox="0 0 56 56" className="overflow-visible" aria-hidden="true">
-        <circle cx="28" cy="28" r="26" fill="#161622" />
-        <circle cx="28" cy="28" r="26" fill="rgba(212,168,83,0.07)" stroke="rgba(212,168,83,0.3)" strokeWidth="1.5" />
-        <circle
-          cx="28" cy="28" r="26"
-          fill="none"
-          stroke="rgba(212,168,83,0.15)"
-          strokeWidth="1"
-          strokeDasharray="5 7"
-          className="animate-spin-slow"
-          style={{ transformOrigin: "28px 28px" }}
-        />
-        <text x="28" y="35" textAnchor="middle" fill="#D4A853" fontSize="14" fontFamily="'JetBrains Mono', monospace" fontWeight="700">
-          {number}
-        </text>
-      </svg>
-    </div>
-  );
-}
-
 function HowItWorksSection() {
+  const TOTAL_STEPS = 4;
   const steps = [
     {
-      number: "01",
+      step: 1,
       emoji: "🗺️",
       title: "Crie o Encontro",
       description: "Busque no compendium completo, adicione NPCs custom, carregue sua campanha salva.",
       time: "~1 min",
     },
     {
-      number: "02",
+      step: 2,
       emoji: "🎲",
       title: "Role Iniciativa",
       description: "Insira os valores, ordene automaticamente, resolva empates com dragndrop.",
       time: "~30 seg",
     },
     {
-      number: "03",
+      step: 3,
       emoji: "🔗",
       title: "Compartilhe o Link",
       description: "Gere o link da sessão. Jogadores abrem no celular — sem conta necessária.",
       time: "~10 seg",
     },
     {
-      number: "04",
+      step: 4,
       emoji: "⚔️",
       title: "Mestre o Combate",
       description:
@@ -508,161 +488,98 @@ function HowItWorksSection() {
 
         {/* Desktop: horizontal flow */}
         <div className="hidden md:block relative">
-          {/* ── Flowing SVG connector between all steps ── */}
-          <svg
-            className="absolute top-0 left-0 w-full h-14 pointer-events-none z-10"
-            viewBox="0 0 1000 56"
-            preserveAspectRatio="none"
-            fill="none"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient id="flow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#D4A853" stopOpacity="0.08" />
-                <stop offset="12%" stopColor="#D4A853" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#D4A853" stopOpacity="0.65" />
-                <stop offset="88%" stopColor="#D4A853" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#D4A853" stopOpacity="0.08" />
-              </linearGradient>
-              <filter id="particle-glow">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              <filter id="trail-glow">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-
-            {/* Background path — faint static guide */}
-            <path
-              d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              stroke="rgba(212,168,83,0.15)"
-              strokeWidth="2"
-            />
-
-            {/* Animated dashed path — flowing energy */}
-            <path
-              d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              stroke="url(#flow-grad)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeDasharray="14 14"
-              className="animate-flow-dash"
-            />
-
-            {/* Glow trail — wider, softer duplicate for ambient glow */}
-            <path
-              d="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              stroke="rgba(212,168,83,0.1)"
-              strokeWidth="10"
-              strokeLinecap="round"
-              filter="url(#trail-glow)"
-            />
-
-            {/* Particle 1 — large, bright */}
-            <circle r="4" fill="#D4A853" opacity="0.9" filter="url(#particle-glow)">
-              <animateMotion
-                dur="3s"
-                repeatCount="indefinite"
-                path="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              />
-            </circle>
-
-            {/* Particle 2 — medium, offset */}
-            <circle r="3" fill="#D4A853" opacity="0.65" filter="url(#particle-glow)">
-              <animateMotion
-                dur="3s"
-                begin="1s"
-                repeatCount="indefinite"
-                path="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              />
-            </circle>
-
-            {/* Particle 3 — small, subtle */}
-            <circle r="2.5" fill="#D4A853" opacity="0.45" filter="url(#particle-glow)">
-              <animateMotion
-                dur="3s"
-                begin="2s"
-                repeatCount="indefinite"
-                path="M 125,28 C 208,10 292,46 375,28 C 458,10 542,46 625,28 C 708,10 792,46 875,28"
-              />
-            </circle>
-
-            {/* Arrow chevrons at each destination step */}
-            {[375, 625, 875].map((x) => (
-              <path
-                key={x}
-                d={`M ${x - 8},22 L ${x},28 L ${x - 8},34`}
-                stroke="rgba(212,168,83,0.3)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            ))}
-          </svg>
+          {/* ── Fire gradient quest path connector ── */}
+          <div className="absolute top-0 left-0 w-full z-10">
+            <QuestPath steps={TOTAL_STEPS} currentStep={TOTAL_STEPS} />
+          </div>
 
           {/* Step cards */}
           <div className="relative z-20 flex items-start gap-0">
-            {steps.map((s, i) => (
-              <div
-                key={s.number}
-                className="flex-1 flex flex-col items-center text-center group animate-fade-in-up px-4"
-                style={{ animationDelay: `${i * 0.12}s` }}
-              >
-                {/* Step circle + emoji */}
-                <div className="relative mb-3">
-                  <StepCircle number={s.number} />
-                  <span className="absolute -bottom-2 -right-2 text-lg leading-none">{s.emoji}</span>
+            {steps.map((s, i) => {
+              const isLast = s.step === TOTAL_STEPS;
+              const stepColor = getFireStepColor(s.step, TOTAL_STEPS);
+              const circle = (
+                <RuneCircle step={s.step} total={TOTAL_STEPS} size="lg" active={isLast} />
+              );
+
+              return (
+                <div
+                  key={s.step}
+                  className="flex-1 flex flex-col items-center text-center group animate-fade-in-up px-4"
+                  style={{ animationDelay: `${i * 0.12}s` }}
+                >
+                  {/* Step circle + emoji */}
+                  <div className="relative mb-3">
+                    {isLast ? (
+                      <TorchGlow intensity="high" className="rounded-full">
+                        {circle}
+                      </TorchGlow>
+                    ) : (
+                      circle
+                    )}
+                    <span className="absolute -bottom-2 -right-2 text-lg leading-none">{s.emoji}</span>
+                  </div>
+                  {/* Time badge — color matches fire step progression */}
+                  <span
+                    className="text-[10px] font-mono uppercase tracking-widest mb-2"
+                    style={{ color: stepColor, opacity: 0.75 }}
+                  >
+                    {s.time}
+                  </span>
+                  <h3 className="font-display text-foreground text-base mb-1 group-hover:text-gold transition-colors duration-200">
+                    {s.title}
+                  </h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed max-w-[160px]">
+                    {s.description}
+                  </p>
                 </div>
-                {/* Time badge */}
-                <span className="text-[10px] font-mono text-gold/60 uppercase tracking-widest mb-2">
-                  {s.time}
-                </span>
-                <h3 className="font-display text-foreground text-base mb-1 group-hover:text-gold transition-colors duration-200">
-                  {s.title}
-                </h3>
-                <p className="text-muted-foreground text-xs leading-relaxed max-w-[160px]">
-                  {s.description}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* Mobile: vertical cards */}
         <div className="md:hidden grid grid-cols-1 gap-6">
-          {steps.map((s, i) => (
-            <div
-              key={s.number}
-              className="flex gap-5 group animate-fade-in-up"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className="relative shrink-0">
-                <StepCircle number={s.number} />
-                <span className="absolute -bottom-1 -right-1 text-base leading-none">{s.emoji}</span>
-              </div>
-              <div className="pt-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-display text-foreground text-lg group-hover:text-gold transition-colors duration-200">
-                    {s.title}
-                  </h3>
-                  <span className="text-[10px] font-mono text-gold/50 uppercase tracking-wider">
-                    {s.time}
-                  </span>
+          {steps.map((s, i) => {
+            const isLast = s.step === TOTAL_STEPS;
+            const stepColor = getFireStepColor(s.step, TOTAL_STEPS);
+            const circle = (
+              <RuneCircle step={s.step} total={TOTAL_STEPS} size="md" active={isLast} />
+            );
+
+            return (
+              <div
+                key={s.step}
+                className="flex gap-5 group animate-fade-in-up"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="relative shrink-0">
+                  {isLast ? (
+                    <TorchGlow intensity="medium" className="rounded-full">
+                      {circle}
+                    </TorchGlow>
+                  ) : (
+                    circle
+                  )}
+                  <span className="absolute -bottom-1 -right-1 text-base leading-none">{s.emoji}</span>
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
+                <div className="pt-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-display text-foreground text-lg group-hover:text-gold transition-colors duration-200">
+                      {s.title}
+                    </h3>
+                    <span
+                      className="text-[10px] font-mono uppercase tracking-wider"
+                      style={{ color: stepColor, opacity: 0.7 }}
+                    >
+                      {s.time}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* CTA after steps */}

@@ -414,7 +414,11 @@ html {
     .float-gentle,
     .animate-spin-slow,
     .glow-pulse,
-    .wave-drift {
+    .wave-drift,
+    .animate-torch-flicker,
+    .animate-ember-float,
+    .animate-rune-pulse,
+    .animate-flow-dash {
       animation: none !important;
     }
   }
