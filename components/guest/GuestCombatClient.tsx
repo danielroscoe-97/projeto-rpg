@@ -14,6 +14,7 @@ import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
+import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
@@ -44,6 +45,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   const {
     combatants,
     addCombatant,
+    addMonsterGroup,
     removeCombatant,
     setInitiative,
     updateCombatantStats,
@@ -86,8 +88,13 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
   const handleSelectMonster = useCallback(
     (monster: SrdMonster) => {
-      const numberedName = getGuestNumberedName(monster.name, useGuestCombatStore.getState().combatants);
-      
+      const currentCombatants = useGuestCombatStore.getState().combatants;
+      const numberedName = getGuestNumberedName(monster.name, currentCombatants);
+      const existingNames = currentCombatants
+        .filter((c) => !c.is_player && c.display_name)
+        .map((c) => c.display_name!);
+      const displayName = generateCreatureName(monster.type, existingNames);
+
       // Roll initiative instantly using the monster's DEX
       const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
 
@@ -108,7 +115,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         monster_id: monster.id,
         token_url: monster.token_url ?? null,
         creature_type: monster.type ?? null,
-        display_name: null,
+        display_name: displayName,
         monster_group_id: null,
         group_order: null,
         dm_notes: "",
@@ -116,12 +123,53 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         player_character_id: null,
       });
 
-      // We still clear the add row to ensure a clean state
       setAddRow(EMPTY_ADD_ROW);
       lastSelectedMonster.current = null;
       setSubmitError(null);
     },
     [addCombatant]
+  );
+
+  // Add a group of N monsters with shared group ID
+  const handleSelectMonsterGroup = useCallback(
+    (monster: SrdMonster, qty: number) => {
+      const groupId = crypto.randomUUID();
+      const currentCombatants = useGuestCombatStore.getState().combatants;
+      const newCombatants: Omit<Combatant, "id">[] = [];
+      for (let i = 1; i <= qty; i++) {
+        const existingNames = [...currentCombatants, ...newCombatants as Combatant[]]
+          .filter((c) => !c.is_player && c.display_name)
+          .map((c) => c.display_name!);
+        const displayName = generateCreatureName(monster.type ?? null, existingNames);
+        newCombatants.push({
+          name: `${monster.name} ${i}`,
+          current_hp: monster.hit_points,
+          max_hp: monster.hit_points,
+          temp_hp: 0,
+          ac: monster.armor_class,
+          spell_save_dc: null,
+          initiative: null,
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: monster.ruleset_version,
+          is_defeated: false,
+          is_hidden: false,
+          is_player: false,
+          monster_id: monster.id,
+          token_url: monster.token_url ?? null,
+          creature_type: monster.type ?? null,
+          display_name: displayName,
+          monster_group_id: groupId,
+          group_order: i,
+          dm_notes: "",
+          player_notes: "",
+          player_character_id: null,
+        });
+      }
+      addMonsterGroup(newCombatants);
+      setAddRow(EMPTY_ADD_ROW);
+    },
+    [addMonsterGroup]
   );
 
   const handleMonsterAdded = useCallback(() => {
@@ -152,6 +200,11 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       : null;
 
     const sel = lastSelectedMonster.current;
+    const currentCombatants = useGuestCombatStore.getState().combatants;
+    const existingNames = currentCombatants
+      .filter((c) => !c.is_player && c.display_name)
+      .map((c) => c.display_name!);
+    const displayName = generateCreatureName(null, existingNames);
     addCombatant({
       name,
       current_hp: isNaN(hp) || hp < 0 ? 0 : hp,
@@ -169,7 +222,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       monster_id: sel?.id ?? null,
       token_url: null,
       creature_type: null,
-      display_name: null,
+      display_name: displayName,
       monster_group_id: null,
       group_order: null,
       dm_notes: "",
@@ -243,6 +296,57 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
     [updatePlayerNotes]
   );
 
+  const handleDuplicate = useCallback(
+    (source: Combatant) => {
+      const currentCombatants = useGuestCombatStore.getState().combatants;
+
+      // Determine group order for duplicated combatant
+      let groupOrder: number | null = null;
+      if (source.monster_group_id) {
+        const groupMembers = currentCombatants.filter(
+          (c) => c.monster_group_id === source.monster_group_id
+        );
+        groupOrder = groupMembers.length + 1;
+      }
+
+      // Generate numbered name
+      const baseName = source.name.replace(/\s+\d+$/, "");
+      const numberedName = getGuestNumberedName(baseName, currentCombatants);
+
+      // Generate display name
+      const existingNames = currentCombatants
+        .filter((c) => !c.is_player && c.display_name)
+        .map((c) => c.display_name!);
+      const displayName = source.is_player ? null : generateCreatureName(source.creature_type, existingNames);
+
+      addCombatant({
+        name: numberedName,
+        current_hp: source.max_hp,
+        max_hp: source.max_hp,
+        temp_hp: 0,
+        ac: source.ac,
+        spell_save_dc: source.spell_save_dc,
+        initiative: source.initiative,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: source.ruleset_version,
+        is_defeated: false,
+        is_hidden: false,
+        is_player: source.is_player,
+        monster_id: source.monster_id,
+        token_url: source.token_url,
+        creature_type: source.creature_type,
+        display_name: displayName,
+        monster_group_id: source.monster_group_id,
+        group_order: groupOrder,
+        dm_notes: "",
+        player_notes: "",
+        player_character_id: null,
+      });
+    },
+    [addCombatant]
+  );
+
   const handleStartCombat = () => {
     if (combatants.length === 0) {
       setSubmitError(t("error_no_combatants"));
@@ -297,6 +401,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       <MonsterSearchPanel
         rulesetVersion={rulesetVersion}
         onSelectMonster={handleSelectMonster}
+        onSelectMonsterGroup={handleSelectMonsterGroup}
         onMonsterAdded={handleMonsterAdded}
       />
 
@@ -323,6 +428,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               onNameChange={handleRowNameChange}
               onHpChange={handleRowHpChange}
               onAcChange={handleRowAcChange}
+              onDuplicate={handleDuplicate}
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}

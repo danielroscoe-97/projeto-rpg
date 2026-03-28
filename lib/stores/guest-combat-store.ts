@@ -15,6 +15,7 @@ interface GuestCombatState {
 
 interface GuestCombatActions {
   addCombatant: (combatant: Omit<Combatant, "id">) => void;
+  addMonsterGroup: (newCombatants: Omit<Combatant, "id">[]) => void;
   removeCombatant: (id: string) => void;
   setInitiative: (id: string, value: number | null) => void;
   batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
@@ -52,6 +53,14 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       addCombatant: (combatant) =>
         set((state) => ({
           combatants: [...state.combatants, { ...combatant, id: crypto.randomUUID() }],
+        })),
+
+      addMonsterGroup: (newCombatants) =>
+        set((state) => ({
+          combatants: [
+            ...state.combatants,
+            ...newCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
+          ],
         })),
 
       removeCombatant: (id) =>
