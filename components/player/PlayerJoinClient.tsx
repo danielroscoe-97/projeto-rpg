@@ -111,6 +111,8 @@ export function PlayerJoinClient({
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastTurnBroadcastRef = useRef<number>(0);
   const [playerAudioFiles, setPlayerAudioFiles] = useState<PlayerAudioFile[]>([]);
   const [playerAudioUrls, setPlayerAudioUrls] = useState<Record<string, string>>({});
 
@@ -324,6 +326,7 @@ export function PlayerJoinClient({
           if (payload.encounter_id) setCurrentEncounterId(payload.encounter_id);
         })
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
+          lastTurnBroadcastRef.current = Date.now();
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
           if (payload.round_number !== undefined) setRound(payload.round_number);
           setNextCombatantId(payload.next_combatant_id ?? null);
@@ -651,6 +654,30 @@ export function PlayerJoinClient({
     const interval = isMobile ? 5000 : 2000;
     pollIntervalRef.current = setInterval(() => fetchFullState(eid), interval);
   };
+
+  // Turn-sync polling fallback: periodically fetch state to catch missed
+  // combat:turn_advance broadcasts (Supabase Realtime is unreliable DM→player).
+  // Skips fetch if a broadcast arrived recently to avoid redundant API calls.
+  useEffect(() => {
+    if (!active || !sessionId || !encounterIdRef.current) {
+      if (turnPollRef.current) {
+        clearInterval(turnPollRef.current);
+        turnPollRef.current = null;
+      }
+      return;
+    }
+    const eid = encounterIdRef.current;
+    turnPollRef.current = setInterval(() => {
+      if (Date.now() - lastTurnBroadcastRef.current < 2000) return;
+      fetchFullState(eid);
+    }, 3000);
+    return () => {
+      if (turnPollRef.current) {
+        clearInterval(turnPollRef.current);
+        turnPollRef.current = null;
+      }
+    };
+  }, [active, sessionId, fetchFullState]);
 
   // Player registration handler — MUST be before any early returns (Rules of Hooks)
   const handleRegister = useCallback(async (data: {

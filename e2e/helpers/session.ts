@@ -99,8 +99,17 @@ export async function dmSetupCombatSession(
   const startBtn = page.locator('[data-testid="start-combat-btn"]');
   await startBtn.scrollIntoViewIfNeeded();
   await startBtn.click();
-  // Starting combat triggers server calls + possible Next.js router.replace navigation
-  await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 20_000 });
+  // Starting combat triggers server calls + possible Next.js router.replace navigation.
+  // Retry click if first attempt was swallowed by a concurrent re-render.
+  try {
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 20_000 });
+  } catch {
+    const retryBtn = page.locator('[data-testid="start-combat-btn"]');
+    if (await retryBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await retryBtn.click();
+    }
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 15_000 });
+  }
 
   return token;
 }

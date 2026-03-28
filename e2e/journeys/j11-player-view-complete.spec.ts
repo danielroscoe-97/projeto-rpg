@@ -119,17 +119,11 @@ test.describe("J11 — Player View Completa", () => {
     const nextTurnBtn = dmPage.locator('[data-testid="next-turn-btn"]');
     await expect(nextTurnBtn).toBeVisible({ timeout: 5_000 });
     await nextTurnBtn.click();
-    await playerPage.waitForTimeout(3_000);
 
-    // Player should see turn indicator: the player view shows a Swords icon
-    // and/or "Seu turno!" toast when it becomes their turn. We verify the
-    // player view is still visible and functional after turn advance.
-    // The visual indicator is the Swords (⚔) icon on the hero card or
-    // aria-current on the initiative board (may be below fold).
-    const playerView = playerPage.locator('[data-testid="player-view"]');
-    await expect(playerView).toBeVisible({ timeout: 10_000 });
-    // Check that the player's combatant name appears in the player view
-    await expect(playerPage.getByText("Thorin").first()).toBeVisible({ timeout: 5_000 });
+    // Wait for turn advance to propagate (via broadcast or polling fallback at 3s interval)
+    // aria-current="true" is set on the active combatant in PlayerInitiativeBoard
+    const turnIndicator = playerPage.locator('[aria-current="true"]');
+    await expect(turnIndicator.first()).toBeVisible({ timeout: 10_000 });
 
     await dmContext.close();
     await playerContext.close();
