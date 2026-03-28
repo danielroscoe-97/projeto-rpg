@@ -39,8 +39,8 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
   const travelDur = "6s"; // slow single journey
   const lastPt = stepPoints[stepPoints.length - 1];
 
-  // Static embers scattered along the curve
-  const staticEmbers = Array.from({ length: 16 }, (_, i) => {
+  // Static embers scattered along the curve — more particles left behind
+  const staticEmbers = Array.from({ length: 28 }, (_, i) => {
     const t = (i + 1) / 18;
     const cx = pad + t * usable;
     const wave = Math.sin(t * Math.PI * (steps - 1)) * waveAmp;
@@ -131,12 +131,16 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
           <animate attributeName="opacity" from="0.6" to="0" dur="0.5s" begin={travelDur} fill="freeze" />
         </circle>
 
-        {/* Trailing embers */}
+        {/* Trailing embers — more particles */}
         {[
-          { dx: -20, dy: -6, s: 2.5, c: "#991b1b", o: 0.4 },
-          { dx: -14, dy: 5, s: 2, c: "#c2410c", o: 0.5 },
-          { dx: -9, dy: -4, s: 2.5, c: "#ea580c", o: 0.55 },
-          { dx: -5, dy: 3, s: 2, c: "#f59e0b", o: 0.6 },
+          { dx: -35, dy: -7, s: 3, c: "#7f1d1d", o: 0.3 },
+          { dx: -28, dy: 6, s: 2.5, c: "#991b1b", o: 0.35 },
+          { dx: -22, dy: -5, s: 3, c: "#991b1b", o: 0.4 },
+          { dx: -17, dy: 7, s: 2.5, c: "#c2410c", o: 0.45 },
+          { dx: -13, dy: -6, s: 3, c: "#c2410c", o: 0.5 },
+          { dx: -9, dy: 4, s: 2.5, c: "#ea580c", o: 0.55 },
+          { dx: -5, dy: -3, s: 3, c: "#f59e0b", o: 0.6 },
+          { dx: -2, dy: 5, s: 2.5, c: "#f59e0b", o: 0.55 },
         ].map((e, i) => (
           <rect key={`te-${i}`} width={e.s} height={e.s} fill={e.c} opacity="0" x={e.dx} y={e.dy}>
             <animate attributeName="opacity" from="0" to={String(e.o)} dur="0.3s" fill="freeze" />
@@ -157,57 +161,57 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
           {/* Frame 1 */}
           <g>
             <animate attributeName="opacity" values="1;1;0;0;1" dur="0.25s" repeatCount="indefinite" />
-            <rect x="-1.5" y="-16" width="3" height="3" fill="#fef08a" />
-            <rect x="-4.5" y="-13" width="3" height="3" fill="#fbbf24" />
-            <rect x="-1.5" y="-13" width="3" height="3" fill="#fde047" />
-            <rect x="1.5" y="-13" width="3" height="3" fill="#fbbf24" />
-            <rect x="-6" y="-10" width="3" height="3" fill="#f59e0b" />
-            <rect x="-3" y="-10" width="3" height="3" fill="#fbbf24" />
-            <rect x="0" y="-10" width="3" height="3" fill="#f59e0b" />
-            <rect x="3" y="-10" width="3" height="3" fill="#ea580c" />
-            <rect x="-4.5" y="-7" width="3" height="3" fill="#ea580c" />
-            <rect x="-1.5" y="-7" width="3" height="3" fill="#f59e0b" />
-            <rect x="1.5" y="-7" width="3" height="3" fill="#ea580c" />
-            <rect x="-3" y="-4" width="3" height="3" fill="#c2410c" />
-            <rect x="0" y="-4" width="3" height="3" fill="#dc2626" />
+            <rect x="-1.5" y="-16" width="4" height="4" fill="#fef08a" />
+            <rect x="-4.5" y="-13" width="4" height="4" fill="#fbbf24" />
+            <rect x="-1.5" y="-13" width="4" height="4" fill="#fde047" />
+            <rect x="1.5" y="-13" width="4" height="4" fill="#fbbf24" />
+            <rect x="-6" y="-10" width="4" height="4" fill="#f59e0b" />
+            <rect x="-3" y="-10" width="4" height="4" fill="#fbbf24" />
+            <rect x="0" y="-10" width="4" height="4" fill="#f59e0b" />
+            <rect x="3" y="-10" width="4" height="4" fill="#ea580c" />
+            <rect x="-4.5" y="-7" width="4" height="4" fill="#ea580c" />
+            <rect x="-1.5" y="-7" width="4" height="4" fill="#f59e0b" />
+            <rect x="1.5" y="-7" width="4" height="4" fill="#ea580c" />
+            <rect x="-3" y="-4" width="4" height="4" fill="#c2410c" />
+            <rect x="0" y="-4" width="4" height="4" fill="#dc2626" />
           </g>
           {/* Frame 2 */}
           <g>
             <animate attributeName="opacity" values="0;0;1;1;0" dur="0.25s" repeatCount="indefinite" />
-            <rect x="0" y="-17" width="3" height="3" fill="#fef9c3" />
-            <rect x="-3" y="-14" width="3" height="3" fill="#fde047" />
-            <rect x="0" y="-14" width="3" height="3" fill="#fbbf24" />
-            <rect x="3" y="-14" width="3" height="3" fill="#fde047" />
-            <rect x="-4.5" y="-11" width="3" height="3" fill="#fbbf24" />
-            <rect x="-1.5" y="-11" width="3" height="3" fill="#f59e0b" />
-            <rect x="1.5" y="-11" width="3" height="3" fill="#fbbf24" />
-            <rect x="4.5" y="-11" width="3" height="3" fill="#ea580c" />
-            <rect x="-3" y="-8" width="3" height="3" fill="#ea580c" />
-            <rect x="0" y="-8" width="3" height="3" fill="#f59e0b" />
-            <rect x="3" y="-8" width="3" height="3" fill="#dc2626" />
-            <rect x="-1.5" y="-5" width="3" height="3" fill="#c2410c" />
-            <rect x="1.5" y="-5" width="3" height="3" fill="#991b1b" />
+            <rect x="0" y="-17" width="4" height="4" fill="#fef9c3" />
+            <rect x="-3" y="-14" width="4" height="4" fill="#fde047" />
+            <rect x="0" y="-14" width="4" height="4" fill="#fbbf24" />
+            <rect x="3" y="-14" width="4" height="4" fill="#fde047" />
+            <rect x="-4.5" y="-11" width="4" height="4" fill="#fbbf24" />
+            <rect x="-1.5" y="-11" width="4" height="4" fill="#f59e0b" />
+            <rect x="1.5" y="-11" width="4" height="4" fill="#fbbf24" />
+            <rect x="4.5" y="-11" width="4" height="4" fill="#ea580c" />
+            <rect x="-3" y="-8" width="4" height="4" fill="#ea580c" />
+            <rect x="0" y="-8" width="4" height="4" fill="#f59e0b" />
+            <rect x="3" y="-8" width="4" height="4" fill="#dc2626" />
+            <rect x="-1.5" y="-5" width="4" height="4" fill="#c2410c" />
+            <rect x="1.5" y="-5" width="4" height="4" fill="#991b1b" />
           </g>
         </g>
       </g>
 
-      {/* === BONFIRE at step 04 — appears after firebolt arrives, grows and stays === */}
+      {/* === BONFIRE at step 04 — behind the circle (z-order), big flames rising up === */}
       <g className="motion-reduce:hidden" shapeRendering="crispEdges">
-        {/* Big warm glow behind bonfire */}
-        <circle cx={lastPt.x} cy={lastPt.y} r="35" fill="url(#bonfire-glow)" filter="url(#bonfire-blur)" opacity="0">
-          <animate attributeName="opacity" from="0" to="0.8" dur="1s" begin={travelDur} fill="freeze" />
-          <animate attributeName="r" values="35;38;35" dur="2s" begin={travelDur} repeatCount="indefinite" />
+        {/* Large warm glow centered on step 04 */}
+        <circle cx={lastPt.x} cy={lastPt.y - 10} r="50" fill="url(#bonfire-glow)" filter="url(#bonfire-blur)" opacity="0">
+          <animate attributeName="opacity" from="0" to="1" dur="1s" begin={travelDur} fill="freeze" />
+          <animate attributeName="r" values="50;55;50" dur="2s" begin={travelDur} repeatCount="indefinite" />
         </circle>
 
-        {/* Bonfire pixel sprite — scales up from small to big */}
+        {/* Bonfire pixel sprite — at step 04 position, grows BIG (scale 2.5) */}
         <g transform={`translate(${lastPt.x}, ${lastPt.y})`} opacity="0">
           <animate attributeName="opacity" from="0" to="1" dur="0.6s" begin={travelDur} fill="freeze" />
           <animateTransform
             attributeName="transform"
             type="scale"
-            from="0.5"
-            to="1.8"
-            dur="0.8s"
+            from="0.3"
+            to="2.5"
+            dur="1s"
             begin={travelDur}
             fill="freeze"
             additive="sum"
@@ -217,55 +221,55 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
           <g>
             <animate attributeName="opacity" values="1;1;0;0;1" dur="0.3s" repeatCount="indefinite" />
             {/* Tip */}
-            <rect x="-1.5" y="-22" width="3" height="3" fill="#fef9c3" />
-            <rect x="1.5" y="-24" width="3" height="3" fill="#fef08a" />
+            <rect x="-1.5" y="-22" width="4" height="4" fill="#fef9c3" />
+            <rect x="1.5" y="-24" width="4" height="4" fill="#fef08a" />
             {/* Upper */}
-            <rect x="-4.5" y="-19" width="3" height="3" fill="#fde047" />
-            <rect x="-1.5" y="-19" width="3" height="3" fill="#fbbf24" />
-            <rect x="1.5" y="-19" width="3" height="3" fill="#fde047" />
-            <rect x="4.5" y="-19" width="3" height="3" fill="#fbbf24" />
+            <rect x="-4.5" y="-19" width="4" height="4" fill="#fde047" />
+            <rect x="-1.5" y="-19" width="4" height="4" fill="#fbbf24" />
+            <rect x="1.5" y="-19" width="4" height="4" fill="#fde047" />
+            <rect x="4.5" y="-19" width="4" height="4" fill="#fbbf24" />
             {/* Mid */}
-            <rect x="-7.5" y="-16" width="3" height="3" fill="#f59e0b" />
-            <rect x="-4.5" y="-16" width="3" height="3" fill="#fbbf24" />
-            <rect x="-1.5" y="-16" width="3" height="3" fill="#fde047" />
-            <rect x="1.5" y="-16" width="3" height="3" fill="#fbbf24" />
-            <rect x="4.5" y="-16" width="3" height="3" fill="#f59e0b" />
+            <rect x="-7.5" y="-16" width="4" height="4" fill="#f59e0b" />
+            <rect x="-4.5" y="-16" width="4" height="4" fill="#fbbf24" />
+            <rect x="-1.5" y="-16" width="4" height="4" fill="#fde047" />
+            <rect x="1.5" y="-16" width="4" height="4" fill="#fbbf24" />
+            <rect x="4.5" y="-16" width="4" height="4" fill="#f59e0b" />
             {/* Lower */}
-            <rect x="-6" y="-13" width="3" height="3" fill="#ea580c" />
-            <rect x="-3" y="-13" width="3" height="3" fill="#f59e0b" />
-            <rect x="0" y="-13" width="3" height="3" fill="#fbbf24" />
-            <rect x="3" y="-13" width="3" height="3" fill="#ea580c" />
+            <rect x="-6" y="-13" width="4" height="4" fill="#ea580c" />
+            <rect x="-3" y="-13" width="4" height="4" fill="#f59e0b" />
+            <rect x="0" y="-13" width="4" height="4" fill="#fbbf24" />
+            <rect x="3" y="-13" width="4" height="4" fill="#ea580c" />
             {/* Base */}
-            <rect x="-4.5" y="-10" width="3" height="3" fill="#c2410c" />
-            <rect x="-1.5" y="-10" width="3" height="3" fill="#dc2626" />
-            <rect x="1.5" y="-10" width="3" height="3" fill="#c2410c" />
+            <rect x="-4.5" y="-10" width="4" height="4" fill="#c2410c" />
+            <rect x="-1.5" y="-10" width="4" height="4" fill="#dc2626" />
+            <rect x="1.5" y="-10" width="4" height="4" fill="#c2410c" />
           </g>
 
           {/* Frame 2 */}
           <g>
             <animate attributeName="opacity" values="0;0;1;1;0" dur="0.3s" repeatCount="indefinite" />
-            <rect x="0" y="-23" width="3" height="3" fill="#fef9c3" />
-            <rect x="-3" y="-21" width="3" height="3" fill="#fef08a" />
+            <rect x="0" y="-23" width="4" height="4" fill="#fef9c3" />
+            <rect x="-3" y="-21" width="4" height="4" fill="#fef08a" />
             {/* Upper */}
-            <rect x="-6" y="-18" width="3" height="3" fill="#fbbf24" />
-            <rect x="-3" y="-18" width="3" height="3" fill="#fde047" />
-            <rect x="0" y="-18" width="3" height="3" fill="#fbbf24" />
-            <rect x="3" y="-18" width="3" height="3" fill="#fde047" />
+            <rect x="-6" y="-18" width="4" height="4" fill="#fbbf24" />
+            <rect x="-3" y="-18" width="4" height="4" fill="#fde047" />
+            <rect x="0" y="-18" width="4" height="4" fill="#fbbf24" />
+            <rect x="3" y="-18" width="4" height="4" fill="#fde047" />
             {/* Mid */}
-            <rect x="-7.5" y="-15" width="3" height="3" fill="#fbbf24" />
-            <rect x="-4.5" y="-15" width="3" height="3" fill="#f59e0b" />
-            <rect x="-1.5" y="-15" width="3" height="3" fill="#fbbf24" />
-            <rect x="1.5" y="-15" width="3" height="3" fill="#f59e0b" />
-            <rect x="4.5" y="-15" width="3" height="3" fill="#fbbf24" />
+            <rect x="-7.5" y="-15" width="4" height="4" fill="#fbbf24" />
+            <rect x="-4.5" y="-15" width="4" height="4" fill="#f59e0b" />
+            <rect x="-1.5" y="-15" width="4" height="4" fill="#fbbf24" />
+            <rect x="1.5" y="-15" width="4" height="4" fill="#f59e0b" />
+            <rect x="4.5" y="-15" width="4" height="4" fill="#fbbf24" />
             {/* Lower */}
-            <rect x="-6" y="-12" width="3" height="3" fill="#ea580c" />
-            <rect x="-3" y="-12" width="3" height="3" fill="#f59e0b" />
-            <rect x="0" y="-12" width="3" height="3" fill="#ea580c" />
-            <rect x="3" y="-12" width="3" height="3" fill="#dc2626" />
+            <rect x="-6" y="-12" width="4" height="4" fill="#ea580c" />
+            <rect x="-3" y="-12" width="4" height="4" fill="#f59e0b" />
+            <rect x="0" y="-12" width="4" height="4" fill="#ea580c" />
+            <rect x="3" y="-12" width="4" height="4" fill="#dc2626" />
             {/* Base */}
-            <rect x="-4.5" y="-9" width="3" height="3" fill="#991b1b" />
-            <rect x="-1.5" y="-9" width="3" height="3" fill="#c2410c" />
-            <rect x="1.5" y="-9" width="3" height="3" fill="#991b1b" />
+            <rect x="-4.5" y="-9" width="4" height="4" fill="#991b1b" />
+            <rect x="-1.5" y="-9" width="4" height="4" fill="#c2410c" />
+            <rect x="1.5" y="-9" width="4" height="4" fill="#991b1b" />
           </g>
         </g>
       </g>
