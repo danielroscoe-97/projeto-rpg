@@ -21,7 +21,7 @@ import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
-import { broadcastEvent, getDmChannel } from "@/lib/realtime/broadcast";
+import { broadcastEvent, getDmChannel, registerHiddenLookup } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
@@ -96,6 +96,7 @@ export function CombatSessionClient({
     handleSwitchVersion,
     handleUpdateDmNotes,
     handleUpdatePlayerNotes,
+    handleToggleHidden,
     handleEndEncounter: doEndEncounter,
     getSessionId,
   } = useCombatActions({ sessionId, onNavigate: (path) => router.push(path) });
@@ -132,6 +133,18 @@ export function CombatSessionClient({
     useCombatLogStore.getState().clear();
     doEndEncounter();
   }, [doEndEncounter]);
+
+  // Register hidden lookup so broadcast.ts can filter events for hidden combatants
+  useEffect(() => {
+    registerHiddenLookup(
+      (id: string) => {
+        const c = useCombatStore.getState().combatants.find((x) => x.id === id);
+        return c?.is_hidden ?? false;
+      },
+      () => useCombatStore.getState().combatants
+    );
+    return () => { registerHiddenLookup(() => false); };
+  }, []);
 
   // Hydrate the store from server-fetched data (skip for fresh encounters).
   useEffect(() => {
@@ -252,6 +265,7 @@ export function CombatSessionClient({
       conditions: [],
       ruleset_version: monster.ruleset_version,
       is_defeated: false,
+      is_hidden: false,
       is_player: false,
       monster_id: monster.id,
       token_url: monster.token_url ?? null,
@@ -287,6 +301,7 @@ export function CombatSessionClient({
         conditions: [],
         ruleset_version: monster.ruleset_version,
         is_defeated: false,
+        is_hidden: false,
         is_player: false,
         monster_id: monster.id,
         token_url: monster.token_url ?? null,
@@ -460,6 +475,7 @@ export function CombatSessionClient({
                 conditions: [],
                 ruleset_version: null,
                 is_defeated: false,
+                is_hidden: false,
                 is_player: true,
                 monster_id: null,
                 token_url: null,
@@ -745,6 +761,7 @@ export function CombatSessionClient({
         onUpdateDmNotes={handleUpdateDmNotes}
         onUpdatePlayerNotes={handleUpdatePlayerNotes}
         onApplyToMultiple={handleApplyToMultiple}
+        onToggleHidden={handleToggleHidden}
         onToggleGroupExpanded={(gid) => useCombatStore.getState().toggleGroupExpanded(gid)}
         onSetGroupInitiative={(gid, val) => {
           useCombatStore.getState().setGroupInitiative(gid, val);
@@ -795,6 +812,7 @@ interface CombatListProps {
   onUpdateDmNotes: (id: string, notes: string) => void;
   onUpdatePlayerNotes: (id: string, notes: string) => void;
   onApplyToMultiple: (targetIds: string[], amount: number, mode: HpMode) => void;
+  onToggleHidden: (id: string) => void;
   onToggleGroupExpanded: (groupId: string) => void;
   onSetGroupInitiative: (groupId: string, value: number) => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
@@ -843,6 +861,7 @@ function CombatList({
   onUpdateDmNotes,
   onUpdatePlayerNotes,
   onApplyToMultiple,
+  onToggleHidden,
   onToggleGroupExpanded,
   onSetGroupInitiative,
   t,
@@ -868,6 +887,7 @@ function CombatList({
         onUpdatePlayerNotes={onUpdatePlayerNotes}
         allCombatants={combatants}
         onApplyToMultiple={onApplyToMultiple}
+        onToggleHidden={onToggleHidden}
       />
     </div>
   );

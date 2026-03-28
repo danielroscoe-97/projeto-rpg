@@ -170,6 +170,7 @@ export function monsterToCombatant(
     conditions: [],
     ruleset_version: version,
     is_defeated: false,
+    is_hidden: false,
     is_player: false,
     monster_id: monster.id,
     token_url: monster.token_url ?? null,

@@ -15,6 +15,7 @@ import { MonsterActionBar } from "./MonsterActionBar";
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
+import { Eye, EyeOff } from "lucide-react";
 import type { Combatant } from "@/lib/types/combat";
 import type { RollMode } from "@/lib/dice/roll";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -41,6 +42,7 @@ export interface CombatantRowProps {
   rollMode?: RollMode;
   /** Callback for applying HP changes to multiple targets (AoE). */
   onApplyToMultiple?: (targetIds: string[], amount: number, mode: import("./HpAdjuster").HpMode) => void;
+  onToggleHidden?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -65,6 +67,7 @@ export function CombatantRow({
   allCombatants = [],
   rollMode,
   onApplyToMultiple,
+  onToggleHidden,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -159,7 +162,7 @@ export function CombatantRow({
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
       } ${combatant.is_defeated ? "opacity-50" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
         combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : ""
-      }`}
+      } ${combatant.is_hidden ? "border-dashed opacity-70" : ""}`}
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
       data-testid={`combatant-row-${combatant.id}`}
@@ -378,6 +381,14 @@ export function CombatantRow({
           {/* Version badge for monsters */}
           {combatant.ruleset_version && combatant.monster_id && (
             <VersionBadge version={combatant.ruleset_version} />
+          )}
+
+          {/* Hidden indicator badge */}
+          {combatant.is_hidden && (
+            <span className="text-xs text-purple-400 font-medium inline-flex items-center gap-0.5" data-testid="hidden-badge">
+              <EyeOff className="w-3 h-3" />
+              {t("hidden_indicator")}
+            </span>
           )}
 
           {/* Defeated badge */}
@@ -608,6 +619,24 @@ export function CombatantRow({
                   onConfirm={() => onSwitchVersion?.(combatant.id, otherVersion)}
                 />
               </>
+            )}
+            {/* Hide/Reveal toggle — non-player combatants only */}
+            {!combatant.is_player && onToggleHidden && (
+              <button
+                type="button"
+                onClick={() => onToggleHidden(combatant.id)}
+                className={`px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] inline-flex items-center gap-1 ${
+                  combatant.is_hidden
+                    ? "bg-purple-900/30 text-purple-400 hover:bg-purple-900/50"
+                    : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
+                }`}
+                aria-label={combatant.is_hidden ? t("reveal_to_players") : t("hide_from_players")}
+                title={combatant.is_hidden ? t("reveal_to_players") : t("hide_from_players")}
+                data-testid={`hidden-btn-${combatant.id}`}
+              >
+                {combatant.is_hidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                {combatant.is_hidden ? t("hidden_indicator") : null}
+              </button>
             )}
             <button
               type="button"

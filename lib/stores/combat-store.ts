@@ -193,6 +193,13 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       };
     }),
 
+  toggleHidden: (id) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, is_hidden: !c.is_hidden } : c
+      ),
+    })),
+
   updateCombatantStats: (id, stats) =>
     set((state) => ({
       combatants: state.combatants.map((c) => {

@@ -14,6 +14,8 @@ export interface Combatant {
   conditions: string[];
   ruleset_version: RulesetVersion | null;
   is_defeated: boolean;
+  /** Hidden from player view — DM-only visibility until revealed. Default: false. */
+  is_hidden: boolean;
   is_player: boolean;
   /** SRD monster id (from public/srd/*.json), null for custom NPCs and players */
   monster_id: string | null;
@@ -92,6 +94,8 @@ export interface CombatActions {
   toggleCondition: (id: string, condition: string) => void;
   /** Mark a combatant as defeated (or un-defeat). */
   setDefeated: (id: string, is_defeated: boolean) => void;
+  /** Toggle hidden/visible state for a combatant (DM-only). Hidden combatants are invisible to players. */
+  toggleHidden: (id: string) => void;
   /** Update a combatant's editable stats (name, display_name, max_hp, ac, spell_save_dc). Caps current_hp to new max_hp. */
   updateCombatantStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   /** Switch a combatant's ruleset version. */
@@ -117,3 +121,46 @@ export interface CombatActions {
   /** Undo the last mid-combat combatant addition (removes combatant). Returns removed ID or null. */
   undoLastAdd: () => string | null;
 }
+
+// --- CP.1.1: Parsed Monster Action Types ---
+
+export interface ParsedDamage {
+  dice: string;          // "2d6+4", "8d6"
+  avgDamage: number;     // 11, 28
+  type: string;          // "Slashing", "Fire", "Psychic"
+}
+
+export interface ParsedAction {
+  name: string;
+  rawDesc: string;
+  type: "attack" | "save" | "utility" | "unknown";
+  // Attack fields (when type === "attack")
+  attackBonus?: number;
+  attackType?: "melee" | "ranged" | "melee_or_ranged";
+  reach?: string;
+  range?: string;
+  // Save fields (when type === "save")
+  saveDC?: number;
+  saveAbility?: string;      // "DEX", "WIS", "CON", etc.
+  halfOnSave?: boolean;
+  // Damage (both attack and save)
+  damages: ParsedDamage[];
+  // Conditions applied
+  conditionsApplied?: string[];
+}
+
+// --- CP.1.2: Damage Modifier Types ---
+
+export interface DamageModifier {
+  type: string;           // "fire", "cold", "bludgeoning", etc.
+  condition?: string;     // "from nonmagical attacks", "that isn't silvered"
+}
+
+export interface DamageModifiers {
+  resistances: DamageModifier[];
+  immunities: DamageModifier[];
+  vulnerabilities: DamageModifier[];
+  conditionImmunities: string[];
+}
+
+export type DamageModifierResult = "normal" | "resistant" | "immune" | "vulnerable";

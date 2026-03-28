@@ -556,7 +556,10 @@
     "weather_snow": "Snow",
     "weather_fog": "Fog",
     "weather_storm": "Storm",
-    "weather_ash": "Ash"
+    "weather_ash": "Ash",
+    "hide_from_players": "Hide from players",
+    "reveal_to_players": "Reveal to players",
+    "hidden_indicator": "Hidden"
   },
   "conditions": {
     "blinded": "Blinded",
@@ -744,7 +747,8 @@
     "bottom_bar_conditions_label": "Conditions",
     "auto_join_select_character": "Select your character",
     "auto_join_confirm": "Confirm and Join",
-    "auto_join_prefilled": "Your stats were loaded automatically. Review and join!"
+    "auto_join_prefilled": "Your stats were loaded automatically. Review and join!",
+    "dm_turn": "DM's turn"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",

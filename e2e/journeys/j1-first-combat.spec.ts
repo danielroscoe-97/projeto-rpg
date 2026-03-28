@@ -11,6 +11,7 @@
  */
 import { test, expect } from "@playwright/test";
 import { loginAs } from "../helpers/auth";
+import { goToNewSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 test.describe("J1 — Primeiro Combate (DM)", () => {
@@ -21,21 +22,7 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
   test("J1.1 — Happy path: dashboard → novo combate → 2 combatentes → iniciar", async ({
     page,
   }) => {
-    // Navigate to new session
-    await page.goto("/app/session/new");
-    await page.waitForLoadState("domcontentloaded");
-
-    // Handle campaign picker — skip to quick combat
-    const quickBtn = page.locator(
-      'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
-    );
-    if (await quickBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await quickBtn.click();
-    }
-
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({
-      timeout: 10_000,
-    });
+    await goToNewSession(page);
 
     // Set encounter name
     await page.fill(
@@ -85,40 +72,14 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
   });
 
   test("J1.3 — Quick Combat bypasses campaign picker", async ({ page }) => {
-    await page.goto("/app/session/new");
-    await page.waitForLoadState("domcontentloaded");
-
-    // If campaign picker shows, Quick Combat should be available
-    const quickBtn = page.locator(
-      'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
-    );
-    const addRow = page.locator('[data-testid="add-row"]');
-
-    // Either quick combat button exists (click it) or we're already at setup
-    if (await quickBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await quickBtn.click();
-    }
-
-    // Setup screen must be visible without selecting a campaign
-    await expect(addRow).toBeVisible({ timeout: 10_000 });
+    await goToNewSession(page);
+    await expect(page.locator('[data-testid="add-row"]')).toBeVisible();
   });
 
   test("J1.4 — Edge: cannot start combat without combatants", async ({
     page,
   }) => {
-    await page.goto("/app/session/new");
-    await page.waitForLoadState("domcontentloaded");
-
-    const quickBtn = page.locator(
-      'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
-    );
-    if (await quickBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await quickBtn.click();
-    }
-
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({
-      timeout: 10_000,
-    });
+    await goToNewSession(page);
 
     // Try to start combat with 0 combatants
     const startBtn = page.locator('[data-testid="start-combat-btn"]');
@@ -148,56 +109,43 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
     }
   });
 
-  test("J1.6 — Persistence: combatants survive page refresh", async ({
+  test("J1.6 — Persistence: combat survives page refresh", async ({
     page,
   }) => {
-    await page.goto("/app/session/new");
-    await page.waitForLoadState("domcontentloaded");
+    await goToNewSession(page);
 
-    const quickBtn = page.locator(
-      'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
-    );
-    if (await quickBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await quickBtn.click();
-    }
+    await page.fill('[data-testid="encounter-name-input"]', "J1.6 Persist");
 
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({
-      timeout: 10_000,
-    });
-
-    // First, create session by clicking share-prepare (creates session in Supabase)
-    const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
-    if (await prepareBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await prepareBtn.click();
-      await page.waitForTimeout(2_000);
-    }
-
-    // Capture session URL
-    const sessionUrl = page.url();
-
-    // Add a combatant
-    await page.fill('[data-testid="add-row-name"]', "Persistence Test");
+    // Add 2 combatants and start combat (creates session in Supabase)
+    await page.fill('[data-testid="add-row-name"]', "Hero Persist");
     await page.fill('[data-testid="add-row-hp"]', "99");
     await page.fill('[data-testid="add-row-ac"]', "20");
     await page.fill('[data-testid="add-row-init"]', "20");
     await page.click('[data-testid="add-row-btn"]');
 
-    await expect(
-      page.locator('[data-testid^="setup-row-"]').first()
-    ).toBeVisible({ timeout: 5_000 });
+    await page.fill('[data-testid="add-row-name"]', "Goblin Persist");
+    await page.fill('[data-testid="add-row-hp"]', "7");
+    await page.fill('[data-testid="add-row-ac"]', "15");
+    await page.fill('[data-testid="add-row-init"]', "10");
+    await page.click('[data-testid="add-row-btn"]');
 
-    // Refresh the page
-    await page.goto(sessionUrl);
-    await page.waitForLoadState("domcontentloaded");
+    await page.click('[data-testid="start-combat-btn"]');
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
+      timeout: 10_000,
+    });
 
-    // Combatant should persist (data is in Supabase, not just client state)
-    const row = page.locator('[data-testid^="setup-row-"]').first();
-    await expect(row).toBeVisible({ timeout: 10_000 });
+    // Hard refresh
+    await page.reload({ waitUntil: "domcontentloaded" });
 
-    // Verify combatant name persisted
-    const nameInput = page.locator('input[data-testid^="setup-name-"]').first();
-    if (await nameInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await expect(nameInput).toHaveValue("Persistence Test");
-    }
+    // Combat should still be active after refresh
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
+      timeout: 15_000,
+    });
+
+    // Combatants should still be there
+    const combatants = page.locator(
+      '[data-testid="initiative-list"] [data-testid^="combatant-row-"]'
+    );
+    expect(await combatants.count()).toBeGreaterThanOrEqual(2);
   });
 });

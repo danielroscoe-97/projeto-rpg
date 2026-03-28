@@ -419,6 +419,26 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [onNavigate, setError, getSessionId]);
 
+  const handleToggleHidden = useCallback((id: string) => {
+    const snap = useCombatStore.getState();
+    const combatant = snap.combatants.find((c) => c.id === id);
+    if (!combatant) return;
+
+    const wasHidden = combatant.is_hidden;
+    snap.toggleHidden(id);
+
+    if (wasHidden) {
+      // Revealing: broadcast the combatant as a new add so players see it appear
+      const revealed = useCombatStore.getState().combatants.find((c) => c.id === id);
+      if (revealed) {
+        broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: revealed });
+      }
+    } else {
+      // Hiding: broadcast a remove so players see it disappear
+      broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
+    }
+  }, [getSessionId]);
+
   const handleUndoLastAdd = useCallback(() => {
     const removedId = useCombatStore.getState().undoLastAdd();
     if (!removedId) return;
@@ -452,6 +472,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     handleSwitchVersion,
     handleUpdateDmNotes,
     handleUpdatePlayerNotes,
+    handleToggleHidden,
     handleUndoLastAdd,
     handleEndEncounter,
     getSessionId,

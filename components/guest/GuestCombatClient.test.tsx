@@ -104,6 +104,7 @@ const SAMPLE_COMBATANT = {
   conditions: [] as string[],
   ruleset_version: "2014" as const,
   is_defeated: false,
+  is_hidden: false,
   is_player: false,
   monster_id: "goblin",
   token_url: null,

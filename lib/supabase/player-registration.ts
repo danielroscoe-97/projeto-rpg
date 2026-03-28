@@ -165,6 +165,7 @@ export async function registerPlayerCombatant(
         spell_save_dc: null,
         conditions: [],
         is_defeated: false,
+        is_hidden: false,
         is_player: true,
         monster_id: null,
         dm_notes: "",

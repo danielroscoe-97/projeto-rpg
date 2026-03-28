@@ -12,6 +12,7 @@ export type RealtimeEventType =
   | "combat:initiative_reorder"
   | "combat:version_switch"
   | "combat:defeated_change"
+  | "combat:hidden_change"
   | "combat:stats_update"
   | "combat:player_notes_update"
   | "combat:late_join_request"
@@ -74,6 +75,14 @@ export interface RealtimeDefeatedChange {
   type: "combat:defeated_change";
   combatant_id: string;
   is_defeated: boolean;
+}
+
+export interface RealtimeHiddenChange {
+  type: "combat:hidden_change";
+  combatant_id: string;
+  is_hidden: boolean;
+  /** When revealing (is_hidden=false), include the full combatant for player-side add */
+  combatant?: Combatant;
 }
 
 export interface RealtimeStatsUpdate {
@@ -146,6 +155,7 @@ export type RealtimeEvent =
   | RealtimeInitiativeReorder
   | RealtimeVersionSwitch
   | RealtimeDefeatedChange
+  | RealtimeHiddenChange
   | RealtimeStatsUpdate
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
