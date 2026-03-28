@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createClient as createAuthClient, createServiceClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";

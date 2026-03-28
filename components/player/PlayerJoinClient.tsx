@@ -192,7 +192,9 @@ export function PlayerJoinClient({
         }
       } catch (err) {
         captureError(err instanceof Error ? err : new Error(String(err)), {
-          context: "player-join-auth",
+          component: "PlayerJoinClient",
+          action: "initAuth",
+          category: "auth",
           extra: { tokenId },
         });
         if (!cancelled) {
