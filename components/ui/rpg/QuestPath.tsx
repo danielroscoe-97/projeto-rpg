@@ -107,18 +107,20 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
       {/* Faint background curve */}
       <path d={curvePath} stroke="rgba(212,168,83,0.08)" strokeWidth="2" fill="none" />
 
-      {/* Fire gradient curve (dashed, flowing) */}
-      <path
-        d={curvePath}
-        stroke="url(#fire-path-grad)"
-        strokeWidth="2"
-        fill="none"
-        strokeDasharray="14 14"
-        className="animate-flow-dash motion-reduce:animate-none"
-      />
+      {/* Fire gradient curve (dashed, flowing) — only animates after scroll */}
+      {isVisible && (
+        <path
+          d={curvePath}
+          stroke="url(#fire-path-grad)"
+          strokeWidth="2"
+          fill="none"
+          strokeDasharray="14 14"
+          className="animate-flow-dash motion-reduce:animate-none"
+        />
+      )}
 
-      {/* Static embers — appear as the firebolt passes (delayed fade-in) */}
-      {staticEmbers.map((e, i) => (
+      {/* Static embers — only appear after scroll trigger */}
+      {isVisible && staticEmbers.map((e, i) => (
         <rect
           key={`se-${i}`}
           x={e.cx - e.r}
@@ -137,6 +139,7 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
       ))}
 
       {/* === Traveling Pixel Firebolt (ONE trip, triggered on scroll) === */}
+
       {isVisible && (<><g className="motion-reduce:hidden" shapeRendering="crispEdges">
         {/* Ambient glow */}
         <circle r="20" fill="url(#firebolt-glow)" filter="url(#fb-blur)" opacity="0">
