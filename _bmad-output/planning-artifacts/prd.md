@@ -658,6 +658,20 @@ homebrew tools, other RPG systems, marketplace.
 
 ---
 
+### Guided Onboarding (Try Mode)
+
+- FR64: First-time visitors to `/try` receive an automatic guided tour that walks them through the full combat setup flow — from monster search to combat start
+- FR65: The tour uses a spotlight overlay (SVG mask) that highlights the active UI element while dimming the rest of the interface, providing clear visual focus
+- FR66: Tour steps are categorized as "info" (manual advance via Next button) or "interactive" (auto-advance when user completes the required action), creating a learn-by-doing experience
+- FR67: The tour includes smart skip logic — if a user has already completed a step's condition before the tour reaches it (e.g., already added a monster), the step is automatically skipped
+- FR68: Tour progress persists in localStorage — completed tours do not re-trigger on subsequent visits; users can reset the tour from settings
+- FR69: The tour concludes with a conversion CTA encouraging account creation, linking the onboarding experience to the signup funnel
+- FR70: All tour content is fully localized (pt-BR + en) via the existing i18n system (next-intl)
+- FR71: Tour supports responsive positioning — tooltips auto-reposition based on available viewport space, with mobile-first top/bottom placement
+- FR72: Tour tooltips are accessible — role="dialog", aria-live="polite" for step transitions, ESC key to skip, keyboard-navigable buttons with 44px minimum touch targets
+
+---
+
 ### Real-Time Collaboration
 
 - FR28: Player view displays the current initiative order in real time, reflecting DM changes as they happen
