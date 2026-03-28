@@ -169,7 +169,8 @@ function HeroSection() {
 
         {/* Headline */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-foreground leading-[1.1] tracking-tight animate-fade-in-up">
-          Domine o combate.{" "}
+          Domine o combate.
+          <br />
           <span className="text-gold drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]">
             Abandone o papel.
           </span>
