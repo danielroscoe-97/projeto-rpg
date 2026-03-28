@@ -777,11 +777,8 @@ function ComparisonSection() {
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
             Feito para a mesa, não para a tela
           </h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-            VTTs são poderosos para o jogo online. Ferramentas digitais ajudam na consulta.
-            Mas quem mestra{" "}
-            <span className="text-foreground font-medium">presencialmente</span>{" "}
-            merece algo pensado pra isso.
+          <p className="text-muted-foreground text-sm max-w-lg mx-auto leading-relaxed">
+            VTTs são para o online. Quem mestra <span className="text-foreground font-medium">presencialmente</span> merece algo pensado pra isso.
           </p>
         </div>
 
