@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { PlayerBottomBar } from "@/components/player/PlayerBottomBar";
 import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
@@ -167,6 +168,28 @@ export function PlayerInitiativeBoard({
   const turnRef = useRef<HTMLLIElement | null>(null);
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
+
+  // Track known combatant IDs to detect newly revealed combatants (dramatic entrance)
+  const knownIdsRef = useRef<Set<string>>(new Set(combatants.map((c) => c.id)));
+  const [revealedIds, setRevealedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const newIds = new Set<string>();
+    for (const c of combatants) {
+      if (!knownIdsRef.current.has(c.id)) {
+        newIds.add(c.id);
+      }
+    }
+    if (newIds.size > 0) {
+      setRevealedIds(newIds);
+      // Clear the glow effect after animation completes
+      const timer = setTimeout(() => setRevealedIds(new Set()), 1500);
+      // Update known IDs
+      knownIdsRef.current = new Set(combatants.map((c) => c.id));
+      return () => clearTimeout(timer);
+    }
+    knownIdsRef.current = new Set(combatants.map((c) => c.id));
+  }, [combatants]);
 
   // Update max revealed index when turn advances in round 1
   useEffect(() => {
@@ -374,6 +397,19 @@ export function PlayerInitiativeBoard({
       {/* HP legend for first-time players (B2-6) */}
       <HPLegendOverlay />
 
+      {/* DM's turn indicator — shown when a hidden NPC has the current turn */}
+      {currentTurnIndex === -1 && (
+        <div
+          className="bg-card border border-amber-400/50 rounded-lg px-4 py-3 text-center"
+          data-testid="dm-turn-indicator"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-gold text-lg lg:text-sm leading-none select-none">▶</span>
+            <span className="text-foreground font-medium text-lg lg:text-sm">{t("dm_turn")}</span>
+          </div>
+        </div>
+      )}
+
       {/* Initiative Order */}
       <ul
         className="space-y-2 lg:space-y-2"
@@ -381,11 +417,13 @@ export function PlayerInitiativeBoard({
         aria-label={t("initiative_order")}
         data-testid="player-initiative-board"
       >
+        <AnimatePresence mode="popLayout">
         {combatants.map((combatant, index) => {
           // Progressive reveal: hide unrevealed combatants in round 1
           if (!isRevealed(index)) return null;
           const isCurrentTurn = index === currentTurnIndex;
           const isPlayer = combatant.is_player;
+          const isNewlyRevealed = revealedIds.has(combatant.id);
 
           // Player characters: show full HP bar
           const hpPct = isPlayer && combatant.max_hp && combatant.max_hp > 0
@@ -396,16 +434,23 @@ export function PlayerInitiativeBoard({
           const hasTempHp = isPlayer && (combatant.temp_hp ?? 0) > 0;
 
           return (
-            <li
+            <motion.li
               key={combatant.id}
               ref={isCurrentTurn ? turnRef : undefined}
+              initial={isNewlyRevealed ? { scale: 0.8, opacity: 0 } : false}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              layout
               className={`bg-card border rounded-lg transition-all duration-300 min-h-[48px] ${
                 isCurrentTurn
                   ? "border-amber-400 border-2 bg-gold/5 px-4 py-4 lg:px-4 lg:py-3"
                   : "border-border px-4 py-3"
               } ${combatant.is_defeated ? "opacity-50" : ""} ${
                 isPlayer ? "border-gold/40" : ""
-              } ${roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""}`}
+              } ${roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""} ${
+                isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
+              }`}
               role="listitem"
               aria-current={isCurrentTurn ? true : undefined}
               data-testid={`player-combatant-${combatant.id}`}
@@ -486,9 +531,10 @@ export function PlayerInitiativeBoard({
                   ))}
                 </div>
               )}
-            </li>
+            </motion.li>
           );
         })}
+        </AnimatePresence>
       </ul>
 
       {/* Notification toggle */}

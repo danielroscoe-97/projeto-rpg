@@ -453,7 +453,10 @@
     "player_link_already": "Já vinculado a {name}",
     "player_link_in_use": "em uso",
     "no_rolls_yet": "Nenhuma rolagem ainda",
-    "dice_log_title": "Histórico de Rolagens"
+    "dice_log_title": "Histórico de Rolagens",
+    "hide_from_players": "Ocultar dos jogadores",
+    "reveal_to_players": "Revelar para jogadores",
+    "hidden_indicator": "Oculto"
   },
   "conditions": {
     "blinded": "Cego",
@@ -641,7 +644,8 @@
     "notifications_off": "🔕 Notificações de turno DESLIGADAS",
     "bottom_bar_your_character": "Seu Personagem",
     "bottom_bar_ac_label": "CA",
-    "bottom_bar_conditions_label": "Condições"
+    "bottom_bar_conditions_label": "Condições",
+    "dm_turn": "Vez do Mestre"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",

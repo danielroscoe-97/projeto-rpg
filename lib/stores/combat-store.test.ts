@@ -18,6 +18,7 @@ const baseCombatant: Omit<Combatant, "id"> = {
   conditions: [],
   ruleset_version: "2014",
   is_defeated: false,
+  is_hidden: false,
   is_player: false,
   monster_id: "goblin",
   token_url: null,

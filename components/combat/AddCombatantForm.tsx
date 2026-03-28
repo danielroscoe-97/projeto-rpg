@@ -61,6 +61,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
       conditions: [],
       ruleset_version: null,
       is_defeated: false,
+      is_hidden: false,
       is_player: false,
       monster_id: null,
       token_url: null,

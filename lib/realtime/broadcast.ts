@@ -109,12 +109,25 @@ function validateEvent(event: SanitizedEvent): boolean {
 }
 
 /** Sanitize a DM event for player-safe broadcast.
- *  Removes sensitive data and returns a properly typed SanitizedEvent. */
-function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
+ *  Removes sensitive data and returns a properly typed SanitizedEvent.
+ *  Returns null when the event should be suppressed entirely (e.g. hidden combatant_add). */
+function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   // Audio events pass through unchanged — no sensitive data (no monster stats/HP)
   if (event.type === "audio:play_sound") return event;
 
+  // Turn advance: adjust the turn index for the player-visible combatant list
+  if (event.type === "combat:turn_advance") {
+    return {
+      ...event,
+      current_turn_index: adjustTurnIndexForPlayers(event.current_turn_index),
+    };
+  }
+
   if (event.type === "combat:combatant_add") {
+    // Never broadcast hidden combatants to players
+    if (event.combatant.is_hidden) {
+      return null;
+    }
     const result: SanitizedCombatantAdd = {
       type: event.type,
       combatant: sanitizeCombatant(event.combatant),
@@ -122,20 +135,46 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
     return result;
   }
 
+  // combat:hidden_change — when revealing, broadcast as combatant_add; when hiding, broadcast as combatant_remove
+  // This is handled by the caller (useCombatActions), so hidden_change never reaches sanitizePayload directly.
+  // But as a safety net, block it from leaking raw hidden state to players.
+  if (event.type === "combat:hidden_change") {
+    // Should never reach here — caller converts to add/remove. Block as safety net.
+    return { type: "combat:combatant_remove", combatant_id: event.combatant_id } as SanitizedEvent;
+  }
+
   if (event.type === "session:state_sync") {
+    // Filter out hidden combatants from the full state sync
+    const visibleCombatants = event.combatants.filter((c) => !c.is_hidden);
+
+    // Adjust turn index: map DM's index to the visible combatant list
+    // If the current turn combatant is hidden, use -1 to signal "DM's turn"
+    let adjustedTurnIndex = event.current_turn_index;
+    const turnCombatant = event.combatants[event.current_turn_index];
+    if (turnCombatant) {
+      if (turnCombatant.is_hidden) {
+        adjustedTurnIndex = -1; // Hidden NPC's turn — player sees "DM's turn"
+      } else {
+        const visibleIdx = visibleCombatants.findIndex((c) => c.id === turnCombatant.id);
+        adjustedTurnIndex = visibleIdx >= 0 ? visibleIdx : event.current_turn_index;
+      }
+    }
+
     const result: SanitizedStateSync = {
       type: event.type,
-      combatants: event.combatants.map(sanitizeCombatant),
-      current_turn_index: event.current_turn_index,
+      combatants: visibleCombatants.map(sanitizeCombatant),
+      current_turn_index: adjustedTurnIndex,
       round_number: event.round_number,
     };
     return result;
   }
 
   if (event.type === "combat:initiative_reorder") {
+    // Filter out hidden combatants from reorder broadcasts
+    const visibleCombatants = event.combatants.filter((c) => !c.is_hidden);
     const result: SanitizedInitiativeReorder = {
       type: event.type,
-      combatants: event.combatants.map(sanitizeCombatant),
+      combatants: visibleCombatants.map(sanitizeCombatant),
     };
     return result;
   }
@@ -182,6 +221,39 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent {
   return event;
 }
 
+/** Check if a combatant-targeted event should be suppressed because the combatant is hidden.
+ *  Accepts an optional lookup function to resolve combatant hidden status by ID. */
+let _hiddenLookup: ((id: string) => boolean) | null = null;
+/** Lookup function to get all combatants from the store (for turn index adjustment). */
+let _combatantsLookup: (() => Combatant[]) | null = null;
+
+/** Register a callback to check if a combatant is hidden by ID.
+ *  Called once by the combat session to wire the store lookup. */
+export function registerHiddenLookup(fn: (id: string) => boolean, combatantsGetter?: () => Combatant[]): void {
+  _hiddenLookup = fn;
+  if (combatantsGetter) _combatantsLookup = combatantsGetter;
+}
+
+function isCombatantHidden(combatantId: string): boolean {
+  return _hiddenLookup ? _hiddenLookup(combatantId) : false;
+}
+
+/** Adjust a DM-side turn index to the player-visible index (excluding hidden combatants).
+ *  Returns -1 if the turn is on a hidden combatant (signals "DM's turn" to players). */
+function adjustTurnIndexForPlayers(dmIndex: number): number {
+  if (!_combatantsLookup) return dmIndex;
+  const allCombatants = _combatantsLookup();
+  const turnCombatant = allCombatants[dmIndex];
+  if (!turnCombatant) return dmIndex;
+  if (turnCombatant.is_hidden) return -1;
+  // Count visible combatants before this one
+  let visibleIdx = 0;
+  for (let i = 0; i < dmIndex; i++) {
+    if (!allCombatants[i].is_hidden) visibleIdx++;
+  }
+  return visibleIdx;
+}
+
 /** Broadcast a combat event to all connected players.
  *  Guards against sending to a stale channel whose session doesn't match. */
 export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
@@ -194,9 +266,30 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     });
     return;
   }
+
+  // SECURITY: Never broadcast hidden combatants to the player channel
+  if (event.type === "combat:combatant_add" && event.combatant.is_hidden) {
+    return;
+  }
+
+  // SECURITY: Suppress per-combatant events for hidden combatants
+  const combatantTargetedTypes: string[] = [
+    "combat:hp_update",
+    "combat:condition_change",
+    "combat:defeated_change",
+    "combat:stats_update",
+    "combat:player_notes_update",
+    "combat:version_switch",
+  ];
+  if (combatantTargetedTypes.includes(event.type) && "combatant_id" in event) {
+    if (isCombatantHidden((event as { combatant_id: string }).combatant_id)) {
+      return;
+    }
+  }
+
   const ch = getDmChannel(sessionId);
   const safeEvent = sanitizePayload(event);
-  if (!validateEvent(safeEvent)) return;
+  if (!safeEvent || !validateEvent(safeEvent)) return;
   ch.send({
     type: "broadcast",
     event: safeEvent.type,

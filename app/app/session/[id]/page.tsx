@@ -65,6 +65,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     conditions: row.conditions ?? [],
     ruleset_version: row.ruleset_version ?? null,
     is_defeated: row.is_defeated ?? false,
+    is_hidden: (row as Record<string, unknown>).is_hidden as boolean ?? false,
     is_player: row.is_player ?? false,
     monster_id: row.monster_id ?? null,
     token_url: null,

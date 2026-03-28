@@ -14,6 +14,8 @@ export interface Combatant {
   conditions: string[];
   ruleset_version: RulesetVersion | null;
   is_defeated: boolean;
+  /** Hidden from player view — DM-only visibility until revealed. Default: false. */
+  is_hidden: boolean;
   is_player: boolean;
   /** SRD monster id (from public/srd/*.json), null for custom NPCs and players */
   monster_id: string | null;
@@ -90,6 +92,8 @@ export interface CombatActions {
   toggleCondition: (id: string, condition: string) => void;
   /** Mark a combatant as defeated (or un-defeat). */
   setDefeated: (id: string, is_defeated: boolean) => void;
+  /** Toggle hidden/visible state for a combatant (DM-only). Hidden combatants are invisible to players. */
+  toggleHidden: (id: string) => void;
   /** Update a combatant's editable stats (name, display_name, max_hp, ac, spell_save_dc). Caps current_hp to new max_hp. */
   updateCombatantStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   /** Switch a combatant's ruleset version. */

@@ -94,6 +94,7 @@ const makeC = (id: string, name: string): Combatant => ({
   conditions: [],
   ruleset_version: "2014",
   is_defeated: false,
+  is_hidden: false,
   is_player: false,
   monster_id: null,
   token_url: null,
