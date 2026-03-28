@@ -428,6 +428,7 @@ export function MonsterSearchPanel({
                     : "hover:bg-white/[0.04]"
                 }`}
                 data-testid={`srd-result-${monster.id}`}
+                {...(idx === 0 ? { "data-tour-id": "monster-result" } : {})}
               >
                 {/* Monster token thumbnail */}
                 <MonsterToken

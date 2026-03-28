@@ -1271,5 +1271,31 @@
     "pro_feature_8": "Combat soundboard",
     "pro_feature_9": "Private DM notes",
     "pro_feature_10": "Session analytics"
+  },
+  "tour": {
+    "welcome_title": "Welcome to Pocket DM!",
+    "welcome_description": "Let me guide you through setting up your first combat. It takes less than 2 minutes!",
+    "search_title": "Search Monsters",
+    "search_description": "Use this field to search for D&D monsters by name. Try typing 'Goblin'!",
+    "search_hint": "Type at least 3 letters to search...",
+    "add_monster_title": "Add to Combat",
+    "add_monster_description": "Click on a monster from the list to add it to the combat.",
+    "add_monster_hint": "Click a monster to continue...",
+    "manual_add_title": "Manual Entry",
+    "manual_add_description": "You can also manually add players or custom NPCs using this row.",
+    "initiative_title": "Roll Initiative",
+    "initiative_description": "Click to roll initiative for all combatants and set the turn order.",
+    "initiative_hint": "Click the button to roll initiative...",
+    "start_title": "Start Combat!",
+    "start_description": "All set! Click to start the combat and begin managing turns.",
+    "start_hint": "Click to start combat...",
+    "controls_title": "Combat Controls",
+    "controls_description": "Use 'Next Turn' to advance in initiative order and the HP controls to manage combatant health.",
+    "complete_title": "All Done!",
+    "complete_description": "Now you know the basics of Pocket DM! Create your account to save combats, share sessions with players, and more.",
+    "skip": "Skip tutorial",
+    "next": "Next",
+    "finish": "Done",
+    "create_account": "Create Account"
   }
 }

@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { GuestBanner } from "@/components/guest/GuestBanner";
+import { TourProvider } from "@/components/tour/TourProvider";
 
 export default function TryLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,6 +36,7 @@ export default function TryLayout({ children }: { children: React.ReactNode }) {
         <div className="p-6">
           {children}
         </div>
+        <TourProvider />
       </main>
     </div>
   );

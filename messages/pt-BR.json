@@ -1271,5 +1271,31 @@
     "pro_feature_8": "Soundboard de combate",
     "pro_feature_9": "Notas privadas do DM",
     "pro_feature_10": "Analytics de sessão"
+  },
+  "tour": {
+    "welcome_title": "Bem-vindo ao Pocket DM!",
+    "welcome_description": "Vou te guiar para montar seu primeiro combate. Leva menos de 2 minutos!",
+    "search_title": "Pesquise Monstros",
+    "search_description": "Use este campo para buscar monstros do D&D pelo nome. Experimente digitar 'Goblin'!",
+    "search_hint": "Digite pelo menos 3 letras para buscar...",
+    "add_monster_title": "Adicione ao Combate",
+    "add_monster_description": "Clique em um monstro da lista para adicioná-lo ao combate.",
+    "add_monster_hint": "Clique em um monstro para continuar...",
+    "manual_add_title": "Adição Manual",
+    "manual_add_description": "Você também pode adicionar jogadores ou NPCs personalizados manualmente nesta linha.",
+    "initiative_title": "Role a Iniciativa",
+    "initiative_description": "Clique para rolar a iniciativa de todos os combatentes e definir a ordem dos turnos.",
+    "initiative_hint": "Clique no botão para rolar a iniciativa...",
+    "start_title": "Iniciar Combate!",
+    "start_description": "Tudo pronto! Clique para iniciar o combate e começar a gerenciar os turnos.",
+    "start_hint": "Clique para iniciar o combate...",
+    "controls_title": "Controles do Combate",
+    "controls_description": "Use 'Próximo Turno' para avançar na ordem de iniciativa e os controles de HP para gerenciar a vida dos combatentes.",
+    "complete_title": "Tudo Pronto!",
+    "complete_description": "Agora você sabe o básico do Pocket DM! Crie sua conta para salvar combates, compartilhar sessões com jogadores e muito mais.",
+    "skip": "Pular tutorial",
+    "next": "Próximo",
+    "finish": "Concluir",
+    "create_account": "Criar Conta"
   }
 }

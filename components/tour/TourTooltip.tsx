@@ -1,0 +1,195 @@
+"use client";
+
+import { useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { TourProgress } from "./TourProgress";
+import { TOUR_STEPS } from "./tour-steps";
+import type { TourStepConfig } from "./tour-steps";
+
+interface TourTooltipProps {
+  step: TourStepConfig;
+  stepIndex: number;
+  targetRect: DOMRect | null;
+  onNext: () => void;
+  onSkip: () => void;
+  onComplete: () => void;
+}
+
+type Position = "top" | "bottom" | "left" | "right";
+
+function computePosition(
+  targetRect: DOMRect,
+  preferred: Position | undefined
+): { position: Position; style: React.CSSProperties } {
+  const padding = 12;
+  const tooltipWidth = Math.min(340, window.innerWidth - 32);
+  const isMobile = window.innerWidth < 768;
+
+  // On mobile, only use top/bottom
+  const candidates: Position[] = isMobile
+    ? ["bottom", "top"]
+    : preferred
+      ? [preferred, "bottom", "top", "right", "left"]
+      : ["bottom", "top", "right", "left"];
+
+  const spaceAbove = targetRect.top;
+  const spaceBelow = window.innerHeight - targetRect.bottom;
+  const spaceLeft = targetRect.left;
+  const spaceRight = window.innerWidth - targetRect.right;
+
+  const minSpace = 120;
+
+  let chosen: Position = candidates[0];
+  for (const pos of candidates) {
+    if (pos === "top" && spaceAbove >= minSpace) { chosen = pos; break; }
+    if (pos === "bottom" && spaceBelow >= minSpace) { chosen = pos; break; }
+    if (pos === "left" && spaceLeft >= tooltipWidth + padding) { chosen = pos; break; }
+    if (pos === "right" && spaceRight >= tooltipWidth + padding) { chosen = pos; break; }
+  }
+
+  const style: React.CSSProperties = { maxWidth: tooltipWidth };
+
+  const centerX = targetRect.left + targetRect.width / 2;
+
+  switch (chosen) {
+    case "bottom":
+      style.top = targetRect.bottom + padding;
+      style.left = Math.max(16, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16));
+      break;
+    case "top":
+      style.bottom = window.innerHeight - targetRect.top + padding;
+      style.left = Math.max(16, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16));
+      break;
+    case "right":
+      style.top = targetRect.top + targetRect.height / 2 - 60;
+      style.left = targetRect.right + padding;
+      break;
+    case "left":
+      style.top = targetRect.top + targetRect.height / 2 - 60;
+      style.right = window.innerWidth - targetRect.left + padding;
+      break;
+  }
+
+  return { position: chosen, style };
+}
+
+export function TourTooltip({
+  step,
+  stepIndex,
+  targetRect,
+  onNext,
+  onSkip,
+  onComplete,
+}: TourTooltipProps) {
+  const t = useTranslations();
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const isLastStep = stepIndex === TOUR_STEPS.length - 1;
+  const isInteractive = step.type === "interactive";
+
+  // Focus trap: focus tooltip on mount
+  useEffect(() => {
+    const el = tooltipRef.current;
+    if (el) {
+      const focusable = el.querySelector<HTMLElement>("button, [tabindex]");
+      focusable?.focus();
+    }
+  }, [stepIndex]);
+
+  // ESC to skip
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onSkip();
+      }
+    },
+    [onSkip]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  if (!targetRect) return null;
+
+  const { position, style } = computePosition(targetRect, step.position);
+
+  // Arrow direction is opposite to tooltip position
+  const arrowClass: Record<Position, string> = {
+    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-[#2a2a4a]  border-l-transparent border-r-transparent border-t-transparent border-[8px]",
+    top: "top-full left-1/2 -translate-x-1/2 border-t-[#2a2a4a] border-l-transparent border-r-transparent border-b-transparent border-[8px]",
+    right: "right-full top-1/2 -translate-y-1/2 border-r-[#2a2a4a] border-t-transparent border-b-transparent border-l-transparent border-[8px]",
+    left: "left-full top-1/2 -translate-y-1/2 border-l-[#2a2a4a] border-t-transparent border-b-transparent border-r-transparent border-[8px]",
+  };
+
+  const slideDirection = {
+    bottom: { y: -8 },
+    top: { y: 8 },
+    right: { x: -8 },
+    left: { x: 8 },
+  };
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={step.id}
+        ref={tooltipRef}
+        role="dialog"
+        aria-label={t(step.titleKey)}
+        aria-describedby={`tour-step-desc-${step.id}`}
+        className="fixed z-[10001] bg-[#2a2a4a] border border-gold/30 rounded-lg shadow-2xl p-4"
+        style={style}
+        initial={{ opacity: 0, ...slideDirection[position] }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        {/* Arrow */}
+        <div className={`absolute w-0 h-0 ${arrowClass[position]}`} />
+
+        {/* Content */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-gold">
+            {t(step.titleKey)}
+          </h3>
+          <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
+            {t(step.descriptionKey)}
+          </p>
+
+          {isInteractive && step.interactiveHint && (
+            <p className="text-xs text-gold/70 italic">
+              {t(step.interactiveHint)}
+            </p>
+          )}
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-1">
+            <TourProgress currentStep={stepIndex} />
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onSkip}
+                className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1"
+              >
+                {t("tour.skip")}
+              </button>
+
+              {!isInteractive && (
+                <button
+                  type="button"
+                  onClick={isLastStep ? onComplete : onNext}
+                  className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200"
+                >
+                  {isLastStep ? t("tour.finish") : t("tour.next")}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}

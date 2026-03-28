@@ -381,7 +381,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
     "bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px]";
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-4 px-2">
+    <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-tour-id="welcome">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
@@ -406,12 +406,14 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       </div>
 
       {/* SRD Monster Search */}
-      <MonsterSearchPanel
-        rulesetVersion={rulesetVersion}
-        onSelectMonster={handleSelectMonster}
-        onSelectMonsterGroup={handleSelectMonsterGroup}
-        onMonsterAdded={handleMonsterAdded}
-      />
+      <div data-tour-id="monster-search">
+        <MonsterSearchPanel
+          rulesetVersion={rulesetVersion}
+          onSelectMonster={handleSelectMonster}
+          onSelectMonsterGroup={handleSelectMonsterGroup}
+          onMonsterAdded={handleMonsterAdded}
+        />
+      </div>
 
       {/* Column headers — Sticky for usability in long lists */}
       <div className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-wider border-b border-border/50 mb-1">
@@ -459,6 +461,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       <div
         className={`flex flex-wrap items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
         data-testid="add-row"
+        data-tour-id="add-row"
         onKeyDown={addRowKeyDown}
       >
         <span className="w-5 text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
@@ -557,6 +560,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
                 className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 title={t("roll_all_title")}
                 data-testid="roll-all-init-btn"
+                data-tour-id="roll-initiative"
               >
                 🎲 {t("roll_all")}
               </button>
@@ -578,6 +582,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
             disabled={combatants.length === 0}
             className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             data-testid="start-combat-btn"
+            data-tour-id="start-combat"
           >
             {t("start_combat")}
           </button>
@@ -859,7 +864,7 @@ export function GuestCombatClient() {
   // Active combat view
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
+      <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat" data-tour-id="tour-complete">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-foreground font-semibold">
@@ -867,7 +872,7 @@ export function GuestCombatClient() {
             </h2>
             {combatStartTime && <CombatTimer startTime={combatStartTime} />}
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap" data-tour-id="combat-controls">
             {/* Encerrar combate */}
             <button
               type="button"
