@@ -229,12 +229,17 @@ Cenários visuais temáticos, geração por IA, efeitos cinematográficos e pres
 Pesquisa de kit hardware (projetor + app) para projetar na mesa física.
 **Stories:** 3
 
+### Epic 9: Guided Onboarding — Try Mode (Implementado)
+Tour guiado interativo no modo `/try` com spotlight SVG, steps interativos com auto-advance, smart skip logic, i18n (pt-BR + en), e CTA de conversão. Baseado em análise competitiva do Shieldmaiden VTT.
+**FRs cobertos:** FR64, FR65, FR66, FR67, FR68, FR69, FR70, FR71, FR72
+**Stories:** 4 (3 implementadas + 1 pendente com melhorias Shieldmaiden)
+
 ---
 
 > **Nota:** As stories detalhadas para cada Epic estão nos arquivos dedicados:
 > - Epics 0, 1, 2: `_bmad-output/implementation-artifacts/v2-epics-0-1-2-stories.md`
 > - Epics 3, 4, 5: `_bmad-output/planning-artifacts/epics-v2-stories.md`
-> - Epics 6, 7, 8: Inline abaixo (backlog, menos detalhadas)
+> - Epic 9: `_bmad-output/planning-artifacts/epic-9-guided-onboarding.md`
 >
 > **Para stories completas com Given/When/Then AC, consulte os arquivos acima.**
 > Abaixo segue o resumo de cada story com referências.

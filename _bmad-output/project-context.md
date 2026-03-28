@@ -152,6 +152,18 @@ session:state_sync       → encounter state completo (reconnect)
 | SRD | `lib/stores/srd-store.ts` | Inicialização e status dos bundles SRD |
 | Dice History | `lib/stores/dice-history-store.ts` | Histórico de rolagens |
 | Pinned Cards | `lib/stores/pinned-cards-store.ts` | Cards fixados do Oracle |
+| Tour | `lib/stores/tour-store.ts` | Guided onboarding tour (persist localStorage `guided-tour-v1`) |
+
+### Guided Onboarding Tour (Try Mode)
+
+- Tour automático na primeira visita ao `/try` — 8 steps guiando o fluxo completo de combate
+- **Componentes:** `components/tour/` — TourProvider (orquestrador), TourOverlay (SVG spotlight), TourTooltip (posicionamento auto), TourProgress (dots)
+- **Steps config:** `components/tour/tour-steps.ts` — declarativo, cada step tem `id`, `targetSelector` (data-tour-id), `type` (info/interactive)
+- **Interactive steps** auto-avançam via subscribe no guest-combat-store (ex: combatants.length aumenta → avança)
+- **Smart skip:** `shouldSkipStep()` pula steps cujas condições já foram satisfeitas
+- **Spotlight:** SVG mask com `pointer-events: auto` na área do spotlight para steps interativos
+- **i18n:** namespace `tour.*` em `messages/pt-BR.json` + `messages/en.json`
+- **Elementos alvo:** Marcados com `data-tour-id="..."` nos componentes GuestCombatClient e MonsterSearchPanel
 
 ### SRD System
 
