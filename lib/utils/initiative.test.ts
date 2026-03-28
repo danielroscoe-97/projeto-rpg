@@ -2,6 +2,7 @@ import {
   sortByInitiative,
   detectTies,
   assignInitiativeOrder,
+  adjustInitiativeAfterReorder,
 } from "./initiative";
 import type { Combatant } from "@/lib/types/combat";
 

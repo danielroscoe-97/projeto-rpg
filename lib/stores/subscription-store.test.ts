@@ -2,8 +2,8 @@ import { useSubscriptionStore } from "./subscription-store";
 
 // Mock Supabase client
 const mockGetUser = jest.fn();
-const mockSingle = jest.fn();
-const mockEq = jest.fn(() => ({ single: mockSingle }));
+const mockMaybeSingle = jest.fn();
+const mockEq = jest.fn(() => ({ maybeSingle: mockMaybeSingle }));
 const mockSelect = jest.fn(() => ({ eq: mockEq }));
 const mockFrom = jest.fn(() => ({ select: mockSelect }));
 
@@ -45,7 +45,7 @@ describe("subscription-store", () => {
       mockGetUser.mockResolvedValue({
         data: { user: { id: "user-1" } },
       });
-      mockSingle.mockResolvedValue({
+      mockMaybeSingle.mockResolvedValue({
         data: {
           id: "sub-1",
           user_id: "user-1",
@@ -84,7 +84,7 @@ describe("subscription-store", () => {
       mockGetUser.mockResolvedValue({
         data: { user: { id: "user-1" } },
       });
-      mockSingle.mockResolvedValue({ data: null });
+      mockMaybeSingle.mockResolvedValue({ data: null });
 
       await useSubscriptionStore.getState().loadSubscription();
 
@@ -97,7 +97,7 @@ describe("subscription-store", () => {
       mockGetUser.mockResolvedValue({
         data: { user: { id: "user-1" } },
       });
-      mockSingle.mockResolvedValue({
+      mockMaybeSingle.mockResolvedValue({
         data: {
           id: "sub-1",
           user_id: "user-1",
@@ -123,7 +123,7 @@ describe("subscription-store", () => {
       mockGetUser.mockResolvedValue({
         data: { user: { id: "user-1" } },
       });
-      mockSingle.mockResolvedValue({
+      mockMaybeSingle.mockResolvedValue({
         data: {
           id: "sub-1",
           user_id: "user-1",
@@ -148,7 +148,7 @@ describe("subscription-store", () => {
       mockGetUser.mockResolvedValue({
         data: { user: { id: "user-1" } },
       });
-      mockSingle.mockResolvedValue({
+      mockMaybeSingle.mockResolvedValue({
         data: {
           id: "sub-1",
           user_id: "user-1",
