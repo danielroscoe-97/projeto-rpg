@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { TourProgress } from "./TourProgress";
@@ -26,7 +27,6 @@ function computePosition(
   const tooltipWidth = Math.min(340, window.innerWidth - 32);
   const isMobile = window.innerWidth < 768;
 
-  // On mobile, only use top/bottom
   const candidates: Position[] = isMobile
     ? ["bottom", "top"]
     : preferred
@@ -86,12 +86,13 @@ export function TourTooltip({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const isLastStep = stepIndex === TOUR_STEPS.length - 1;
   const isInteractive = step.type === "interactive";
+  const isCompleteStep = step.phase === "complete";
 
   // Focus trap: focus tooltip on mount
   useEffect(() => {
     const el = tooltipRef.current;
     if (el) {
-      const focusable = el.querySelector<HTMLElement>("button, [tabindex]");
+      const focusable = el.querySelector<HTMLElement>("button, [tabindex], a");
       focusable?.focus();
     }
   }, [stepIndex]);
@@ -112,22 +113,16 @@ export function TourTooltip({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  if (!targetRect) {
-    // For steps without a visible target (e.g. welcome on slow render),
-    // show centered tooltip instead of nothing
-    return null;
-  }
+  if (!targetRect) return null;
 
-  // Strip "tour." prefix from keys since we use useTranslations("tour")
   const titleKey = step.titleKey.replace(/^tour\./, "");
   const descKey = step.descriptionKey.replace(/^tour\./, "");
   const hintKey = step.interactiveHint?.replace(/^tour\./, "");
 
   const { position, style } = computePosition(targetRect, step.position);
 
-  // Arrow direction is opposite to tooltip position
   const arrowClass: Record<Position, string> = {
-    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-card  border-l-transparent border-r-transparent border-t-transparent border-[8px]",
+    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-card border-l-transparent border-r-transparent border-t-transparent border-[8px]",
     top: "top-full left-1/2 -translate-x-1/2 border-t-card border-l-transparent border-r-transparent border-b-transparent border-[8px]",
     right: "right-full top-1/2 -translate-y-1/2 border-r-card border-t-transparent border-b-transparent border-l-transparent border-[8px]",
     left: "left-full top-1/2 -translate-y-1/2 border-l-card border-t-transparent border-b-transparent border-r-transparent border-[8px]",
@@ -161,6 +156,19 @@ export function TourTooltip({
 
         {/* Content */}
         <div className="space-y-3">
+          {/* Phase badge */}
+          <div className="flex items-center gap-2">
+            <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+              step.phase === "setup"
+                ? "bg-emerald-900/30 text-emerald-400"
+                : step.phase === "combat"
+                  ? "bg-red-900/30 text-red-400"
+                  : "bg-gold/20 text-gold"
+            }`}>
+              {t(`phase_${step.phase}`)}
+            </span>
+          </div>
+
           <h3 className="text-sm font-semibold text-gold">
             {t(titleKey)}
           </h3>
@@ -169,9 +177,20 @@ export function TourTooltip({
           </p>
 
           {isInteractive && hintKey && (
-            <p className="text-xs text-gold/70 italic">
+            <p className="text-xs text-gold/70 italic flex items-center gap-1.5">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold/70 animate-pulse" aria-hidden="true" />
               {t(hintKey)}
             </p>
+          )}
+
+          {/* Completion CTA */}
+          {isCompleteStep && (
+            <Link
+              href="/auth/sign-up"
+              className="block w-full text-center px-4 py-2.5 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+            >
+              {t("create_account")}
+            </Link>
           )}
 
           {/* Footer */}
@@ -181,19 +200,19 @@ export function TourTooltip({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={onSkip}
+                onClick={isLastStep ? onComplete : onSkip}
                 className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
               >
-                {t("skip")}
+                {isLastStep ? t("finish") : t("skip")}
               </button>
 
-              {!isInteractive && (
+              {!isInteractive && !isCompleteStep && (
                 <button
                   type="button"
-                  onClick={isLastStep ? onComplete : onNext}
+                  onClick={onNext}
                   className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                 >
-                  {isLastStep ? t("finish") : t("next")}
+                  {t("next")}
                 </button>
               )}
             </div>

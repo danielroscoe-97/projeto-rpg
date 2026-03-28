@@ -6,6 +6,7 @@ import { useGuestCombatStore, type GuestCombatPhase } from "@/lib/stores/guest-c
 import type { Combatant } from "@/lib/types/combat";
 import { TourOverlay } from "./TourOverlay";
 import { TourTooltip } from "./TourTooltip";
+import { TourHelpButton } from "./TourHelpButton";
 import { TOUR_STEPS } from "./tour-steps";
 
 /**
@@ -16,31 +17,26 @@ function shouldSkipStep(stepId: string): boolean {
   const state = useGuestCombatStore.getState();
   switch (stepId) {
     case "monster-result":
-      // Skip if user already added combatants
       return state.combatants.length > 0;
     case "roll-initiative":
-      // Skip if all combatants already have initiative
       return (
         state.combatants.length > 0 &&
         state.combatants.every((c) => c.initiative !== null)
       );
     case "start-combat":
-      // Skip if already in combat
       return state.phase === "combat";
     case "combat-controls":
+    case "hp-adjust":
+    case "next-turn":
+    case "keyboard-tip":
     case "tour-complete":
-      // These steps only make sense in combat phase — but don't skip them
-      // during phase transition. They'll be reached via smartAdvance after
-      // the start-combat interactive step detects the phase change.
+      // These are reached via smartAdvance after phase transition
       return false;
     default:
       return false;
   }
 }
 
-/**
- * Finds the next valid step index, skipping any that should be skipped.
- */
 function findNextValidStep(fromStep: number): number {
   let step = fromStep;
   while (step < TOUR_STEPS.length && shouldSkipStep(TOUR_STEPS[step].id)) {
@@ -50,7 +46,7 @@ function findNextValidStep(fromStep: number): number {
 }
 
 export function TourProvider() {
-  const { currentStep, isActive, isCompleted, startTour, nextStep, goToStep, skipTour, completeTour } =
+  const { currentStep, isActive, isCompleted, startTour, goToStep, skipTour, completeTour } =
     useTourStore();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -86,7 +82,6 @@ export function TourProvider() {
       goToStep(next);
     }
 
-    // Reset after a tick
     setTimeout(() => {
       advancingRef.current = false;
     }, 100);
@@ -96,7 +91,6 @@ export function TourProvider() {
   useEffect(() => {
     if (!isActive || currentStep >= TOUR_STEPS.length) return;
     if (shouldSkipStep(TOUR_STEPS[currentStep].id)) {
-      // Defer to avoid render-loop
       const timer = setTimeout(() => smartAdvance(), 50);
       return () => clearTimeout(timer);
     }
@@ -113,7 +107,6 @@ export function TourProvider() {
       const rect = target.getBoundingClientRect();
       setTargetRect(rect);
 
-      // Scroll into view if needed
       const isInViewport = rect.top >= 0 && rect.bottom <= window.innerHeight;
 
       if (!isInViewport) {
@@ -137,7 +130,6 @@ export function TourProvider() {
     window.addEventListener("resize", handleUpdate);
     window.addEventListener("scroll", handleUpdate, true);
 
-    // Poll briefly for elements that might render async
     const pollInterval = setInterval(handleUpdate, 500);
     const pollTimeout = setTimeout(() => clearInterval(pollInterval), 5000);
 
@@ -159,7 +151,6 @@ export function TourProvider() {
     const unsub = useGuestCombatStore.subscribe((state: { combatants: Combatant[]; phase: GuestCombatPhase }, prevState: { combatants: Combatant[]; phase: GuestCombatPhase }) => {
       switch (step.id) {
         case "monster-search": {
-          // Handled by DOM polling below
           break;
         }
         case "monster-result": {
@@ -212,7 +203,6 @@ export function TourProvider() {
     };
   }, [isActive, currentStep, smartAdvance]);
 
-  // Handle manual next from tooltip
   const handleNext = useCallback(() => {
     smartAdvance();
   }, [smartAdvance]);
@@ -224,7 +214,12 @@ export function TourProvider() {
     };
   }, []);
 
-  if (!mounted || !isActive || currentStep >= TOUR_STEPS.length) return null;
+  if (!mounted) return null;
+
+  // Always render help button; conditionally render tour UI
+  if (!isActive || currentStep >= TOUR_STEPS.length) {
+    return <TourHelpButton />;
+  }
 
   const step = TOUR_STEPS[currentStep];
   const isInteractive = step.type === "interactive";

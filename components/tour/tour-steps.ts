@@ -9,9 +9,13 @@ export interface TourStepConfig {
   position?: "top" | "bottom" | "left" | "right";
   /** For interactive steps: condition is checked externally by TourProvider */
   interactiveHint?: string;
+  /** Phase this step belongs to — used for progress display */
+  phase: "setup" | "combat" | "complete";
 }
 
 export const TOUR_STEPS: TourStepConfig[] = [
+  // === SETUP PHASE ===
+
   // Step 0 — Welcome (info)
   {
     id: "welcome",
@@ -20,6 +24,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     descriptionKey: "tour.welcome_description",
     type: "info",
     position: "bottom",
+    phase: "setup",
   },
   // Step 1 — Monster Search (interactive)
   {
@@ -30,6 +35,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "interactive",
     position: "bottom",
     interactiveHint: "tour.search_hint",
+    phase: "setup",
   },
   // Step 2 — Add Monster (interactive)
   {
@@ -40,6 +46,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "interactive",
     position: "bottom",
     interactiveHint: "tour.add_monster_hint",
+    phase: "setup",
   },
   // Step 3 — Manual Add Row (info)
   {
@@ -49,6 +56,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     descriptionKey: "tour.manual_add_description",
     type: "info",
     position: "top",
+    phase: "setup",
   },
   // Step 4 — Roll Initiative (interactive)
   {
@@ -59,6 +67,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "interactive",
     position: "top",
     interactiveHint: "tour.initiative_hint",
+    phase: "setup",
   },
   // Step 5 — Start Combat (interactive)
   {
@@ -69,8 +78,12 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "interactive",
     position: "top",
     interactiveHint: "tour.start_hint",
+    phase: "setup",
   },
-  // Step 6 — Combat Controls (info)
+
+  // === COMBAT PHASE ===
+
+  // Step 6 — Combat Controls Overview
   {
     id: "combat-controls",
     targetSelector: '[data-tour-id="combat-controls"]',
@@ -78,8 +91,42 @@ export const TOUR_STEPS: TourStepConfig[] = [
     descriptionKey: "tour.controls_description",
     type: "info",
     position: "bottom",
+    phase: "combat",
   },
-  // Step 7 — Tour Complete (info)
+  // Step 7 — HP Adjustment (interactive)
+  {
+    id: "hp-adjust",
+    targetSelector: '[data-tour-id="hp-adjust"]',
+    titleKey: "tour.hp_adjust_title",
+    descriptionKey: "tour.hp_adjust_description",
+    type: "info",
+    position: "left",
+    phase: "combat",
+  },
+  // Step 8 — Next Turn (interactive)
+  {
+    id: "next-turn",
+    targetSelector: '[data-tour-id="next-turn"]',
+    titleKey: "tour.next_turn_title",
+    descriptionKey: "tour.next_turn_description",
+    type: "info",
+    position: "bottom",
+    phase: "combat",
+  },
+  // Step 9 — Keyboard Shortcuts tip
+  {
+    id: "keyboard-tip",
+    targetSelector: '[data-tour-id="tour-complete"]',
+    titleKey: "tour.keyboard_title",
+    descriptionKey: "tour.keyboard_description",
+    type: "info",
+    position: "bottom",
+    phase: "combat",
+  },
+
+  // === COMPLETE PHASE ===
+
+  // Step 10 — Tour Complete with CTA
   {
     id: "tour-complete",
     targetSelector: '[data-tour-id="tour-complete"]',
@@ -87,5 +134,6 @@ export const TOUR_STEPS: TourStepConfig[] = [
     descriptionKey: "tour.complete_description",
     type: "info",
     position: "bottom",
+    phase: "complete",
   },
 ];

@@ -1290,12 +1290,23 @@
     "start_description": "All set! Click to start the combat and begin managing turns.",
     "start_hint": "Click to start combat...",
     "controls_title": "Combat Controls",
-    "controls_description": "Use 'Next Turn' to advance in initiative order and the HP controls to manage combatant health.",
-    "complete_title": "All Done!",
-    "complete_description": "Now you know the basics of Pocket DM! Create your account to save combats, share sessions with players, and more.",
+    "controls_description": "Here are the main controls: end combat, save session, and add new combatants mid-fight.",
+    "hp_adjust_title": "Manage Combatant HP",
+    "hp_adjust_description": "Click any combatant's HP to apply damage or healing. Temporary HP absorbs damage first. Click the name to view the full stat block.",
+    "next_turn_title": "Advance Turn",
+    "next_turn_description": "Click 'Next Turn' to move to the next combatant in initiative order. You can also drag to reorder.",
+    "keyboard_title": "Tip: Keyboard Shortcuts",
+    "keyboard_description": "Use Space to advance turn, +/- to quickly adjust HP, and drag combatants to reorder initiative.",
+    "complete_title": "All Done! 🎉",
+    "complete_description": "You've mastered Pocket DM! Create your free account to save combats, share sessions with your players in real time, and much more.",
     "skip": "Skip tutorial",
     "next": "Next",
-    "finish": "Done",
-    "create_account": "Create Account"
+    "finish": "Close",
+    "create_account": "Create Free Account",
+    "restart_tour": "Restart tutorial",
+    "help_button": "Help & tutorial",
+    "phase_setup": "Setup",
+    "phase_combat": "Combat",
+    "phase_complete": "Complete"
   }
 }

@@ -916,6 +916,7 @@ export function GuestCombatClient() {
               className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
               aria-label="Advance to next turn"
               data-testid="next-turn-btn"
+              data-tour-id="next-turn"
             >
               {t("next_turn")}
             </button>
@@ -933,6 +934,7 @@ export function GuestCombatClient() {
           role="list"
           aria-label={t("initiative_order")}
           data-testid="initiative-list"
+          data-tour-id="hp-adjust"
           className="space-y-2"
         >
           <SortableCombatantList

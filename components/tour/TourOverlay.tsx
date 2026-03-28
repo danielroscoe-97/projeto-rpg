@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 interface TourOverlayProps {
   isActive: boolean;
   targetRect: DOMRect | null;
-  /** When true, the spotlight area allows pointer events (for interactive steps) */
   allowInteraction?: boolean;
 }
 
@@ -54,8 +53,20 @@ export function TourOverlay({ isActive, targetRect, allowInteraction = false }: 
                   fill="rgba(0, 0, 0, 0.7)"
                   mask="url(#tour-spotlight-mask)"
                 />
+                {/* Pulse ring around spotlight */}
+                <rect
+                  x={targetRect.left - PADDING - 2}
+                  y={targetRect.top - PADDING - 2}
+                  width={targetRect.width + PADDING * 2 + 4}
+                  height={targetRect.height + PADDING * 2 + 4}
+                  rx={BORDER_RADIUS + 2}
+                  ry={BORDER_RADIUS + 2}
+                  fill="none"
+                  stroke="var(--gold, #d4a843)"
+                  strokeWidth="2"
+                  className="animate-tour-pulse"
+                />
               </svg>
-              {/* Click-through hole for the spotlight area on interactive steps */}
               {allowInteraction && (
                 <div
                   className="absolute"
@@ -66,7 +77,6 @@ export function TourOverlay({ isActive, targetRect, allowInteraction = false }: 
                     width: targetRect.width + PADDING * 2,
                     height: targetRect.height + PADDING * 2,
                     borderRadius: BORDER_RADIUS,
-                    // Transparent div that re-enables pointer events in the spotlight
                     background: "transparent",
                   }}
                 />

@@ -118,11 +118,16 @@ export default {
           "0%, 100%": { boxShadow: "0 0 8px rgba(212,168,83,0.3)" },
           "50%": { boxShadow: "0 0 20px rgba(212,168,83,0.6)" },
         },
+        "tour-pulse": {
+          "0%, 100%": { opacity: "0.4", strokeWidth: "2" },
+          "50%": { opacity: "1", strokeWidth: "3" },
+        },
       },
       animation: {
         "torch-flicker": "torch-flicker 3s ease-in-out infinite",
         "ember-float": "ember-float 4s ease-out infinite",
         "rune-pulse": "rune-pulse 2s ease-in-out infinite",
+        "tour-pulse": "tour-pulse 2s ease-in-out infinite",
       },
     },
   },
