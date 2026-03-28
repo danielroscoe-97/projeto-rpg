@@ -688,10 +688,10 @@ type CellValue =
   | { type: "partial"; label: string };
 
 function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
-  const iconColor = highlight ? "#D4A853" : "rgba(255,255,255,0.16)";
+  const iconColor = highlight ? "#D4A853" : "rgba(255,255,255,0.35)";
   const textClass = highlight && val.type === "check"
     ? "text-white font-medium text-sm leading-snug"
-    : "text-white/45 text-sm leading-snug";
+    : "text-white/70 text-sm leading-snug";
 
   return (
     <div className="flex items-center gap-2.5 py-5">
@@ -703,14 +703,14 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
       )}
       {val.type === "cross" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.30)" strokeWidth="1.5" />
+          <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       {val.type === "partial" && (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
-          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.30)" strokeWidth="1.5" />
+          <path d="M5.5 9h7" stroke="rgba(255,255,255,0.40)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       )}
       <span className={textClass}>{val.label}</span>
