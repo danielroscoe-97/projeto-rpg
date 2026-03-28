@@ -35,10 +35,12 @@ export interface CombatantRowProps {
   onSwitchVersion?: (id: string, version: RulesetVersion) => void;
   onUpdateDmNotes?: (id: string, notes: string) => void;
   onUpdatePlayerNotes?: (id: string, notes: string) => void;
-  /** All combatants for target selection in MonsterActionBar */
+  /** All combatants for target selection in MonsterActionBar and multi-target AoE */
   allCombatants?: Combatant[];
   /** Current roll mode (Normal/Advantage/Disadvantage) passed to MonsterActionBar */
   rollMode?: RollMode;
+  /** Callback for applying HP changes to multiple targets (AoE). */
+  onApplyToMultiple?: (targetIds: string[], amount: number, mode: import("./HpAdjuster").HpMode) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -62,6 +64,7 @@ export function CombatantRow({
   onUpdatePlayerNotes,
   allCombatants = [],
   rollMode,
+  onApplyToMultiple,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -625,6 +628,9 @@ export function CombatantRow({
             onApplyHealing={(amount) => onApplyHealing?.(combatant.id, amount)}
             onSetTempHp={(value) => onSetTempHp?.(combatant.id, value)}
             onClose={() => setOpenPanel(null)}
+            allCombatants={allCombatants}
+            primaryTargetId={combatant.id}
+            onApplyToMultiple={onApplyToMultiple}
           />
         )}
 
