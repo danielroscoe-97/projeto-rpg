@@ -6,6 +6,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
+import { LpPricingSection } from "@/components/marketing/LpPricingSection";
 import { Button } from "@/components/ui/button";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
@@ -146,6 +147,19 @@ function HeroSection() {
       </div>
 
       <div className="relative max-w-3xl mx-auto text-center space-y-8">
+        {/* Crown d20 Logo */}
+        <div className="animate-fade-in flex flex-col items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/art/brand/logo-icon.svg"
+            alt="Pocket DM"
+            className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-[0_0_24px_rgba(212,168,83,0.35)] glow-pulse"
+            width={96}
+            height={96}
+          />
+          <span className="font-display text-gold text-lg sm:text-xl tracking-[0.15em] uppercase font-bold">Pocket DM</span>
+        </div>
+
         {/* Live badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-xs text-muted-foreground animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -159,6 +173,11 @@ function HeroSection() {
             Abandone o papel.
           </span>
         </h1>
+
+        {/* Tagline */}
+        <p className="text-sm sm:text-base text-gold/60 italic font-light tracking-[0.2em] animate-fade-in" style={{ animationDelay: "0.05s" }}>
+          Master your table.
+        </p>
 
         {/* Subheading */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
@@ -968,7 +987,7 @@ export default function LandingPage() {
           { href: "#features", label: "Features" },
           { href: "#como-funciona", label: "Como Funciona" },
           { href: "#comparativo", label: "Comparativo" },
-          { href: "/pricing", label: "Preços" },
+          { href: "#precos", label: "Preços" },
         ]}
         rightSlot={
           <>
@@ -998,6 +1017,9 @@ export default function LandingPage() {
       <SectionDivider />
       <ComparisonSection />
       <SocialProofSection />
+      <SectionDivider />
+      <LpPricingSection />
+      <SectionDivider />
       <FinalCtaSection />
 
       <LandingPageTracker />
