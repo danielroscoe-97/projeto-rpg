@@ -11,13 +11,17 @@ let spellCache: SrdSpell[] | null = null;
  *  Returns only is_srd: true entries for public pages. */
 export function getSrdMonsters(): SrdMonster[] {
   if (monsterCache) return monsterCache;
-  const m2014: SrdMonster[] = JSON.parse(
-    readFileSync(join(SRD_DIR, "monsters-2014.json"), "utf-8")
-  );
-  const m2024: SrdMonster[] = JSON.parse(
-    readFileSync(join(SRD_DIR, "monsters-2024.json"), "utf-8")
-  );
-  monsterCache = [...m2014, ...m2024].filter((m) => m.is_srd === true);
+  try {
+    const m2014: SrdMonster[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "monsters-2014.json"), "utf-8")
+    );
+    const m2024: SrdMonster[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "monsters-2024.json"), "utf-8")
+    );
+    monsterCache = [...m2014, ...m2024].filter((m) => m.is_srd === true);
+  } catch {
+    monsterCache = [];
+  }
   return monsterCache;
 }
 
@@ -25,13 +29,17 @@ export function getSrdMonsters(): SrdMonster[] {
  *  Returns only is_srd: true entries for public pages. */
 export function getSrdSpells(): SrdSpell[] {
   if (spellCache) return spellCache;
-  const s2014: SrdSpell[] = JSON.parse(
-    readFileSync(join(SRD_DIR, "spells-2014.json"), "utf-8")
-  );
-  const s2024: SrdSpell[] = JSON.parse(
-    readFileSync(join(SRD_DIR, "spells-2024.json"), "utf-8")
-  );
-  spellCache = [...s2014, ...s2024].filter((s) => s.is_srd === true);
+  try {
+    const s2014: SrdSpell[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "spells-2014.json"), "utf-8")
+    );
+    const s2024: SrdSpell[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "spells-2024.json"), "utf-8")
+    );
+    spellCache = [...s2014, ...s2024].filter((s) => s.is_srd === true);
+  } catch {
+    spellCache = [];
+  }
   return spellCache;
 }
 
@@ -42,6 +50,27 @@ export function toSlug(name: string): string {
     .replace(/['']/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+/** Deduplicate entries by slug (first wins) */
+function dedupBySlug<T extends { name: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const slug = toSlug(item.name);
+    if (seen.has(slug)) return false;
+    seen.add(slug);
+    return true;
+  });
+}
+
+/** Get deduplicated monster list for static generation */
+export function getSrdMonstersDeduped(): SrdMonster[] {
+  return dedupBySlug(getSrdMonsters());
+}
+
+/** Get deduplicated spell list for static generation */
+export function getSrdSpellsDeduped(): SrdSpell[] {
+  return dedupBySlug(getSrdSpells());
 }
 
 /** Find a monster by slug */

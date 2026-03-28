@@ -353,7 +353,8 @@ export function parseStatBlock(text: string): ParsedStatBlock {
     // Speed
     const speedMatch = line.match(/^Speed\s+(.*)/i);
     if (speedMatch) {
-      result.speed = parseSpeed(speedMatch[1]);
+      const parsed = parseSpeed(speedMatch[1]);
+      result.speed = Object.keys(parsed).length > 0 ? parsed : { walk: "30 ft." };
       continue;
     }
 

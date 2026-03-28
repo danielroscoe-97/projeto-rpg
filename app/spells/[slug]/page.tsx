@@ -2,14 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
-  getSrdSpells,
+  getSrdSpellsDeduped,
   getSpellBySlug,
   toSlug,
 } from "@/lib/srd/srd-data-server";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
-  return getSrdSpells().map((s) => ({ slug: toSlug(s.name) }));
+  return getSrdSpellsDeduped().map((s) => ({ slug: toSlug(s.name) }));
 }
 
 export const revalidate = 86400;
@@ -26,7 +26,8 @@ export async function generateMetadata({
 
   const levelStr = spell.level === 0 ? "Cantrip" : `Level ${spell.level}`;
   const title = `${spell.name} — D&D 5e Spell | Pocket DM`;
-  const description = `${spell.name}, ${levelStr} ${spell.school}. ${spell.casting_time}, ${spell.range}. ${spell.description.slice(0, 120)}...`;
+  const desc = spell.description ? spell.description.slice(0, 120) : "";
+  const description = `${spell.name}, ${levelStr} ${spell.school}. ${spell.casting_time}, ${spell.range}.${desc ? ` ${desc}...` : ""}`;
 
   return {
     title,
@@ -131,7 +132,7 @@ export default async function SpellPage({
               </div>
 
               {/* Classes */}
-              {spell.classes.length > 0 && (
+              {spell.classes?.length > 0 && (
                 <div className="border-b-2 border-[#7a200d] pb-3 text-sm">
                   <p>
                     <strong className="text-[#7a200d]">Classes</strong>{" "}

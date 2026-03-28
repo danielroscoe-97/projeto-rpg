@@ -173,8 +173,8 @@ export function StatBlockImporter({
 
   const missingFields: string[] = [];
   if (!parsed.name) missingFields.push("Name");
-  if (!parsed.armor_class) missingFields.push("AC");
-  if (!parsed.hit_points) missingFields.push("HP");
+  if (parsed.armor_class == null) missingFields.push("AC");
+  if (parsed.hit_points == null) missingFields.push("HP");
 
   return (
     <div className="space-y-4">

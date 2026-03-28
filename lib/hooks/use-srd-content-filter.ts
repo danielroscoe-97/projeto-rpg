@@ -14,7 +14,8 @@ export function useSrdContentFilter<T extends SrdMonster | SrdSpell>(
   const { allowed: showNonSrd, loading } = useFeatureGate("show_non_srd_content");
 
   const filtered = useMemo(() => {
-    if (showNonSrd || loading) return items;
+    if (loading) return items.filter((item) => item.is_srd === true);
+    if (showNonSrd) return items;
     return items.filter((item) => item.is_srd === true);
   }, [items, showNonSrd, loading]);
 

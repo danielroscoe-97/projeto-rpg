@@ -2,14 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
-  getSrdMonsters,
+  getSrdMonstersDeduped,
   getMonsterBySlug,
   toSlug,
 } from "@/lib/srd/srd-data-server";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
-  return getSrdMonsters().map((m) => ({ slug: toSlug(m.name) }));
+  return getSrdMonstersDeduped().map((m) => ({ slug: toSlug(m.name) }));
 }
 
 export const revalidate = 86400; // ISR: revalidate every 24h
