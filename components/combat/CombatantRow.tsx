@@ -11,10 +11,12 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { HpAdjuster } from "./HpAdjuster";
 import { ConditionSelector } from "./ConditionSelector";
+import { MonsterActionBar } from "./MonsterActionBar";
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { Combatant } from "@/lib/types/combat";
+import type { RollMode } from "@/lib/dice/roll";
 import type { RulesetVersion } from "@/lib/types/database";
 
 export interface CombatantRowProps {
@@ -22,7 +24,7 @@ export interface CombatantRowProps {
   isCurrentTurn: boolean;
   /** When true, show action buttons (HP, conditions, defeat, edit, version). Only in active combat. */
   showActions?: boolean;
-  onApplyDamage?: (id: string, amount: number) => void;
+  onApplyDamage?: (id: string, amount: number, options?: { damageType?: string; isHalfDamage?: boolean; source?: string }) => void;
   onApplyHealing?: (id: string, amount: number) => void;
   onSetTempHp?: (id: string, value: number) => void;
   onToggleCondition?: (id: string, condition: string) => void;
@@ -33,11 +35,15 @@ export interface CombatantRowProps {
   onSwitchVersion?: (id: string, version: RulesetVersion) => void;
   onUpdateDmNotes?: (id: string, notes: string) => void;
   onUpdatePlayerNotes?: (id: string, notes: string) => void;
+  /** All combatants for target selection in MonsterActionBar */
+  allCombatants?: Combatant[];
+  /** Current roll mode (Normal/Advantage/Disadvantage) passed to MonsterActionBar */
+  rollMode?: RollMode;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
 
-type OpenPanel = "hp" | "conditions" | "edit" | null;
+type OpenPanel = "hp" | "conditions" | "edit" | "actions" | null;
 
 export function CombatantRow({
   combatant,
@@ -54,6 +60,8 @@ export function CombatantRow({
   onSwitchVersion,
   onUpdateDmNotes,
   onUpdatePlayerNotes,
+  allCombatants = [],
+  rollMode,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -214,15 +222,28 @@ export function CombatantRow({
             )
           )}
 
-          {/* Monster token */}
+          {/* Monster token — clickable to open stat block */}
           {combatant.monster_id && (
-            <MonsterToken
-              tokenUrl={combatant.token_url ?? fullMonster?.token_url}
-              fallbackTokenUrl={fullMonster?.fallback_token_url}
-              creatureType={combatant.creature_type ?? fullMonster?.type}
-              name={combatant.name}
-              size={32}
-            />
+            <button
+              type="button"
+              onClick={() => {
+                if (canExpand && fullMonster) {
+                  pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+                }
+              }}
+              className={`flex-shrink-0 rounded-full ${canExpand ? "cursor-pointer hover:ring-2 hover:ring-gold/60 transition-shadow" : "cursor-default"}`}
+              disabled={!canExpand}
+              aria-label={canExpand ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
+              data-testid={`token-btn-${combatant.id}`}
+            >
+              <MonsterToken
+                tokenUrl={combatant.token_url ?? fullMonster?.token_url}
+                fallbackTokenUrl={fullMonster?.fallback_token_url}
+                creatureType={combatant.creature_type ?? fullMonster?.type}
+                name={combatant.name}
+                size={32}
+              />
+            </button>
           )}
 
           {/* Name — clickable to open pinned card if monster */}
@@ -360,6 +381,16 @@ export function CombatantRow({
           {combatant.is_defeated && (
             <span className="text-xs text-red-400 font-medium" data-testid="defeated-badge">
               {t("defeated")}
+            </span>
+          )}
+
+          {/* Dying badge — PC at 0 HP but not defeated (death saves needed) */}
+          {combatant.is_player && combatant.current_hp === 0 && !combatant.is_defeated && (
+            <span
+              className="text-xs text-red-300 font-medium animate-pulse"
+              data-testid="dying-badge"
+            >
+              {t("dying_label")}
             </span>
           )}
         </div>
@@ -613,6 +644,21 @@ export function CombatantRow({
           />
         )}
       </div>
+
+      {/* Monster Action Bar — always visible for monsters during active combat */}
+      {showActions && combatant.monster_id && !combatant.is_defeated && (
+        <div className="px-3 pb-1">
+          <MonsterActionBar
+            combatant={combatant}
+            combatants={allCombatants}
+            onApplyDamage={(id, amount, options) => {
+              onApplyDamage?.(id, amount, options);
+            }}
+            onClose={() => {}}
+            rollMode={rollMode}
+          />
+        </div>
+      )}
 
       {/* === ONE-TAP TIER: AC, DC, stat block === */}
       <AnimatePresence>
