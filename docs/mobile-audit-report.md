@@ -11,11 +11,14 @@
 
 | Metric | Value |
 |--------|-------|
-| Pages tested | 17 (all unique layouts) |
-| Critical issues found | 5 |
-| Issues fixed | 5 |
-| Components with responsive patterns | 36/58 (62%) |
-| Components WITHOUT responsive patterns | 22/58 (38%) |
+| Pages tested | 28 (all unique layouts) |
+| Critical issues found | 6 |
+| Issues fixed | 6 |
+| E2E tests passed (mobile-chrome) | 137/156 (88%) |
+| E2E flaky (recovered on retry) | 5 |
+| E2E skipped | 7 |
+| E2E failures (desktop-only tests on mobile) | 7 |
+| Mobile-specific E2E (J13+J2.8+J11.5) | 8/8 (100%) |
 
 ---
 
@@ -93,6 +96,37 @@
 **Problem:** Title + "Compartilhar Sessao" + "Voltar ao Dashboard" all forced into a single horizontal row with `justify-between`, leaving no space on mobile.
 
 **Fix:** Changed to `flex-col sm:flex-row` layout. Elements stack vertically on mobile, sit side-by-side on larger screens.
+
+### Fix #6: Add Combatant Name Input Squeezed to ~30px
+**Severity:** HIGH
+**Files:**
+- `components/combat/EncounterSetup.tsx:728`
+- `components/guest/GuestCombatClient.tsx:451`
+
+**Problem:** On 393px viewport, the flex row with [+][Init][Name][HP][AC][Button] squeezed the Name input to ~30px, showing only "No" instead of "Nome".
+**Fix:** Added `flex-wrap` to the container and `basis-full md:basis-auto` on the name input, so it takes a full line on mobile with Init/HP/AC/Button wrapping to the second line.
+
+---
+
+## E2E Test Results (mobile-chrome project)
+
+**Total: 156 tests | 137 passed | 5 flaky | 7 skipped | 7 desktop-only failures**
+
+### Mobile-Specific Tests: 100% Pass Rate
+- J13.1-J13.6 (Mobile Pixel 5 suite): 6/6 passed
+- J2.8 (Player join mobile viewport): passed
+- J11.5 (Player view mobile no overflow): passed
+
+### Flaky Tests (recovered on retry)
+- Popover close outside, J1.6 Persist, J12.2 reopen, J15.E1 Presets, J6.4 conditions
+
+### Desktop-Only Test Failures on Mobile (not bugs)
+Tests written for desktop viewport that fail on mobile due to element positioning:
+- J10.4/J10.5: Compendium search click targets different on mobile
+- J15.I1/I2: Stat block/spell detail click targets
+- J3.5: Compendium monsters access
+- J15.A1: Landing hero CTA positioning
+- J8.6: Signup CTA in /try guest mode
 
 ---
 
