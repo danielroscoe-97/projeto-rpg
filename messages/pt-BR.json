@@ -453,7 +453,19 @@
     "player_link_already": "Já vinculado a {name}",
     "player_link_in_use": "em uso",
     "no_rolls_yet": "Nenhuma rolagem ainda",
-    "dice_log_title": "Histórico de Rolagens"
+    "dice_log_title": "Histórico de Rolagens",
+    "leaderboard_title": "Resultado do Combate",
+    "leaderboard_mvp": "MVP do Combate",
+    "leaderboard_damage_dealt": "Dano Causado",
+    "leaderboard_damage_taken": "Dano Recebido",
+    "leaderboard_healing": "Cura",
+    "leaderboard_crits": "Críticos",
+    "leaderboard_share": "Compartilhar",
+    "leaderboard_close": "Fechar",
+    "leaderboard_rounds": "{rounds} rounds",
+    "leaderboard_tank": "Tanque",
+    "leaderboard_healer": "Curandeiro",
+    "leaderboard_copied": "Resultados copiados para a área de transferência"
   },
   "conditions": {
     "blinded": "Cego",

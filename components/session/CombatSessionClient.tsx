@@ -29,6 +29,11 @@ import { DiceRollLog, type DiceRollEntry } from "@/components/combat/DiceRollLog
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
+import { useCombatLogStore } from "@/lib/stores/combat-log-store";
+import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
+import type { CombatantStats } from "@/lib/utils/combat-stats";
+import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { AnimatePresence } from "framer-motion";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -61,6 +66,8 @@ export function CombatSessionClient({
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
   const [diceLog, setDiceLog] = useState<DiceRollEntry[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
+  const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
 
   const { combatants, is_active, setError } =
     useCombatStore();
@@ -85,9 +92,42 @@ export function CombatSessionClient({
     handleSwitchVersion,
     handleUpdateDmNotes,
     handleUpdatePlayerNotes,
-    handleEndEncounter,
+    handleEndEncounter: doEndEncounter,
     getSessionId,
   } = useCombatActions({ sessionId, onNavigate: (path) => router.push(path) });
+
+  // Intercept end encounter: compute stats and show leaderboard before navigating
+  const handleEndEncounter = useCallback(() => {
+    const logEntries = useCombatLogStore.getState().entries;
+    const stats = computeCombatStats(logEntries);
+    const rounds = getMaxRound(logEntries);
+    const name = useCombatStore.getState().encounter_name;
+
+    // If there are actionable stats, show the leaderboard overlay
+    if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0)) {
+      setLeaderboardData(stats);
+      setLeaderboardMeta({ name, rounds });
+      // Broadcast stats to player view
+      const sid = getSessionId();
+      if (sid) {
+        broadcastEvent(sid, {
+          type: "session:combat_stats",
+          stats,
+          encounter_name: name,
+          rounds,
+        });
+      }
+    } else {
+      // No meaningful stats — proceed directly
+      doEndEncounter();
+    }
+  }, [doEndEncounter, getSessionId]);
+
+  const handleDismissLeaderboard = useCallback(() => {
+    setLeaderboardData(null);
+    useCombatLogStore.getState().clear();
+    doEndEncounter();
+  }, [doEndEncounter]);
 
   // Hydrate the store from server-fetched data (skip for fresh encounters).
   useEffect(() => {
@@ -644,6 +684,17 @@ export function CombatSessionClient({
       <DiceRollLog entries={diceLog} className="max-h-[300px]" />
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
+
+      <AnimatePresence>
+        {leaderboardData && (
+          <CombatLeaderboard
+            stats={leaderboardData}
+            encounterName={leaderboardMeta.name}
+            rounds={leaderboardMeta.rounds}
+            onClose={handleDismissLeaderboard}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -453,7 +453,19 @@
     "player_link_already": "Already linked to {name}",
     "player_link_in_use": "in use",
     "no_rolls_yet": "No rolls yet",
-    "dice_log_title": "Dice Roll History"
+    "dice_log_title": "Dice Roll History",
+    "leaderboard_title": "Combat Results",
+    "leaderboard_mvp": "Combat MVP",
+    "leaderboard_damage_dealt": "Damage Dealt",
+    "leaderboard_damage_taken": "Damage Taken",
+    "leaderboard_healing": "Healing",
+    "leaderboard_crits": "Critical Hits",
+    "leaderboard_share": "Share",
+    "leaderboard_close": "Close",
+    "leaderboard_rounds": "{rounds} rounds",
+    "leaderboard_tank": "Tank",
+    "leaderboard_healer": "Healer",
+    "leaderboard_copied": "Results copied to clipboard"
   },
   "conditions": {
     "blinded": "Blinded",

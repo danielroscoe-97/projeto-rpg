@@ -1,5 +1,6 @@
 import type { Combatant } from "./combat";
 import type { HpStatus } from "@/lib/utils/hp-status";
+import type { CombatantStats } from "@/lib/utils/combat-stats";
 
 /** Realtime event types following domain:action pattern */
 export type RealtimeEventType =
@@ -17,6 +18,7 @@ export type RealtimeEventType =
   | "combat:late_join_response"
   | "session:state_sync"
   | "session:player_linked"
+  | "session:combat_stats"
   | "audio:play_sound";
 
 export interface RealtimeHpUpdate {
@@ -113,6 +115,13 @@ export interface RealtimeStateSync {
   round_number: number;
 }
 
+export interface RealtimeCombatStats {
+  type: "session:combat_stats";
+  stats: CombatantStats[];
+  encounter_name: string;
+  rounds: number;
+}
+
 export interface RealtimeAudioPlay {
   type: "audio:play_sound";
   sound_id: string;
@@ -136,6 +145,7 @@ export type RealtimeEvent =
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
   | RealtimeStateSync
+  | RealtimeCombatStats
   | RealtimeAudioPlay;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
@@ -215,4 +225,5 @@ export type SanitizedEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
+  | RealtimeCombatStats
   | RealtimeAudioPlay;
