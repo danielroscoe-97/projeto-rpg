@@ -18,13 +18,13 @@ const DAMAGE_TYPES = [
 const ATTACK_2024_RE = /^(Melee|Ranged|Melee or Ranged)\s+Attack:\s*\+(\d+)/i;
 
 // SRD 2014: "Melee Weapon Attack: +N to hit" / "Ranged Weapon Attack: +N to hit"
-const ATTACK_2014_RE = /^(Melee|Ranged|Melee or Ranged)\s+(?:Weapon\s+)?Attack:\s*\+(\d+)\s+to hit/i;
+const ATTACK_2014_RE = /^(Melee|Ranged|Melee or Ranged) (?:Weapon )?Attack: *\+(\d+) to hit/i;
 
 // Reach: "reach N ft."
 const REACH_RE = /reach\s+(\d+\s*ft\.)/i;
 
 // Range: "range N/N ft." or "range N ft."
-const RANGE_RE = /range\s+(\d+(?:\/\d+)?\s*ft\.)/i;
+const RANGE_RE = /range (\d+\/\d+ ?ft\.|\d+ ?ft\.)/i;
 
 // SRD 2024 save: starts with lowercase ability + DC N
 const SAVE_2024_RE = /^(str|dex|con|int|wis|cha)\s+DC\s+(\d+)/i;
@@ -34,10 +34,10 @@ const SAVE_2014_RE = /DC\s+(\d+)\s+(Strength|Dexterity|Constitution|Intelligence
 
 // Damage: "N (XdY + Z) Type damage" or "N (XdY) Type damage"
 // Also matches "N (XdY + Z) Type" without "damage" for short patterns
-const DAMAGE_RE = /(\d+)\s*\((\d+d\d+(?:\s*[+-]\s*\d+)?)\)\s*(Acid|Bludgeoning|Cold|Fire|Force|Lightning|Necrotic|Piercing|Poison|Psychic|Radiant|Slashing|Thunder)/gi;
+const DAMAGE_RE = /(\d+) ?\((\d+d\d+ ?[+-] ?\d+|\d+d\d+)\) ?(Acid|Bludgeoning|Cold|Fire|Force|Lightning|Necrotic|Piercing|Poison|Psychic|Radiant|Slashing|Thunder)/gi;
 
 // Half on save patterns
-const HALF_ON_SAVE_RE = /half\s+damage|half\s+on\s+(?:a\s+)?sav(?:e|ing)|or\s+half\s+as\s+much|{@actSaveSuccess}\s*Half\s+damage/i;
+const HALF_ON_SAVE_RE = /half damage|half on (?:a )?sav(?:e|ing)|or half as much|\{@actSaveSuccess\} ?Half damage/i;
 
 // Condition pattern: "has the X condition" or "X condition" or specific 2014 patterns
 const CONDITION_RE = new RegExp(

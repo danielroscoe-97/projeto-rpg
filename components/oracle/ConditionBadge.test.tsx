@@ -18,13 +18,17 @@ beforeEach(() => {
 });
 
 describe("ConditionBadge", () => {
+  // The i18n mock returns "conditions.<key>" for tc(key), so the rendered
+  // display name for condition="Stunned" is "conditions.stunned".
   it("renders the condition name", () => {
     render(<ConditionBadge condition="Stunned" />);
-    expect(screen.getByText("Stunned")).toBeInTheDocument();
+    expect(screen.getByText("conditions.stunned")).toBeInTheDocument();
   });
 
   it("has correct aria-label", () => {
     render(<ConditionBadge condition="Stunned" />);
+    // t("condition_view_aria", { name }) → "combat.condition_view_aria"
+    // (the mock replaces {name} in the key string, but the key has no placeholder)
     expect(screen.getByLabelText("combat.condition_view_aria")).toBeInTheDocument();
   });
 
@@ -32,7 +36,7 @@ describe("ConditionBadge", () => {
     const user = userEvent.setup();
     render(<ConditionBadge condition="Stunned" />);
 
-    await user.click(screen.getByText("Stunned"));
+    await user.click(screen.getByText("conditions.stunned"));
 
     expect(mockPinCard).toHaveBeenCalledWith("condition", "stunned", "2014");
   });
@@ -41,7 +45,7 @@ describe("ConditionBadge", () => {
     const user = userEvent.setup();
     render(<ConditionBadge condition="Stunned" rulesetVersion="2024" />);
 
-    await user.click(screen.getByText("Stunned"));
+    await user.click(screen.getByText("conditions.stunned"));
 
     expect(mockPinCard).toHaveBeenCalledWith("condition", "stunned", "2024");
   });
@@ -50,7 +54,7 @@ describe("ConditionBadge", () => {
     const user = userEvent.setup();
     render(<ConditionBadge condition="Blinded" />);
 
-    await user.click(screen.getByText("Blinded"));
+    await user.click(screen.getByText("conditions.blinded"));
 
     expect(mockPinCard).toHaveBeenCalledWith("condition", "blinded", "2014");
   });

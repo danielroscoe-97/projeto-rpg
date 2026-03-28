@@ -127,7 +127,8 @@ describe("PlayerInitiativeBoard", () => {
         rulesetVersion="2014"
       />
     );
-    expect(screen.getByText("Stunned")).toBeInTheDocument();
+    // The i18n mock returns "conditions.<key>" for translated condition names
+    expect(screen.getByText("conditions.stunned")).toBeInTheDocument();
   });
 
   it("shows defeated badge for defeated combatants", () => {
