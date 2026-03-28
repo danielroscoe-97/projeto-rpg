@@ -6,15 +6,17 @@ interface TourOverlayProps {
   isActive: boolean;
   targetRect: DOMRect | null;
   allowInteraction?: boolean;
+  /** When true, renders a plain dark backdrop without a spotlight cutout */
+  dimOnly?: boolean;
 }
 
 const PADDING = 8;
 const BORDER_RADIUS = 8;
 
-export function TourOverlay({ isActive, targetRect, allowInteraction = false }: TourOverlayProps) {
+export function TourOverlay({ isActive, targetRect, allowInteraction = false, dimOnly = false }: TourOverlayProps) {
   if (!isActive) return null;
 
-  const hasTarget = targetRect !== null;
+  const hasTarget = targetRect !== null && !dimOnly;
 
   return (
     <AnimatePresence>

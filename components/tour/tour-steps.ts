@@ -11,12 +11,18 @@ export interface TourStepConfig {
   interactiveHint?: string;
   /** Phase this step belongs to — used for progress display */
   phase: "setup" | "combat" | "complete";
+  /** Render as centered modal instead of anchored tooltip */
+  modal?: boolean;
+  /** Hide this step on mobile (< 768px) */
+  hideOnMobile?: boolean;
+  /** On mobile, merge this step's content into the next info step */
+  mergeOnMobile?: boolean;
 }
 
 export const TOUR_STEPS: TourStepConfig[] = [
   // === SETUP PHASE ===
 
-  // Step 0 — Welcome (info)
+  // Step 0 — Welcome (centered modal, no anchor)
   {
     id: "welcome",
     targetSelector: '[data-tour-id="welcome"]',
@@ -25,6 +31,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "setup",
+    modal: true,
   },
   // Step 1 — Monster Search (interactive)
   {
@@ -58,15 +65,14 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "top",
     phase: "setup",
   },
-  // Step 4 — Roll Initiative (interactive)
+  // Step 4 — Roll Initiative (info — always shown, never auto-skipped)
   {
     id: "roll-initiative",
     targetSelector: '[data-tour-id="roll-initiative"]',
     titleKey: "tour.initiative_title",
     descriptionKey: "tour.initiative_description",
-    type: "interactive",
+    type: "info",
     position: "top",
-    interactiveHint: "tour.initiative_hint",
     phase: "setup",
   },
   // Step 5 — Start Combat (interactive)
@@ -93,7 +99,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "bottom",
     phase: "combat",
   },
-  // Step 7 — HP Adjustment (interactive)
+  // Step 7 — HP + Name click (merges into next step on mobile)
   {
     id: "hp-adjust",
     targetSelector: '[data-tour-id="hp-adjust"]',
@@ -102,8 +108,9 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "info",
     position: "left",
     phase: "combat",
+    mergeOnMobile: true,
   },
-  // Step 8 — Next Turn (interactive)
+  // Step 8 — Next Turn
   {
     id: "next-turn",
     targetSelector: '[data-tour-id="next-turn"]',
@@ -113,7 +120,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "bottom",
     phase: "combat",
   },
-  // Step 9 — Keyboard Shortcuts tip
+  // Step 9 — Keyboard Shortcuts tip (desktop only)
   {
     id: "keyboard-tip",
     targetSelector: '[data-tour-id="tour-complete"]',
@@ -122,6 +129,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "combat",
+    hideOnMobile: true,
   },
 
   // === COMPLETE PHASE ===
@@ -135,5 +143,6 @@ export const TOUR_STEPS: TourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "complete",
+    modal: true,
   },
 ];

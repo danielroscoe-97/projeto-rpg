@@ -23,9 +23,20 @@ describe("tour-steps", () => {
 
   it("interactive steps have interactiveHint", () => {
     const interactiveSteps = TOUR_STEPS.filter((s) => s.type === "interactive");
+    expect(interactiveSteps.length).toBeGreaterThan(0);
     for (const step of interactiveSteps) {
       expect(step.interactiveHint).toBeTruthy();
     }
+  });
+
+  it("welcome and complete steps are modals", () => {
+    expect(TOUR_STEPS[0].modal).toBe(true);
+    expect(TOUR_STEPS[TOUR_STEPS.length - 1].modal).toBe(true);
+  });
+
+  it("keyboard-tip is hidden on mobile", () => {
+    const keyboardStep = TOUR_STEPS.find((s) => s.id === "keyboard-tip");
+    expect(keyboardStep?.hideOnMobile).toBe(true);
   });
 
   it("all targetSelectors use data-tour-id attribute", () => {

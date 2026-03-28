@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { TourProgress } from "./TourProgress";
-import { TOUR_STEPS } from "./tour-steps";
 import type { TourStepConfig } from "./tour-steps";
 
 interface TourTooltipProps {
   step: TourStepConfig;
   stepIndex: number;
+  totalSteps: number;
   targetRect: DOMRect | null;
   onNext: () => void;
   onSkip: () => void;
@@ -99,9 +99,55 @@ function computePosition(
   return { position: chosen, style };
 }
 
+/** Simple confetti burst using CSS-animated spans */
+function ConfettiBurst() {
+  const colors = ["#d4a843", "#f5d572", "#e8c35a", "#b8922f", "#ffffff", "#ff6b6b", "#4ecdc4"];
+  const particles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    color: colors[i % colors.length],
+    x: (Math.random() - 0.5) * 300,
+    y: -(Math.random() * 200 + 80),
+    rotate: Math.random() * 720 - 360,
+    delay: Math.random() * 0.3,
+    size: Math.random() * 6 + 3,
+  }));
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
+      {particles.map((p) => (
+        <motion.span
+          key={p.id}
+          className="absolute rounded-sm"
+          style={{
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            left: "50%",
+            top: "30%",
+          }}
+          initial={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
+          animate={{
+            opacity: [1, 1, 0],
+            x: p.x,
+            y: [p.y, p.y + 150],
+            rotate: p.rotate,
+            scale: [1, 1.2, 0.5],
+          }}
+          transition={{
+            duration: 1.5,
+            delay: p.delay,
+            ease: "easeOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function TourTooltip({
   step,
   stepIndex,
+  totalSteps,
   targetRect,
   onNext,
   onSkip,
@@ -109,9 +155,20 @@ export function TourTooltip({
 }: TourTooltipProps) {
   const t = useTranslations("tour");
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const isLastStep = stepIndex === TOUR_STEPS.length - 1;
+  const isLastStep = stepIndex === totalSteps - 1;
   const isInteractive = step.type === "interactive";
   const isCompleteStep = step.phase === "complete";
+  const isModal = step.modal === true;
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Trigger confetti on complete step
+  useEffect(() => {
+    if (isCompleteStep) {
+      setShowConfetti(true);
+    } else {
+      setShowConfetti(false);
+    }
+  }, [isCompleteStep]);
 
   // Focus trap: focus tooltip on mount
   useEffect(() => {
@@ -138,13 +195,103 @@ export function TourTooltip({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  if (!targetRect) return null;
+  if (!targetRect && !isModal) return null;
 
   const titleKey = step.titleKey.replace(/^tour\./, "");
   const descKey = step.descriptionKey.replace(/^tour\./, "");
   const hintKey = step.interactiveHint?.replace(/^tour\./, "");
 
-  const { position, style } = computePosition(targetRect, step.position);
+  // Modal steps: centered on screen
+  if (isModal) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step.id}
+          ref={tooltipRef}
+          role="dialog"
+          aria-label={t(titleKey)}
+          aria-describedby={`tour-step-desc-${step.id}`}
+          aria-live="polite"
+          className="fixed z-[10001] bg-card border border-gold/30 rounded-xl shadow-2xl p-5 overflow-y-auto"
+          style={{
+            top: "50%",
+            left: "16px",
+            right: "16px",
+            transform: "translateY(-50%)",
+            maxWidth: 380,
+            marginInline: "auto",
+            maxHeight: "min(400px, calc(100vh - 64px))",
+            pointerEvents: "auto",
+          }}
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+        >
+          {showConfetti && <ConfettiBurst />}
+          <div className="space-y-3 relative">
+            {/* Phase badge */}
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+                step.phase === "setup"
+                  ? "bg-emerald-900/30 text-emerald-400"
+                  : step.phase === "combat"
+                    ? "bg-red-900/30 text-red-400"
+                    : "bg-gold/20 text-gold"
+              }`}>
+                {t(`phase_${step.phase}`)}
+              </span>
+            </div>
+
+            <h3 className="text-base font-semibold text-gold">
+              {t(titleKey)}
+            </h3>
+            <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
+              {t(descKey)}
+            </p>
+
+            {/* Completion CTA with urgency */}
+            {isCompleteStep && (
+              <Link
+                href="/auth/sign-up"
+                className="block w-full text-center px-4 py-3 bg-gold text-surface-primary text-sm font-bold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+              >
+                {t("create_account")}
+              </Link>
+            )}
+
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-1">
+              <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={isLastStep ? onComplete : onSkip}
+                  className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
+                >
+                  {isLastStep ? t("finish") : t("skip")}
+                </button>
+
+                {!isInteractive && !isCompleteStep && (
+                  <button
+                    type="button"
+                    onClick={onNext}
+                    className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                  >
+                    {t("next")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
+  // Anchored tooltip (non-modal steps)
+  const { position, style } = computePosition(targetRect!, step.position);
 
   const arrowClass: Record<Position, string> = {
     bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-card border-l-transparent border-r-transparent border-t-transparent border-[8px]",
@@ -208,19 +355,9 @@ export function TourTooltip({
             </p>
           )}
 
-          {/* Completion CTA */}
-          {isCompleteStep && (
-            <Link
-              href="/auth/sign-up"
-              className="block w-full text-center px-4 py-2.5 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
-            >
-              {t("create_account")}
-            </Link>
-          )}
-
           {/* Footer */}
           <div className="flex items-center justify-between pt-1">
-            <TourProgress currentStep={stepIndex} />
+            <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
 
             <div className="flex items-center gap-2">
               <button
