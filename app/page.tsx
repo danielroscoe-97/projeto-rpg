@@ -786,22 +786,22 @@ function ComparisonSection() {
         <div
           className="hidden md:block overflow-hidden rounded-2xl animate-fade-in-up"
           style={{
-            background: "#13131f",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow: "0 0 0 1px rgba(212,168,83,0.05), 0 32px 80px rgba(0,0,0,0.6)",
+            background: "#181825",
+            border: "1px solid rgba(255,255,255,0.12)",
+            boxShadow: "0 0 0 1px rgba(212,168,83,0.08), 0 32px 80px rgba(0,0,0,0.5)",
             animationDelay: "0.1s",
           }}
         >
           {/* Column headers */}
           <div className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr]">
-            <div className="px-7 py-6 border-b border-white/[0.06]" />
-            <div className="px-6 py-6 text-center border-b border-l border-white/[0.06]">
-              <span className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">
+            <div className="px-7 py-6 border-b border-white/[0.10]" />
+            <div className="px-6 py-6 text-center border-b border-l border-white/[0.10]">
+              <span className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">
                 Roll20 / Foundry
               </span>
             </div>
-            <div className="px-6 py-6 text-center border-b border-l border-white/[0.06]">
-              <span className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">
+            <div className="px-6 py-6 text-center border-b border-l border-white/[0.10]">
+              <span className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">
                 D&amp;D Beyond
               </span>
             </div>
@@ -829,22 +829,22 @@ function ComparisonSection() {
             return (
               <div
                 key={row.feature}
-                className={`grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-colors duration-150 ${row.knockout ? "border-t-2 border-t-gold/25" : ""}`}
-                style={{ background: row.knockout ? "rgba(212,168,83,0.04)" : isEven ? "transparent" : "rgba(255,255,255,0.016)" }}
+                className={`grid grid-cols-[1.3fr_1fr_1fr_1.15fr] group transition-all duration-200 hover:bg-white/[0.05] ${row.knockout ? "border-t-2 border-t-gold/25" : ""}`}
+                style={{ background: row.knockout ? "rgba(212,168,83,0.06)" : isEven ? "transparent" : "rgba(255,255,255,0.025)" }}
               >
-                <div className={`px-7 py-1 flex items-center gap-3 group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b border-white/[0.04]"}`}>
+                <div className={`px-7 py-1 flex items-center gap-3 transition-colors duration-200 ${isLast ? "" : "border-b border-white/[0.07]"}`}>
                   <span className="text-xl leading-none shrink-0">{row.icon}</span>
                   <span className="text-[15px] font-semibold text-white/90">{row.feature}</span>
                 </div>
-                <div className={`px-6 border-l border-white/[0.04] group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b"}`}>
+                <div className={`px-6 border-l border-white/[0.07] transition-colors duration-200 ${isLast ? "" : "border-b"}`}>
                   <CompCell val={row.roll20} />
                 </div>
-                <div className={`px-6 border-l border-white/[0.04] group-hover:bg-white/[0.02] transition-colors duration-150 ${isLast ? "" : "border-b"}`}>
+                <div className={`px-6 border-l border-white/[0.07] transition-colors duration-200 ${isLast ? "" : "border-b"}`}>
                   <CompCell val={row.beyond} />
                 </div>
                 <div
-                  className={`px-6 border-l border-l-gold/15 group-hover:brightness-110 transition-all duration-150 ${isLast ? "" : "border-b border-b-gold/10"}`}
-                  style={{ background: row.knockout ? "rgba(212,168,83,0.12)" : "rgba(212,168,83,0.07)" }}
+                  className={`px-6 border-l border-l-gold/20 group-hover:brightness-125 transition-all duration-200 ${isLast ? "" : "border-b border-b-gold/15"}`}
+                  style={{ background: row.knockout ? "rgba(212,168,83,0.14)" : "rgba(212,168,83,0.09)" }}
                 >
                   <CompCell val={row.pocketdm} highlight />
                 </div>
