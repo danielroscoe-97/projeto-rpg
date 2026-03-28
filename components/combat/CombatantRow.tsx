@@ -11,7 +11,7 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { HpAdjuster } from "./HpAdjuster";
 import { ConditionSelector } from "./ConditionSelector";
-import { MonsterActionBar } from "./MonsterActionBar";
+// MonsterActionBar — not yet implemented (CP.1.3), import removed to unblock build
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
@@ -680,20 +680,7 @@ export function CombatantRow({
         )}
       </div>
 
-      {/* Monster Action Bar — always visible for monsters during active combat */}
-      {showActions && combatant.monster_id && !combatant.is_defeated && (
-        <div className="px-3 pb-1">
-          <MonsterActionBar
-            combatant={combatant}
-            combatants={allCombatants}
-            onApplyDamage={(id, amount, options) => {
-              onApplyDamage?.(id, amount, options);
-            }}
-            onClose={() => {}}
-            rollMode={rollMode}
-          />
-        </div>
-      )}
+      {/* TODO: Monster Action Bar — CP.1.3 (MonsterActionBar component not yet implemented) */}
 
       {/* === ONE-TAP TIER: AC, DC, stat block === */}
       <AnimatePresence>
