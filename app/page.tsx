@@ -148,7 +148,7 @@ function HeroSection() {
 
       <div className="relative max-w-3xl mx-auto text-center space-y-8">
         {/* Crown d20 Logo */}
-        <div className="animate-fade-in flex flex-col items-center gap-3">
+        <div className="animate-fade-in flex flex-col items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/art/brand/logo-icon.svg"
@@ -158,6 +158,7 @@ function HeroSection() {
             height={96}
           />
           <span className="font-display text-gold text-lg sm:text-xl tracking-[0.15em] uppercase font-bold">Pocket DM</span>
+          <span className="text-gold/40 text-xs sm:text-sm italic font-light tracking-[0.15em] -mt-1">— Master your table.</span>
         </div>
 
         {/* Live badge */}
@@ -167,17 +168,12 @@ function HeroSection() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display text-foreground leading-[1.1] tracking-tight animate-fade-in-up">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-foreground leading-[1.1] tracking-tight animate-fade-in-up">
           Domine o combate.{" "}
           <span className="text-gold drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]">
             Abandone o papel.
           </span>
         </h1>
-
-        {/* Tagline */}
-        <p className="text-sm sm:text-base text-gold/60 italic font-light tracking-[0.2em] animate-fade-in" style={{ animationDelay: "0.05s" }}>
-          Master your table.
-        </p>
 
         {/* Subheading */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
