@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { shallow } from "zustand/shallow";
-import type { Combatant, EncounterState, CombatActions, HpUndoEntry } from "@/lib/types/combat";
+import type { Combatant, EncounterState, CombatActions, UndoEntry } from "@/lib/types/combat";
 import {
   sortByInitiative,
   assignInitiativeOrder,
@@ -12,7 +12,7 @@ type CombatStore = EncounterState & CombatActions;
 
 const MAX_UNDO = 10;
 
-function pushUndo(stack: HpUndoEntry[], entry: HpUndoEntry): HpUndoEntry[] {
+function pushUndo(stack: UndoEntry[], entry: UndoEntry): UndoEntry[] {
   const next = [...stack, entry];
   return next.length > MAX_UNDO ? next.slice(next.length - MAX_UNDO) : next;
 }
@@ -27,7 +27,7 @@ const initialState: EncounterState = {
   is_active: false,
   is_loading: false,
   error: null,
-  hpUndoStack: [],
+  undoStack: [],
   lastAddedCombatantId: null,
   expandedGroups: {},
 };
@@ -100,6 +100,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       }
       if (combatants[next].is_defeated) return state;
       return {
+        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
       };
@@ -111,11 +112,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   applyDamage: (id, amount) =>
     set((state) => {
       const target = state.combatants.find((c) => c.id === id);
-      const undoEntry: HpUndoEntry | null = target
-        ? { combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "damage" }
+      const undoEntry: UndoEntry | null = target
+        ? { type: "hp", combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "damage" }
         : null;
       return {
-        hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
+        undoStack: undoEntry ? pushUndo(state.undoStack, undoEntry) : state.undoStack,
         combatants: state.combatants.map((c) => {
           if (c.id !== id) return c;
           let remaining = amount;
@@ -134,11 +135,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   applyHealing: (id, amount) =>
     set((state) => {
       const target = state.combatants.find((c) => c.id === id);
-      const undoEntry: HpUndoEntry | null = target
-        ? { combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "heal" }
+      const undoEntry: UndoEntry | null = target
+        ? { type: "hp", combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "heal" }
         : null;
       return {
-        hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
+        undoStack: undoEntry ? pushUndo(state.undoStack, undoEntry) : state.undoStack,
         combatants: state.combatants.map((c) =>
           c.id === id
             ? { ...c, current_hp: Math.min(c.max_hp, c.current_hp + amount) }
@@ -150,11 +151,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   setTempHp: (id, value) =>
     set((state) => {
       const target = state.combatants.find((c) => c.id === id);
-      const undoEntry: HpUndoEntry | null = target
-        ? { combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "temp" }
+      const undoEntry: UndoEntry | null = target
+        ? { type: "hp", combatantId: id, previousHp: target.current_hp, previousTempHp: target.temp_hp, action: "temp" }
         : null;
       return {
-        hpUndoStack: undoEntry ? pushUndo(state.hpUndoStack, undoEntry) : state.hpUndoStack,
+        undoStack: undoEntry ? pushUndo(state.undoStack, undoEntry) : state.undoStack,
         combatants: state.combatants.map((c) =>
           c.id === id
             ? { ...c, temp_hp: Math.min(9999, Math.max(c.temp_hp, value)) }
@@ -164,25 +165,33 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     }),
 
   toggleCondition: (id, condition) =>
-    set((state) => ({
-      combatants: state.combatants.map((c) => {
-        if (c.id !== id) return c;
-        const has = c.conditions.includes(condition);
-        return {
-          ...c,
-          conditions: has
-            ? c.conditions.filter((cond) => cond !== condition)
-            : [...c.conditions, condition],
-        };
-      }),
-    })),
+    set((state) => {
+      const target = state.combatants.find((c) => c.id === id);
+      const has = target?.conditions.includes(condition) ?? false;
+      return {
+        undoStack: target ? pushUndo(state.undoStack, { type: "condition", combatantId: id, condition, wasAdded: !has }) : state.undoStack,
+        combatants: state.combatants.map((c) => {
+          if (c.id !== id) return c;
+          return {
+            ...c,
+            conditions: has
+              ? c.conditions.filter((cond) => cond !== condition)
+              : [...c.conditions, condition],
+          };
+        }),
+      };
+    }),
 
   setDefeated: (id, is_defeated) =>
-    set((state) => ({
-      combatants: state.combatants.map((c) =>
-        c.id === id ? { ...c, is_defeated } : c
-      ),
-    })),
+    set((state) => {
+      const target = state.combatants.find((c) => c.id === id);
+      return {
+        undoStack: target ? pushUndo(state.undoStack, { type: "defeated", combatantId: id, wasDefeated: target.is_defeated }) : state.undoStack,
+        combatants: state.combatants.map((c) =>
+          c.id === id ? { ...c, is_defeated } : c
+        ),
+      };
+    }),
 
   updateCombatantStats: (id, stats) =>
     set((state) => ({
@@ -218,20 +227,63 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       ),
     })),
 
-  undoLastHpChange: () =>
-    set((state) => {
-      if (state.hpUndoStack.length === 0) return state;
-      const stack = [...state.hpUndoStack];
-      const entry = stack.pop()!;
-      return {
-        hpUndoStack: stack,
-        combatants: state.combatants.map((c) =>
-          c.id === entry.combatantId
-            ? { ...c, current_hp: entry.previousHp, temp_hp: entry.previousTempHp }
-            : c
-        ),
-      };
-    }),
+  undoLastAction: () => {
+    const state = get();
+    if (state.undoStack.length === 0) return null;
+    const stack = [...state.undoStack];
+    const entry = stack.pop()!;
+
+    switch (entry.type) {
+      case "hp":
+        set({
+          undoStack: stack,
+          combatants: state.combatants.map((c) =>
+            c.id === entry.combatantId
+              ? { ...c, current_hp: entry.previousHp, temp_hp: entry.previousTempHp }
+              : c
+          ),
+        });
+        break;
+      case "condition":
+        set({
+          undoStack: stack,
+          combatants: state.combatants.map((c) => {
+            if (c.id !== entry.combatantId) return c;
+            // If the action added the condition, undo = remove it. If it removed, undo = add it back.
+            return {
+              ...c,
+              conditions: entry.wasAdded
+                ? c.conditions.filter((cond) => cond !== entry.condition)
+                : [...c.conditions, entry.condition],
+            };
+          }),
+        });
+        break;
+      case "defeated":
+        set({
+          undoStack: stack,
+          combatants: state.combatants.map((c) =>
+            c.id === entry.combatantId
+              ? { ...c, is_defeated: entry.wasDefeated }
+              : c
+          ),
+        });
+        break;
+      case "turn":
+        set({
+          undoStack: stack,
+          current_turn_index: Math.min(entry.previousTurnIndex, state.combatants.length - 1),
+          round_number: entry.previousRound,
+        });
+        break;
+    }
+
+    return entry;
+  },
+
+  undoLastHpChange: () => {
+    get().undoLastAction();
+  },
 
   addMonsterGroup: (newCombatants) =>
     set((state) => ({

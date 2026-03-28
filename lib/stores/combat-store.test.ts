@@ -483,15 +483,15 @@ describe("useCombatStore – setRulesetVersion", () => {
   });
 });
 
-// === AC4: Undo Stack (HP) ===
+// === AC4: Undo Stack (unified) ===
 
-describe("useCombatStore – undoLastHpChange", () => {
+describe("useCombatStore – undoLastAction (HP undo, backwards compat)", () => {
   it("pushes entry on damage and restores on undo", () => {
     useCombatStore.getState().addCombatant(baseCombatant);
     const id = useCombatStore.getState().combatants[0].id;
     useCombatStore.getState().applyDamage(id, 3);
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
-    useCombatStore.getState().undoLastHpChange();
+    useCombatStore.getState().undoLastAction();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
   });
 
@@ -500,7 +500,7 @@ describe("useCombatStore – undoLastHpChange", () => {
     const id = useCombatStore.getState().combatants[0].id;
     useCombatStore.getState().applyHealing(id, 2);
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(5);
-    useCombatStore.getState().undoLastHpChange();
+    useCombatStore.getState().undoLastAction();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(3);
   });
 
@@ -511,17 +511,18 @@ describe("useCombatStore – undoLastHpChange", () => {
     useCombatStore.getState().applyDamage(id, 2); // 6 -> 4
     useCombatStore.getState().applyDamage(id, 1); // 4 -> 3
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(3);
-    useCombatStore.getState().undoLastHpChange();
+    useCombatStore.getState().undoLastAction();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
-    useCombatStore.getState().undoLastHpChange();
+    useCombatStore.getState().undoLastAction();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(6);
-    useCombatStore.getState().undoLastHpChange();
+    useCombatStore.getState().undoLastAction();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
   });
 
-  it("is a no-op when stack is empty", () => {
+  it("returns null when stack is empty", () => {
     useCombatStore.getState().addCombatant(baseCombatant);
-    useCombatStore.getState().undoLastHpChange();
+    const result = useCombatStore.getState().undoLastAction();
+    expect(result).toBeNull();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
   });
 
@@ -532,7 +533,7 @@ describe("useCombatStore – undoLastHpChange", () => {
     useCombatStore.getState().applyDamage(id, 8);
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
     expect(useCombatStore.getState().combatants[0].temp_hp).toBe(0);
-    useCombatStore.getState().undoLastHpChange();
+    useCombatStore.getState().undoLastAction();
     expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
     expect(useCombatStore.getState().combatants[0].temp_hp).toBe(5);
   });
@@ -542,7 +543,94 @@ describe("useCombatStore – undoLastHpChange", () => {
     const id = useCombatStore.getState().combatants[0].id;
     useCombatStore.getState().applyDamage(id, 3);
     useCombatStore.getState().clearEncounter();
-    expect(useCombatStore.getState().hpUndoStack).toEqual([]);
+    expect(useCombatStore.getState().undoStack).toEqual([]);
+  });
+
+  it("undoLastHpChange delegates to undoLastAction (backwards compat)", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 3);
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(4);
+    useCombatStore.getState().undoLastHpChange();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
+  });
+});
+
+describe("useCombatStore – undoLastAction (condition undo)", () => {
+  it("undoes adding a condition", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().toggleCondition(id, "Poisoned");
+    expect(useCombatStore.getState().combatants[0].conditions).toContain("Poisoned");
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].conditions).not.toContain("Poisoned");
+  });
+
+  it("undoes removing a condition", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, conditions: ["Stunned"] });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().toggleCondition(id, "Stunned");
+    expect(useCombatStore.getState().combatants[0].conditions).not.toContain("Stunned");
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].conditions).toContain("Stunned");
+  });
+});
+
+describe("useCombatStore – undoLastAction (defeated undo)", () => {
+  it("undoes marking as defeated", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(false);
+    useCombatStore.getState().setDefeated(id, true);
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(true);
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(false);
+  });
+
+  it("undoes un-defeating", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, is_defeated: true });
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().setDefeated(id, false);
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(false);
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(true);
+  });
+});
+
+describe("useCombatStore – undoLastAction (turn undo)", () => {
+  it("undoes turn advance and restores round", () => {
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "A", initiative: 20 });
+    useCombatStore.getState().addCombatant({ ...baseCombatant, name: "B", initiative: 10 });
+    useCombatStore.getState().startCombat();
+    expect(useCombatStore.getState().current_turn_index).toBe(0);
+    expect(useCombatStore.getState().round_number).toBe(1);
+    useCombatStore.getState().advanceTurn();
+    expect(useCombatStore.getState().current_turn_index).toBe(1);
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().current_turn_index).toBe(0);
+    expect(useCombatStore.getState().round_number).toBe(1);
+  });
+});
+
+describe("useCombatStore – unified undo stack ordering", () => {
+  it("undoes mixed actions in LIFO order", () => {
+    useCombatStore.getState().addCombatant(baseCombatant);
+    const id = useCombatStore.getState().combatants[0].id;
+    useCombatStore.getState().applyDamage(id, 2); // hp: 7 -> 5
+    useCombatStore.getState().toggleCondition(id, "Poisoned"); // add condition
+    useCombatStore.getState().setDefeated(id, true); // mark defeated
+
+    // Undo defeated first (LIFO)
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].is_defeated).toBe(false);
+
+    // Undo condition
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].conditions).not.toContain("Poisoned");
+
+    // Undo HP
+    useCombatStore.getState().undoLastAction();
+    expect(useCombatStore.getState().combatants[0].current_hp).toBe(7);
   });
 });
 

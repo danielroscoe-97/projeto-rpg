@@ -35,12 +35,14 @@ export interface Combatant {
   player_character_id: string | null;
 }
 
-export interface HpUndoEntry {
-  combatantId: string;
-  previousHp: number;
-  previousTempHp: number;
-  action: "damage" | "heal" | "temp";
-}
+export type UndoEntry =
+  | { type: "hp"; combatantId: string; previousHp: number; previousTempHp: number; action: "damage" | "heal" | "temp" }
+  | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean }
+  | { type: "defeated"; combatantId: string; wasDefeated: boolean }
+  | { type: "turn"; previousTurnIndex: number; previousRound: number };
+
+/** @deprecated Use UndoEntry instead. Kept for backwards compatibility. */
+export type HpUndoEntry = Extract<UndoEntry, { type: "hp" }>;
 
 export interface EncounterState {
   encounter_id: string | null;
@@ -52,7 +54,7 @@ export interface EncounterState {
   is_active: boolean;
   is_loading: boolean;
   error: string | null;
-  hpUndoStack: HpUndoEntry[];
+  undoStack: UndoEntry[];
   /** ID of the last combatant added mid-combat (for undo). */
   lastAddedCombatantId: string | null;
   /** Client-side only: which monster groups are expanded (default collapsed). */
@@ -98,7 +100,9 @@ export interface CombatActions {
   updateDmNotes: (id: string, notes: string) => void;
   /** Update player-visible notes for a combatant. */
   updatePlayerNotes: (id: string, notes: string) => void;
-  /** Undo the last HP change from the undo stack. */
+  /** Undo the last combat action from the unified undo stack. Returns the undone entry or null if stack was empty. */
+  undoLastAction: () => UndoEntry | null;
+  /** @deprecated Use undoLastAction() instead. Delegates to undoLastAction() for backwards compatibility. */
   undoLastHpChange: () => void;
   /** Add multiple monsters of the same type as a named group. */
   addMonsterGroup: (combatants: Omit<Combatant, "id">[]) => void;

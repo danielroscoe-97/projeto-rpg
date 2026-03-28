@@ -326,7 +326,27 @@ export function CombatSessionClient({
         btn?.click();
       }
     },
-    onUndoHp: () => useCombatStore.getState().undoLastHpChange(),
+    onUndo: () => {
+      const entry = useCombatStore.getState().undoLastAction();
+      if (!entry) {
+        toast(t("undo_empty"));
+        return;
+      }
+      switch (entry.type) {
+        case "hp":
+          toast(t("undo_hp"));
+          break;
+        case "condition":
+          toast(entry.wasAdded ? t("undo_condition_add", { condition: entry.condition }) : t("undo_condition_remove", { condition: entry.condition }));
+          break;
+        case "defeated":
+          toast(t("undo_defeated"));
+          break;
+        case "turn":
+          toast(t("undo_turn"));
+          break;
+      }
+    },
     onReorder: (fromIndex: number, toIndex: number) => {
       const reordered = [...combatants];
       const [moved] = reordered.splice(fromIndex, 1);
