@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, X } from "lucide-react";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { OracleAIData } from "@/lib/stores/pinned-cards-store";
 
@@ -223,6 +223,14 @@ export function OracleAIModal() {
               className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground bg-white/[0.06] rounded border border-white/[0.08] hover:bg-white/[0.12] hover:text-foreground transition-colors cursor-pointer"
             >
               ESC
+            </button>
+            <button
+              type="button"
+              onClick={handleDismiss}
+              className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] -mr-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
             </button>
           </div>
 

@@ -33,6 +33,7 @@ const baseCharacter = {
   current_hp: 45,
   ac: 16,
   spell_save_dc: 14 as number | null,
+  dm_notes: "",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
 };
@@ -45,6 +46,7 @@ const secondCharacter = {
   current_hp: 50,
   ac: 12,
   spell_save_dc: null as number | null,
+  dm_notes: "",
   created_at: "2026-01-02T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
 };

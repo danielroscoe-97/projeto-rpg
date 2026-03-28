@@ -11,7 +11,7 @@ import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal
 import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import type { SrdMonster, SrdSpell } from "@/lib/srd/srd-loader";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
-import { Skull, Sparkles, HeartPulse } from "lucide-react";
+import { Skull, Sparkles, HeartPulse, X } from "lucide-react";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 
 const MAX_RESULTS_PER_GROUP = 5;
@@ -199,6 +199,14 @@ export function CommandPalette() {
               aria-label={t("hint_close")}
             >
               ESC
+            </button>
+            <button
+              type="button"
+              onClick={handleDismiss}
+              className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] -mr-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              aria-label={t("hint_close")}
+            >
+              <X className="w-5 h-5" />
             </button>
           </div>
 

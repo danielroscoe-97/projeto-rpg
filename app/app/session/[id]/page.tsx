@@ -23,7 +23,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
   // Fetch session
   const { data: session, error: sessionError } = await supabase
     .from("sessions")
-    .select("id, name, ruleset_version")
+    .select("id, name, ruleset_version, campaign_id")
     .eq("id", sessionId)
     .eq("owner_id", user.id)
     .single();
@@ -117,6 +117,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
         isActive={encounter?.is_active ?? false}
         roundNumber={encounter?.round_number ?? 1}
         currentTurnIndex={encounter?.current_turn_index ?? 0}
+        campaignId={session.campaign_id ?? null}
       />
     </div>
   );

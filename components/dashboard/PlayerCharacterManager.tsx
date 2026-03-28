@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -90,6 +90,46 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
 
   const supabase = createClient();
 
+  // ── DM Notes (debounced auto-save) ──────────────────────────────────────
+  const [notesValues, setNotesValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    for (const c of initialCharacters) {
+      initial[c.id] = c.dm_notes ?? "";
+    }
+    return initial;
+  });
+  const [notesSaveStatus, setNotesSaveStatus] = useState<Record<string, "idle" | "saving" | "saved" | "error">>({});
+  const notesTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  const saveNotes = useCallback(async (charId: string, value: string) => {
+    setNotesSaveStatus((prev) => ({ ...prev, [charId]: "saving" }));
+    try {
+      const { error: dbError } = await supabase
+        .from("player_characters")
+        .update({ dm_notes: value })
+        .eq("id", charId)
+        .eq("campaign_id", campaignId);
+      if (dbError) throw dbError;
+      setNotesSaveStatus((prev) => ({ ...prev, [charId]: "saved" }));
+      setCharacters((prev) => prev.map((c) => c.id === charId ? { ...c, dm_notes: value } : c));
+      setTimeout(() => {
+        setNotesSaveStatus((prev) => prev[charId] === "saved" ? { ...prev, [charId]: "idle" } : prev);
+      }, 2000);
+    } catch {
+      setNotesSaveStatus((prev) => ({ ...prev, [charId]: "error" }));
+    }
+  }, [supabase, campaignId]);
+
+  const handleNotesChange = useCallback((charId: string, value: string) => {
+    if (value.length > 2000) return;
+    setNotesValues((prev) => ({ ...prev, [charId]: value }));
+    setNotesSaveStatus((prev) => ({ ...prev, [charId]: "idle" }));
+    if (notesTimers.current[charId]) clearTimeout(notesTimers.current[charId]);
+    notesTimers.current[charId] = setTimeout(() => {
+      saveNotes(charId, value);
+    }, 800);
+  }, [saveNotes]);
+
   // ── Add ────────────────────────────────────────────────────────────────────
 
   const handleAdd = async () => {
@@ -119,6 +159,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       if (dbError || !data) throw new Error("Failed to add character. Please try again.");
 
       setCharacters((prev) => [...prev, data]);
+      setNotesValues((prev) => ({ ...prev, [data.id]: data.dm_notes ?? "" }));
       setAddForm(EMPTY_FORM);
       setShowAdd(false);
     } catch (err) {
@@ -480,6 +521,29 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                   {character.spell_save_dc && (
                     <StatBadge label={t("pc_col_spell_dc")} value={character.spell_save_dc} />
                   )}
+                </div>
+                {/* DM Notes */}
+                <div className="mt-3 space-y-1">
+                  <textarea
+                    value={notesValues[character.id] ?? ""}
+                    onChange={(e) => handleNotesChange(character.id, e.target.value)}
+                    placeholder="Notas sobre este jogador..."
+                    maxLength={2000}
+                    rows={2}
+                    className="w-full bg-transparent border border-border/50 rounded-md px-3 py-2 text-sm text-muted-foreground placeholder:text-muted-foreground/30 resize-y focus:outline-none focus:border-border/80 transition-colors"
+                    style={{ fontSize: 16, minHeight: "3.5rem", maxHeight: "9rem" }}
+                  />
+                  <div className="flex justify-end h-4">
+                    {notesSaveStatus[character.id] === "saving" && (
+                      <span className="text-[11px] text-muted-foreground/50">Salvando...</span>
+                    )}
+                    {notesSaveStatus[character.id] === "saved" && (
+                      <span className="text-[11px] text-green-500/70">Salvo</span>
+                    )}
+                    {notesSaveStatus[character.id] === "error" && (
+                      <span className="text-[11px] text-red-400/70">Erro ao salvar</span>
+                    )}
+                  </div>
                 </div>
               </div>
             );

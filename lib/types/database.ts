@@ -83,6 +83,7 @@ export interface Database {
           current_hp: number;
           ac: number;
           spell_save_dc: number | null;
+          dm_notes: string;
           created_at: string;
           updated_at: string;
         };
@@ -94,6 +95,7 @@ export interface Database {
           current_hp: number;
           ac: number;
           spell_save_dc?: number | null;
+          dm_notes?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -104,6 +106,7 @@ export interface Database {
           current_hp?: number;
           ac?: number;
           spell_save_dc?: number | null;
+          dm_notes?: string;
           updated_at?: string;
         };
       };
@@ -490,6 +493,31 @@ export interface Database {
           updated_at?: string;
         };
       };
+      campaign_notes: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          user_id: string;
+          title: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          user_id: string;
+          title?: string;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          content?: string;
+          updated_at?: string;
+        };
+      };
       session_tokens: {
         Row: {
           id: string;
@@ -539,3 +567,4 @@ export type Spell = Database["public"]["Tables"]["spells"]["Row"];
 export type ConditionType = Database["public"]["Tables"]["condition_types"]["Row"];
 export type SessionToken = Database["public"]["Tables"]["session_tokens"]["Row"];
 export type MonsterPreset = Database["public"]["Tables"]["monster_presets"]["Row"];
+export type CampaignNote = Database["public"]["Tables"]["campaign_notes"]["Row"];
