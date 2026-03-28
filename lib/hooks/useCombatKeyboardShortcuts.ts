@@ -25,7 +25,9 @@ interface CombatKeyboardShortcutsOptions {
   cheatsheetOpen: boolean;
   /** Toggle cheatsheet visibility */
   onToggleCheatsheet: () => void;
-  /** Callback to undo last HP change */
+  /** Callback to undo last combat action */
+  onUndo?: () => void;
+  /** @deprecated Use onUndo instead */
   onUndoHp?: () => void;
   /** Callback to reorder the focused combatant — receives (fromIndex, toIndex) */
   onReorder?: (fromIndex: number, toIndex: number) => void;
@@ -51,6 +53,7 @@ export function useCombatKeyboardShortcuts({
   onOpenConditions,
   cheatsheetOpen,
   onToggleCheatsheet,
+  onUndo,
   onUndoHp,
   onReorder,
 }: CombatKeyboardShortcutsOptions) {
@@ -65,6 +68,7 @@ export function useCombatKeyboardShortcuts({
     onOpenConditions,
     cheatsheetOpen,
     onToggleCheatsheet,
+    onUndo,
     onUndoHp,
     onReorder,
   });
@@ -80,6 +84,7 @@ export function useCombatKeyboardShortcuts({
     onOpenConditions,
     cheatsheetOpen,
     onToggleCheatsheet,
+    onUndo,
     onUndoHp,
     onReorder,
   };
@@ -100,10 +105,11 @@ export function useCombatKeyboardShortcuts({
 
       const opts = optionsRef.current;
 
-      // Ctrl+Z = Undo HP (works even when cheatsheet is open)
+      // Ctrl+Z = Undo last action (works even when cheatsheet is open)
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
         e.preventDefault();
-        opts.onUndoHp?.();
+        // Prefer onUndo (unified), fall back to deprecated onUndoHp
+        (opts.onUndo ?? opts.onUndoHp)?.();
         return;
       }
 

@@ -15,7 +15,7 @@ const SHORTCUTS = [
   { keys: ["D"], action: "shortcut_damage" },
   { keys: ["H"], action: "shortcut_heal" },
   { keys: ["C"], action: "shortcut_conditions" },
-  { keys: ["Ctrl", "Z"], action: "shortcut_undo" },
+  { keys: ["Ctrl", "Z"], action: "shortcut_undo_action" },
   { keys: ["Ctrl", "K"], action: "shortcut_search" },
   { keys: ["Esc"], action: "shortcut_close" },
   { keys: ["?"], action: "shortcut_help" },
