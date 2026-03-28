@@ -26,6 +26,24 @@ function computePosition(
   const padding = 12;
   const tooltipWidth = Math.min(340, window.innerWidth - 32);
   const isMobile = window.innerWidth < 768;
+  const safeMargin = 16;
+
+  // Mobile bottom-sheet: when target is too tall (>50% viewport) or
+  // tooltip would be clipped, pin to bottom of viewport
+  const targetTooTall = targetRect.height > window.innerHeight * 0.5;
+  if (isMobile && targetTooTall) {
+    return {
+      position: "bottom",
+      style: {
+        maxWidth: tooltipWidth,
+        bottom: safeMargin,
+        left: safeMargin,
+        right: safeMargin,
+        width: "auto",
+        maxHeight: `calc(50vh - ${safeMargin}px)`,
+      },
+    };
+  }
 
   const candidates: Position[] = isMobile
     ? ["bottom", "top"]
@@ -51,17 +69,23 @@ function computePosition(
   const style: React.CSSProperties = { maxWidth: tooltipWidth };
 
   const centerX = targetRect.left + targetRect.width / 2;
-  const safeMargin = 16;
 
   switch (chosen) {
-    case "bottom":
-      style.top = Math.min(targetRect.bottom + padding, window.innerHeight - safeMargin - 100);
+    case "bottom": {
+      const top = Math.min(targetRect.bottom + padding, window.innerHeight - safeMargin - 100);
+      style.top = top;
       style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
+      // Dynamic max-height based on remaining space below
+      style.maxHeight = `${window.innerHeight - top - safeMargin}px`;
       break;
-    case "top":
-      style.bottom = window.innerHeight - targetRect.top + padding;
+    }
+    case "top": {
+      const bottomVal = window.innerHeight - targetRect.top + padding;
+      style.bottom = bottomVal;
       style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
+      style.maxHeight = `${window.innerHeight - bottomVal - safeMargin}px`;
       break;
+    }
     case "right":
       style.top = Math.max(safeMargin, targetRect.top + targetRect.height / 2 - 60);
       style.left = targetRect.right + padding;
@@ -146,7 +170,7 @@ export function TourTooltip({
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
         className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
-        style={{ ...style, pointerEvents: "auto", maxHeight: "calc(100vh - 32px)" }}
+        style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0 }}
