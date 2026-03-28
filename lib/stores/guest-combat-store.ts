@@ -18,6 +18,7 @@ interface GuestCombatActions {
   removeCombatant: (id: string) => void;
   setInitiative: (id: string, value: number | null) => void;
   batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
+  setGroupInitiative: (groupId: string, value: number) => void;
   reorderCombatants: (newOrder: Combatant[]) => void;
   updateCombatantStats: (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   updatePlayerNotes: (id: string, notes: string) => void;
@@ -72,6 +73,14 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           const initMap = new Map(entries.map((e) => [e.id, e.value]));
           const updated = state.combatants.map((c) =>
             initMap.has(c.id) ? { ...c, initiative: initMap.get(c.id)! } : c
+          );
+          return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
+        }),
+
+      setGroupInitiative: (groupId, value) =>
+        set((state) => {
+          const updated = state.combatants.map((c) =>
+            c.monster_group_id === groupId ? { ...c, initiative: value } : c
           );
           return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
         }),

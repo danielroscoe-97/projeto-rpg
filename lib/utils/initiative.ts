@@ -48,15 +48,52 @@ export function getDexScore(
 
 /**
  * Sorts combatants in descending initiative order (highest first).
- * Stable: combatants with the same initiative keep their relative order.
- * Returns a NEW array — does not mutate the input.
+ * Group-aware: members of the same monster_group_id are always kept adjacent,
+ * sorted internally by group_order. A group's position is determined by its
+ * shared initiative value. Returns a NEW array — does not mutate the input.
  */
 export function sortByInitiative(combatants: Combatant[]): Combatant[] {
-  return [...combatants].sort((a, b) => {
-    const ia = a.initiative ?? -Infinity;
-    const ib = b.initiative ?? -Infinity;
-    return ib - ia;
-  });
+  // 1. Identify each group's representative initiative (use max among members)
+  const groupInitiative = new Map<string, number>();
+  for (const c of combatants) {
+    if (c.monster_group_id) {
+      const current = groupInitiative.get(c.monster_group_id) ?? -Infinity;
+      const val = c.initiative ?? -Infinity;
+      if (val > current) groupInitiative.set(c.monster_group_id, val);
+    }
+  }
+
+  // 2. Build render blocks: ungrouped combatants are solo blocks, groups are one block
+  type Block = { initiative: number; groupId: string | null; members: Combatant[] };
+  const blocks: Block[] = [];
+  const seenGroups = new Set<string>();
+
+  for (const c of combatants) {
+    if (c.monster_group_id) {
+      if (seenGroups.has(c.monster_group_id)) continue;
+      seenGroups.add(c.monster_group_id);
+      const members = combatants
+        .filter((m) => m.monster_group_id === c.monster_group_id)
+        .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
+      blocks.push({
+        initiative: groupInitiative.get(c.monster_group_id) ?? -Infinity,
+        groupId: c.monster_group_id,
+        members,
+      });
+    } else {
+      blocks.push({
+        initiative: c.initiative ?? -Infinity,
+        groupId: null,
+        members: [c],
+      });
+    }
+  }
+
+  // 3. Sort blocks descending by initiative (stable)
+  blocks.sort((a, b) => b.initiative - a.initiative);
+
+  // 4. Flatten back
+  return blocks.flatMap((block) => block.members);
 }
 
 /**
@@ -86,37 +123,58 @@ export function assignInitiativeOrder(combatants: Combatant[]): Combatant[] {
 }
 
 /**
- * After a drag-and-drop reorder, recalculate the moved combatant's initiative
- * so it fits its new position in descending order.
+ * After a drag-and-drop reorder, recalculate the moved combatant's (or group's)
+ * initiative so it fits its new position in descending order.
+ *
+ * If the moved combatant belongs to a monster group, ALL group members receive
+ * the same new initiative value so the group stays together on re-sort.
  *
  * @param reordered  - the full array after arrayMove (new visual order)
  * @param movedId    - the id of the combatant that was dragged
- * @returns a new array with the moved combatant's initiative adjusted
+ * @returns a new array with the moved combatant's (or group's) initiative adjusted
  */
 export function adjustInitiativeAfterReorder(
   reordered: Combatant[],
   movedId: string
 ): Combatant[] {
-  const idx = reordered.findIndex((c) => c.id === movedId);
-  if (idx === -1) return reordered;
+  const moved = reordered.find((c) => c.id === movedId);
+  if (!moved) return reordered;
 
-  const above = idx > 0 ? reordered[idx - 1] : null;
-  const below = idx < reordered.length - 1 ? reordered[idx + 1] : null;
+  const groupId = moved.monster_group_id;
+
+  // Find the range of the moved group/combatant in the reordered array
+  let blockStart: number;
+  let blockEnd: number;
+  if (groupId) {
+    blockStart = reordered.findIndex((c) => c.monster_group_id === groupId);
+    blockEnd = blockStart;
+    while (blockEnd < reordered.length - 1 && reordered[blockEnd + 1].monster_group_id === groupId) {
+      blockEnd++;
+    }
+  } else {
+    blockStart = reordered.indexOf(moved);
+    blockEnd = blockStart;
+  }
+
+  // Find external neighbors (outside the group block)
+  const neighborAbove = blockStart > 0 ? reordered[blockStart - 1] : null;
+  const neighborBelow = blockEnd < reordered.length - 1 ? reordered[blockEnd + 1] : null;
 
   // List is descending: position 0 = highest initiative.
-  // The moved combatant must fit between its neighbors.
   let newInit: number;
-  if (!above && below?.initiative !== null && below) {
-    // Moved to top — must be higher than the one below
-    newInit = below.initiative! + 1;
-  } else if (above?.initiative !== null && above) {
-    // Has a neighbor above — place just below it
-    newInit = above.initiative! - 1;
+  if (!neighborAbove && neighborBelow?.initiative != null) {
+    newInit = neighborBelow.initiative + 1;
+  } else if (neighborAbove?.initiative != null) {
+    newInit = neighborAbove.initiative - 1;
   } else {
     return reordered;
   }
 
-  return reordered.map((c) =>
-    c.id === movedId ? { ...c, initiative: newInit } : c
-  );
+  // Apply to the moved combatant AND all members of its group
+  const movedGroupId = moved.monster_group_id;
+  return reordered.map((c) => {
+    if (c.id === movedId) return { ...c, initiative: newInit };
+    if (movedGroupId && c.monster_group_id === movedGroupId) return { ...c, initiative: newInit };
+    return c;
+  });
 }

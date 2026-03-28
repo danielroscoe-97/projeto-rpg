@@ -184,11 +184,41 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   }, [addRow, addCombatant, t]);
 
   const handleRowInitChange = useCallback(
-    (id: string, value: number | null) => setInitiative(id, value),
+    (id: string, value: number | null) => {
+      const combatant = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+      if (combatant?.monster_group_id) {
+        if (value !== null) {
+          useGuestCombatStore.getState().setGroupInitiative(combatant.monster_group_id, value);
+        } else {
+          const members = useGuestCombatStore.getState().combatants.filter(
+            (c) => c.monster_group_id === combatant.monster_group_id
+          );
+          for (const m of members) useGuestCombatStore.getState().setInitiative(m.id, null);
+        }
+      } else {
+        setInitiative(id, value);
+      }
+    },
     [setInitiative]
   );
   const handleRowNameChange = useCallback(
-    (id: string, name: string) => updateCombatantStats(id, { name }),
+    (id: string, name: string) => {
+      const combatant = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+      if (combatant?.monster_group_id) {
+        const groupMembers = useGuestCombatStore.getState().combatants
+          .filter((c) => c.monster_group_id === combatant.monster_group_id)
+          .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
+        const newBase = name.replace(/\s+\d+$/, "");
+        useGuestCombatStore.getState().hydrateCombatants(
+          useGuestCombatStore.getState().combatants.map((c) => {
+            const idx = groupMembers.findIndex((m) => m.id === c.id);
+            return idx !== -1 ? { ...c, name: `${newBase} ${idx + 1}` } : c;
+          })
+        );
+      } else {
+        updateCombatantStats(id, { name });
+      }
+    },
     [updateCombatantStats]
   );
   const handleRowHpChange = useCallback(
@@ -577,7 +607,20 @@ export function GuestCombatClient() {
 
   const handleSetInitiative = useCallback(
     (id: string, value: number | null) => {
-      useGuestCombatStore.getState().setInitiative(id, value);
+      const store = useGuestCombatStore.getState();
+      const combatant = store.combatants.find((c) => c.id === id);
+      if (combatant?.monster_group_id && value !== null) {
+        store.setGroupInitiative(combatant.monster_group_id, value);
+      } else if (combatant?.monster_group_id && value === null) {
+        // Clear initiative for all group members
+        store.hydrateCombatants(
+          store.combatants.map((c) =>
+            c.monster_group_id === combatant.monster_group_id ? { ...c, initiative: null } : c
+          )
+        );
+      } else {
+        store.setInitiative(id, value);
+      }
     },
     []
   );

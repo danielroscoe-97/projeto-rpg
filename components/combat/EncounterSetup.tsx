@@ -440,11 +440,55 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   // Row edit handlers
   const handleRowInitChange = useCallback(
-    (id: string, value: number | null) => setInitiative(id, value),
+    (id: string, value: number | null) => {
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === id);
+      // If grouped, propagate initiative to all group members
+      if (combatant?.monster_group_id) {
+        if (value !== null) {
+          useCombatStore.getState().setGroupInitiative(combatant.monster_group_id, value);
+        } else {
+          // Clear initiative for all group members
+          const members = useCombatStore.getState().combatants.filter(
+            (c) => c.monster_group_id === combatant.monster_group_id
+          );
+          for (const m of members) useCombatStore.getState().setInitiative(m.id, null);
+        }
+      } else {
+        setInitiative(id, value);
+      }
+    },
     [setInitiative]
   );
   const handleRowNameChange = useCallback(
-    (id: string, name: string) => updateCombatantStats(id, { name }),
+    (id: string, name: string) => {
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === id);
+
+      // If this combatant belongs to a group, propagate the base name change to all members
+      if (combatant?.monster_group_id) {
+        const groupMembers = useCombatStore.getState().combatants
+          .filter((c) => c.monster_group_id === combatant.monster_group_id)
+          .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
+
+        // Extract new base name (strip trailing " N" if present)
+        const newBase = name.replace(/\s+\d+$/, "");
+
+        // Rename all members: "NewBase 1", "NewBase 2", etc.
+        const updates = groupMembers.map((m, i) => ({
+          ...m,
+          name: `${newBase} ${i + 1}`,
+          display_name: m.display_name, // keep display_name as-is (DM controls it)
+        }));
+
+        useCombatStore.getState().hydrateCombatants(
+          useCombatStore.getState().combatants.map((c) => {
+            const updated = updates.find((u) => u.id === c.id);
+            return updated ? { ...c, name: updated.name } : c;
+          })
+        );
+      } else {
+        updateCombatantStats(id, { name });
+      }
+    },
     [updateCombatantStats]
   );
   const handleRowHpChange = useCallback(
@@ -473,14 +517,30 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   const handleDuplicate = useCallback(
     (source: Combatant) => {
+      const currentCombatants = useCombatStore.getState().combatants;
+
+      // If source belongs to a group, compute next group_order
+      let groupOrder: number | null = null;
+      if (source.monster_group_id) {
+        const groupMembers = currentCombatants.filter(
+          (c) => c.monster_group_id === source.monster_group_id
+        );
+        groupOrder = Math.max(...groupMembers.map((m) => m.group_order ?? 0)) + 1;
+      }
+
+      // For group members, use the group base name for proper numbering (e.g. "Goblin 4" not "Goblin 2 1")
+      const baseName = source.monster_group_id
+        ? source.name.replace(/\s+\d+$/, "")
+        : source.name;
+
       addCombatant({
-        name: getNumberedName(source.name, useCombatStore.getState().combatants),
+        name: getNumberedName(baseName, currentCombatants),
         current_hp: source.max_hp,
         max_hp: source.max_hp,
         temp_hp: 0,
         ac: source.ac,
         spell_save_dc: source.spell_save_dc,
-        initiative: null,
+        initiative: source.monster_group_id ? source.initiative : null,
         initiative_order: null,
         conditions: [],
         ruleset_version: source.ruleset_version,
@@ -490,9 +550,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         monster_id: source.monster_id,
         token_url: source.token_url,
         creature_type: source.creature_type,
-        display_name: source.is_player ? null : getDefaultDisplayName(source.creature_type, useCombatStore.getState().combatants),
+        display_name: source.is_player ? null : getDefaultDisplayName(source.creature_type, currentCombatants),
         monster_group_id: source.monster_group_id,
-        group_order: null,
+        group_order: groupOrder,
         dm_notes: "",
         player_notes: "",
         player_character_id: null,

@@ -36,11 +36,19 @@ export function useInitiativeRolling(
 
   const handleRollOne = useCallback(
     (id: string) => {
-      const c = store.getState().combatants.find((x) => x.id === id);
+      const { combatants, setInitiative, batchSetInitiatives } = store.getState();
+      const c = combatants.find((x) => x.id === id);
       if (!c) return;
       const dex = getDexScore(c, monsterIndexRef.current);
       const result = rollInitiativeForCombatant(id, dex);
-      store.getState().setInitiative(id, result.total);
+
+      // If this combatant belongs to a group, apply the same roll to all members
+      if (c.monster_group_id) {
+        const groupMembers = combatants.filter((x) => x.monster_group_id === c.monster_group_id);
+        batchSetInitiatives(groupMembers.map((m) => ({ id: m.id, value: result.total })));
+      } else {
+        setInitiative(id, result.total);
+      }
     },
     [store]
   );

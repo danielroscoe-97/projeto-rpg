@@ -391,11 +391,27 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
   const handleSetInitiative = useCallback((id: string, value: number | null) => {
     const snap = useCombatStore.getState();
-    snap.setInitiative(id, value);
+    const combatant = snap.combatants.find((c) => c.id === id);
+
+    // If this combatant belongs to a group, set/clear initiative for the whole group
+    if (combatant?.monster_group_id) {
+      if (value !== null) {
+        snap.setGroupInitiative(combatant.monster_group_id, value);
+      } else {
+        // Clear initiative for all group members via individual setInitiative calls
+        const groupMembers = snap.combatants.filter((c) => c.monster_group_id === combatant.monster_group_id);
+        for (const m of groupMembers) {
+          useCombatStore.getState().setInitiative(m.id, null);
+        }
+      }
+    } else {
+      snap.setInitiative(id, value);
+    }
+
     const postSet = useCombatStore.getState();
     broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: postSet.combatants });
     persistInitiativeOrder(
-      postSet.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
+      postSet.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
     ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError, getSessionId]);
 

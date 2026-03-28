@@ -31,9 +31,18 @@ const base: Omit<Combatant, "id" | "name" | "initiative"> = {
 function make(
   id: string,
   name: string,
-  initiative: number | null
+  initiative: number | null,
+  groupId?: string | null,
+  groupOrder?: number | null
 ): Combatant {
-  return { ...base, id, name, initiative };
+  return {
+    ...base,
+    id,
+    name,
+    initiative,
+    monster_group_id: groupId ?? null,
+    group_order: groupOrder ?? null,
+  };
 }
 
 describe("sortByInitiative", () => {
@@ -124,5 +133,75 @@ describe("assignInitiativeOrder", () => {
     const result = assignInitiativeOrder(combatants);
     expect(result[0]).not.toBe(combatants[0]);
     expect(combatants[0].initiative_order).toBeNull();
+  });
+});
+
+describe("sortByInitiative — group clustering", () => {
+  it("keeps group members adjacent even when interleaved with same-initiative combatants", () => {
+    const combatants = [
+      make("g1", "Goat 1", 15, "group-goat", 1),
+      make("pc", "Hero", 15),
+      make("g2", "Goat 2", 15, "group-goat", 2),
+    ];
+    const sorted = sortByInitiative(combatants);
+    const names = sorted.map((c) => c.name);
+    // Group must be together — either [Goat1, Goat2, Hero] or [Hero, Goat1, Goat2]
+    const g1Idx = names.indexOf("Goat 1");
+    const g2Idx = names.indexOf("Goat 2");
+    expect(g2Idx).toBe(g1Idx + 1);
+  });
+
+  it("sorts groups by their shared initiative descending", () => {
+    const combatants = [
+      make("g1", "Goat 1", 10, "group-goat", 1),
+      make("g2", "Goat 2", 10, "group-goat", 2),
+      make("w1", "Wolf 1", 18, "group-wolf", 1),
+      make("w2", "Wolf 2", 18, "group-wolf", 2),
+      make("pc", "Hero", 14),
+    ];
+    const sorted = sortByInitiative(combatants);
+    const names = sorted.map((c) => c.name);
+    // Wolves (18) > Hero (14) > Goats (10)
+    expect(names).toEqual(["Wolf 1", "Wolf 2", "Hero", "Goat 1", "Goat 2"]);
+  });
+
+  it("sorts group members internally by group_order", () => {
+    const combatants = [
+      make("g3", "Goat 3", 12, "group-goat", 3),
+      make("g1", "Goat 1", 12, "group-goat", 1),
+      make("g2", "Goat 2", 12, "group-goat", 2),
+    ];
+    const sorted = sortByInitiative(combatants);
+    expect(sorted.map((c) => c.name)).toEqual(["Goat 1", "Goat 2", "Goat 3"]);
+  });
+
+  it("handles mixed grouped and ungrouped combatants", () => {
+    const combatants = [
+      make("pc1", "Fighter", 20),
+      make("g1", "Goblin 1", 15, "group-gob", 1),
+      make("g2", "Goblin 2", 15, "group-gob", 2),
+      make("pc2", "Wizard", 10),
+    ];
+    const sorted = sortByInitiative(combatants);
+    expect(sorted.map((c) => c.name)).toEqual([
+      "Fighter",
+      "Goblin 1",
+      "Goblin 2",
+      "Wizard",
+    ]);
+  });
+});
+
+describe("adjustInitiativeAfterReorder — group support", () => {
+  it("applies new initiative to all group members when one is moved", () => {
+    const reordered = [
+      make("g1", "Goat 1", 10, "group-goat", 1),
+      make("g2", "Goat 2", 10, "group-goat", 2),
+      make("pc", "Hero", 15),
+    ];
+    const result = adjustInitiativeAfterReorder(reordered, "g1");
+    // Goats moved to top — should get initiative > Hero's 15
+    expect(result[0].initiative).toBe(16);
+    expect(result[1].initiative).toBe(16); // Same group, same initiative
   });
 });

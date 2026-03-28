@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -21,6 +21,43 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import type { Combatant } from "@/lib/types/combat";
 
+// ─── Block model: groups become a single draggable unit ─────────────────────
+
+type SortableBlock =
+  | { kind: "single"; id: string; members: [Combatant] }
+  | { kind: "group"; id: string; groupId: string; members: Combatant[] };
+
+function buildBlocks(combatants: Combatant[]): SortableBlock[] {
+  const blocks: SortableBlock[] = [];
+  const seenGroups = new Set<string>();
+
+  for (const c of combatants) {
+    if (!c.monster_group_id) {
+      blocks.push({ kind: "single", id: c.id, members: [c] });
+      continue;
+    }
+    if (seenGroups.has(c.monster_group_id)) continue;
+    seenGroups.add(c.monster_group_id);
+    const members = combatants
+      .filter((m) => m.monster_group_id === c.monster_group_id)
+      .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
+    blocks.push({
+      kind: "group",
+      id: `group:${c.monster_group_id}`,
+      groupId: c.monster_group_id,
+      members,
+    });
+  }
+  return blocks;
+}
+
+/** Flatten blocks back into a flat combatant array preserving block order. */
+function flattenBlocks(blocks: SortableBlock[]): Combatant[] {
+  return blocks.flatMap((b) => b.members);
+}
+
+// ─── Public API ─────────────────────────────────────────────────────────────
+
 interface SortableCombatantListProps {
   combatants: Combatant[];
   onReorder: (newOrder: Combatant[], movedId?: string) => void;
@@ -33,6 +70,9 @@ export function SortableCombatantList({
   renderItem,
 }: SortableCombatantListProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  const blocks = useMemo(() => buildBlocks(combatants), [combatants]);
+  const blockIds = useMemo(() => blocks.map((b) => b.id), [blocks]);
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 5 },
@@ -52,17 +92,22 @@ export function SortableCombatantList({
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
-      const oldIndex = combatants.findIndex((c) => c.id === active.id);
-      const newIndex = combatants.findIndex((c) => c.id === over.id);
+      const oldIndex = blocks.findIndex((b) => b.id === active.id);
+      const newIndex = blocks.findIndex((b) => b.id === over.id);
       if (oldIndex === -1 || newIndex === -1) return;
 
-      const newOrder = arrayMove(combatants, oldIndex, newIndex);
-      onReorder(newOrder, String(active.id));
+      const reorderedBlocks = arrayMove(blocks, oldIndex, newIndex);
+      const newOrder = flattenBlocks(reorderedBlocks);
+
+      // Use the first member's id as the "moved" id for initiative adjustment
+      const movedBlock = blocks[oldIndex];
+      onReorder(newOrder, movedBlock.members[0]?.id);
     },
-    [combatants, onReorder]
+    [blocks, onReorder]
   );
 
-  const activeCombatant = activeId ? combatants.find((c) => c.id === activeId) : null;
+  // Find the active block for overlay rendering
+  const activeBlock = activeId ? blocks.find((b) => b.id === activeId) : null;
 
   return (
     <DndContext
@@ -71,19 +116,18 @@ export function SortableCombatantList({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={combatants.map((c) => c.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        {combatants.map((c) => (
-          <SortableItem key={c.id} combatant={c} renderItem={renderItem} />
+      <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
+        {blocks.map((block) => (
+          <SortableBlock key={block.id} block={block} renderItem={renderItem} />
         ))}
       </SortableContext>
 
       <DragOverlay>
-        {activeCombatant && (
-          <div className="opacity-80 shadow-lg rounded-md">
-            {renderItem(activeCombatant, {})}
+        {activeBlock && (
+          <div className={`opacity-80 shadow-lg rounded-md ${activeBlock.kind === "group" ? "border-l-2 border-gold/30 rounded-l-sm" : ""}`}>
+            {activeBlock.members.map((c) => (
+              <div key={c.id}>{renderItem(c, {})}</div>
+            ))}
           </div>
         )}
       </DragOverlay>
@@ -91,12 +135,14 @@ export function SortableCombatantList({
   );
 }
 
-interface SortableItemProps {
-  combatant: Combatant;
+// ─── Sortable block wrapper ─────────────────────────────────────────────────
+
+interface SortableBlockProps {
+  block: SortableBlock;
   renderItem: (combatant: Combatant, dragHandleProps: Record<string, unknown>) => React.ReactNode;
 }
 
-function SortableItem({ combatant, renderItem }: SortableItemProps) {
+function SortableBlock({ block, renderItem }: SortableBlockProps) {
   const {
     attributes,
     listeners,
@@ -104,7 +150,7 @@ function SortableItem({ combatant, renderItem }: SortableItemProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: combatant.id });
+  } = useSortable({ id: block.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -114,9 +160,26 @@ function SortableItem({ combatant, renderItem }: SortableItemProps) {
 
   const dragHandleProps = { ...attributes, ...listeners };
 
+  if (block.kind === "single") {
+    return (
+      <div ref={setNodeRef} style={style}>
+        {renderItem(block.members[0], dragHandleProps)}
+      </div>
+    );
+  }
+
+  // Group: render all members inside one draggable container.
+  // Only the first member gets the drag handle; others get an empty
+  // handle (they can't be dragged individually).
   return (
-    <div ref={setNodeRef} style={style}>
-      {renderItem(combatant, dragHandleProps)}
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="border-l-2 border-gold/30 rounded-l-sm"
+    >
+      {block.members.map((c, i) => (
+        <div key={c.id}>{renderItem(c, i === 0 ? dragHandleProps : {})}</div>
+      ))}
     </div>
   );
 }

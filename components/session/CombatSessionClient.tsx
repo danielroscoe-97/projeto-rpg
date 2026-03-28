@@ -429,9 +429,44 @@ export function CombatSessionClient({
       }
     },
     onReorder: (fromIndex: number, toIndex: number) => {
-      const reordered = [...combatants];
-      const [moved] = reordered.splice(fromIndex, 1);
-      reordered.splice(toIndex, 0, moved);
+      const moved = combatants[fromIndex];
+      if (!moved) return;
+
+      // Build block-based representation to preserve all groups
+      type Block = { id: string; groupId: string | null; members: Combatant[] };
+      const blocks: Block[] = [];
+      const seenGroups = new Set<string>();
+      for (const c of combatants) {
+        if (c.monster_group_id) {
+          if (seenGroups.has(c.monster_group_id)) continue;
+          seenGroups.add(c.monster_group_id);
+          blocks.push({
+            id: `group:${c.monster_group_id}`,
+            groupId: c.monster_group_id,
+            members: combatants.filter((m) => m.monster_group_id === c.monster_group_id),
+          });
+        } else {
+          blocks.push({ id: c.id, groupId: null, members: [c] });
+        }
+      }
+
+      // Find which block the moved combatant belongs to, and the target block
+      const movedBlockIdx = blocks.findIndex((b) =>
+        b.members.some((m) => m.id === moved.id)
+      );
+      // Find the block that contains the combatant at toIndex
+      const targetCombatant = combatants[toIndex];
+      const targetBlockIdx = targetCombatant
+        ? blocks.findIndex((b) => b.members.some((m) => m.id === targetCombatant.id))
+        : blocks.length - 1;
+
+      if (movedBlockIdx === -1 || movedBlockIdx === targetBlockIdx) return;
+
+      // Move the block
+      const [movedBlock] = blocks.splice(movedBlockIdx, 1);
+      blocks.splice(targetBlockIdx, 0, movedBlock);
+
+      const reordered = blocks.flatMap((b) => b.members);
       handleReorderCombatants(reordered, moved.id);
     },
     cheatsheetOpen,
