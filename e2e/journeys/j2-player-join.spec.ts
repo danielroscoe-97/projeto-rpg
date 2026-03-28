@@ -16,6 +16,10 @@ import { dmSetupCombatSession, playerJoinCombat } from "../helpers/session";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
 test.describe("J2 — Player Recebe o Link", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  // Default 30s is too short for this multi-context flow against production.
+  test.setTimeout(90_000);
+
   test("J2.3 — Player ve HP atualizado em tempo real quando DM ajusta", async ({
     browser,
   }) => {
@@ -212,14 +216,10 @@ test.describe("J2 — Player Recebe o Link", () => {
     await mobilePage.goto(`/join/${token}`);
     await mobilePage.waitForTimeout(3_000);
 
-    // Should see late-join form
-    const nameInput = mobilePage
-      .locator(
-        'input[placeholder*="Aragorn"], input[placeholder*="nome"], input[name="name"]'
-      )
-      .first();
+    // Should see late-join form (uses stable data-testid from PlayerLobby)
+    const nameInput = mobilePage.locator('[data-testid="lobby-name"]');
 
-    if (await nameInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 10_000 }).catch(() => false)) {
       // Verify form is usable on mobile (no overflow)
       const formBox = await nameInput.boundingBox();
       expect(formBox).toBeTruthy();
@@ -229,17 +229,13 @@ test.describe("J2 — Player Recebe o Link", () => {
       // Fill and submit
       await nameInput.fill("Mobile Player");
 
-      const initInput = mobilePage
-        .locator('input[placeholder*="18"]')
-        .first();
-      if (await initInput.isVisible()) await initInput.fill("10");
+      const initInput = mobilePage.locator('[data-testid="lobby-initiative"]');
+      if (await initInput.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await initInput.fill("10");
+      }
 
-      const submitBtn = mobilePage
-        .locator(
-          'button:has-text("Solicitar"), button:has-text("Request"), button[type="submit"]'
-        )
-        .first();
-      if (await submitBtn.isVisible()) {
+      const submitBtn = mobilePage.locator('[data-testid="lobby-submit"]');
+      if (await submitBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
         // Verify submit button is within viewport
         const btnBox = await submitBtn.boundingBox();
         expect(btnBox).toBeTruthy();

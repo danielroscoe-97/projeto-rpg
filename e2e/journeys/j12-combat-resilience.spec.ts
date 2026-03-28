@@ -20,6 +20,9 @@ import { dmSetupCombatSession, playerJoinCombat } from "../helpers/session";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
 test.describe("J12 — Combat Resilience", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  test.setTimeout(90_000);
+
   test("J12.1 — DM refresh preserva combate ativo completo", async ({
     browser,
   }) => {

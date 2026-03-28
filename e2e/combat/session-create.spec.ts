@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { loginAs } from "../helpers/auth";
+import { goToNewSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 test.describe("P0 — DM Creates Session", () => {
@@ -8,23 +9,19 @@ test.describe("P0 — DM Creates Session", () => {
   });
 
   test("DM can navigate to create new session", async ({ page }) => {
-    await page.goto("/app/session/new");
-    await page.waitForURL("**/app/session/**", { timeout: 15_000 });
+    await goToNewSession(page);
     await expect(page).toHaveURL(/\/app\/session\//);
   });
 
   test("DM session page shows encounter setup", async ({ page }) => {
-    await page.goto("/app/session/new");
-    await page.waitForURL("**/app/session/**", { timeout: 15_000 });
+    await goToNewSession(page);
 
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
     await expect(page.locator('[data-testid="setup-combatant-list"]')).toBeVisible();
   });
 
   test("DM can add combatant in encounter setup", async ({ page }) => {
-    await page.goto("/app/session/new");
-    await page.waitForURL("**/app/session/**", { timeout: 15_000 });
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
+    await goToNewSession(page);
 
     await page.fill('[data-testid="add-row-name"]', "Test Goblin");
     await page.fill('[data-testid="add-row-hp"]', "7");
@@ -39,16 +36,7 @@ test.describe("P0 — DM Creates Session", () => {
   });
 
   test("DM can generate share link", async ({ page }) => {
-    await page.goto("/app/session/new");
-    await page.waitForLoadState("domcontentloaded");
-
-    // /app/session/new may show campaign picker first — skip to quick combat
-    const quickCombatBtn = page.locator('button:has-text("Combate Rápido"), button:has-text("Quick Combat")');
-    if (await quickCombatBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await quickCombatBtn.click();
-    }
-
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
+    await goToNewSession(page);
 
     // On /session/new (sessionId=null), click share-prepare-btn to create session on-demand
     const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
@@ -68,9 +56,7 @@ test.describe("P0 — DM Creates Session", () => {
   });
 
   test("DM can start combat with combatants", async ({ page }) => {
-    await page.goto("/app/session/new");
-    await page.waitForURL("**/app/session/**", { timeout: 15_000 });
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
+    await goToNewSession(page);
 
     // Set encounter name (required to start combat)
     await page.fill('[data-testid="encounter-name-input"]', "E2E Test Encounter");

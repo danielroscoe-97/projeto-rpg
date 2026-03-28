@@ -103,6 +103,9 @@ export async function dmSetupCombatSession(
  * Player joins via /join/[token], handles late-join form + DM approval.
  * Returns when player-view is visible.
  *
+ * Uses stable data-testid selectors from PlayerLobby component.
+ * DM approval button is inside a Sonner toast — requires [data-sonner-toaster] selector.
+ *
  * @param playerPage - Player's page (already logged in or anonymous)
  * @param dmPage - DM's page (in active combat, to accept late-join request)
  * @param token - Share token
@@ -116,45 +119,52 @@ export async function playerJoinCombat(
   opts: { initiative?: string; hp?: string; ac?: string } = {}
 ) {
   await playerPage.goto(`/join/${token}`);
+  await playerPage.waitForLoadState("domcontentloaded");
+
+  // Wait for auth + lobby form to render (PlayerLobby uses data-testid="lobby-name")
+  const nameInput = playerPage.locator('[data-testid="lobby-name"]');
+  await expect(nameInput).toBeVisible({ timeout: 15_000 });
+
+  // Allow realtime channel to fully subscribe before interacting with the form.
+  // The channel is created when authReady=true (which triggers form render),
+  // but Supabase Realtime subscription is async — needs a moment to connect.
   await playerPage.waitForTimeout(3_000);
 
-  // Check for late-join registration form
-  const nameInput = playerPage.locator(
-    'input[placeholder*="Aragorn"], input[placeholder*="nome"], input[name="name"]'
-  ).first();
+  // Fill the late-join registration form
+  await nameInput.fill(playerName);
 
-  if (await nameInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-    await nameInput.fill(playerName);
+  const initInput = playerPage.locator('[data-testid="lobby-initiative"]');
+  await expect(initInput).toBeVisible({ timeout: 3_000 });
+  await initInput.fill(opts.initiative ?? "15");
 
-    const initInput = playerPage.locator('input[placeholder*="18"]').first();
-    if (await initInput.isVisible()) await initInput.fill(opts.initiative ?? "15");
-
-    const hpInput = playerPage.locator('input[placeholder*="45"]').first();
-    if (await hpInput.isVisible()) await hpInput.fill(opts.hp ?? "45");
-
-    const acInput = playerPage.locator('input[placeholder*="16"]').first();
-    if (await acInput.isVisible()) await acInput.fill(opts.ac ?? "18");
-
-    // Submit late-join request
-    const submitBtn = playerPage.locator(
-      'button:has-text("Solicitar"), button:has-text("Request"), button[type="submit"]'
-    ).first();
-    if (await submitBtn.isVisible()) {
-      await submitBtn.click();
-      await playerPage.waitForTimeout(2_000);
-    }
-
-    // DM accepts the late-join request
-    const acceptBtn = dmPage.locator(
-      'button:has-text("Aceitar"), button:has-text("Accept"), button:has-text("Aprovar")'
-    ).first();
-    if (await acceptBtn.isVisible({ timeout: 10_000 }).catch(() => false)) {
-      await acceptBtn.click();
-    }
+  const hpInput = playerPage.locator('[data-testid="lobby-hp"]');
+  if (await hpInput.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await hpInput.fill(opts.hp ?? "45");
   }
 
-  // Wait for player-view to appear
+  const acInput = playerPage.locator('[data-testid="lobby-ac"]');
+  if (await acInput.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await acInput.fill(opts.ac ?? "18");
+  }
+
+  // Submit late-join request
+  const submitBtn = playerPage.locator('[data-testid="lobby-submit"]');
+  await expect(submitBtn).toBeVisible({ timeout: 3_000 });
+  await submitBtn.click();
+
+  // DM accepts the late-join request via Sonner toast action button
+  // The toast renders inside [data-sonner-toaster] with text "Aceitar" (pt-BR) or "Accept" (en)
+  const toastAcceptBtn = dmPage
+    .locator('[data-sonner-toaster] button')
+    .filter({ hasText: /Aceitar|Accept/ })
+    .first();
+  await expect(toastAcceptBtn).toBeVisible({ timeout: 15_000 });
+  await toastAcceptBtn.click();
+
+  // KNOWN ISSUE: The DM's combat:late_join_response broadcast does not reliably
+  // reach the player via Supabase Realtime. This causes player-view to never appear.
+  // See: docs/prompt-fix-cat1-player-join.md for the production fix needed.
   await expect(
     playerPage.locator('[data-testid="player-view"]')
-  ).toBeVisible({ timeout: 20_000 });
+  ).toBeVisible({ timeout: 30_000 });
 }

@@ -92,16 +92,11 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
     await page.goto("/app/presets");
     await page.waitForLoadState("domcontentloaded");
 
-    // Presets page should load without error
-    const bodyText = await page.textContent("body");
-    expect(bodyText).toBeTruthy();
-    expect(bodyText).not.toContain("Internal Server Error");
-    expect(bodyText).not.toContain("404");
-
-    // Page should have some structure — wait for render
-    await page.waitForTimeout(3_000);
-    const bodyLen = (await page.textContent("body"))?.length ?? 0;
-    expect(bodyLen).toBeGreaterThan(100);
+    // Page should render the h1 title ("Encontros Preparados" / "Encounter Presets")
+    const heading = page.locator("h1");
+    await expect(heading).toBeVisible({ timeout: 10_000 });
+    const headingText = await heading.textContent();
+    expect(headingText).toMatch(/Encontros Preparados|Encounter Presets/);
   });
 
   test("J3.5 — DM acessa compendium de monstros", async ({ page }) => {
@@ -110,18 +105,17 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
     await page.goto("/app/compendium?tab=monsters");
     await page.waitForLoadState("domcontentloaded");
 
-    // Compendium should render without error
-    await page.waitForTimeout(2_000);
+    // Wait for compendium h1 to render
+    await expect(page.locator("h1")).toBeVisible({ timeout: 10_000 });
 
-    const bodyText = await page.textContent("body");
-    expect(bodyText).not.toContain("Internal Server Error");
-
-    // Search functionality should be available
+    // Search functionality should be available after SRD data loads
+    // MonsterBrowser renders filterBar twice (mobile md:hidden + desktop md:grid).
+    // Use .last() to target the desktop instance which is visible at default viewport.
     const searchInput = page
       .locator(
-        'input[type="search"], input[type="text"], input[placeholder*="search"], input[placeholder*="Search"], input[placeholder*="Buscar"], input[placeholder*="buscar"]'
+        'input[placeholder*="Filtrar"], input[placeholder*="Filter"]'
       )
-      .first();
-    await expect(searchInput).toBeVisible({ timeout: 10_000 });
+      .last();
+    await expect(searchInput).toBeVisible({ timeout: 20_000 });
   });
 });

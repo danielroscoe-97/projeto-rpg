@@ -4,6 +4,9 @@ import { dmSetupCombatSession, playerJoinCombat } from "../helpers/session";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
 test.describe("P2 — Soundboard", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  test.setTimeout(90_000);
+
   test("Soundboard FAB visible in player view", async ({ browser }) => {
     const dmContext = await browser.newContext();
     const dmPage = await dmContext.newPage();

@@ -117,25 +117,23 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
     expect(bodyText).not.toContain("Internal Server Error");
 
     // Search for a common monster
+    // MonsterBrowser renders filterBar twice (mobile + desktop).
+    // Use .last() to target the desktop instance visible at default viewport.
     const searchInput = page
       .locator(
-        'input[type="search"], input[placeholder*="search"], input[placeholder*="Buscar"], input[placeholder*="buscar"]'
+        'input[placeholder*="Filtrar"], input[placeholder*="Filter"], input[placeholder*="search"], input[placeholder*="Buscar"]'
       )
-      .first();
+      .last();
 
-    if (await searchInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await searchInput.fill("Dragon");
-      await page.waitForTimeout(1_000);
+    await expect(searchInput).toBeVisible({ timeout: 20_000 });
+    await searchInput.fill("Dragon");
+    await page.waitForTimeout(1_500);
 
-      // Results should appear — no paywall
-      const results = page.locator(
-        '[data-testid*="monster-"], [data-testid*="result"], .monster-card, .compendium-result'
-      );
-      const hasResults = await results.first()
-        .isVisible({ timeout: 5_000 })
-        .catch(() => false);
-      expect(hasResults).toBe(true);
-    }
+    // Results should appear in the listbox
+    const searchResults = await page.textContent("body");
+    expect(
+      searchResults!.includes("Dragon") || searchResults!.includes("Dragão")
+    ).toBe(true);
   });
 
   test("J10.5 — Compendium Spells carrega e busca funciona", async ({
@@ -150,20 +148,19 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
 
     const searchInput = page
       .locator(
-        'input[type="search"], input[placeholder*="search"], input[placeholder*="Buscar"]'
+        'input[placeholder*="Filtrar"], input[placeholder*="Filter"], input[placeholder*="search"], input[placeholder*="Buscar"]'
       )
-      .first();
+      .last();
 
-    if (await searchInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await searchInput.fill("Fireball");
-      await page.waitForTimeout(1_000);
+    await expect(searchInput).toBeVisible({ timeout: 20_000 });
+    await searchInput.fill("Fireball");
+    await page.waitForTimeout(1_500);
 
-      // Should see results
-      const pageText = await page.textContent("body");
-      expect(
-        pageText!.includes("Fireball") || pageText!.includes("Bola de Fogo")
-      ).toBe(true);
-    }
+    // Should see results
+    const pageText = await page.textContent("body");
+    expect(
+      pageText!.includes("Fireball") || pageText!.includes("Bola de Fogo")
+    ).toBe(true);
   });
 
   test("J10.6 — Command Palette (Ctrl+K) funciona", async ({ page }) => {
@@ -191,16 +188,12 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
   test("J10.7 — Presets page carrega sem erro", async ({ page }) => {
     await page.goto("/app/presets");
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
-    const bodyText = await page.textContent("body");
-    expect(bodyText).not.toContain("Internal Server Error");
-    expect(bodyText).not.toContain("404");
-
-    // Page should have structure — wait for render
-    await page.waitForTimeout(3_000);
-    const bodyLen = (await page.textContent("body"))?.length ?? 0;
-    expect(bodyLen).toBeGreaterThan(100);
+    // Page should render the h1 title ("Encontros Preparados" / "Encounter Presets")
+    const heading = page.locator("h1");
+    await expect(heading).toBeVisible({ timeout: 10_000 });
+    const headingText = await heading.textContent();
+    expect(headingText).toMatch(/Encontros Preparados|Encounter Presets/);
   });
 
   test("J10.8 — Settings page carrega e permite trocar idioma", async ({

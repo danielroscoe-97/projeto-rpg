@@ -37,6 +37,9 @@ async function assertNoOverflow(page: import("@playwright/test").Page) {
 }
 
 test.describe("J13 — Mobile (Pixel 5)", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  test.setTimeout(90_000);
+
   test("J13.1 — /try funciona no mobile sem overflow", async ({ browser }) => {
     const ctx = await browser.newContext(PIXEL_5);
     const page = await ctx.newPage();
@@ -214,17 +217,18 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
     await assertNoOverflow(page);
 
     // Search input should be visible and usable
+    // MonsterBrowser renders the filter bar twice (mobile + desktop).
+    // On mobile viewport, use .first() to target the mobile-visible instance.
     const searchInput = page
       .locator(
-        'input[type="search"], input[placeholder*="search"], input[placeholder*="Buscar"]'
+        'input[placeholder*="Filtrar"], input[placeholder*="Filter"], input[placeholder*="search"], input[placeholder*="Buscar"]'
       )
       .first();
 
-    if (await searchInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      const inputBox = await searchInput.boundingBox();
-      expect(inputBox).toBeTruthy();
-      expect(inputBox!.x + inputBox!.width).toBeLessThanOrEqual(393 + 10);
-    }
+    await expect(searchInput).toBeVisible({ timeout: 20_000 });
+    const inputBox = await searchInput.boundingBox();
+    expect(inputBox).toBeTruthy();
+    expect(inputBox!.x + inputBox!.width).toBeLessThanOrEqual(393 + 10);
 
     await ctx.close();
   });

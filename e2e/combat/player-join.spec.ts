@@ -4,6 +4,9 @@ import { dmSetupCombatSession } from "../helpers/session";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
 test.describe("P1 — Player Join Flow", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  test.setTimeout(90_000);
+
   test("Authenticated player can join via /join/[token] (late join)", async ({ browser }) => {
     // ── DM: create session + get share token ──
     const dmContext = await browser.newContext();

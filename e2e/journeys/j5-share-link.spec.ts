@@ -21,6 +21,9 @@ import {
 } from "../fixtures/test-accounts";
 
 test.describe("J5 — Compartilhamento Organico", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  test.setTimeout(90_000);
+
   test("J5.3 — Dois players podem usar o mesmo link de join", async ({
     browser,
   }) => {

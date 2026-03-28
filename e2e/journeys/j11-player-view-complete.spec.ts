@@ -26,6 +26,9 @@ import { dmSetupCombatSession, playerJoinCombat } from "../helpers/session";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
 test.describe("J11 — Player View Completa", () => {
+  // Player join flow involves DM setup + realtime broadcast + late-join approval.
+  test.setTimeout(90_000);
+
   test("J11.1 — Player ve combate com UI completa (lista, HP bars, turno)", async ({
     browser,
   }) => {
