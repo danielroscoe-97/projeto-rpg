@@ -61,5 +61,6 @@ scripts/orchestrator/node_modules/
 scripts/audios/
 scripts/audiosv2/
 e2e/results/
+playwright-report/
 ms-playwright/
 C\:\\Users\\*/
