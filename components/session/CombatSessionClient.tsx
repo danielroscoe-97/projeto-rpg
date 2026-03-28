@@ -488,11 +488,8 @@ export function CombatSessionClient({
     const activeToastIds: string[] = [];
     let active = true;
 
-    console.log("[DM] Late-join listener setup", { sid, state: (ch as unknown as { state: string }).state });
-
     const handleLateJoin = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
-      console.log("[DM] Late-join request received", payload);
       const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id } = payload as {
         player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string;
       };

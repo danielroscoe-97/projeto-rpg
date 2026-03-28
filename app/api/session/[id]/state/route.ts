@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-import { getHpStatus } from "@/lib/utils/hp-status";
+import { sanitizeCombatantsForPlayer } from "@/lib/utils/sanitize-combatants";
 
 export async function GET(
   _request: NextRequest,
@@ -60,17 +60,14 @@ export async function GET(
   const { data: combatants } = await serviceClient
     .from("combatants")
     .select(
-      "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version"
+      "id, name, display_name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version"
     )
     .eq("encounter_id", encounter.id)
     .order("initiative_order", { ascending: true });
 
-  // Strip sensitive data from monsters — players see only HP status label
-  const playerCombatants = (combatants ?? []).map((c) => {
-    if (c.is_player) return c;
-    const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, ...rest } = c;
-    return { ...rest, hp_status: getHpStatus(_current_hp, _max_hp) };
-  });
+  // Strip sensitive data from monsters — players see only HP status label.
+  // Also filter out hidden combatants and apply display_name anti-metagaming.
+  const playerCombatants = sanitizeCombatantsForPlayer(combatants ?? []);
 
   return NextResponse.json({
     data: {
