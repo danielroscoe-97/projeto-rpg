@@ -83,49 +83,84 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
         className="animate-flow-dash motion-reduce:animate-none"
       />
 
-      {/* === Firebolt particle traveling along the path === */}
-      {/* Outer glow (large, blurred) */}
-      <circle r="18" fill="url(#firebolt-glow)" filter="url(#firebolt-blur)" className="motion-reduce:hidden">
-        <animateMotion
-          dur="3.5s"
-          repeatCount="indefinite"
-          path={`M${pathStart},${cy} L${pathEnd},${cy}`}
-        />
-      </circle>
+      {/* === Pixel Fire Sprite traveling along the path === */}
+      <g className="motion-reduce:hidden" shapeRendering="crispEdges">
+        {/* Soft glow behind the fire */}
+        <circle r="20" fill="url(#firebolt-glow)" filter="url(#firebolt-blur)" opacity="0.6">
+          <animateMotion dur="3.5s" repeatCount="indefinite" path={`M${pathStart},${cy} L${pathEnd},${cy}`} />
+        </circle>
 
-      {/* Fire trail behind the bolt */}
-      <line
-        x1="0" y1="0" x2="60" y2="0"
-        stroke="url(#firebolt-trail)"
-        strokeWidth="3"
-        strokeLinecap="round"
-        className="motion-reduce:hidden"
-      >
-        <animateMotion
-          dur="3.5s"
-          repeatCount="indefinite"
-          path={`M${pathStart - 60},${cy} L${pathEnd - 60},${cy}`}
-          rotate="auto"
-        />
-      </line>
+        {/* Trailing ember sparks */}
+        {[
+          { dx: -30, dy: -3, s: 2.5, c: "#7f1d1d", o: 0.4, d: 0 },
+          { dx: -24, dy: 4, s: 2, c: "#991b1b", o: 0.5, d: 0.08 },
+          { dx: -18, dy: -5, s: 2.5, c: "#c2410c", o: 0.5, d: 0.04 },
+          { dx: -13, dy: 3, s: 2, c: "#ea580c", o: 0.6, d: 0.12 },
+        ].map((e, i) => (
+          <rect key={`t-${i}`} width={e.s} height={e.s} fill={e.c} opacity={e.o}>
+            <animateMotion dur="3.5s" repeatCount="indefinite" path={`M${pathStart + e.dx},${cy + e.dy} L${pathEnd + e.dx},${cy + e.dy}`} begin={`${e.d}s`} />
+            <animate attributeName="opacity" values={`${e.o};${e.o * 0.2};${e.o}`} dur="0.5s" repeatCount="indefinite" />
+          </rect>
+        ))}
 
-      {/* Core bright particle */}
-      <circle r="4" fill="#fbbf24" opacity="0.95" className="motion-reduce:hidden">
-        <animateMotion
-          dur="3.5s"
-          repeatCount="indefinite"
-          path={`M${pathStart},${cy} L${pathEnd},${cy}`}
-        />
-      </circle>
+        {/* Pixel fire sprite — built from pixel grid (each rect = 1 pixel)
+            Simulates a 16-bit flame shape:
+                 ██              (tip — bright yellow)
+                ████             (upper — yellow/amber)
+               ██████            (mid — orange)
+                ████             (base — dark orange/red)
+                 ██              (root — dark red)
+        */}
+        <g>
+          <animateMotion dur="3.5s" repeatCount="indefinite" path={`M${pathStart},${cy} L${pathEnd},${cy}`} />
 
-      {/* Inner white-hot core */}
-      <circle r="2" fill="white" opacity="0.8" className="motion-reduce:hidden">
-        <animateMotion
-          dur="3.5s"
-          repeatCount="indefinite"
-          path={`M${pathStart},${cy} L${pathEnd},${cy}`}
-        />
-      </circle>
+          {/* Frame 1 — shown 0-50% of flicker cycle */}
+          <g>
+            <animate attributeName="opacity" values="1;1;0;0;1" dur="0.3s" repeatCount="indefinite" />
+            {/* Tip */}
+            <rect x="-1.5" y="-16" width="3" height="3" fill="#fef08a" />
+            {/* Upper flame */}
+            <rect x="-4.5" y="-13" width="3" height="3" fill="#fbbf24" />
+            <rect x="-1.5" y="-13" width="3" height="3" fill="#fde047" />
+            <rect x="1.5" y="-13" width="3" height="3" fill="#fbbf24" />
+            {/* Mid flame */}
+            <rect x="-6" y="-10" width="3" height="3" fill="#f59e0b" />
+            <rect x="-3" y="-10" width="3" height="3" fill="#fbbf24" />
+            <rect x="0" y="-10" width="3" height="3" fill="#f59e0b" />
+            <rect x="3" y="-10" width="3" height="3" fill="#ea580c" />
+            {/* Lower flame */}
+            <rect x="-4.5" y="-7" width="3" height="3" fill="#ea580c" />
+            <rect x="-1.5" y="-7" width="3" height="3" fill="#f59e0b" />
+            <rect x="1.5" y="-7" width="3" height="3" fill="#ea580c" />
+            {/* Base */}
+            <rect x="-3" y="-4" width="3" height="3" fill="#c2410c" />
+            <rect x="0" y="-4" width="3" height="3" fill="#dc2626" />
+          </g>
+
+          {/* Frame 2 — shown 50-100% of flicker cycle (slightly different shape) */}
+          <g>
+            <animate attributeName="opacity" values="0;0;1;1;0" dur="0.3s" repeatCount="indefinite" />
+            {/* Tip (offset) */}
+            <rect x="0" y="-17" width="3" height="3" fill="#fef9c3" />
+            {/* Upper flame */}
+            <rect x="-3" y="-14" width="3" height="3" fill="#fde047" />
+            <rect x="0" y="-14" width="3" height="3" fill="#fbbf24" />
+            <rect x="3" y="-14" width="3" height="3" fill="#fde047" />
+            {/* Mid flame */}
+            <rect x="-4.5" y="-11" width="3" height="3" fill="#fbbf24" />
+            <rect x="-1.5" y="-11" width="3" height="3" fill="#f59e0b" />
+            <rect x="1.5" y="-11" width="3" height="3" fill="#fbbf24" />
+            <rect x="4.5" y="-11" width="3" height="3" fill="#ea580c" />
+            {/* Lower flame */}
+            <rect x="-3" y="-8" width="3" height="3" fill="#ea580c" />
+            <rect x="0" y="-8" width="3" height="3" fill="#f59e0b" />
+            <rect x="3" y="-8" width="3" height="3" fill="#dc2626" />
+            {/* Base */}
+            <rect x="-1.5" y="-5" width="3" height="3" fill="#c2410c" />
+            <rect x="1.5" y="-5" width="3" height="3" fill="#991b1b" />
+          </g>
+        </g>
+      </g>
 
       {/* Step dots */}
       {positions.map((x, i) => {
