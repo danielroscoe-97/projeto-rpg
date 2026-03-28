@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3]
+stepsCompleted: [1, 2, 3, 4]
 inputDocuments: []
 workflowType: 'research'
 lastStep: 1
@@ -680,3 +680,129 @@ _Fonte: [Stripe API — Create Coupon](https://docs.stripe.com/api/coupons/creat
 | ADR-6 | 1 Coupon % por influenciador (início) | 2 Coupons (mensal fixo + anual fixo) | Simplicidade; ajustar depois se necessário |
 | ADR-7 | `allow_promotion_codes: true` no checkout | Pre-apply via `discounts` | Flexibilidade pro cliente, menos código |
 | ADR-8 | Admin cria cupons (não self-service) | Influenciador cria próprio código | Controle de qualidade, fase beta |
+
+---
+
+## Abordagens de Implementação e Adoção
+
+### Roadmap de Implementação em 3 Fases
+
+**Fase 1 — Fundação (MVP)** _[Prioridade: AGORA — Beta]_
+
+Objetivo: Estrutura mínima funcional pra aceitar cupons e rastrear indicações.
+
+| Item | Descrição | Esforço |
+|---|---|---|
+| Migration SQL | 4 tabelas + RLS policies + indexes | Baixo |
+| Types TypeScript | `Influencer`, `Coupon`, `Referral`, `CommissionEntry` | Baixo |
+| Checkout: `allow_promotion_codes` | 1 linha no `/api/checkout/route.ts` | Mínimo |
+| Webhook: captura promotion code | Expandir handler de `checkout.session.completed` | Médio |
+| Admin: CRUD Influenciadores | Tela simples no `/admin/influencers` | Médio |
+| Admin: CRUD Cupons | Criar coupon + promo code no Stripe + Supabase | Médio |
+| Seed: cupons de teste | Criar cupons no Stripe test mode | Baixo |
+
+**Entregável:** Admin consegue criar influenciador + cupom. Usuário consegue usar cupom no checkout. Sistema registra referral e comissão automaticamente.
+
+**Fase 2 — Dashboard e Visibilidade** _[Prioridade: Pré-lançamento monetização]_
+
+| Item | Descrição | Esforço |
+|---|---|---|
+| Dashboard do influenciador | `/app/influencer/dashboard` com métricas | Médio |
+| Lista de referrals | Tabela com assinantes indicados | Médio |
+| Resumo de comissões | Cards: total, disponível, pendente | Baixo |
+| Webhook: `invoice.payment_succeeded` | Comissões recorrentes | Médio |
+| Webhook: `charge.refunded` | Reversal de comissão | Médio |
+| Admin: métricas de influenciadores | Overview no dashboard admin | Baixo |
+
+**Entregável:** Influenciador consegue ver seus resultados. Sistema calcula comissões recorrentes e reverte em refund.
+
+**Fase 3 — Refinamento e Escala** _[Prioridade: Pós-lançamento]_
+
+| Item | Descrição | Esforço |
+|---|---|---|
+| Campaign URLs (`?ref=CODE`) | Banner pré-checkout com código auto-aplicado | Médio |
+| Gráfico de ganhos (EarningsChart) | Visualização temporal de comissões | Médio |
+| Sistema de payouts | Controle de saque (manual inicialmente) | Alto |
+| Notificações (Novu) | Alertar influenciador sobre nova indicação | Baixo |
+| Anti-fraude avançado | Rate limiting, IP tracking, pattern detection | Alto |
+| Termos de uso de afiliado | Documento legal + aceite no cadastro | Baixo |
+| Multi-tier commissions (futuro) | Influenciador indica influenciador | Alto |
+
+**Entregável:** Sistema completo e escalável.
+
+### Workflow de Desenvolvimento e Teste
+
+**Ambientes Stripe:**
+- **Test mode:** Cupons e Promotion Codes são isolados por ambiente. Criar equivalentes em test e live mode
+- **Stripe CLI para webhooks:** `stripe listen --forward-to localhost:3000/api/webhooks/stripe` para testar localmente
+- **Sandbox com time simulation:** Stripe permite simular avanço de tempo para testar renovações e comissões recorrentes
+
+**Fluxo de teste recomendado:**
+1. Criar coupon + promo code no Stripe test mode via admin panel
+2. Fazer checkout com cartão de teste `4242 4242 4242 4242`
+3. Digitar promo code no Stripe Checkout
+4. Verificar webhook: referral criado, comissão registrada
+5. Simular renovação (Stripe sandbox time advance): comissão recorrente registrada
+6. Simular refund: comissão revertida
+7. Verificar dashboard do influenciador: dados corretos
+
+**Testes automatizados:**
+- **Unit tests:** Cálculo de comissão, validação de self-referral, mapStripeStatus
+- **Integration tests:** Webhook handler com payloads mock do Stripe
+- **E2E (Playwright):** Fluxo completo admin → checkout → dashboard (com Stripe test mode)
+
+**Atenção:** Ao testar no live mode, usar cupom de 100% off para não gerar cobrança real. Garantir que webhook ouve `checkout.session.completed` (não `payment_intent.succeeded`), pois pedidos gratuitos não geram PaymentIntent.
+
+_Fonte: [Stripe — Test Billing Integration](https://docs.stripe.com/billing/testing), [Stripe — Testing Use Cases](https://docs.stripe.com/testing-use-cases), [Wisp CMS — Test Stripe in Live Mode](https://www.wisp.blog/blog/test-stripe-payments-in-live-mode-without-transaction-fees)_
+
+### Estratégia de Rollout
+
+**Rollout faseado recomendado:**
+
+1. **Internal testing** (Fase 1 pronta)
+   - Criar 2-3 influenciadores de teste (equipe interna)
+   - Validar fluxo completo: criar cupom → checkout → webhook → referral → comissão
+   - Verificar RLS: influenciador só vê seus dados
+
+2. **Closed beta** (Fase 2 pronta, 3-5 influenciadores reais)
+   - Convidar micro-influenciadores de RPG/D&D de confiança
+   - Coletar feedback sobre dashboard, UX, clareza do cupom
+   - Monitorar métricas: taxa de uso de cupom, conversão, comissão gerada
+
+3. **Public launch** (Fase 3, ajustes pós-feedback)
+   - Abrir programa para mais influenciadores
+   - Documentação/FAQ para influenciadores
+   - Página pública "Seja um parceiro" (se aplicável)
+
+_Fonte: [LivePlan — SaaS Beta Launch](https://www.liveplan.com/blog/starting/saas-beta-launch), [Dock — Phased Implementation](https://www.dock.us/library/phased-implementation)_
+
+### Análise de Riscos e Mitigações
+
+| Risco | Probabilidade | Impacto | Mitigação |
+|---|---|---|---|
+| Stripe API muda (breaking change) | Baixa | Alto | Pin na API version, monitorar changelog |
+| Influenciador divulga cupom em canal errado | Média | Baixo | Termos de uso, cupom desativável no admin |
+| Volume alto de referrals sobrecarrega webhook | Baixa | Médio | Webhook já tem retry do Stripe; considerar queue (Trigger.dev) se necessário |
+| Self-referral não detectado | Média | Médio | Validação user_id no webhook; revisão manual no admin |
+| Comissão calculada errada | Baixa | Alto | Testes automatizados; ledger imutável permite auditoria |
+| Influenciador insatisfeito com comissão | Média | Médio | Transparência no dashboard; termos claros antes de aceitar |
+| Reforma tributária muda regras | Alta (2026) | Médio | Manter ledger completo; consultar contador quando escalar |
+
+### Métricas de Sucesso (KPIs)
+
+**Para o produto:**
+- % de novas assinaturas que usam cupom de influenciador
+- CAC (Customer Acquisition Cost) via influenciador vs orgânico
+- LTV de clientes indicados vs não-indicados
+- Taxa de churn de clientes indicados
+
+**Para influenciadores:**
+- Número de indicações por influenciador/mês
+- Taxa de conversão (views/cliques → assinatura)
+- Comissão média por influenciador
+- Retenção de influenciadores no programa
+
+**Para o negócio:**
+- ROI do programa: receita de indicados vs comissões pagas
+- Custo efetivo de aquisição por canal
+- Crescimento MRR atribuído a influenciadores
