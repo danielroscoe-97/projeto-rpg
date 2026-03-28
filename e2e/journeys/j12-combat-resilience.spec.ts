@@ -191,19 +191,10 @@ test.describe("J12 — Combat Resilience", () => {
     await playerPage.reload({ waitUntil: "domcontentloaded" });
     await playerPage.waitForTimeout(3_000);
 
-    // Player view should come back
-    const hasPlayerView = await playerPage
-      .locator('[data-testid="player-view"]')
-      .isVisible({ timeout: 15_000 })
-      .catch(() => false);
-    const hasJoinForm = await playerPage
-      .locator('input[name="name"]')
-      .first()
-      .isVisible({ timeout: 3_000 })
-      .catch(() => false);
-
-    // Either player-view is back or late-join form shows (both are acceptable)
-    expect(hasPlayerView || hasJoinForm).toBe(true);
+    // Player view should come back — either player-view or late-join form (both acceptable)
+    const playerView = playerPage.locator('[data-testid="player-view"]');
+    const joinForm = playerPage.locator('input[name="name"]').first();
+    await expect(playerView.or(joinForm)).toBeVisible({ timeout: 15_000 });
 
     // NOT a login page
     expect(playerPage.url()).not.toContain("/auth/login");

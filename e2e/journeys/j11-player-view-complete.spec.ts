@@ -74,9 +74,10 @@ test.describe("J11 — Player View Completa", () => {
       playerBody!.includes("Kobold");
     expect(seesNames).toBe(true);
 
-    // Must NOT show errors
+    // Must NOT show errors (check specific error strings, not "Error" which appears in JS source)
     expect(playerBody).not.toContain("Internal Server Error");
-    expect(playerBody).not.toContain("Error");
+    expect(playerBody).not.toContain("Application error");
+    expect(playerBody).not.toContain("Unhandled Runtime Error");
 
     await dmContext.close();
     await playerContext.close();
@@ -350,32 +351,29 @@ test.describe("J11 — Player View Completa", () => {
 
     // DM applies massive damage
     const hpBtn = dmPage.locator('[data-testid^="hp-btn-"]').first();
-    if (await hpBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await hpBtn.click();
+    await expect(hpBtn).toBeVisible({ timeout: 10_000 });
+    await hpBtn.click();
 
-      const adjuster = dmPage.locator(
-        '[data-testid="hp-adjuster"], [role="dialog"], .hp-adjust'
-      );
-      await expect(adjuster).toBeVisible({ timeout: 5_000 });
+    const adjuster = dmPage.locator(
+      '[data-testid="hp-adjuster"], [role="dialog"], .hp-adjust'
+    );
+    await expect(adjuster).toBeVisible({ timeout: 5_000 });
 
-      const dmgInput = dmPage
-        .locator(
-          'input[type="number"], input[data-testid="hp-adjust-value"]'
-        )
-        .first();
-      if (await dmgInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
-        await dmgInput.fill("90"); // Giant goes from 100 → 10 HP (CRITICAL tier)
+    const dmgInput = dmPage
+      .locator(
+        'input[type="number"], input[data-testid="hp-adjust-value"]'
+      )
+      .first();
+    await expect(dmgInput).toBeVisible({ timeout: 5_000 });
+    await dmgInput.fill("90"); // Giant goes from 100 → 10 HP (CRITICAL tier)
 
-        const applyBtn = dmPage
-          .locator(
-            'button:has-text("Dano"), button:has-text("Damage"), button:has-text("Aplicar"), button:has-text("Apply")'
-          )
-          .first();
-        if (await applyBtn.isVisible()) {
-          await applyBtn.click();
-        }
-      }
-    }
+    const applyBtn = dmPage
+      .locator(
+        'button:has-text("Dano"), button:has-text("Damage"), button:has-text("Aplicar"), button:has-text("Apply")'
+      )
+      .first();
+    await expect(applyBtn).toBeVisible({ timeout: 5_000 });
+    await applyBtn.click();
 
     // Wait for realtime propagation
     await playerPage.waitForTimeout(5_000);
