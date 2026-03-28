@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2]
+stepsCompleted: [1, 2, 3]
 inputDocuments: []
 workflowType: 'research'
 lastStep: 1
@@ -384,3 +384,299 @@ _Fonte: [Fathom Analytics — Referral Program](https://usefathom.com/blog/how-w
 - **Rate limiting:** Max de N referrals por influenciador por dia (configurável no admin)
 
 _Fonte: [FirstPromoter](https://firstpromoter.com/), [Rewardful — Influencer Coupon Codes](https://www.rewardful.com/articles/influencer-coupon-codes)_
+
+---
+
+## Padrões Arquiteturais e Design
+
+### Schema de Banco de Dados Detalhado (Supabase/PostgreSQL)
+
+**4 novas tabelas + alteração em 1 existente:**
+
+```sql
+-- ============================================
+-- 1. TABELA: influencers
+-- Perfil do influenciador, vinculado a um user existente
+-- ============================================
+CREATE TABLE influencers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,           -- ex: "joao-rpg" (usado em URLs)
+  bio TEXT,
+  social_links JSONB DEFAULT '{}',     -- { youtube: "...", twitch: "...", instagram: "..." }
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
+  commission_rate_monthly INTEGER NOT NULL DEFAULT 150,  -- centavos (R$1,50)
+  commission_rate_annual INTEGER NOT NULL DEFAULT 500,   -- centavos (R$5,00)
+  total_referrals INTEGER NOT NULL DEFAULT 0,
+  total_earned INTEGER NOT NULL DEFAULT 0,  -- centavos, acumulado
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT influencers_user_id_unique UNIQUE (user_id)
+);
+
+CREATE INDEX idx_influencers_user_id ON influencers(user_id);
+CREATE INDEX idx_influencers_slug ON influencers(slug);
+
+-- ============================================
+-- 2. TABELA: influencer_coupons
+-- Cada cupom = 1 Stripe Promotion Code vinculado a 1 influenciador
+-- ============================================
+CREATE TABLE influencer_coupons (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  influencer_id UUID NOT NULL REFERENCES influencers(id) ON DELETE CASCADE,
+  code TEXT NOT NULL UNIQUE,                    -- ex: "JOAO_RPG"
+  stripe_coupon_id TEXT NOT NULL,               -- ID do Coupon no Stripe
+  stripe_promotion_code_id TEXT NOT NULL,       -- ID do Promotion Code no Stripe
+  discount_type TEXT NOT NULL CHECK (discount_type IN ('percent_off', 'amount_off')),
+  discount_value INTEGER NOT NULL,              -- centavos ou % (ex: 1300 = 13% ou 200 = R$2,00)
+  max_redemptions INTEGER,                      -- NULL = ilimitado
+  current_redemptions INTEGER NOT NULL DEFAULT 0,
+  expires_at TIMESTAMPTZ,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_coupons_influencer ON influencer_coupons(influencer_id);
+CREATE INDEX idx_coupons_code ON influencer_coupons(code);
+CREATE INDEX idx_coupons_stripe_promo ON influencer_coupons(stripe_promotion_code_id);
+
+-- ============================================
+-- 3. TABELA: referrals
+-- Cada conversão: quem indicou → quem assinou
+-- ============================================
+CREATE TABLE referrals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  influencer_id UUID NOT NULL REFERENCES influencers(id),
+  coupon_id UUID NOT NULL REFERENCES influencer_coupons(id),
+  referred_user_id UUID NOT NULL REFERENCES auth.users(id),
+  stripe_subscription_id TEXT NOT NULL,
+  stripe_customer_id TEXT NOT NULL,
+  subscription_interval TEXT NOT NULL CHECK (subscription_interval IN ('month', 'year')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'canceled', 'refunded')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT referrals_referred_user_unique UNIQUE (referred_user_id)  -- 1 referral por user
+);
+
+CREATE INDEX idx_referrals_influencer ON referrals(influencer_id);
+CREATE INDEX idx_referrals_referred_user ON referrals(referred_user_id);
+CREATE INDEX idx_referrals_stripe_sub ON referrals(stripe_subscription_id);
+
+-- ============================================
+-- 4. TABELA: commission_ledger
+-- Ledger imutável de eventos de comissão (crédito/débito)
+-- ============================================
+CREATE TABLE commission_ledger (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  influencer_id UUID NOT NULL REFERENCES influencers(id),
+  referral_id UUID NOT NULL REFERENCES referrals(id),
+  type TEXT NOT NULL CHECK (type IN ('credit', 'debit', 'payout')),
+  amount INTEGER NOT NULL,             -- centavos (positivo = crédito, negativo = débito)
+  description TEXT NOT NULL,           -- ex: "Comissão mensal - user@email.com"
+  stripe_invoice_id TEXT,              -- referência ao invoice que gerou
+  available_at TIMESTAMPTZ,            -- quando fica disponível pra saque (holdback 30d)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_ledger_influencer ON commission_ledger(influencer_id);
+CREATE INDEX idx_ledger_referral ON commission_ledger(referral_id);
+CREATE INDEX idx_ledger_available ON commission_ledger(available_at);
+
+-- ============================================
+-- TRIGGER: updated_at automático
+-- ============================================
+CREATE TRIGGER set_influencers_updated_at
+  BEFORE UPDATE ON influencers
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE TRIGGER set_coupons_updated_at
+  BEFORE UPDATE ON influencer_coupons
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE TRIGGER set_referrals_updated_at
+  BEFORE UPDATE ON referrals
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+```
+
+**Decisões de design:**
+- **Ledger imutável:** `commission_ledger` nunca atualiza rows — só insere créditos e débitos. Isso garante auditoria perfeita.
+- **Valores em centavos:** Evita problemas de floating point. R$1,50 = 150 centavos.
+- **1 referral por user:** Um usuário só pode ser indicado uma vez (UNIQUE constraint em `referred_user_id`).
+- **Counters desnormalizados:** `total_referrals` e `total_earned` em `influencers` para queries rápidas do dashboard.
+
+_Fonte: [Kinsta — Affiliate System](https://kinsta.com/blog/affiliate-system/), [Fathom Analytics — Referral Program](https://usefathom.com/blog/how-we-built-our-referral-program), [Stripe API — Create Coupon](https://docs.stripe.com/api/coupons/create), [Stripe API — Create Promotion Code](https://docs.stripe.com/api/promotion_codes/create)_
+
+### Arquitetura de Componentes (Next.js)
+
+**Novos arquivos/rotas necessários:**
+
+```
+app/
+├── api/
+│   ├── admin/
+│   │   └── influencers/
+│   │       └── route.ts              # CRUD influenciadores (admin)
+│   │   └── coupons/
+│   │       └── route.ts              # CRUD cupons (admin, cria no Stripe + Supabase)
+│   └── webhooks/
+│       └── stripe/
+│           └── route.ts              # (EXISTENTE - adicionar handlers)
+├── admin/
+│   └── influencers/
+│       └── page.tsx                  # Painel admin de influenciadores
+│   └── coupons/
+│       └── page.tsx                  # Painel admin de cupons
+├── app/
+│   └── influencer/
+│       └── dashboard/
+│           └── page.tsx              # Dashboard do influenciador
+
+components/
+├── admin/
+│   ├── InfluencerManager.tsx         # Lista/cria/edita influenciadores
+│   └── CouponManager.tsx            # Lista/cria/edita cupons
+├── influencer/
+│   ├── InfluencerDashboard.tsx       # Dashboard principal
+│   ├── ReferralList.tsx              # Lista de referrals
+│   ├── CommissionSummary.tsx         # Resumo de comissões
+│   └── EarningsChart.tsx             # Gráfico de ganhos
+
+lib/
+├── types/
+│   └── influencer.ts                 # Types: Influencer, Coupon, Referral, Commission
+└── stores/
+    └── influencer-store.ts           # Zustand store (se necessário)
+```
+
+**Padrão seguido:** Mesmo do projeto atual — Server Components para fetch, Client Components para interatividade, API Routes para mutations, Zustand para state management.
+
+_Fonte: [Supabase + Next.js Tutorial](https://supabase.com/docs/guides/getting-started/tutorials/with-nextjs), [MakerKit — CRUD with Server Actions](https://makerkit.dev/courses/nextjs-app-router/managing-posts)_
+
+### Dashboard do Influenciador — O que Mostrar
+
+**Métricas essenciais (MVP):**
+
+| Métrica | Descrição | Prioridade |
+|---|---|---|
+| Total de indicações | Quantos assinantes vieram pelo cupom | Alta |
+| Indicações ativas | Assinantes que ainda estão pagando | Alta |
+| Comissão total acumulada | Quanto já ganhou (lifetime) | Alta |
+| Comissão disponível | Quanto pode sacar (após holdback 30d) | Alta |
+| Comissão pendente | Em holdback, ainda não disponível | Alta |
+| Taxa de conversão | % de quem usou o cupom e completou assinatura | Média |
+| Código do cupom | Copiar com 1 clique | Alta |
+
+**Lista de referrals (dados visíveis ao influenciador):**
+- Display name do assinante (não email, por privacidade)
+- Data da assinatura
+- Plano (mensal/anual)
+- Status (ativo/cancelado)
+- Comissão gerada
+
+**O que NÃO mostrar:**
+- Email do assinante (privacidade)
+- Dados de pagamento
+- Informações de outros influenciadores
+
+**Design:**
+- Layout minimalista, consistente com o estilo do Pocket DM
+- Cards com números grandes (total earned, active referrals)
+- Tabela simples de referrals com sort/filter
+- Gráfico de ganhos ao longo do tempo (V2)
+
+_Fonte: [ReferralCandy — Affiliate Dashboard Examples](https://www.referralcandy.com/blog/affiliate-dashboard-examples), [Databox — Affiliate Dashboard Best Practices](https://databox.com/affiliate-marketing-dashboard), [LeadDyno — Affiliate KPIs](https://www.leaddyno.com/blog/affiliate-marketing-kpis-and-metrics)_
+
+### Fluxo de Criação de Cupom (Admin → Stripe → Supabase)
+
+**Fluxo no Admin Panel:**
+
+```
+Admin clica "Novo Cupom"
+  → Seleciona influenciador (dropdown)
+  → Define código (ex: "JOAO_RPG")
+  → Define tipo de desconto (% ou valor fixo)
+  → Define valor (ex: 13% ou R$2,00)
+  → Define duração (forever, once, repeating + meses)
+  → Define limite de usos (opcional)
+  → Define data de expiração (opcional)
+  → Clica "Criar"
+
+API /api/admin/coupons POST:
+  1. Cria Coupon no Stripe (stripe.coupons.create)
+  2. Cria Promotion Code no Stripe (stripe.promotionCodes.create)
+  3. Insere registro em influencer_coupons no Supabase
+  4. Retorna sucesso com IDs
+```
+
+**Decisão: Stripe como source of truth para o cupom, Supabase como source of truth para o vínculo influenciador ↔ cupom.**
+
+Isso garante que o Stripe sempre tem a validação canônica do desconto, enquanto o Supabase mantém a relação de quem é dono de qual cupom.
+
+_Fonte: [Stripe API — Create Coupon](https://docs.stripe.com/api/coupons/create), [Stripe API — Create Promotion Code](https://docs.stripe.com/api/promotion_codes/create)_
+
+### Fluxo Completo — Diagrama de Sequência
+
+```
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│Influencer│   │  Usuário  │   │ Pocket DM│   │  Stripe  │   │ Supabase │
+└────┬─────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘
+     │              │              │              │              │
+     │  Divulga     │              │              │              │
+     │  "JOAO_RPG"  │              │              │              │
+     │─────────────>│              │              │              │
+     │              │              │              │              │
+     │              │ Clica assinar│              │              │
+     │              │─────────────>│              │              │
+     │              │              │              │              │
+     │              │              │ POST /api/   │              │
+     │              │              │ checkout     │              │
+     │              │              │─────────────>│ create       │
+     │              │              │              │ session      │
+     │              │              │              │ (allow_promo │
+     │              │              │              │  _codes:true)│
+     │              │              │<─────────────│ session.url  │
+     │              │              │              │              │
+     │              │ Redirect to  │              │              │
+     │              │ Stripe       │              │              │
+     │              │─────────────────────────────>              │
+     │              │              │              │              │
+     │              │ Digita       │              │              │
+     │              │ "JOAO_RPG"   │              │              │
+     │              │ e paga       │              │              │
+     │              │─────────────────────────────>              │
+     │              │              │              │              │
+     │              │              │   webhook    │              │
+     │              │              │   checkout.  │              │
+     │              │              │   session.   │              │
+     │              │              │   completed  │              │
+     │              │              │<─────────────│              │
+     │              │              │              │              │
+     │              │              │ Identifica   │              │
+     │              │              │ promo code   │              │
+     │              │              │ → influencer │              │
+     │              │              │──────────────────────────── >│
+     │              │              │              │   upsert     │
+     │              │              │              │   subscription│
+     │              │              │              │   + referral  │
+     │              │              │              │   + commission│
+     │              │              │<────────────────────────────│
+     │              │              │              │              │
+     │  Dashboard   │              │              │              │
+     │  atualizado  │              │              │              │
+     │<─────────────│──────────────│              │              │
+```
+
+### Decisões Arquiteturais (ADRs)
+
+| # | Decisão | Alternativa rejeitada | Razão |
+|---|---|---|---|
+| ADR-1 | Build in-house | Rewardful/FirstPromoter ($49+/mês) | Volume baixo, já temos Stripe, controle total |
+| ADR-2 | Stripe Promotion Codes (customer-facing) | Stripe Coupons direto (server-only) | Precisa que cliente digite código no checkout |
+| ADR-3 | Ledger imutável para comissões | UPDATE em tabela de comissões | Auditoria, compliance fiscal, anti-fraude |
+| ADR-4 | Valores em centavos (INTEGER) | DECIMAL/FLOAT | Evita floating point, padrão Stripe |
+| ADR-5 | Holdback 30 dias | Pagamento imediato | Proteção contra chargeback/refund |
+| ADR-6 | 1 Coupon % por influenciador (início) | 2 Coupons (mensal fixo + anual fixo) | Simplicidade; ajustar depois se necessário |
+| ADR-7 | `allow_promotion_codes: true` no checkout | Pre-apply via `discounts` | Flexibilidade pro cliente, menos código |
+| ADR-8 | Admin cria cupons (não self-service) | Influenciador cria próprio código | Controle de qualidade, fase beta |
