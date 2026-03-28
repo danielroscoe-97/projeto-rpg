@@ -465,6 +465,7 @@
     "player_link_in_use": "in use",
     "no_rolls_yet": "No rolls yet",
     "dice_log_title": "Dice Roll History",
+<<<<<<< HEAD
     "background_title": "Scene Background",
     "background_url_placeholder": "Paste image URL...",
     "background_clear": "Clear Background",
@@ -537,7 +538,19 @@
     "shortcut_log": "Combat log",
     "shortcut_advantage": "Advantage mode",
     "shortcut_disadvantage": "Disadvantage mode",
-    "shortcut_concentration": "Toggle concentration"
+    "shortcut_concentration": "Toggle concentration",
+    "leaderboard_title": "Combat Results",
+    "leaderboard_mvp": "Combat MVP",
+    "leaderboard_damage_dealt": "Damage Dealt",
+    "leaderboard_damage_taken": "Damage Taken",
+    "leaderboard_healing": "Healing",
+    "leaderboard_crits": "Critical Hits",
+    "leaderboard_share": "Share",
+    "leaderboard_close": "Close",
+    "leaderboard_rounds": "{rounds} rounds",
+    "leaderboard_tank": "Tank",
+    "leaderboard_healer": "Healer",
+    "leaderboard_copied": "Results copied to clipboard"
   },
   "conditions": {
     "blinded": "Blinded",

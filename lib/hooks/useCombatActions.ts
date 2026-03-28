@@ -20,9 +20,21 @@ import {
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
+import { isConcentrating, showConcentrationCheck } from "@/lib/combat/concentration";
+import { showDeathSavePrompt, showTurnConditionReminder } from "@/lib/combat/save-prompts";
+import { useCombatLogStore } from "@/lib/stores/combat-log-store";
+import { parseDamageModifiers, applyDamageModifier } from "@/lib/combat/parse-resistances";
+import { getMonsterById } from "@/lib/srd/srd-search";
+import { toast } from "sonner";
 import { assignInitiativeOrder, sortByInitiative, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
+
+/** Get the name of the combatant whose turn is currently active. */
+function getCurrentActorName(): string {
+  const { combatants, current_turn_index } = useCombatStore.getState();
+  return combatants[current_turn_index]?.name ?? "Unknown";
+}
 
 interface UseCombatActionsOptions {
   sessionId: string | null;
@@ -82,6 +94,20 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound, next_combatant_id: nextCombatantId });
 
+    // CP.2.1: Log turn advance
+    const currentCombatant = combatants[nextIdx];
+    if (currentCombatant) {
+      useCombatLogStore.getState().addEntry({
+        round: nextRound,
+        type: "turn",
+        actorName: currentCombatant.name,
+        description: `Turn: ${currentCombatant.name}`,
+      });
+
+      // CP.2.3: Condition save reminders at start of turn
+      showTurnConditionReminder(currentCombatant.name, currentCombatant.conditions);
+    }
+
     try {
       await persistTurnAdvance(encounter_id, nextIdx, nextRound);
     } catch (err) {
@@ -93,15 +119,36 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [advanceTurn, setError, t, getSessionId]);
 
-  const handleApplyDamage = useCallback((id: string, amount: number) => {
+  const handleApplyDamage = useCallback((id: string, amount: number, options?: { damageType?: string; isHalfDamage?: boolean; source?: string }) => {
     const snap = useCombatStore.getState();
     const before = snap.combatants.find((x) => x.id === id);
     if (!before) return;
 
-    snap.applyDamage(id, amount);
+    // CP.1.4: Auto-apply resistance/immunity/vulnerability if damageType provided and target is a monster
+    let finalAmount = amount;
+    let damageModifierResult: string | undefined;
+    if (options?.damageType && before.monster_id && before.ruleset_version) {
+      const targetMonster = getMonsterById(before.monster_id, before.ruleset_version as RulesetVersion);
+      if (targetMonster) {
+        const modifiers = parseDamageModifiers(targetMonster);
+        const { finalDamage, applied } = applyDamageModifier(finalAmount, options.damageType, modifiers);
+        if (applied !== "normal") {
+          damageModifierResult = applied;
+          finalAmount = finalDamage;
+          toast(applied === "immune"
+            ? `${options.damageType} → ${before.name}: IMMUNE (0)`
+            : applied === "resistant"
+            ? `${options.damageType} → ${before.name}: RESISTANT (${amount} → ${finalDamage})`
+            : `${options.damageType} → ${before.name}: VULNERABLE (${amount} → ${finalDamage})`,
+          { duration: 3000 });
+        }
+      }
+    }
+
+    snap.applyDamage(id, finalAmount);
 
     // Compute expected post-damage values from snapshot (mirrors store logic)
-    let remaining = amount;
+    let remaining = finalAmount;
     let newTempHp = before.temp_hp;
     if (newTempHp > 0) {
       const absorbed = Math.min(newTempHp, remaining);
@@ -112,6 +159,34 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: newTempHp, max_hp: before.max_hp, is_player: before.is_player });
     persistHpChange(id, newCurrentHp, newTempHp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+
+    // CP.1.4: Log damage to combat log
+    const roundNumber = useCombatStore.getState().round_number;
+    useCombatLogStore.getState().addEntry({
+      round: roundNumber,
+      type: "damage",
+      actorName: options?.source || getCurrentActorName(),
+      targetName: before.name,
+      description: `${before.name} takes ${finalAmount}${damageModifierResult ? ` (${damageModifierResult})` : ""} ${options?.damageType ?? ""} damage`,
+      details: { damageAmount: finalAmount, damageType: options?.damageType, damageModifier: damageModifierResult },
+    });
+
+    // CP.2.2: Concentration check on damage
+    if (isConcentrating(before.conditions) && finalAmount > 0) {
+      showConcentrationCheck(before.name, finalAmount);
+    }
+
+    // CP.2.3: Death save prompt for PCs at 0 HP
+    if (before.is_player && newCurrentHp === 0 && before.current_hp > 0) {
+      showDeathSavePrompt(before.name);
+      useCombatLogStore.getState().addEntry({
+        round: roundNumber,
+        type: "system",
+        actorName: "",
+        targetName: before.name,
+        description: `${before.name} at 0 HP — death saves required`,
+      });
+    }
   }, [setError, getSessionId]);
 
   const handleApplyHealing = useCallback((id: string, amount: number) => {
@@ -126,6 +201,15 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: before.temp_hp, max_hp: before.max_hp, is_player: before.is_player });
     persistHpChange(id, newCurrentHp, before.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+
+    // CP.2.1: Log heal
+    useCombatLogStore.getState().addEntry({
+      round: useCombatStore.getState().round_number,
+      type: "heal",
+      actorName: getCurrentActorName(),
+      targetName: before.name,
+      description: `${before.name} healed for ${amount} HP`,
+    });
   }, [setError, getSessionId]);
 
   const handleSetTempHp = useCallback((id: string, value: number) => {
@@ -157,12 +241,34 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     broadcastEvent(getSessionId(), { type: "combat:condition_change", combatant_id: id, conditions: newConditions });
     persistConditions(id, newConditions).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+
+    // CP.2.1: Log condition change
+    useCombatLogStore.getState().addEntry({
+      round: useCombatStore.getState().round_number,
+      type: "condition",
+      actorName: getCurrentActorName(),
+      targetName: before.name,
+      description: `${before.name} ${has ? "lost" : "gained"} ${condition}`,
+      details: { conditionName: condition, conditionAction: has ? "removed" : "applied" },
+    });
   }, [setError, getSessionId]);
 
   const handleSetDefeated = useCallback((id: string, isDefeated: boolean) => {
+    const name = useCombatStore.getState().combatants.find((c) => c.id === id)?.name ?? "";
     useCombatStore.getState().setDefeated(id, isDefeated);
     broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
     persistDefeated(id, isDefeated).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+
+    // CP.2.1: Log defeat
+    if (isDefeated) {
+      useCombatLogStore.getState().addEntry({
+        round: useCombatStore.getState().round_number,
+        type: "defeat",
+        actorName: getCurrentActorName(),
+        targetName: name,
+        description: `${name} defeated`,
+      });
+    }
   }, [setError, getSessionId]);
 
   const handleRemoveCombatant = useCallback((id: string) => {
