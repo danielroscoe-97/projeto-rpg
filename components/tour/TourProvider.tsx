@@ -29,8 +29,10 @@ function shouldSkipStep(stepId: string): boolean {
       return state.phase === "combat";
     case "combat-controls":
     case "tour-complete":
-      // Only show these in combat phase
-      return state.phase !== "combat";
+      // These steps only make sense in combat phase — but don't skip them
+      // during phase transition. They'll be reached via smartAdvance after
+      // the start-combat interactive step detects the phase change.
+      return false;
     default:
       return false;
   }
@@ -215,13 +217,21 @@ export function TourProvider() {
     smartAdvance();
   }, [smartAdvance]);
 
+  // Clean up phase transition timer on unmount
+  useEffect(() => {
+    return () => {
+      if (phaseTransitionTimer.current) clearTimeout(phaseTransitionTimer.current);
+    };
+  }, []);
+
   if (!mounted || !isActive || currentStep >= TOUR_STEPS.length) return null;
 
   const step = TOUR_STEPS[currentStep];
+  const isInteractive = step.type === "interactive";
 
   return (
     <>
-      <TourOverlay isActive={isActive} targetRect={targetRect} />
+      <TourOverlay isActive={isActive} targetRect={targetRect} allowInteraction={isInteractive} />
       <TourTooltip
         step={step}
         stepIndex={currentStep}

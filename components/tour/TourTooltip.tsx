@@ -82,7 +82,7 @@ export function TourTooltip({
   onSkip,
   onComplete,
 }: TourTooltipProps) {
-  const t = useTranslations();
+  const t = useTranslations("tour");
   const tooltipRef = useRef<HTMLDivElement>(null);
   const isLastStep = stepIndex === TOUR_STEPS.length - 1;
   const isInteractive = step.type === "interactive";
@@ -112,16 +112,25 @@ export function TourTooltip({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  if (!targetRect) return null;
+  if (!targetRect) {
+    // For steps without a visible target (e.g. welcome on slow render),
+    // show centered tooltip instead of nothing
+    return null;
+  }
+
+  // Strip "tour." prefix from keys since we use useTranslations("tour")
+  const titleKey = step.titleKey.replace(/^tour\./, "");
+  const descKey = step.descriptionKey.replace(/^tour\./, "");
+  const hintKey = step.interactiveHint?.replace(/^tour\./, "");
 
   const { position, style } = computePosition(targetRect, step.position);
 
   // Arrow direction is opposite to tooltip position
   const arrowClass: Record<Position, string> = {
-    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-[#2a2a4a]  border-l-transparent border-r-transparent border-t-transparent border-[8px]",
-    top: "top-full left-1/2 -translate-x-1/2 border-t-[#2a2a4a] border-l-transparent border-r-transparent border-b-transparent border-[8px]",
-    right: "right-full top-1/2 -translate-y-1/2 border-r-[#2a2a4a] border-t-transparent border-b-transparent border-l-transparent border-[8px]",
-    left: "left-full top-1/2 -translate-y-1/2 border-l-[#2a2a4a] border-t-transparent border-b-transparent border-r-transparent border-[8px]",
+    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-card  border-l-transparent border-r-transparent border-t-transparent border-[8px]",
+    top: "top-full left-1/2 -translate-x-1/2 border-t-card border-l-transparent border-r-transparent border-b-transparent border-[8px]",
+    right: "right-full top-1/2 -translate-y-1/2 border-r-card border-t-transparent border-b-transparent border-l-transparent border-[8px]",
+    left: "left-full top-1/2 -translate-y-1/2 border-l-card border-t-transparent border-b-transparent border-r-transparent border-[8px]",
   };
 
   const slideDirection = {
@@ -137,10 +146,11 @@ export function TourTooltip({
         key={step.id}
         ref={tooltipRef}
         role="dialog"
-        aria-label={t(step.titleKey)}
+        aria-label={t(titleKey)}
         aria-describedby={`tour-step-desc-${step.id}`}
-        className="fixed z-[10001] bg-[#2a2a4a] border border-gold/30 rounded-lg shadow-2xl p-4"
-        style={style}
+        aria-live="polite"
+        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4"
+        style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0 }}
@@ -152,15 +162,15 @@ export function TourTooltip({
         {/* Content */}
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-gold">
-            {t(step.titleKey)}
+            {t(titleKey)}
           </h3>
           <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
-            {t(step.descriptionKey)}
+            {t(descKey)}
           </p>
 
-          {isInteractive && step.interactiveHint && (
+          {isInteractive && hintKey && (
             <p className="text-xs text-gold/70 italic">
-              {t(step.interactiveHint)}
+              {t(hintKey)}
             </p>
           )}
 
@@ -172,18 +182,18 @@ export function TourTooltip({
               <button
                 type="button"
                 onClick={onSkip}
-                className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1"
+                className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
               >
-                {t("tour.skip")}
+                {t("skip")}
               </button>
 
               {!isInteractive && (
                 <button
                   type="button"
                   onClick={isLastStep ? onComplete : onNext}
-                  className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200"
+                  className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                 >
-                  {isLastStep ? t("tour.finish") : t("tour.next")}
+                  {isLastStep ? t("finish") : t("next")}
                 </button>
               )}
             </div>
