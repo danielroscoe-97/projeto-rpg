@@ -112,6 +112,11 @@ export default function PricingPage() {
     t("free_features.combat_tracker"),
     t("free_features.oracle_srd"),
     t("free_features.clickable_dice"),
+    t("free_features.player_view"),
+    t("free_features.rules_2014_2024"),
+    t("free_features.conditions"),
+    t("free_features.initiative"),
+    t("free_features.dark_mode"),
   ];
 
   const proFeatures = [
@@ -202,14 +207,14 @@ export default function PricingPage() {
             </ul>
           </div>
 
-          {/* ─── Pro plan ─────────────────────────────────────────────── */}
-          <div className="relative rounded-2xl border border-gold/30 bg-white/[0.02] p-6 sm:p-8 flex flex-col shadow-[0_0_40px_-12px_rgba(212,168,83,0.15)]">
-            {/* "Most popular" badge */}
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-surface-primary bg-gold rounded-full px-3 py-1 shadow-gold-glow">
-              {t("most_popular")}
+          {/* ─── Pro plan (coming soon — dimmed, not clickable) ─────── */}
+          <div className="relative rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 flex flex-col opacity-60 cursor-default" aria-disabled="true">
+            {/* "(em breve)" badge */}
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-gold bg-gold/20 border border-gold/30 rounded-full px-3 py-1" aria-label={t("coming_soon")}>
+              {t("coming_soon")}
             </span>
 
-            <h2 className="font-display text-xl text-gold tracking-tight mt-1">
+            <h2 className="font-display text-xl text-foreground tracking-tight mt-1">
               {t("pro_title")}
             </h2>
 
@@ -222,19 +227,8 @@ export default function PricingPage() {
                 {yearly ? t("per_year") : t("per_month")}
               </span>
             </div>
-            {yearly && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("yearly_equivalent")}
-              </p>
-            )}
 
-            {/* CTA */}
-            <Link
-              href="/auth/sign-up?plan=pro"
-              className="mt-6 inline-flex items-center justify-center w-full min-h-[44px] rounded-lg bg-gold text-surface-primary text-sm font-semibold hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            >
-              {t("pro_cta")}
-            </Link>
+            {/* No CTA button — Pro is not available yet */}
 
             {/* Features */}
             <p className="mt-8 text-xs font-medium text-muted-foreground uppercase tracking-wider">

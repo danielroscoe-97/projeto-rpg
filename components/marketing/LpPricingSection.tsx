@@ -105,6 +105,11 @@ export function LpPricingSection() {
                   "free_feature_1",
                   "free_feature_2",
                   "free_feature_3",
+                  "free_feature_4",
+                  "free_feature_5",
+                  "free_feature_6",
+                  "free_feature_7",
+                  "free_feature_8",
                 ] as const
               ).map((key) => (
                 <li key={key} className="flex items-start gap-2.5">

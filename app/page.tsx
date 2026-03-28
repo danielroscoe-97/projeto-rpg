@@ -935,13 +935,6 @@ function FinalCtaSection() {
 
 
       <div className="relative max-w-2xl mx-auto text-center space-y-6 animate-fade-in-up">
-        {/* Ornament */}
-        <div className="flex justify-center mb-2">
-          <svg width="48" height="24" viewBox="0 0 48 24" fill="none" aria-hidden="true">
-            <path d="M4 12h40M20 4l4 8-4 8M28 4l4 8-4 8" stroke="rgba(212,168,83,0.3)" strokeWidth="1" strokeLinecap="round" />
-          </svg>
-        </div>
-
         <h2 className="text-3xl sm:text-4xl font-display text-foreground">
           Pronto para mestrar{" "}
           <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">melhor</span>?
@@ -959,29 +952,13 @@ function FinalCtaSection() {
             Começar Agora — é Grátis
             <ArrowRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
-          <div className="flex items-center justify-center gap-4 text-sm">
-            <Link
-              href="/try"
-              className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
-            >
-              Testar sem conta
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-            <span className="text-white/20">|</span>
-            <Link
-              href="/pricing"
-              className="text-gold hover:text-gold/80 underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
-            >
-              Ver planos Pro
-            </Link>
-            <span className="text-white/20">|</span>
-            <Link
-              href="/auth/login"
-              className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
-            >
-              Já tenho conta
-            </Link>
-          </div>
+          <Link
+            href="/try"
+            className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
+          >
+            Testar sem conta
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
       </div>
     </section>
@@ -1031,7 +1008,6 @@ export default function LandingPage() {
       <SocialProofSection />
       <SectionDivider />
       <LpPricingSection />
-      <SectionDivider />
       <FinalCtaSection />
 
       <LandingPageTracker />
