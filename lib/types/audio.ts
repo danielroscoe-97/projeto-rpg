@@ -4,7 +4,7 @@ export interface AudioPreset {
   name_key: string;
   file: string;
   icon: string;
-  category: "attack" | "magic" | "defense" | "dramatic";
+  category: "attack" | "magic" | "defense" | "dramatic" | "ambient";
 }
 
 /** Player-uploaded audio file record from the database */

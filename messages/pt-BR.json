@@ -1218,6 +1218,12 @@
     "preset_arrow": "Flecha Certeira",
     "preset_critical_hit": "Acerto Crítico",
     "preset_teleport": "Teleporte",
+    "preset_ambient_dungeon": "Dungeon",
+    "preset_ambient_rain": "Chuva",
+    "preset_ambient_tavern": "Taverna",
+    "preset_ambient_forest": "Floresta",
+    "preset_ambient_ocean": "Oceano",
+    "preset_ambient_creek": "Riacho",
     "slot_empty": "Slot vazio",
     "replace_sound": "Substituir som"
   },

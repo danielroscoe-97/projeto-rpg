@@ -1218,6 +1218,12 @@
     "preset_arrow": "Arrow Strike",
     "preset_critical_hit": "Critical Hit",
     "preset_teleport": "Teleport",
+    "preset_ambient_dungeon": "Dungeon",
+    "preset_ambient_rain": "Rain",
+    "preset_ambient_tavern": "Tavern",
+    "preset_ambient_forest": "Forest",
+    "preset_ambient_ocean": "Ocean",
+    "preset_ambient_creek": "Creek",
     "slot_empty": "Empty slot",
     "replace_sound": "Replace sound"
   },

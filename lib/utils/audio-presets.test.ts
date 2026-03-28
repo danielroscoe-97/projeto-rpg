@@ -2,17 +2,17 @@ import { getPresetById, getAllPresets } from "./audio-presets";
 
 describe("audio-presets", () => {
   describe("getAllPresets", () => {
-    it("returns 10 presets", () => {
-      expect(getAllPresets()).toHaveLength(10);
+    it("returns 16 presets (10 SFX + 6 ambient)", () => {
+      expect(getAllPresets()).toHaveLength(16);
     });
 
     it("each preset has required fields", () => {
       for (const preset of getAllPresets()) {
         expect(preset.id).toBeTruthy();
         expect(preset.name_key).toMatch(/^audio\.preset_/);
-        expect(preset.file).toMatch(/^\/sounds\/sfx\/.+\.mp3$/);
+        expect(preset.file).toMatch(/^\/sounds\/(sfx|ambient)\/.+\.mp3$/);
         expect(preset.icon).toBeTruthy();
-        expect(["attack", "magic", "defense", "dramatic"]).toContain(preset.category);
+        expect(["attack", "magic", "defense", "dramatic", "ambient"]).toContain(preset.category);
       }
     });
 

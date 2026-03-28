@@ -95,11 +95,15 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     const audio = preloaded ?? new Audio(audioUrl);
     audio.volume = volume;
     audio.currentTime = 0;
+
+    // Ambient sounds loop continuously
+    const preset = source === "preset" ? getPresetById(soundId) : null;
+    audio.loop = preset?.category === "ambient";
+
     audio.play().catch(() => {
       // Browser blocked autoplay — ignored silently
     });
 
-    const preset = source === "preset" ? getPresetById(soundId) : null;
     const label = `${playerName}: ${preset?.icon ?? "🔊"} ${preset?.id ?? soundId}`;
 
     set({
