@@ -685,7 +685,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
         <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
         <span className="hidden md:block w-8 flex-shrink-0" /> {/* monster token spacer */}
-        <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
+        <span className="flex-1 min-w-0 cursor-help" title={t("setup_col_name_tooltip")}>{t("setup_col_name")}</span>
         <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
         <span className="w-10 md:w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
         <span className="hidden md:block flex-1 min-w-0">{t("setup_col_notes")}</span>

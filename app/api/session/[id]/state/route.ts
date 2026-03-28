@@ -60,17 +60,28 @@ export async function GET(
   const { data: combatants } = await serviceClient
     .from("combatants")
     .select(
-      "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version"
+      "id, name, display_name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version"
     )
     .eq("encounter_id", encounter.id)
     .order("initiative_order", { ascending: true });
 
-  // Strip sensitive data from monsters — players see only HP status label
-  const playerCombatants = (combatants ?? []).map((c) => {
-    if (c.is_player) return c;
-    const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, ...rest } = c;
-    return { ...rest, hp_status: getHpStatus(_current_hp, _max_hp) };
-  });
+  // Strip sensitive data from monsters — players see only HP status label.
+  // Also filter out hidden combatants and apply display_name anti-metagaming.
+  const playerCombatants = (combatants ?? [])
+    .filter((c) => !c.is_hidden)
+    .map((c) => {
+      if (c.is_player) {
+        const { display_name: _dn, is_hidden: _h, ...rest } = c;
+        return rest;
+      }
+      const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, display_name, is_hidden: _h, ...rest } = c;
+      return {
+        ...rest,
+        // Anti-metagaming: replace real name with display_name if set
+        name: display_name || rest.name,
+        hp_status: getHpStatus(_current_hp, _max_hp),
+      };
+    });
 
   return NextResponse.json({
     data: {
