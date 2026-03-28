@@ -99,7 +99,8 @@ export async function dmSetupCombatSession(
   const startBtn = page.locator('[data-testid="start-combat-btn"]');
   await startBtn.scrollIntoViewIfNeeded();
   await startBtn.click();
-  await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 10_000 });
+  // Starting combat triggers server calls + possible Next.js router.replace navigation
+  await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 20_000 });
 
   return token;
 }
