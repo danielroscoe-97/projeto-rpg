@@ -60,7 +60,7 @@ export function CombatantSetupRow({
       </span>
 
       {/* Init */}
-      <div className="flex items-center gap-0.5 w-16 flex-shrink-0">
+      <div className="flex items-center gap-0.5 w-12 md:w-16 flex-shrink-0">
         <input
           type="number"
           value={combatant.initiative ?? ""}
@@ -107,7 +107,7 @@ export function CombatantSetupRow({
               pinCard("monster", combatant.monster_id, combatant.ruleset_version);
             }
           }}
-          className={`flex-shrink-0 rounded-full ${combatant.ruleset_version ? "cursor-pointer hover:ring-2 hover:ring-gold/60 transition-shadow" : "cursor-default"}`}
+          className={`hidden md:block flex-shrink-0 rounded-full ${combatant.ruleset_version ? "cursor-pointer hover:ring-2 hover:ring-gold/60 transition-shadow" : "cursor-default"}`}
           disabled={!combatant.ruleset_version}
           aria-label={combatant.ruleset_version ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
           data-testid={`token-btn-${combatant.id}`}
@@ -120,7 +120,7 @@ export function CombatantSetupRow({
           />
         </button>
       ) : (
-        <span className="w-8 flex-shrink-0" />
+        <span className="hidden md:block w-8 flex-shrink-0" />
       )}
 
       {/* Name */}
@@ -164,7 +164,7 @@ export function CombatantSetupRow({
         onFocus={selectOnFocus}
         placeholder={t("setup_hp_placeholder")}
         min={1}
-        className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         aria-label={t("setup_hp_aria", { name: combatant.name })}
         data-testid={`setup-hp-${combatant.id}`}
       />
@@ -182,24 +182,24 @@ export function CombatantSetupRow({
         onFocus={selectOnFocus}
         placeholder={t("setup_ac_placeholder")}
         min={1}
-        className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        className={`${inputClass} w-10 md:w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         aria-label={t("setup_ac_aria", { name: combatant.name })}
         data-testid={`setup-ac-${combatant.id}`}
       />
 
-      {/* Notes */}
+      {/* Notes — hidden on mobile to save space */}
       <input
         type="text"
         value={combatant.player_notes}
         onChange={(e) => onNotesChange(combatant.id, e.target.value)}
         placeholder={t("setup_notes_placeholder")}
-        className={`${inputClass} flex-1 min-w-0 text-muted-foreground`}
+        className={`${inputClass} hidden md:block flex-1 min-w-0 text-muted-foreground`}
         aria-label={t("setup_notes_aria", { name: combatant.name })}
         data-testid={`setup-notes-${combatant.id}`}
       />
 
-      {/* Actions — fixed width so columns stay aligned regardless of Ver Ficha */}
-      <div className="w-[170px] flex-shrink-0 flex items-center justify-end gap-1">
+      {/* Actions — responsive width */}
+      <div className="w-auto md:w-[170px] flex-shrink-0 flex items-center justify-end gap-1">
         {combatant.monster_id && combatant.ruleset_version && (
           <button
             type="button"
@@ -209,7 +209,7 @@ export function CombatantSetupRow({
             data-testid={`ver-ficha-setup-${combatant.id}`}
           >
             <span aria-hidden>📖</span>
-            <span>{t("setup_view_card")}</span>
+            <span className="hidden md:inline">{t("setup_view_card")}</span>
           </button>
         )}
         {onDuplicate && (

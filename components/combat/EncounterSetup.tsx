@@ -606,8 +606,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {t("encounter_description")}
@@ -680,13 +680,13 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       {/* Column headers — always visible, aligned with both rows and add-row */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider">
         <span className="w-5 flex-shrink-0" /> {/* drag handle / + icon spacer */}
-        <span className="w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
-        <span className="w-8 flex-shrink-0" /> {/* monster token spacer */}
+        <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
+        <span className="hidden md:block w-8 flex-shrink-0" /> {/* monster token spacer */}
         <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
-        <span className="w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
-        <span className="w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
-        <span className="flex-1 min-w-0">{t("setup_col_notes")}</span>
-        <span className="w-[170px] flex-shrink-0" /> {/* actions spacer (Duplicar + Ver Ficha + Remover / Adicionar) */}
+        <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
+        <span className="w-10 md:w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
+        <span className="hidden md:block flex-1 min-w-0">{t("setup_col_notes")}</span>
+        <span className="hidden md:block w-[170px] flex-shrink-0" /> {/* actions spacer (Duplicar + Ver Ficha + Remover / Adicionar) */}
       </div>
 
       {/* Combatant list (insertion order, drag-reorderable) */}
@@ -741,10 +741,10 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           min={-5}
           max={50}
           aria-label={t("setup_init_aria")}
-          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />
-        <span className="w-8 flex-shrink-0" /> {/* monster token spacer */}
+        <span className="hidden md:block w-8 flex-shrink-0" /> {/* monster token spacer */}
         <input
           type="text"
           value={addRow.name}
@@ -767,7 +767,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           placeholder={t("setup_col_hp")}
           min={1}
           aria-label={t("setup_hp_aria")}
-          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-hp"
         />
         <input
@@ -778,7 +778,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           placeholder={t("setup_col_ac")}
           min={1}
           aria-label={t("setup_ac_aria")}
-          className={`${inputClass} w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-10 md:w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-ac"
         />
         <input
@@ -786,13 +786,13 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           value={addRow.notes}
           onChange={(e) => setAddRow((f) => ({ ...f, notes: e.target.value }))}
           placeholder={t("setup_col_notes")}
-          className={`${inputClass} flex-1 min-w-0 text-muted-foreground`}
+          className={`${inputClass} hidden md:block flex-1 min-w-0 text-muted-foreground`}
           data-testid="add-row-notes"
         />
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-[170px] flex-shrink-0 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
+          className="w-auto md:w-[170px] flex-shrink-0 py-1.5 px-3 md:px-0 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}

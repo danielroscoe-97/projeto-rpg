@@ -69,17 +69,17 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-start justify-between gap-4 relative">
-        <div className="flex-1 min-w-0 pr-4">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 relative">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             {t("description")}
           </p>
         </div>
-        <div className="flex items-center justify-end">
+        <div className="flex items-center sm:justify-end">
           <Link
             href="/app/session/new"
-            className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-[45px] py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] min-w-[240px] shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] w-full sm:w-auto sm:min-w-[240px] shrink-0"
           >
             <Swords className="inline-block w-4 h-4" aria-hidden="true" /> {t("new_session")}
           </Link>

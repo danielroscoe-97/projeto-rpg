@@ -88,20 +88,20 @@ export default async function SessionPage({ params }: SessionPageProps) {
       </div>
 
       {/* Session header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold text-foreground truncate">
             {encounter?.name ?? "Encounter"}
           </h1>
           <p className="text-muted-foreground text-sm mt-0.5">
             {session.name} · Ruleset {session.ruleset_version}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <ShareSessionButton sessionId={sessionId} />
           <Link
             href="/app/dashboard"
-            className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center"
+            className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center whitespace-nowrap"
             aria-label={t("back_to_dashboard")}
           >
             {t("back_to_dashboard")}
