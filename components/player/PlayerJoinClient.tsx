@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { claimPlayerToken, registerPlayerCombatant } from "@/lib/supabase/player-registration";
+import { claimPlayerToken, registerPlayerCombatant, markPlayerToken } from "@/lib/supabase/player-registration";
 import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
 import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
@@ -358,9 +358,9 @@ export function PlayerJoinClient({
               setLateJoinStatus("accepted");
               setIsRegistered(true);
               setRegisteredName(payload.combatant.name);
-              // Mark token with player_name (combatant already created by DM)
+              // Mark token with player_name only (combatant already created by DM)
               if (lateJoinDataRef.current) {
-                registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current)
+                markPlayerToken(effectiveTokenId, sessionId, lateJoinDataRef.current.name)
                   .catch(() => { /* Token may already be marked — ignore */ });
               }
             }
@@ -554,7 +554,8 @@ export function PlayerJoinClient({
           setLateJoinStatus("accepted");
           setIsRegistered(true);
           setRegisteredName(playerName);
-          registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current!)
+          // Only mark token — combatant already created by DM
+          markPlayerToken(effectiveTokenId, sessionId, playerName)
             .catch(() => { /* Token may already be marked — ignore */ });
         }
       } catch {

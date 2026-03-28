@@ -195,6 +195,50 @@ export async function registerPlayerCombatant(
 }
 
 /**
+ * Mark a player token with a player name WITHOUT creating a combatant.
+ * Used when the DM has already created the combatant (late-join acceptance),
+ * so we only need to associate the token with the player name.
+ * Silently succeeds if the token is already marked (idempotent).
+ */
+export async function markPlayerToken(
+  tokenId: string,
+  sessionId: string,
+  playerName: string
+): Promise<void> {
+  const supabase = createServiceClient();
+
+  const name = playerName?.trim();
+  if (!name || name.length > 50) {
+    throw new Error("Invalid name");
+  }
+
+  // Validate the token belongs to this session and is active
+  const { data: token, error: tokenError } = await supabase
+    .from("session_tokens")
+    .select("id, session_id, player_name")
+    .eq("id", tokenId)
+    .eq("session_id", sessionId)
+    .eq("is_active", true)
+    .single();
+
+  if (tokenError || !token) {
+    throw new Error("Invalid or expired session token");
+  }
+
+  // Already marked — idempotent success
+  if (token.player_name) return;
+
+  await supabase
+    .from("session_tokens")
+    .update({ player_name: name })
+    .eq("id", tokenId);
+
+  trackServerEvent("player:joined", {
+    properties: { session_id: sessionId, token_id: tokenId, late_join: true },
+  });
+}
+
+/**
  * Fetch all registered players for a session (from session_tokens with player_name set).
  */
 export async function getRegisteredPlayers(

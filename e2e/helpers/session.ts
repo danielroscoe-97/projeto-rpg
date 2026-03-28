@@ -31,26 +31,29 @@ export async function goToNewSession(page: Page) {
  * Flow: share-prepare-btn (creates session) → share-session-generate → share-session-url
  */
 export async function getShareToken(page: Page): Promise<string | null> {
-  // Step 1: On /session/new, click share-prepare-btn to create session
-  const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
-  if (await prepareBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+  try {
+    // Step 1: On /session/new, click share-prepare-btn to create session
+    const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
+    await prepareBtn.scrollIntoViewIfNeeded();
+    await expect(prepareBtn).toBeVisible({ timeout: 5_000 });
     await prepareBtn.click();
     await page.waitForTimeout(2_000);
-  }
 
-  // Step 2: Now ShareSessionButton appears — click generate
-  const generateBtn = page.locator('[data-testid="share-session-generate"]');
-  if (await generateBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    // Step 2: Now ShareSessionButton appears — click generate
+    const generateBtn = page.locator('[data-testid="share-session-generate"]');
+    await generateBtn.scrollIntoViewIfNeeded();
+    await expect(generateBtn).toBeVisible({ timeout: 5_000 });
     await generateBtn.click();
     await page.waitForTimeout(2_000);
-  }
 
-  // Step 3: Get the share URL
-  const shareUrl = page.locator('[data-testid="share-session-url"]');
-  if (await shareUrl.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    // Step 3: Get the share URL
+    const shareUrl = page.locator('[data-testid="share-session-url"]');
+    await expect(shareUrl).toBeVisible({ timeout: 5_000 });
     const value = await shareUrl.inputValue();
     const match = value.match(/\/join\/([a-zA-Z0-9_-]+)/);
     if (match) return match[1];
+  } catch {
+    // Fall through to fallback
   }
 
   // Fallback: search all inputs
@@ -92,8 +95,10 @@ export async function dmSetupCombatSession(
     await page.waitForTimeout(500);
   }
 
-  // Start combat
-  await page.click('[data-testid="start-combat-btn"]');
+  // Start combat (scroll into view for mobile viewports where button may be below fold)
+  const startBtn = page.locator('[data-testid="start-combat-btn"]');
+  await startBtn.scrollIntoViewIfNeeded();
+  await startBtn.click();
   await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 10_000 });
 
   return token;
@@ -161,9 +166,8 @@ export async function playerJoinCombat(
   await expect(toastAcceptBtn).toBeVisible({ timeout: 15_000 });
   await toastAcceptBtn.click();
 
-  // KNOWN ISSUE: The DM's combat:late_join_response broadcast does not reliably
-  // reach the player via Supabase Realtime. This causes player-view to never appear.
-  // See: docs/prompt-fix-cat1-player-join.md for the production fix needed.
+  // Player detects acceptance via combat:combatant_add broadcast or polling fallback.
+  // The polling checks every 5s if the DM has added a combatant matching the player's name.
   await expect(
     playerPage.locator('[data-testid="player-view"]')
   ).toBeVisible({ timeout: 30_000 });
