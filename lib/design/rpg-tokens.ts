@@ -36,9 +36,9 @@ export function getFireStepColor(step: number, total: number): string {
     FIRE_GRADIENT.ember,
     FIRE_GRADIENT.gold,
   ];
-  const t = total <= 1 ? 1 : (step - 1) / (total - 1);
+  const t = Math.max(0, Math.min(1, total <= 1 ? 1 : (step - 1) / (total - 1)));
   const idx = t * (stops.length - 1);
-  const lower = Math.floor(idx);
+  const lower = Math.max(0, Math.min(Math.floor(idx), stops.length - 1));
   const upper = Math.min(lower + 1, stops.length - 1);
   const frac = idx - lower;
 

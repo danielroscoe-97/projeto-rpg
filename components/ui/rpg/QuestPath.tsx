@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { FIRE_GRADIENT, getFireStepColor } from "@/lib/design/rpg-tokens";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +11,19 @@ interface QuestPathProps {
 }
 
 export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
+      { threshold: 0.3 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const width = 1000;
   const height = 90;
   const pad = 125;
@@ -55,6 +69,7 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
 
   return (
     <svg
+      ref={svgRef}
       className={cn("w-full pointer-events-none", className)}
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
@@ -121,8 +136,8 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
         </rect>
       ))}
 
-      {/* === Traveling Pixel Firebolt (ONE trip, then disappears) === */}
-      <g className="motion-reduce:hidden" shapeRendering="crispEdges">
+      {/* === Traveling Pixel Firebolt (ONE trip, triggered on scroll) === */}
+      {isVisible && (<><g className="motion-reduce:hidden" shapeRendering="crispEdges">
         {/* Ambient glow */}
         <circle r="20" fill="url(#firebolt-glow)" filter="url(#fb-blur)" opacity="0">
           <animate attributeName="opacity" from="0" to="0.6" dur="0.3s" fill="freeze" />
@@ -194,13 +209,14 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
           </g>
         </g>
       </g>
+      </>) }
 
-      {/* === BONFIRE at step 04 — behind the circle (z-order), big flames rising up === */}
-      <g className="motion-reduce:hidden" shapeRendering="crispEdges">
+      {/* === BONFIRE at step 04 — behind the circle, smaller to not leak above === */}
+      {isVisible && (<g className="motion-reduce:hidden" shapeRendering="crispEdges">
         {/* Large warm glow centered on step 04 */}
-        <circle cx={lastPt.x} cy={lastPt.y - 10} r="50" fill="url(#bonfire-glow)" filter="url(#bonfire-blur)" opacity="0">
-          <animate attributeName="opacity" from="0" to="1" dur="1s" begin={travelDur} fill="freeze" />
-          <animate attributeName="r" values="50;55;50" dur="2s" begin={travelDur} repeatCount="indefinite" />
+        <circle cx={lastPt.x} cy={lastPt.y - 5} r="30" fill="url(#bonfire-glow)" filter="url(#bonfire-blur)" opacity="0">
+          <animate attributeName="opacity" from="0" to="0.7" dur="1s" begin={travelDur} fill="freeze" />
+          <animate attributeName="r" values="30;33;30" dur="2s" begin={travelDur} repeatCount="indefinite" />
         </circle>
 
         {/* Bonfire pixel sprite — at step 04 position, grows BIG (scale 2.5) */}
@@ -210,7 +226,7 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
             attributeName="transform"
             type="scale"
             from="0.3"
-            to="2.5"
+            to="1.3"
             dur="1s"
             begin={travelDur}
             fill="freeze"
@@ -272,7 +288,7 @@ export function QuestPath({ steps, currentStep, className }: QuestPathProps) {
             <rect x="1.5" y="-9" width="4" height="4" fill="#991b1b" />
           </g>
         </g>
-      </g>
+      </g>)}
 
       {/* Step dots on the curve */}
       {stepPoints.map((pt, i) => {
