@@ -178,8 +178,9 @@ export function TourProvider() {
 
     const step = effectiveSteps[currentStep];
 
-    // Auto-search "goblin" when entering the monster-search step
-    if (step.id === "monster-search") {
+    // Auto-search "goblin" when entering the monster-result step (transition 2→3)
+    // so results are visible when the "Adicione ao Combate" tooltip appears
+    if (step.id === "monster-result") {
       const timer = setTimeout(() => {
         const input = document.querySelector<HTMLInputElement>(
           '[data-tour-id="monster-search"] input[type="text"]'
