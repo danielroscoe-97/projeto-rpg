@@ -133,7 +133,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
 
       {/* Mobile menu drawer */}
       {mobileOpen && (
-        <div className="fixed inset-x-0 top-[72px] bottom-0 z-40 bg-background border-b border-white/[0.08] p-4 lg:hidden overflow-y-auto">
+        <div className="fixed inset-x-0 top-[72px] bottom-0 z-40 bg-background border-b border-white/[0.08] p-4 lg:hidden overflow-y-auto flex flex-col">
           <div className="flex flex-col gap-1">
             {links.map((link) =>
               link.children ? (
@@ -169,6 +169,14 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
               {rightSlot}
             </div>
           )}
+
+          {/* Quick value prop — fills empty space */}
+          <div className="mt-auto pb-6 pt-6 text-center">
+            <p className="text-xs text-muted-foreground/40 leading-relaxed">
+              Combat tracker para D&D 5e.<br />
+              3000+ monstros · 900+ magias · Grátis.
+            </p>
+          </div>
         </div>
       )}
     </>

@@ -186,12 +186,12 @@ function HeroSection() {
 
         {/* CTAs */}
         <div className="flex flex-col items-center gap-3 pt-4 animate-fade-in-up w-full max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
-          {/* Primary escape-hatch — elongated, full width */}
+          {/* Primary escape-hatch — elongated, full width, gold-accented */}
           <Link
             href="/try"
-            className="group relative overflow-hidden w-full py-3 bg-white/[0.06] text-foreground font-medium text-base rounded-lg border border-white/[0.10] hover:bg-white/[0.10] hover:border-gold/30 hover:text-gold transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
+            className="group relative overflow-hidden w-full py-3 bg-gold/[0.08] text-foreground font-semibold text-lg rounded-lg border border-gold/25 shadow-[0_0_20px_rgba(212,168,83,0.08)] hover:bg-gold/[0.14] hover:border-gold/40 hover:text-gold hover:shadow-[0_0_24px_rgba(212,168,83,0.15)] transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
-            Testar Combat Tracker (Grátis)
+            Testar Grátis
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
 
@@ -353,18 +353,21 @@ function FeaturesSection() {
           ))}
         </div>
 
-        {/* Mobile: compact 2×3 grid — emoji + title only */}
-        <div className="grid grid-cols-2 gap-3 md:hidden">
+        {/* Mobile: vertical list with short descriptions */}
+        <div className="flex flex-col gap-2.5 md:hidden">
           {features.map((f, i) => (
             <div
               key={f.title}
-              className="bg-card border border-border rounded-lg p-3 flex items-center gap-2.5 animate-fade-in-up"
+              className="bg-card border border-border rounded-lg px-3.5 py-3 flex items-start gap-3 animate-fade-in-up"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
-              <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-base">
+              <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-base mt-0.5">
                 {f.emoji}
               </div>
-              <h3 className="font-display text-foreground text-xs leading-tight">{f.title}</h3>
+              <div className="min-w-0">
+                <h3 className="font-display text-foreground text-sm leading-tight">{f.title}</h3>
+                <p className="text-muted-foreground text-xs leading-snug mt-0.5 line-clamp-1">{f.description}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -452,7 +455,15 @@ function SocialProofSection() {
               </div>
             ))}
           </div>
-          <p className="text-center text-[10px] text-muted-foreground/50 mt-2">Deslize para ver mais</p>
+          {/* Scroll indicator dots */}
+          <div className="flex justify-center gap-1.5 mt-3" aria-hidden="true">
+            {testimonials.map((_, i) => (
+              <div
+                key={i}
+                className={`w-1.5 h-1.5 rounded-full ${i === 0 ? "bg-gold/60" : "bg-white/20"}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -481,7 +492,7 @@ function HowItWorksSection() {
       step: 3,
       emoji: "🔗",
       title: "Compartilhe o Link",
-      description: "Gere o link da sessão. Jogadores entram pelo celular — sem cadastro para eles.",
+      description: "Gere o link da sessão. Jogadores entram pelo celular — sem conta pra eles.",
       time: "~10 seg",
     },
     {
@@ -615,7 +626,7 @@ function HowItWorksSection() {
             </Link>
           </Button>
           <p className="text-muted-foreground text-sm mt-3">
-            Sem cadastro necessário
+            Sem conta necessária
           </p>
         </div>
       </div>
@@ -824,7 +835,7 @@ function ComparisonSection() {
             {
               icon: "📱",
               title: "Player view sem conta",
-              description: "Gere um link. Jogadores abrem no celular. Sem app, sem cadastro.",
+              description: "Gere um link. Jogadores abrem no celular. Sem app, sem conta.",
             },
             {
               icon: "📚",
@@ -891,7 +902,7 @@ function FinalCtaSection() {
             href="/try"
             className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
           >
-            Testar Combat Tracker sem conta
+            Testar sem conta
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
