@@ -7,6 +7,7 @@ import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
 import { LpPricingSection } from "@/components/marketing/LpPricingSection";
+import { SrdPrefetch } from "@/components/srd/SrdPrefetch";
 import { Button } from "@/components/ui/button";
 import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
 import { getFireStepColor } from "@/lib/design/rpg-tokens";
@@ -931,6 +932,7 @@ export default function LandingPage() {
       <FinalCtaSection />
 
       <LandingPageTracker />
+      <SrdPrefetch />
       <Footer />
     </div>
   );
