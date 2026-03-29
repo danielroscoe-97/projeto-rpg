@@ -67,7 +67,7 @@ export default async function AppLayout({
         <OracleFAB />
         <DiceHistoryPanel />
       </ErrorBoundary>
-      <main id="main-content" className="flex-1 pt-[72px] p-6">
+      <main id="main-content" className="flex-1 pt-[72px] p-6 pb-28 lg:pb-6">
         <ErrorBoundary name="MainContent">
           {children}
         </ErrorBoundary>
