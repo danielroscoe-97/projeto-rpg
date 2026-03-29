@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useTourStore } from "@/lib/stores/tour-store";
-import { useGuestCombatStore, type GuestCombatPhase } from "@/lib/stores/guest-combat-store";
-import type { Combatant } from "@/lib/types/combat";
+import { useGuestCombatStore } from "@/lib/stores/guest-combat-store";
 import { TourOverlay } from "./TourOverlay";
 import { TourTooltip } from "./TourTooltip";
 import { TourHelpButton } from "./TourHelpButton";
@@ -28,64 +27,16 @@ function getEffectiveSteps() {
   });
 }
 
-/**
- * Maps an effective step index back to the canonical TOUR_STEPS index.
- */
-function toCanonicalIndex(effectiveIndex: number): number {
-  const effective = getEffectiveSteps();
-  if (effectiveIndex >= effective.length) return TOUR_STEPS.length;
-  const step = effective[effectiveIndex];
-  return TOUR_STEPS.findIndex((s) => s.id === step.id);
-}
-
-/**
- * Determines if a step should be skipped because the user already completed
- * its condition before the tour reached it.
- * NOTE: roll-initiative is never skipped — we always show it as info.
- */
-function shouldSkipStep(stepId: string): boolean {
-  const state = useGuestCombatStore.getState();
-  switch (stepId) {
-    case "monster-result":
-      return state.combatants.length > 0;
-    case "start-combat":
-      return state.phase === "combat";
-    case "combat-controls":
-    case "hp-adjust":
-    case "next-turn":
-    case "keyboard-tip":
-    case "tour-complete":
-    case "roll-initiative":
-      return false;
-    default:
-      return false;
-  }
-}
-
-function findNextValidStep(fromStep: number, steps: typeof TOUR_STEPS): number {
-  let step = fromStep;
-  while (step < steps.length && shouldSkipStep(steps[step].id)) {
-    step++;
-  }
-  return step;
-}
-
 export function TourProvider() {
   const { currentStep, isActive, isCompleted, startTour, goToStep, skipTour, completeTour } =
     useTourStore();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
-  const prevCombatantsLengthRef = useRef<number>(0);
-  const phaseTransitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pulseTarget, setPulseTarget] = useState(false);
   const advancingRef = useRef(false);
 
   // Memoize effective steps — only recompute when mounted changes (avoids infinite re-render)
   const effectiveSteps = useMemo(() => getEffectiveSteps(), [mounted]);
-
-  // Track initial combatants count for interactive step detection
-  useEffect(() => {
-    prevCombatantsLengthRef.current = useGuestCombatStore.getState().combatants.length;
-  }, [currentStep]);
 
   // Auto-start tour on first visit
   useEffect(() => {
@@ -115,12 +66,12 @@ export function TourProvider() {
     };
   }, [isActive, mounted]);
 
-  // Smart advance: skip steps whose conditions are already met
+  // Smart advance: go to next step
   const smartAdvance = useCallback(() => {
     if (advancingRef.current) return;
     advancingRef.current = true;
 
-    const next = findNextValidStep(currentStep + 1, effectiveSteps);
+    const next = currentStep + 1;
     if (next >= effectiveSteps.length) {
       completeTour();
     } else {
@@ -132,51 +83,6 @@ export function TourProvider() {
     }, 100);
   }, [currentStep, effectiveSteps, goToStep, completeTour]);
 
-  // On step change, check if current step should be skipped
-  useEffect(() => {
-    if (!isActive || currentStep >= effectiveSteps.length) return;
-    if (shouldSkipStep(effectiveSteps[currentStep].id)) {
-      const timer = setTimeout(() => smartAdvance(), 50);
-      return () => clearTimeout(timer);
-    }
-  }, [isActive, currentStep, effectiveSteps, smartAdvance]);
-
-  // Elevate target element above overlay for interactive steps
-  const prevTargetRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    // Restore previous target's styles
-    if (prevTargetRef.current) {
-      prevTargetRef.current.style.removeProperty("position");
-      prevTargetRef.current.style.removeProperty("z-index");
-      prevTargetRef.current = null;
-    }
-
-    if (!isActive || currentStep >= effectiveSteps.length) return;
-
-    const step = effectiveSteps[currentStep];
-    if (step.type !== "interactive") return;
-
-    const target = document.querySelector<HTMLElement>(step.targetSelector);
-    if (!target) return;
-
-    // Only set position if not already positioned
-    const computed = getComputedStyle(target);
-    if (computed.position === "static") {
-      target.style.position = "relative";
-    }
-    target.style.zIndex = "10001";
-    prevTargetRef.current = target;
-
-    return () => {
-      if (prevTargetRef.current) {
-        prevTargetRef.current.style.removeProperty("position");
-        prevTargetRef.current.style.removeProperty("z-index");
-        prevTargetRef.current = null;
-      }
-    };
-  }, [isActive, currentStep, effectiveSteps]);
-
   // Calculate target position
   const updateTargetRect = useCallback(() => {
     if (!isActive || currentStep >= effectiveSteps.length) return;
@@ -185,12 +91,10 @@ export function TourProvider() {
 
     // Modal steps don't need precise target positioning
     if (step.modal) {
-      // Still need a rect for the overlay spotlight — use the target if available
       const target = document.querySelector(step.targetSelector);
       if (target) {
         setTargetRect(target.getBoundingClientRect());
       } else {
-        // Provide a dummy rect for modals
         setTargetRect(new DOMRect(0, 0, 0, 0));
       }
       return;
@@ -219,6 +123,9 @@ export function TourProvider() {
   useEffect(() => {
     if (!isActive) return;
 
+    // Reset pulse on step change
+    setPulseTarget(false);
+
     updateTargetRect();
 
     const handleUpdate = () => updateTargetRect();
@@ -236,78 +143,30 @@ export function TourProvider() {
     };
   }, [isActive, currentStep, updateTargetRect]);
 
-  // Watch guest-combat-store for interactive step conditions
-  useEffect(() => {
-    if (!isActive || currentStep >= effectiveSteps.length) return;
-
-    const step = effectiveSteps[currentStep];
-    if (step.type !== "interactive") return;
-
-    const unsub = useGuestCombatStore.subscribe((state: { combatants: Combatant[]; phase: GuestCombatPhase }, prevState: { combatants: Combatant[]; phase: GuestCombatPhase }) => {
-      switch (step.id) {
-        case "monster-search": {
-          break;
-        }
-        case "monster-result": {
-          if (state.combatants.length > prevCombatantsLengthRef.current) {
-            smartAdvance();
-            unsub();
-          }
-          break;
-        }
-        case "roll-initiative": {
-          if (
-            state.combatants.length > 0 &&
-            state.combatants.every((c) => c.initiative !== null)
-          ) {
-            setTimeout(() => smartAdvance(), 500);
-            unsub();
-          }
-          break;
-        }
-        case "start-combat": {
-          if (state.phase === "combat" && prevState.phase !== "combat") {
-            if (phaseTransitionTimer.current) clearTimeout(phaseTransitionTimer.current);
-            phaseTransitionTimer.current = setTimeout(() => smartAdvance(), 800);
-            unsub();
-          }
-          break;
-        }
+  // Handle overlay click: pulse the target to draw attention
+  const handleOverlayClick = useCallback(() => {
+    setPulseTarget(true);
+    // Also scroll target into view
+    if (currentStep < effectiveSteps.length) {
+      const step = effectiveSteps[currentStep];
+      const target = document.querySelector<HTMLElement>(step.targetSelector);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
       }
-    });
-
-    // For monster-search step, poll the DOM input value
-    let inputPollInterval: ReturnType<typeof setInterval> | undefined;
-    if (step.id === "monster-search") {
-      inputPollInterval = setInterval(() => {
-        const searchInput = document.querySelector(
-          '[data-tour-id="monster-search"] input'
-        ) as HTMLInputElement;
-        if (searchInput && searchInput.value.length >= 3) {
-          clearInterval(inputPollInterval);
-          setTimeout(() => smartAdvance(), 600);
-          unsub();
-        }
-      }, 300);
     }
-
-    return () => {
-      unsub();
-      if (inputPollInterval) clearInterval(inputPollInterval);
-      if (phaseTransitionTimer.current) clearTimeout(phaseTransitionTimer.current);
-    };
-  }, [isActive, currentStep, effectiveSteps, smartAdvance]);
+    // Remove pulse after animation
+    setTimeout(() => setPulseTarget(false), 1000);
+  }, [currentStep, effectiveSteps]);
 
   const handleNext = useCallback(() => {
     smartAdvance();
   }, [smartAdvance]);
 
-  // Clean up phase transition timer on unmount
-  useEffect(() => {
-    return () => {
-      if (phaseTransitionTimer.current) clearTimeout(phaseTransitionTimer.current);
-    };
-  }, []);
+  // Complete tour and reset combat state for a clean start
+  const handleComplete = useCallback(() => {
+    completeTour();
+    useGuestCombatStore.getState().resetCombat();
+  }, [completeTour]);
 
   if (!mounted) return null;
 
@@ -317,7 +176,6 @@ export function TourProvider() {
   }
 
   const step = effectiveSteps[currentStep];
-  const isInteractive = step.type === "interactive";
   const isModal = step.modal === true;
 
   return (
@@ -325,8 +183,10 @@ export function TourProvider() {
       <TourOverlay
         isActive={isActive}
         targetRect={isModal ? null : targetRect}
-        allowInteraction={isInteractive}
+        allowInteraction={false}
         dimOnly={isModal}
+        onOverlayClick={handleOverlayClick}
+        pulseTarget={pulseTarget}
       />
       <TourTooltip
         step={step}
@@ -335,7 +195,7 @@ export function TourProvider() {
         targetRect={targetRect}
         onNext={handleNext}
         onSkip={skipTour}
-        onComplete={completeTour}
+        onComplete={handleComplete}
       />
     </>
   );

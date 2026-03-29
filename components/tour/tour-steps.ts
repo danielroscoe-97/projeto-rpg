@@ -1,4 +1,4 @@
-export type TourStepType = "info" | "interactive";
+export type TourStepType = "info";
 
 export interface TourStepConfig {
   id: string;
@@ -7,8 +7,6 @@ export interface TourStepConfig {
   descriptionKey: string;
   type: TourStepType;
   position?: "top" | "bottom" | "left" | "right";
-  /** For interactive steps: condition is checked externally by TourProvider */
-  interactiveHint?: string;
   /** Phase this step belongs to — used for progress display */
   phase: "setup" | "combat" | "complete";
   /** Render as centered modal instead of anchored tooltip */
@@ -33,26 +31,24 @@ export const TOUR_STEPS: TourStepConfig[] = [
     phase: "setup",
     modal: true,
   },
-  // Step 1 — Monster Search (interactive)
+  // Step 1 — Monster Search (info — step-by-step)
   {
     id: "monster-search",
     targetSelector: '[data-tour-id="monster-search"]',
     titleKey: "tour.search_title",
     descriptionKey: "tour.search_description",
-    type: "interactive",
+    type: "info",
     position: "bottom",
-    interactiveHint: "tour.search_hint",
     phase: "setup",
   },
-  // Step 2 — Add Monster (interactive)
+  // Step 2 — Add Monster (info — step-by-step)
   {
     id: "monster-result",
-    targetSelector: '[data-tour-id="monster-result"]',
+    targetSelector: '[data-tour-id="monster-search"]',
     titleKey: "tour.add_monster_title",
     descriptionKey: "tour.add_monster_description",
-    type: "interactive",
+    type: "info",
     position: "bottom",
-    interactiveHint: "tour.add_monster_hint",
     phase: "setup",
   },
   // Step 3 — Import Hint (info)
@@ -85,15 +81,14 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "top",
     phase: "setup",
   },
-  // Step 5 — Start Combat (interactive)
+  // Step 5 — Start Combat (info — step-by-step)
   {
     id: "start-combat",
     targetSelector: '[data-tour-id="start-combat"]',
     titleKey: "tour.start_title",
     descriptionKey: "tour.start_description",
-    type: "interactive",
+    type: "info",
     position: "top",
-    interactiveHint: "tour.start_hint",
     phase: "setup",
   },
 

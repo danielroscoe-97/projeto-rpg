@@ -56,7 +56,6 @@ function computePosition(
       : ["bottom", "top", "right", "left"];
 
   const spaceAbove = targetRect.top;
-  // spaceBelow already computed above
   const spaceLeft = targetRect.left;
   const spaceRight = window.innerWidth - targetRect.right;
 
@@ -79,7 +78,6 @@ function computePosition(
       const top = Math.min(targetRect.bottom + padding, window.innerHeight - safeMargin - 100);
       style.top = top;
       style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
-      // Dynamic max-height based on remaining space below
       style.maxHeight = `${window.innerHeight - top - safeMargin}px`;
       break;
     }
@@ -160,7 +158,6 @@ export function TourTooltip({
   const t = useTranslations("tour");
   const tooltipRef = useRef<HTMLDivElement>(null);
   const isLastStep = stepIndex === totalSteps - 1;
-  const isInteractive = step.type === "interactive";
   const isCompleteStep = step.phase === "complete";
   const isModal = step.modal === true;
   const [showConfetti, setShowConfetti] = useState(false);
@@ -203,7 +200,6 @@ export function TourTooltip({
 
   const titleKey = step.titleKey.replace(/^tour\./, "");
   const descKey = step.descriptionKey.replace(/^tour\./, "");
-  const hintKey = step.interactiveHint?.replace(/^tour\./, "");
 
   // Modal steps: centered on screen
   if (isModal) {
@@ -254,14 +250,25 @@ export function TourTooltip({
               {t(descKey)}
             </p>
 
-            {/* Completion CTA with urgency */}
+            {/* Completion CTAs */}
             {isCompleteStep && (
-              <Link
-                href="/auth/sign-up"
-                className="block w-full text-center px-4 py-3 bg-gold text-surface-primary text-sm font-bold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
-              >
-                {t("create_account")}
-              </Link>
+              <div className="space-y-2 pt-1">
+                {/* Primary: dismiss and create combat */}
+                <button
+                  type="button"
+                  onClick={onComplete}
+                  className="block w-full text-center px-4 py-3 bg-gold text-surface-primary text-sm font-bold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                >
+                  {t("got_it_create")}
+                </button>
+                {/* Secondary: create account */}
+                <Link
+                  href="/auth/sign-up"
+                  className="block w-full text-center px-4 py-2.5 border border-gold/40 text-gold text-sm font-semibold rounded-md hover:bg-gold/10 transition-all duration-200 min-h-[44px]"
+                >
+                  {t("create_account")}
+                </Link>
+              </div>
             )}
 
             {/* Footer */}
@@ -269,22 +276,31 @@ export function TourTooltip({
               <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
 
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={isLastStep ? onComplete : onSkip}
-                  className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
-                >
-                  {isLastStep ? t("finish") : t("skip")}
-                </button>
-
-                {!isInteractive && !isCompleteStep && (
+                {isCompleteStep ? (
                   <button
                     type="button"
-                    onClick={onNext}
-                    className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                    onClick={onComplete}
+                    className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
                   >
-                    {t("next")}
+                    {t("finish")}
                   </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={onSkip}
+                      className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
+                    >
+                      {t("skip")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onNext}
+                      className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                    >
+                      {t("next")}
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -321,7 +337,7 @@ export function TourTooltip({
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
         className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
-        style={{ ...style, pointerEvents: isInteractive ? "none" : "auto" }}
+        style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0 }}
@@ -352,35 +368,26 @@ export function TourTooltip({
             {t(descKey)}
           </p>
 
-          {isInteractive && hintKey && (
-            <p className="text-xs text-gold/70 italic flex items-center gap-1.5">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold/70 animate-pulse" aria-hidden="true" />
-              {t(hintKey)}
-            </p>
-          )}
-
-          {/* Footer — pointer-events:auto so skip button is clickable even when tooltip is pass-through */}
-          <div className="flex items-center justify-between pt-1" style={{ pointerEvents: "auto" }}>
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-1">
             <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
 
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={isLastStep ? onComplete : onSkip}
+                onClick={onSkip}
                 className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
               >
-                {isLastStep ? t("finish") : t("skip")}
+                {t("skip")}
               </button>
 
-              {!isInteractive && !isCompleteStep && (
-                <button
-                  type="button"
-                  onClick={onNext}
-                  className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
-                >
-                  {t("next")}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={onNext}
+                className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+              >
+                {t("next")}
+              </button>
             </div>
           </div>
         </div>

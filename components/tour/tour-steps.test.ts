@@ -21,11 +21,9 @@ describe("tour-steps", () => {
     }
   });
 
-  it("interactive steps have interactiveHint", () => {
-    const interactiveSteps = TOUR_STEPS.filter((s) => s.type === "interactive");
-    expect(interactiveSteps.length).toBeGreaterThan(0);
-    for (const step of interactiveSteps) {
-      expect(step.interactiveHint).toBeTruthy();
+  it("all steps are info type (step-by-step tour)", () => {
+    for (const step of TOUR_STEPS) {
+      expect(step.type).toBe("info");
     }
   });
 
