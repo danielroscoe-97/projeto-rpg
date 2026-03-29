@@ -198,37 +198,18 @@ export function TourProvider() {
       return () => clearTimeout(timer);
     }
 
-    // Auto-add Goblin when entering the import-hint step (after "Add Monster" step)
-    // This ensures combatants exist for roll-initiative and start-combat steps
-    if (step.id === "import-hint") {
-      const { combatants, addCombatant } = useGuestCombatStore.getState();
-      if (combatants.length === 0) {
-        addCombatant({
-          name: "Goblin",
-          current_hp: 7,
-          max_hp: 7,
-          temp_hp: 0,
-          ac: 15,
-          spell_save_dc: null,
-          initiative: null,
-          initiative_order: null,
-          conditions: [],
-          ruleset_version: "2014",
-          is_defeated: false,
-          is_hidden: false,
-          is_player: false,
-          monster_id: "goblin-mm",
-          token_url: "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin.webp",
-          creature_type: "humanoid",
-          display_name: null,
-          monster_group_id: null,
-          group_order: null,
-          dm_notes: "",
-          player_notes: "",
-          player_character_id: null,
-          combatant_role: null,
-        });
-      }
+    // Auto-click the first Goblin result when entering the monster-result step
+    // This adds the goblin to combat via the real UI flow (closes search, updates list)
+    if (step.id === "monster-result") {
+      const timer = setTimeout(() => {
+        const firstResult = document.querySelector<HTMLButtonElement>(
+          '[data-tour-id="monster-result"] button'
+        );
+        if (firstResult) {
+          firstResult.click();
+        }
+      }, 600);
+      return () => clearTimeout(timer);
     }
   }, [isActive, currentStep, effectiveSteps]);
 
