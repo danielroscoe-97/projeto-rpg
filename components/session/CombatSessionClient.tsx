@@ -486,12 +486,10 @@ export function CombatSessionClient({
       } as import("@/lib/types/realtime").RealtimeEvent);
 
       // If taking over an active session, broadcast session_revoked so the old device disconnects
-      if (req.isActiveSession) {
-        // Find the token for this player to revoke (best-effort)
-        // The revocation is handled by the rejoinAsPlayer server action transferring ownership
+      if (req.isActiveSession && req.senderTokenId) {
         broadcastEvent(sid, {
           type: "combat:session_revoked",
-          revoked_token_id: req.player_name, // Player-side matches by effectiveTokenId, but we use player_name as identifier for broadcast
+          revoked_token_id: req.senderTokenId,
         } as import("@/lib/types/realtime").RealtimeEvent);
       }
     } else {
@@ -572,8 +570,8 @@ export function CombatSessionClient({
 
     const handleRejoinRequest = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
-      const { character_name, request_id, is_active_session } = payload as {
-        character_name: string; request_id: string; is_active_session: boolean;
+      const { character_name, request_id, is_active_session, sender_token_id } = payload as {
+        character_name: string; request_id: string; is_active_session: boolean; sender_token_id: string;
       };
       setJoinRequests((prev) => {
         if (prev.some((r) => r.request_id === request_id)) return prev;
@@ -585,6 +583,7 @@ export function CombatSessionClient({
           initiative: 0,
           isRejoin: true,
           isActiveSession: is_active_session,
+          senderTokenId: sender_token_id,
         }];
       });
     };

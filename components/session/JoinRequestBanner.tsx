@@ -14,6 +14,8 @@ export interface JoinRequest {
   isRejoin?: boolean;
   /** Whether the character has an active session (only for rejoin requests) */
   isActiveSession?: boolean;
+  /** Token ID of the player's current session (for revoking old sessions on active takeover) */
+  senderTokenId?: string;
 }
 
 interface JoinRequestBannerProps {
@@ -55,8 +57,8 @@ function JoinRequestCard({
           {isRejoin && (
             <span className={`text-xs ${isActiveSession ? "text-amber-400" : "text-muted-foreground"}`}>
               {isActiveSession
-                ? t("rejoin_notification_active", { name: "", character: request.player_name }).replace("⚠️ ", "").replace("  ", " ")
-                : t("rejoin_notification", { name: "", character: request.player_name }).replace("  ", " ")}
+                ? t("rejoin_banner_subtitle_active", { character: request.player_name })
+                : t("rejoin_banner_subtitle", { character: request.player_name })}
             </span>
           )}
         </div>

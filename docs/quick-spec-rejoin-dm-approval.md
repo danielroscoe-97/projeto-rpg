@@ -1,7 +1,7 @@
 # Quick Spec: Reconexão de Jogador com Aprovação do DM
 
 **Data:** 2026-03-29
-**Status:** Em implementação
+**Status:** QA revisado — bugs corrigidos
 
 ## Problema
 
@@ -38,7 +38,7 @@ Continua automática — sem mudança.
 
 ## Eventos Realtime Novos
 
-- `combat:rejoin_request` — player → DM (player_name, character_name, request_id, is_active_session)
+- `combat:rejoin_request` — player → DM (character_name, request_id, is_active_session, sender_token_id)
 - `combat:rejoin_response` — DM → player (request_id, accepted)
 - `combat:session_revoked` — DM → canal (revoked_token_id) — desconecta dispositivo antigo
 
@@ -60,3 +60,18 @@ Continua automática — sem mudança.
 - Reconexão com cookie válido (automática)
 - Late-join de jogador novo (fluxo existente)
 - `rejoinAsPlayer()` server action (continua existindo, chamada após aprovação do DM)
+
+## QA Review — Bugs encontrados e corrigidos (2026-03-29)
+
+### BUG 1 (CRÍTICO) — `session_revoked` não desconectava dispositivo antigo
+**Causa:** `CombatSessionClient` enviava `revoked_token_id: req.player_name` (string com nome do personagem), mas `PlayerJoinClient` comparava com `effectiveTokenId` (UUID). Nunca batia.
+**Fix:** Adicionado `sender_token_id` ao payload de `combat:rejoin_request`. O player envia seu `effectiveTokenId`, o DM armazena no `JoinRequest.senderTokenId` e usa esse valor no broadcast de `session_revoked`.
+**Arquivos:** `realtime.ts`, `PlayerJoinClient.tsx`, `CombatSessionClient.tsx`, `JoinRequestBanner.tsx`
+
+### BUG 2 (MÉDIO) — Lobby não passava `rejoinStatus`
+**Causa:** O render do lobby (sem combate) não passava `rejoinStatus`/`onRejoinRetry` para `PlayerLobby`.
+**Decisão:** Não é um bug real — o lobby faz rejoin direto sem aprovação, então `rejoinStatus` nunca sai de `"idle"`. Erros são reportados via toast. Comportamento está correto conforme spec.
+
+### BUG 3 (BAIXO) — Strings i18n com `.replace()` hacky no banner
+**Causa:** `JoinRequestBanner` usava `t("rejoin_notification_active", { name: "", character: ... }).replace("⚠️ ", "").replace("  ", " ")` para remover o nome e o emoji.
+**Fix:** Criadas chaves i18n dedicadas `rejoin_banner_subtitle` e `rejoin_banner_subtitle_active` sem `{name}` e sem emoji, usadas diretamente no banner.

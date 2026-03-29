@@ -128,6 +128,8 @@ export interface RealtimeRejoinRequest {
   request_id: string;
   /** Whether the character currently has an active session */
   is_active_session: boolean;
+  /** Token ID of the sender — used to revoke the correct session when another device takes over */
+  sender_token_id: string;
 }
 
 export interface RealtimeRejoinResponse {

@@ -829,6 +829,7 @@ export function PlayerJoinClient({
           character_name: playerName,
           request_id: requestId,
           is_active_session: isActiveSession,
+          sender_token_id: effectiveTokenId,
         },
       });
     } else {
@@ -838,7 +839,7 @@ export function PlayerJoinClient({
         category: "realtime",
       });
     }
-  }, [sessionId, active, currentEncounterId, registeredPlayersWithStatus]);
+  }, [sessionId, active, currentEncounterId, registeredPlayersWithStatus, effectiveTokenId]);
 
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

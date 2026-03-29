@@ -530,6 +530,8 @@
     "rejoin_banner_title_many": "{count} players want to reconnect!",
     "rejoin_notification": "{name} wants to reconnect as {character}",
     "rejoin_notification_active": "⚠️ {name} wants to take over {character} (active session)",
+    "rejoin_banner_subtitle": "Wants to reconnect as {character}",
+    "rejoin_banner_subtitle_active": "Wants to take over {character} (active session)",
     "cr_difficulty": "Difficulty",
     "cr_easy": "Easy",
     "cr_medium": "Medium",
