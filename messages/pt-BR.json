@@ -799,6 +799,7 @@
     "bottom_bar_conditions_label": "Condições",
     "dm_turn": "Vez do Mestre",
     "turn_of": "Vez de {name}",
+    "your_turn_banner": "É a sua vez!",
     "next_up": "Próximo: {name}",
     "player_tag": "Jogador",
     "monster_tag": "Monstro",

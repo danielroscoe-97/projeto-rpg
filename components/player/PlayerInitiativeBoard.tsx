@@ -294,7 +294,7 @@ export function PlayerInitiativeBoard({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-foreground font-semibold text-lg lg:text-base truncate">
-                  {t("turn_of", { name: currentCombatant.name })}
+                  {isPlayerTurn ? t("your_turn_banner") : t("turn_of", { name: currentCombatant.name })}
                 </span>
                 {/* Tag: player or monster */}
                 {currentCombatant.is_player ? (

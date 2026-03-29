@@ -799,6 +799,7 @@
     "auto_join_prefilled": "Your stats were loaded automatically. Review and join!",
     "dm_turn": "DM's turn",
     "turn_of": "{name}'s turn",
+    "your_turn_banner": "It's your turn!",
     "next_up": "Next: {name}",
     "player_tag": "Player",
     "monster_tag": "Monster",
