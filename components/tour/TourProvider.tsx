@@ -198,9 +198,9 @@ export function TourProvider() {
       return () => clearTimeout(timer);
     }
 
-    // Auto-click the first Goblin result when entering the monster-result step
-    // This adds the goblin to combat via the real UI flow (closes search, updates list)
-    if (step.id === "monster-result") {
+    // Auto-click the first Goblin result when entering the import-hint step
+    // (user clicked "Next" on step 3 → step 4 transition)
+    if (step.id === "import-hint") {
       const timer = setTimeout(() => {
         const firstResult = document.querySelector<HTMLButtonElement>(
           '[data-tour-id="monster-result"] button'
