@@ -64,16 +64,16 @@ export function LpPricingSection() {
           </Link>
         </div>
 
-        {/* Section heading */}
-        <div className="text-center mb-12 animate-fade-in">
+        {/* Section heading — desktop only */}
+        <div className="text-center mb-12 animate-fade-in hidden md:block">
           <h2 className="text-3xl sm:text-4xl font-display text-gold mb-4">
             {t("section_title")}
           </h2>
         </div>
 
-        {/* Plan Cards */}
+        {/* Plan Cards — desktop only */}
         <div
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up"
+          className="hidden md:grid md:grid-cols-2 gap-6 animate-fade-in-up"
           style={{ animationDelay: "0.1s" }}
         >
           {/* ── Free Card ── */}

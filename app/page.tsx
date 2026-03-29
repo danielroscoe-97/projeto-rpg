@@ -353,22 +353,31 @@ function FeaturesSection() {
           ))}
         </div>
 
-        {/* Mobile: vertical list with short descriptions */}
-        <div className="flex flex-col gap-2.5 md:hidden">
+        {/* Mobile: expandable cards — tap to reveal full description */}
+        <div className="flex flex-col gap-2 md:hidden">
           {features.map((f, i) => (
-            <div
+            <details
               key={f.title}
-              className="bg-card border border-border rounded-lg px-3.5 py-3 flex items-start gap-3 animate-fade-in-up"
+              className="group bg-card border border-border rounded-lg animate-fade-in-up [&[open]]:border-gold/25"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
-              <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-base mt-0.5">
-                {f.emoji}
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-display text-foreground text-sm leading-tight">{f.title}</h3>
-                <p className="text-muted-foreground text-xs leading-snug mt-0.5 line-clamp-1">{f.description}</p>
-              </div>
-            </div>
+              <summary className="flex items-center gap-3 px-3.5 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-base">
+                  {f.emoji}
+                </div>
+                <h3 className="font-display text-foreground text-sm leading-tight flex-1">{f.title}</h3>
+                <svg
+                  className="w-4 h-4 text-muted-foreground/50 shrink-0 transition-transform duration-200 group-open:rotate-180"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </summary>
+              <p className="text-muted-foreground text-xs leading-relaxed px-3.5 pb-3 pt-0.5 pl-[3.25rem]">
+                {f.description}
+              </p>
+            </details>
           ))}
         </div>
       </div>
