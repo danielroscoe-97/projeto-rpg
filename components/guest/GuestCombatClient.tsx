@@ -557,7 +557,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           placeholder={t("setup_col_init")}
           min={-5}
           max={50}
-          className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-init"
         />
         <input
