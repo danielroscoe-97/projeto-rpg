@@ -69,9 +69,11 @@ export async function persistDefeated(
   isDefeated: boolean
 ): Promise<void> {
   const supabase = createClient();
+  const updateData: Record<string, unknown> = { is_defeated: isDefeated };
+  if (isDefeated) updateData.current_hp = 0;
   const { error } = await supabase
     .from("combatants")
-    .update({ is_defeated: isDefeated })
+    .update(updateData)
     .eq("id", combatantId);
   if (error) throw new Error(error.message);
 }

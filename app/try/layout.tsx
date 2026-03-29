@@ -4,6 +4,7 @@ import { SrdLoadingScreen } from "@/components/srd/SrdLoadingScreen";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { GuestBanner } from "@/components/guest/GuestBanner";
 import { TourProvider } from "@/components/tour/TourProvider";
+import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 
 export default function TryLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,6 +38,7 @@ export default function TryLayout({ children }: { children: React.ReactNode }) {
             {children}
           </div>
           <TourProvider />
+          <DiceHistoryPanel />
         </main>
       </SrdLoadingScreen>
     </div>

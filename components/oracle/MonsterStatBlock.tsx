@@ -113,7 +113,7 @@ function AbilityTable({
         const label = `${ABILITY_LABELS[i]} check`;
         return (
           <div key={`mod-${key}`} className="ability-mod">
-            <ClickableRoll notation={`1d20${mod >= 0 ? "+" : ""}${mod}`} label={label}>
+            <ClickableRoll notation={`1d20${mod >= 0 ? "+" : ""}${mod}`} label={label} source={monster.name}>
               {signedStr(mod)}
             </ClickableRoll>
           </div>
@@ -130,7 +130,7 @@ function AbilityTable({
             key={`save-${key}`}
             className={hasProf ? "ability-save-prof ability-row-even" : "ability-save ability-row-even"}
           >
-            <ClickableRoll notation={`1d20${saveNum >= 0 ? "+" : ""}${saveNum}`} label={label}>
+            <ClickableRoll notation={`1d20${saveNum >= 0 ? "+" : ""}${saveNum}`} label={label} source={monster.name}>
               {saveStr}
             </ClickableRoll>
           </div>
@@ -224,7 +224,7 @@ export function MonsterStatBlock({
   const renderDesc = renderDescProp
     ? (text: string, actionName: string) => renderDescProp(text, monster.ruleset_version, actionName)
     : (text: string, actionName: string) => (
-        <DiceText text={text} rulesetVersion={monster.ruleset_version} actionName={actionName} />
+        <DiceText text={text} rulesetVersion={monster.ruleset_version} actionName={actionName} source={monster.name} />
       );
 
   const isCard = variant === "card";
@@ -291,7 +291,7 @@ export function MonsterStatBlock({
           {monster.hp_formula ? (
             <>
               {monster.hit_points} (
-              <ClickableRoll notation={monster.hp_formula} label={`${monster.name} HP`}>
+              <ClickableRoll notation={monster.hp_formula} label={`${monster.name} HP`} source={monster.name}>
                 {monster.hp_formula}
               </ClickableRoll>
               )
@@ -308,6 +308,7 @@ export function MonsterStatBlock({
             <ClickableRoll
               notation={`1d20${dexMod >= 0 ? "+" : ""}${dexMod}`}
               label={`${monster.name} Initiative`}
+              source={monster.name}
             >
               {signedStr(dexMod)} (<span title="Passive Initiative">{ 10 + dexMod}</span>)
             </ClickableRoll>
@@ -337,6 +338,7 @@ export function MonsterStatBlock({
                 <ClickableRoll
                   notation={`1d20${skill.modifier >= 0 ? "+" : ""}${skill.modifier}`}
                   label={`${skill.name} check`}
+                  source={monster.name}
                 >
                   {skill.modifier >= 0 ? "+" : ""}{skill.modifier}
                 </ClickableRoll>

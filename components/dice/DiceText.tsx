@@ -20,9 +20,11 @@ export interface DiceTextProps {
   rulesetVersion: RulesetVersion;
   /** Action name for contextual labels, e.g. "Tentacle" */
   actionName?: string;
+  /** Source creature name, e.g. "Goblin 2" */
+  source?: string;
 }
 
-export function DiceText({ text, rulesetVersion, actionName }: DiceTextProps) {
+export function DiceText({ text, rulesetVersion, actionName, source }: DiceTextProps) {
   const segments = useMemo(
     () => parseDiceInText(text, actionName),
     [text, actionName],
@@ -37,6 +39,7 @@ export function DiceText({ text, rulesetVersion, actionName }: DiceTextProps) {
               key={i}
               notation={seg.notation}
               label={seg.label}
+              source={source}
             >
               {seg.content}
             </ClickableRoll>

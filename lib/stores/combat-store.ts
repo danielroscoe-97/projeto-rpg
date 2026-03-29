@@ -212,9 +212,9 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     set((state) => {
       const target = state.combatants.find((c) => c.id === id);
       return {
-        undoStack: target ? pushUndo(state.undoStack, { type: "defeated", combatantId: id, wasDefeated: target.is_defeated }) : state.undoStack,
+        undoStack: target ? pushUndo(state.undoStack, { type: "defeated", combatantId: id, wasDefeated: target.is_defeated, previousHp: target.current_hp }) : state.undoStack,
         combatants: state.combatants.map((c) =>
-          c.id === id ? { ...c, is_defeated } : c
+          c.id === id ? { ...c, is_defeated, current_hp: is_defeated ? 0 : c.current_hp } : c
         ),
       };
     }),
@@ -297,7 +297,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           undoStack: stack,
           combatants: state.combatants.map((c) =>
             c.id === entry.combatantId
-              ? { ...c, is_defeated: entry.wasDefeated }
+              ? { ...c, is_defeated: entry.wasDefeated, current_hp: entry.previousHp }
               : c
           ),
         });

@@ -266,6 +266,9 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const name = useCombatStore.getState().combatants.find((c) => c.id === id)?.name ?? "";
     useCombatStore.getState().setDefeated(id, isDefeated);
     broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: isDefeated });
+    if (isDefeated) {
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: 0, temp_hp: 0 });
+    }
     persistDefeated(id, isDefeated).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
 
     // CP.2.1: Log defeat
