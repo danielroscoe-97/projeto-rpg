@@ -84,7 +84,8 @@ function computePosition(
       break;
     }
     case "top": {
-      const bottomVal = window.innerHeight - targetRect.top + padding;
+      const topPadding = isMobile ? 24 : padding;
+      const bottomVal = window.innerHeight - targetRect.top + topPadding;
       style.bottom = bottomVal;
       style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
       style.maxHeight = `${window.innerHeight - bottomVal - safeMargin}px`;
