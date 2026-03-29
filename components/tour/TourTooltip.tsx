@@ -58,7 +58,6 @@ function computePosition(
       : ["bottom", "top", "right", "left"];
 
   const spaceAbove = targetRect.top;
-  const spaceBelow = window.innerHeight - targetRect.bottom;
   const spaceLeft = targetRect.left;
   const spaceRight = window.innerWidth - targetRect.right;
 
