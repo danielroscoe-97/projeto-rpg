@@ -3,7 +3,7 @@ title: 'Polimento Onboarding Mobile + Confirmação Limpar Tudo'
 slug: 'onboarding-mobile-polish-clear-confirm'
 created: '2026-03-29'
 status: 'in-progress'
-stepsCompleted: [1]
+stepsCompleted: [1, 2]
 tech_stack: ['Next.js', 'React 19', 'Zustand', 'next-intl', 'Tailwind CSS', 'Framer Motion']
 files_to_modify:
   - 'components/srd/SrdLoadingScreen.tsx'
@@ -13,6 +13,7 @@ files_to_modify:
   - 'components/guest/GuestCombatClient.tsx'
   - 'messages/pt-BR.json'
   - 'messages/en.json'
+  - 'lib/utils/role-config.ts'
 code_patterns: ['Zustand stores', 'next-intl useTranslations', 'Tailwind responsive md:', 'Framer Motion', 'data-tour-id selectors']
 test_patterns: ['Jest + React Testing Library']
 ---
@@ -94,6 +95,7 @@ Corrigir todos os 7 itens com mudanças cirúrgicas nos componentes existentes, 
 - **Reordenação de steps**: Mover "add-row" (step 5) para antes de "import-hint" (step 4) no array `TOUR_STEPS`. Ajustar comments dos steps.
 - **Anti-metagame hint**: Adicionar parágrafo extra no step `monster-added` (passo 4) via nova key i18n `tour.monster_added_antimetagame`. Renderizar em cor dourada abaixo da descrição principal.
 - **Focus ring do skip button**: Adicionar `focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30` para evitar glow dourado herdado.
+- **Extrair ROLE_CONFIG**: Mover `ROLE_CONFIG` de `CombatantSetupRow.tsx` para `lib/utils/role-config.ts` para reutilizar em `GuestCombatClient.tsx` sem duplicação.
 
 ## Implementation Plan
 
