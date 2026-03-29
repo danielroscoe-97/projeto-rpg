@@ -59,7 +59,8 @@ CREATE OR REPLACE FUNCTION handle_new_campaign()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO campaign_members (campaign_id, user_id, role, status)
-  VALUES (NEW.id, NEW.owner_id, 'dm', 'active');
+  VALUES (NEW.id, NEW.owner_id, 'dm', 'active')
+  ON CONFLICT (campaign_id, user_id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

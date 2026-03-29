@@ -69,7 +69,8 @@ export async function getUserMemberships(
     .from("campaign_members")
     .select("campaign_id")
     .in("campaign_id", campaignIds)
-    .eq("status", "active");
+    .eq("status", "active")
+    .eq("role", "player");
 
   const { data: activeSessions } = await supabase
     .from("sessions")
@@ -101,23 +102,25 @@ export async function getUserMemberships(
 
   const characterMap: Record<
     string,
-    { name: string; current_hp: number; max_hp: number }
+    { name: string; current_hp: number; max_hp: number; race: string | null; characterClass: string | null; level: number | null }
   > = {};
 
   if (playerCampaignIds.length > 0) {
     const { data: characters } = await supabase
       .from("player_characters")
-      .select("campaign_id, name, current_hp, max_hp")
+      .select("campaign_id, name, current_hp, max_hp, race, class, level")
       .in("campaign_id", playerCampaignIds)
       .eq("user_id", userId);
 
     for (const pc of characters ?? []) {
-      // Use the first character found per campaign (player's own)
       if (!characterMap[pc.campaign_id]) {
         characterMap[pc.campaign_id] = {
           name: pc.name,
           current_hp: pc.current_hp,
           max_hp: pc.max_hp,
+          race: pc.race ?? null,
+          characterClass: pc.class ?? null,
+          level: pc.level ?? null,
         };
       }
     }
@@ -145,6 +148,9 @@ export async function getUserMemberships(
           character_name: character?.name ?? null,
           character_hp: character?.current_hp ?? null,
           character_max_hp: character?.max_hp ?? null,
+          character_race: character?.race ?? null,
+          character_class: character?.characterClass ?? null,
+          character_level: character?.level ?? null,
         }),
       };
     }
@@ -261,14 +267,30 @@ export async function acceptCampaignInvite(
 
 /**
  * Declines a campaign invite by marking it as expired.
+ * Uses service client because recipients have no UPDATE RLS policy.
+ * Validates the invite belongs to the caller's email before updating.
  */
 export async function declineCampaignInvite(inviteId: string): Promise<void> {
-  const supabase = await createClient();
+  const userSupabase = await createClient();
 
-  const { error } = await supabase
+  // Get the caller's email to verify ownership
+  const {
+    data: { user },
+  } = await userSupabase.auth.getUser();
+  if (!user?.email) {
+    throw new Error("Authentication required");
+  }
+
+  const supabase = createServiceClient();
+
+  // Only update if the invite belongs to this user's email
+  const { data, error } = await supabase
     .from("campaign_invites")
     .update({ status: "expired" })
-    .eq("id", inviteId);
+    .eq("id", inviteId)
+    .eq("email", user.email)
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     captureError(new Error(`Failed to decline invite: ${error.message}`), {
@@ -280,6 +302,10 @@ export async function declineCampaignInvite(inviteId: string): Promise<void> {
     throw new Error(`Failed to decline invite: ${error.message}`);
   }
 
+  if (!data) {
+    throw new Error("Invite not found or does not belong to this account");
+  }
+
   trackServerEvent("campaign:invite_declined", {
     properties: { invite_id: inviteId },
   });
@@ -288,7 +314,7 @@ export async function declineCampaignInvite(inviteId: string): Promise<void> {
 /**
  * Creates or retrieves a session token for a logged-in player.
  * Uses service client to bypass RLS (players cannot create tokens directly).
- * The caller must verify campaign membership before calling this.
+ * Validates campaign membership internally before creating the token.
  */
 export async function getOrCreatePlayerSessionToken(
   sessionId: string,
@@ -296,6 +322,30 @@ export async function getOrCreatePlayerSessionToken(
   playerCharacterId: string
 ): Promise<string> {
   const supabase = createServiceClient();
+
+  // Verify the user is an active member of the campaign that owns this session
+  const { data: sessionRow } = await supabase
+    .from("sessions")
+    .select("campaign_id")
+    .eq("id", sessionId)
+    .single();
+
+  if (!sessionRow) {
+    throw new Error("Session not found");
+  }
+
+  const { data: membership } = await supabase
+    .from("campaign_members")
+    .select("id")
+    .eq("campaign_id", sessionRow.campaign_id)
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+
+  if (!membership) {
+    throw new Error("User is not an active member of this campaign");
+  }
 
   // Check for an existing active token for this user in this session
   const { data: existing } = await supabase
@@ -385,29 +435,15 @@ export async function leaveCampaign(
 ): Promise<void> {
   const supabase = await createClient();
 
-  // Check membership exists and is not a DM
-  const { data: membership, error: fetchError } = await supabase
-    .from("campaign_members")
-    .select("id, role")
-    .eq("campaign_id", campaignId)
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
-
-  if (fetchError || !membership) {
-    throw new Error("Membership not found");
-  }
-
-  if (membership.role === "dm") {
-    throw new Error(
-      "DMs cannot leave their own campaign. Transfer ownership or delete the campaign instead."
-    );
-  }
-
-  const { error } = await supabase
+  // Atomic delete: only delete if role is not 'dm' (avoids TOCTOU race)
+  const { data: deleted, error } = await supabase
     .from("campaign_members")
     .delete()
-    .eq("id", membership.id);
+    .eq("campaign_id", campaignId)
+    .eq("user_id", userId)
+    .neq("role", "dm")
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     captureError(new Error(`Failed to leave campaign: ${error.message}`), {
@@ -417,6 +453,24 @@ export async function leaveCampaign(
       extra: { campaignId, userId, code: error.code },
     });
     throw new Error(`Failed to leave campaign: ${error.message}`);
+  }
+
+  if (!deleted) {
+    // Either membership not found or user is a DM
+    const { data: membership } = await supabase
+      .from("campaign_members")
+      .select("role")
+      .eq("campaign_id", campaignId)
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (membership?.role === "dm") {
+      throw new Error(
+        "DMs cannot leave their own campaign. Transfer ownership or delete the campaign instead."
+      );
+    }
+    throw new Error("Membership not found");
   }
 
   trackServerEvent("campaign:member_left", {

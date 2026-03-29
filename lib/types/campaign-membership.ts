@@ -27,6 +27,9 @@ export interface UserMembership {
   character_name?: string | null;
   character_hp?: number | null;
   character_max_hp?: number | null;
+  character_race?: string | null;
+  character_class?: string | null;
+  character_level?: number | null;
 }
 
 export interface CampaignInviteWithDetails {

@@ -18,4 +18,5 @@ INSERT INTO campaign_members (campaign_id, user_id, role, status)
 SELECT DISTINCT campaign_id, user_id, 'player', 'active'
 FROM player_characters
 WHERE user_id IS NOT NULL
+  AND campaign_id IS NOT NULL
 ON CONFLICT (campaign_id, user_id) DO NOTHING;
