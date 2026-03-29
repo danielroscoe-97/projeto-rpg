@@ -49,7 +49,7 @@ export type UndoEntry =
   | { type: "hp"; combatantId: string; previousHp: number; previousTempHp: number; action: "damage" | "heal" | "temp" }
   | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean }
   | { type: "defeated"; combatantId: string; wasDefeated: boolean }
-  | { type: "turn"; previousTurnIndex: number; previousRound: number };
+  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[] };
 
 /** @deprecated Use UndoEntry instead. Kept for backwards compatibility. */
 export type HpUndoEntry = Extract<UndoEntry, { type: "hp" }>;

@@ -213,8 +213,13 @@ export function CombatantRow({
                 }}
                 onBlur={() => {
                   if (inlineEditRef.current !== "initiative") return;
-                  const val = parseInt(inlineHpValue, 10);
-                  if (!isNaN(val)) onSetInitiative?.(combatant.id, Math.min(50, Math.max(-5, val)));
+                  const trimmed = inlineHpValue.trim();
+                  if (trimmed === "" || trimmed === "-") {
+                    onSetInitiative?.(combatant.id, null);
+                  } else {
+                    const val = parseInt(trimmed, 10);
+                    if (!isNaN(val)) onSetInitiative?.(combatant.id, Math.min(50, Math.max(-5, val)));
+                  }
                   closeInlineEdit();
                 }}
                 onKeyDown={(e) => {

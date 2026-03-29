@@ -108,7 +108,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
       // Find where the current combatant ended up after sorting
       const sortedIndex = sorted.findIndex((c) => c.id === currentCombatantId);
-      const baseIndex = sortedIndex >= 0 ? sortedIndex : current_turn_index;
+      const baseIndex = sortedIndex >= 0 ? sortedIndex : Math.min(current_turn_index, sorted.length - 1);
 
       let next = baseIndex;
       let roundBumped = false;
@@ -120,7 +120,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       if (sorted[next].is_defeated) return state;
       return {
         combatants: sorted,
-        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number }),
+        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
       };
@@ -299,7 +299,8 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       case "turn":
         set({
           undoStack: stack,
-          current_turn_index: Math.min(entry.previousTurnIndex, state.combatants.length - 1),
+          combatants: entry.previousCombatants,
+          current_turn_index: Math.min(entry.previousTurnIndex, entry.previousCombatants.length - 1),
           round_number: entry.previousRound,
         });
         break;

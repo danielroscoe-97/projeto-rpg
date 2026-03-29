@@ -481,14 +481,18 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       </div>
 
       {/* Column headers — Sticky for usability in long lists */}
-      <div className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-wider border-b border-border/50 mb-1">
-        <span className="w-5 flex-shrink-0" />
-        <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_init")}</span>
-        <span className="flex-1 min-w-0">{t("setup_col_name")}</span>
-        <span className="w-12 md:w-16 flex-shrink-0 text-center">{t("setup_col_hp")}</span>
-        <span className="w-10 md:w-14 flex-shrink-0 text-center">{t("setup_col_ac")}</span>
-        <span className="hidden md:block flex-1 min-w-0">{t("setup_col_notes")}</span>
-        <span className="hidden md:block w-[140px] flex-shrink-0" /> {/* actions spacer (Ver Ficha + Remover / Adicionar) */}
+      <div
+        className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-wider border-b border-border/50 mb-1 md:grid md:gap-x-1.5 md:items-center"
+        style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
+      >
+        <span /> {/* drag handle spacer */}
+        <span className="w-12 md:w-auto text-center">{t("setup_col_init")}</span>
+        <span className="hidden md:block" /> {/* token spacer */}
+        <span className="flex-1 md:flex-none min-w-0">{t("setup_col_name")}</span>
+        <span className="w-12 md:w-auto text-center">{t("setup_col_hp")}</span>
+        <span className="w-10 md:w-auto text-center">{t("setup_col_ac")}</span>
+        <span className="hidden md:block min-w-0">{t("setup_col_notes")}</span>
+        <span className="hidden md:block" /> {/* actions spacer */}
       </div>
 
       {/* Combatant list */}
@@ -524,12 +528,13 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
       {/* Add row */}
       <div
-        className={`flex flex-wrap items-center gap-1.5 bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
+        className={`flex flex-wrap items-center gap-1.5 md:grid md:gap-x-1.5 md:items-center bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
+        style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
         data-testid="add-row"
         data-tour-id="add-row"
         onKeyDown={addRowKeyDown}
       >
-        <span className="w-5 text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
+        <span className="w-5 md:w-auto text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
         <input
           ref={initInputRef}
           type="text"
@@ -544,9 +549,10 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           }}
           onFocus={selectOnFocus}
           placeholder={t("setup_col_init")}
-          className={`${inputClass} w-16 text-center font-mono`}
+          className={`${inputClass} w-16 md:w-full text-center font-mono`}
           data-testid="add-row-init"
         />
+        <span className="hidden md:block" /> {/* token spacer */}
         <input
           type="text"
           value={addRow.name}
@@ -556,7 +562,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
             if (addRowErrors.has("name")) setAddRowErrors(new Set());
           }}
           placeholder={t("setup_col_name")}
-          className={`${inputClass} basis-full md:basis-auto flex-1 min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
+          className={`${inputClass} basis-full md:basis-auto md:w-full min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
           aria-invalid={addRowErrors.has("name") || undefined}
           data-testid="add-row-name"
         />
@@ -567,7 +573,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           onFocus={selectOnFocus}
           placeholder={t("setup_col_hp")}
           min={1}
-          className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-hp"
         />
         <input
@@ -577,7 +583,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           onFocus={selectOnFocus}
           placeholder={t("setup_col_ac")}
           min={1}
-          className={`${inputClass} w-10 md:w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           data-testid="add-row-ac"
         />
         <input
@@ -585,10 +591,11 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           value={addRow.notes}
           onChange={(e) => setAddRow((f) => ({ ...f, notes: e.target.value }))}
           placeholder={t("setup_col_notes")}
-          className={`${inputClass} hidden md:block flex-1 min-w-0 text-muted-foreground`}
+          className={`${inputClass} hidden md:block w-full min-w-0 text-muted-foreground`}
           data-testid="add-row-notes"
         />
-        {/* Role cycle button — moved to the right, before Add button */}
+        {/* Role cycle button + Add button — share last grid column */}
+        <div className="flex items-center gap-1 md:w-full">
         {(() => {
           const config = ADD_ROW_ROLE_CONFIG[addRowRole];
           const Icon = config.icon;
@@ -609,11 +616,12 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-auto md:w-[100px] flex-shrink-0 py-1.5 px-3 md:px-0 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
+          className="flex-1 py-1.5 px-3 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}
         </button>
+        </div>
       </div>
 
       {submitError && (

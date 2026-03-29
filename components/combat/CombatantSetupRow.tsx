@@ -97,7 +97,12 @@ export function CombatantSetupRow({
               return;
             }
             if (/^-?\d+$/.test(raw)) {
-              const val = Number(raw);
+              onInitiativeChange(combatant.id, Number(raw));
+            }
+          }}
+          onBlur={(e) => {
+            const val = Number(e.target.value);
+            if (!isNaN(val) && e.target.value !== "") {
               onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
             }
           }}
@@ -219,7 +224,7 @@ export function CombatantSetupRow({
       </div>
 
       {/* Quebra de linha no mobile — hidden in desktop grid */}
-      <div className="w-full h-0 md:hidden md:col-span-0" aria-hidden="true" />
+      <div className="w-full h-0 md:hidden" aria-hidden="true" />
 
       {/* HP + CA grouped for mobile second line */}
       <div className="flex items-center gap-1.5 md:contents">
