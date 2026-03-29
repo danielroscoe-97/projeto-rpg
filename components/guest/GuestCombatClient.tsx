@@ -431,7 +431,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       </div>
 
       {/* Combatant list */}
-      <div className="space-y-1" data-testid="setup-combatant-list" role="list" aria-label="Combatants">
+      <div className="space-y-1" data-testid="setup-combatant-list" data-tour-id="combatant-list" role="list" aria-label="Combatants">
         <SortableCombatantList
           combatants={combatants}
           onReorder={reorderCombatants}

@@ -1344,6 +1344,8 @@
     "search_description": "Use this field to search for D&D monsters by name. Try typing 'Goblin'!",
     "add_monster_title": "Add to Combat",
     "add_monster_description": "Click on a monster from the list to add it to the combat.",
+    "monster_added_title": "Monster Added!",
+    "monster_added_description": "The Goblin has joined the initiative list. All combatants appear here with HP, AC, and initiative.",
     "manual_add_title": "Manual Entry",
     "manual_add_description": "You can also manually add players or custom NPCs using this row.",
     "initiative_title": "Initiative & Turn Order",

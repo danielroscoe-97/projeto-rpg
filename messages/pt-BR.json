@@ -1344,6 +1344,8 @@
     "search_description": "Use este campo para buscar monstros do D&D pelo nome. Experimente digitar 'Goblin'!",
     "add_monster_title": "Adicione ao Combate",
     "add_monster_description": "Clique em um monstro da lista para adicioná-lo ao combate.",
+    "monster_added_title": "Monstro Adicionado!",
+    "monster_added_description": "O Goblin entrou na lista de iniciativa do combate. Todos os combatentes aparecem aqui com HP, CA e iniciativa.",
     "manual_add_title": "Adição Manual",
     "manual_add_description": "Você também pode adicionar jogadores ou NPCs personalizados manualmente nesta linha.",
     "initiative_title": "Iniciativa e Ordem de Turno",
