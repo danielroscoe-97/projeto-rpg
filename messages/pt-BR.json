@@ -871,7 +871,10 @@
     "delete_confirm_button": "Sim, excluir tudo",
     "role_title": "Papel",
     "role_description": "Como você usa o Pocket DM? Isso personaliza sua experiência.",
-    "role_updated": "Papel atualizado com sucesso!"
+    "role_updated": "Papel atualizado com sucesso!",
+    "role_player_desc": "Participe de sessões como jogador",
+    "role_dm_desc": "Crie e conduza encontros",
+    "role_both_desc": "Jogue e mestre sessões"
   },
   "admin": {
     "panel_title": "Painel Administrativo",

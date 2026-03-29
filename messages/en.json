@@ -871,7 +871,10 @@
     "delete_confirm_button": "Yes, delete everything",
     "role_title": "Role",
     "role_description": "How do you use Pocket DM? This personalizes your experience.",
-    "role_updated": "Role updated successfully!"
+    "role_updated": "Role updated successfully!",
+    "role_player_desc": "Join sessions as a player",
+    "role_dm_desc": "Create and run encounters",
+    "role_both_desc": "Play and run sessions"
   },
   "admin": {
     "panel_title": "Admin Panel",

@@ -2,8 +2,8 @@
 title: 'Role Selection no Signup e View Switcher'
 slug: 'role-selection-view-switcher'
 created: '2026-03-29'
-status: 'in-progress'
-stepsCompleted: [1, 2, 3]
+status: 'done'
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7]
 tech_stack: ['Next.js', 'React 19', 'Zustand', 'Supabase', 'next-intl', 'Tailwind CSS']
 files_to_modify:
   - 'components/sign-up-form.tsx'
@@ -104,20 +104,20 @@ Atualmente a conta do Pocket DM não diferencia entre Mestre e Jogador no moment
 - `components/layout/RoleSwitcher.tsx`: pill-toggle DM/Player
 - Integrado no `rightSlot` do navbar via `app/app/layout.tsx`
 
-#### Task 5: Dashboard Adaptation 🔲 TODO
+#### Task 5: Dashboard Adaptation ✅ DONE
 - `app/app/dashboard/page.tsx`: passar role para client component
 - Criar `DashboardClient` wrapper que usa `useRoleStore`
 - Player view: esconder "Nova Sessão" button e presets, mostrar campanhas com foco em personagens
 - DM view: layout atual (campaigns, encounters, presets)
 
-#### Task 6: Settings — Role Change 🔲 TODO
+#### Task 6: Settings — Role Change ✅ DONE
 - `components/settings/SettingsClient.tsx`: adicionar seção "Papel" na tab Preferences
 - Usar mesmo visual dos 3 cards do RoleSelectionCards
 - Save via `useRoleStore().updateRole()`
 
-#### Task 7: i18n Completo ✅ PARCIAL
+#### Task 7: i18n Completo ✅ DONE
 - Chaves `role_switcher.*` adicionadas
-- Falta: chaves para settings role section
+- Chaves para settings role section adicionadas (`role_player_desc`, `role_dm_desc`, `role_both_desc`)
 
 ### Acceptance Criteria
 
