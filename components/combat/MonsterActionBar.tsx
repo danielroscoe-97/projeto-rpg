@@ -134,8 +134,9 @@ export function MonsterActionBar({
   );
 
   const dispatchRollEvent = useCallback((result: RollResult) => {
+    result.source = combatant.name;
     window.dispatchEvent(new CustomEvent("dice-roll-result", { detail: result }));
-  }, []);
+  }, [combatant.name]);
 
   // --- Action Selection ---
   const selectAction = useCallback((action: ParsedAction) => {

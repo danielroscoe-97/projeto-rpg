@@ -35,6 +35,8 @@ export interface RollResult {
   discardedDice: DieResult[];
   /** Pre-halved total for resistance mode */
   resistanceTotal?: number;
+  /** Source name (e.g. monster/combatant name) */
+  source?: string;
 }
 
 /**

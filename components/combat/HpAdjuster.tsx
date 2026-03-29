@@ -46,6 +46,9 @@ export function HpAdjuster({
   const [multiTargetOpen, setMultiTargetOpen] = useState(false);
   const [checkedTargets, setCheckedTargets] = useState<Set<string>>(new Set());
 
+  // Primary target combatant (for display at top of multi-target list)
+  const primaryTarget = allCombatants?.find((c) => c.id === primaryTargetId);
+
   // Other combatants eligible for multi-target (non-defeated, not the primary target)
   const otherCombatants = allCombatants?.filter(
     (c) => c.id !== primaryTargetId && !c.is_defeated
@@ -214,6 +217,27 @@ export function HpAdjuster({
 
           {multiTargetOpen && (
             <div className="mt-1.5 border border-white/10 rounded-md bg-surface-secondary p-2">
+              {/* Current target — always checked, shown at top */}
+              {primaryTarget && (
+                <div
+                  className="flex items-center gap-2 px-1.5 py-1 rounded bg-white/[0.08] mb-1.5"
+                  data-testid="hp-multi-target-primary"
+                >
+                  <input
+                    type="checkbox"
+                    checked
+                    disabled
+                    className="rounded border-white/20 bg-white/[0.06] text-gold focus:ring-gold/40 h-3.5 w-3.5 flex-shrink-0 opacity-60"
+                  />
+                  <span className="text-xs text-muted-foreground truncate flex-1">
+                    {primaryTarget.name}
+                    <span className="ml-1 text-[10px] opacity-60">— {t("hp_current_target")}</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono flex-shrink-0">
+                    {primaryTarget.current_hp}/{primaryTarget.max_hp}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center justify-between mb-1.5">
                 <button
                   type="button"

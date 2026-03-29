@@ -66,9 +66,7 @@ export function DiceHistoryPanel() {
           <circle cx="16" cy="16" r="1.5" fill="currentColor" />
           <circle cx="12" cy="12" r="1.5" fill="currentColor" />
         </svg>
-        {lastEntry && (
-          <span className="dice-history-pill-preview">{lastEntry.result.total}</span>
-        )}
+        <span className="dice-history-pill-label">{t("history_title")}</span>
         {unreadCount > 0 && (
           <span className="dice-history-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>
         )}
@@ -143,6 +141,9 @@ function HistoryEntryRow({ entry, locale }: { entry: HistoryEntry; locale: strin
     <div className={`dice-history-entry ${natClass}`}>
       <div className="dice-history-entry-top">
         <span className="dice-history-time">{time}</span>
+        {result.source && (
+          <span className="dice-history-source">{result.source}</span>
+        )}
         {result.label && (
           <span className="dice-history-label">
             {result.label}
