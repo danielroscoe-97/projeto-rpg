@@ -160,7 +160,8 @@
     "dm_view": "Visão do Mestre",
     "leave_campaign": "Sair da Campanha",
     "leave_campaign_confirm": "Tem certeza que deseja sair desta campanha? Você perderá acesso ao seu personagem e dados de sessão.",
-    "leave_campaign_button": "Sair"
+    "leave_campaign_button": "Sair",
+    "level_label": "Nv {level}"
   },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",

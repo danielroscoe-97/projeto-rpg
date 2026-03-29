@@ -12,53 +12,66 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  // C.1: Check membership to determine role
-  const membership = await getCampaignMembership(id, user.id)
-
-  // Fallback: if no membership but user is owner, treat as DM (backward compat)
-  const { data: campaign } = await supabase
-    .from('campaigns')
-    .select('id, name, description, owner_id')
-    .eq('id', id)
-    .single()
+  // C.1: Check membership + campaign in parallel
+  const [membership, { data: campaign }] = await Promise.all([
+    getCampaignMembership(id, user.id),
+    supabase
+      .from('campaigns')
+      .select('id, name, description, owner_id')
+      .eq('id', id)
+      .single(),
+  ])
 
   if (!campaign) redirect('/app/dashboard')
 
   const isOwner = campaign.owner_id === user.id
   const role = membership?.role ?? (isOwner ? 'dm' : null)
 
-  // No access at all
+  // No access: not a member AND not the owner
   if (!role) redirect('/app/dashboard')
 
   // ── Player View ──────────────────────────────────────────────────────────
   if (role === 'player') {
-    // Fetch player's own character in this campaign
-    const { data: myCharacter } = await supabase
-      .from('player_characters')
-      .select('id, name, current_hp, max_hp, ac, race, class, level')
-      .eq('campaign_id', id)
-      .eq('user_id', user.id)
-      .limit(1)
-      .maybeSingle()
+    // Parallelize independent queries
+    const [
+      { data: myCharacter },
+      { data: companions },
+      { data: activeSession },
+      { data: historySessions },
+      { data: dmUser },
+    ] = await Promise.all([
+      supabase
+        .from('player_characters')
+        .select('id, name, current_hp, max_hp, ac, race, class, level')
+        .eq('campaign_id', id)
+        .eq('user_id', user.id)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('player_characters')
+        .select('id, name, current_hp, max_hp')
+        .eq('campaign_id', id)
+        .neq('user_id', user.id)
+        .order('name'),
+      supabase
+        .from('sessions')
+        .select('id, name, is_active')
+        .eq('campaign_id', id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('sessions')
+        .select('id')
+        .eq('campaign_id', id),
+      supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', campaign.owner_id)
+        .maybeSingle(),
+    ])
 
-    // Fetch companions (other PCs in the campaign, not the player's own)
-    const { data: companions } = await supabase
-      .from('player_characters')
-      .select('id, name, current_hp, max_hp')
-      .eq('campaign_id', id)
-      .neq('user_id', user.id)
-      .order('name')
-
-    // Fetch active session info
-    const { data: activeSession } = await supabase
-      .from('sessions')
-      .select('id, name, is_active')
-      .eq('campaign_id', id)
-      .eq('is_active', true)
-      .limit(1)
-      .maybeSingle()
-
-    // Fetch active encounter if session exists
+    // Fetch active encounter if session exists (depends on activeSession)
     let activeEncounter: { round_number: number; current_turn_name: string | null } | null = null
     if (activeSession) {
       const { data: enc } = await supabase
@@ -69,19 +82,14 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         .limit(1)
         .maybeSingle()
       if (enc) {
-        activeEncounter = { round_number: enc.round_number ?? 1, current_turn_name: null }
+        activeEncounter = { round_number: enc.round_number ?? 0, current_turn_name: null }
       }
     }
 
     // Fetch combat history (finished encounters)
-    const { data: sessions } = await supabase
-      .from('sessions')
-      .select('id')
-      .eq('campaign_id', id)
-
     let combatHistory: { id: string; name: string; round_number: number }[] = []
-    if (sessions && sessions.length > 0) {
-      const sessionIds = sessions.map(s => s.id)
+    if (historySessions && historySessions.length > 0) {
+      const sessionIds = historySessions.map(s => s.id)
       const { data: encounters } = await supabase
         .from('encounters')
         .select('id, name, round_number')
@@ -92,16 +100,9 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       combatHistory = (encounters ?? []).map(e => ({
         id: e.id,
         name: e.name ?? 'Encounter',
-        round_number: e.round_number ?? 1,
+        round_number: e.round_number ?? 0,
       }))
     }
-
-    // DM info
-    const { data: dmUser } = await supabase
-      .from('users')
-      .select('display_name')
-      .eq('id', campaign.owner_id)
-      .maybeSingle()
 
     const t = await getTranslations("campaign")
     const tDash = await getTranslations("dashboard")
@@ -149,6 +150,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           noCombatHistory: t("no_combat_history"),
           activeSession: tDash("active_session"),
           noActiveSession: tDash("no_active_session"),
+          levelLabel: t("level_label"),
         }}
       />
     )

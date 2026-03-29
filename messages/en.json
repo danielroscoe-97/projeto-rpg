@@ -160,7 +160,8 @@
     "dm_view": "DM View",
     "leave_campaign": "Leave Campaign",
     "leave_campaign_confirm": "Are you sure you want to leave this campaign? You will lose access to your character and session data.",
-    "leave_campaign_button": "Leave"
+    "leave_campaign_button": "Leave",
+    "level_label": "Lv {level}"
   },
   "auth_errors": {
     "invalid_credentials": "Incorrect email or password.",

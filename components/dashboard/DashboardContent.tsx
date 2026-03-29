@@ -60,7 +60,6 @@ interface DashboardContentProps {
     invite_decline_error: string;
     invite_accepted_redirect: string;
     player_count_label: string;
-    view_campaign: string;
   };
 }
 
@@ -334,7 +333,6 @@ function PlayerSection({
             translations={{
               activeSession: t.active_session,
               noActiveSession: t.no_active_session,
-              viewCampaign: t.view_campaign,
               playerCount: t.player_count_label,
             }}
           />

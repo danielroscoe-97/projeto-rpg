@@ -9,7 +9,6 @@ interface PlayerCampaignCardProps {
   translations: {
     activeSession: string;
     noActiveSession: string;
-    viewCampaign: string;
     playerCount: string;
   };
 }

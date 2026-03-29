@@ -66,6 +66,7 @@ interface PlayerCampaignViewProps {
     noCombatHistory: string;
     activeSession: string;
     noActiveSession: string;
+    levelLabel: string;
   };
 }
 
@@ -213,7 +214,7 @@ export function PlayerCampaignView({
                   {[myCharacter.race, myCharacter.characterClass]
                     .filter(Boolean)
                     .join(" · ")}
-                  {myCharacter.level && ` · Lv ${myCharacter.level}`}
+                  {myCharacter.level && ` · ${t.levelLabel.replace("{level}", String(myCharacter.level))}`}
                 </p>
               )}
             </div>

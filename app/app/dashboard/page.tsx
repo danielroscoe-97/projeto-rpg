@@ -118,7 +118,6 @@ export default async function DashboardPage() {
     invite_decline_error: t("invite_decline_error"),
     invite_accepted_redirect: t("invite_accepted_redirect"),
     player_count_label: t("player_count_label", { count: "{count}" }),
-    view_campaign: t("view_campaign"),
   };
 
   return (

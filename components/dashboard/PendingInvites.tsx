@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { Mail, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  acceptCampaignInvite,
-  declineCampaignInvite,
-} from "@/lib/supabase/campaign-membership";
+  acceptInviteAction,
+  declineInviteAction,
+} from "@/lib/actions/invite-actions";
 import type { CampaignInviteWithDetails } from "@/lib/types/campaign-membership";
 
 interface PendingInvitesProps {
@@ -40,7 +40,7 @@ export function PendingInvites({
     setProcessingId(invite.id);
     setError(null);
 
-    const result = await acceptCampaignInvite(invite.token);
+    const result = await acceptInviteAction(invite.token);
 
     if ("error" in result) {
       setError(t.acceptError);
@@ -61,7 +61,7 @@ export function PendingInvites({
     setError(null);
 
     try {
-      await declineCampaignInvite(invite.id);
+      await declineInviteAction(invite.id);
       setInvites((prev) => prev.filter((i) => i.id !== invite.id));
     } catch {
       setError(t.declineError);

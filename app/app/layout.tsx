@@ -12,6 +12,7 @@ import { OracleAIModal } from "@/components/oracle/OracleAIModal";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { unstable_cache } from "next/cache";
 import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
 
 export default async function AppLayout({
@@ -30,34 +31,44 @@ export default async function AppLayout({
   }
 
   // B.6: Check if user has DM access to decide whether to show Presets
-  const [
-    { count: dmMembershipCount },
-    { count: ownedCampaignCount },
-    { data: userData },
-  ] = await Promise.all([
-    supabase
-      .from("campaign_members")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("role", "dm")
-      .eq("status", "active"),
-    supabase
-      .from("campaigns")
-      .select("id", { count: "exact", head: true })
-      .eq("owner_id", user.id),
-    supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle(),
-  ]);
+  // Cached for 60s to avoid 3 extra queries on every /app/* navigation
+  const getHasDmAccess = unstable_cache(
+    async (userId: string) => {
+      const [
+        { count: dmMembershipCount },
+        { count: ownedCampaignCount },
+        { data: userData },
+      ] = await Promise.all([
+        supabase
+          .from("campaign_members")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("role", "dm")
+          .eq("status", "active"),
+        supabase
+          .from("campaigns")
+          .select("id", { count: "exact", head: true })
+          .eq("owner_id", userId),
+        supabase
+          .from("users")
+          .select("role")
+          .eq("id", userId)
+          .maybeSingle(),
+      ]);
 
-  const userDbRole = userData?.role ?? "both";
-  const hasDmAccess =
-    (dmMembershipCount ?? 0) > 0 ||
-    (ownedCampaignCount ?? 0) > 0 ||
-    userDbRole === "dm" ||
-    userDbRole === "both";
+      const userDbRole = userData?.role ?? "both";
+      return (
+        (dmMembershipCount ?? 0) > 0 ||
+        (ownedCampaignCount ?? 0) > 0 ||
+        userDbRole === "dm" ||
+        userDbRole === "both"
+      );
+    },
+    [`dm-access-${user.id}`],
+    { revalidate: 60 }
+  );
+
+  const hasDmAccess = await getHasDmAccess(user.id);
 
   // Build nav links — conditionally include Presets
   const navLinks = [
