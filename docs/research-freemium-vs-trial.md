@@ -198,7 +198,61 @@ A boa noticia: **a infraestrutura do reverse trial ja esta construida!**
 
 ---
 
-## 7. Riscos e Mitigacoes
+## 7. Psicologia e Ativacao
+
+### Loss Aversion (Aversao a Perda)
+- Pessoas sentem perdas **2x mais forte** do que ganhos (Kahneman & Tversky)
+- Mensagens com framing de perda aumentam conversao em **21%** vs abordagem de ganho (McKinsey)
+- Enquadrar preco como "o que voce perde sem isso" pode aumentar conversao em ate **32%**
+- **Reverse trial maximiza isso:** o mestre ja usou campanha persistente, ja exportou PDF — perder doi
+
+### Ativacao
+- Freemium: taxa de ativacao mediana **20%**
+- Free trial: taxa de ativacao mediana **40%** (OpenView, 150+ empresas)
+- Usuarios que engajam com features core na primeira semana sao **5x mais provaveis de converter** (Mixpanel)
+- Usuarios ativos por 3+ dias sao **4x mais provaveis de converter**
+- Onboarding completo: **67% conversao** vs 18% para onboarding incompleto
+
+### Efeito Ancora
+- Freemium cria ancora perigosa de **R$0** — pular de gratis para qualquer preco gera friccao
+- Reverse trial ancora o usuario na experiencia COMPLETA — o "normal" e o Pro, nao o Free
+
+### Churn Pos-Conversao
+- Clientes que convertem do free tem **~30% menor CAC** que clientes cold-start (ProfitWell)
+- Retencao e **~15% maior** para quem converte do free vs cold start
+- Produtos com >25% conversao de trial tem **38% menos churn** no primeiro ano
+
+---
+
+## 8. Mercado Brasileiro — Dados Especificos
+
+### Conversao no Brasil
+- Conversao de trial no Brasil e ~**2x maior** que freemium (alinhado com dados globais)
+- **Maioria dos micro-SaaS brasileiros usam free trial, NAO freemium** (Bruno Okamoto, Comunidade Micro-SaaS)
+- Tintim (tracking tool) foi de 0 a quase **R$1 milhao/mes** em ~2 anos com modelo de trial
+
+### Exemplos Brasileiros
+| Produto | Modelo | Trial |
+|---------|--------|-------|
+| RD Station | Free trial | 10 dias |
+| Agendor | Free trial | 7 dias Pro |
+| Pipedrive (BR) | Free trial | 14 dias |
+
+### Alertas do Bruno Okamoto (Micro-SaaS BR)
+- Plano free gera demanda de suporte, trabalho pos-venda e volume de feedback que cria **ilusao de crescimento** — perigoso para solodevs
+- Founders investem demais no tier free, entregando tanto valor que usuarios nunca fazem upgrade
+- **Pergunta-chave:** "Seus usuarios free criam loop viral? Se a resposta e incerta, freemium nao e para voce."
+- **No caso do Pocket DM:** SIM, Player View cria loop viral (mestre free convida jogadores) — freemium faz sentido como base
+
+### Caracteristicas do Mercado BR
+- Modelo de assinatura ainda funciona bem no Brasil (EUA ja esta saturando)
+- Modelos emergentes: pay-per-task, pacotes por uso, sistema de creditos
+- Ferramentas verticalizadas vencem no BR — Pocket DM e nicho (RPG/D&D) e isso e bom
+- PIX facilita micropagamentos, mas a decisao de assinar precisa ser convincente
+
+---
+
+## 9. Riscos e Mitigacoes
 
 | Risco | Mitigacao |
 |-------|----------|
@@ -207,6 +261,18 @@ A boa noticia: **a infraestrutura do reverse trial ja esta construida!**
 | Complexidade tecnica | Infra ja existe — e ativacao, nao construcao |
 | Abuso (criar contas multiplas) | Rate limiting por IP + verificacao de email |
 | Mestre para de usar apos downgrade | Email de reengajamento dia 7 e 30 pos-trial; upsell contextual no app |
+
+---
+
+## 10. Experimento Academico (680K usuarios)
+
+Um **experimento randomizado de 2 anos com 680.588 usuarios em 190 paises** (Frontiers in Psychology, 2025) descobriu:
+- Em modelos freemium, trials mais curtos aumentam conversao imediata
+- O tier free retido cria uma populacao grande de usuarios ativos de longo prazo
+- O modelo freemium requer avaliar conversao **imediata E tardia** (usuarios que convertem meses depois)
+- Duracao do trial e uma "alavanca estrategica critica" — duracoes diferentes afetam estagios diferentes do funil
+
+**Implicacao para Pocket DM:** Um reverse trial de 14 dias com fallback para free captura AMBOS os efeitos — conversao imediata pela urgencia do trial E conversao tardia pelo tier free que mantem o usuario no ecossistema.
 
 ---
 
@@ -222,3 +288,10 @@ A boa noticia: **a infraestrutura do reverse trial ja esta construida!**
 - [Lenny's Newsletter - Free-to-Paid Conversion](https://www.lennysnewsletter.com/p/what-is-a-good-free-to-paid-conversion)
 - [The Growth Mind - Freemium vs Trial vs Reverse Trial](https://thegrowthmind.substack.com/p/freemium-free-trial-reverse-trial)
 - [Medium - Monetization Strategies Spotify Slack Tinder](https://medium.com/@nicobottaro/monetization-strategies-how-spotify-slack-and-tinder-achieve-5x-premium-users-20-free-paid-801448e86576)
+- [Frontiers in Psychology - Large-Scale Randomized Field Experiment](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2025.1568868/full)
+- [MicroSaaS BR - Seu SaaS deve ter plano gratis?](https://microsaas.substack.com/p/seu-saas-deve-ter-plano-gratis-ou)
+- [OpenView Partners - Freemium vs Free Trial](https://openviewpartners.com/blog/freemium-vs-free-trial/)
+- [ProfitWell/Paddle - Churn & Retention Data](https://www.paddle.com/resources/churn-rate)
+- [Elena Verna - Reverse Trial Examples](https://www.elenaverna.com/p/reverse-trials-examples)
+- [CXL - Reverse Trial Strategy](https://cxl.com/blog/reverse-trial-strategy/)
+- [Konvoy VC - Freemium Conversion in Gaming](https://www.konvoy.vc/newsletters/freemium-conversion-2-4-in-gaming)
