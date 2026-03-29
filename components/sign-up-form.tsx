@@ -77,7 +77,7 @@ export function SignUpForm({
         setIsLoading(false);
         return;
       }
-      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}`;
+      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole)}`;
       if (inviteToken && inviteCampaignId) {
         successUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }

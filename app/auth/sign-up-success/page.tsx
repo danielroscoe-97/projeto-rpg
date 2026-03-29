@@ -18,6 +18,7 @@ export default function Page() {
   const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const role = searchParams.get("role") ?? "both";
   const inviteToken = searchParams.get("invite");
   const inviteCampaignId = searchParams.get("campaign");
   const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
@@ -26,9 +27,9 @@ export default function Page() {
     if (!email) return;
     setResendStatus("loading");
     const supabase = createClient();
-    let redirectUrl = `${window.location.origin}/auth/confirm`;
+    let redirectUrl = `${window.location.origin}/auth/confirm?role=${encodeURIComponent(role)}`;
     if (inviteToken && inviteCampaignId) {
-      redirectUrl += `?invite=${inviteToken}&campaign=${inviteCampaignId}`;
+      redirectUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
     }
     const { error } = await supabase.auth.resend({
       type: "signup",
