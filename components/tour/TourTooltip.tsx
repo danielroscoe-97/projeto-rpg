@@ -279,53 +279,53 @@ export function TourTooltip({
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-2">
-                <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
-                {!isCompleteStep && (
+            <div className="space-y-2 pt-1">
+              <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
+              <div className="flex items-center justify-between">
+                {!isCompleteStep ? (
                   <button
                     type="button"
                     onClick={onSkip}
                     data-testid="tour-skip"
-                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
+                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center"
                   >
                     {t("skip")}
                   </button>
-                )}
-              </div>
+                ) : <div />}
 
-              <div className="flex items-center gap-2">
-                {isCompleteStep ? (
-                  <button
-                    type="button"
-                    onClick={onComplete}
-                    data-testid="tour-finish"
-                    className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
-                  >
-                    {t("finish")}
-                  </button>
-                ) : (
-                  <>
-                    {stepIndex > 0 && (
-                      <button
-                        type="button"
-                        onClick={onBack}
-                        data-testid="tour-back"
-                        className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
-                      >
-                        {t("back")}
-                      </button>
-                    )}
+                <div className="flex items-center gap-2">
+                  {isCompleteStep ? (
                     <button
                       type="button"
-                      onClick={onNext}
-                      data-testid="tour-next"
-                      className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                      onClick={onComplete}
+                      data-testid="tour-finish"
+                      className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
                     >
-                      {t("next")}
+                      {t("finish")}
                     </button>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      {stepIndex > 0 && (
+                        <button
+                          type="button"
+                          onClick={onBack}
+                          data-testid="tour-back"
+                          className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                        >
+                          {t("back")}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={onNext}
+                        data-testid="tour-next"
+                        className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                      >
+                        {t("next")}
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -394,38 +394,37 @@ export function TourTooltip({
           </p>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-2">
-              <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
+          <div className="space-y-2 pt-1">
+            <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
+            <div className="flex items-center justify-between">
               <button
                 type="button"
                 onClick={onSkip}
                 data-testid="tour-skip"
-                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
+                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center"
               >
                 {t("skip")}
               </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {stepIndex > 0 && (
+              <div className="flex items-center gap-2">
+                {stepIndex > 0 && (
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    data-testid="tour-back"
+                    className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                  >
+                    {t("back")}
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={onBack}
-                  data-testid="tour-back"
-                  className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                  onClick={onNext}
+                  data-testid="tour-next"
+                  className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                 >
-                  {t("back")}
+                  {t("next")}
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={onNext}
-                data-testid="tour-next"
-                className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
-              >
-                {t("next")}
-              </button>
+              </div>
             </div>
           </div>
         </div>
