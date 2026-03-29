@@ -112,6 +112,11 @@
     "role_saving": "Salvando...",
     "role_save_error": "Erro ao salvar preferência. Tente novamente."
   },
+  "role_switcher": {
+    "toggle_label": "Alternar entre visão de Mestre e Jogador",
+    "view_dm": "Mestre",
+    "view_player": "Jogador"
+  },
   "campaign": {
     "invite_button": "Convidar Jogador",
     "invite_title": "Convidar Jogador para Campanha",

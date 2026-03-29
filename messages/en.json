@@ -112,6 +112,11 @@
     "role_saving": "Saving...",
     "role_save_error": "Failed to save preference. Please try again."
   },
+  "role_switcher": {
+    "toggle_label": "Switch between DM and Player view",
+    "view_dm": "DM",
+    "view_player": "Player"
+  },
   "campaign": {
     "invite_button": "Invite Player",
     "invite_title": "Invite Player to Campaign",
