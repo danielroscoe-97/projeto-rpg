@@ -266,7 +266,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
     lastSelectedMonster.current = null;
     setAddRow(EMPTY_ADD_ROW);
-    setAddRowRole(DEFAULT_ADD_ROW_ROLE);
+    // Keep addRowRole — user likely adds multiple combatants of the same role
     setSubmitError(null);
     initInputRef.current?.focus();
   }, [addRow, addRowRole, addCombatant, t]);
