@@ -31,6 +31,7 @@ function computePosition(
 
   // Bottom-sheet fallback: only when target is too tall (>50% viewport).
   // For small targets near the bottom, the regular top/bottom logic handles it.
+  const spaceBelow = window.innerHeight - targetRect.bottom;
   const targetTooTall = targetRect.height > window.innerHeight * 0.5;
   if (targetTooTall) {
     // Use explicit left instead of left:50%+translateX(-50%) because
