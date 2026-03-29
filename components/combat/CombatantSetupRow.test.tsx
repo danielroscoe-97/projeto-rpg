@@ -38,6 +38,7 @@ const BASE: Combatant = {
   dm_notes: "",
   player_notes: "flying",
   player_character_id: null,
+  combatant_role: null,
 };
 
 const noop = jest.fn();

@@ -1,5 +1,11 @@
 import type { RulesetVersion } from "./database";
 
+/** Visual role tag for manually-added combatants (not persisted to DB yet). */
+export type CombatantRole = "player" | "npc" | "summon" | "monster";
+
+/** Ordered cycle: Jogador → NPC → Invocação → Monstro → Jogador */
+export const COMBATANT_ROLE_CYCLE: CombatantRole[] = ["player", "npc", "summon", "monster"];
+
 export interface Combatant {
   /** Client-side UUID (pre-persist). Matches DB id after save. */
   id: string;
@@ -35,6 +41,8 @@ export interface Combatant {
   player_notes: string;
   /** Linked player_character ID (DM links temp player to campaign character). Null = unlinked. */
   player_character_id: string | null;
+  /** Visual role for manually-added combatants. Null = from compendium (has monster_id). */
+  combatant_role: CombatantRole | null;
 }
 
 export type UndoEntry =

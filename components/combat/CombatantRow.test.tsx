@@ -78,6 +78,7 @@ const BASE_PLAYER: Combatant = {
   dm_notes: "",
   player_notes: "",
   player_character_id: null,
+  combatant_role: null,
 };
 
 const MONSTER_COMBATANT: Combatant = {
@@ -104,6 +105,7 @@ const MONSTER_COMBATANT: Combatant = {
   dm_notes: "",
   player_notes: "",
   player_character_id: null,
+  combatant_role: null,
 };
 
 const GOBLIN_FULL: SrdMonster = {

@@ -142,6 +142,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         dm_notes: "",
         player_notes: "",
         player_character_id: pc.id,
+        combatant_role: null,
       };
       addCombatant(newCombatant);
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -201,6 +202,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           dm_notes: "",
           player_notes: `token:${payload.id}`,
           player_character_id: null,
+          combatant_role: null,
         });
       })
       .subscribe();
@@ -246,6 +248,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        combatant_role: null,
       });
 
       lastSelectedMonster.current = null;
@@ -288,6 +291,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           dm_notes: "",
           player_notes: "",
           player_character_id: null,
+          combatant_role: null,
         });
       }
       useCombatStore.getState().addMonsterGroup(newCombatants);
@@ -358,6 +362,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       dm_notes: "",
       player_notes: addRow.notes.trim(),
       player_character_id: null,
+      combatant_role: sel?.id ? null : "player",
     });
 
     lastSelectedMonster.current = null;
@@ -395,6 +400,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           dm_notes: "",
           player_notes: "",
           player_character_id: pc.id,
+          combatant_role: null,
         };
         addCombatant(newCombatant);
         currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -434,6 +440,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             dm_notes: "",
             player_notes: "",
             player_character_id: null,
+            combatant_role: null,
           };
           addCombatant(newCombatant);
           currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -561,6 +568,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        combatant_role: source.combatant_role,
       });
     },
     [addCombatant]
@@ -723,6 +731,13 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}
               onDisplayNameChange={(id, dn) => updateCombatantStats(id, { display_name: dn })}
+              onRoleChange={(id, role) => {
+                useCombatStore.setState((state) => ({
+                  combatants: state.combatants.map((c2) =>
+                    c2.id === id ? { ...c2, combatant_role: role } : c2
+                  ),
+                }));
+              }}
               dragHandleProps={dragHandleProps}
               highlightInit={invalidInitIds.has(c.id)}
             />

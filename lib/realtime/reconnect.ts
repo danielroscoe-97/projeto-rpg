@@ -57,6 +57,7 @@ export async function fetchSessionSnapshot(
     dm_notes: row.dm_notes ?? '',
     player_notes: row.player_notes ?? '',
     player_character_id: row.player_character_id ?? null,
+    combatant_role: null,
   }));
 
   return {

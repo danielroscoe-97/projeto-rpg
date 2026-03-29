@@ -115,6 +115,7 @@ const SAMPLE_COMBATANT = {
   dm_notes: "",
   player_notes: "",
   player_character_id: null,
+  combatant_role: null,
 };
 
 describe("GuestCombatClient", () => {

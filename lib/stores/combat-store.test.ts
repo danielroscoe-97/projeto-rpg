@@ -29,6 +29,7 @@ const baseCombatant: Omit<Combatant, "id"> = {
   dm_notes: "",
   player_notes: "",
   player_character_id: null,
+  combatant_role: null,
 };
 
 describe("useCombatStore – addCombatant", () => {

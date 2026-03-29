@@ -57,6 +57,7 @@ function makeMonster(overrides?: Partial<Combatant>): Combatant {
     dm_notes: "SECRET: vulnerable to cold damage",
     player_notes: "",
     player_character_id: null,
+    combatant_role: null,
     ...overrides,
   };
 }
@@ -86,6 +87,7 @@ function makePlayer(overrides?: Partial<Combatant>): Combatant {
     dm_notes: "",
     player_notes: "Focus fire on the dragon",
     player_character_id: "pc-1",
+    combatant_role: null,
     ...overrides,
   };
 }

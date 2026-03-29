@@ -179,6 +179,7 @@ export async function registerPlayerCombatant(
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        combatant_role: null,
       })
       .select("id")
       .single();

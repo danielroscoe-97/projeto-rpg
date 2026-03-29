@@ -39,6 +39,7 @@ import { BackgroundSelector } from "@/components/combat/BackgroundSelector";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
+import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -76,6 +77,7 @@ export function CombatSessionClient({
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [showWeatherSelector, setShowWeatherSelector] = useState(false);
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
+  const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
 
   const { combatants, is_active, setError } =
     useCombatStore();
@@ -280,6 +282,7 @@ export function CombatSessionClient({
       dm_notes: "",
       player_notes: "",
       player_character_id: null,
+      combatant_role: null,
     });
   }, [addCombatantAction]);
 
@@ -316,6 +319,7 @@ export function CombatSessionClient({
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        combatant_role: null,
       });
     }
     for (const c of newCombatants) {
@@ -480,12 +484,67 @@ export function CombatSessionClient({
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
   });
 
+  // Handle accepting a late-join request
+  const handleAcceptJoinRequest = useCallback((req: JoinRequest) => {
+    const sid = getSessionId();
+    handleAddCombatant({
+      name: req.player_name,
+      current_hp: req.hp ?? 0,
+      max_hp: req.hp ?? 0,
+      temp_hp: 0,
+      ac: req.ac ?? 0,
+      spell_save_dc: null,
+      initiative: req.initiative,
+      initiative_order: null,
+      conditions: [],
+      ruleset_version: null,
+      is_defeated: false,
+      is_hidden: false,
+      is_player: true,
+      monster_id: null,
+      token_url: null,
+      creature_type: null,
+      display_name: null,
+      monster_group_id: null,
+      group_order: null,
+      dm_notes: "",
+      player_notes: "",
+      player_character_id: null,
+      combatant_role: null,
+    } as Omit<Combatant, "id">);
+    broadcastEvent(sid, {
+      type: "combat:late_join_response",
+      request_id: req.request_id,
+      accepted: true,
+    } as import("@/lib/types/realtime").RealtimeEvent);
+    setJoinRequests((prev) => prev.filter((r) => r.request_id !== req.request_id));
+  }, [getSessionId, handleAddCombatant]);
+
+  // Handle rejecting a late-join request
+  const handleRejectJoinRequest = useCallback((req: JoinRequest) => {
+    const sid = getSessionId();
+    broadcastEvent(sid, {
+      type: "combat:late_join_response",
+      request_id: req.request_id,
+      accepted: false,
+    } as import("@/lib/types/realtime").RealtimeEvent);
+    setJoinRequests((prev) => prev.filter((r) => r.request_id !== req.request_id));
+  }, [getSessionId]);
+
+  // Bulk accept/reject all pending join requests
+  const handleAcceptAllJoinRequests = useCallback(() => {
+    joinRequests.forEach((req) => handleAcceptJoinRequest(req));
+  }, [joinRequests, handleAcceptJoinRequest]);
+
+  const handleRejectAllJoinRequests = useCallback(() => {
+    joinRequests.forEach((req) => handleRejectJoinRequest(req));
+  }, [joinRequests, handleRejectJoinRequest]);
+
   // Listen for late-join requests from players
   useEffect(() => {
     const sid = getSessionId();
     if (!sid || !is_active) return;
     const ch = getDmChannel(sid);
-    const activeToastIds: string[] = [];
     let active = true;
 
     const handleLateJoin = ({ payload }: { payload: Record<string, unknown> }) => {
@@ -493,65 +552,13 @@ export function CombatSessionClient({
       const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id } = payload as {
         player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string;
       };
-
-      const toastId = toast(
-        t("late_join_notification", { name: player_name, initiative: pInit }),
-        {
-          duration: 60_000,
-          action: {
-            label: t("late_join_accept"),
-            onClick: () => {
-              // Accept: add as player combatant via mid-combat add
-              handleAddCombatant({
-                name: player_name,
-                current_hp: pHp ?? 0,
-                max_hp: pHp ?? 0,
-                temp_hp: 0,
-                ac: pAc ?? 0,
-                spell_save_dc: null,
-                initiative: pInit,
-                initiative_order: null,
-                conditions: [],
-                ruleset_version: null,
-                is_defeated: false,
-                is_hidden: false,
-                is_player: true,
-                monster_id: null,
-                token_url: null,
-                creature_type: null,
-                display_name: null,
-                monster_group_id: null,
-                group_order: null,
-                dm_notes: "",
-                player_notes: "",
-                player_character_id: null,
-              } as Omit<Combatant, "id">);
-              broadcastEvent(sid, {
-                type: "combat:late_join_response",
-                request_id,
-                accepted: true,
-              } as import("@/lib/types/realtime").RealtimeEvent);
-            },
-          },
-          cancel: {
-            label: t("late_join_reject"),
-            onClick: () => {
-              broadcastEvent(sid, {
-                type: "combat:late_join_response",
-                request_id,
-                accepted: false,
-              } as import("@/lib/types/realtime").RealtimeEvent);
-            },
-          },
-        }
-      );
-      activeToastIds.push(toastId as string);
+      setJoinRequests((prev) => {
+        if (prev.some((r) => r.request_id === request_id)) return prev;
+        return [...prev, { request_id, player_name, hp: pHp, ac: pAc, initiative: pInit }];
+      });
     };
 
     // Remove any stale late-join bindings before adding the new one.
-    // When this effect re-runs (e.g. handleAddCombatant changes), the old
-    // .on() binding can't be removed via public API, so we clean it up via
-    // the public `bindings` record to prevent duplicate handlers.
     try {
       const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
       const broadcastBindings = bindings?.broadcast;
@@ -567,12 +574,10 @@ export function CombatSessionClient({
     ch.on("broadcast", { event: "combat:late_join_request" }, handleLateJoin);
 
     return () => {
-      // Flag the handler as inactive so future events are ignored
       active = false;
-      // Dismiss any pending late-join toasts on unmount / combat end
-      activeToastIds.forEach((id) => toast.dismiss(id));
+      setJoinRequests([]);
     };
-  }, [is_active, getSessionId, handleAddCombatant, t]);
+  }, [is_active, getSessionId]);
 
   // Listen for audio:play_sound events from players
   useEffect(() => {
@@ -708,6 +713,14 @@ export function CombatSessionClient({
           </button>
         </div>
       </div>
+
+      <JoinRequestBanner
+        requests={joinRequests}
+        onAccept={handleAcceptJoinRequest}
+        onReject={handleRejectJoinRequest}
+        onAcceptAll={handleAcceptAllJoinRequests}
+        onRejectAll={handleRejectAllJoinRequests}
+      />
 
       {showWeatherSelector && (
         <div className="p-3 bg-white/[0.04] rounded-md" data-testid="weather-selector-panel">

@@ -323,6 +323,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           ? {
               ...c,
               player_character_id: characterId,
+              combatant_role: null,
               name: stats.name,
               max_hp: stats.max_hp,
               current_hp: stats.max_hp,
@@ -337,7 +338,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     set((state) => ({
       combatants: state.combatants.map((c) =>
         c.id === combatantId
-          ? { ...c, player_character_id: null }
+          ? { ...c, player_character_id: null, combatant_role: null }
           : c
       ),
     })),

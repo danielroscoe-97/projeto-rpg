@@ -2,11 +2,25 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Copy, Shield } from "lucide-react";
-import type { Combatant } from "@/lib/types/combat";
+import { Copy, Shield, User, UserCircle, Sparkles, Skull } from "lucide-react";
+import type { Combatant, CombatantRole } from "@/lib/types/combat";
+import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+const ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string }> = {
+  player: { icon: User, color: "text-blue-400 hover:text-blue-300 border-blue-400/30 hover:border-blue-400/50" },
+  npc: { icon: UserCircle, color: "text-gold hover:text-gold-light border-gold/30 hover:border-gold/50" },
+  summon: { icon: Sparkles, color: "text-purple-400 hover:text-purple-300 border-purple-400/30 hover:border-purple-400/50" },
+  monster: { icon: Skull, color: "text-red-400 hover:text-red-300 border-red-400/30 hover:border-red-400/50" },
+};
 
 interface CombatantSetupRowProps {
   combatant: Combatant;
@@ -22,6 +36,8 @@ interface CombatantSetupRowProps {
   onRollInitiative?: (id: string) => void;
   /** Update the anti-metagame display name for this combatant */
   onDisplayNameChange?: (id: string, displayName: string | null) => void;
+  /** Cycle the visual role for manually-added combatants */
+  onRoleChange?: (id: string, role: CombatantRole) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
   /** Highlight the initiative field as invalid */
@@ -39,6 +55,7 @@ export function CombatantSetupRow({
   onDuplicate,
   onRollInitiative,
   onDisplayNameChange,
+  onRoleChange,
   dragHandleProps,
   highlightInit,
 }: CombatantSetupRowProps) {
@@ -248,6 +265,33 @@ export function CombatantSetupRow({
             <span className="hidden md:inline">{t("setup_view_card")}</span>
           </button>
         )}
+        {!combatant.monster_id && combatant.combatant_role && onRoleChange && (() => {
+          const role = combatant.combatant_role!;
+          const config = ROLE_CONFIG[role];
+          const Icon = config.icon;
+          const roleLabel = t(`setup_role_${role}`);
+          const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(role) + 1) % COMBATANT_ROLE_CYCLE.length];
+          return (
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => onRoleChange(combatant.id, nextRole)}
+                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all flex-shrink-0 border ${config.color}`}
+                    data-testid={`role-btn-${combatant.id}`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span className="hidden md:inline">{roleLabel}</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {t("setup_role_tooltip")}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        })()}
         {onDuplicate && (
           <button
             type="button"

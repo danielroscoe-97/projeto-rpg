@@ -104,6 +104,7 @@ describe("EncounterSetup", () => {
       dm_notes: "",
       player_notes: "",
       player_character_id: null,
+      combatant_role: null,
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
     const rows = useCombatStore.getState().combatants;
@@ -134,6 +135,7 @@ describe("EncounterSetup", () => {
       dm_notes: "",
       player_notes: "",
       player_character_id: null,
+      combatant_role: null,
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
     expect(screen.getByTestId("start-combat-btn")).not.toBeDisabled();
@@ -163,6 +165,7 @@ describe("EncounterSetup", () => {
       dm_notes: "",
       player_notes: "",
       player_character_id: null,
+      combatant_role: null,
     });
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
     await userEvent.type(screen.getByTestId("encounter-name-input"), "Test Encounter");

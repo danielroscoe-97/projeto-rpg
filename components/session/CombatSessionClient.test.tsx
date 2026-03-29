@@ -106,6 +106,7 @@ const makeC = (id: string, name: string): Combatant => ({
   dm_notes: "",
   player_notes: "",
   player_character_id: null,
+  combatant_role: null,
 });
 
 const TWO_COMBATANTS = [makeC("c1", "Goblin"), makeC("c2", "Orc")];

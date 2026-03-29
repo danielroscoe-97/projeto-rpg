@@ -77,6 +77,7 @@ describe("fetchSessionSnapshot", () => {
         dm_notes: "",
         player_notes: "concentrating",
         player_character_id: "pc1",
+        combatant_role: null,
       },
     ];
     mockOrder.mockResolvedValueOnce({ data: rawCombatants });
@@ -121,6 +122,7 @@ describe("fetchSessionSnapshot", () => {
         dm_notes: null,
         player_notes: null,
         player_character_id: null,
+        combatant_role: null,
       },
     ];
     mockOrder.mockResolvedValueOnce({ data: rawCombatants });

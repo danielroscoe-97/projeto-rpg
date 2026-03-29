@@ -219,6 +219,14 @@ export function TourProvider() {
           is_player: false,
           monster_id: "goblin-mm",
           token_url: "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin.webp",
+          creature_type: "humanoid",
+          display_name: null,
+          monster_group_id: null,
+          group_order: null,
+          dm_notes: "",
+          player_notes: "",
+          player_character_id: null,
+          combatant_role: null,
         });
       }
     }

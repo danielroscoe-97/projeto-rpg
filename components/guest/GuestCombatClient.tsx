@@ -126,6 +126,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        combatant_role: null,
       });
 
       setAddRow(EMPTY_ADD_ROW);
@@ -172,6 +173,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           dm_notes: "",
           player_notes: "",
           player_character_id: null,
+          combatant_role: null,
         });
       }
       addMonsterGroup(newCombatants);
@@ -236,6 +238,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       dm_notes: "",
       player_notes: addRow.notes.trim(),
       player_character_id: null,
+      combatant_role: null,
     });
 
     lastSelectedMonster.current = null;
@@ -350,6 +353,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        combatant_role: null,
       });
     },
     [addCombatant]

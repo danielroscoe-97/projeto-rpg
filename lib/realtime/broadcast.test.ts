@@ -56,6 +56,7 @@ const monsterCombatant: Combatant = {
   dm_notes: "secret weakness: antimagic",
   player_notes: "",
   player_character_id: null,
+  combatant_role: null,
 };
 
 const playerCombatant: Combatant = {
@@ -82,6 +83,7 @@ const playerCombatant: Combatant = {
   dm_notes: "is the true king",
   player_notes: "concentrating on Bless",
   player_character_id: "pc1",
+  combatant_role: null,
 };
 
 describe("broadcastEvent – combat:combatant_add sanitization", () => {
