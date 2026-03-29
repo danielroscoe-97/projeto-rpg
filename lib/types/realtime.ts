@@ -17,6 +17,9 @@ export type RealtimeEventType =
   | "combat:player_notes_update"
   | "combat:late_join_request"
   | "combat:late_join_response"
+  | "combat:rejoin_request"
+  | "combat:rejoin_response"
+  | "combat:session_revoked"
   | "session:state_sync"
   | "session:player_linked"
   | "session:combat_stats"
@@ -118,6 +121,27 @@ export interface RealtimeLateJoinResponse {
   accepted: boolean;
 }
 
+export interface RealtimeRejoinRequest {
+  type: "combat:rejoin_request";
+  /** Name the player chose to rejoin as */
+  character_name: string;
+  request_id: string;
+  /** Whether the character currently has an active session */
+  is_active_session: boolean;
+}
+
+export interface RealtimeRejoinResponse {
+  type: "combat:rejoin_response";
+  request_id: string;
+  accepted: boolean;
+}
+
+export interface RealtimeSessionRevoked {
+  type: "combat:session_revoked";
+  /** Token ID of the session being revoked */
+  revoked_token_id: string;
+}
+
 export interface RealtimeStateSync {
   type: "session:state_sync";
   combatants: Combatant[];
@@ -162,6 +186,9 @@ export type RealtimeEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
+  | RealtimeRejoinRequest
+  | RealtimeRejoinResponse
+  | RealtimeSessionRevoked
   | RealtimeStateSync
   | RealtimeCombatStats
   | RealtimeWeatherChange
@@ -245,6 +272,9 @@ export type SanitizedEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
+  | RealtimeRejoinRequest
+  | RealtimeRejoinResponse
+  | RealtimeSessionRevoked
   | RealtimeCombatStats
   | RealtimeWeatherChange
   | RealtimeAudioPlay;

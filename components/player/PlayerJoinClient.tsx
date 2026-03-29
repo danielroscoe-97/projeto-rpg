@@ -65,6 +65,8 @@ interface PlayerJoinClientProps {
   dmPlan?: Plan;
   /** Player names already registered in this session (enables cookie-less rejoin) */
   registeredPlayerNames?: string[];
+  /** Player names with active/inactive status (for DM-approval reconnection) */
+  registeredPlayersWithStatus?: Array<{ name: string; isActive: boolean }>;
 }
 
 export function PlayerJoinClient({
@@ -80,6 +82,7 @@ export function PlayerJoinClient({
   prefilledCharacters,
   dmPlan = "free",
   registeredPlayerNames = [],
+  registeredPlayersWithStatus = [],
 }: PlayerJoinClientProps) {
   const t = useTranslations("player");
   const tRef = useRef(t);
@@ -108,6 +111,10 @@ export function PlayerJoinClient({
   const lateJoinRequestIdRef = useRef<string | null>(null);
   const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const lateJoinRegisteredRef = useRef(false);
+  // Rejoin-with-approval state (for cookie-less reconnect during active combat)
+  const [rejoinStatus, setRejoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
+  const rejoinRequestIdRef = useRef<string | null>(null);
+  const rejoinCharacterRef = useRef<string | null>(null);
   const presenceChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const combatantsRef = useRef(initialCombatants);
   const turnIndexRef = useRef(currentTurnIndex);
@@ -469,6 +476,46 @@ export function PlayerJoinClient({
             setLateJoinStatus("rejected");
           }
         })
+        .on("broadcast", { event: "combat:rejoin_response" }, ({ payload }) => {
+          if (payload.request_id !== rejoinRequestIdRef.current) return;
+          if (payload.accepted) {
+            setRejoinStatus("accepted");
+            // DM approved — now transfer token ownership
+            const charName = rejoinCharacterRef.current;
+            if (charName) {
+              (async () => {
+                try {
+                  const supabase = createClient();
+                  const { data: { session: authSession } } = await supabase.auth.getSession();
+                  const userId = authSession?.user?.id;
+                  if (!userId) throw new Error("No auth session");
+                  const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, charName, userId);
+                  setEffectiveTokenId(rejoinedTokenId);
+                  setIsRegistered(true);
+                  setRegisteredName(charName);
+                  setRejoinStatus("idle");
+                } catch (err) {
+                  setRejoinStatus("idle");
+                  toast.error(tRef.current("rejoin_error"));
+                  captureError(err instanceof Error ? err : new Error(String(err)), {
+                    component: "PlayerJoinClient", action: "rejoinAfterApproval", category: "auth",
+                  });
+                }
+              })();
+            }
+          } else {
+            setRejoinStatus("rejected");
+          }
+        })
+        .on("broadcast", { event: "combat:session_revoked" }, ({ payload }) => {
+          // If our token was revoked (another device took over), disconnect gracefully
+          if (payload.revoked_token_id === effectiveTokenId) {
+            setIsRegistered(false);
+            setRegisteredName(undefined);
+            setRejoinStatus("idle");
+            toast.error(tRef.current("rejoin_revoked"));
+          }
+        })
         .on("broadcast", { event: "player:joined" }, ({ payload }) => {
           if (payload.id && payload.name) {
             setJoinedPlayers((prev) => {
@@ -735,27 +782,63 @@ export function PlayerJoinClient({
   }, [effectiveTokenId, sessionId]);
 
   // Rejoin handler — for returning players who lost their anonymous session (cookies cleared)
+  // During active combat: sends a request to DM for approval instead of direct transfer
+  // During lobby (no combat): transfers directly (DM can see and remove manually)
   const handleRejoin = useCallback(async (playerName: string) => {
-    try {
-      const supabase = createClient();
-      const { data: { session: authSession } } = await supabase.auth.getSession();
-      const userId = authSession?.user?.id;
-      if (!userId) throw new Error("No auth session");
+    // If combat is NOT active, do direct rejoin (lobby mode — no approval needed)
+    if (!active || !currentEncounterId) {
+      try {
+        const supabase = createClient();
+        const { data: { session: authSession } } = await supabase.auth.getSession();
+        const userId = authSession?.user?.id;
+        if (!userId) throw new Error("No auth session");
 
-      const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, playerName, userId);
-      setEffectiveTokenId(rejoinedTokenId);
-      setIsRegistered(true);
-      setRegisteredName(playerName);
-    } catch (err) {
-      captureError(err instanceof Error ? err : new Error(String(err)), {
-        component: "PlayerJoinClient",
-        action: "rejoin",
-        category: "auth",
-        extra: { sessionId, playerName },
-      });
-      toast.error(tRef.current("rejoin_error"));
+        const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, playerName, userId);
+        setEffectiveTokenId(rejoinedTokenId);
+        setIsRegistered(true);
+        setRegisteredName(playerName);
+      } catch (err) {
+        captureError(err instanceof Error ? err : new Error(String(err)), {
+          component: "PlayerJoinClient",
+          action: "rejoin",
+          category: "auth",
+          extra: { sessionId, playerName },
+        });
+        toast.error(tRef.current("rejoin_error"));
+      }
+      return;
     }
-  }, [sessionId]);
+
+    // Combat is active — send rejoin request to DM for approval
+    const requestId = typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+    rejoinRequestIdRef.current = requestId;
+    rejoinCharacterRef.current = playerName;
+    setRejoinStatus("waiting");
+
+    // Determine if this character has an active session
+    const playerStatus = registeredPlayersWithStatus.find((p) => p.name === playerName);
+    const isActiveSession = playerStatus?.isActive ?? false;
+
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "combat:rejoin_request",
+        payload: {
+          character_name: playerName,
+          request_id: requestId,
+          is_active_session: isActiveSession,
+        },
+      });
+    } else {
+      captureError(new Error("Cannot send rejoin request — channel not available"), {
+        component: "PlayerJoinClient",
+        action: "rejoin-request",
+        category: "realtime",
+      });
+    }
+  }, [sessionId, active, currentEncounterId, registeredPlayersWithStatus]);
 
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -852,7 +935,10 @@ export function PlayerJoinClient({
         lateJoinStatus={lateJoinStatus}
         prefilledCharacters={prefilledCharacters}
         registeredPlayerNames={registeredPlayerNames}
+        registeredPlayersWithStatus={registeredPlayersWithStatus}
         onRejoin={handleRejoin}
+        rejoinStatus={rejoinStatus}
+        onRejoinRetry={() => setRejoinStatus("idle")}
       />
     );
   }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Swords, Users, LogIn } from "lucide-react";
+import { Swords, Users, LogIn, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
 
@@ -45,8 +45,14 @@ interface PlayerLobbyProps {
   prefilledCharacters?: PrefilledCharacter[];
   /** Names of players already registered in this session (for cookie-less rejoin) */
   registeredPlayerNames?: string[];
+  /** Player names with active/inactive status (for DM-approval reconnection during combat) */
+  registeredPlayersWithStatus?: Array<{ name: string; isActive: boolean }>;
   /** Called when a returning player selects their name to rejoin */
   onRejoin?: (playerName: string) => Promise<void>;
+  /** Rejoin approval status: idle | waiting | accepted | rejected */
+  rejoinStatus?: "idle" | "waiting" | "accepted" | "rejected";
+  /** Called when player wants to retry after rejection */
+  onRejoinRetry?: () => void;
 }
 
 export function PlayerLobby({
@@ -60,7 +66,10 @@ export function PlayerLobby({
   lateJoinStatus = "idle",
   prefilledCharacters,
   registeredPlayerNames = [],
+  registeredPlayersWithStatus = [],
   onRejoin,
+  rejoinStatus = "idle",
+  onRejoinRetry,
 }: PlayerLobbyProps) {
   const t = useTranslations("player");
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
@@ -75,12 +84,35 @@ export function PlayerLobby({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Set<string>>(new Set());
   const [isRejoining, setIsRejoining] = useState(false);
+  const [confirmActivePlayer, setConfirmActivePlayer] = useState<string | null>(null);
 
   const handleRejoinClick = async (playerName: string) => {
     if (!onRejoin || isRejoining) return;
+
+    // During active combat, check if the player has an active session
+    if (isCombatActive) {
+      const playerStatus = registeredPlayersWithStatus.find((p) => p.name === playerName);
+      if (playerStatus?.isActive) {
+        // Show confirmation modal for active players
+        setConfirmActivePlayer(playerName);
+        return;
+      }
+    }
+
     setIsRejoining(true);
     try {
       await onRejoin(playerName);
+    } catch {
+      setIsRejoining(false);
+    }
+  };
+
+  const handleConfirmActiveRejoin = async () => {
+    if (!confirmActivePlayer || !onRejoin || isRejoining) return;
+    setIsRejoining(true);
+    setConfirmActivePlayer(null);
+    try {
+      await onRejoin(confirmActivePlayer);
     } catch {
       setIsRejoining(false);
     }
@@ -202,6 +234,51 @@ export function PlayerLobby({
     );
   }
 
+  // Rejoin waiting state — player sent request, awaiting DM approval
+  if (rejoinStatus === "waiting") {
+    return (
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
+        <div className="max-w-sm mx-auto w-full space-y-6 text-center">
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-gold mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
+          <div className="py-8">
+            <div className="flex items-center justify-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:0ms]" />
+              <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:150ms]" />
+              <div className="w-2 h-2 rounded-full bg-gold animate-bounce [animation-delay:300ms]" />
+            </div>
+            <p className="text-muted-foreground text-base lg:text-sm mt-4">
+              {t("rejoin_waiting_approval")}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Rejoin rejected state — DM declined the reconnection
+  if (rejoinStatus === "rejected") {
+    return (
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
+        <div className="max-w-sm mx-auto w-full space-y-6 text-center">
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-red-400 mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
+          <p className="text-red-400 text-base lg:text-sm">{t("rejoin_rejected")}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setIsRejoining(false);
+              onRejoinRetry?.();
+            }}
+            className="px-4 py-3 lg:py-2 bg-card border border-border rounded-lg text-foreground text-base lg:text-sm active:bg-white/[0.06] lg:hover:bg-white/[0.06] transition-colors min-h-[48px]"
+          >
+            {t("late_join_retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Registration form (handles both normal and late-join)
   const handleFormSubmit = async () => {
     const trimmedName = name.trim();
@@ -271,25 +348,70 @@ export function PlayerLobby({
               {t("rejoin_title")}
             </p>
             <div className="grid gap-2">
-              {registeredPlayerNames.map((pName) => (
-                <button
-                  key={pName}
-                  type="button"
-                  disabled={isRejoining}
-                  onClick={() => handleRejoinClick(pName)}
-                  className="w-full text-left px-3 py-2.5 rounded-lg border border-border bg-background text-foreground hover:border-gold/50 hover:bg-gold/5 transition-colors disabled:opacity-50 min-h-[48px] flex items-center gap-2"
-                  data-testid={`rejoin-${pName}`}
-                >
-                  <Swords className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
-                  <span className="font-medium text-sm">{pName}</span>
-                  <span className="text-muted-foreground text-xs ml-auto">{t("rejoin_button")}</span>
-                </button>
-              ))}
+              {registeredPlayerNames.map((pName) => {
+                const playerStatus = registeredPlayersWithStatus.find((p) => p.name === pName);
+                const isPlayerActive = isCombatActive && playerStatus?.isActive;
+                return (
+                  <button
+                    key={pName}
+                    type="button"
+                    disabled={isRejoining}
+                    onClick={() => handleRejoinClick(pName)}
+                    className="w-full text-left px-3 py-2.5 rounded-lg border border-border bg-background text-foreground hover:border-gold/50 hover:bg-gold/5 transition-colors disabled:opacity-50 min-h-[48px] flex items-center gap-2"
+                    data-testid={`rejoin-${pName}`}
+                  >
+                    <Swords className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
+                    <span className="font-medium text-sm">{pName}</span>
+                    {isCombatActive && registeredPlayersWithStatus.length > 0 && (
+                      <span className={`inline-flex items-center gap-1 text-xs ml-1 ${
+                        isPlayerActive ? "text-emerald-400" : "text-red-400"
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          isPlayerActive ? "bg-emerald-400" : "bg-red-400"
+                        }`} />
+                        {isPlayerActive ? t("rejoin_status_active") : t("rejoin_status_inactive")}
+                      </span>
+                    )}
+                    <span className="text-muted-foreground text-xs ml-auto">{t("rejoin_button")}</span>
+                  </button>
+                );
+              })}
             </div>
             <div className="flex items-center gap-2 pt-1">
               <div className="flex-1 border-t border-border" />
               <span className="text-muted-foreground/60 text-xs">{t("rejoin_or_new")}</span>
               <div className="flex-1 border-t border-border" />
+            </div>
+          </div>
+        )}
+
+        {/* Confirmation modal for active player takeover */}
+        {confirmActivePlayer && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+            <div className="bg-card border border-border rounded-lg p-6 max-w-sm w-full space-y-4">
+              <div className="flex items-center gap-2 text-amber-400">
+                <AlertTriangle className="w-5 h-5" />
+                <h2 className="font-semibold text-base">{t("rejoin_confirm_active_title")}</h2>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                {t("rejoin_confirm_active_body")}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmActivePlayer(null)}
+                  className="flex-1 px-4 py-2.5 bg-background border border-border rounded-lg text-foreground text-sm hover:bg-white/[0.06] transition-colors min-h-[44px]"
+                >
+                  {t("rejoin_confirm_active_no")}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmActiveRejoin}
+                  className="flex-1 px-4 py-2.5 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-500 transition-colors min-h-[44px]"
+                >
+                  {t("rejoin_confirm_active_yes")}
+                </button>
+              </div>
             </div>
           </div>
         )}

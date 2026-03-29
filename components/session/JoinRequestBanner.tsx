@@ -10,6 +10,10 @@ export interface JoinRequest {
   hp: number | null;
   ac: number | null;
   initiative: number;
+  /** Whether this is a reconnection request (vs a new late-join) */
+  isRejoin?: boolean;
+  /** Whether the character has an active session (only for rejoin requests) */
+  isActiveSession?: boolean;
 }
 
 interface JoinRequestBannerProps {
@@ -30,6 +34,8 @@ function JoinRequestCard({
   onReject: () => void;
 }) {
   const t = useTranslations("common");
+  const isRejoin = request.isRejoin;
+  const isActiveSession = request.isActiveSession;
 
   return (
     <motion.div
@@ -41,28 +47,41 @@ function JoinRequestCard({
       className="flex items-center gap-3 justify-between"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <Shield className="w-4 h-4 text-gold shrink-0" />
-        <span className="font-medium text-foreground truncate">
-          {request.player_name}
-        </span>
-        <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Heart className="w-3 h-3" />
-            {request.hp ?? "—"}
+        <Shield className={`w-4 h-4 shrink-0 ${isActiveSession ? "text-amber-400" : "text-gold"}`} />
+        <div className="min-w-0">
+          <span className="font-medium text-foreground truncate block">
+            {request.player_name}
           </span>
-          <span className="inline-flex items-center gap-1">
-            <Shield className="w-3 h-3" />
-            {request.ac ?? "—"}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <Swords className="w-3 h-3" />
-            {request.initiative}
-          </span>
+          {isRejoin && (
+            <span className={`text-xs ${isActiveSession ? "text-amber-400" : "text-muted-foreground"}`}>
+              {isActiveSession
+                ? t("rejoin_notification_active", { name: "", character: request.player_name }).replace("⚠️ ", "").replace("  ", " ")
+                : t("rejoin_notification", { name: "", character: request.player_name }).replace("  ", " ")}
+            </span>
+          )}
         </div>
-        {/* Mobile: show compact stats */}
-        <div className="flex sm:hidden items-center gap-2 text-xs text-muted-foreground">
-          <span>{t("late_join_init_short", { value: request.initiative })}</span>
-        </div>
+        {!isRejoin && (
+          <>
+            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <Heart className="w-3 h-3" />
+                {request.hp ?? "—"}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                {request.ac ?? "—"}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Swords className="w-3 h-3" />
+                {request.initiative}
+              </span>
+            </div>
+            {/* Mobile: show compact stats */}
+            <div className="flex sm:hidden items-center gap-2 text-xs text-muted-foreground">
+              <span>{t("late_join_init_short", { value: request.initiative })}</span>
+            </div>
+          </>
+        )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <button
@@ -77,7 +96,11 @@ function JoinRequestCard({
         <button
           type="button"
           onClick={onAccept}
-          className="px-3 py-1.5 text-sm font-medium rounded-md bg-gold text-background hover:bg-gold/80 transition-all duration-200 min-h-[36px] inline-flex items-center gap-1.5"
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 min-h-[36px] inline-flex items-center gap-1.5 ${
+            isActiveSession
+              ? "bg-amber-600 text-white hover:bg-amber-500"
+              : "bg-gold text-background hover:bg-gold/80"
+          }`}
           aria-label={`${t("late_join_accept")} ${request.player_name}`}
         >
           <Check className="w-3.5 h-3.5" />
@@ -97,6 +120,20 @@ export function JoinRequestBanner({
 }: JoinRequestBannerProps) {
   const t = useTranslations("common");
   const count = requests.length;
+  const hasActiveSessionRequest = requests.some((r) => r.isActiveSession);
+  const allRejoin = requests.every((r) => r.isRejoin);
+
+  // Pick the right banner title depending on request type
+  const getBannerTitle = () => {
+    if (allRejoin) {
+      return count === 1
+        ? t("rejoin_banner_title_one")
+        : t("rejoin_banner_title_many", { count });
+    }
+    return count === 1
+      ? t("late_join_banner_title_one")
+      : t("late_join_banner_title_many", { count });
+  };
 
   return (
     <AnimatePresence>
@@ -109,18 +146,20 @@ export function JoinRequestBanner({
           className="overflow-hidden"
         >
           <div
-            className="rounded-lg border border-gold/40 bg-gold/[0.06] p-3 sm:p-4 space-y-3"
+            className={`rounded-lg p-3 sm:p-4 space-y-3 ${
+              hasActiveSessionRequest
+                ? "border border-amber-500/40 bg-amber-900/10"
+                : "border border-gold/40 bg-gold/[0.06]"
+            }`}
             role="alert"
             aria-live="polite"
             data-testid="join-request-banner"
           >
             {/* Header */}
-            <div className="flex items-center gap-2 text-gold">
+            <div className={`flex items-center gap-2 ${hasActiveSessionRequest ? "text-amber-400" : "text-gold"}`}>
               <Swords className="w-4 h-4 animate-pulse" />
               <span className="text-sm font-semibold">
-                {count === 1
-                  ? t("late_join_banner_title_one")
-                  : t("late_join_banner_title_many", { count })}
+                {getBannerTitle()}
               </span>
             </div>
 
