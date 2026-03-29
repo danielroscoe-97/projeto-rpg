@@ -14,8 +14,20 @@ const LOADING_MESSAGE_KEYS = [
   "msg_consulting_oracle",
 ] as const;
 
-const MIN_DISPLAY_MS = 2200;
+const MESSAGES_TO_SHOW = 3;
+const MESSAGE_DURATION_MS = 850;
+const MIN_DISPLAY_MS = MESSAGES_TO_SHOW * MESSAGE_DURATION_MS;
 const FALLBACK_TIMEOUT_MS = 15000;
+
+/** Pick N random unique indices from an array of length `total`. */
+function pickRandom(total: number, count: number): number[] {
+  const indices = Array.from({ length: total }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return indices.slice(0, count);
+}
 
 /**
  * Full-screen animated loading screen that initializes SRD data.
@@ -26,7 +38,8 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
   const { is_loading, monsters, error } = useSrdStore();
   const t = useTranslations("srd_loading");
   const [showLoader, setShowLoader] = useState(true);
-  const [messageIndex, setMessageIndex] = useState(0);
+  const [messageSlot, setMessageSlot] = useState(0);
+  const [pickedIndices] = useState(() => pickRandom(LOADING_MESSAGE_KEYS.length, MESSAGES_TO_SHOW));
   const minTimeRef = useRef(false);
   const srdReadyRef = useRef(false);
 
@@ -76,12 +89,12 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
     }
   }, [error]);
 
-  // Cycle messages
+  // Cycle through the 3 randomly picked messages
   useEffect(() => {
     if (!showLoader) return;
     const interval = setInterval(() => {
-      setMessageIndex((i) => (i + 1) % LOADING_MESSAGE_KEYS.length);
-    }, 700);
+      setMessageSlot((i) => Math.min(i + 1, MESSAGES_TO_SHOW - 1));
+    }, MESSAGE_DURATION_MS);
     return () => clearInterval(interval);
   }, [showLoader]);
 
@@ -118,14 +131,14 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
             {/* Rotating message */}
             <AnimatePresence mode="wait">
               <motion.p
-                key={messageIndex}
+                key={messageSlot}
                 className="text-sm text-muted-foreground/70 font-medium"
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
               >
-                {t(LOADING_MESSAGE_KEYS[messageIndex])}
+                {t(LOADING_MESSAGE_KEYS[pickedIndices[messageSlot]])}
               </motion.p>
             </AnimatePresence>
           </motion.div>
