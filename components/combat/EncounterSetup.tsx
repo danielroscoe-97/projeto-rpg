@@ -266,8 +266,12 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       const groupInit = groupInitResult.total;
       const currentCombatants = useCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
+      // Generate ONE display name for the group, append numbers
+      const existingNames = currentCombatants
+        .filter((c) => !c.is_player && c.display_name)
+        .map((c) => c.display_name!);
+      const groupDisplayBase = getDefaultDisplayName(monster?.type ?? null, existingNames);
       for (let i = 1; i <= qty; i++) {
-        const displayName = getDefaultDisplayName(monster?.type ?? null, [...currentCombatants, ...newCombatants as Combatant[]]);
         newCombatants.push({
           name: `${monster.name} ${i}`,
           current_hp: monster.hit_points,
@@ -285,7 +289,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           monster_id: monster.id,
           token_url: monster.token_url ?? null,
           creature_type: monster.type ?? null,
-          display_name: displayName,
+          display_name: `${groupDisplayBase} ${i}`,
           monster_group_id: groupId,
           group_order: i,
           dm_notes: "",
@@ -499,6 +503,30 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         );
       } else {
         updateCombatantStats(id, { name });
+      }
+    },
+    [updateCombatantStats]
+  );
+  // Update display name — propagate to all group members if applicable
+  const handleDisplayNameChange = useCallback(
+    (id: string, displayName: string | null) => {
+      const store = useCombatStore.getState();
+      const combatant = store.combatants.find((c) => c.id === id);
+
+      if (combatant?.monster_group_id && displayName) {
+        const groupMembers = store.combatants
+          .filter((c) => c.monster_group_id === combatant.monster_group_id)
+          .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
+        // Strip trailing " N" to get new base, then re-number all members
+        const newBase = displayName.replace(/\s+\d+$/, "");
+        const updated = store.combatants.map((c) => {
+          const idx = groupMembers.findIndex((m) => m.id === c.id);
+          if (idx === -1) return c;
+          return { ...c, display_name: `${newBase} ${idx + 1}` };
+        });
+        store.hydrateCombatants(updated);
+      } else {
+        updateCombatantStats(id, { display_name: displayName });
       }
     },
     [updateCombatantStats]
@@ -730,7 +758,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
               onNotesChange={handleRowNotesChange}
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}
-              onDisplayNameChange={(id, dn) => updateCombatantStats(id, { display_name: dn })}
+              onDisplayNameChange={handleDisplayNameChange}
               onRoleChange={(id, role) => {
                 useCombatStore.setState((state) => ({
                   combatants: state.combatants.map((c2) =>

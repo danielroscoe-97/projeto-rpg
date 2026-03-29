@@ -301,11 +301,12 @@ export function CombatSessionClient({
     const groupId = crypto.randomUUID();
     const currentCombatants = useCombatStore.getState().combatants;
     const newCombatants: Omit<Combatant, "id">[] = [];
+    // Generate ONE display name for the group, append numbers
+    const existingNames = currentCombatants
+      .filter((c) => !c.is_player && c.display_name)
+      .map((c) => c.display_name!);
+    const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
     for (let i = 1; i <= qty; i++) {
-      const existingNames = [...currentCombatants, ...newCombatants as Combatant[]]
-        .filter((c) => !c.is_player && c.display_name)
-        .map((c) => c.display_name!);
-      const displayName = generateCreatureName(monster.type ?? null, existingNames);
       newCombatants.push({
         name: `${monster.name} ${i}`,
         current_hp: monster.hit_points,
@@ -323,7 +324,7 @@ export function CombatSessionClient({
         monster_id: monster.id,
         token_url: monster.token_url ?? null,
         creature_type: monster.type ?? null,
-        display_name: displayName,
+        display_name: `${groupDisplayBase} ${i}`,
         monster_group_id: groupId,
         group_order: i,
         dm_notes: "",
