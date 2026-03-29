@@ -24,7 +24,7 @@ export async function createSessionToken(
     .eq("session_id", sessionId)
     .eq("is_active", true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const token = existing?.token ?? generateToken();
 
