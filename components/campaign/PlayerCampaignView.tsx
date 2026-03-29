@@ -67,6 +67,8 @@ interface PlayerCampaignViewProps {
     activeSession: string;
     noActiveSession: string;
     levelLabel: string;
+    dmLabel: string;
+    acLabel: string;
   };
 }
 
@@ -154,7 +156,7 @@ export function PlayerCampaignView({
           </h1>
           {dmName && (
             <p className="text-muted-foreground text-xs mt-0.5">
-              DM: {dmName}
+              {t.dmLabel}: {dmName}
             </p>
           )}
         </div>
@@ -221,7 +223,7 @@ export function PlayerCampaignView({
             <HpBar current={myCharacter.current_hp} max={myCharacter.max_hp} />
             <div className="flex items-center gap-4 text-sm">
               <span className="text-muted-foreground">
-                AC:{" "}
+                {t.acLabel}:{" "}
                 <span className="text-foreground font-medium">
                   {myCharacter.ac}
                 </span>

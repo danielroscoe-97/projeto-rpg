@@ -161,7 +161,11 @@
     "leave_campaign": "Sair da Campanha",
     "leave_campaign_confirm": "Tem certeza que deseja sair desta campanha? Você perderá acesso ao seu personagem e dados de sessão.",
     "leave_campaign_button": "Sair",
-    "level_label": "Nv {level}"
+    "level_label": "Nv {level}",
+    "dm_label": "Mestre",
+    "ac_label": "CA",
+    "encounter_fallback": "Encontro",
+    "session_fallback": "Sessão"
   },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",
@@ -253,7 +257,8 @@
     "invite_decline_error": "Falha ao recusar convite. Tente novamente.",
     "invite_accepted_redirect": "Convite aceito! Redirecionando para a campanha...",
     "player_count_label": "{count} jogadores",
-    "view_campaign": "Ver"
+    "view_campaign": "Ver",
+    "dm_label": "Mestre"
   },
   "onboarding": {
     "choose_title": "Como você quer começar?",

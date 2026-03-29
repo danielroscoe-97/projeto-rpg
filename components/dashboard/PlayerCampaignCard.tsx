@@ -10,6 +10,7 @@ interface PlayerCampaignCardProps {
     activeSession: string;
     noActiveSession: string;
     playerCount: string;
+    dmLabel: string;
   };
 }
 
@@ -31,7 +32,7 @@ export function PlayerCampaignCard({
             {membership.campaign_name}
           </p>
           <p className="text-xs text-muted-foreground truncate">
-            DM: {membership.dm_name || membership.dm_email}
+            {t.dmLabel}: {membership.dm_name || membership.dm_email}
           </p>
         </div>
         {hasActiveSession && (

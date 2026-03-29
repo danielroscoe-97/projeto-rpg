@@ -321,6 +321,15 @@ export async function getOrCreatePlayerSessionToken(
   userId: string,
   playerCharacterId: string
 ): Promise<string> {
+  // Verify the caller IS the userId (prevent token forgery)
+  const userSupabase = await createClient();
+  const {
+    data: { user },
+  } = await userSupabase.auth.getUser();
+  if (!user || user.id !== userId) {
+    throw new Error("Authentication mismatch: caller is not the specified user");
+  }
+
   const supabase = createServiceClient();
 
   // Verify the user is an active member of the campaign that owns this session
@@ -364,7 +373,7 @@ export async function getOrCreatePlayerSessionToken(
     .from("player_characters")
     .select("name")
     .eq("id", playerCharacterId)
-    .single();
+    .maybeSingle();
 
   // Generate a new token
   const token = generateSessionToken();

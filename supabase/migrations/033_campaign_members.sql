@@ -63,7 +63,7 @@ BEGIN
   ON CONFLICT (campaign_id, user_id) DO NOTHING;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Drop trigger if it already exists (idempotent)
 DROP TRIGGER IF EXISTS on_campaign_created ON campaigns;

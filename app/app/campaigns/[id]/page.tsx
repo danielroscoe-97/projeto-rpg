@@ -99,7 +99,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         .limit(10)
       combatHistory = (encounters ?? []).map(e => ({
         id: e.id,
-        name: e.name ?? 'Encounter',
+        name: e.name ?? t("encounter_fallback"),
         round_number: e.round_number ?? 0,
       }))
     }
@@ -129,7 +129,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         }))}
         activeSession={activeSession ? {
           id: activeSession.id,
-          name: activeSession.name ?? 'Session',
+          name: activeSession.name ?? t("session_fallback"),
           round_number: activeEncounter?.round_number ?? null,
           current_turn_name: activeEncounter?.current_turn_name ?? null,
         } : null}
@@ -151,6 +151,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           activeSession: tDash("active_session"),
           noActiveSession: tDash("no_active_session"),
           levelLabel: t("level_label"),
+          dmLabel: t("dm_label"),
+          acLabel: t("ac_label"),
         }}
       />
     )
