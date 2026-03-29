@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull } from "lucide-react";
+import { Swords, Skull, User, Bug } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -230,6 +230,11 @@ export function PlayerInitiativeBoard({
   const currentCombatant = combatants[currentTurnIndex];
   const isPlayerTurn = currentCombatant?.is_player ?? false;
 
+  // Resolve next combatant for the "Next up" display
+  const nextCombatant = nextCombatantId
+    ? combatants.find((c) => c.id === nextCombatantId)
+    : null;
+
   // "É sua vez!" overlay — shows on turn start, dismissible
   // Player can disable via localStorage (B2-1 AC #8)
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
@@ -274,21 +279,50 @@ export function PlayerInitiativeBoard({
       {/* Story 3.1: "Você é o próximo!" — shown when player is next (not current) */}
       <TurnUpcomingBanner visible={isPlayerUpcoming} />
 
-      {/* Combat Log */}
-      {visibleLog.length > 0 && (
-        <div className="bg-card border border-border rounded-lg px-3 py-2">
-          <h3 className="text-muted-foreground text-sm lg:text-xs font-medium mb-1.5">{t("combat_log_title")}</h3>
-          <ul className="space-y-1 lg:space-y-0.5 max-h-36 lg:max-h-28 overflow-y-auto">
-            {visibleLog.map((entry, i) => (
-              <li key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 text-sm lg:text-xs min-h-[32px] lg:min-h-0 items-center lg:items-baseline">
-                <span className={`shrink-0 ${LOG_TYPE_COLORS[entry.type]}`}>●</span>
-                <span className="text-foreground/80 flex-1">{entry.text}</span>
-                <span className="text-muted-foreground text-xs lg:text-[10px] shrink-0">
-                  {formatRelativeTime(entry.timestamp, t)}
+      {/* ── TURN INDICATOR BANNER ── */}
+      {/* Clear, prominent banner: whose turn NOW + who's next */}
+      {currentCombatant && (
+        <div className="bg-card border border-border rounded-lg px-4 py-3" data-testid="turn-indicator-banner">
+          <div className="flex items-center gap-2">
+            <span className="text-gold text-lg leading-none select-none" aria-hidden="true">▶</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-foreground font-semibold text-lg lg:text-base truncate">
+                  {t("turn_of", { name: currentCombatant.name })}
                 </span>
-              </li>
-            ))}
-          </ul>
+                {/* Tag: player or monster */}
+                {currentCombatant.is_player ? (
+                  <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                    <User className="w-3 h-3" aria-hidden="true" />
+                    {t("player_tag")}
+                  </span>
+                ) : (
+                  <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20">
+                    <Bug className="w-3 h-3" aria-hidden="true" />
+                    {t("monster_tag")}
+                  </span>
+                )}
+              </div>
+              {nextCombatant && (
+                <span className="text-muted-foreground text-sm lg:text-xs">
+                  {t("next_up", { name: nextCombatant.name })}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DM's turn indicator — shown when a hidden NPC has the current turn */}
+      {currentTurnIndex === -1 && (
+        <div
+          className="bg-card border border-amber-400/50 rounded-lg px-4 py-3 text-center"
+          data-testid="dm-turn-indicator"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-gold text-lg lg:text-sm leading-none select-none">▶</span>
+            <span className="text-foreground font-medium text-lg lg:text-sm">{t("dm_turn")}</span>
+          </div>
         </div>
       )}
 
@@ -404,19 +438,6 @@ export function PlayerInitiativeBoard({
       {/* HP legend for first-time players (B2-6) */}
       <HPLegendOverlay />
 
-      {/* DM's turn indicator — shown when a hidden NPC has the current turn */}
-      {currentTurnIndex === -1 && (
-        <div
-          className="bg-card border border-amber-400/50 rounded-lg px-4 py-3 text-center"
-          data-testid="dm-turn-indicator"
-        >
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-gold text-lg lg:text-sm leading-none select-none">▶</span>
-            <span className="text-foreground font-medium text-lg lg:text-sm">{t("dm_turn")}</span>
-          </div>
-        </div>
-      )}
-
       {/* Initiative Order */}
       <ul
         className="space-y-2 lg:space-y-2"
@@ -430,6 +451,7 @@ export function PlayerInitiativeBoard({
           if (!isRevealed(index)) return null;
           const isCurrentTurn = index === currentTurnIndex;
           const isPlayer = combatant.is_player;
+          const isOwnChar = playerChars.some((pc) => pc.id === combatant.id);
           const isNewlyRevealed = revealedIds.has(combatant.id);
 
           // Player characters: show full HP bar
@@ -440,6 +462,11 @@ export function PlayerInitiativeBoard({
           const hpThresholdKey = isPlayer ? getHpThresholdKey(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : null;
           const hasTempHp = isPlayer && (combatant.temp_hp ?? 0) > 0;
 
+          // Visual differentiation: players = blue left border, monsters = red left border
+          const typeBorderClass = isPlayer
+            ? "border-l-4 border-l-blue-500/60"
+            : "border-l-4 border-l-red-500/40";
+
           return (
             <motion.li
               key={combatant.id}
@@ -449,13 +476,15 @@ export function PlayerInitiativeBoard({
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               layout
-              className={`bg-card border rounded-lg transition-all duration-300 min-h-[48px] ${
+              className={`bg-card border rounded-lg transition-all duration-300 min-h-[48px] ${typeBorderClass} ${
                 isCurrentTurn
-                  ? "border-amber-400 border-2 bg-gold/5 px-4 py-4 lg:px-4 lg:py-3"
-                  : "border-border px-4 py-3"
+                  ? "border-t border-r border-b border-amber-400 border-t-2 border-r-2 border-b-2 bg-amber-400/5 px-4 py-3 lg:px-4 lg:py-3 shadow-[0_0_8px_rgba(251,191,36,0.15)]"
+                  : isOwnChar
+                    ? "border-t border-r border-b border-border bg-card px-4 py-3"
+                    : "border-t border-r border-b border-border px-4 py-3"
               } ${combatant.is_defeated ? "opacity-50" : ""} ${
-                isPlayer ? "border-gold/40" : ""
-              } ${roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""} ${
+                roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""
+              } ${
                 isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
               }`}
               role="listitem"
@@ -463,23 +492,33 @@ export function PlayerInitiativeBoard({
               data-testid={`player-combatant-${combatant.id}`}
             >
               {/* Name row */}
-              <div className="flex items-center gap-2 mb-2 min-h-[48px] lg:min-h-0">
+              <div className="flex items-center gap-2 min-h-[36px] lg:min-h-0">
                 {isCurrentTurn && (
                   <span
-                    className="text-gold shrink-0 text-lg lg:text-sm leading-none select-none"
+                    className="text-amber-400 shrink-0 text-base leading-none select-none"
                     aria-label={t("current_turn")}
                   >
                     ▶
                   </span>
                 )}
-                <span className={`text-foreground font-medium flex-1 truncate ${
-                  isCurrentTurn ? "text-2xl lg:text-sm" : "text-xl lg:text-sm"
-                }`}>
+                <span className={`text-foreground font-medium flex-1 truncate text-base lg:text-sm`}>
                   {combatant.name}
-                  {isPlayer && (
-                    <span className="text-gold/60 text-sm lg:text-xs ml-1">({t("you_label")})</span>
-                  )}
                 </span>
+                {/* Type indicator: player or monster */}
+                {isOwnChar ? (
+                  <span className="shrink-0 text-xs text-blue-400/70 font-medium">
+                    {t("your_character")}
+                  </span>
+                ) : isPlayer ? (
+                  <span className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-400/60">
+                    <User className="w-3 h-3" aria-hidden="true" />
+                    {t("player_tag")}
+                  </span>
+                ) : (
+                  <span className="shrink-0 inline-flex items-center gap-1 text-xs text-red-400/50">
+                    <Bug className="w-3 h-3" aria-hidden="true" />
+                  </span>
+                )}
                 {combatant.is_defeated && (
                   <span className="text-sm lg:text-xs text-red-400 font-medium shrink-0">
                     {t("defeated")}
@@ -489,7 +528,7 @@ export function PlayerInitiativeBoard({
 
               {/* HP display — full bar for players, status label for monsters */}
               {isPlayer ? (
-                <div className="mb-2">
+                <div className="mt-1.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-sm lg:text-xs">{t("hp_label")}</span>
                     <span className="text-muted-foreground text-base lg:text-sm font-mono">
@@ -507,7 +546,7 @@ export function PlayerInitiativeBoard({
                     </span>
                   </div>
                   <div
-                    className="h-6 lg:h-2.5 bg-white/[0.06] rounded-full overflow-hidden"
+                    className="h-4 lg:h-2.5 bg-white/[0.06] rounded-full overflow-hidden"
                     role="progressbar"
                     aria-valuenow={combatant.current_hp}
                     aria-valuemin={0}
@@ -521,14 +560,14 @@ export function PlayerInitiativeBoard({
                   </div>
                 </div>
               ) : combatant.hp_status ? (
-                <div className="mb-2">
+                <div className="mt-1.5">
                   <HpStatusBadge status={combatant.hp_status} />
                 </div>
               ) : null}
 
               {/* Condition badges */}
               {combatant.conditions.length > 0 && (
-                <div className="flex flex-wrap gap-2 lg:gap-1.5" role="list" aria-label={`${combatant.name} conditions`}>
+                <div className="flex flex-wrap gap-2 lg:gap-1.5 mt-1.5" role="list" aria-label={`${combatant.name} conditions`}>
                   {combatant.conditions.map((condition) => (
                     <ConditionBadge
                       key={condition}
@@ -543,6 +582,24 @@ export function PlayerInitiativeBoard({
         })}
         </AnimatePresence>
       </ul>
+
+      {/* ── COMBAT LOG — at the bottom so it doesn't compete with turn info ── */}
+      {visibleLog.length > 0 && (
+        <div className="bg-card/50 border border-border/50 rounded-lg px-3 py-2">
+          <h3 className="text-muted-foreground text-sm lg:text-xs font-medium mb-1.5">{t("combat_log_title")}</h3>
+          <ul className="space-y-1 lg:space-y-0.5 max-h-36 lg:max-h-28 overflow-y-auto">
+            {visibleLog.map((entry, i) => (
+              <li key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 text-sm lg:text-xs min-h-[32px] lg:min-h-0 items-center lg:items-baseline">
+                <span className={`shrink-0 ${LOG_TYPE_COLORS[entry.type]}`}>●</span>
+                <span className="text-foreground/80 flex-1">{entry.text}</span>
+                <span className="text-muted-foreground text-xs lg:text-[10px] shrink-0">
+                  {formatRelativeTime(entry.timestamp, t)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Notification toggle */}
       <div className="flex justify-center py-2">
