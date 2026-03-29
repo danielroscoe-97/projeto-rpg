@@ -85,34 +85,45 @@ export function CombatantSetupRow({
 
       {/* Init */}
       <div className="flex items-center gap-0.5 w-12 md:w-auto flex-shrink-0">
-        <input
-          type="text"
-          inputMode="numeric"
-          pattern="-?[0-9]*"
-          value={combatant.initiative ?? ""}
-          onChange={(e) => {
-            const raw = e.target.value;
-            if (raw === "" || raw === "-") {
-              onInitiativeChange(combatant.id, null);
-              return;
-            }
-            if (/^-?\d+$/.test(raw)) {
-              onInitiativeChange(combatant.id, Number(raw));
-            }
-          }}
-          onBlur={(e) => {
-            const val = Number(e.target.value);
-            if (!isNaN(val) && e.target.value !== "") {
-              onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
-            }
-          }}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_init_placeholder")}
-          className={`${inputClass} w-10 text-center font-mono${highlightInit ? " field-error" : ""}`}
-          aria-label={t("setup_init_aria", { name: combatant.name })}
-          aria-invalid={highlightInit || undefined}
-          data-testid={`setup-init-${combatant.id}`}
-        />
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="-?[0-9]*"
+                value={combatant.initiative ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "" || raw === "-") {
+                    onInitiativeChange(combatant.id, null);
+                    return;
+                  }
+                  if (/^-?\d+$/.test(raw)) {
+                    onInitiativeChange(combatant.id, Number(raw));
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = Number(e.target.value);
+                  if (!isNaN(val) && e.target.value !== "") {
+                    onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
+                  }
+                }}
+                onFocus={selectOnFocus}
+                placeholder={t("setup_init_placeholder")}
+                className={`${inputClass} w-10 text-center font-mono${highlightInit ? " field-error" : ""}`}
+                aria-label={t("setup_init_aria", { name: combatant.name })}
+                aria-invalid={highlightInit || undefined}
+                data-testid={`setup-init-${combatant.id}`}
+              />
+            </TooltipTrigger>
+            {combatant.initiative_breakdown && (
+              <TooltipContent side="bottom" className="text-xs font-mono">
+                🎲 {combatant.initiative_breakdown.roll} {combatant.initiative_breakdown.modifier >= 0 ? "+" : "−"} {Math.abs(combatant.initiative_breakdown.modifier)} DEX
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
         {onRollInitiative && (
           <button
             type="button"

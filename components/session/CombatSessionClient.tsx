@@ -277,6 +277,7 @@ export function CombatSessionClient({
       ac: monster.armor_class,
       spell_save_dc: null,
       initiative: rollResult.total,
+      initiative_breakdown: { roll: rollResult.rolls[0], modifier: rollResult.modifier },
       initiative_order: null,
       conditions: [],
       ruleset_version: monster.ruleset_version,

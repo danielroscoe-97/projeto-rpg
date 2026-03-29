@@ -132,6 +132,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         ac: monster.armor_class,
         spell_save_dc: null,
         initiative: rollResult.total,
+        initiative_breakdown: { roll: rollResult.rolls[0], modifier: rollResult.modifier },
         initiative_order: null,
         conditions: [],
         ruleset_version: monster.ruleset_version,
@@ -165,6 +166,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       // Roll initiative once for the whole group (D&D 5e PHB p.189)
       const groupInitResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
       const groupInit = groupInitResult.total;
+      const groupBreakdown = { roll: groupInitResult.rolls[0], modifier: groupInitResult.modifier };
       const currentCombatants = useGuestCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       // Generate ONE display name for the group, append numbers
@@ -181,6 +183,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           ac: monster.armor_class,
           spell_save_dc: null,
           initiative: groupInit,
+          initiative_breakdown: groupBreakdown,
           initiative_order: null,
           conditions: [],
           ruleset_version: monster.ruleset_version,

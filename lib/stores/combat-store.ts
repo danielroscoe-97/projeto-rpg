@@ -61,19 +61,21 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
   setLoading: (is_loading) => set({ is_loading }),
 
-  setInitiative: (id, value) =>
+  setInitiative: (id, value, breakdown) =>
     set((state) => {
+      const patch: Partial<Combatant> = { initiative: value };
+      if (breakdown !== undefined) patch.initiative_breakdown = breakdown;
       // During active combat, only update the value — do NOT re-sort.
       // Reordering happens on advanceTurn so the current turn isn't disrupted.
       if (state.is_active) {
         const updated = state.combatants.map((c) =>
-          c.id === id ? { ...c, initiative: value } : c
+          c.id === id ? { ...c, ...patch } : c
         );
         return { combatants: updated };
       }
       // Pre-combat: sort immediately so the setup list reflects order.
       const updated = state.combatants.map((c) =>
-        c.id === id ? { ...c, initiative: value } : c
+        c.id === id ? { ...c, ...patch } : c
       );
       const sorted = assignInitiativeOrder(sortByInitiative(updated));
       return { combatants: sorted };
@@ -81,10 +83,14 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
   batchSetInitiatives: (entries) =>
     set((state) => {
-      const initMap = new Map(entries.map((e) => [e.id, e.value]));
-      const updated = state.combatants.map((c) =>
-        initMap.has(c.id) ? { ...c, initiative: initMap.get(c.id)! } : c
-      );
+      const initMap = new Map(entries.map((e) => [e.id, { value: e.value, breakdown: e.breakdown }]));
+      const updated = state.combatants.map((c) => {
+        const entry = initMap.get(c.id);
+        if (!entry) return c;
+        const patch: Partial<Combatant> = { initiative: entry.value };
+        if (entry.breakdown !== undefined) patch.initiative_breakdown = entry.breakdown;
+        return { ...c, ...patch };
+      });
       return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
     }),
 

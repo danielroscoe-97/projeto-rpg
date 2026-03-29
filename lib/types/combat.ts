@@ -16,6 +16,8 @@ export interface Combatant {
   ac: number;
   spell_save_dc: number | null;
   initiative: number | null;
+  /** Client-side only: d20 roll + modifier breakdown for DM auditing. Not persisted to DB. */
+  initiative_breakdown?: { roll: number; modifier: number } | null;
   initiative_order: number | null;
   conditions: string[];
   ruleset_version: RulesetVersion | null;
@@ -79,9 +81,9 @@ export interface CombatActions {
   setError: (error: string | null) => void;
   setLoading: (is_loading: boolean) => void;
   /** Update a single combatant's initiative value and re-sort the list. */
-  setInitiative: (id: string, value: number | null) => void;
+  setInitiative: (id: string, value: number | null, breakdown?: { roll: number; modifier: number } | null) => void;
   /** Batch-set initiative for multiple combatants in a single update (avoids N re-sorts). */
-  batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
+  batchSetInitiatives: (entries: Array<{ id: string; value: number; breakdown?: { roll: number; modifier: number } | null }>) => void;
   /** Replace the combatant list with a manually reordered array and re-assign initiative_order. */
   reorderCombatants: (newOrder: Combatant[]) => void;
   /** Mark the encounter as active and set current_turn_index = 0. */

@@ -10,8 +10,8 @@ import type { RulesetVersion } from "@/lib/types/database";
 interface InitiativeStore {
   getState: () => {
     combatants: Combatant[];
-    batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
-    setInitiative: (id: string, value: number | null) => void;
+    batchSetInitiatives: (entries: Array<{ id: string; value: number; breakdown?: { roll: number; modifier: number } | null }>) => void;
+    setInitiative: (id: string, value: number | null, breakdown?: { roll: number; modifier: number } | null) => void;
   };
 }
 
@@ -41,13 +41,14 @@ export function useInitiativeRolling(
       if (!c) return;
       const dex = getDexScore(c, monsterIndexRef.current);
       const result = rollInitiativeForCombatant(id, dex);
+      const breakdown = { roll: result.rolls[0], modifier: result.modifier };
 
       // If this combatant belongs to a group, apply the same roll to all members
       if (c.monster_group_id) {
         const groupMembers = combatants.filter((x) => x.monster_group_id === c.monster_group_id);
-        batchSetInitiatives(groupMembers.map((m) => ({ id: m.id, value: result.total })));
+        batchSetInitiatives(groupMembers.map((m) => ({ id: m.id, value: result.total, breakdown })));
       } else {
-        setInitiative(id, result.total);
+        setInitiative(id, result.total, breakdown);
       }
     },
     [store]
@@ -55,8 +56,8 @@ export function useInitiativeRolling(
 
   /** Roll initiative for a list of combatants. Groups share one roll (D&D 5e PHB p.189). */
   const rollForCombatants = useCallback((combatants: Combatant[]) => {
-    const entries: Array<{ id: string; value: number }> = [];
-    const groupRolls = new Map<string, number>();
+    const entries: Array<{ id: string; value: number; breakdown?: { roll: number; modifier: number } | null }> = [];
+    const groupRolls = new Map<string, { total: number; breakdown: { roll: number; modifier: number } }>();
 
     for (const c of combatants) {
       if (c.initiative !== null) continue;
@@ -66,13 +67,14 @@ export function useInitiativeRolling(
         if (!groupRolls.has(c.monster_group_id)) {
           const dex = getDexScore(c, monsterIndexRef.current);
           const result = rollInitiativeForCombatant(c.id, dex);
-          groupRolls.set(c.monster_group_id, result.total);
+          groupRolls.set(c.monster_group_id, { total: result.total, breakdown: { roll: result.rolls[0], modifier: result.modifier } });
         }
-        entries.push({ id: c.id, value: groupRolls.get(c.monster_group_id)! });
+        const gr = groupRolls.get(c.monster_group_id)!;
+        entries.push({ id: c.id, value: gr.total, breakdown: gr.breakdown });
       } else {
         const dex = getDexScore(c, monsterIndexRef.current);
         const result = rollInitiativeForCombatant(c.id, dex);
-        entries.push({ id: c.id, value: result.total });
+        entries.push({ id: c.id, value: result.total, breakdown: { roll: result.rolls[0], modifier: result.modifier } });
       }
     }
 
