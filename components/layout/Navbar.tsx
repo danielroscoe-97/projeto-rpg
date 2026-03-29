@@ -74,7 +74,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
                       <ChevronDown className="w-3 h-3 opacity-60" aria-hidden="true" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="bg-surface border-white/10">
+                  <DropdownMenuContent align="start" className="bg-surface-secondary border-white/10 shadow-xl backdrop-blur-none">
                     {link.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
                         <Link

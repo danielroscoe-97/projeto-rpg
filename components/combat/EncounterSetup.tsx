@@ -314,17 +314,18 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     const name = addRow.name.trim();
     const hpValue = addRow.hp.trim();
     const acValue = addRow.ac.trim();
-    const hp = hpValue ? parseInt(hpValue, 10) : NaN;
-    const ac = acValue ? parseInt(acValue, 10) : NaN;
+    const hp = hpValue ? parseInt(hpValue, 10) : null;
+    const ac = acValue ? parseInt(acValue, 10) : null;
     const errors = new Set<string>();
     if (!name) errors.add("name");
-    if (isNaN(hp) || hp < 1) errors.add("hp");
-    if (isNaN(ac) || ac < 1) errors.add("ac");
     if (errors.size > 0) {
       setAddRowErrors(errors);
       return;
     }
     setAddRowErrors(new Set());
+
+    const safeHp = hp !== null && !isNaN(hp) && hp >= 1 ? hp : 0;
+    const safeAc = ac !== null && !isNaN(ac) && ac >= 1 ? ac : 0;
 
     const initVal = addRow.initiative.trim()
       ? parseInt(addRow.initiative, 10)
@@ -336,10 +337,10 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     const displayName = getDefaultDisplayName(selType, useCombatStore.getState().combatants);
     addCombatant({
       name,
-      current_hp: hp,
-      max_hp: hp,
+      current_hp: safeHp,
+      max_hp: safeHp,
       temp_hp: 0,
-      ac: ac,
+      ac: safeAc,
       spell_save_dc: null,
       initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
       initiative_order: null,
