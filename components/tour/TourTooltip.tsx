@@ -29,15 +29,10 @@ function computePosition(
   const isMobile = window.innerWidth < 768;
   const safeMargin = 16;
 
-  // Bottom-sheet fallback: when target is too tall (>50% viewport) or
-  // target is in the bottom half and there's not enough room below,
-  // pin tooltip to bottom of viewport as a bottom-sheet.
-  // On desktop, center it horizontally; on mobile, stretch full width.
+  // Bottom-sheet fallback: only when target is too tall (>50% viewport).
+  // For small targets near the bottom, the regular top/bottom logic handles it.
   const targetTooTall = targetRect.height > window.innerHeight * 0.5;
-  const spaceBelow = window.innerHeight - targetRect.bottom;
-  const targetInBottomHalf = targetRect.top > window.innerHeight * 0.4;
-  const insufficientSpaceBelow = spaceBelow < 200;
-  if (targetTooTall || (targetInBottomHalf && insufficientSpaceBelow)) {
+  if (targetTooTall) {
     // Use explicit left instead of left:50%+translateX(-50%) because
     // Framer Motion's animate overrides the CSS transform, breaking centering.
     const sheetWidth = Math.min(isMobile ? tooltipWidth : 420, window.innerWidth - safeMargin * 2);
@@ -54,7 +49,9 @@ function computePosition(
   }
 
   const candidates: Position[] = isMobile
-    ? ["bottom", "top"]
+    ? preferred === "top"
+      ? ["top", "bottom"]
+      : ["bottom", "top"]
     : preferred
       ? [preferred, "bottom", "top", "right", "left"]
       : ["bottom", "top", "right", "left"];
