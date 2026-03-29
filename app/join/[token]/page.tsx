@@ -89,17 +89,22 @@ export default async function JoinPage({ params }: JoinPageProps) {
     const { data: combatantRows } = await supabase
       .from("combatants")
       .select(
-        "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, monster_id, ruleset_version"
+        "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version"
       )
       .eq("encounter_id", encounter.id)
       .order("initiative_order", { ascending: true });
 
-    // Strip sensitive monster stats — players only see HP status label
-    combatants = (combatantRows ?? []).map((c) => {
-      if (c.is_player) return c;
-      const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, ...safe } = c;
-      return { ...safe, hp_status: getHpStatus(_current_hp, _max_hp) };
-    });
+    // Filter hidden combatants and strip sensitive monster stats — players only see HP status label
+    combatants = (combatantRows ?? [])
+      .filter((c) => !c.is_hidden)
+      .map((c) => {
+        if (c.is_player) {
+          const { is_hidden: _h, ...rest } = c;
+          return rest;
+        }
+        const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, is_hidden: _h, ...safe } = c;
+        return { ...safe, hp_status: getHpStatus(_current_hp, _max_hp) };
+      });
   }
 
   // Auto-join: detect authenticated user with characters in this campaign
@@ -142,6 +147,18 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   const dmPlan = (["free","pro","mesa"].includes(session.dm_plan) ? session.dm_plan : "free") as Plan;
 
+  // Fetch already-registered player names for this session (enables rejoin without cookies)
+  const { data: registeredTokens } = await supabase
+    .from("session_tokens")
+    .select("player_name")
+    .eq("session_id", session.id)
+    .eq("is_active", true)
+    .not("player_name", "is", null);
+
+  const registeredPlayerNames = (registeredTokens ?? [])
+    .map((t) => t.player_name!)
+    .filter(Boolean);
+
   return (
     <PlayerJoinClient
       tokenId={tokenRow.id}
@@ -155,6 +172,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       initialCombatants={combatants}
       prefilledCharacters={prefilledCharacters}
       dmPlan={dmPlan}
+      registeredPlayerNames={registeredPlayerNames}
     />
   );
 }

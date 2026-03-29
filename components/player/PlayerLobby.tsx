@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Swords, Users } from "lucide-react";
+import { Swords, Users, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
 
@@ -43,6 +43,10 @@ interface PlayerLobbyProps {
   lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected" | "polling";
   /** Characters the authenticated player has in this campaign (auto-join pre-fill) */
   prefilledCharacters?: PrefilledCharacter[];
+  /** Names of players already registered in this session (for cookie-less rejoin) */
+  registeredPlayerNames?: string[];
+  /** Called when a returning player selects their name to rejoin */
+  onRejoin?: (playerName: string) => Promise<void>;
 }
 
 export function PlayerLobby({
@@ -55,6 +59,8 @@ export function PlayerLobby({
   onLateJoinRequest,
   lateJoinStatus = "idle",
   prefilledCharacters,
+  registeredPlayerNames = [],
+  onRejoin,
 }: PlayerLobbyProps) {
   const t = useTranslations("player");
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
@@ -68,6 +74,17 @@ export function PlayerLobby({
   const [ac, setAc] = useState(selectedChar ? String(selectedChar.ac) : "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Set<string>>(new Set());
+  const [isRejoining, setIsRejoining] = useState(false);
+
+  const handleRejoinClick = async (playerName: string) => {
+    if (!onRejoin || isRejoining) return;
+    setIsRejoining(true);
+    try {
+      await onRejoin(playerName);
+    } catch {
+      setIsRejoining(false);
+    }
+  };
 
   // Pre-fill form when character selected
   const handleSelectCharacter = (charId: string) => {
@@ -247,6 +264,36 @@ export function PlayerLobby({
           )}
         </div>
 
+        {/* Rejoin section — shown when there are already-registered players and this visitor isn't registered */}
+        {registeredPlayerNames.length > 0 && onRejoin && !isRegistered && (
+          <div className="bg-card border border-border rounded-lg px-4 py-3 space-y-2">
+            <p className="text-muted-foreground text-sm font-medium">
+              {t("rejoin_title")}
+            </p>
+            <div className="grid gap-2">
+              {registeredPlayerNames.map((pName) => (
+                <button
+                  key={pName}
+                  type="button"
+                  disabled={isRejoining}
+                  onClick={() => handleRejoinClick(pName)}
+                  className="w-full text-left px-3 py-2.5 rounded-lg border border-border bg-background text-foreground hover:border-gold/50 hover:bg-gold/5 transition-colors disabled:opacity-50 min-h-[48px] flex items-center gap-2"
+                  data-testid={`rejoin-${pName}`}
+                >
+                  <Swords className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
+                  <span className="font-medium text-sm">{pName}</span>
+                  <span className="text-muted-foreground text-xs ml-auto">{t("rejoin_button")}</span>
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <div className="flex-1 border-t border-border" />
+              <span className="text-muted-foreground/60 text-xs">{t("rejoin_or_new")}</span>
+              <div className="flex-1 border-t border-border" />
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4">
           {/* Character selector — shown when player has characters in this campaign */}
           {prefilledCharacters && prefilledCharacters.length > 1 && (
@@ -407,6 +454,18 @@ export function PlayerLobby({
             </ul>
           </div>
         )}
+
+        {/* Login link — lets players use their real account for persistent session */}
+        <div className="text-center pt-2">
+          <a
+            href={`/auth/login?next=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
+            className="inline-flex items-center gap-1.5 text-muted-foreground/70 text-xs hover:text-gold transition-colors"
+            data-testid="lobby-login-link"
+          >
+            <LogIn className="w-3.5 h-3.5" aria-hidden="true" />
+            {t("lobby_login_link")}
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -99,7 +99,7 @@ describe("PlayerJoinClient", () => {
       data: { user: { id: "anon-user-1" } },
       error: null,
     });
-    mockClaimPlayerToken.mockResolvedValue("token-123");
+    mockClaimPlayerToken.mockResolvedValue({ tokenId: "token-123", playerName: null });
     mockRegisterPlayerCombatant.mockResolvedValue(undefined);
     mockChannel.mockReturnValue(createMockChannel());
   });
@@ -256,5 +256,41 @@ describe("PlayerJoinClient", () => {
     await waitFor(() => {
       expect(screen.getByTestId("mock-player-lobby")).toBeInTheDocument();
     });
+  });
+
+  it("auto-sets isRegistered when claimPlayerToken returns playerName (same-device reconnect)", async () => {
+    mockClaimPlayerToken.mockResolvedValue({ tokenId: "token-123", playerName: "Gandalf" });
+    const mockCh = createMockChannel();
+    mockChannel.mockReturnValue(mockCh);
+
+    render(
+      <PlayerJoinClient
+        {...DEFAULT_PROPS}
+        isActive={true}
+        encounterId="enc-1"
+        initialCombatants={[
+          {
+            id: "c1",
+            name: "Gandalf",
+            current_hp: 50,
+            max_hp: 50,
+            initiative_order: 0,
+            conditions: [],
+            is_defeated: false,
+            is_player: true,
+            monster_id: null,
+            ruleset_version: null,
+          },
+        ]}
+      />
+    );
+
+    // Should skip lobby and go straight to combat view
+    await waitFor(() => {
+      expect(screen.getByTestId("player-view")).toBeInTheDocument();
+    });
+
+    // Should NOT have called registerPlayerCombatant (already registered)
+    expect(mockRegisterPlayerCombatant).not.toHaveBeenCalled();
   });
 });

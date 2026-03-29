@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { claimPlayerToken, registerPlayerCombatant, markPlayerToken } from "@/lib/supabase/player-registration";
+import { claimPlayerToken, registerPlayerCombatant, markPlayerToken, rejoinAsPlayer } from "@/lib/supabase/player-registration";
 import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
 import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
@@ -63,6 +63,8 @@ interface PlayerJoinClientProps {
   prefilledCharacters?: PrefilledCharacter[];
   /** DM's plan snapshotted on the session (Mesa model) */
   dmPlan?: Plan;
+  /** Player names already registered in this session (enables cookie-less rejoin) */
+  registeredPlayerNames?: string[];
 }
 
 export function PlayerJoinClient({
@@ -77,6 +79,7 @@ export function PlayerJoinClient({
   initialCombatants,
   prefilledCharacters,
   dmPlan = "free",
+  registeredPlayerNames = [],
 }: PlayerJoinClientProps) {
   const t = useTranslations("player");
   const tRef = useRef(t);
@@ -187,9 +190,14 @@ export function PlayerJoinClient({
         }
 
         // Server action — creates per-player token if shared one is taken
-        const claimedTokenId = await withTimeout(claimPlayerToken(tokenId, userId), 10000);
+        const { tokenId: claimedTokenId, playerName } = await withTimeout(claimPlayerToken(tokenId, userId), 10000);
         if (!cancelled) {
           setEffectiveTokenId(claimedTokenId);
+          // Same-device reconnect: player already registered on this token
+          if (playerName) {
+            setIsRegistered(true);
+            setRegisteredName(playerName);
+          }
           setAuthReady(true);
         }
       } catch (err) {
@@ -726,6 +734,29 @@ export function PlayerJoinClient({
     }
   }, [effectiveTokenId, sessionId]);
 
+  // Rejoin handler — for returning players who lost their anonymous session (cookies cleared)
+  const handleRejoin = useCallback(async (playerName: string) => {
+    try {
+      const supabase = createClient();
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      const userId = authSession?.user?.id;
+      if (!userId) throw new Error("No auth session");
+
+      const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, playerName, userId);
+      setEffectiveTokenId(rejoinedTokenId);
+      setIsRegistered(true);
+      setRegisteredName(playerName);
+    } catch (err) {
+      captureError(err instanceof Error ? err : new Error(String(err)), {
+        component: "PlayerJoinClient",
+        action: "rejoin",
+        category: "auth",
+        extra: { sessionId, playerName },
+      });
+      toast.error(tRef.current("rejoin_error"));
+    }
+  }, [sessionId]);
+
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleLateJoinRequest = useCallback(async (data: {
@@ -801,6 +832,8 @@ export function PlayerJoinClient({
         isRegistered={isRegistered}
         registeredName={registeredName}
         prefilledCharacters={prefilledCharacters}
+        registeredPlayerNames={registeredPlayerNames}
+        onRejoin={handleRejoin}
       />
     );
   }
@@ -818,6 +851,8 @@ export function PlayerJoinClient({
         onLateJoinRequest={handleLateJoinRequest}
         lateJoinStatus={lateJoinStatus}
         prefilledCharacters={prefilledCharacters}
+        registeredPlayerNames={registeredPlayerNames}
+        onRejoin={handleRejoin}
       />
     );
   }

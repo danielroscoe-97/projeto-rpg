@@ -188,6 +188,7 @@ export interface Database {
           conditions: string[];
           ruleset_version: RulesetVersion | null;
           is_defeated: boolean;
+          is_hidden: boolean;
           is_player: boolean;
           monster_id: string | null;
           player_character_id: string | null;
@@ -210,6 +211,7 @@ export interface Database {
           conditions?: string[];
           ruleset_version?: RulesetVersion | null;
           is_defeated?: boolean;
+          is_hidden?: boolean;
           is_player?: boolean;
           monster_id?: string | null;
           player_character_id?: string | null;
@@ -231,6 +233,7 @@ export interface Database {
           conditions?: string[];
           ruleset_version?: RulesetVersion | null;
           is_defeated?: boolean;
+          is_hidden?: boolean;
           is_player?: boolean;
           monster_id?: string | null;
           player_character_id?: string | null;

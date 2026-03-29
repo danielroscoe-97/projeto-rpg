@@ -10,22 +10,28 @@ interface PlayerRegistrationData {
   ac: number | null;
 }
 
+export interface ClaimTokenResult {
+  tokenId: string;
+  /** Non-null when this player previously registered (same-device reconnect). */
+  playerName: string | null;
+}
+
 /**
  * Claims an existing session token for an anonymous player, or creates a new
  * per-player token if the shared token is already claimed.
  * Uses service client to bypass RLS (anonymous players have no token yet).
- * Returns the effective token ID for this player.
+ * Returns the effective token ID and player_name (if already registered).
  */
 export async function claimPlayerToken(
   masterTokenId: string,
   anonUserId: string
-): Promise<string> {
+): Promise<ClaimTokenResult> {
   const supabase = createServiceClient();
 
   // Look up the master token
   const { data: master } = await supabase
     .from("session_tokens")
-    .select("id, session_id, anon_user_id")
+    .select("id, session_id, anon_user_id, player_name")
     .eq("id", masterTokenId)
     .eq("is_active", true)
     .single();
@@ -33,19 +39,21 @@ export async function claimPlayerToken(
   if (!master) throw new Error("Token not found");
 
   // Already claimed by this player
-  if (master.anon_user_id === anonUserId) return master.id;
+  if (master.anon_user_id === anonUserId) {
+    return { tokenId: master.id, playerName: master.player_name ?? null };
+  }
 
   // Check if player already has a token for this session
   const { data: existing } = await supabase
     .from("session_tokens")
-    .select("id")
+    .select("id, player_name")
     .eq("session_id", master.session_id)
     .eq("anon_user_id", anonUserId)
     .eq("is_active", true)
     .limit(1)
     .single();
 
-  if (existing) return existing.id;
+  if (existing) return { tokenId: existing.id, playerName: existing.player_name ?? null };
 
   // Token unclaimed — try to claim it (atomic: only succeeds if still null)
   if (!master.anon_user_id) {
@@ -60,7 +68,7 @@ export async function claimPlayerToken(
       .select("id")
       .single();
 
-    if (claimed) return masterTokenId;
+    if (claimed) return { tokenId: masterTokenId, playerName: null };
   }
 
   // Token already claimed by another player — create a new one
@@ -81,7 +89,7 @@ export async function claimPlayerToken(
     .single();
 
   if (insertError) throw new Error(`Failed to create player token: ${insertError.message}`);
-  return created.id;
+  return { tokenId: created.id, playerName: null };
 }
 
 /**
@@ -257,4 +265,55 @@ export async function getRegisteredPlayers(
     id: t.id,
     name: t.player_name!,
   }));
+}
+
+/**
+ * Rejoin a session as a previously-registered player.
+ * Transfers ownership of the player's token to the new anonymous user ID
+ * (handles cookie-less reconnect: player lost their anonymous session).
+ * Returns the effective token ID for this player.
+ */
+export async function rejoinAsPlayer(
+  sessionId: string,
+  playerName: string,
+  anonUserId: string
+): Promise<ClaimTokenResult> {
+  const supabase = createServiceClient();
+
+  const name = playerName?.trim();
+  if (!name) throw new Error("Invalid name");
+
+  // Find the token for this player in this session
+  const { data: token, error: tokenError } = await supabase
+    .from("session_tokens")
+    .select("id, player_name, anon_user_id")
+    .eq("session_id", sessionId)
+    .eq("player_name", name)
+    .eq("is_active", true)
+    .limit(1)
+    .single();
+
+  if (tokenError || !token) {
+    throw new Error("Player not found in this session");
+  }
+
+  // Already owned by this user — no transfer needed
+  if (token.anon_user_id === anonUserId) {
+    return { tokenId: token.id, playerName: token.player_name };
+  }
+
+  // Transfer token ownership to the new anonymous user
+  await supabase
+    .from("session_tokens")
+    .update({
+      anon_user_id: anonUserId,
+      last_seen_at: new Date().toISOString(),
+    })
+    .eq("id", token.id);
+
+  trackServerEvent("player:rejoined", {
+    properties: { session_id: sessionId, token_id: token.id, player_name: name },
+  });
+
+  return { tokenId: token.id, playerName: token.player_name };
 }

@@ -39,6 +39,7 @@ export async function reconcileFullState(
         conditions: c.conditions,
         is_defeated: c.is_defeated,
         is_player: c.is_player,
+        is_hidden: c.is_hidden,
         monster_id: c.monster_id,
         display_name: c.display_name ?? null,
         monster_group_id: c.monster_group_id ?? null,
