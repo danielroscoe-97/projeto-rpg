@@ -544,7 +544,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               data-testid="add-row-role"
             >
               <Icon className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">{t(config.label)}</span>
+              <span>{t(config.label)}</span>
             </button>
           );
         })()}
