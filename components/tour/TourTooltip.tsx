@@ -38,14 +38,16 @@ function computePosition(
   const targetInBottomHalf = targetRect.top > window.innerHeight * 0.4;
   const insufficientSpaceBelow = spaceBelow < 200;
   if (targetTooTall || (targetInBottomHalf && insufficientSpaceBelow)) {
+    // Use explicit left instead of left:50%+translateX(-50%) because
+    // Framer Motion's animate overrides the CSS transform, breaking centering.
+    const sheetWidth = Math.min(isMobile ? tooltipWidth : 420, window.innerWidth - safeMargin * 2);
     return {
       position: "bottom",
       style: {
-        maxWidth: isMobile ? tooltipWidth : 420,
+        width: sheetWidth,
+        maxWidth: sheetWidth,
         bottom: safeMargin,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: `calc(100% - ${safeMargin * 2}px)`,
+        left: (window.innerWidth - sheetWidth) / 2,
         maxHeight: `calc(50vh - ${safeMargin}px)`,
       },
     };
