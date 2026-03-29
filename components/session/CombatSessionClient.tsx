@@ -26,7 +26,6 @@ import { broadcastEvent, getDmChannel, registerHiddenLookup } from "@/lib/realti
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
-import { DiceRollLog, type DiceRollEntry } from "@/components/combat/DiceRollLog";
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
@@ -71,7 +70,6 @@ export function CombatSessionClient({
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
-  const [diceLog, setDiceLog] = useState<DiceRollEntry[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
@@ -207,6 +205,11 @@ export function CombatSessionClient({
         }
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
+        // Auto-expand group if first combatant belongs to one
+        const firstCombatant = sorted[0];
+        if (firstCombatant?.monster_group_id) {
+          store.toggleGroupExpanded(firstCombatant.monster_group_id);
+        }
         // Notify players that combat has started
         broadcastEvent(getSessionId(), {
           type: "session:state_sync",
@@ -231,6 +234,11 @@ export function CombatSessionClient({
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
       store.startCombat();
+      // Auto-expand group if first combatant belongs to one
+      const firstNew = sorted[0];
+      if (firstNew?.monster_group_id) {
+        store.toggleGroupExpanded(firstNew.monster_group_id);
+      }
       // Notify players that combat has started
       broadcastEvent(session_id, {
         type: "session:state_sync",
@@ -327,13 +335,6 @@ export function CombatSessionClient({
     }
   }, [addCombatantAction]);
 
-  const addDiceRoll = useCallback((entry: Omit<DiceRollEntry, "id" | "timestamp">) => {
-    setDiceLog((prev) => {
-      const next = [...prev, { ...entry, id: crypto.randomUUID(), timestamp: Date.now() }];
-      return next.length > 50 ? next.slice(-50) : next;
-    });
-  }, []);
-
   /** Apply HP change to multiple targets (AoE). Each target is independent (fail-safe). */
   const handleApplyToMultiple = useCallback((targetIds: string[], amount: number, mode: HpMode) => {
     let appliedCount = 0;
@@ -355,27 +356,6 @@ export function CombatSessionClient({
       toast(t("hp_applied_multiple", { count: appliedCount }), { duration: 2000 });
     }
   }, [handleApplyDamage, handleApplyHealing, handleSetTempHp, t]);
-
-  // Listen for dice-roll-result events from ClickableRoll and feed into DiceRollLog
-  useEffect(() => {
-    function handleDiceRollEvent(e: Event) {
-      const r = (e as CustomEvent).detail;
-      if (!r || !r.notation) return;
-      addDiceRoll({
-        label: r.label || r.notation,
-        expression: r.notation,
-        rolls: (r.dice ?? []).map((d: { value: number }) => d.value),
-        modifier: r.modifier ?? 0,
-        total: r.total ?? 0,
-        mode: r.mode ?? "normal",
-        discardedRolls: (r.discardedDice ?? []).map((d: { value: number }) => d.value),
-        isNat1: r.isNat1 ?? false,
-        isNat20: r.isNat20 ?? false,
-      });
-    }
-    window.addEventListener("dice-roll-result", handleDiceRollEvent);
-    return () => window.removeEventListener("dice-roll-result", handleDiceRollEvent);
-  }, [addDiceRoll]);
 
   // Combat resilience: beforeunload flush + offline→online reconciliation
   useCombatResilience();
@@ -846,8 +826,6 @@ export function CombatSessionClient({
         }}
         t={t}
       />
-
-      <DiceRollLog entries={diceLog} className="max-h-[300px]" />
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
 

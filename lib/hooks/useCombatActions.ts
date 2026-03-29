@@ -80,6 +80,15 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       return;
     }
 
+    // Auto-expand group when turn advances to a grouped combatant
+    const nextCombatant = combatants[nextIdx];
+    if (nextCombatant?.monster_group_id) {
+      const { expandedGroups, toggleGroupExpanded } = useCombatStore.getState();
+      if (!expandedGroups[nextCombatant.monster_group_id]) {
+        toggleGroupExpanded(nextCombatant.monster_group_id);
+      }
+    }
+
     // Compute next_combatant_id: the non-defeated combatant after the current one (Story 3.1)
     let nextCombatantId: string | undefined;
     if (combatants.length > 1) {
