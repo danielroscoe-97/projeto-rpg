@@ -24,7 +24,9 @@ export type RealtimeEventType =
   | "session:player_linked"
   | "session:combat_stats"
   | "session:weather_change"
-  | "audio:play_sound";
+  | "audio:play_sound"
+  | "audio:ambient_start"
+  | "audio:ambient_stop";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -174,6 +176,15 @@ export interface RealtimeAudioPlay {
   audio_url?: string;
 }
 
+export interface RealtimeAmbientStart {
+  type: "audio:ambient_start";
+  sound_id: string;
+}
+
+export interface RealtimeAmbientStop {
+  type: "audio:ambient_stop";
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -194,7 +205,9 @@ export type RealtimeEvent =
   | RealtimeStateSync
   | RealtimeCombatStats
   | RealtimeWeatherChange
-  | RealtimeAudioPlay;
+  | RealtimeAudioPlay
+  | RealtimeAmbientStart
+  | RealtimeAmbientStop;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -279,4 +292,6 @@ export type SanitizedEvent =
   | RealtimeSessionRevoked
   | RealtimeCombatStats
   | RealtimeWeatherChange
-  | RealtimeAudioPlay;
+  | RealtimeAudioPlay
+  | RealtimeAmbientStart
+  | RealtimeAmbientStop;

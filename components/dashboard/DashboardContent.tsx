@@ -9,6 +9,7 @@ import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
+import { DmSoundboard } from "@/components/audio/DmSoundboard";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { Button } from "@/components/ui/button";
 import type { UserRole, ActiveView } from "@/lib/stores/role-store";
@@ -309,6 +310,8 @@ function DmSection({
           {t.presets_manage}
         </span>
       </Link>
+
+      <DmSoundboard ambientOnly />
     </div>
   );
 }

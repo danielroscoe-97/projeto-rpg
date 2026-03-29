@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
+import { DmSoundboard } from "@/components/audio/DmSoundboard";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
@@ -703,6 +704,7 @@ export function CombatSessionClient({
             {turnPending ? t("next_turn_saving") : t("next_turn")}
             <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
           </button>
+          <DmSoundboard onBroadcast={(event, payload) => broadcastEvent(getSessionId(), { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)} />
           <DmAudioControls />
           <button
             type="button"
