@@ -70,7 +70,7 @@ export function CombatantSetupRow({
 
   return (
     <div
-      className="flex items-center gap-1.5 bg-card border border-white/[0.04] rounded-md px-2 py-1.5 hover:bg-white/[0.02] group"
+      className="flex flex-wrap items-center gap-x-1.5 gap-y-1 md:flex-nowrap bg-card border border-white/[0.04] rounded-md px-2 py-1.5 hover:bg-white/[0.02] group"
       data-testid={`setup-row-${combatant.id}`}
     >
       {/* Drag handle */}
@@ -147,7 +147,7 @@ export function CombatantSetupRow({
       )}
 
       {/* Name */}
-      <div className="flex items-center gap-1 flex-1 min-w-0">
+      <div className="flex items-center gap-1 flex-1 min-w-0 md:flex-initial md:flex-1">
         <input
           type="text"
           value={combatant.name}
@@ -199,41 +199,49 @@ export function CombatantSetupRow({
         )}
       </div>
 
-      {/* HP */}
-      <input
-        type="number"
-        value={combatant.max_hp || ""}
-        onChange={(e) => {
-          const val = parseInt(e.target.value, 10);
-          if (!isNaN(val) && val >= 1) {
-            onHpChange(combatant.id, val);
-          }
-        }}
-        onFocus={selectOnFocus}
-        placeholder={t("setup_hp_placeholder")}
-        min={1}
-        className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-        aria-label={t("setup_hp_aria", { name: combatant.name })}
-        data-testid={`setup-hp-${combatant.id}`}
-      />
+      {/* Quebra de linha no mobile */}
+      <div className="w-full h-0 md:hidden" aria-hidden="true" />
 
-      {/* AC */}
-      <input
-        type="number"
-        value={combatant.ac || ""}
-        onChange={(e) => {
-          const val = parseInt(e.target.value, 10);
-          if (!isNaN(val) && val >= 1) {
-            onAcChange(combatant.id, val);
-          }
-        }}
-        onFocus={selectOnFocus}
-        placeholder={t("setup_ac_placeholder")}
-        min={1}
-        className={`${inputClass} w-10 md:w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-        aria-label={t("setup_ac_aria", { name: combatant.name })}
-        data-testid={`setup-ac-${combatant.id}`}
-      />
+      {/* HP + CA grouped for mobile second line */}
+      <div className="flex items-center gap-1.5 md:contents">
+        {/* HP */}
+        <span className="text-[10px] text-muted-foreground/50 uppercase md:hidden">HP</span>
+        <input
+          type="number"
+          value={combatant.max_hp || ""}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val >= 1) {
+              onHpChange(combatant.id, val);
+            }
+          }}
+          onFocus={selectOnFocus}
+          placeholder={t("setup_hp_placeholder")}
+          min={1}
+          className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          aria-label={t("setup_hp_aria", { name: combatant.name })}
+          data-testid={`setup-hp-${combatant.id}`}
+        />
+
+        {/* AC */}
+        <span className="text-[10px] text-muted-foreground/50 uppercase md:hidden">CA</span>
+        <input
+          type="number"
+          value={combatant.ac || ""}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val >= 1) {
+              onAcChange(combatant.id, val);
+            }
+          }}
+          onFocus={selectOnFocus}
+          placeholder={t("setup_ac_placeholder")}
+          min={1}
+          className={`${inputClass} w-10 md:w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          aria-label={t("setup_ac_aria", { name: combatant.name })}
+          data-testid={`setup-ac-${combatant.id}`}
+        />
+      </div>
 
       {/* Notes — hidden on mobile to save space */}
       <input
@@ -247,7 +255,7 @@ export function CombatantSetupRow({
       />
 
       {/* Actions — responsive width */}
-      <div className="w-auto md:w-[170px] flex-shrink-0 flex items-center justify-end gap-1">
+      <div className="flex-shrink-0 flex items-center justify-end gap-1 ml-auto md:w-[170px]">
         {combatant.is_player && (
           <span className="text-[10px] text-blue-400/70 uppercase tracking-wider flex-shrink-0 px-1.5 py-0.5 border border-blue-400/20 rounded">
             {t("setup_player_badge")}
@@ -257,7 +265,7 @@ export function CombatantSetupRow({
           <button
             type="button"
             onClick={() => pinCard("monster", combatant.monster_id!, combatant.ruleset_version!)}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30"
+            className="flex items-center justify-center gap-1 px-2 py-1 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/10 rounded transition-all flex-shrink-0 border border-transparent hover:border-gold/30 min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0"
             aria-label={t("setup_view_card_aria", { name: combatant.name })}
             data-testid={`ver-ficha-setup-${combatant.id}`}
           >
@@ -278,7 +286,7 @@ export function CombatantSetupRow({
                   <button
                     type="button"
                     onClick={() => onRoleChange(combatant.id, nextRole)}
-                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all flex-shrink-0 border ${config.color}`}
+                    className={`flex items-center justify-center gap-1 px-2 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`}
                     data-testid={`role-btn-${combatant.id}`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -296,7 +304,7 @@ export function CombatantSetupRow({
           <button
             type="button"
             onClick={() => onDuplicate(combatant)}
-            className="text-muted-foreground/40 hover:text-gold transition-colors text-xs min-h-[32px] px-1"
+            className="text-muted-foreground/40 hover:text-gold transition-colors text-xs min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 px-1 flex items-center justify-center"
             aria-label={t("setup_duplicate_aria", { name: combatant.name })}
             title={t("setup_duplicate")}
             data-testid={`setup-duplicate-${combatant.id}`}
@@ -307,7 +315,7 @@ export function CombatantSetupRow({
         <button
           type="button"
           onClick={() => onRemove(combatant.id)}
-          className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs flex-1 text-center min-h-[32px]"
+          className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs text-center min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 flex items-center justify-center"
           aria-label={t("setup_remove_aria", { name: combatant.name })}
           data-testid={`setup-remove-${combatant.id}`}
         >
