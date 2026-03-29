@@ -151,47 +151,30 @@ export function LpPricingSection() {
               </span>
             </div>
 
-            {/* Mobile: compact summary */}
-            <div className="md:hidden">
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-2xl font-mono font-bold text-foreground tracking-tight">
-                  {t("pro_price")}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {t("pro_period")}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {t("pro_includes_free")}
-              </p>
+            <div className="flex items-baseline gap-1 mb-2 md:mb-4">
+              <span className="text-2xl md:text-4xl font-mono font-bold text-foreground tracking-tight">
+                {t("pro_price")}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {t("pro_period")}
+              </span>
             </div>
+
+            <p className="text-sm text-muted-foreground mb-2 md:mb-4">
+              {t("pro_includes_free")}
+            </p>
 
             {/* Desktop: full feature list */}
-            <div className="hidden md:block">
-              <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-4xl font-mono font-bold text-foreground tracking-tight">
-                  {t("pro_price")}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {t("pro_period")}
-                </span>
-              </div>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                {t("pro_includes_free")}
-              </p>
-
-              <ul className="space-y-2.5 flex-1">
-                {proFeatureKeys.map((key) => (
-                  <li key={key} className="flex items-start gap-2.5">
-                    <CheckIcon className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground/60">
-                      {t(key)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="space-y-2.5 flex-1 hidden md:block">
+              {proFeatureKeys.map((key) => (
+                <li key={key} className="flex items-start gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
+                  <span className="text-sm text-foreground/60">
+                    {t(key)}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

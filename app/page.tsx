@@ -322,7 +322,7 @@ function FeaturesSection() {
 
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-8 md:mb-16 animate-fade-in">
-          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
+          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
             Tudo o que o Mestre precisa
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto hidden md:block">
@@ -400,12 +400,11 @@ function SocialProofSection() {
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        {/* Desktop heading */}
-        <div className="text-center mb-14 animate-fade-in hidden md:block">
-          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
+        <div className="text-center mb-6 md:mb-14 animate-fade-in">
+          <h2 className="text-2xl md:text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
             O que mestres estão dizendo
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm hidden md:block">
             Feedback real de quem usa na mesa toda semana.
           </p>
         </div>
@@ -453,12 +452,7 @@ function SocialProofSection() {
               </div>
             ))}
           </div>
-          {/* Scroll indicators */}
-          <div className="flex justify-center gap-1.5 mt-2">
-            {testimonials.map((_, i) => (
-              <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === 0 ? "bg-gold/60" : "bg-white/15"}`} />
-            ))}
-          </div>
+          <p className="text-center text-[10px] text-muted-foreground/50 mt-2">Deslize para ver mais</p>
         </div>
       </div>
     </section>
@@ -869,31 +863,29 @@ function ComparisonSection() {
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
-    <section data-section="final-cta" className="hidden md:block py-24 px-6 relative overflow-hidden">
+    <section data-section="final-cta" className="py-10 md:py-24 px-4 md:px-6 relative overflow-hidden">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/[0.06] rounded-full blur-[100px]" />
       </div>
 
-
-
-      <div className="relative max-w-2xl mx-auto text-center space-y-6 animate-fade-in-up">
-        <h2 className="text-3xl sm:text-4xl font-display text-foreground">
+      <div className="relative max-w-2xl mx-auto text-center space-y-4 md:space-y-6 animate-fade-in-up">
+        <h2 className="text-2xl md:text-3xl sm:text-4xl font-display text-foreground">
           Pronto para mestrar{" "}
           <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">melhor</span>?
         </h2>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-muted-foreground text-sm md:text-lg hidden md:block">
           Crie sua conta em segundos e transforme sua próxima sessão.
         </p>
 
         <div className="flex flex-col items-center gap-3 pt-2">
           <Link
             href="/auth/sign-up"
-            className="group relative overflow-hidden inline-flex items-center gap-2.5 px-10 py-4 bg-gold text-surface-primary font-semibold text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[52px] btn-shimmer"
+            className="group relative overflow-hidden inline-flex items-center gap-2.5 px-8 md:px-10 py-3 md:py-4 bg-gold text-surface-primary font-semibold text-base md:text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[48px] md:min-h-[52px] btn-shimmer"
           >
-            <SparkleIcon className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
+            <SparkleIcon className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
             Começar Agora — é Grátis
-            <ArrowRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
           <Link
             href="/try"
