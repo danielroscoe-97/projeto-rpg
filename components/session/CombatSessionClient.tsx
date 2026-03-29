@@ -617,7 +617,8 @@ export function CombatSessionClient({
 
   // Active combat view
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat">
+    <div className="w-full max-w-6xl mx-auto px-2" data-testid="active-combat">
+      <div className="sticky top-0 z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-foreground font-semibold">
           {encounter_name && <span className="mr-2">{encounter_name}</span>}
@@ -797,7 +798,9 @@ export function CombatSessionClient({
           )}
         </div>
       )}
+      </div>{/* end sticky controls */}
 
+      <div className="mt-4">
       <CombatList
         combatants={combatants}
         currentTurnIndex={current_turn_index}
@@ -828,6 +831,7 @@ export function CombatSessionClient({
         }}
         t={t}
       />
+      </div>{/* end scrollable area */}
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
 
