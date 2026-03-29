@@ -260,7 +260,7 @@ export function CombatSessionClient({
   }, [addCombatantAction]);
 
   // Convert an SRD monster into a combatant and add it mid-combat
-  const handleSelectMonster = useCallback((monster: SrdMonster) => {
+  const handleSelectMonster = useCallback((monster: SrdMonster, options?: { isHidden?: boolean }) => {
     const currentCombatants = useCombatStore.getState().combatants;
     const numberedName = getNumberedName(monster.name, currentCombatants);
     const existingNames = currentCombatants
@@ -281,7 +281,7 @@ export function CombatSessionClient({
       conditions: [],
       ruleset_version: monster.ruleset_version,
       is_defeated: false,
-      is_hidden: false,
+      is_hidden: options?.isHidden ?? false,
       is_player: false,
       monster_id: monster.id,
       token_url: monster.token_url ?? null,
@@ -297,7 +297,7 @@ export function CombatSessionClient({
   }, [addCombatantAction]);
 
   // Add a group of N monsters mid-combat
-  const handleSelectMonsterGroup = useCallback((monster: SrdMonster, qty: number) => {
+  const handleSelectMonsterGroup = useCallback((monster: SrdMonster, qty: number, options?: { isHidden?: boolean }) => {
     const groupId = crypto.randomUUID();
     const currentCombatants = useCombatStore.getState().combatants;
     const newCombatants: Omit<Combatant, "id">[] = [];
@@ -318,7 +318,7 @@ export function CombatSessionClient({
         conditions: [],
         ruleset_version: monster.ruleset_version,
         is_defeated: false,
-        is_hidden: false,
+        is_hidden: options?.isHidden ?? false,
         is_player: false,
         monster_id: monster.id,
         token_url: monster.token_url ?? null,

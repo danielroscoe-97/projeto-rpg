@@ -84,11 +84,11 @@ function getTypes(monsters: SrdMonster[]): string[] {
 
 interface MonsterSearchPanelProps {
   rulesetVersion: RulesetVersion;
-  onSelectMonster: (monster: SrdMonster) => void;
+  onSelectMonster: (monster: SrdMonster, options?: { isHidden?: boolean }) => void;
   /** Fired after a monster is selected — parent uses this to trigger glow */
   onMonsterAdded?: () => void;
   /** Called when quantity > 1 to add a monster group */
-  onSelectMonsterGroup?: (monster: SrdMonster, quantity: number) => void;
+  onSelectMonsterGroup?: (monster: SrdMonster, quantity: number, options?: { isHidden?: boolean }) => void;
 }
 
 const DEBOUNCE_MS = 200;
@@ -117,6 +117,7 @@ export function MonsterSearchPanel({
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [quantity, setQuantity] = useState(1);
+  const [isHidden, setIsHidden] = useState(false);
 
   const [activeIndex, setActiveIndex] = useState(-1);
   const [gateOpen, setGateOpen] = useState(false);
@@ -203,18 +204,20 @@ export function MonsterSearchPanel({
 
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
+      const opts = isHidden ? { isHidden: true } : undefined;
       if (quantity > 1 && onSelectMonsterGroup) {
-        onSelectMonsterGroup(monster, quantity);
+        onSelectMonsterGroup(monster, quantity, opts);
       } else {
-        onSelectMonster(monster);
+        onSelectMonster(monster, opts);
       }
       onMonsterAdded?.();
       setQuery("");
       setResults([]);
       setActiveIndex(-1);
       setQuantity(1);
+      setIsHidden(false);
     },
-    [onSelectMonster, onMonsterAdded, onSelectMonsterGroup, quantity]
+    [onSelectMonster, onMonsterAdded, onSelectMonsterGroup, quantity, isHidden]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -422,6 +425,18 @@ export function MonsterSearchPanel({
           )}
         </div>
       )}
+
+      {/* Hidden checkbox */}
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={isHidden}
+          onChange={(e) => setIsHidden(e.target.checked)}
+          className="w-4 h-4 rounded border-border bg-white/[0.06] accent-gold"
+          data-testid="add-hidden-checkbox"
+        />
+        <span className="text-xs text-muted-foreground">{t("add_as_hidden")}</span>
+      </label>
 
       {/* Results */}
       {results.length > 0 && (

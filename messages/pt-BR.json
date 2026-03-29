@@ -462,6 +462,7 @@
     "monster_quantity_decrease": "Diminuir quantidade",
     "monster_quantity_increase": "Aumentar quantidade",
     "monster_quantity_group_hint": "Serão adicionados como grupo",
+    "add_as_hidden": "Adicionar como criatura oculta",
     "group_active": "ativos",
     "group_edit_initiative_title": "Editar iniciativa do grupo",
     "group_edit_initiative_aria": "Editar iniciativa do grupo {name}",

@@ -217,7 +217,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   // Auto-add monster with rolled initiative when selected from compendium
   const handleSelectMonster = useCallback(
-    (monster: SrdMonster) => {
+    (monster: SrdMonster, options?: { isHidden?: boolean }) => {
       const currentCombatants = useCombatStore.getState().combatants;
       const numberedName = getNumberedName(monster.name, currentCombatants);
       const displayName = getDefaultDisplayName(monster.type, currentCombatants);
@@ -237,7 +237,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         conditions: [],
         ruleset_version: monster.ruleset_version,
         is_defeated: false,
-        is_hidden: false,
+        is_hidden: options?.isHidden ?? false,
         is_player: false,
         monster_id: monster.id,
         token_url: monster.token_url ?? null,
@@ -259,7 +259,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   // Add a group of N monsters with shared group ID
   const handleSelectMonsterGroup = useCallback(
-    (monster: SrdMonster, qty: number) => {
+    (monster: SrdMonster, qty: number, options?: { isHidden?: boolean }) => {
       const groupId = crypto.randomUUID();
       // Roll initiative once for the whole group (D&D 5e PHB p.189)
       const groupInitResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
@@ -280,7 +280,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           conditions: [],
           ruleset_version: monster.ruleset_version,
           is_defeated: false,
-          is_hidden: false,
+          is_hidden: options?.isHidden ?? false,
           is_player: false,
           monster_id: monster.id,
           token_url: monster.token_url ?? null,
