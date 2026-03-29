@@ -34,6 +34,10 @@ export function TourProvider() {
   const [mounted, setMounted] = useState(false);
   const [pulseTarget, setPulseTarget] = useState(false);
   const advancingRef = useRef(false);
+  // Snapshot of combatants before combat phase, so "Back" can restore setup state
+  const setupSnapshotRef = useRef<import("@/lib/types/combat").Combatant[] | null>(null);
+  // Track the last combatant auto-added by the tour (for undo on back)
+  const autoAddedIdRef = useRef<string | null>(null);
 
   // Memoize effective steps — only recompute when mounted changes (avoids infinite re-render)
   const effectiveSteps = useMemo(() => getEffectiveSteps(), [mounted]);
@@ -81,7 +85,7 @@ export function TourProvider() {
     const currentStepConfig = effectiveSteps[currentStep];
     const nextStepConfig = effectiveSteps[next];
 
-    // Phase transition: setup → combat — auto-start combat so DOM updates
+    // Phase transition: setup → combat — snapshot setup state, then auto-start combat
     if (currentStepConfig?.phase === "setup" && nextStepConfig?.phase === "combat") {
       const { startCombat, combatants } = useGuestCombatStore.getState();
       if (combatants.length === 0) {
@@ -89,6 +93,8 @@ export function TourProvider() {
         advancingRef.current = false;
         return;
       }
+      // Snapshot combatants so "Back" can restore setup state
+      setupSnapshotRef.current = combatants.map((c) => ({ ...c }));
       try {
         startCombat();
       } catch {
@@ -107,7 +113,7 @@ export function TourProvider() {
     advancingRef.current = false;
   }, [currentStep, effectiveSteps, goToStep, completeTour]);
 
-  // Smart go back: go to previous step, handling phase transitions
+  // Smart go back: go to previous step, undoing side effects from forward transitions
   const smartGoBack = useCallback(() => {
     if (advancingRef.current) return;
     if (currentStep <= 0) return;
@@ -117,10 +123,15 @@ export function TourProvider() {
     const currentStepConfig = effectiveSteps[currentStep];
     const prevStepConfig = effectiveSteps[prev];
 
-    // Phase transition: combat → setup — revert to setup view
+    // Phase transition: combat → setup — restore setup snapshot instead of clearing
     if (currentStepConfig?.phase === "combat" && prevStepConfig?.phase === "setup") {
       try {
         useGuestCombatStore.getState().resetCombat();
+        // Restore combatants from snapshot taken before startCombat
+        if (setupSnapshotRef.current) {
+          useGuestCombatStore.getState().hydrateCombatants(setupSnapshotRef.current);
+          setupSnapshotRef.current = null;
+        }
       } catch {
         advancingRef.current = false;
         return;
@@ -130,6 +141,30 @@ export function TourProvider() {
         advancingRef.current = false;
       }, 600);
       return;
+    }
+
+    // Undo auto-added goblin when going back from monster-added → monster-result
+    if (currentStepConfig?.id === "monster-added" && prevStepConfig?.id === "monster-result") {
+      if (autoAddedIdRef.current) {
+        useGuestCombatStore.getState().removeCombatant(autoAddedIdRef.current);
+        autoAddedIdRef.current = null;
+      }
+    }
+
+    // Clear search input when going back from monster-result → monster-search
+    if (currentStepConfig?.id === "monster-result" && prevStepConfig?.id === "monster-search") {
+      const input = document.querySelector<HTMLInputElement>(
+        '[data-tour-id="monster-search"] input[type="text"]'
+      );
+      if (input) {
+        const nativeSetter = Object.getOwnPropertyDescriptor(
+          HTMLInputElement.prototype, "value"
+        )?.set;
+        if (nativeSetter) {
+          nativeSetter.call(input, "");
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      }
     }
 
     goToStep(prev);
@@ -203,11 +238,19 @@ export function TourProvider() {
     // (user clicked "Next" on step 3 → step 4 transition)
     if (step.id === "monster-added") {
       const timer = setTimeout(() => {
+        const countBefore = useGuestCombatStore.getState().combatants.length;
         const firstResult = document.querySelector<HTMLButtonElement>(
           '[data-tour-id="monster-result"] button'
         );
         if (firstResult) {
           firstResult.click();
+          // Track the auto-added combatant so "Back" can remove it
+          requestAnimationFrame(() => {
+            const combatants = useGuestCombatStore.getState().combatants;
+            if (combatants.length > countBefore) {
+              autoAddedIdRef.current = combatants[combatants.length - 1].id;
+            }
+          });
         }
       }, 600);
       return () => clearTimeout(timer);
