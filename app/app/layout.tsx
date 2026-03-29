@@ -12,6 +12,7 @@ import { OracleAIModal } from "@/components/oracle/OracleAIModal";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
 
 export default async function AppLayout({
@@ -56,7 +57,7 @@ export default async function AppLayout({
           { href: "/app/presets", label: <span className="inline-flex items-center gap-1.5"><Package className="w-4 h-4" aria-hidden="true" />{t("presets")}</span> },
           { href: "/app/settings", label: <span className="inline-flex items-center gap-1.5"><Settings className="w-4 h-4" aria-hidden="true" />{t("settings")}</span> },
         ]}
-        rightSlot={<><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
+        rightSlot={<><RoleSwitcher /><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
       />
       <SrdInitializer />
       <ErrorBoundary name="Oracle">

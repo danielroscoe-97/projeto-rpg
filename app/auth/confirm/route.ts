@@ -25,7 +25,21 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
-  // Determine redirect: new signups go to role selection, otherwise to specified next
+  // Save role from signup form if provided
+  async function saveRoleFromParams(): Promise<void> {
+    const role = searchParams.get("role");
+    if (!role || !["player", "dm", "both"].includes(role)) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase
+      .from("users")
+      .update({ role })
+      .eq("id", user.id);
+  }
+
+  // Determine redirect: new signups go to onboarding, otherwise to specified next
   async function getRedirectTarget(): Promise<string> {
     // If invite params present, preserve them
     const invite = searchParams.get("invite");
@@ -33,13 +47,12 @@ export async function GET(request: NextRequest) {
     if (invite && campaign) {
       return `/auth/sign-up?invite=${invite}&campaign=${campaign}`;
     }
-    // Check if user has selected a role yet — if not, redirect to role selection
+    // Check if user has campaigns — if not, go to onboarding
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // New user heuristic: no campaigns created yet → show role selection
       const { count } = await supabase.from("campaigns").select("id", { count: "exact", head: true }).eq("owner_id", user.id);
       if (count === 0) {
-        return "/app/onboarding/role";
+        return "/app/onboarding";
       }
     }
     return next;
@@ -49,6 +62,7 @@ export async function GET(request: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      await saveRoleFromParams();
       const target = await getRedirectTarget();
       await syncLocaleAndRedirect(target);
     } else {
@@ -63,6 +77,7 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
+      await saveRoleFromParams();
       const target = await getRedirectTarget();
       await syncLocaleAndRedirect(target);
     } else {

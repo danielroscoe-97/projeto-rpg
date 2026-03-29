@@ -112,6 +112,11 @@
     "role_saving": "Salvando...",
     "role_save_error": "Erro ao salvar preferência. Tente novamente."
   },
+  "role_switcher": {
+    "toggle_label": "Alternar entre visão de Mestre e Jogador",
+    "view_dm": "Mestre",
+    "view_player": "Jogador"
+  },
   "campaign": {
     "invite_button": "Convidar Jogador",
     "invite_title": "Convidar Jogador para Campanha",
@@ -204,7 +209,9 @@
     "pc_char_count": "/50",
     "presets_title": "Encontros Preparados",
     "presets_count": "presets",
-    "presets_manage": "Gerenciar →"
+    "presets_manage": "Gerenciar →",
+    "player_welcome": "Bem-vindo, Jogador!",
+    "player_join_hint": "Peça ao seu Mestre o link da sessão para participar de um encontro."
   },
   "onboarding": {
     "choose_title": "Como você quer começar?",
@@ -843,7 +850,10 @@
     "delete_confirm_title": "Excluir Conta?",
     "delete_confirm_description": "Isso excluirá permanentemente sua conta e todas as suas campanhas, personagens de jogadores, encontros, combatentes e histórico de sessão.",
     "delete_confirm_warning": "Isso não pode ser desfeito.",
-    "delete_confirm_button": "Sim, excluir tudo"
+    "delete_confirm_button": "Sim, excluir tudo",
+    "role_title": "Papel",
+    "role_description": "Como você usa o Pocket DM? Isso personaliza sua experiência.",
+    "role_updated": "Papel atualizado com sucesso!"
   },
   "admin": {
     "panel_title": "Painel Administrativo",

@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { trackEvent } from "@/lib/analytics/track";
 import { getAuthErrorKey } from "@/lib/auth/translate-error";
+import { Swords, Shield, Users } from "lucide-react";
 
 export function SignUpForm({
   className,
@@ -18,13 +19,21 @@ export function SignUpForm({
   const t = useTranslations("auth");
   const tc = useTranslations("common");
   const te = useTranslations("auth_errors");
+  const ts = useTranslations("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<"player" | "dm" | "both">("both");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const router = useRouter();
+
+  const roleOptions = [
+    { value: "player" as const, icon: <Swords className="w-5 h-5" />, label: ts("role_player") },
+    { value: "dm" as const, icon: <Shield className="w-5 h-5" />, label: ts("role_dm") },
+    { value: "both" as const, icon: <Users className="w-5 h-5" />, label: ts("role_both") },
+  ];
 
   // Capture invite params from URL (Story 4.4)
   const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
@@ -49,9 +58,9 @@ export function SignUpForm({
 
     try {
       // Preserve invite params through email confirmation redirect (Story 4.4)
-      let redirectUrl = `${window.location.origin}/auth/confirm`;
+      let redirectUrl = `${window.location.origin}/auth/confirm?role=${encodeURIComponent(selectedRole)}`;
       if (inviteToken && inviteCampaignId) {
-        redirectUrl += `?invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
+        redirectUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -68,7 +77,7 @@ export function SignUpForm({
         setIsLoading(false);
         return;
       }
-      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}`;
+      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole)}`;
       if (inviteToken && inviteCampaignId) {
         successUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
@@ -168,6 +177,32 @@ export function SignUpForm({
               onChange={(e) => { setRepeatPassword(e.target.value); setPasswordMismatch(false); }}
               className={`${inputClass}${passwordMismatch ? " field-error" : ""}`}
             />
+          </div>
+        </div>
+
+        {/* Role selection */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-1.5 text-[11px] text-gold/80 uppercase tracking-widest font-medium">
+            <Shield className="w-3.5 h-3.5" />
+            {ts("role_selection_title")}
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {roleOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setSelectedRole(option.value)}
+                className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all duration-200 ${
+                  selectedRole === option.value
+                    ? "border-gold bg-gold/10 text-gold"
+                    : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/[0.15]"
+                }`}
+                data-testid={`signup-role-${option.value}`}
+              >
+                {option.icon}
+                <span className="text-xs font-medium">{option.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
