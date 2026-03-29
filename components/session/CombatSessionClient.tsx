@@ -367,6 +367,10 @@ export function CombatSessionClient({
         rolls: (r.dice ?? []).map((d: { value: number }) => d.value),
         modifier: r.modifier ?? 0,
         total: r.total ?? 0,
+        mode: r.mode ?? "normal",
+        discardedRolls: (r.discardedDice ?? []).map((d: { value: number }) => d.value),
+        isNat1: r.isNat1 ?? false,
+        isNat20: r.isNat20 ?? false,
       });
     }
     window.addEventListener("dice-roll-result", handleDiceRollEvent);

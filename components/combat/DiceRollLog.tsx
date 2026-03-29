@@ -19,6 +19,14 @@ export interface DiceRollEntry {
   total: number;
   /** Optional type for styling */
   type?: "attack" | "damage" | "save" | "check" | "initiative";
+  /** Roll mode: advantage, disadvantage, critical, resistance, or normal */
+  mode?: "normal" | "advantage" | "disadvantage" | "critical" | "resistance";
+  /** Discarded dice values (for advantage/disadvantage) */
+  discardedRolls?: number[];
+  /** Natural 1 */
+  isNat1?: boolean;
+  /** Natural 20 */
+  isNat20?: boolean;
 }
 
 interface DiceRollLogProps {
@@ -57,20 +65,43 @@ export function DiceRollLog({ entries, className }: DiceRollLogProps) {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground/60 font-mono">{entry.expression}</span>
+              {(entry.mode === "advantage" || entry.mode === "disadvantage") && (
+                <span className={`text-[9px] font-bold px-1 py-0.5 rounded ${entry.mode === "advantage" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                  {entry.mode === "advantage" ? "ADV" : "DIS"}
+                </span>
+              )}
+              {entry.mode === "critical" && (
+                <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-yellow-500/20 text-yellow-400">CRIT</span>
+              )}
               <span className="text-muted-foreground/30">&rarr;</span>
               <div className="flex items-center gap-1">
-                {entry.rolls.map((roll, i) => (
-                  <span key={i} className="inline-flex items-center justify-center w-6 h-6 rounded bg-surface-tertiary text-xs font-mono text-foreground border border-white/10">
-                    {roll}
-                  </span>
-                ))}
+                {(entry.mode === "advantage" || entry.mode === "disadvantage") && entry.discardedRolls && entry.discardedRolls.length > 0 ? (
+                  <>
+                    {entry.rolls.map((roll, i) => (
+                      <span key={`kept-${i}`} className="inline-flex items-center justify-center w-6 h-6 rounded bg-surface-tertiary text-xs font-mono text-foreground border border-green-500/30">
+                        {roll}
+                      </span>
+                    ))}
+                    {entry.discardedRolls.map((roll, i) => (
+                      <span key={`disc-${i}`} className="inline-flex items-center justify-center w-6 h-6 rounded bg-surface-tertiary text-xs font-mono text-muted-foreground/40 border border-white/5 line-through">
+                        {roll}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  entry.rolls.map((roll, i) => (
+                    <span key={i} className="inline-flex items-center justify-center w-6 h-6 rounded bg-surface-tertiary text-xs font-mono text-foreground border border-white/10">
+                      {roll}
+                    </span>
+                  ))
+                )}
                 {entry.modifier !== 0 && (
                   <span className="text-xs text-muted-foreground/60 font-mono">
                     {entry.modifier > 0 ? "+" : ""}{entry.modifier}
                   </span>
                 )}
               </div>
-              <span className="text-foreground font-bold text-sm ml-auto">{entry.total}</span>
+              <span className={`text-foreground font-bold text-sm ml-auto ${entry.isNat20 ? "text-green-400" : entry.isNat1 ? "text-red-400" : ""}`}>{entry.total}</span>
             </div>
           </div>
         ))}
