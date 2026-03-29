@@ -15,6 +15,8 @@ export interface TourStepConfig {
   hideOnMobile?: boolean;
   /** On mobile, merge this step's content into the next info step */
   mergeOnMobile?: boolean;
+  /** Optional extra description rendered in gold below the main description */
+  extraDescriptionKey?: string;
 }
 
 export const TOUR_STEPS: TourStepConfig[] = [
@@ -57,21 +59,12 @@ export const TOUR_STEPS: TourStepConfig[] = [
     targetSelector: '[data-tour-id="combatant-list"]',
     titleKey: "tour.monster_added_title",
     descriptionKey: "tour.monster_added_description",
+    extraDescriptionKey: "tour.monster_added_antimetagame",
     type: "info",
     position: "top",
     phase: "setup",
   },
-  // Step 4 — Import Hint (info)
-  {
-    id: "import-hint",
-    targetSelector: '[data-tour-id="import-content"]',
-    titleKey: "tour.import_hint_title",
-    descriptionKey: "tour.import_hint_description",
-    type: "info",
-    position: "bottom",
-    phase: "setup",
-  },
-  // Step 4 — Manual Add Row (info)
+  // Step 4 — Manual Add Row (info) — before import hint for natural first-use flow
   {
     id: "add-row",
     targetSelector: '[data-tour-id="add-row"]',
@@ -81,7 +74,17 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "top",
     phase: "setup",
   },
-  // Step 4 — Roll Initiative (info — always shown, never auto-skipped)
+  // Step 5 — Import Hint (info)
+  {
+    id: "import-hint",
+    targetSelector: '[data-tour-id="import-content"]',
+    titleKey: "tour.import_hint_title",
+    descriptionKey: "tour.import_hint_description",
+    type: "info",
+    position: "bottom",
+    phase: "setup",
+  },
+  // Step 6 — Roll Initiative (info — always shown, never auto-skipped)
   {
     id: "roll-initiative",
     targetSelector: '[data-tour-id="roll-initiative"]',
@@ -91,7 +94,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "top",
     phase: "setup",
   },
-  // Step 5 — Start Combat (info — step-by-step)
+  // Step 7 — Start Combat (info — step-by-step)
   {
     id: "start-combat",
     targetSelector: '[data-tour-id="start-combat"]',

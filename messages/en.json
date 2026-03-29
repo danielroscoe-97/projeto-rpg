@@ -433,6 +433,8 @@
     "setup_role_summon": "Summon",
     "setup_role_monster": "Monster",
     "setup_role_tooltip": "Click to change type",
+    "clear_all_confirm_message": "Are you sure you want to clear all combatants and initiatives?",
+    "clear_all_confirm_yes": "Yes, clear all",
     "encounter_name_label": "Encounter name",
     "encounter_name_placeholder": "e.g. Goblin Ambush",
     "error_encounter_name_required": "Give the encounter a name before starting.",
@@ -1342,6 +1344,14 @@
     "management_monsters": "{count} monsters",
     "management_imported_at": "Imported on {date}"
   },
+  "srd_loading": {
+    "msg_cataloging_monsters": "Cataloging monsters...",
+    "msg_rolling_initiative": "Rolling initiative order...",
+    "msg_amplifying_powers": "Amplifying powers...",
+    "msg_preparing_spells": "Preparing spells...",
+    "msg_sharpening_swords": "Sharpening swords...",
+    "msg_consulting_oracle": "Consulting the oracle..."
+  },
   "tour": {
     "welcome_title": "Welcome to Pocket DM!",
     "welcome_description": "Let me guide you through setting up your first combat. It takes less than 2 minutes!",
@@ -1351,6 +1361,7 @@
     "add_monster_description": "Click on a monster from the list to add it to the combat.",
     "monster_added_title": "Monster Added!",
     "monster_added_description": "The Goblin has joined the initiative list. All combatants appear here with HP, AC, and initiative.",
+    "monster_added_antimetagame": "🛡️ Tip: tap the name or silhouette to change what players see.",
     "manual_add_title": "Manual Entry",
     "manual_add_description": "You can also manually add players or custom NPCs using this row.",
     "initiative_title": "Initiative & Turn Order",

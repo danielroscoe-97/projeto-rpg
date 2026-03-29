@@ -339,4 +339,80 @@ describe("GuestCombatClient", () => {
 
     expect(screen.getByRole("list", { name: "combat.initiative_order" })).toBeInTheDocument();
   });
+
+  // ── Role Selector ─────────────────────────────────────────────────────
+
+  it("renders role selector button in add row", () => {
+    render(<GuestCombatClient />);
+    expect(screen.getByTestId("add-row-role")).toBeInTheDocument();
+  });
+
+  it("cycles role when role button is clicked", () => {
+    render(<GuestCombatClient />);
+    const roleBtn = screen.getByTestId("add-row-role");
+
+    // Default is monster (Skull icon), click cycles to player
+    fireEvent.click(roleBtn);
+    // After one click, should cycle to the next role
+    expect(roleBtn).toBeInTheDocument();
+  });
+
+  it("sets combatant_role when adding via add row", () => {
+    render(<GuestCombatClient />);
+
+    const nameInput = screen.getByTestId("add-row-name");
+    const addBtn = screen.getByTestId("add-row-btn");
+
+    fireEvent.change(nameInput, { target: { value: "Fighter" } });
+    fireEvent.click(addBtn);
+
+    const combatants = useGuestCombatStore.getState().combatants;
+    expect(combatants).toHaveLength(1);
+    // Default role is monster
+    expect(combatants[0].combatant_role).toBe("monster");
+  });
+
+  // ── Clear Confirmation ────────────────────────────────────────────────
+
+  it("shows confirmation banner when clear all is clicked", () => {
+    act(() => {
+      useGuestCombatStore.getState().addCombatant(SAMPLE_COMBATANT);
+    });
+
+    render(<GuestCombatClient />);
+
+    const clearBtn = screen.getByText("common.clear_all");
+    fireEvent.click(clearBtn);
+
+    expect(screen.getByText("combat.clear_all_confirm_message")).toBeInTheDocument();
+    expect(screen.getByTestId("clear-confirm-yes")).toBeInTheDocument();
+    expect(screen.getByTestId("clear-confirm-no")).toBeInTheDocument();
+  });
+
+  it("clears combatants when confirm is clicked", () => {
+    act(() => {
+      useGuestCombatStore.getState().addCombatant(SAMPLE_COMBATANT);
+    });
+
+    render(<GuestCombatClient />);
+
+    fireEvent.click(screen.getByText("common.clear_all"));
+    fireEvent.click(screen.getByTestId("clear-confirm-yes"));
+
+    expect(useGuestCombatStore.getState().combatants).toHaveLength(0);
+  });
+
+  it("dismisses confirmation banner when cancel is clicked", () => {
+    act(() => {
+      useGuestCombatStore.getState().addCombatant(SAMPLE_COMBATANT);
+    });
+
+    render(<GuestCombatClient />);
+
+    fireEvent.click(screen.getByText("common.clear_all"));
+    expect(screen.getByTestId("clear-confirm-yes")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("clear-confirm-no"));
+    expect(screen.queryByTestId("clear-confirm-yes")).not.toBeInTheDocument();
+  });
 });

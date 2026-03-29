@@ -122,4 +122,34 @@ describe("CombatantSetupRow", () => {
     renderRow({ ruleset_version: "2024" });
     expect(screen.getByTestId("version-badge")).toHaveTextContent("2024");
   });
+
+  it("renders monster token for monsters with monster_id", () => {
+    renderRow({ monster_id: "goblin", ruleset_version: "2014" });
+    // Mobile visual token (span) and desktop clickable token (button) both render
+    expect(screen.getByTestId(`token-btn-c1`)).toBeInTheDocument();
+  });
+
+  it("renders spacer when no monster_id", () => {
+    renderRow({ monster_id: null });
+    expect(screen.queryByTestId(`token-btn-c1`)).not.toBeInTheDocument();
+  });
+
+  it("shows role button for manual combatants with role", () => {
+    const h = {
+      onInitiativeChange: jest.fn(),
+      onNameChange: jest.fn(),
+      onHpChange: jest.fn(),
+      onAcChange: jest.fn(),
+      onNotesChange: jest.fn(),
+      onRemove: jest.fn(),
+      onRoleChange: jest.fn(),
+    };
+    render(
+      <CombatantSetupRow
+        combatant={{ ...BASE, monster_id: null, combatant_role: "player" }}
+        {...h}
+      />
+    );
+    expect(screen.getByTestId("role-btn-c1")).toBeInTheDocument();
+  });
 });

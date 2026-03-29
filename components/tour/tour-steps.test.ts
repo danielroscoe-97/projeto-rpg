@@ -101,4 +101,27 @@ describe("tour-steps", () => {
     expect(keyboardStep).toBeDefined();
     expect(keyboardStep!.phase).toBe("combat");
   });
+
+  it("add-row step comes before import-hint step", () => {
+    const ids = TOUR_STEPS.map((s) => s.id);
+    const addRowIdx = ids.indexOf("add-row");
+    const importHintIdx = ids.indexOf("import-hint");
+    expect(addRowIdx).toBeGreaterThan(-1);
+    expect(importHintIdx).toBeGreaterThan(-1);
+    expect(addRowIdx).toBeLessThan(importHintIdx);
+  });
+
+  it("monster-added step has extraDescriptionKey for anti-metagame hint", () => {
+    const monsterAdded = TOUR_STEPS.find((s) => s.id === "monster-added");
+    expect(monsterAdded).toBeDefined();
+    expect(monsterAdded!.extraDescriptionKey).toBe("tour.monster_added_antimetagame");
+  });
+
+  it("extraDescriptionKey follows tour.* naming convention when present", () => {
+    for (const step of TOUR_STEPS) {
+      if (step.extraDescriptionKey) {
+        expect(step.extraDescriptionKey).toMatch(/^tour\./);
+      }
+    }
+  });
 });
