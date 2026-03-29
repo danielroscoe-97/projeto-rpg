@@ -267,10 +267,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       const currentCombatants = useCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       // Generate ONE display name for the group, append numbers
-      const existingNames = currentCombatants
-        .filter((c) => !c.is_player && c.display_name)
-        .map((c) => c.display_name!);
-      const groupDisplayBase = getDefaultDisplayName(monster?.type ?? null, existingNames);
+      const groupDisplayBase = getDefaultDisplayName(monster?.type ?? null, currentCombatants as Combatant[]);
       for (let i = 1; i <= qty; i++) {
         newCombatants.push({
           name: `${monster.name} ${i}`,
