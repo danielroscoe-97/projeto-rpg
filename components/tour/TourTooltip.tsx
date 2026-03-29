@@ -25,8 +25,8 @@ function computePosition(
   preferred: Position | undefined
 ): { position: Position; style: React.CSSProperties } {
   const padding = 12;
-  const tooltipWidth = Math.min(340, window.innerWidth - 32);
   const isMobile = window.innerWidth < 768;
+  const tooltipWidth = isMobile ? window.innerWidth - 24 : Math.min(340, window.innerWidth - 32);
   const safeMargin = 16;
 
   // Bottom-sheet fallback: only when target is too tall (>50% viewport).
