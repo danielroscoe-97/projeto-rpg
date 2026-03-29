@@ -181,7 +181,7 @@ export function CombatantSetupRow({
             data-testid={`alias-btn-${combatant.id}`}
           >
             <Shield className="w-3 h-3" />
-            <span className="truncate max-w-[120px]">{combatant.display_name}</span>
+            <span className="truncate max-w-[80px] md:max-w-[120px]">{combatant.display_name}</span>
           </button>
         )}
         {!combatant.is_player && editingAlias && (
