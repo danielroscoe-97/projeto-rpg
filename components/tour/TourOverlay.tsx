@@ -34,6 +34,7 @@ export function TourOverlay({
       {isActive && (
         <motion.div
           className="fixed inset-0 z-[10000]"
+          data-testid="tour-overlay"
           style={{ pointerEvents: allowInteraction ? "none" : "auto", cursor: "pointer" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -52,6 +52,7 @@ export function TourHelpButton() {
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-11 h-11 rounded-full bg-gold/90 text-surface-primary font-bold text-lg shadow-lg hover:bg-gold hover:shadow-gold-glow transition-all duration-200 flex items-center justify-center"
         aria-label={t("help_button")}
+        data-testid="tour-help-btn"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >

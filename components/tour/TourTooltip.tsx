@@ -216,6 +216,7 @@ export function TourTooltip({
           aria-label={t(titleKey)}
           aria-describedby={`tour-step-desc-${step.id}`}
           aria-live="polite"
+          data-testid="tour-tooltip"
           className="fixed z-[10001] bg-card border border-gold/30 rounded-xl shadow-2xl p-5 overflow-y-auto"
           style={{
             top: "50%",
@@ -261,6 +262,7 @@ export function TourTooltip({
                 <button
                   type="button"
                   onClick={onComplete}
+                  data-testid="tour-got-it"
                   className="block w-full text-center px-4 py-3 bg-gold text-surface-primary text-sm font-bold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                 >
                   {t("got_it_create")}
@@ -283,6 +285,7 @@ export function TourTooltip({
                   <button
                     type="button"
                     onClick={onSkip}
+                    data-testid="tour-skip"
                     className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
                   >
                     {t("skip")}
@@ -295,6 +298,7 @@ export function TourTooltip({
                   <button
                     type="button"
                     onClick={onComplete}
+                    data-testid="tour-finish"
                     className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
                   >
                     {t("finish")}
@@ -305,6 +309,7 @@ export function TourTooltip({
                       <button
                         type="button"
                         onClick={onBack}
+                        data-testid="tour-back"
                         className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
                       >
                         {t("back")}
@@ -313,6 +318,7 @@ export function TourTooltip({
                     <button
                       type="button"
                       onClick={onNext}
+                      data-testid="tour-next"
                       className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                     >
                       {t("next")}
@@ -353,6 +359,7 @@ export function TourTooltip({
         aria-label={t(titleKey)}
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
+        data-testid="tour-tooltip"
         className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
         style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
@@ -392,6 +399,7 @@ export function TourTooltip({
               <button
                 type="button"
                 onClick={onSkip}
+                data-testid="tour-skip"
                 className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
               >
                 {t("skip")}
@@ -403,6 +411,7 @@ export function TourTooltip({
                 <button
                   type="button"
                   onClick={onBack}
+                  data-testid="tour-back"
                   className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
                 >
                   {t("back")}
@@ -411,6 +420,7 @@ export function TourTooltip({
               <button
                 type="button"
                 onClick={onNext}
+                data-testid="tour-next"
                 className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
               >
                 {t("next")}
