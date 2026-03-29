@@ -246,7 +246,7 @@ function HeroSection() {
 // ── Section Divider ───────────────────────────────────────────────────────────
 function SectionDivider() {
   return (
-    <div className="flex justify-center items-center gap-4 py-4" aria-hidden="true">
+    <div className="hidden md:flex justify-center items-center gap-4 py-4" aria-hidden="true">
       <div className="h-px w-24 bg-gradient-to-r from-transparent via-gold/20 to-gold/20" />
       {/* SVG d6 diamond ornament */}
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-gold/30">
@@ -306,44 +306,33 @@ function FeaturesSection() {
   ];
 
   return (
-    <section data-section="features" className="py-24 px-6 relative overflow-hidden" id="features">
-      {/* Decorative layer — floating RPG dice */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <section data-section="features" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden" id="features">
+      {/* Decorative layer — floating RPG dice (desktop only) */}
+      <div className="absolute inset-0 pointer-events-none hidden md:block" aria-hidden="true">
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-gold/[0.04] rounded-full blur-[120px]" />
-
-        {/* d20 — top-right */}
         <D20Icon className="absolute top-10 right-10 w-24 h-24 text-gold/20 float-drift-3" style={{ animationDelay: "-1s" }} />
         <SparkleIcon className="absolute bottom-16 left-16 w-10 h-10 text-gold/20 float-gentle" />
-
-        {/* d4 — top-left */}
         <D4Icon className="absolute top-8 left-[8%] w-16 h-16 text-gold/15 float-drift-1" />
-
-        {/* d6 — mid-right */}
         <D6Icon className="absolute top-1/3 right-[5%] w-14 h-14 text-gold/12 float-drift-2" />
-
-        {/* d8 — bottom-right */}
         <D8Icon className="absolute bottom-12 right-[12%] w-16 h-16 text-gold/15 float-drift-3" />
-
-        {/* d10 — mid-left */}
         <D10Icon className="absolute top-[55%] left-[3%] w-14 h-14 text-gold/12 float-drift-4" />
-
-        {/* Extra sparkles */}
         <SparkleIcon className="absolute top-[20%] right-[25%] w-7 h-7 text-gold/15 float-drift-1" style={{ animationDelay: "-1.5s" }} />
         <SparkleIcon className="absolute bottom-[30%] left-[20%] w-8 h-8 text-gold/12 float-drift-3" style={{ animationDelay: "-3s" }} />
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        <div className="text-center mb-16 animate-fade-in">
+        <div className="text-center mb-8 md:mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
             Tudo o que o Mestre precisa
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-muted-foreground max-w-lg mx-auto hidden md:block">
             De iniciativa a pontos de vida, de condições a oráculo de magias.
             Uma ferramenta focada no que importa.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Desktop: full cards with descriptions */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f, i) => (
             <div
               key={f.title}
@@ -360,6 +349,22 @@ function FeaturesSection() {
               </div>
               <h3 className="font-display text-foreground text-lg mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile: compact 2×3 grid — emoji + title only */}
+        <div className="grid grid-cols-2 gap-3 md:hidden">
+          {features.map((f, i) => (
+            <div
+              key={f.title}
+              className="bg-card border border-border rounded-lg p-3 flex items-center gap-2.5 animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.05}s` }}
+            >
+              <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-base">
+                {f.emoji}
+              </div>
+              <h3 className="font-display text-foreground text-xs leading-tight">{f.title}</h3>
             </div>
           ))}
         </div>
@@ -389,13 +394,14 @@ function SocialProofSection() {
   ];
 
   return (
-    <section data-section="social-proof" className="py-24 px-6 relative overflow-hidden">
+    <section data-section="social-proof" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cool/[0.03] rounded-full blur-[120px]" />
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        <div className="text-center mb-14 animate-fade-in">
+        {/* Desktop heading */}
+        <div className="text-center mb-14 animate-fade-in hidden md:block">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
             O que mestres estão dizendo
           </h2>
@@ -404,14 +410,14 @@ function SocialProofSection() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Desktop: 3-column grid */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
             <div
               key={i}
               className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              {/* Quote mark */}
               <svg width="28" height="21" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-4 shrink-0" aria-hidden="true">
                 <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
               </svg>
@@ -424,6 +430,35 @@ function SocialProofSection() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Mobile: horizontal scroll-snap carousel */}
+        <div className="md:hidden">
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide">
+            {testimonials.map((t, i) => (
+              <div
+                key={i}
+                className="relative bg-card border border-border rounded-xl p-5 flex flex-col snap-center shrink-0 w-[85vw] max-w-[320px]"
+              >
+                <svg width="20" height="15" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-3 shrink-0" aria-hidden="true">
+                  <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
+                </svg>
+                <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                  <p className="text-sm font-medium text-foreground">{t.author}</p>
+                  <p className="text-xs text-muted-foreground">{t.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Scroll indicators */}
+          <div className="flex justify-center gap-1.5 mt-2">
+            {testimonials.map((_, i) => (
+              <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === 0 ? "bg-gold/60" : "bg-white/15"}`} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -466,7 +501,7 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section data-section="how-it-works" id="como-funciona" className="py-24 px-6 bg-surface-secondary/50 relative overflow-hidden">
+    <section data-section="how-it-works" id="como-funciona" className="py-12 md:py-24 px-4 md:px-6 bg-surface-secondary/50 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cool/[0.04] rounded-full blur-[100px]" />
         {/* Subtle grid pattern */}
@@ -480,8 +515,8 @@ function HowItWorksSection() {
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
+        <div className="text-center mb-8 md:mb-16 animate-fade-in">
+          <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
             Como funciona
           </h2>
           <p className="text-muted-foreground">4 passos. 3 minutos. Zero setup.</p>
@@ -542,44 +577,36 @@ function HowItWorksSection() {
           </div>
         </div>
 
-        {/* Mobile: vertical cards */}
-        <div className="md:hidden grid grid-cols-1 gap-6">
-          {steps.map((s, i) => {
-            const isLast = s.step === TOTAL_STEPS;
+        {/* Mobile: compact inline timeline */}
+        <div className="md:hidden flex flex-col gap-0 animate-fade-in-up">
+          {steps.map((s) => {
             const stepColor = getFireStepColor(s.step, TOTAL_STEPS);
-            const circle = (
-              <RuneCircle step={s.step} total={TOTAL_STEPS} size="md" active={isLast} />
-            );
+            const isLast = s.step === TOTAL_STEPS;
 
             return (
               <div
                 key={s.step}
-                className="flex gap-5 group animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.1}s` }}
+                className="flex items-center gap-3 py-3 border-b border-white/[0.06] last:border-b-0"
               >
-                <div className="relative shrink-0">
-                  {isLast ? (
-                    <TorchGlow intensity="medium" className="rounded-full">
-                      {circle}
-                    </TorchGlow>
-                  ) : (
-                    circle
-                  )}
-                  <span className="absolute -bottom-1 -right-1 text-base leading-none">{s.emoji}</span>
+                <div
+                  className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold font-mono"
+                  style={{
+                    color: stepColor,
+                    border: `1.5px solid ${stepColor}`,
+                    background: isLast ? `${stepColor}15` : "transparent",
+                    boxShadow: isLast ? `0 0 12px ${stepColor}30` : "none",
+                  }}
+                >
+                  {s.step}
                 </div>
-                <div className="pt-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-display text-foreground text-lg group-hover:text-gold transition-colors duration-200">
-                      {s.title}
-                    </h3>
-                    <span
-                      className="text-[10px] font-mono uppercase tracking-wider"
-                      style={{ color: stepColor, opacity: 0.7 }}
-                    >
-                      {s.time}
-                    </span>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
+                <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
+                  <h3 className="font-display text-foreground text-sm truncate">{s.title}</h3>
+                  <span
+                    className="text-[10px] font-mono uppercase tracking-wider shrink-0"
+                    style={{ color: stepColor, opacity: 0.7 }}
+                  >
+                    {s.time}
+                  </span>
                 </div>
               </div>
             );
@@ -693,7 +720,7 @@ function ComparisonSection() {
 
   return (
     // Darker "stage" bg — breaks visual monotony from the rest of the page
-    <section data-section="comparison" id="comparativo" className="py-24 px-6 relative overflow-hidden bg-[#0c0c16]">
+    <section data-section="comparison" id="comparativo" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden bg-[#0c0c16]">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/[0.025] rounded-full blur-[140px]" />
       </div>
@@ -792,42 +819,37 @@ function ComparisonSection() {
           })}
         </div>
 
-        {/* ── Mobile cards (hidden on desktop) ── */}
+        {/* ── Mobile: 3 killer differentiators ── */}
         <div className="md:hidden flex flex-col gap-3 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          {rows.map((row) => (
+          {[
+            {
+              icon: "💰",
+              title: "Comece grátis",
+              description: "Roll20 cobra $5–50/mês. D&D Beyond $6/mês. Pocket DM é grátis.",
+            },
+            {
+              icon: "📱",
+              title: "Player view sem conta",
+              description: "Gere um link. Jogadores abrem no celular. Sem app, sem cadastro.",
+            },
+            {
+              icon: "📚",
+              title: "Regras 2014 + 2024 grátis",
+              description: "3000+ monstros e 900+ magias. Nos concorrentes, é módulo pago.",
+            },
+          ].map((item) => (
             <div
-              key={row.feature}
-              className={`rounded-xl overflow-hidden ${row.knockout ? "ring-1 ring-gold/30" : ""}`}
+              key={item.title}
+              className="flex items-start gap-3 rounded-xl px-4 py-3.5"
               style={{
                 background: "#13131f",
                 border: "1px solid rgba(255,255,255,0.07)",
               }}
             >
-              {/* Feature header */}
-              <div className={`px-5 py-4 flex items-center gap-3 ${row.knockout ? "bg-gold/[0.06]" : "bg-white/[0.02]"}`}>
-                <span className="text-xl leading-none shrink-0">{row.icon}</span>
-                <span className="text-[15px] font-semibold text-white/90">{row.feature}</span>
-              </div>
-              {/* Competitor rows */}
-              <div className="divide-y divide-white/[0.04]">
-                <div className="px-5 py-3 flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">Roll20</span>
-                  <CompCell val={row.roll20} />
-                </div>
-                <div className="px-5 py-3 flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">D&amp;D Beyond</span>
-                  <CompCell val={row.beyond} />
-                </div>
-                <div
-                  className="px-5 py-3 flex items-center justify-between"
-                  style={{
-                    background: row.knockout ? "rgba(212,168,83,0.12)" : "rgba(212,168,83,0.07)",
-                    borderTop: "1px solid rgba(212,168,83,0.15)",
-                  }}
-                >
-                  <span className="text-[11px] font-bold text-gold/80 uppercase tracking-wider">Pocket DM</span>
-                  <CompCell val={row.pocketdm} highlight />
-                </div>
+              <span className="text-xl leading-none shrink-0 mt-0.5">{item.icon}</span>
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold text-foreground mb-0.5">{item.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
               </div>
             </div>
           ))}
@@ -847,7 +869,7 @@ function ComparisonSection() {
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCtaSection() {
   return (
-    <section data-section="final-cta" className="py-24 px-6 relative overflow-hidden">
+    <section data-section="final-cta" className="hidden md:block py-24 px-6 relative overflow-hidden">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/[0.06] rounded-full blur-[100px]" />

@@ -37,7 +37,7 @@ export function LpPricingSection() {
     <section
       data-section="lp-pricing"
       id="precos"
-      className="py-24 px-6 relative overflow-hidden bg-[#0d0d14]"
+      className="py-14 md:py-24 px-4 md:px-6 relative overflow-hidden bg-[#0d0d14]"
     >
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -78,7 +78,7 @@ export function LpPricingSection() {
         >
           {/* ── Free Card ── */}
           <div
-            className="relative rounded-2xl bg-card p-8 flex flex-col transition-all duration-200 hover:ring-2 hover:ring-gold/40"
+            className="relative rounded-2xl bg-card p-5 md:p-8 flex flex-col transition-all duration-200 hover:ring-2 hover:ring-gold/40"
             style={{
               background: "#13131f",
               border: "1px solid rgba(212,168,83,0.25)",
@@ -129,9 +129,9 @@ export function LpPricingSection() {
             </Link>
           </div>
 
-          {/* ── Pro Card (dimmed) ── */}
+          {/* ── Pro Card (dimmed) — collapsed on mobile ── */}
           <div
-            className="relative rounded-2xl border border-border p-8 flex flex-col opacity-60 cursor-default"
+            className="relative rounded-2xl border border-border p-5 md:p-8 flex flex-col opacity-60 cursor-default"
             aria-disabled="true"
             style={{
               background: "#13131f",
@@ -139,7 +139,6 @@ export function LpPricingSection() {
               boxShadow: "0 24px 64px rgba(0,0,0,0.3)",
             }}
           >
-            {/* Coming soon badge */}
             <div className="flex items-center gap-3 mb-3">
               <h3 className="text-xl font-display text-foreground">
                 {t("pro_title")}
@@ -152,31 +151,47 @@ export function LpPricingSection() {
               </span>
             </div>
 
-            <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-4xl font-mono font-bold text-foreground tracking-tight">
-                {t("pro_price")}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {t("pro_period")}
-              </span>
+            {/* Mobile: compact summary */}
+            <div className="md:hidden">
+              <div className="flex items-baseline gap-1 mb-2">
+                <span className="text-2xl font-mono font-bold text-foreground tracking-tight">
+                  {t("pro_price")}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {t("pro_period")}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {t("pro_includes_free")}
+              </p>
             </div>
 
-            <p className="text-sm text-muted-foreground mb-4">
-              {t("pro_includes_free")}
-            </p>
+            {/* Desktop: full feature list */}
+            <div className="hidden md:block">
+              <div className="flex items-baseline gap-1 mb-4">
+                <span className="text-4xl font-mono font-bold text-foreground tracking-tight">
+                  {t("pro_price")}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {t("pro_period")}
+                </span>
+              </div>
 
-            <ul className="space-y-2.5 flex-1">
-              {proFeatureKeys.map((key) => (
-                <li key={key} className="flex items-start gap-2.5">
-                  <CheckIcon className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
-                  <span className="text-sm text-foreground/60">
-                    {t(key)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+              <p className="text-sm text-muted-foreground mb-4">
+                {t("pro_includes_free")}
+              </p>
 
-            {/* No CTA button for Pro */}
+              <ul className="space-y-2.5 flex-1">
+                {proFeatureKeys.map((key) => (
+                  <li key={key} className="flex items-start gap-2.5">
+                    <CheckIcon className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
+                    <span className="text-sm text-foreground/60">
+                      {t(key)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>

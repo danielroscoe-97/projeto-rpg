@@ -7,6 +7,14 @@
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+  /* Hide scrollbar for horizontal carousels */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Smooth scroll + offset for fixed navbar */
