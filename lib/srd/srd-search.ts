@@ -172,6 +172,24 @@ export function mergeHomebrewItems(homebrew: SrdItem[]): void {
   itemIndex = new Fuse(Array.from(itemMap.values()), ITEM_OPTIONS);
 }
 
+// ── Imported content merge ──────────────────────────────────────────────────
+
+/**
+ * Merge imported monsters into the existing Fuse.js index.
+ * Call after loading imported content from IndexedDB.
+ */
+export function mergeImportedMonsters(imported: SrdMonster[]): void {
+  if (!monsterIndex) return;
+  imported.forEach((m) => monsterMap.set(`${m.id}:${m.ruleset_version}`, m));
+  monsterIndex = new Fuse(Array.from(monsterMap.values()), MONSTER_OPTIONS);
+}
+
+export function mergeImportedSpells(imported: SrdSpell[]): void {
+  if (!spellIndex) return;
+  imported.forEach((s) => spellMap.set(`${s.id}:${s.ruleset_version}`, s));
+  spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
+}
+
 /** Resets singleton indexes — for testing only. */
 export function resetSrdIndexes(): void {
   monsterIndex = null;

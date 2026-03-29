@@ -34,7 +34,8 @@ export type FeatureFlagKey =
   | "cr_calculator"
   | "file_sharing"
   | "email_invites"
-  | "show_non_srd_content";
+  | "show_non_srd_content"
+  | "extended_compendium";
 
 /** Whether a plan meets the required plan level */
 export function planMeetsRequirement(userPlan: Plan, required: Plan): boolean {

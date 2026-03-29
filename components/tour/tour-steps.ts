@@ -55,7 +55,17 @@ export const TOUR_STEPS: TourStepConfig[] = [
     interactiveHint: "tour.add_monster_hint",
     phase: "setup",
   },
-  // Step 3 — Manual Add Row (info)
+  // Step 3 — Import Hint (info)
+  {
+    id: "import-hint",
+    targetSelector: '[data-tour-id="import-content"]',
+    titleKey: "tour.import_hint_title",
+    descriptionKey: "tour.import_hint_description",
+    type: "info",
+    position: "bottom",
+    phase: "setup",
+  },
+  // Step 4 — Manual Add Row (info)
   {
     id: "add-row",
     targetSelector: '[data-tour-id="add-row"]',

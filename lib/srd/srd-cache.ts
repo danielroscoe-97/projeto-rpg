@@ -3,13 +3,13 @@ import type { SrdMonster, SrdSpell, SrdCondition, SrdItem } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
 const DB_NAME = "srd-cache";
-// Bumped to 5: added items object store
-const DB_VERSION = 5;
+// Bumped to 6: added imported-monsters, imported-spells object stores
+const DB_VERSION = 6;
 
 // Singleton promise — one IDBDatabase connection shared across all reads/writes
 let _dbPromise: ReturnType<typeof openDB> | null = null;
 
-function getDb() {
+export function getDb() {
   if (!_dbPromise) {
     _dbPromise = openDB(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion, _newVersion, tx) {
@@ -24,6 +24,12 @@ function getDb() {
         }
         if (!db.objectStoreNames.contains("items")) {
           db.createObjectStore("items");
+        }
+        if (!db.objectStoreNames.contains("imported-monsters")) {
+          db.createObjectStore("imported-monsters");
+        }
+        if (!db.objectStoreNames.contains("imported-spells")) {
+          db.createObjectStore("imported-spells");
         }
         // Clear stale data on version upgrade so fresh SRD bundles
         // (with token_url and latest fields) get fetched and cached.

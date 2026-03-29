@@ -234,12 +234,19 @@ Tour guiado interativo no modo `/try` com spotlight SVG, steps interativos com a
 **FRs cobertos:** FR64, FR65, FR66, FR67, FR68, FR69, FR70, FR71, FR72
 **Stories:** 4 (3 implementadas + 1 pendente com melhorias Shieldmaiden)
 
+### Epic 10: Content Import Engine (Sprint 4)
+Motor de importação genérica de conteúdo externo (monstros, magias, itens) via URL ou upload JSON. Dados em IndexedDB client-side. Parser multi-formato (5etools, Open5e, 5e-database). Integrado ao combate e ao tour do `/try`.
+**Research:** `_bmad-output/planning-artifacts/research/research-compendium-legal-strategy-2026-03-28.md`
+**Stories:** 7
+**Stories detalhadas:** `_bmad-output/planning-artifacts/epic-10-content-import-engine.md`
+
 ---
 
 > **Nota:** As stories detalhadas para cada Epic estão nos arquivos dedicados:
 > - Epics 0, 1, 2: `_bmad-output/implementation-artifacts/v2-epics-0-1-2-stories.md`
 > - Epics 3, 4, 5: `_bmad-output/planning-artifacts/epics-v2-stories.md`
 > - Epic 9: `_bmad-output/planning-artifacts/epic-9-guided-onboarding.md`
+> - Epic 10: `_bmad-output/planning-artifacts/epic-10-content-import-engine.md`
 >
 > **Para stories completas com Given/When/Then AC, consulte os arquivos acima.**
 > Abaixo segue o resumo de cada story com referências.
@@ -1332,6 +1339,7 @@ Migration 016: RLS V2 policies para novas tabelas
 | Sprint 2 | Epic 2 + Epic 3 | 5 dias | 9 stories |
 | Sprint 3 | Epic 4 + Epic 5 | 10 dias | 13 stories |
 | **Total** | **Epics 0-5** | **20 dias (~4 semanas)** | **30 stories** |
+| Sprint 4 | Epic 10 | 7 dias | 7 stories |
 | Backlog V2+ | Epic 6 | ~7-10 dias | 4 stories |
 | Backlog V3+ | Epic 7 | ~15-20 dias | 4 stories |
 | Backlog V5 | Epic 8 | TBD | 3 stories |

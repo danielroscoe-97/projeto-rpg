@@ -249,7 +249,56 @@ Para o conteúdo base do produto (Camada 1):
 
 ---
 
-## 9. Relação com Épicos Existentes
+## 9. Integração com Onboarding — Combate Guiado (`/try`)
+
+> **Decisão aprovada em 2026-03-28** — A importação de conteúdo deve ser descoberta dentro do combate guiado do onboarding.
+
+### 9.1 Princípio
+
+O momento de máximo engajamento do usuário é durante o combate. Apresentar a importação nesse contexto cria um "aha moment" natural e um funil de conversão orgânico:
+
+```
+/try → combate → "quero mais monstros" → importa →
+"wow funciona!" → "crie conta pra não perder" → signup
+```
+
+### 9.2 Pontos de Entrada no Combate (ambos implementados)
+
+**A) Toolbar discreta do combate:**
+- Ícone de importação (📥) na toolbar geral do combate
+- Sempre visível, mas discreto — não compete com ações de combate
+- Abre o modal/drawer de importação sobre o combate
+
+**B) CTA no final da lista de monstros (contextual):**
+- Quando o usuário rola a lista de monstros para adicionar ao combate, um footer aparece:
+  ```
+  ────────────────────────────
+  📥 Só 334 monstros? Importe seu compêndio completo
+  ────────────────────────────
+  ```
+- Aparece exatamente quando o usuário sente a limitação do SRD
+- Visível enquanto `extended_compendium` não estiver ativada (ou se não houver importados)
+
+### 9.3 Step no Tour do Onboarding
+
+- **Momento:** Após o usuário adicionar o primeiro monstro SRD ao combate
+- Tooltip do tour aponta pro botão de importação na toolbar:
+  ```
+  💡 "Sabia que você pode importar milhares de monstros
+       de fontes externas? Toque aqui para expandir
+       seu compêndio."
+  ```
+
+### 9.4 Comportamento no `/try` (sem login)
+
+- Importação salva no IndexedDB local (funciona sem autenticação)
+- Aviso sutil: "Dados temporários — crie sua conta para manter seus monstros"
+- Após signup, IndexedDB migra automaticamente para o perfil do usuário
+- Incentivo natural de cadastro: o usuário já investiu nos dados importados
+
+---
+
+## 10. Relação com Épicos Existentes
 
 | Épico | Relação |
 |---|---|
@@ -257,6 +306,8 @@ Para o conteúdo base do produto (Camada 1):
 | **C.1.1** — Feature Flags | Flag `extended_compendium` usa o sistema já especificado |
 | **Story 4.1** — SRD Client-Side Search | Busca precisa ser expandida para incluir IndexedDB de importados |
 | **Story 4.2** — Monster Search & Stat Block | Stat block precisa renderizar monstros importados no mesmo formato |
+| **Epic 9 — Onboarding Tour** | Novo step no `/try` após adicionar primeiro monstro SRD |
+| **Novo: Content Import Engine** | Épico cross-cutting — motor, UI, integração combate, migração IndexedDB→conta |
 
 ---
 

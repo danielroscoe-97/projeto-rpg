@@ -8,6 +8,10 @@ import { loadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
 import { VersionBadge } from "@/components/session/RulesetSelector";
+import { useExtendedCompendium } from "@/lib/hooks/use-extended-compendium";
+import { ExternalContentGate } from "@/components/import/ExternalContentGate";
+import { ImportContentModal } from "@/components/import/ImportContentModal";
+import { getImportedSources } from "@/lib/import/import-cache";
 import type { RulesetVersion } from "@/lib/types/database";
 
 const CREATURE_COLORS: Record<string, string> = {
@@ -98,7 +102,9 @@ export function MonsterSearchPanel({
   onSelectMonsterGroup,
 }: MonsterSearchPanelProps) {
   const t = useTranslations("combat");
+  const tImport = useTranslations("import");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+  const { isActive: extendedActive } = useExtendedCompendium();
 
   const [query, setQuery] = useState("");
   const [allMonsters, setAllMonsters] = useState<SrdMonster[]>([]);
@@ -113,8 +119,16 @@ export function MonsterSearchPanel({
   const [quantity, setQuantity] = useState(1);
 
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [gateOpen, setGateOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [hasImported, setHasImported] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Check if user has imported content
+  useEffect(() => {
+    getImportedSources().then((s) => setHasImported(s.length > 0));
+  }, [importOpen]);
 
   const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0;
   const shouldShowResults = query.trim() !== "" || hasFilters;
@@ -176,11 +190,16 @@ export function MonsterSearchPanel({
         });
       }
 
+      // Filter non-SRD content unless extended compendium is active
+      if (!extendedActive) {
+        base = base.filter((m) => m.is_srd !== false);
+      }
+
       setResults(base.slice(0, query.trim() ? 8 : 20));
       setActiveIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [query, rulesetVersion, allMonsters, isLoading, crMin, crMax, selectedTypes, shouldShowResults]);
+  }, [query, rulesetVersion, allMonsters, isLoading, crMin, crMax, selectedTypes, shouldShowResults, extendedActive]);
 
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
@@ -451,6 +470,11 @@ export function MonsterSearchPanel({
                     </span>
                     <CrBadge cr={monster.cr} />
                     <VersionBadge version={monster.ruleset_version} />
+                    {monster.is_srd === false && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400">
+                        {tImport("badge_external")}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground/70">
                     <span className="capitalize">{typePrimary}</span>
@@ -487,6 +511,34 @@ export function MonsterSearchPanel({
           {t("search_no_results", { query })}
         </p>
       )}
+
+      {/* Import CTA footer */}
+      {!extendedActive && (
+        <button
+          type="button"
+          onClick={() => setGateOpen(true)}
+          className="w-full flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/5 rounded transition-colors border-t border-white/[0.04]"
+          data-tour-id="import-content"
+        >
+          <span>📥</span>
+          {tImport("cta_discover")}
+        </button>
+      )}
+      {extendedActive && !hasImported && (
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          className="w-full flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground/60 hover:text-gold hover:bg-gold/5 rounded transition-colors border-t border-white/[0.04]"
+          data-tour-id="import-content"
+        >
+          <span>📥</span>
+          {tImport("cta_import_more")}
+        </button>
+      )}
+
+      {/* Modals */}
+      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} />
+      <ImportContentModal open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
 }

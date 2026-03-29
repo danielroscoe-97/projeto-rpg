@@ -38,6 +38,14 @@ const DEFAULT_FLAGS: FeatureFlag[] = [
     description: null,
     updated_at: "",
   },
+  {
+    id: "",
+    key: "extended_compendium",
+    enabled: true,
+    plan_required: "free" as Plan,
+    description: null,
+    updated_at: "",
+  },
 ];
 
 async function fetchFlags(): Promise<FeatureFlag[]> {

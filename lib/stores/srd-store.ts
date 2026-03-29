@@ -21,7 +21,9 @@ import {
   buildSpellIndex,
   buildItemIndex,
   setConditionData,
+  mergeImportedMonsters,
 } from "@/lib/srd/srd-search";
+import { getImportedMonsters } from "@/lib/import/import-cache";
 
 interface SrdState {
   monsters: SrdMonster[];
@@ -105,6 +107,20 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
       buildSpellIndex([...spells2014, ...spells2024]);
       buildItemIndex(items);
       setConditionData(conditions);
+
+      // Merge imported content if extended compendium was previously accepted
+      try {
+        const accepted = typeof window !== "undefined" &&
+          localStorage.getItem("ext_compendium_accepted") === "true";
+        if (accepted) {
+          const imported = await getImportedMonsters();
+          if (imported.length > 0) {
+            mergeImportedMonsters(imported);
+          }
+        }
+      } catch {
+        // IndexedDB unavailable — degrade gracefully
+      }
 
       set({
         monsters: [...monsters2014, ...monsters2024],

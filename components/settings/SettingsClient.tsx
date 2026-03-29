@@ -8,6 +8,7 @@ import { SpellSearch } from "@/components/oracle/SpellSearch";
 import { MonsterSearch } from "@/components/oracle/MonsterSearch";
 import { ConditionLookup } from "@/components/oracle/ConditionLookup";
 import { SubscriptionPanel } from "@/components/billing/SubscriptionPanel";
+import { ImportManagement } from "@/components/import/ImportManagement";
 
 type Tab = "preferences" | "wiki" | "billing" | "account";
 type WikiTab = "spells" | "monsters" | "conditions";
@@ -94,6 +95,9 @@ function PreferencesTab({ email }: { email: string }) {
       <section className="bg-card rounded-lg border border-border p-5">
         <LanguageSwitcher />
       </section>
+
+      {/* External content management */}
+      <ImportManagement />
     </div>
   );
 }
