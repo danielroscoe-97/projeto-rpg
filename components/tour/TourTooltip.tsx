@@ -202,6 +202,7 @@ export function TourTooltip({
 
   const titleKey = step.titleKey.replace(/^tour\./, "");
   const descKey = step.descriptionKey.replace(/^tour\./, "");
+  const extraDescKey = step.extraDescriptionKey?.replace(/^tour\./, "");
 
   // Fallback: if target element doesn't exist, render as modal
   const renderAsModal = isModal || (!targetRect);
@@ -255,6 +256,11 @@ export function TourTooltip({
             <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
               {t(descKey)}
             </p>
+            {extraDescKey && (
+              <p className="text-xs text-gold leading-relaxed">
+                {t(extraDescKey)}
+              </p>
+            )}
 
             {/* Completion CTAs */}
             {isCompleteStep && (
@@ -287,7 +293,7 @@ export function TourTooltip({
                     type="button"
                     onClick={onSkip}
                     data-testid="tour-skip"
-                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center"
+                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30 rounded"
                   >
                     {t("skip")}
                   </button>
@@ -392,6 +398,11 @@ export function TourTooltip({
           <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
             {t(descKey)}
           </p>
+          {extraDescKey && (
+            <p className="text-xs text-gold leading-relaxed">
+              {t(extraDescKey)}
+            </p>
+          )}
 
           {/* Footer */}
           <div className="space-y-2 pt-1">
@@ -401,7 +412,7 @@ export function TourTooltip({
                 type="button"
                 onClick={onSkip}
                 data-testid="tour-skip"
-                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center"
+                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30 rounded"
               >
                 {t("skip")}
               </button>

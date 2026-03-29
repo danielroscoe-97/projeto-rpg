@@ -121,29 +121,41 @@ export function CombatantSetupRow({
         )}
       </div>
 
-      {/* Monster token — clickable to open stat block (or spacer to keep alignment) */}
+      {/* Monster token — visual on mobile (24px), clickable on desktop (32px) */}
       {combatant.monster_id ? (
-        <button
-          type="button"
-          onClick={() => {
-            if (combatant.monster_id && combatant.ruleset_version) {
-              pinCard("monster", combatant.monster_id, combatant.ruleset_version);
-            }
-          }}
-          className={`hidden md:block flex-shrink-0 rounded-full ${combatant.ruleset_version ? "cursor-pointer hover:ring-2 hover:ring-gold/60 transition-shadow" : "cursor-default"}`}
-          disabled={!combatant.ruleset_version}
-          aria-label={combatant.ruleset_version ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
-          data-testid={`token-btn-${combatant.id}`}
-        >
-          <MonsterToken
-            tokenUrl={combatant.token_url ?? undefined}
-            creatureType={combatant.creature_type ?? undefined}
-            name={combatant.name}
-            size={32}
-          />
-        </button>
+        <>
+          {/* Mobile: visual-only token */}
+          <span className="block md:hidden flex-shrink-0 rounded-full">
+            <MonsterToken
+              tokenUrl={combatant.token_url ?? undefined}
+              creatureType={combatant.creature_type ?? undefined}
+              name={combatant.name}
+              size={24}
+            />
+          </span>
+          {/* Desktop: clickable token */}
+          <button
+            type="button"
+            onClick={() => {
+              if (combatant.monster_id && combatant.ruleset_version) {
+                pinCard("monster", combatant.monster_id, combatant.ruleset_version);
+              }
+            }}
+            className={`hidden md:block flex-shrink-0 rounded-full ${combatant.ruleset_version ? "cursor-pointer hover:ring-2 hover:ring-gold/60 transition-shadow" : "cursor-default"}`}
+            disabled={!combatant.ruleset_version}
+            aria-label={combatant.ruleset_version ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
+            data-testid={`token-btn-${combatant.id}`}
+          >
+            <MonsterToken
+              tokenUrl={combatant.token_url ?? undefined}
+              creatureType={combatant.creature_type ?? undefined}
+              name={combatant.name}
+              size={32}
+            />
+          </button>
+        </>
       ) : (
-        <span className="hidden md:block w-8 flex-shrink-0" />
+        <span className="w-6 md:w-8 flex-shrink-0" />
       )}
 
       {/* Name */}

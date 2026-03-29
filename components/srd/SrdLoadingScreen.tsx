@@ -81,7 +81,7 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
     if (!showLoader) return;
     const interval = setInterval(() => {
       setMessageIndex((i) => (i + 1) % LOADING_MESSAGE_KEYS.length);
-    }, 400);
+    }, 700);
     return () => clearInterval(interval);
   }, [showLoader]);
 

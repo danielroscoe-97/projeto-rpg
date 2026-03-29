@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull } from "lucide-react";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
@@ -20,7 +20,8 @@ import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, ad
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
-import type { Combatant } from "@/lib/types/combat";
+import type { Combatant, CombatantRole } from "@/lib/types/combat";
+import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
 
@@ -38,6 +39,13 @@ const EMPTY_ADD_ROW: AddRowForm = {
   hp: "",
   ac: "",
   notes: "",
+};
+
+const ADD_ROW_ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string; label: string }> = {
+  player: { icon: User, color: "text-blue-400 border-blue-400/30", label: "setup_role_player" },
+  npc: { icon: UserCircle, color: "text-gold border-gold/30", label: "setup_role_npc" },
+  summon: { icon: Sparkles, color: "text-purple-400 border-purple-400/30", label: "setup_role_summon" },
+  monster: { icon: Skull, color: "text-red-400 border-red-400/30", label: "setup_role_monster" },
 };
 
 // ─── Setup Phase ────────────────────────────────────────────────────────────
@@ -61,7 +69,9 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
   const [rulesetVersion, setRulesetVersion] = useState<RulesetVersion>("2014");
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
+  const [addRowRole, setAddRowRole] = useState<CombatantRole>("monster");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [addRowGlow, setAddRowGlow] = useState(false);
   const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
   const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
@@ -228,7 +238,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       ruleset_version: sel?.version ?? null,
       is_defeated: false,
       is_hidden: false,
-      is_player: false,
+      is_player: !sel && addRowRole === "player",
       monster_id: sel?.id ?? null,
       token_url: null,
       creature_type: null,
@@ -238,14 +248,15 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       dm_notes: "",
       player_notes: addRow.notes.trim(),
       player_character_id: null,
-      combatant_role: null,
+      combatant_role: sel ? null : addRowRole,
     });
 
     lastSelectedMonster.current = null;
     setAddRow(EMPTY_ADD_ROW);
+    setAddRowRole("monster");
     setSubmitError(null);
     initInputRef.current?.focus();
-  }, [addRow, addCombatant, t]);
+  }, [addRow, addRowRole, addCombatant, t]);
 
   const handleRowInitChange = useCallback(
     (id: string, value: number | null) => {
@@ -469,6 +480,24 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         onKeyDown={addRowKeyDown}
       >
         <span className="w-5 text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
+        {/* Role cycle button */}
+        {(() => {
+          const config = ADD_ROW_ROLE_CONFIG[addRowRole];
+          const Icon = config.icon;
+          const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(addRowRole) + 1) % COMBATANT_ROLE_CYCLE.length];
+          return (
+            <button
+              type="button"
+              onClick={() => setAddRowRole(nextRole)}
+              className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`}
+              title={t("setup_role_tooltip")}
+              data-testid="add-row-role"
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">{t(config.label)}</span>
+            </button>
+          );
+        })()}
         <input
           ref={initInputRef}
           type="number"
@@ -536,12 +565,42 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         <p className="text-red-400 text-sm" role="alert">{submitError}</p>
       )}
 
+      {/* Clear confirmation banner */}
+      {showClearConfirm && (
+        <div className="flex items-center gap-3 bg-red-950/30 border border-red-500/20 rounded-md px-3 py-2">
+          <p className="text-sm text-foreground/80 flex-1">{t("clear_all_confirm_message")}</p>
+          <button
+            type="button"
+            onClick={() => {
+              resetCombat();
+              setAddRow(EMPTY_ADD_ROW);
+              setAddRowRole("monster");
+              setSubmitError(null);
+              lastSelectedMonster.current = null;
+              setShowClearConfirm(false);
+            }}
+            className="px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-500 transition-colors min-h-[32px]"
+            data-testid="clear-confirm-yes"
+          >
+            {t("clear_all_confirm_yes")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowClearConfirm(false)}
+            className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded transition-colors min-h-[32px]"
+            data-testid="clear-confirm-no"
+          >
+            {tCommon("cancel")}
+          </button>
+        </div>
+      )}
+
       {/* Footer controls */}
       <div className="flex items-center justify-between pt-2">
         {combatants.length > 0 ? (
           <button
             type="button"
-            onClick={() => { resetCombat(); setAddRow(EMPTY_ADD_ROW); setSubmitError(null); lastSelectedMonster.current = null; }}
+            onClick={() => { setShowClearConfirm(true); }}
             className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           >
             {tCommon("clear_all")}
