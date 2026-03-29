@@ -6,67 +6,67 @@
 
 const NAMES_BY_TYPE: Record<string, string[]> = {
   aberration: [
-    "Entidade Distorcida", "Ser Aberrante", "Coisa do Além",
-    "Horror Profundo", "Criatura Alienígena", "Forma Impossível",
+    "Ser Distorcido", "Coisa do Além", "Horror Profundo",
+    "Forma Impossível", "Ser Aberrante", "Alien Voraz",
   ],
   beast: [
-    "Fera Selvagem", "Besta das Sombras", "Predador Antigo",
-    "Criatura Rastejante", "Animal Monstruoso", "Caçador Feroz",
+    "Fera Selvagem", "Besta Sombria", "Predador", "Criatura Feroz",
+    "Caçador Feroz", "Animal Hostil",
   ],
   celestial: [
-    "Ser Radiante", "Emissário Celestial", "Guardião Divino",
-    "Entidade Luminosa", "Servo dos Céus", "Presença Sagrada",
+    "Ser Radiante", "Guardião Divino", "Luz Celestial",
+    "Servo dos Céus", "Anjo Velado", "Ser Luminoso",
   ],
   construct: [
-    "Autômato Antigo", "Máquina Arcana", "Construto Animado",
-    "Sentinela de Pedra", "Guardião Mecânico", "Forma Artificial",
+    "Autômato", "Construto", "Sentinela",
+    "Guardião Arcano", "Forma Artificial", "Máquina Viva",
   ],
   dragon: [
-    "Wyrm Ancestral", "Besta Alada", "Serpente de Fogo",
-    "Grande Escama", "Dragão das Brumas", "Terror Voador",
+    "Wyrm Antigo", "Besta Alada", "Grande Escama",
+    "Serpente Ígnea", "Terror Voador", "Dragão Velado",
   ],
   elemental: [
-    "Espírito Elemental", "Fúria dos Elementos", "Essência Primordial",
-    "Manifestação Caótica", "Força da Natureza", "Turbilhão Vivo",
+    "Ser Elemental", "Fúria Viva", "Força Primal",
+    "Caos Elemental", "Turbilhão Vivo", "Essência Bruta",
   ],
   fey: [
-    "Criatura Feérica", "Espírito da Floresta", "Ser do Crepúsculo",
-    "Encantador Silvestre", "Presença Arcana", "Vulto Encantado",
+    "Ser Feérico", "Vulto Encantado", "Fada Sombria",
+    "Ser Silvestre", "Presença Arcana", "Ente Feérico",
   ],
   fiend: [
-    "Entidade Sombria", "Demônio Menor", "Ser Infernal",
-    "Horror das Trevas", "Criatura Abissal", "Presença Maligna",
+    "Ser Infernal", "Demônio Menor", "Horror das Trevas",
+    "Ente Sombrio", "Ser Abissal", "Vulto Maligno",
   ],
   giant: [
-    "Colosso Antigo", "Gigante das Terras", "Titã Primitivo",
-    "Montanha Viva", "Destroçador Imenso", "Grande Ancestral",
+    "Colosso", "Titã Antigo", "Montanha Viva",
+    "Grande Imenso", "Gigante Hostil", "Titã Bruto",
   ],
   humanoid: [
-    "Figura Encapuzada", "Guerreiro Misterioso", "Estranho Armado",
-    "Silhueta Hostil", "Combatente Desconhecido", "Vulto Sombrio",
+    "Vulto Armado", "Figura Hostil", "Estranho",
+    "Silhueta Hostil", "Vulto Sombrio", "Encapuzado",
   ],
   monstrosity: [
-    "Monstruosidade", "Besta Antinatural", "Criatura Grotesca",
-    "Aberração da Natureza", "Terror Rastejante", "Horror Vivo",
+    "Besta Grotesca", "Horror Vivo", "Fera Mutante",
+    "Monstruosidade", "Ser Grotesco", "Terror Vivo",
   ],
   ooze: [
-    "Gosma Rastejante", "Lodo Animado", "Massa Amorfa",
-    "Criatura Viscosa", "Bolha Corrosiva", "Forma Gelatinosa",
+    "Gosma Viva", "Lodo Animado", "Massa Amorfa",
+    "Bolha Ácida", "Forma Viscosa", "Lodo Hostil",
   ],
   plant: [
-    "Vegetação Animada", "Planta Carnívora", "Raiz Viva",
-    "Esporo Ambulante", "Flora Predadora", "Trepadeira Hostil",
+    "Planta Viva", "Flora Hostil", "Raiz Viva",
+    "Esporo Animado", "Trepadeira", "Vegetal Hostil",
   ],
   undead: [
-    "Morto-Vivo", "Espírito Atormentado", "Cadáver Animado",
-    "Sombra Errante", "Presença Necrótica", "Resquício Maldito",
+    "Morto-Vivo", "Sombra Errante", "Cadáver Animado",
+    "Ser Necrótico", "Espírito Hostil", "Vulto Maldito",
   ],
 };
 
 const GENERIC_NAMES = [
-  "Criatura Misteriosa", "Inimigo Desconhecido", "Entidade Hostil",
-  "Ser Misterioso", "Presença Ameaçadora", "Vulto Sinistro",
-  "Ameaça Oculta", "Forma Indistinta", "Adversário Enigmático",
+  "Ser Misterioso", "Inimigo Oculto", "Ente Hostil",
+  "Vulto Sinistro", "Ameaça Oculta", "Forma Estranha",
+  "Ser Desconhecido", "Vulto Hostil", "Ente Sombrio",
 ];
 
 /**
