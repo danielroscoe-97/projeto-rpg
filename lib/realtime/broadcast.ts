@@ -185,6 +185,7 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
       combatants: visibleCombatants.map(sanitizeCombatant),
       current_turn_index: adjustedTurnIndex,
       round_number: event.round_number,
+      ...(event.encounter_id ? { encounter_id: event.encounter_id } : {}),
     };
     return result;
   }

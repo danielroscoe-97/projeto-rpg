@@ -123,6 +123,8 @@ export interface RealtimeStateSync {
   combatants: Combatant[];
   current_turn_index: number;
   round_number: number;
+  /** Included on combat start so the player can exit the lobby */
+  encounter_id?: string;
 }
 
 export interface RealtimeCombatStats {
@@ -194,6 +196,7 @@ export interface SanitizedStateSync {
   combatants: SanitizedCombatant[];
   current_turn_index: number;
   round_number: number;
+  encounter_id?: string;
 }
 
 /** Player-safe version of combat:initiative_reorder */

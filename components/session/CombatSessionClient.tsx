@@ -216,6 +216,7 @@ export function CombatSessionClient({
           combatants: sorted,
           current_turn_index: 0,
           round_number: 1,
+          encounter_id: store.encounter_id!,
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : t("error_start_combat"));
@@ -245,6 +246,7 @@ export function CombatSessionClient({
         combatants: sorted,
         current_turn_index: 0,
         round_number: 1,
+        encounter_id: encounter_id,
       });
       router.replace(`/app/session/${session_id}`);
     } catch (err) {
