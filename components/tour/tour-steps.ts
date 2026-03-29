@@ -51,7 +51,17 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "bottom",
     phase: "setup",
   },
-  // Step 3 — Import Hint (info)
+  // Step 3 — Monster Added confirmation (info)
+  {
+    id: "monster-added",
+    targetSelector: '[data-tour-id="combatant-list"]',
+    titleKey: "tour.monster_added_title",
+    descriptionKey: "tour.monster_added_description",
+    type: "info",
+    position: "top",
+    phase: "setup",
+  },
+  // Step 4 — Import Hint (info)
   {
     id: "import-hint",
     targetSelector: '[data-tour-id="import-content"]',
