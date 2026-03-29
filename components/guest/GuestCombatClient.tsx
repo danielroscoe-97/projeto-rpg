@@ -530,34 +530,21 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         onKeyDown={addRowKeyDown}
       >
         <span className="w-5 text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
-        {/* Role cycle button */}
-        {(() => {
-          const config = ADD_ROW_ROLE_CONFIG[addRowRole];
-          const Icon = config.icon;
-          const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(addRowRole) + 1) % COMBATANT_ROLE_CYCLE.length];
-          return (
-            <button
-              type="button"
-              onClick={() => setAddRowRole(nextRole)}
-              className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`}
-              title={t("setup_role_tooltip")}
-              data-testid="add-row-role"
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{t(config.label)}</span>
-            </button>
-          );
-        })()}
         <input
           ref={initInputRef}
-          type="number"
+          type="text"
+          inputMode="numeric"
+          pattern="-?[0-9]*"
           value={addRow.initiative}
-          onChange={(e) => setAddRow((f) => ({ ...f, initiative: e.target.value }))}
+          onChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) {
+              setAddRow((f) => ({ ...f, initiative: raw }));
+            }
+          }}
           onFocus={selectOnFocus}
           placeholder={t("setup_col_init")}
-          min={-5}
-          max={50}
-          className={`${inputClass} w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-16 text-center font-mono`}
           data-testid="add-row-init"
         />
         <input
@@ -601,10 +588,28 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           className={`${inputClass} hidden md:block flex-1 min-w-0 text-muted-foreground`}
           data-testid="add-row-notes"
         />
+        {/* Role cycle button — moved to the right, before Add button */}
+        {(() => {
+          const config = ADD_ROW_ROLE_CONFIG[addRowRole];
+          const Icon = config.icon;
+          const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(addRowRole) + 1) % COMBATANT_ROLE_CYCLE.length];
+          return (
+            <button
+              type="button"
+              onClick={() => setAddRowRole(nextRole)}
+              className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`}
+              title={t("setup_role_tooltip")}
+              data-testid="add-row-role"
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{t(config.label)}</span>
+            </button>
+          );
+        })()}
         <button
           type="button"
           onClick={handleAddFromRow}
-          className="w-auto md:w-[140px] flex-shrink-0 py-1.5 px-3 md:px-0 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
+          className="w-auto md:w-[100px] flex-shrink-0 py-1.5 px-3 md:px-0 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
           data-testid="add-row-btn"
         >
           {t("setup_add")}

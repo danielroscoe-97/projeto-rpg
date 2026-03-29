@@ -63,6 +63,15 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
   setInitiative: (id, value) =>
     set((state) => {
+      // During active combat, only update the value — do NOT re-sort.
+      // Reordering happens on advanceTurn so the current turn isn't disrupted.
+      if (state.is_active) {
+        const updated = state.combatants.map((c) =>
+          c.id === id ? { ...c, initiative: value } : c
+        );
+        return { combatants: updated };
+      }
+      // Pre-combat: sort immediately so the setup list reflects order.
       const updated = state.combatants.map((c) =>
         c.id === id ? { ...c, initiative: value } : c
       );
@@ -91,15 +100,26 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     set((state) => {
       const { combatants, current_turn_index, round_number } = state;
       if (combatants.length === 0) return state;
-      let next = current_turn_index;
+
+      // Re-sort by initiative before advancing — this applies any mid-combat
+      // initiative changes without disrupting the current combatant's turn.
+      const currentCombatantId = combatants[current_turn_index]?.id;
+      const sorted = assignInitiativeOrder(sortByInitiative([...combatants]));
+
+      // Find where the current combatant ended up after sorting
+      const sortedIndex = sorted.findIndex((c) => c.id === currentCombatantId);
+      const baseIndex = sortedIndex >= 0 ? sortedIndex : current_turn_index;
+
+      let next = baseIndex;
       let roundBumped = false;
-      for (let i = 0; i < combatants.length; i++) {
-        next = (next + 1) % combatants.length;
-        if (next === 0 && combatants.length > 1) roundBumped = true;
-        if (!combatants[next].is_defeated) break;
+      for (let i = 0; i < sorted.length; i++) {
+        next = (next + 1) % sorted.length;
+        if (next === 0 && sorted.length > 1) roundBumped = true;
+        if (!sorted[next].is_defeated) break;
       }
-      if (combatants[next].is_defeated) return state;
+      if (sorted[next].is_defeated) return state;
       return {
+        combatants: sorted,
         undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,

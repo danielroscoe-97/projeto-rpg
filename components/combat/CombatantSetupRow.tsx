@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Copy, Shield, User, UserCircle, Sparkles, Skull } from "lucide-react";
+import { Copy, EyeOff, Shield, User, UserCircle, Sparkles, Skull } from "lucide-react";
 import type { Combatant, CombatantRole } from "@/lib/types/combat";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import { VersionBadge } from "@/components/session/RulesetSelector";
@@ -70,7 +70,8 @@ export function CombatantSetupRow({
 
   return (
     <div
-      className="flex flex-wrap items-center gap-x-1.5 gap-y-1 md:flex-nowrap bg-card border border-white/[0.04] rounded-md px-2 py-1.5 hover:bg-white/[0.02] group"
+      className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 md:grid md:gap-x-1.5 md:items-center bg-card border rounded-md px-2 py-1.5 hover:bg-white/[0.02] group${combatant.is_hidden ? " border-dashed border-purple-500/40 opacity-80" : " border-white/[0.04]"}`}
+      style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
       data-testid={`setup-row-${combatant.id}`}
     >
       {/* Drag handle */}
@@ -83,26 +84,26 @@ export function CombatantSetupRow({
       </span>
 
       {/* Init */}
-      <div className="flex items-center gap-0.5 w-12 md:w-16 flex-shrink-0">
+      <div className="flex items-center gap-0.5 w-12 md:w-auto flex-shrink-0">
         <input
-          type="number"
+          type="text"
+          inputMode="numeric"
+          pattern="-?[0-9]*"
           value={combatant.initiative ?? ""}
           onChange={(e) => {
             const raw = e.target.value;
-            if (raw === "") {
+            if (raw === "" || raw === "-") {
               onInitiativeChange(combatant.id, null);
               return;
             }
-            const val = Number(raw);
-            if (!isNaN(val)) {
+            if (/^-?\d+$/.test(raw)) {
+              const val = Number(raw);
               onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
             }
           }}
           onFocus={selectOnFocus}
           placeholder={t("setup_init_placeholder")}
-          min={-5}
-          max={50}
-          className={`${inputClass} w-10 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${highlightInit ? " field-error" : ""}`}
+          className={`${inputClass} w-10 text-center font-mono${highlightInit ? " field-error" : ""}`}
           aria-label={t("setup_init_aria", { name: combatant.name })}
           aria-invalid={highlightInit || undefined}
           data-testid={`setup-init-${combatant.id}`}
@@ -155,11 +156,11 @@ export function CombatantSetupRow({
           </button>
         </>
       ) : (
-        <span className="w-6 md:w-8 flex-shrink-0" />
+        <span className="w-6 md:w-auto flex-shrink-0" />
       )}
 
       {/* Name */}
-      <div className="flex items-center gap-1 flex-1 min-w-0 md:flex-initial md:flex-1">
+      <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
         <input
           type="text"
           value={combatant.name}
@@ -209,10 +210,16 @@ export function CombatantSetupRow({
             <VersionBadge version={combatant.ruleset_version} />
           </span>
         )}
+        {combatant.is_hidden && (
+          <span className="flex-shrink-0 inline-flex items-center gap-0.5 text-[10px] text-purple-400 font-medium px-1.5 py-0.5 bg-purple-900/20 border border-purple-500/30 rounded">
+            <EyeOff className="w-3 h-3" />
+            <span className="hidden md:inline">{t("hidden_indicator")}</span>
+          </span>
+        )}
       </div>
 
-      {/* Quebra de linha no mobile */}
-      <div className="w-full h-0 md:hidden" aria-hidden="true" />
+      {/* Quebra de linha no mobile — hidden in desktop grid */}
+      <div className="w-full h-0 md:hidden md:col-span-0" aria-hidden="true" />
 
       {/* HP + CA grouped for mobile second line */}
       <div className="flex items-center gap-1.5 md:contents">
@@ -230,7 +237,7 @@ export function CombatantSetupRow({
           onFocus={selectOnFocus}
           placeholder={t("setup_hp_placeholder")}
           min={1}
-          className={`${inputClass} w-12 md:w-16 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           aria-label={t("setup_hp_aria", { name: combatant.name })}
           data-testid={`setup-hp-${combatant.id}`}
         />
@@ -249,7 +256,7 @@ export function CombatantSetupRow({
           onFocus={selectOnFocus}
           placeholder={t("setup_ac_placeholder")}
           min={1}
-          className={`${inputClass} w-10 md:w-14 text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`${inputClass} w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           aria-label={t("setup_ac_aria", { name: combatant.name })}
           data-testid={`setup-ac-${combatant.id}`}
         />
@@ -261,13 +268,13 @@ export function CombatantSetupRow({
         value={combatant.player_notes}
         onChange={(e) => onNotesChange(combatant.id, e.target.value)}
         placeholder={t("setup_notes_placeholder")}
-        className={`${inputClass} hidden md:block flex-1 min-w-0 text-muted-foreground`}
+        className={`${inputClass} hidden md:block w-full min-w-0 text-muted-foreground`}
         aria-label={t("setup_notes_aria", { name: combatant.name })}
         data-testid={`setup-notes-${combatant.id}`}
       />
 
       {/* Actions — responsive width */}
-      <div className="flex-shrink-0 flex items-center justify-end gap-1 ml-auto md:w-[170px]">
+      <div className="flex-shrink-0 flex items-center justify-end gap-1 ml-auto md:ml-0 md:w-auto">
         {combatant.is_player && (
           <span className="text-[10px] text-blue-400/70 uppercase tracking-wider flex-shrink-0 px-1.5 py-0.5 border border-blue-400/20 rounded">
             {t("setup_player_badge")}

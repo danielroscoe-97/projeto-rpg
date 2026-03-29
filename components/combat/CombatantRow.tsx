@@ -203,9 +203,14 @@ export function CombatantRow({
           {showActions && (
             inlineEditTarget === "initiative" ? (
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="-?[0-9]*"
                 value={inlineHpValue}
-                onChange={(e) => setInlineHpValue(e.target.value)}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) setInlineHpValue(raw);
+                }}
                 onBlur={() => {
                   if (inlineEditRef.current !== "initiative") return;
                   const val = parseInt(inlineHpValue, 10);
@@ -216,7 +221,7 @@ export function CombatantRow({
                   if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                   if (e.key === "Escape") closeInlineEdit();
                 }}
-                className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-gold text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-14 bg-transparent border border-gold/60 rounded px-1 py-0.5 text-gold text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-gold"
                 autoFocus
                 aria-label={t("edit_initiative_aria", { name: combatant.name })}
                 data-testid={`inline-init-input-${combatant.id}`}
