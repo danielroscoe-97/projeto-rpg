@@ -13,6 +13,7 @@ interface TourTooltipProps {
   totalSteps: number;
   targetRect: DOMRect | null;
   onNext: () => void;
+  onBack: () => void;
   onSkip: () => void;
   onComplete: () => void;
 }
@@ -152,6 +153,7 @@ export function TourTooltip({
   totalSteps,
   targetRect,
   onNext,
+  onBack,
   onSkip,
   onComplete,
 }: TourTooltipProps) {
@@ -273,7 +275,18 @@ export function TourTooltip({
 
             {/* Footer */}
             <div className="flex items-center justify-between pt-1">
-              <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
+              <div className="flex items-center gap-2">
+                <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
+                {!isCompleteStep && (
+                  <button
+                    type="button"
+                    onClick={onSkip}
+                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
+                  >
+                    {t("skip")}
+                  </button>
+                )}
+              </div>
 
               <div className="flex items-center gap-2">
                 {isCompleteStep ? (
@@ -286,13 +299,15 @@ export function TourTooltip({
                   </button>
                 ) : (
                   <>
-                    <button
-                      type="button"
-                      onClick={onSkip}
-                      className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
-                    >
-                      {t("skip")}
-                    </button>
+                    {stepIndex > 0 && (
+                      <button
+                        type="button"
+                        onClick={onBack}
+                        className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                      >
+                        {t("back")}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={onNext}
@@ -370,17 +385,27 @@ export function TourTooltip({
 
           {/* Footer */}
           <div className="flex items-center justify-between pt-1">
-            <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
-
             <div className="flex items-center gap-2">
+              <TourProgress currentStep={stepIndex} totalSteps={totalSteps} />
               <button
                 type="button"
                 onClick={onSkip}
-                className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
+                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
               >
                 {t("skip")}
               </button>
+            </div>
 
+            <div className="flex items-center gap-2">
+              {stepIndex > 0 && (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                >
+                  {t("back")}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onNext}
