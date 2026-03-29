@@ -281,7 +281,7 @@ export function TourTooltip({
                   <button
                     type="button"
                     onClick={onSkip}
-                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1"
+                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
                   >
                     {t("skip")}
                   </button>
@@ -390,7 +390,7 @@ export function TourTooltip({
               <button
                 type="button"
                 onClick={onSkip}
-                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1"
+                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-2 py-1 min-h-[44px] flex items-center"
               >
                 {t("skip")}
               </button>

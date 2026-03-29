@@ -74,7 +74,7 @@ export function TourProvider() {
     const next = currentStep + 1;
     if (next >= effectiveSteps.length) {
       completeTour();
-      setTimeout(() => { advancingRef.current = false; }, 100);
+      advancingRef.current = false;
       return;
     }
 
@@ -84,8 +84,16 @@ export function TourProvider() {
     // Phase transition: setup → combat — auto-start combat so DOM updates
     if (currentStepConfig?.phase === "setup" && nextStepConfig?.phase === "combat") {
       const { startCombat, combatants } = useGuestCombatStore.getState();
-      if (combatants.length > 0) {
+      if (combatants.length === 0) {
+        // Can't enter combat with no combatants — stay on current step
+        advancingRef.current = false;
+        return;
+      }
+      try {
         startCombat();
+      } catch {
+        advancingRef.current = false;
+        return;
       }
       // Wait for DOM to re-render with combat view elements
       setTimeout(() => {
@@ -96,7 +104,7 @@ export function TourProvider() {
     }
 
     goToStep(next);
-    setTimeout(() => { advancingRef.current = false; }, 100);
+    advancingRef.current = false;
   }, [currentStep, effectiveSteps, goToStep, completeTour]);
 
   // Smart go back: go to previous step, handling phase transitions
@@ -111,8 +119,12 @@ export function TourProvider() {
 
     // Phase transition: combat → setup — revert to setup view
     if (currentStepConfig?.phase === "combat" && prevStepConfig?.phase === "setup") {
-      const { resetCombat } = useGuestCombatStore.getState();
-      resetCombat();
+      try {
+        useGuestCombatStore.getState().resetCombat();
+      } catch {
+        advancingRef.current = false;
+        return;
+      }
       setTimeout(() => {
         goToStep(prev);
         advancingRef.current = false;
@@ -121,7 +133,7 @@ export function TourProvider() {
     }
 
     goToStep(prev);
-    setTimeout(() => { advancingRef.current = false; }, 100);
+    advancingRef.current = false;
   }, [currentStep, effectiveSteps, goToStep]);
 
   // Calculate target position
@@ -234,6 +246,12 @@ export function TourProvider() {
     smartGoBack();
   }, [smartGoBack]);
 
+  // Skip tour and reset combat state if in combat phase
+  const handleSkip = useCallback(() => {
+    skipTour();
+    useGuestCombatStore.getState().resetCombat();
+  }, [skipTour]);
+
   // Complete tour and reset combat state for a clean start
   const handleComplete = useCallback(() => {
     completeTour();
@@ -267,7 +285,7 @@ export function TourProvider() {
         targetRect={targetRect}
         onNext={handleNext}
         onBack={handleBack}
-        onSkip={skipTour}
+        onSkip={handleSkip}
         onComplete={handleComplete}
       />
     </>
