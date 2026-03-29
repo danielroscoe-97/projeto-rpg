@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
-import { SrdInitializer } from "@/components/srd/SrdInitializer";
+import { SrdLoadingScreen } from "@/components/srd/SrdLoadingScreen";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { GuestBanner } from "@/components/guest/GuestBanner";
 import { TourProvider } from "@/components/tour/TourProvider";
@@ -29,15 +29,16 @@ export default function TryLayout({ children }: { children: React.ReactNode }) {
           </>
         }
       />
-      <SrdInitializer />
-      <FloatingCardContainer />
-      <main className="flex-1 pt-[72px] isolate">
-        <GuestBanner />
-        <div className="p-6">
-          {children}
-        </div>
-        <TourProvider />
-      </main>
+      <SrdLoadingScreen>
+        <FloatingCardContainer />
+        <main className="flex-1 pt-[72px] isolate">
+          <GuestBanner />
+          <div className="p-6">
+            {children}
+          </div>
+          <TourProvider />
+        </main>
+      </SrdLoadingScreen>
     </div>
   );
 }
