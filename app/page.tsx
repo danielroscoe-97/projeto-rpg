@@ -874,7 +874,7 @@ function FinalCtaSection() {
           </Link>
           <Link
             href="/try"
-            className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1"
+            className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
           >
             Testar sem conta
             <ArrowRight className="w-3.5 h-3.5" />

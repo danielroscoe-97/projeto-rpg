@@ -197,6 +197,31 @@ export function TourProvider() {
       }, 400);
       return () => clearTimeout(timer);
     }
+
+    // Auto-add Goblin when entering the import-hint step (after "Add Monster" step)
+    // This ensures combatants exist for roll-initiative and start-combat steps
+    if (step.id === "import-hint") {
+      const { combatants, addCombatant } = useGuestCombatStore.getState();
+      if (combatants.length === 0) {
+        addCombatant({
+          name: "Goblin",
+          current_hp: 7,
+          max_hp: 7,
+          temp_hp: 0,
+          ac: 15,
+          spell_save_dc: null,
+          initiative: null,
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: "2014",
+          is_defeated: false,
+          is_hidden: false,
+          is_player: false,
+          monster_id: "goblin-mm",
+          token_url: "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin.webp",
+        });
+      }
+    }
   }, [isActive, currentStep, effectiveSteps]);
 
   // Update rect on step change, resize, scroll

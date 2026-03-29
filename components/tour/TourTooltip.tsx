@@ -29,22 +29,23 @@ function computePosition(
   const isMobile = window.innerWidth < 768;
   const safeMargin = 16;
 
-  // Mobile bottom-sheet: when target is too tall (>50% viewport) or
+  // Bottom-sheet fallback: when target is too tall (>50% viewport) or
   // target is in the bottom half and there's not enough room below,
-  // pin tooltip to bottom of viewport as a bottom-sheet
+  // pin tooltip to bottom of viewport as a bottom-sheet.
+  // On desktop, center it horizontally; on mobile, stretch full width.
   const targetTooTall = targetRect.height > window.innerHeight * 0.5;
   const spaceBelow = window.innerHeight - targetRect.bottom;
   const targetInBottomHalf = targetRect.top > window.innerHeight * 0.4;
   const insufficientSpaceBelow = spaceBelow < 200;
-  if (isMobile && (targetTooTall || (targetInBottomHalf && insufficientSpaceBelow))) {
+  if (targetTooTall || (targetInBottomHalf && insufficientSpaceBelow)) {
     return {
       position: "bottom",
       style: {
-        maxWidth: tooltipWidth,
+        maxWidth: isMobile ? tooltipWidth : 420,
         bottom: safeMargin,
-        left: safeMargin,
-        right: safeMargin,
-        width: "auto",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: `calc(100% - ${safeMargin * 2}px)`,
         maxHeight: `calc(50vh - ${safeMargin}px)`,
       },
     };
@@ -198,13 +199,14 @@ export function TourTooltip({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  if (!targetRect && !isModal) return null;
-
   const titleKey = step.titleKey.replace(/^tour\./, "");
   const descKey = step.descriptionKey.replace(/^tour\./, "");
 
-  // Modal steps: centered on screen
-  if (isModal) {
+  // Fallback: if target element doesn't exist, render as modal
+  const renderAsModal = isModal || (!targetRect);
+
+  // Modal steps (or fallback): centered on screen
+  if (renderAsModal) {
     return (
       <AnimatePresence mode="wait">
         <motion.div

@@ -57,7 +57,7 @@ export async function Footer() {
               href="https://creativecommons.org/licenses/by/4.0/"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-2 hover:text-muted-foreground transition-colors"
+              className="underline underline-offset-2 hover:text-muted-foreground transition-colors min-h-[44px] inline-flex items-center"
             >
               {t("footer_srd_license")}
             </a>

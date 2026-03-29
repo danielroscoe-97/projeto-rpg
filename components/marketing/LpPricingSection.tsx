@@ -58,7 +58,7 @@ export function LpPricingSection() {
           </p>
           <Link
             href="/try"
-            className="shrink-0 inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-gold/40 text-gold text-sm font-semibold hover:bg-gold/10 transition-colors duration-200"
+            className="shrink-0 inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-gold/40 text-gold text-sm font-semibold hover:bg-gold/10 transition-colors duration-200 min-h-[44px]"
           >
             {t("beta_cta")}
           </Link>
