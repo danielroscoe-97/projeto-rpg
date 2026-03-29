@@ -9,6 +9,7 @@ import { MonsterSearch } from "@/components/oracle/MonsterSearch";
 import { ConditionLookup } from "@/components/oracle/ConditionLookup";
 import { SubscriptionPanel } from "@/components/billing/SubscriptionPanel";
 import { ImportManagement } from "@/components/import/ImportManagement";
+import { RoleSelector } from "@/components/settings/RoleSelector";
 
 type Tab = "preferences" | "wiki" | "billing" | "account";
 type WikiTab = "spells" | "monsters" | "conditions";
@@ -89,6 +90,11 @@ function PreferencesTab({ email }: { email: string }) {
             <p className="text-foreground text-sm mt-0.5">{email}</p>
           </div>
         </div>
+      </section>
+
+      {/* Role */}
+      <section className="bg-card rounded-lg border border-border p-5">
+        <RoleSelector />
       </section>
 
       {/* Language */}

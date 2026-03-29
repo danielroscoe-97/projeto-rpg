@@ -848,7 +848,10 @@
     "delete_confirm_title": "Delete Account?",
     "delete_confirm_description": "This will permanently delete your account and all your campaigns, player characters, encounters, combatants, and session history.",
     "delete_confirm_warning": "This cannot be undone.",
-    "delete_confirm_button": "Yes, delete everything"
+    "delete_confirm_button": "Yes, delete everything",
+    "role_title": "Role",
+    "role_description": "How do you use Pocket DM? This personalizes your experience.",
+    "role_updated": "Role updated successfully!"
   },
   "admin": {
     "panel_title": "Admin Panel",

@@ -848,7 +848,10 @@
     "delete_confirm_title": "Excluir Conta?",
     "delete_confirm_description": "Isso excluirá permanentemente sua conta e todas as suas campanhas, personagens de jogadores, encontros, combatentes e histórico de sessão.",
     "delete_confirm_warning": "Isso não pode ser desfeito.",
-    "delete_confirm_button": "Sim, excluir tudo"
+    "delete_confirm_button": "Sim, excluir tudo",
+    "role_title": "Papel",
+    "role_description": "Como você usa o Pocket DM? Isso personaliza sua experiência.",
+    "role_updated": "Papel atualizado com sucesso!"
   },
   "admin": {
     "panel_title": "Painel Administrativo",
