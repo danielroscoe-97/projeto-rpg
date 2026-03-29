@@ -35,14 +35,14 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
     useSrdStore.getState().initializeSrd();
   }, []);
 
-  // Min display timer
+  // Min display timer — also dismiss on error once min time elapses
   useEffect(() => {
     const timer = setTimeout(() => {
       minTimeRef.current = true;
-      if (srdReadyRef.current) setShowLoader(false);
+      if (srdReadyRef.current || error) setShowLoader(false);
     }, MIN_DISPLAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [error]);
 
   // Track SRD readiness
   useEffect(() => {
@@ -131,7 +131,10 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
           </motion.div>
         )}
       </AnimatePresence>
-      {children}
+      {/* Prevent keyboard interaction with children while loader is visible */}
+      <div inert={showLoader || undefined} aria-hidden={showLoader || undefined}>
+        {children}
+      </div>
     </>
   );
 }

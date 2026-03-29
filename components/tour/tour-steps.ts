@@ -84,7 +84,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "bottom",
     phase: "setup",
   },
-  // Step 4 — Roll Initiative (info — always shown, never auto-skipped)
+  // Step 6 — Roll Initiative (info — always shown, never auto-skipped)
   {
     id: "roll-initiative",
     targetSelector: '[data-tour-id="roll-initiative"]',
@@ -94,7 +94,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     position: "top",
     phase: "setup",
   },
-  // Step 5 — Start Combat (info — step-by-step)
+  // Step 7 — Start Combat (info — step-by-step)
   {
     id: "start-combat",
     targetSelector: '[data-tour-id="start-combat"]',

@@ -41,6 +41,8 @@ const EMPTY_ADD_ROW: AddRowForm = {
   notes: "",
 };
 
+const DEFAULT_ADD_ROW_ROLE: CombatantRole = "monster";
+
 const ADD_ROW_ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string; label: string }> = {
   player: { icon: User, color: "text-blue-400 border-blue-400/30", label: "setup_role_player" },
   npc: { icon: UserCircle, color: "text-gold border-gold/30", label: "setup_role_npc" },
@@ -69,7 +71,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
   const [rulesetVersion, setRulesetVersion] = useState<RulesetVersion>("2014");
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
-  const [addRowRole, setAddRowRole] = useState<CombatantRole>("monster");
+  const [addRowRole, setAddRowRole] = useState<CombatantRole>(DEFAULT_ADD_ROW_ROLE);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [addRowGlow, setAddRowGlow] = useState(false);
@@ -93,6 +95,15 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   );
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
+
+  const handleConfirmClear = useCallback(() => {
+    resetCombat();
+    setAddRow(EMPTY_ADD_ROW);
+    setAddRowRole(DEFAULT_ADD_ROW_ROLE);
+    setSubmitError(null);
+    lastSelectedMonster.current = null;
+    setShowClearConfirm(false);
+  }, [resetCombat]);
 
   // Bug #2: Clear stale validation error when combatants change (e.g. initiative filled)
   useEffect(() => {
@@ -140,6 +151,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       });
 
       setAddRow(EMPTY_ADD_ROW);
+      setAddRowRole(DEFAULT_ADD_ROW_ROLE);
       lastSelectedMonster.current = null;
       setSubmitError(null);
     },
@@ -253,7 +265,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
     lastSelectedMonster.current = null;
     setAddRow(EMPTY_ADD_ROW);
-    setAddRowRole("monster");
+    setAddRowRole(DEFAULT_ADD_ROW_ROLE);
     setSubmitError(null);
     initInputRef.current?.focus();
   }, [addRow, addRowRole, addCombatant, t]);
@@ -571,14 +583,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           <p className="text-sm text-foreground/80 flex-1">{t("clear_all_confirm_message")}</p>
           <button
             type="button"
-            onClick={() => {
-              resetCombat();
-              setAddRow(EMPTY_ADD_ROW);
-              setAddRowRole("monster");
-              setSubmitError(null);
-              lastSelectedMonster.current = null;
-              setShowClearConfirm(false);
-            }}
+            onClick={handleConfirmClear}
             className="px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-500 transition-colors min-h-[32px]"
             data-testid="clear-confirm-yes"
           >

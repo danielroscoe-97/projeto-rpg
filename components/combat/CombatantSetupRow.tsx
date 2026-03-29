@@ -124,8 +124,8 @@ export function CombatantSetupRow({
       {/* Monster token — visual on mobile (24px), clickable on desktop (32px) */}
       {combatant.monster_id ? (
         <>
-          {/* Mobile: visual-only token */}
-          <span className="block md:hidden flex-shrink-0 rounded-full">
+          {/* Mobile: visual-only token (24px forced via inline style to override sizeClass) */}
+          <span className="block md:hidden flex-shrink-0 rounded-full overflow-hidden w-6 h-6" style={{ fontSize: 10 }}>
             <MonsterToken
               tokenUrl={combatant.token_url ?? undefined}
               creatureType={combatant.creature_type ?? undefined}
