@@ -209,7 +209,9 @@
     "pc_char_count": "/50",
     "presets_title": "Encounter Presets",
     "presets_count": "presets",
-    "presets_manage": "Manage →"
+    "presets_manage": "Manage →",
+    "player_welcome": "Welcome, Player!",
+    "player_join_hint": "Ask your DM for the session link to join an encounter."
   },
   "onboarding": {
     "choose_title": "How do you want to start?",

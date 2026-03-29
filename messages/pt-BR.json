@@ -209,7 +209,9 @@
     "pc_char_count": "/50",
     "presets_title": "Encontros Preparados",
     "presets_count": "presets",
-    "presets_manage": "Gerenciar →"
+    "presets_manage": "Gerenciar →",
+    "player_welcome": "Bem-vindo, Jogador!",
+    "player_join_hint": "Peça ao seu Mestre o link da sessão para participar de um encontro."
   },
   "onboarding": {
     "choose_title": "Como você quer começar?",

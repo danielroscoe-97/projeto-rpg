@@ -2,12 +2,12 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Swords, Package } from "lucide-react";
+import { Swords, Package, Users } from "lucide-react";
 
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import { useRoleStore } from "@/lib/stores/role-store";
-import type { UserRole } from "@/lib/stores/role-store";
+import type { UserRole, ActiveView } from "@/lib/stores/role-store";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 
 interface DashboardContentProps {
@@ -23,6 +23,8 @@ interface DashboardContentProps {
     presets_title: string;
     presets_count: string;
     presets_manage: string;
+    player_welcome: string;
+    player_join_hint: string;
   };
 }
 
@@ -34,15 +36,21 @@ export function DashboardContent({
   userRole,
   translations: t,
 }: DashboardContentProps) {
-  const { activeView, loadRole } = useRoleStore();
+  const { activeView, initialized, loadRole } = useRoleStore();
 
   useEffect(() => {
     loadRole();
   }, [loadRole]);
 
-  // Determine what to show: DM-only content is hidden when activeView is "player"
-  // For single-role users (dm or player), activeView matches their role
-  const showDmContent = userRole === "dm" || activeView === "dm";
+  // Use server-provided role as fallback until client store initializes
+  // This prevents flash of wrong content before loadRole() completes
+  const effectiveView: ActiveView = initialized
+    ? activeView
+    : userRole === "player"
+      ? "player"
+      : "dm";
+
+  const isPlayerView = effectiveView === "player";
 
   return (
     <>
@@ -51,7 +59,7 @@ export function DashboardContent({
           <h1 className="text-2xl font-semibold text-foreground">{t.title}</h1>
           <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
         </div>
-        {showDmContent && (
+        {!isPlayerView && (
           <div className="flex items-center sm:justify-end">
             <Link
               href="/app/session/new"
@@ -63,10 +71,25 @@ export function DashboardContent({
         )}
       </div>
 
-      {showDmContent && <SavedEncounters encounters={savedEncounters} />}
+      {/* Player view: show welcome message and hint about joining sessions */}
+      {isPlayerView && (
+        <div className="mb-6 bg-emerald-500/5 border border-emerald-500/20 rounded-lg px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Users className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-foreground">{t.player_welcome}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t.player_join_hint}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Presets quick-access — DM only */}
-      {showDmContent && (
+      <CampaignManager initialCampaigns={campaigns} userId={userId} />
+
+      {/* DM tools: shown below campaigns in player view (deprioritized), prominently in DM view */}
+      {!isPlayerView && <SavedEncounters encounters={savedEncounters} />}
+
+      {!isPlayerView && (
         <div className="mb-6">
           <Link
             href="/app/presets"
@@ -83,8 +106,6 @@ export function DashboardContent({
           </Link>
         </div>
       )}
-
-      <CampaignManager initialCampaigns={campaigns} userId={userId} />
     </>
   );
 }

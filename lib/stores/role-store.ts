@@ -101,24 +101,24 @@ export const useRoleStore = create<RoleState>((set, get) => ({
   },
 
   updateRole: async (newRole) => {
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from("users")
-        .update({ role: newRole })
-        .eq("id", user.id);
-      if (error) throw error;
+    const { error } = await supabase
+      .from("users")
+      .update({ role: newRole })
+      .eq("id", user.id);
+    if (error) throw error;
 
-      set({ role: newRole, activeView: deriveActiveView(newRole) });
-    } catch {
-      // Silently fail — caller can handle with toast
-      throw new Error("Failed to update role");
+    // Only update local state after DB confirms success
+    const newView = deriveActiveView(newRole);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pocketdm:activeView", newView);
     }
+    set({ role: newRole, activeView: newView });
   },
 
   reset: () =>

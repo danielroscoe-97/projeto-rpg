@@ -18,14 +18,6 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/auth/login");
 
-  // Onboarding redirect — new DMs with no campaigns go through the wizard
-  const { count, error: countErr } = await supabase
-    .from("campaigns")
-    .select("id", { count: "exact", head: true })
-    .eq("owner_id", user.id);
-
-  if (!countErr && count === 0) redirect("/app/onboarding");
-
   // Fetch user role
   const { data: userData } = await supabase
     .from("users")
@@ -34,6 +26,17 @@ export default async function DashboardPage() {
     .maybeSingle();
 
   const userRole = (userData?.role as UserRole) ?? "both";
+
+  // Onboarding redirect — new DMs with no campaigns go through the wizard
+  // Players skip onboarding since they don't create campaigns
+  if (userRole !== "player") {
+    const { count, error: countErr } = await supabase
+      .from("campaigns")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", user.id);
+
+    if (!countErr && count === 0) redirect("/app/onboarding");
+  }
 
   // Fetch campaigns with player character count
   const { data: rawCampaigns } = await supabase
@@ -82,6 +85,8 @@ export default async function DashboardPage() {
     presets_title: t("presets_title"),
     presets_count: t("presets_count"),
     presets_manage: t("presets_manage"),
+    player_welcome: t("player_welcome"),
+    player_join_hint: t("player_join_hint"),
   };
 
   return (
