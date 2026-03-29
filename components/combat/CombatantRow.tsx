@@ -405,7 +405,8 @@ export function CombatantRow({
           )}
 
           {/* Dying badge — PC at 0 HP but not defeated (death saves needed) */}
-          {combatant.is_player && combatant.current_hp === 0 && !combatant.is_defeated && (
+          {/* Only show when max_hp > 0 (HP was actually configured) */}
+          {combatant.is_player && combatant.current_hp === 0 && combatant.max_hp > 0 && !combatant.is_defeated && (
             <span
               className="text-xs text-red-300 font-medium animate-pulse"
               data-testid="dying-badge"
