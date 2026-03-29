@@ -12,7 +12,6 @@ import { OracleAIModal } from "@/components/oracle/OracleAIModal";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
 
 export default async function AppLayout({
@@ -30,6 +29,118 @@ export default async function AppLayout({
     redirect("/auth/login");
   }
 
+  // B.6: Check if user has DM access to decide whether to show Presets
+  const [
+    { count: dmMembershipCount },
+    { count: ownedCampaignCount },
+    { data: userData },
+  ] = await Promise.all([
+    supabase
+      .from("campaign_members")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("role", "dm")
+      .eq("status", "active"),
+    supabase
+      .from("campaigns")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", user.id),
+    supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle(),
+  ]);
+
+  const userDbRole = userData?.role ?? "both";
+  const hasDmAccess =
+    (dmMembershipCount ?? 0) > 0 ||
+    (ownedCampaignCount ?? 0) > 0 ||
+    userDbRole === "dm" ||
+    userDbRole === "both";
+
+  // Build nav links — conditionally include Presets
+  const navLinks = [
+    {
+      href: "/app/dashboard",
+      label: (
+        <span className="inline-flex items-center gap-1.5">
+          <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
+          {t("dashboard")}
+        </span>
+      ),
+    },
+    {
+      label: (
+        <span className="inline-flex items-center gap-1.5">
+          <BookOpen className="w-4 h-4" aria-hidden="true" />
+          {t("compendium")}
+        </span>
+      ),
+      children: [
+        {
+          href: "/app/compendium?tab=monsters",
+          label: (
+            <span className="inline-flex items-center gap-1.5">
+              <Skull className="w-4 h-4" aria-hidden="true" />
+              {t("monsters")}
+            </span>
+          ),
+        },
+        {
+          href: "/app/compendium?tab=spells",
+          label: (
+            <span className="inline-flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
+              {t("spells")}
+            </span>
+          ),
+        },
+        {
+          href: "/app/compendium?tab=items",
+          label: (
+            <span className="inline-flex items-center gap-1.5">
+              <Backpack className="w-4 h-4" aria-hidden="true" />
+              {t("items")}
+            </span>
+          ),
+        },
+        {
+          href: "/app/compendium?tab=conditions",
+          label: (
+            <span className="inline-flex items-center gap-1.5">
+              <HeartPulse className="w-4 h-4" aria-hidden="true" />
+              {t("conditions")}
+            </span>
+          ),
+        },
+      ],
+    },
+    // Only show Presets if user has DM access
+    ...(hasDmAccess
+      ? [
+          {
+            href: "/app/presets",
+            label: (
+              <span className="inline-flex items-center gap-1.5">
+                <Package className="w-4 h-4" aria-hidden="true" />
+                {t("presets")}
+              </span>
+            ),
+          },
+        ]
+      : []),
+    {
+      href: "/app/settings",
+      label: (
+        <span className="inline-flex items-center gap-1.5">
+          <Settings className="w-4 h-4" aria-hidden="true" />
+          {t("settings")}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Skip navigation — hidden until focused (WCAG 2.4.1) */}
@@ -43,21 +154,8 @@ export default async function AppLayout({
       <NavbarWithSync
         brand={t("brand")}
         brandHref="/app/dashboard"
-        links={[
-          { href: "/app/dashboard", label: <span className="inline-flex items-center gap-1.5"><LayoutDashboard className="w-4 h-4" aria-hidden="true" />{t("dashboard")}</span> },
-          {
-            label: <span className="inline-flex items-center gap-1.5"><BookOpen className="w-4 h-4" aria-hidden="true" />{t("compendium")}</span>,
-            children: [
-              { href: "/app/compendium?tab=monsters", label: <span className="inline-flex items-center gap-1.5"><Skull className="w-4 h-4" aria-hidden="true" />{t("monsters")}</span> },
-              { href: "/app/compendium?tab=spells", label: <span className="inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" aria-hidden="true" />{t("spells")}</span> },
-              { href: "/app/compendium?tab=items", label: <span className="inline-flex items-center gap-1.5"><Backpack className="w-4 h-4" aria-hidden="true" />{t("items")}</span> },
-              { href: "/app/compendium?tab=conditions", label: <span className="inline-flex items-center gap-1.5"><HeartPulse className="w-4 h-4" aria-hidden="true" />{t("conditions")}</span> },
-            ],
-          },
-          { href: "/app/presets", label: <span className="inline-flex items-center gap-1.5"><Package className="w-4 h-4" aria-hidden="true" />{t("presets")}</span> },
-          { href: "/app/settings", label: <span className="inline-flex items-center gap-1.5"><Settings className="w-4 h-4" aria-hidden="true" />{t("settings")}</span> },
-        ]}
-        rightSlot={<><RoleSwitcher /><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
+        links={navLinks}
+        rightSlot={<><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
       />
       <SrdInitializer />
       <ErrorBoundary name="Oracle">

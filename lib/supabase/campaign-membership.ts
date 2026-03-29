@@ -99,7 +99,7 @@ export async function getUserMemberships(
         (m.campaigns as Record<string, unknown>).id as string
     );
 
-  let characterMap: Record<
+  const characterMap: Record<
     string,
     { name: string; current_hp: number; max_hp: number }
   > = {};
@@ -108,7 +108,8 @@ export async function getUserMemberships(
     const { data: characters } = await supabase
       .from("player_characters")
       .select("campaign_id, name, current_hp, max_hp")
-      .in("campaign_id", playerCampaignIds);
+      .in("campaign_id", playerCampaignIds)
+      .eq("user_id", userId);
 
     for (const pc of characters ?? []) {
       // Use the first character found per campaign (player's own)
@@ -357,6 +358,7 @@ export async function getCampaignMembership(
     .select("id, campaign_id, user_id, role, joined_at, invited_by, status")
     .eq("campaign_id", campaignId)
     .eq("user_id", userId)
+    .eq("status", "active")
     .limit(1)
     .maybeSingle();
 
