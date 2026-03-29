@@ -2,18 +2,20 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 
-const LOADING_MESSAGES = [
-  "Catalogando monstros...",
-  "Reunindo ordem de iniciativa...",
-  "Amplificando poderes...",
-  "Preparando magias...",
-  "Afiando espadas...",
-  "Consultando o oráculo...",
-];
+const LOADING_MESSAGE_KEYS = [
+  "msg_cataloging_monsters",
+  "msg_rolling_initiative",
+  "msg_amplifying_powers",
+  "msg_preparing_spells",
+  "msg_sharpening_swords",
+  "msg_consulting_oracle",
+] as const;
 
-const MIN_DISPLAY_MS = 1800;
+const MIN_DISPLAY_MS = 2200;
+const FALLBACK_TIMEOUT_MS = 15000;
 
 /**
  * Full-screen animated loading screen that initializes SRD data.
@@ -21,7 +23,8 @@ const MIN_DISPLAY_MS = 1800;
  * and min display time passes, fades out and reveals children.
  */
 export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
-  const { is_loading, monsters } = useSrdStore();
+  const { is_loading, monsters, error } = useSrdStore();
+  const t = useTranslations("srd_loading");
   const [showLoader, setShowLoader] = useState(true);
   const [messageIndex, setMessageIndex] = useState(0);
   const minTimeRef = useRef(false);
@@ -58,11 +61,26 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fallback: dismiss loader after timeout even on error
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, FALLBACK_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Handle error after min display time
+  useEffect(() => {
+    if (error && minTimeRef.current) {
+      setShowLoader(false);
+    }
+  }, [error]);
+
   // Cycle messages
   useEffect(() => {
     if (!showLoader) return;
     const interval = setInterval(() => {
-      setMessageIndex((i) => (i + 1) % LOADING_MESSAGES.length);
+      setMessageIndex((i) => (i + 1) % LOADING_MESSAGE_KEYS.length);
     }, 400);
     return () => clearInterval(interval);
   }, [showLoader]);
@@ -107,7 +125,7 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
               >
-                {LOADING_MESSAGES[messageIndex]}
+                {t(LOADING_MESSAGE_KEYS[messageIndex])}
               </motion.p>
             </AnimatePresence>
           </motion.div>

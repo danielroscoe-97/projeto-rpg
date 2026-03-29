@@ -1342,6 +1342,14 @@
     "management_monsters": "{count} monstros",
     "management_imported_at": "Importado em {date}"
   },
+  "srd_loading": {
+    "msg_cataloging_monsters": "Catalogando monstros...",
+    "msg_rolling_initiative": "Reunindo ordem de iniciativa...",
+    "msg_amplifying_powers": "Amplificando poderes...",
+    "msg_preparing_spells": "Preparando magias...",
+    "msg_sharpening_swords": "Afiando espadas...",
+    "msg_consulting_oracle": "Consultando o oráculo..."
+  },
   "tour": {
     "welcome_title": "Bem-vindo ao Pocket DM!",
     "welcome_description": "Vou te guiar para montar seu primeiro combate. Leva menos de 2 minutos!",
