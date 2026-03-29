@@ -406,30 +406,14 @@ export function PlayerInitiativeBoard({
                     ))}
                   </div>
                 )}
-                {/* Player note input — players can signal the DM */}
-                {onPlayerNote && (
-                  <PlayerNoteInput
-                    combatantId={pc.id}
-                    onSubmit={onPlayerNote}
-                  />
-                )}
               </div>
             );
           })}
         </div>
       )}
 
-      {/* Mobile-only: player note input above initiative list (since own-character card is in bottom bar) */}
-      {hasOwnChar && onPlayerNote && (
-        <div className="lg:hidden">
-          {playerChars.map((pc) => (
-            <PlayerNoteInput
-              key={pc.id}
-              combatantId={pc.id}
-              onSubmit={onPlayerNote}
-            />
-          ))}
-        </div>
+      {false && (
+        <div className="hidden" />
       )}
 
       {/* Round 1 reveal indicator */}
@@ -589,23 +573,7 @@ export function PlayerInitiativeBoard({
         </AnimatePresence>
       </ul>
 
-      {/* ── COMBAT LOG — at the bottom so it doesn't compete with turn info ── */}
-      {visibleLog.length > 0 && (
-        <div className="bg-card/50 border border-border/50 rounded-lg px-3 py-2">
-          <h3 className="text-muted-foreground text-sm lg:text-xs font-medium mb-1.5">{t("combat_log_title")}</h3>
-          <ul className="space-y-1 lg:space-y-0.5 max-h-36 lg:max-h-28 overflow-y-auto">
-            {visibleLog.map((entry, i) => (
-              <li key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 text-sm lg:text-xs min-h-[32px] lg:min-h-0 items-center lg:items-baseline">
-                <span className={`shrink-0 ${LOG_TYPE_COLORS[entry.type]}`}>●</span>
-                <span className="text-foreground/80 flex-1">{entry.text}</span>
-                <span className="text-muted-foreground text-xs lg:text-[10px] shrink-0">
-                  {formatRelativeTime(entry.timestamp, t)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Combat log temporarily disabled */}
 
       {/* Notification toggle */}
       <div className="flex justify-center py-2">
