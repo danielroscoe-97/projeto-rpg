@@ -191,7 +191,7 @@ function HeroSection() {
             href="/try"
             className="group relative overflow-hidden w-full py-3 bg-white/[0.06] text-foreground font-medium text-base rounded-lg border border-white/[0.10] hover:bg-white/[0.10] hover:border-gold/30 hover:text-gold transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
-            Começar Agora (Grátis)
+            Testar Combat Tracker (Grátis)
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
 
@@ -590,7 +590,7 @@ function HowItWorksSection() {
         <div className="text-center mt-12">
           <Button variant="gold" size="lg" asChild>
             <Link href="/try">
-              Começar Agora — é Grátis
+              Testar Combat Tracker — Grátis
             </Link>
           </Button>
           <p className="text-muted-foreground text-sm mt-3">
@@ -877,7 +877,7 @@ function FinalCtaSection() {
             href="/try"
             className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
           >
-            Testar sem conta
+            Testar Combat Tracker sem conta
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
