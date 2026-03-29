@@ -267,10 +267,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       const currentCombatants = useCombatStore.getState().combatants;
       const newCombatants: Omit<Combatant, "id">[] = [];
       // Generate ONE display name for the group, append numbers
-      const existingNames = currentCombatants
-        .filter((c) => !c.is_player && c.display_name)
-        .map((c) => c.display_name!);
-      const groupDisplayBase = getDefaultDisplayName(monster?.type ?? null, existingNames);
+      const groupDisplayBase = getDefaultDisplayName(monster?.type ?? null, currentCombatants as Combatant[]);
       for (let i = 1; i <= qty; i++) {
         newCombatants.push({
           name: `${monster.name} ${i}`,
@@ -517,14 +514,26 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         const groupMembers = store.combatants
           .filter((c) => c.monster_group_id === combatant.monster_group_id)
           .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
-        // Strip trailing " N" to get new base, then re-number all members
-        const newBase = displayName.replace(/\s+\d+$/, "");
-        const updated = store.combatants.map((c) => {
-          const idx = groupMembers.findIndex((m) => m.id === c.id);
-          if (idx === -1) return c;
-          return { ...c, display_name: `${newBase} ${idx + 1}` };
-        });
-        store.hydrateCombatants(updated);
+
+        // Detect intent: trailing number matching this member's group_order → rename group
+        // Otherwise → individual rename
+        const trailingNum = displayName.match(/\s+(\d+)$/);
+        const isGroupRename = trailingNum
+          ? Number(trailingNum[1]) === (combatant.group_order ?? 0)
+          : false;
+
+        if (isGroupRename) {
+          const newBase = displayName.replace(/\s+\d+$/, "");
+          const updated = store.combatants.map((c) => {
+            const idx = groupMembers.findIndex((m) => m.id === c.id);
+            if (idx === -1) return c;
+            return { ...c, display_name: `${newBase} ${idx + 1}` };
+          });
+          store.hydrateCombatants(updated);
+        } else {
+          // Individual rename — save as-is on this member only
+          updateCombatantStats(id, { display_name: displayName });
+        }
       } else {
         updateCombatantStats(id, { display_name: displayName });
       }
