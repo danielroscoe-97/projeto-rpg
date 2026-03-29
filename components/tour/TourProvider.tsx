@@ -246,10 +246,13 @@ export function TourProvider() {
     smartGoBack();
   }, [smartGoBack]);
 
-  // Skip tour and reset combat state if in combat phase
+  // Skip tour and reset combat state only if combat is active
   const handleSkip = useCallback(() => {
     skipTour();
-    useGuestCombatStore.getState().resetCombat();
+    const { phase } = useGuestCombatStore.getState();
+    if (phase === "combat") {
+      useGuestCombatStore.getState().resetCombat();
+    }
   }, [skipTour]);
 
   // Complete tour and reset combat state for a clean start

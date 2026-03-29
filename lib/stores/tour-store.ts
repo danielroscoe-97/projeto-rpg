@@ -9,7 +9,6 @@ interface TourState {
 
 interface TourActions {
   startTour: () => void;
-  nextStep: () => void;
   goToStep: (step: number) => void;
   skipTour: () => void;
   completeTour: () => void;
@@ -31,9 +30,6 @@ export const useTourStore = create<TourStore>()(
 
       startTour: () =>
         set({ isActive: true, currentStep: 0 }),
-
-      nextStep: () =>
-        set((state) => ({ currentStep: state.currentStep + 1 })),
 
       goToStep: (step: number) =>
         set({ currentStep: step }),

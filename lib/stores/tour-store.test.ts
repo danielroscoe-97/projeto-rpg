@@ -22,13 +22,6 @@ describe("tour-store", () => {
     expect(state.currentStep).toBe(0);
   });
 
-  it("nextStep increments by 1", () => {
-    useTourStore.getState().startTour();
-    useTourStore.getState().nextStep();
-
-    expect(useTourStore.getState().currentStep).toBe(1);
-  });
-
   it("goToStep sets arbitrary step", () => {
     useTourStore.getState().startTour();
     useTourStore.getState().goToStep(5);
