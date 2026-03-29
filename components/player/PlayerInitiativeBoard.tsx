@@ -153,6 +153,8 @@ interface PlayerInitiativeBoardProps {
   customAudioFiles?: PlayerAudioFile[];
   /** Signed URLs for custom audio files */
   customAudioUrls?: Record<string, string>;
+  /** The registered player name for this session (used to identify "my" turn) */
+  registeredName?: string;
 }
 
 export function PlayerInitiativeBoard({
@@ -167,6 +169,7 @@ export function PlayerInitiativeBoard({
   channelRef,
   customAudioFiles = [],
   customAudioUrls = {},
+  registeredName,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
@@ -228,7 +231,10 @@ export function PlayerInitiativeBoard({
 
   // Story 3.1 + 3.2: Turn notification state
   const currentCombatant = combatants[currentTurnIndex];
-  const isPlayerTurn = currentCombatant?.is_player ?? false;
+  // "É sua vez!" only when it's THIS player's turn, not any player
+  const isPlayerTurn = registeredName
+    ? currentCombatant?.is_player === true && currentCombatant.name === registeredName
+    : currentCombatant?.is_player ?? false;
 
   // Resolve next combatant for the "Next up" display
   const nextCombatant = nextCombatantId
@@ -251,11 +257,11 @@ export function PlayerInitiativeBoard({
     }
   }, [currentTurnIndex]);
 
-  // "Você é o próximo!" — show when next_combatant_id matches a player combatant
+  // "Você é o próximo!" — show when next_combatant_id matches THIS player
   const isPlayerUpcoming = !!(
     nextCombatantId &&
     !isPlayerTurn &&
-    playerChars.some((c) => c.id === nextCombatantId)
+    playerChars.some((c) => c.id === nextCombatantId && (!registeredName || c.name === registeredName))
   );
 
   // Last 5 log entries for display

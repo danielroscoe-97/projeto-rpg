@@ -22,6 +22,9 @@ let currentSessionId: string | null = null;
  *  Recreates the channel when the session ID changes (guards stale singleton).
  *  Also recreates when the existing channel was externally removed/closed
  *  (e.g. by EncounterSetup calling supabase.removeChannel). */
+/** Promise that resolves when the current DM channel is subscribed. */
+let channelReady: Promise<void> | null = null;
+
 export function getDmChannel(sessionId: string): RealtimeChannel {
   if (channel && currentSessionId === sessionId) {
     // Guard against stale channel that was removed externally
@@ -32,28 +35,40 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
     // Channel is dead — fall through to recreate
     console.warn("[broadcast] DM channel was in stale state:", state, "— recreating");
     channel = null;
+    channelReady = null;
   }
   // Session changed or channel is stale — tear down old channel first
   if (channel) {
     channel.unsubscribe();
     channel = null;
+    channelReady = null;
   }
   const supabase = createClient();
   channel = supabase.channel(`session:${sessionId}`, {
     config: { broadcast: { self: false } },
   });
-  channel.subscribe((status, err) => {
-    if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-      captureError(err ?? new Error(`Channel ${status} for session ${sessionId}`), {
-        component: "broadcast",
-        action: "subscribe",
-        category: "realtime",
-        sessionId,
-      });
-    }
+  channelReady = new Promise<void>((resolve) => {
+    channel!.subscribe((status, err) => {
+      if (status === "SUBSCRIBED") {
+        resolve();
+      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        captureError(err ?? new Error(`Channel ${status} for session ${sessionId}`), {
+          component: "broadcast",
+          action: "subscribe",
+          category: "realtime",
+          sessionId,
+        });
+        resolve(); // Resolve anyway to avoid hanging
+      }
+    });
   });
   currentSessionId = sessionId;
   return channel;
+}
+
+/** Wait for the DM channel to be subscribed. Resolves immediately if already subscribed. */
+export function waitForChannel(): Promise<void> {
+  return channelReady ?? Promise.resolve();
 }
 
 /** Invalidate the DM channel singleton so the next getDmChannel call recreates it.
@@ -61,6 +76,7 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
 export function resetDmChannel(): void {
   channel = null;
   currentSessionId = null;
+  channelReady = null;
 }
 
 /** Sanitize a full combatant for player broadcast.
@@ -259,7 +275,8 @@ function adjustTurnIndexForPlayers(dmIndex: number): number {
 }
 
 /** Broadcast a combat event to all connected players.
- *  Guards against sending to a stale channel whose session doesn't match. */
+ *  Guards against sending to a stale channel whose session doesn't match.
+ *  Waits for the channel to be subscribed before sending. */
 export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   if (currentSessionId && currentSessionId !== sessionId) {
     captureWarning(`Blocked broadcast to stale session ${sessionId} (current: ${currentSessionId})`, {
@@ -294,11 +311,22 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   const ch = getDmChannel(sessionId);
   const safeEvent = sanitizePayload(event);
   if (!safeEvent || !validateEvent(safeEvent)) return;
-  ch.send({
-    type: "broadcast",
-    event: safeEvent.type,
-    payload: safeEvent,
-  });
+
+  const doSend = () => {
+    ch.send({
+      type: "broadcast",
+      event: safeEvent.type,
+      payload: safeEvent,
+    });
+  };
+
+  // If channel is still subscribing, wait for it before sending
+  const state = (ch as unknown as { state: string }).state;
+  if (state === "joined") {
+    doSend();
+  } else {
+    waitForChannel().then(doSend);
+  }
 }
 
 /** Cleanup the DM channel (call when leaving session). */
@@ -307,5 +335,6 @@ export function cleanupDmChannel(): void {
     channel.unsubscribe();
     channel = null;
     currentSessionId = null;
+    channelReady = null;
   }
 }

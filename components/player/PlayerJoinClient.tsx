@@ -924,6 +924,7 @@ export function PlayerJoinClient({
           channelRef={channelRef}
           customAudioFiles={playerAudioFiles}
           customAudioUrls={playerAudioUrls}
+          registeredName={registeredName}
         />
       </div>
     </div>
