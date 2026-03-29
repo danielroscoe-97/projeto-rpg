@@ -2,6 +2,7 @@
 
 import { createServiceClient } from "./server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
+import { captureError } from "@/lib/errors/capture";
 
 interface PlayerRegistrationData {
   name: string;
@@ -38,22 +39,28 @@ export async function claimPlayerToken(
 
   if (!master) throw new Error("Token not found");
 
-  // Already claimed by this player
+  // Already claimed by this player (same-device reconnect).
+  // If token already has player_name, another person on the same device
+  // needs a fresh token — fall through to create one.
   if (master.anon_user_id === anonUserId) {
-    return { tokenId: master.id, playerName: master.player_name ?? null };
+    if (!master.player_name) {
+      return { tokenId: master.id, playerName: null };
+    }
+    // Fall through — second player on same device needs a new token
   }
 
-  // Check if player already has a token for this session
+  // Check if player already has an unregistered token for this session
   const { data: existing } = await supabase
     .from("session_tokens")
     .select("id, player_name")
     .eq("session_id", master.session_id)
     .eq("anon_user_id", anonUserId)
     .eq("is_active", true)
+    .is("player_name", null)
     .limit(1)
-    .single();
+    .maybeSingle();
 
-  if (existing) return { tokenId: existing.id, playerName: existing.player_name ?? null };
+  if (existing) return { tokenId: existing.id, playerName: null };
 
   // Token unclaimed — try to claim it (atomic: only succeeds if still null)
   if (!master.anon_user_id) {
@@ -130,11 +137,25 @@ export async function registerPlayerCombatant(
     .single();
 
   if (tokenError || !token) {
+    captureError(new Error("Invalid or expired session token"), {
+      component: "registerPlayerCombatant",
+      action: "validateToken",
+      category: "database",
+      sessionId,
+      extra: { tokenId, tokenError: tokenError?.message },
+    });
     throw new Error("Invalid or expired session token");
   }
 
   // Check if this token already registered a combatant (prevent duplicates)
   if (token.player_name) {
+    captureError(new Error("Already registered"), {
+      component: "registerPlayerCombatant",
+      action: "duplicateCheck",
+      category: "validation",
+      sessionId,
+      extra: { tokenId, existingPlayerName: token.player_name },
+    });
     throw new Error("Already registered");
   }
 
@@ -166,10 +187,10 @@ export async function registerPlayerCombatant(
         name,
         initiative: data.initiative,
         initiative_order: null,
-        current_hp: data.hp,
-        max_hp: data.hp,
+        current_hp: data.hp ?? 0,
+        max_hp: data.hp ?? 0,
         temp_hp: 0,
-        ac: data.ac,
+        ac: data.ac ?? 0,
         spell_save_dc: null,
         conditions: [],
         is_defeated: false,
@@ -179,12 +200,18 @@ export async function registerPlayerCombatant(
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
-        combatant_role: null,
       })
       .select("id")
       .single();
 
     if (insertError) {
+      captureError(new Error(`Failed to register: ${insertError.message}`), {
+        component: "registerPlayerCombatant",
+        action: "insertCombatant",
+        category: "database",
+        sessionId,
+        extra: { tokenId, encounterId, insertCode: insertError.code, insertDetails: insertError.details },
+      });
       throw new Error(`Failed to register: ${insertError.message}`);
     }
 

@@ -178,7 +178,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         if (!payload.name || !payload.id) return;
         const currentCombatants = useCombatStore.getState().combatants;
         // Avoid duplicate — use token ID, not name (two players could share a name)
-        if (currentCombatants.some((c) => c.is_player && c.player_notes === `token:${payload.id}`)) return;
+        if (currentCombatants.some((c) => c.is_player && c.dm_notes === `token:${payload.id}`)) return;
         addCombatant({
           name: payload.name,
           current_hp: payload.hp ?? 0,
@@ -199,8 +199,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           display_name: null,
           monster_group_id: null,
           group_order: null,
-          dm_notes: "",
-          player_notes: `token:${payload.id}`,
+          dm_notes: `token:${payload.id}`,
+          player_notes: "",
           player_character_id: null,
           combatant_role: null,
         });

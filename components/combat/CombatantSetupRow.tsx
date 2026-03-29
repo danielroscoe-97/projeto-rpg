@@ -192,11 +192,6 @@ export function CombatantSetupRow({
             data-testid={`alias-input-${combatant.id}`}
           />
         )}
-        {combatant.is_player && (
-          <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider flex-shrink-0">
-            {t("setup_player_badge")}
-          </span>
-        )}
         {combatant.ruleset_version && (
           <span className="flex-shrink-0">
             <VersionBadge version={combatant.ruleset_version} />
@@ -253,6 +248,11 @@ export function CombatantSetupRow({
 
       {/* Actions — responsive width */}
       <div className="w-auto md:w-[170px] flex-shrink-0 flex items-center justify-end gap-1">
+        {combatant.is_player && (
+          <span className="text-[10px] text-blue-400/70 uppercase tracking-wider flex-shrink-0 px-1.5 py-0.5 border border-blue-400/20 rounded">
+            {t("setup_player_badge")}
+          </span>
+        )}
         {combatant.monster_id && combatant.ruleset_version && (
           <button
             type="button"
