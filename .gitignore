@@ -63,4 +63,7 @@ scripts/audiosv2/
 e2e/results/
 playwright-report/
 ms-playwright/
+
+# QA evidence screenshots (local only — never commit/deploy)
+qa-evidence/
 C\:\\Users\\*/
