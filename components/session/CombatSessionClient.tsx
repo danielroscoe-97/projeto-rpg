@@ -6,6 +6,7 @@ import { useCombatStore } from "@/lib/stores/combat-store";
 import { persistInitiativeAndStartCombat, persistInitiativeOrder, persistNewCombatant } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
+import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
@@ -20,7 +21,6 @@ import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcu
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { useCombatResilience } from "@/lib/hooks/useCombatResilience";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
-import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
 import { broadcastEvent, getDmChannel, registerHiddenLookup } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
@@ -34,6 +34,8 @@ import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { CombatTimer } from "@/components/combat/CombatTimer";
+import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { BackgroundSelector } from "@/components/combat/BackgroundSelector";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
@@ -84,7 +86,8 @@ export function CombatSessionClient({
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
   const round_number = useCombatStore((s) => s.round_number);
   const encounter_name = useCombatStore((s) => s.encounter_name);
-  const expandedGroups = useCombatStore((s) => s.expandedGroups);
+  const combatStartedAt = useCombatStore((s) => s.combatStartedAt);
+  const turnStartedAt = useCombatStore((s) => s.turnStartedAt);
 
   const {
     turnPending,
@@ -667,10 +670,14 @@ export function CombatSessionClient({
     <div className="w-full max-w-6xl mx-auto px-2" data-testid="active-combat">
       <div className="sticky top-0 z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-foreground font-semibold">
-          {encounter_name && <span className="mr-2">{encounter_name}</span>}
-          {t("round")} <span className="font-mono text-gold">{round_number}</span>
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-foreground font-semibold">
+            {encounter_name && <span className="mr-2">{encounter_name}</span>}
+            {t("round")} <span className="font-mono text-gold">{round_number}</span>
+          </h2>
+          {combatStartedAt && <CombatTimer startTime={combatStartedAt} />}
+          {turnStartedAt && <TurnTimer startTime={turnStartedAt} />}
+        </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
@@ -853,7 +860,6 @@ export function CombatSessionClient({
         combatants={combatants}
         currentTurnIndex={current_turn_index}
         focusedIndex={focusedIndex}
-        expandedGroups={expandedGroups}
         onReorder={handleReorderCombatants}
         onApplyDamage={handleApplyDamage}
         onApplyHealing={handleApplyHealing}
@@ -868,15 +874,6 @@ export function CombatSessionClient({
         onUpdatePlayerNotes={handleUpdatePlayerNotes}
         onApplyToMultiple={handleApplyToMultiple}
         onToggleHidden={handleToggleHidden}
-        onToggleGroupExpanded={(gid) => useCombatStore.getState().toggleGroupExpanded(gid)}
-        onSetGroupInitiative={(gid, val) => {
-          useCombatStore.getState().setGroupInitiative(gid, val);
-          const updated = useCombatStore.getState().combatants;
-          broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: updated });
-          persistInitiativeOrder(
-            updated.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
-          ).catch(() => {});
-        }}
         t={t}
       />
       </div>{/* end scrollable area */}
@@ -903,13 +900,12 @@ export function CombatSessionClient({
   );
 }
 
-// ─── Grouped combat list ────────────────────────────────────────────────────
+// ─── Combat list with drag-and-drop ─────────────────────────────────────────
 
 interface CombatListProps {
   combatants: Combatant[];
   currentTurnIndex: number;
   focusedIndex: number;
-  expandedGroups: Record<string, boolean>;
   onReorder: (newOrder: Combatant[], movedId?: string) => void;
   onApplyDamage: (id: string, amount: number) => void;
   onApplyHealing: (id: string, amount: number) => void;
@@ -924,42 +920,14 @@ interface CombatListProps {
   onUpdatePlayerNotes: (id: string, notes: string) => void;
   onApplyToMultiple: (targetIds: string[], amount: number, mode: HpMode) => void;
   onToggleHidden: (id: string) => void;
-  onToggleGroupExpanded: (groupId: string) => void;
-  onSetGroupInitiative: (groupId: string, value: number) => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
-}
-
-/** Organizes combatants into groups and ungrouped items for rendering. */
-function buildRenderItems(combatants: Combatant[]) {
-  type RenderItem =
-    | { kind: "single"; combatant: Combatant; index: number }
-    | { kind: "group"; groupId: string; members: { combatant: Combatant; index: number }[] };
-
-  const items: RenderItem[] = [];
-  const seenGroups = new Set<string>();
-
-  combatants.forEach((c, index) => {
-    if (!c.monster_group_id) {
-      items.push({ kind: "single", combatant: c, index });
-      return;
-    }
-    if (seenGroups.has(c.monster_group_id)) return;
-    seenGroups.add(c.monster_group_id);
-    const members = combatants
-      .map((m, i) => ({ combatant: m, index: i }))
-      .filter((m) => m.combatant.monster_group_id === c.monster_group_id)
-      .sort((a, b) => (a.combatant.group_order ?? 0) - (b.combatant.group_order ?? 0));
-    items.push({ kind: "group", groupId: c.monster_group_id, members });
-  });
-
-  return items;
 }
 
 function CombatList({
   combatants,
   currentTurnIndex,
   focusedIndex,
-  expandedGroups,
+  onReorder,
   onApplyDamage,
   onApplyHealing,
   onSetTempHp,
@@ -973,8 +941,6 @@ function CombatList({
   onUpdatePlayerNotes,
   onApplyToMultiple,
   onToggleHidden,
-  onToggleGroupExpanded,
-  onSetGroupInitiative,
   t,
 }: CombatListProps) {
   // Auto-scroll to active combatant when turn advances (skip initial mount)
@@ -990,32 +956,6 @@ function CombatList({
     });
   }, [currentTurnIndex]);
 
-  const renderItems = buildRenderItems(combatants);
-
-  const renderCombatantRow = (c: Combatant, index: number) => (
-    <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
-      <CombatantRow
-        combatant={c}
-        isCurrentTurn={index === currentTurnIndex}
-        showActions
-        onApplyDamage={onApplyDamage}
-        onApplyHealing={onApplyHealing}
-        onSetTempHp={onSetTempHp}
-        onToggleCondition={onToggleCondition}
-        onSetDefeated={onSetDefeated}
-        onRemoveCombatant={onRemoveCombatant}
-        onUpdateStats={onUpdateStats}
-        onSetInitiative={onSetInitiative}
-        onSwitchVersion={onSwitchVersion}
-        onUpdateDmNotes={onUpdateDmNotes}
-        onUpdatePlayerNotes={onUpdatePlayerNotes}
-        allCombatants={combatants}
-        onApplyToMultiple={onApplyToMultiple}
-        onToggleHidden={onToggleHidden}
-      />
-    </div>
-  );
-
   return (
     <div
       role="list"
@@ -1023,27 +963,37 @@ function CombatList({
       data-testid="initiative-list"
       className="space-y-2"
     >
-      {renderItems.map((item) => {
-        if (item.kind === "single") {
-          return renderCombatantRow(item.combatant, item.index);
-        }
-        const members = item.members.map((m) => m.combatant);
-        const groupName = getGroupBaseName(members);
-        return (
-          <MonsterGroupHeader
-            key={item.groupId}
-            groupName={groupName}
-            members={members}
-            isExpanded={!!expandedGroups[item.groupId]}
-            onToggle={() => onToggleGroupExpanded(item.groupId)}
-            groupInitiative={getGroupInitiative(members)}
-            onSetGroupInitiative={(val) => onSetGroupInitiative(item.groupId, val)}
-            isCurrentTurn={item.members.some((m) => m.index === currentTurnIndex)}
-          >
-            {item.members.map((m) => renderCombatantRow(m.combatant, m.index))}
-          </MonsterGroupHeader>
-        );
-      })}
+      <SortableCombatantList
+        combatants={combatants}
+        onReorder={onReorder}
+        renderItem={(c, dragHandleProps) => {
+          const index = combatants.findIndex((x) => x.id === c.id);
+          return (
+            <div className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+              <CombatantRow
+                combatant={c}
+                isCurrentTurn={index === currentTurnIndex}
+                showActions
+                dragHandleProps={dragHandleProps}
+                onApplyDamage={onApplyDamage}
+                onApplyHealing={onApplyHealing}
+                onSetTempHp={onSetTempHp}
+                onToggleCondition={onToggleCondition}
+                onSetDefeated={onSetDefeated}
+                onRemoveCombatant={onRemoveCombatant}
+                onUpdateStats={onUpdateStats}
+                onSetInitiative={onSetInitiative}
+                onSwitchVersion={onSwitchVersion}
+                onUpdateDmNotes={onUpdateDmNotes}
+                onUpdatePlayerNotes={onUpdatePlayerNotes}
+                allCombatants={combatants}
+                onApplyToMultiple={onApplyToMultiple}
+                onToggleHidden={onToggleHidden}
+              />
+            </div>
+          );
+        }}
+      />
     </div>
   );
 }

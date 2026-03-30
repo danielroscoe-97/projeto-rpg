@@ -222,7 +222,11 @@ export function PlayerInitiativeBoard({
 
   // Separate player characters from others for "own character" highlight
   const playerChars = combatants.filter((c) => c.is_player);
-  const hasOwnChar = playerChars.length > 0;
+  // Only the combatant matching registeredName is "own character"
+  const ownChar = registeredName
+    ? playerChars.find((c) => c.name === registeredName) ?? null
+    : null;
+  const hasOwnChar = ownChar !== null;
 
   // Count revealed vs total for round 1 display
   const revealedCount = roundNumber >= 2
@@ -261,14 +265,15 @@ export function PlayerInitiativeBoard({
   const isPlayerUpcoming = !!(
     nextCombatantId &&
     !isPlayerTurn &&
-    playerChars.some((c) => c.id === nextCombatantId && (!registeredName || c.name === registeredName))
+    ownChar &&
+    ownChar.id === nextCombatantId
   );
 
   // Last 5 log entries for display
   const visibleLog = combatLog?.slice(-5) ?? [];
 
-  // First player character for bottom bar (primary character)
-  const primaryPlayerChar = playerChars[0] ?? null;
+  // Current player's character for bottom bar
+  const primaryPlayerChar = ownChar;
 
   return (
     <div className="relative bg-black lg:bg-transparent min-h-screen lg:min-h-0 space-y-3 pb-32 lg:pb-0">
@@ -333,9 +338,9 @@ export function PlayerInitiativeBoard({
       )}
 
       {/* Own Character Card(s) — prominent display (hidden on mobile when bottom bar is visible, shown on desktop) */}
-      {hasOwnChar && (
+      {hasOwnChar && ownChar && (
         <div className="hidden lg:block space-y-2">
-          {playerChars.map((pc) => {
+          {[ownChar].map((pc) => {
             const pcIndex = combatants.findIndex((c) => c.id === pc.id);
             const pcTurnReached = roundNumber >= 2 || pcIndex <= maxRevealedIndex;
             const currentHp = pc.current_hp ?? 0;
@@ -441,7 +446,7 @@ export function PlayerInitiativeBoard({
           if (!isRevealed(index)) return null;
           const isCurrentTurn = index === currentTurnIndex;
           const isPlayer = combatant.is_player;
-          const isOwnChar = playerChars.some((pc) => pc.id === combatant.id);
+          const isOwnChar = ownChar !== null && combatant.id === ownChar.id;
           const isNewlyRevealed = revealedIds.has(combatant.id);
 
           // Player characters: show full HP bar
