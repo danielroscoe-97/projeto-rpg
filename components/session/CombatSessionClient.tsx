@@ -430,6 +430,9 @@ export function CombatSessionClient({
         case "turn":
           toast(t("undo_turn"));
           break;
+        case "hidden":
+          toast(t("undo_hidden"));
+          break;
       }
     },
     onReorder: (fromIndex: number, toIndex: number) => {

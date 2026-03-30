@@ -55,7 +55,8 @@ export type UndoEntry =
   | { type: "hp"; combatantId: string; previousHp: number; previousTempHp: number; action: "damage" | "heal" | "temp" }
   | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean; previousDurations?: Record<string, number> }
   | { type: "defeated"; combatantId: string; wasDefeated: boolean; previousHp: number; previousDeathSaves?: { successes: number; failures: number } }
-  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[] };
+  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[] }
+  | { type: "hidden"; combatantId: string; wasHidden: boolean };
 
 /** @deprecated Use UndoEntry instead. Kept for backwards compatibility. */
 export type HpUndoEntry = Extract<UndoEntry, { type: "hp" }>;

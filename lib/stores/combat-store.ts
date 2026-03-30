@@ -387,6 +387,14 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           round_number: entry.previousRound,
         });
         break;
+      case "hidden":
+        set({
+          undoStack: stack,
+          combatants: get().combatants.map((c) =>
+            c.id === entry.combatantId ? { ...c, is_hidden: entry.wasHidden } : c
+          ),
+        });
+        break;
     }
 
     return entry;
