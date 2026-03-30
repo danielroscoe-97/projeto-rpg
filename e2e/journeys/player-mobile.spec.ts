@@ -10,7 +10,6 @@ import { loginAs } from "../helpers/auth";
 import {
   goToNewSession,
   getShareToken,
-  dmSetupCombatSession,
   playerJoinCombat,
 } from "../helpers/session";
 import {
@@ -102,30 +101,46 @@ test.describe("Player Mobile Journey", () => {
 
       // 7. Player: Wait for realtime update and verify HP status changed
       // Player should see a status label (LIGHT/MODERATE/HEAVY/CRITICAL), not numeric HP
-      // Allow time for realtime propagation
       await playerPage.waitForTimeout(3_000);
 
-      // 8. Player: Verify NO numeric monster HP visible
-      // Monsters should not show "current_hp / max_hp" pattern to players
+      // 8. Player: Verify NO numeric monster HP visible (anti-metagaming rule)
       const playerBoard = playerPage.locator('[data-testid="player-initiative-board"]');
       const boardText = await playerBoard.textContent();
-      // Goblin's exact HP numbers should NOT be visible to the player
-      // (The player sees status labels like "Light Wounds" instead)
-      // We check that the board does NOT contain the pattern "X / 7" for the Goblin
+      // Goblin's exact HP "X / 7" must NEVER appear in the player view
       const hasNumericGoblinHp = /\d+\s*\/\s*7/.test(boardText ?? "");
-      // This assertion may need adjustment based on whether the player's OWN character shows HP
-      // The key rule: monster HP is hidden from players, shown as status labels
+      expect(hasNumericGoblinHp).toBe(false);
+
+      // Player SHOULD see a status label for the monster (LIGHT, MODERATE, etc.)
+      const statusText = await playerBoard.textContent();
+      const hasStatusLabel = /light|moderate|heavy|critical|leve|moderado|grave|crítico/i.test(statusText ?? "");
+      expect(hasStatusLabel).toBe(true);
 
       // 9. DM: Advance turn
       await advanceTurn(dmPage);
 
       // 10. Player: Verify turn indicator updated
       await playerPage.waitForTimeout(2_000);
-      // The turn indicator or turn-indicator-banner should be visible
       const turnBanner = playerPage.locator('[data-testid="turn-indicator-banner"]');
       const dmTurnIndicator = playerPage.locator('[data-testid="dm-turn-indicator"]');
-      // At least one turn-related element should be visible
       await expect(turnBanner.or(dmTurnIndicator)).toBeVisible({ timeout: 10_000 });
+
+      // 11. Player: Open spell oracle and search "Fireball"
+      const oracleBtn = playerPage.locator('[data-testid="player-oracle-btn"]');
+      await expect(oracleBtn).toBeVisible({ timeout: 5_000 });
+      await oracleBtn.click();
+
+      const oraclePanel = playerPage.locator('[data-testid="player-oracle"]');
+      await expect(oraclePanel).toBeVisible({ timeout: 5_000 });
+
+      // 12. Player: Verify spell search works on mobile
+      const spellSearch = oraclePanel.locator('input[type="text"], input[type="search"]').first();
+      if (await spellSearch.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await spellSearch.fill("Fireball");
+        // Verify results appear
+        await playerPage.waitForTimeout(1_000);
+        const oracleText = await oraclePanel.textContent();
+        expect(oracleText?.toLowerCase()).toContain("fireball");
+      }
     } finally {
       await dmContext.close();
       await playerContext.close();

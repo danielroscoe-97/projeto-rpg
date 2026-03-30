@@ -111,19 +111,13 @@ test.describe("Guest Try Mode Journey", () => {
     await page.waitForTimeout(500);
 
     // 12. Verify signup CTA present
-    // The GuestBanner or a save/share button should prompt signup
-    // Check for the guest-share-upsell or a signup link
-    const signupCta = page.locator(
-      '[data-testid="guest-share-upsell"], ' +
-      '[data-testid="guest-banner"] a[href*="auth"], ' +
-      '[data-testid="guest-banner"] a[href*="sign"], ' +
-      'a[href*="/auth/sign-up"], a[href*="/auth/login"]'
+    // GuestBanner contains a link to /auth/sign-up
+    const signupLink = page.locator(
+      '[data-testid="guest-banner"] a[href*="/auth/sign-up"]'
     );
-    // At least one signup-related CTA should be present on the page
-    const ctaCount = await signupCta.count();
-    expect(ctaCount).toBeGreaterThanOrEqual(0); // GuestBanner itself serves as the CTA
+    await expect(signupLink).toBeVisible({ timeout: 5_000 });
 
-    // The GuestBanner should contain a link or text prompting signup
+    // GuestBanner timer text should also be present
     const bannerText = await guestBanner.textContent();
     expect(bannerText).toBeTruthy();
   });
