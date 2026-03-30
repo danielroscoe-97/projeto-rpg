@@ -216,7 +216,7 @@ export function CombatSessionClient({
           store.toggleGroupExpanded(firstCombatant.monster_group_id);
         }
         // Notify players that combat has started
-        broadcastEvent(getSessionId(), {
+        broadcastEvent(sessionId ?? "", {
           type: "session:state_sync",
           combatants: sorted,
           current_turn_index: 0,
@@ -661,6 +661,10 @@ export function CombatSessionClient({
   }, [is_active, getSessionId]);
 
   // Listen for player:end_turn — player passed their own turn
+  // Use ref to avoid re-subscribing on every handleAdvanceTurn identity change
+  const handleAdvanceTurnRef = useRef(handleAdvanceTurn);
+  handleAdvanceTurnRef.current = handleAdvanceTurn;
+
   useEffect(() => {
     const sid = getSessionId();
     if (!sid || !is_active) return;
@@ -669,31 +673,18 @@ export function CombatSessionClient({
 
     const handlePlayerEndTurn = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
-      // Validate: only advance if it's actually a player's turn and name matches
       const snap = useCombatStore.getState();
       const current = snap.combatants[snap.current_turn_index];
       if (!current?.is_player) return;
       if (!payload.player_name || current.name !== payload.player_name) return;
-      handleAdvanceTurn();
+      handleAdvanceTurnRef.current();
     };
-
-    // Clean stale bindings
-    try {
-      const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
-      const broadcastBindings = bindings?.broadcast;
-      if (Array.isArray(broadcastBindings)) {
-        for (let i = broadcastBindings.length - 1; i >= 0; i--) {
-          if (broadcastBindings[i]?.filter?.event === "player:end_turn") {
-            broadcastBindings.splice(i, 1);
-          }
-        }
-      }
-    } catch { /* ignore */ }
 
     ch.on("broadcast", { event: "player:end_turn" }, handlePlayerEndTurn);
 
     return () => { active = false; };
-  }, [is_active, getSessionId, handleAdvanceTurn]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef
+  }, [is_active, getSessionId]);
 
   // Show unified setup if not yet active
   if (!is_active) {
@@ -746,7 +737,7 @@ export function CombatSessionClient({
             {turnPending ? t("next_turn_saving") : t("next_turn")}
             <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
           </button>
-          <DmSoundboard onBroadcast={(event, payload) => broadcastEvent(getSessionId(), { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)} />
+          <DmSoundboard onBroadcast={(event, payload) => broadcastEvent(sessionId ?? "", { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)} />
           <DmAudioControls />
           <button
             type="button"
@@ -805,7 +796,7 @@ export function CombatSessionClient({
             currentWeather={weatherEffect}
             onWeatherChange={(effect) => {
               setWeatherEffect(effect);
-              broadcastEvent(getSessionId(), {
+              broadcastEvent(sessionId ?? "", {
                 type: "session:weather_change",
                 effect,
               });
@@ -910,6 +901,17 @@ export function CombatSessionClient({
         onApplyToMultiple={handleApplyToMultiple}
         onToggleHidden={handleToggleHidden}
         onAdvanceTurn={handleAdvanceTurn}
+        onAddDeathSaveSuccess={(id) => {
+          useCombatStore.getState().addDeathSaveSuccess(id);
+          const c = useCombatStore.getState().combatants.find((x) => x.id === id);
+          if (c) broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
+        }}
+        onAddDeathSaveFailure={(id) => {
+          useCombatStore.getState().addDeathSaveFailure(id);
+          const c = useCombatStore.getState().combatants.find((x) => x.id === id);
+          if (c?.is_defeated) broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
+          if (c) broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
+        }}
         t={t}
       />
       </div>{/* end scrollable area */}
@@ -957,6 +959,8 @@ interface CombatListProps {
   onApplyToMultiple: (targetIds: string[], amount: number, mode: HpMode) => void;
   onToggleHidden: (id: string) => void;
   onAdvanceTurn: () => void;
+  onAddDeathSaveSuccess?: (id: string) => void;
+  onAddDeathSaveFailure?: (id: string) => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
 }
 
@@ -979,6 +983,8 @@ function CombatList({
   onApplyToMultiple,
   onToggleHidden,
   onAdvanceTurn,
+  onAddDeathSaveSuccess,
+  onAddDeathSaveFailure,
   t,
 }: CombatListProps) {
   // Auto-scroll to active combatant when turn advances (skip initial mount)
@@ -1028,8 +1034,8 @@ function CombatList({
                 onApplyToMultiple={onApplyToMultiple}
                 onToggleHidden={onToggleHidden}
                 onAdvanceTurn={onAdvanceTurn}
-                onAddDeathSaveSuccess={(id) => useCombatStore.getState().addDeathSaveSuccess(id)}
-                onAddDeathSaveFailure={(id) => useCombatStore.getState().addDeathSaveFailure(id)}
+                onAddDeathSaveSuccess={onAddDeathSaveSuccess}
+                onAddDeathSaveFailure={onAddDeathSaveFailure}
               />
             </div>
           );

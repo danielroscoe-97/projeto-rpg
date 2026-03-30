@@ -99,10 +99,26 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   reorderCombatants: (newOrder) =>
     set({ combatants: assignInitiativeOrder(newOrder) }),
 
-  startCombat: () =>
-    set({ is_active: true, current_turn_index: 0, combatStartedAt: Date.now(), turnStartedAt: Date.now() }),
+  startCombat: () => {
+    const now = Date.now();
+    try { localStorage.setItem("combat-timers", JSON.stringify({ combatStartedAt: now, turnStartedAt: now })); } catch { /* storage unavailable */ }
+    set({ is_active: true, current_turn_index: 0, combatStartedAt: now, turnStartedAt: now });
+  },
 
-  hydrateCombatants: (combatants) => set({ combatants }),
+  hydrateCombatants: (combatants) => {
+    // Restore timer timestamps from localStorage on hydration (survives page refresh)
+    let combatStartedAt: number | null = null;
+    let turnStartedAt: number | null = null;
+    try {
+      const saved = localStorage.getItem("combat-timers");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        combatStartedAt = parsed.combatStartedAt ?? null;
+        turnStartedAt = parsed.turnStartedAt ?? null;
+      }
+    } catch { /* ignore */ }
+    set({ combatants, combatStartedAt, turnStartedAt });
+  },
 
   advanceTurn: () =>
     set((state) => {
@@ -140,7 +156,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
-        turnStartedAt: Date.now(),
+        turnStartedAt: (() => { const now = Date.now(); try { const saved = JSON.parse(localStorage.getItem("combat-timers") ?? "{}"); localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: now })); } catch { /* ignore */ } return now; })(),
       };
     }),
 
@@ -239,8 +255,8 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
             ? {
                 ...c,
                 is_defeated,
-                current_hp: is_defeated ? 0 : c.current_hp,
-                death_saves: is_defeated ? c.death_saves : undefined,
+                current_hp: is_defeated ? 0 : Math.max(1, c.current_hp),
+                death_saves: undefined,
               }
             : c
         ),

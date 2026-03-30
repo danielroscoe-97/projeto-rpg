@@ -271,8 +271,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       // Generate ONE display name for the group, append numbers
       const groupDisplayBase = getDefaultDisplayName(monster?.type ?? null, currentCombatants as Combatant[]);
       for (let i = 1; i <= qty; i++) {
+        const allExisting = [...currentCombatants, ...newCombatants] as Combatant[];
         newCombatants.push({
-          name: `${monster.name} ${i}`,
+          name: getNumberedName(monster.name, allExisting),
           current_hp: monster.hit_points,
           max_hp: monster.hit_points,
           temp_hp: 0,

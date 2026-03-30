@@ -142,7 +142,7 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           let roundBumped = false;
           for (let i = 0; i < combatants.length; i++) {
             next = (next + 1) % combatants.length;
-            if (next === 0) roundBumped = true;
+            if (next === 0 && combatants.length > 1) roundBumped = true;
             if (!combatants[next].is_defeated) break;
           }
           if (combatants[next].is_defeated) return state;
@@ -223,8 +223,8 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
               ? {
                   ...c,
                   is_defeated: isDefeated,
-                  current_hp: isDefeated ? 0 : c.current_hp,
-                  death_saves: isDefeated ? c.death_saves : undefined,
+                  current_hp: isDefeated ? 0 : Math.max(1, c.current_hp),
+                  death_saves: undefined,
                 }
               : c
           ),

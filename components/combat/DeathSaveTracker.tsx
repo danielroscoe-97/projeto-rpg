@@ -12,12 +12,17 @@ interface DeathSaveTrackerProps {
 export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailure }: DeathSaveTrackerProps) {
   const t = useTranslations("combat");
   const isStabilized = successes >= 3;
+  const isDead = failures >= 3;
 
   return (
     <div className="flex items-center gap-3 px-3 py-2 bg-red-950/20 border border-red-500/20 rounded-md mt-1" data-testid="death-save-tracker">
       <span className="text-xs font-medium text-red-300">☠️ {t("death_saves_title")}:</span>
 
-      {isStabilized ? (
+      {isDead ? (
+        <span className="text-xs font-semibold text-red-400" data-testid="death-save-dead">
+          💀 {t("death_saves_dead")}
+        </span>
+      ) : isStabilized ? (
         <span className="text-xs font-semibold text-emerald-400" data-testid="death-save-stabilized">
           ✅ {t("death_saves_stabilized")}
         </span>

@@ -103,7 +103,7 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
                   setCopied(true);
                   if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
                   copiedTimerRef.current = setTimeout(() => { copiedTimerRef.current = null; setCopied(false); }, 3000);
-                }).catch(() => {});
+                }).catch(() => { /* clipboard blocked — user can copy from QR panel manually */ });
               }
             }}
             className="min-h-[44px]"

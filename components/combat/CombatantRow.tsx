@@ -206,8 +206,8 @@ export function CombatantRow({
               type="button"
               onClick={(e) => { e.stopPropagation(); onAdvanceTurn?.(); }}
               className="text-gold shrink-0 text-sm leading-none select-none cursor-pointer hover:scale-125 transition-transform"
-              aria-label={t("next_turn")}
-              title={t("next_turn")}
+              aria-label={t("advance_turn")}
+              title={t("advance_turn")}
               data-testid="current-turn-indicator"
             >
               ▶
