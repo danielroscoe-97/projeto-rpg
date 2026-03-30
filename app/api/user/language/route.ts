@@ -3,18 +3,19 @@ import {
   updateUserLanguagePreference,
 } from "@/lib/supabase/user";
 import { NextResponse } from "next/server";
+import { withRateLimit } from "@/lib/rate-limit";
 
 // GET: Fetch user's stored language preference (used after login to sync cookie)
-export async function GET() {
+const getHandler: Parameters<typeof withRateLimit>[0] = async function getHandler() {
   try {
     const locale = await getUserLanguagePreference();
     return NextResponse.json({ locale });
   } catch {
     return NextResponse.json({ locale: "pt-BR" });
   }
-}
+};
 
-export async function POST(request: Request) {
+const postHandler: Parameters<typeof withRateLimit>[0] = async function postHandler(request) {
   try {
     const { locale } = await request.json();
     if (!locale || !["pt-BR", "en"].includes(locale)) {
@@ -28,4 +29,8 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
+};
+
+const rateLimitConfig = { max: 10, window: "15 m" } as const;
+export const GET = withRateLimit(getHandler, rateLimitConfig);
+export const POST = withRateLimit(postHandler, rateLimitConfig);

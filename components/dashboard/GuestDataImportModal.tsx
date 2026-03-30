@@ -8,8 +8,11 @@ import { Loader2, Swords } from "lucide-react";
 import {
   getGuestEncounterData,
   clearGuestEncounterData,
+  getGuestCombatSnapshot,
+  clearGuestCombatSnapshot,
 } from "@/lib/stores/guest-combat-store";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
+import { trackEvent } from "@/lib/analytics/track";
 
 export function GuestDataImportModal() {
   const t = useTranslations("guest");
@@ -19,9 +22,20 @@ export function GuestDataImportModal() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const data = getGuestEncounterData();
-    if (data && data.combatants.length > 0) {
-      setGuestData(data);
+    // Check sessionStorage encounter data first, then localStorage snapshot (from expiry flow)
+    const sessionData = getGuestEncounterData();
+    if (sessionData && sessionData.combatants.length > 0) {
+      setGuestData(sessionData);
+      return;
+    }
+    const snapshot = getGuestCombatSnapshot();
+    if (snapshot && snapshot.combatants.length > 0) {
+      setGuestData({
+        combatants: snapshot.combatants,
+        roundNumber: snapshot.roundNumber,
+        currentTurnIndex: snapshot.currentTurnIndex,
+        phase: "combat",
+      });
     }
   }, []);
 
@@ -29,6 +43,7 @@ export function GuestDataImportModal() {
 
   const handleDiscard = () => {
     clearGuestEncounterData();
+    clearGuestCombatSnapshot();
     setGuestData(null);
   };
 
@@ -44,7 +59,9 @@ export function GuestDataImportModal() {
       );
 
       clearGuestEncounterData();
+      clearGuestCombatSnapshot();
       setGuestData(null);
+      trackEvent("guest:combat_imported");
       router.push(`/app/session/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("import_error"));

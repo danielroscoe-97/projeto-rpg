@@ -1,8 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { withRateLimit } from "@/lib/rate-limit";
 
-export async function POST() {
+const handler: Parameters<typeof withRateLimit>[0] = async function POST() {
   // 1. Verify the caller is authenticated
   const supabase = await createClient();
   const {
@@ -33,4 +34,6 @@ export async function POST() {
   }
 
   return NextResponse.json({ success: true });
-}
+};
+
+export const POST = withRateLimit(handler, { max: 3, window: "15 m" });

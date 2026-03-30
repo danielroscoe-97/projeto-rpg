@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { captureError } from "@/lib/errors/capture";
+import { withRateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/trial — Activate 14-day free trial.
  * One trial per user. Uses atomic upsert to prevent race conditions.
  */
-export async function POST() {
+const handler: Parameters<typeof withRateLimit>[0] = async function POST() {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -44,4 +45,6 @@ export async function POST() {
       { status: 500 }
     );
   }
-}
+};
+
+export const POST = withRateLimit(handler, { max: 5, window: "15 m" });

@@ -1,13 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
+import { withRateLimit } from "@/lib/rate-limit";
 
 const MAX_INVITES_PER_DAY = 20;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function POST(
+const postHandler: Parameters<typeof withRateLimit>[0] = async function postHandler(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: campaignId } = await params;
   const supabase = await createClient();
@@ -87,11 +88,11 @@ export async function POST(
     captureError(err, { component: "CampaignInvitesAPI", action: "createInvite", category: "database" });
     return NextResponse.json({ error: "Failed to create invite" }, { status: 500 });
   }
-}
+};
 
-export async function GET(
+const getHandler: Parameters<typeof withRateLimit>[0] = async function getHandler(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: campaignId } = await params;
   const supabase = await createClient();
@@ -123,11 +124,11 @@ export async function GET(
     captureError(err, { component: "CampaignInvitesAPI", action: "fetchInvites", category: "database" });
     return NextResponse.json({ error: "Failed to fetch invites" }, { status: 500 });
   }
-}
+};
 
-export async function DELETE(
+const deleteHandler: Parameters<typeof withRateLimit>[0] = async function deleteHandler(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: campaignId } = await params;
   const supabase = await createClient();
@@ -155,4 +156,9 @@ export async function DELETE(
     captureError(err, { component: "CampaignInvitesAPI", action: "cancelInvite", category: "database" });
     return NextResponse.json({ error: "Failed to cancel invite" }, { status: 500 });
   }
-}
+};
+
+const rateLimitConfig = { max: 20, window: "15 m" } as const;
+export const POST = withRateLimit(postHandler, rateLimitConfig);
+export const GET = withRateLimit(getHandler, rateLimitConfig);
+export const DELETE = withRateLimit(deleteHandler, rateLimitConfig);

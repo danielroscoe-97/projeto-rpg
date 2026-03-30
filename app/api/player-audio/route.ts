@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
+import { withRateLimit } from "@/lib/rate-limit";
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const MAX_FILES_PER_PLAYER = 6;
@@ -16,7 +17,7 @@ function isMp3(buffer: Uint8Array): boolean {
 }
 
 /** GET — List authenticated player's audio files */
-export async function GET() {
+const getHandler: Parameters<typeof withRateLimit>[0] = async function getHandler() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -37,7 +38,7 @@ export async function GET() {
 }
 
 /** POST — Upload a new MP3 audio file */
-export async function POST(request: NextRequest) {
+const postHandler: Parameters<typeof withRateLimit>[0] = async function postHandler(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
 }
 
 /** DELETE — Remove an audio file by id */
-export async function DELETE(request: NextRequest) {
+const deleteHandler: Parameters<typeof withRateLimit>[0] = async function deleteHandler(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -142,4 +143,9 @@ export async function DELETE(request: NextRequest) {
     captureError(err, { component: "PlayerAudioAPI", action: "delete", category: "database" });
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
-}
+};
+
+const rateLimitConfig = { max: 10, window: "15 m" } as const;
+export const GET = withRateLimit(getHandler, rateLimitConfig);
+export const POST = withRateLimit(postHandler, rateLimitConfig);
+export const DELETE = withRateLimit(deleteHandler, rateLimitConfig);

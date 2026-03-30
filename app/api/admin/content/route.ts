@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { withRateLimit } from "@/lib/rate-limit";
 
 async function verifyAdmin() {
   const supabase = await createClient();
@@ -12,7 +13,7 @@ async function verifyAdmin() {
 }
 
 /** GET: Search monsters or spells by name */
-export async function GET(request: NextRequest) {
+const getHandler: Parameters<typeof withRateLimit>[0] = async function getHandler(request: NextRequest) {
   const admin = await verifyAdmin();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -32,10 +33,10 @@ export async function GET(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ data: data ?? [] });
-}
+};
 
 /** PUT: Update a monster or spell */
-export async function PUT(request: NextRequest) {
+const putHandler: Parameters<typeof withRateLimit>[0] = async function putHandler(request: NextRequest) {
   const admin = await verifyAdmin();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -92,4 +93,8 @@ export async function PUT(request: NextRequest) {
   }
 
   return NextResponse.json({ success: true });
-}
+};
+
+const rateLimitConfig = { max: 30, window: "15 m" } as const;
+export const GET = withRateLimit(getHandler, rateLimitConfig);
+export const PUT = withRateLimit(putHandler, rateLimitConfig);

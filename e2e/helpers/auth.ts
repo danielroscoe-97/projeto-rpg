@@ -1,5 +1,6 @@
 import { type Page, expect } from "@playwright/test";
 import type { TestAccount } from "../fixtures/test-accounts";
+import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 /**
  * Login as any test account via the UI login form.
@@ -22,21 +23,20 @@ export async function loginAs(page: Page, account: TestAccount) {
 }
 
 /**
- * Login as DM using env vars (backwards compat).
+ * Login as DM Primary (convenience wrapper).
+ * Uses DM_PRIMARY account by default, or env var overrides.
  */
 export async function loginAsDM(page: Page) {
-  const email = process.env.E2E_DM_EMAIL;
-  const password = process.env.E2E_DM_PASSWORD;
-
-  if (!email || !password) {
-    throw new Error("Missing E2E_DM_EMAIL or E2E_DM_PASSWORD env vars.");
-  }
+  const email = process.env.E2E_DM_EMAIL || DM_PRIMARY.email;
+  const password = process.env.E2E_DM_PASSWORD || DM_PRIMARY.password;
 
   await page.goto("/auth/login");
+  await page.waitForLoadState("domcontentloaded");
+
   await page.fill("#login-email", email);
   await page.fill("#login-password", password);
   await page.click('button[type="submit"]');
-  await page.waitForURL("**/app/dashboard", { timeout: 30_000, waitUntil: "domcontentloaded" });
+  await page.waitForURL("**/app/**", { timeout: 30_000, waitUntil: "domcontentloaded" });
 }
 
 /**
@@ -49,6 +49,19 @@ export async function joinSession(page: Page, shareToken: string) {
     "[data-testid='player-view'], [data-testid='player-loading']",
     { timeout: 15_000 }
   );
+}
+
+/**
+ * Player navigates to a session URL (full URL or path).
+ * Does not wait for specific selectors — used for link-based join flows.
+ */
+export async function joinAsPlayer(page: Page, sessionUrl: string) {
+  if (sessionUrl.startsWith("http")) {
+    await page.goto(sessionUrl);
+  } else {
+    await page.goto(sessionUrl);
+  }
+  await page.waitForLoadState("domcontentloaded");
 }
 
 /**

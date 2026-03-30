@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { withRateLimit } from "@/lib/rate-limit";
 
 async function verifyAdmin() {
   const supabase = await createClient();
@@ -11,7 +12,7 @@ async function verifyAdmin() {
   return user;
 }
 
-export async function GET() {
+const handler: Parameters<typeof withRateLimit>[0] = async function getHandler() {
   const user = await verifyAdmin();
   if (!user) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -103,4 +104,6 @@ export async function GET() {
       avg_players_per_dm: avgPlayersPerDm,
     },
   });
-}
+};
+
+export const GET = withRateLimit(handler, { max: 30, window: "15 m" });

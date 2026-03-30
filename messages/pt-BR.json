@@ -1122,7 +1122,11 @@
     "footer_create_account": "Crie sua conta e salve suas campanhas →",
     "try_encounter_name": "Combate de Teste",
     "save_requires_account": "Salvar (requer conta)",
-    "share_requires_account": "Compartilhar (requer conta)"
+    "share_requires_account": "Compartilhar (requer conta)",
+    "expired_title": "Sessão expirada",
+    "expired_body": "Crie uma conta gratuita para salvar seus combates e jogar sem limite de tempo.",
+    "expired_cta_signup": "Criar conta grátis",
+    "expired_cta_reset": "Começar novo combate"
   },
   "presets": {
     "title": "Encontros Preparados",
@@ -1426,7 +1430,8 @@
     "dm_stop_all": "Parar Tudo",
     "dashboard_ambient_title": "Sons Ambientes",
     "slot_empty": "Slot vazio",
-    "replace_sound": "Substituir som"
+    "replace_sound": "Substituir som",
+    "tap_to_enable_sound": "Toque para ativar som"
   },
   "lp_pricing": {
     "section_title": "Simples e transparente.",
@@ -1539,5 +1544,27 @@
     "phase_setup": "Preparação",
     "phase_combat": "Combate",
     "phase_complete": "Concluído"
+  },
+  "error_boundary": {
+    "title": "Algo deu errado",
+    "description": "Ocorreu um erro inesperado. O erro foi reportado automaticamente.",
+    "retry": "Tentar novamente",
+    "go_home": "Ir para a página inicial",
+    "guest_title": "Ops! Algo deu errado",
+    "guest_description": "O modo visitante encontrou um erro. Você pode tentar novamente ou criar uma conta gratuita para uma experiência mais estável.",
+    "guest_signup": "Criar Conta Grátis",
+    "auth_title": "Erro de Autenticação",
+    "auth_description": "Algo deu errado durante a autenticação. Por favor, tente novamente.",
+    "auth_back_to_login": "Voltar ao Login",
+    "compendium_title": "Falha ao Carregar Conteúdo",
+    "compendium_description": "Não conseguimos carregar a página do compêndio. Por favor, tente novamente.",
+    "admin_title": "Erro no Painel Admin",
+    "admin_description": "O painel administrativo encontrou um erro. Por favor, tente novamente.",
+    "invite_title": "Convite Inválido",
+    "invite_description": "Este link de convite pode estar expirado ou inválido. Peça um novo convite ao Mestre.",
+    "invite_back": "Ir para a Página Inicial",
+    "pricing_title": "Erro na Página de Preços",
+    "pricing_description": "Não conseguimos carregar a página de preços. Se o problema persistir, entre em contato.",
+    "pricing_contact": "Contatar Suporte"
   }
 }

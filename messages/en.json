@@ -1122,7 +1122,11 @@
     "footer_create_account": "Create your account and save your campaigns →",
     "try_encounter_name": "Test Combat",
     "save_requires_account": "Save (requires account)",
-    "share_requires_account": "Share (requires account)"
+    "share_requires_account": "Share (requires account)",
+    "expired_title": "Session expired",
+    "expired_body": "Create a free account to save your combats and play without time limits.",
+    "expired_cta_signup": "Create free account",
+    "expired_cta_reset": "Start new combat"
   },
   "presets": {
     "title": "Encounter Presets",
@@ -1426,7 +1430,8 @@
     "dm_stop_all": "Stop All",
     "dashboard_ambient_title": "Ambient Sounds",
     "slot_empty": "Empty slot",
-    "replace_sound": "Replace sound"
+    "replace_sound": "Replace sound",
+    "tap_to_enable_sound": "Tap to enable sound"
   },
   "lp_pricing": {
     "section_title": "Simple and transparent.",
@@ -1539,5 +1544,27 @@
     "phase_setup": "Setup",
     "phase_combat": "Combat",
     "phase_complete": "Complete"
+  },
+  "error_boundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. The error has been reported automatically.",
+    "retry": "Try again",
+    "go_home": "Go to homepage",
+    "guest_title": "Oops! Something went wrong",
+    "guest_description": "The guest mode encountered an error. You can try again or create a free account for a more stable experience.",
+    "guest_signup": "Create Free Account",
+    "auth_title": "Authentication Error",
+    "auth_description": "Something went wrong during authentication. Please try again.",
+    "auth_back_to_login": "Back to Login",
+    "compendium_title": "Failed to Load Content",
+    "compendium_description": "We couldn't load the compendium page. Please try again.",
+    "admin_title": "Admin Panel Error",
+    "admin_description": "The admin panel encountered an error. Please try again.",
+    "invite_title": "Invalid Invite",
+    "invite_description": "This invite link may be expired or invalid. Please ask the DM for a new invite.",
+    "invite_back": "Go to Homepage",
+    "pricing_title": "Pricing Page Error",
+    "pricing_description": "We couldn't load the pricing page. If this persists, contact us.",
+    "pricing_contact": "Contact Support"
   }
 }

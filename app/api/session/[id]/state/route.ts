@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sanitizeCombatantsForPlayer } from "@/lib/utils/sanitize-combatants";
+import { withRateLimit } from "@/lib/rate-limit";
 
-export async function GET(
+const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: sessionId } = await params;
   const supabase = await createClient();
@@ -76,4 +77,6 @@ export async function GET(
       dm_plan: sessionRow?.dm_plan ?? null,
     },
   });
-}
+};
+
+export const GET = withRateLimit(handler, { max: 60, window: "1 m" });

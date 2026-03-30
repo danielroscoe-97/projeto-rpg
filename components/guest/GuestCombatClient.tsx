@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock, User, UserCircle, Sparkles, Skull, CloudSun, Image as ImageIcon } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull } from "lucide-react";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
@@ -14,6 +14,7 @@ import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
+import { GuestExpiryModal } from "@/components/guest/GuestExpiryModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
@@ -25,10 +26,7 @@ import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
-import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
-import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
 import { setLastHpMode } from "@/components/combat/HpAdjuster";
-import { toast } from "sonner";
 
 interface AddRowForm {
   initiative: string;
@@ -757,10 +755,10 @@ export function GuestCombatClient() {
     resetCombat,
     addDeathSaveSuccess,
     addDeathSaveFailure,
-    toggleHidden,
+    isExpired,
+    checkExpiry,
+    resetForNewSession,
   } = useGuestCombatStore();
-
-  const { undoLastAction, pushHpUndo, pushConditionUndo, pushDefeatedUndo, pushTurnUndo, pushHiddenUndo } = useGuestUndoStack();
 
   // O(1) index lookup for combatant rows (avoids O(n²) findIndex in renderItem)
   const combatantIndexMap = useMemo(() => {
@@ -779,30 +777,9 @@ export function GuestCombatClient() {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
 
-  const handleAdvanceTurn = useCallback(() => {
-    const store = useGuestCombatStore.getState();
-    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber);
-    advanceTurn();
-  }, [advanceTurn, pushTurnUndo]);
-
-  const handleUndo = useCallback(() => {
-    const entry = undoLastAction();
-    if (!entry) {
-      toast(t("undo_empty"));
-      return;
-    }
-    switch (entry.type) {
-      case "hp": toast(t("undo_hp")); break;
-      case "condition": toast(entry.wasAdded ? t("undo_condition_add", { condition: entry.condition }) : t("undo_condition_remove", { condition: entry.condition })); break;
-      case "defeated": toast(t("undo_defeated")); break;
-      case "turn": toast(t("undo_turn")); break;
-      case "hidden": toast(t("undo_hidden")); break;
-    }
-  }, [undoLastAction, t]);
-
   useCombatKeyboardShortcuts({
     enabled: phase === "combat",
-    onNextTurn: handleAdvanceTurn,
+    onNextTurn: advanceTurn,
     combatantCount: combatants.length,
     focusedIndex,
     onFocusChange: (idx) => {
@@ -843,8 +820,20 @@ export function GuestCombatClient() {
     },
     cheatsheetOpen,
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
-    onUndo: handleUndo,
   });
+
+  // Periodically check guest session expiry (every 30s)
+  useEffect(() => {
+    checkExpiry(); // Check immediately on mount
+    const interval = setInterval(() => {
+      checkExpiry();
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [checkExpiry]);
+
+  const handleExpiryReset = useCallback(() => {
+    resetForNewSession();
+  }, [resetForNewSession]);
 
   const openUpsell = useCallback((trigger: UpsellTrigger) => {
     // Save current combat state to localStorage before showing upsell
@@ -1001,7 +990,6 @@ export function GuestCombatClient() {
       const store = useGuestCombatStore.getState();
       const actor = store.combatants[store.currentTurnIndex];
       const target = store.combatants.find((c) => c.id === id);
-      if (target) pushHpUndo(target, "damage");
       // Calculate effective damage (clamped by temp_hp + current_hp)
       const effectiveDamage = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
       applyDamage(id, amount);
@@ -1017,7 +1005,6 @@ export function GuestCombatClient() {
       const store = useGuestCombatStore.getState();
       const actor = store.combatants[store.currentTurnIndex];
       const target = store.combatants.find((c) => c.id === id);
-      if (target) pushHpUndo(target, "heal");
       // Calculate effective healing (clamped by max_hp - current_hp)
       const effectiveHealing = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
       applyHealing(id, amount);
@@ -1029,26 +1016,15 @@ export function GuestCombatClient() {
     [applyHealing]
   );
   const handleSetTempHp = useCallback(
-    (id: string, value: number) => {
-      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
-      if (target) pushHpUndo(target, "temp");
-      setTempHp(id, value);
-    },
-    [setTempHp, pushHpUndo]
+    (id: string, value: number) => setTempHp(id, value),
+    [setTempHp]
   );
   const handleToggleCondition = useCallback(
-    (id: string, condition: string) => {
-      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
-      const wasAdded = target ? !target.conditions.includes(condition) : true;
-      pushConditionUndo(id, condition, wasAdded);
-      toggleCondition(id, condition);
-    },
-    [toggleCondition, pushConditionUndo]
+    (id: string, condition: string) => toggleCondition(id, condition),
+    [toggleCondition]
   );
   const handleSetDefeated = useCallback(
     (id: string, isDefeated: boolean) => {
-      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
-      if (target) pushDefeatedUndo(target);
       setDefeated(id, isDefeated);
       // Track kills when a combatant is defeated
       if (isDefeated) {
@@ -1059,7 +1035,7 @@ export function GuestCombatClient() {
         }
       }
     },
-    [setDefeated, pushDefeatedUndo]
+    [setDefeated]
   );
   const handleUpdateStats = useCallback(
     (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) =>
@@ -1113,14 +1089,6 @@ export function GuestCombatClient() {
     (id: string, notes: string) => updatePlayerNotes(id, notes),
     [updatePlayerNotes]
   );
-  const handleToggleHidden = useCallback(
-    (id: string) => {
-      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
-      if (target) pushHiddenUndo(target);
-      toggleHidden(id);
-    },
-    [toggleHidden, pushHiddenUndo]
-  );
 
   const handleApplyToMultiple = useCallback(
     (targetIds: string[], amount: number, mode: HpMode) => {
@@ -1129,7 +1097,6 @@ export function GuestCombatClient() {
       const actorName = actor ? (actor.display_name ?? actor.name) : "Unknown";
       for (const id of targetIds) {
         const target = store.combatants.find((c) => c.id === id);
-        if (target) pushHpUndo(target, mode === "damage" ? "damage" : mode === "heal" ? "heal" : "temp");
         if (mode === "damage") {
           const effective = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
           applyDamage(id, amount);
@@ -1143,7 +1110,7 @@ export function GuestCombatClient() {
         }
       }
     },
-    [applyDamage, applyHealing, setTempHp, pushHpUndo]
+    [applyDamage, applyHealing, setTempHp]
   );
 
   const handleEndEncounter = useCallback(() => {
@@ -1175,6 +1142,7 @@ export function GuestCombatClient() {
           onClose={() => setUpsellOpen(false)}
           trigger={upsellTrigger}
         />
+        {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
       </>
     );
   }
@@ -1216,32 +1184,6 @@ export function GuestCombatClient() {
               {tCommon("save")}
             </button>
 
-            {/* Weather teaser — upsell */}
-            <button
-              type="button"
-              onClick={() => openUpsell("weather")}
-              className="px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md text-muted-foreground/60 hover:text-muted-foreground bg-white/[0.04] hover:bg-white/[0.1] transition-all duration-[250ms]"
-              aria-label={tg("upsell_title_weather")}
-              title={tg("upsell_title_weather")}
-              data-testid="weather-teaser-btn"
-            >
-              <CloudSun className="w-4 h-4" aria-hidden="true" />
-              <Lock className="w-2.5 h-2.5 ml-0.5 opacity-50" aria-hidden="true" />
-            </button>
-
-            {/* Background teaser — upsell */}
-            <button
-              type="button"
-              onClick={() => openUpsell("background")}
-              className="px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md text-muted-foreground/60 hover:text-muted-foreground bg-white/[0.04] hover:bg-white/[0.1] transition-all duration-[250ms]"
-              aria-label={tg("upsell_title_background")}
-              title={tg("upsell_title_background")}
-              data-testid="background-teaser-btn"
-            >
-              <ImageIcon className="w-4 h-4" aria-hidden="true" />
-              <Lock className="w-2.5 h-2.5 ml-0.5 opacity-50" aria-hidden="true" />
-            </button>
-
             <span className="text-muted-foreground text-xs">
               {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
             </span>
@@ -1258,7 +1200,7 @@ export function GuestCombatClient() {
 
             <button
               type="button"
-              onClick={handleAdvanceTurn}
+              onClick={advanceTurn}
               className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
               aria-label="Advance to next turn"
               data-testid="next-turn-btn"
@@ -1330,10 +1272,9 @@ export function GuestCombatClient() {
                   onUpdatePlayerNotes={handleUpdatePlayerNotes}
                   allCombatants={combatants}
                   onApplyToMultiple={handleApplyToMultiple}
-                  onToggleHidden={handleToggleHidden}
                   onAddDeathSaveSuccess={addDeathSaveSuccess}
                   onAddDeathSaveFailure={addDeathSaveFailure}
-                  onAdvanceTurn={handleAdvanceTurn}
+                  onAdvanceTurn={advanceTurn}
                 />
               );
             }}
@@ -1353,13 +1294,13 @@ export function GuestCombatClient() {
         </div>
       </div>
 
-      <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
-
       <GuestUpsellModal
         isOpen={upsellOpen}
         onClose={() => setUpsellOpen(false)}
         trigger={upsellTrigger}
       />
+
+      {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
 
       {leaderboardStats && (
         <CombatLeaderboard

@@ -1,33 +1,35 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const BASE_URL =
-  process.env.E2E_BASE_URL ?? "https://www.pocketdm.com.br";
-
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: false, // tests share state (DM session → player join)
+  fullyParallel: false, // tests share state (DM session -> player join)
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 1,
+  retries: process.env.CI ? 1 : 0,
   workers: 1, // sequential — tests depend on shared combat sessions
   reporter: [["html", { open: "never" }], ["list"]],
-  timeout: 30_000,
+  timeout: 60_000,
   expect: { timeout: 10_000 },
   use: {
-    baseURL: BASE_URL,
-    trace: "on-first-retry",
-    screenshot: "on",
-    video: "on",
+    baseURL: "http://localhost:3000",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
     actionTimeout: 10_000,
     navigationTimeout: 15_000,
   },
+  webServer: {
+    command: "npm run dev",
+    port: 3000,
+    reuseExistingServer: true,
+    timeout: 120_000,
+  },
   projects: [
     {
-      name: "chromium",
+      name: "desktop-chrome",
       use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: "mobile-chrome",
-      use: { ...devices["Pixel 5"] },
+      name: "mobile-safari",
+      use: { ...devices["iPhone 14"] },
     },
   ],
   outputDir: "./e2e/results",

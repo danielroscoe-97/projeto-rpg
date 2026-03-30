@@ -6,12 +6,96 @@ import { sortByInitiative, assignInitiativeOrder } from "@/lib/utils/initiative"
 
 export type GuestCombatPhase = "setup" | "combat" | "ended";
 
+/** Guest session hard limit: 60 minutes */
+export const SESSION_LIMIT_MS = 60 * 60 * 1000;
+const SESSION_START_KEY = "guest-session-start";
+const COMBAT_SNAPSHOT_KEY = "guest-combat-snapshot";
+const SNAPSHOT_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+/** Check if the guest session has expired (60 min from first visit) */
+export function isGuestExpired(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const startStr = localStorage.getItem(SESSION_START_KEY);
+    if (!startStr) return false;
+    const elapsed = Date.now() - Number(startStr);
+    return elapsed >= SESSION_LIMIT_MS;
+  } catch {
+    return false;
+  }
+}
+
+/** Save combat state snapshot for post-signup migration */
+export function saveGuestCombatSnapshot(state: {
+  combatants: Combatant[];
+  currentTurnIndex: number;
+  roundNumber: number;
+}): void {
+  try {
+    localStorage.setItem(
+      COMBAT_SNAPSHOT_KEY,
+      JSON.stringify({
+        combatants: state.combatants,
+        currentTurnIndex: state.currentTurnIndex,
+        roundNumber: state.roundNumber,
+        timestamp: Date.now(),
+      })
+    );
+  } catch {
+    // storage unavailable
+  }
+}
+
+/** Retrieve combat snapshot if it exists and is less than 24h old */
+export function getGuestCombatSnapshot(): {
+  combatants: Combatant[];
+  currentTurnIndex: number;
+  roundNumber: number;
+  timestamp: number;
+} | null {
+  try {
+    const raw = localStorage.getItem(COMBAT_SNAPSHOT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.combatants?.length) return null;
+    if (Date.now() - parsed.timestamp > SNAPSHOT_EXPIRY_MS) {
+      localStorage.removeItem(COMBAT_SNAPSHOT_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+/** Clear combat snapshot after import */
+export function clearGuestCombatSnapshot(): void {
+  try {
+    localStorage.removeItem(COMBAT_SNAPSHOT_KEY);
+  } catch {
+    // storage unavailable
+  }
+}
+
+/** Reset guest session timer and clear combat state */
+export function resetGuestSession(): void {
+  try {
+    localStorage.removeItem(SESSION_START_KEY);
+    localStorage.removeItem("guest-banner-dismissed");
+    // Set fresh start time
+    localStorage.setItem(SESSION_START_KEY, String(Date.now()));
+  } catch {
+    // storage unavailable
+  }
+}
+
 interface GuestCombatState {
   phase: GuestCombatPhase;
   combatants: Combatant[];
   currentTurnIndex: number;
   roundNumber: number;
   combatStartTime: number | null;
+  isExpired: boolean;
 }
 
 interface GuestCombatActions {
@@ -32,13 +116,14 @@ interface GuestCombatActions {
   setTempHp: (id: string, value: number) => void;
   toggleCondition: (id: string, condition: string) => void;
   setDefeated: (id: string, isDefeated: boolean) => void;
-  toggleHidden: (id: string) => void;
   addDeathSaveSuccess: (id: string) => void;
   addDeathSaveFailure: (id: string) => void;
   resetDeathSaves: (id: string) => void;
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
   resetCombat: () => void;
+  resetForNewSession: () => void;
   hydrateCombatants: (combatants: Combatant[]) => void;
+  checkExpiry: () => boolean;
 }
 
 type GuestCombatStore = GuestCombatState & GuestCombatActions;
@@ -49,61 +134,93 @@ const initialState: GuestCombatState = {
   currentTurnIndex: 0,
   roundNumber: 1,
   combatStartTime: null,
+  isExpired: false,
 };
 
 export const useGuestCombatStore = create<GuestCombatStore>()(
   persist(
-    (set) => ({
+    (set) => {
+      /** Guard: if session expired, set isExpired and block the action */
+      const guardExpired = (): boolean => {
+        if (isGuestExpired()) {
+          set({ isExpired: true });
+          return true;
+        }
+        return false;
+      };
+
+      return {
       ...initialState,
 
-      addCombatant: (combatant) =>
+      checkExpiry: () => {
+        const expired = isGuestExpired();
+        if (expired) set({ isExpired: true });
+        return expired;
+      },
+
+      addCombatant: (combatant) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: [...state.combatants, { ...combatant, id: crypto.randomUUID() }],
-        })),
+        }));
+      },
 
-      addMonsterGroup: (newCombatants) =>
+      addMonsterGroup: (newCombatants) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: [
             ...state.combatants,
             ...newCombatants.map((c) => ({ ...c, id: crypto.randomUUID() })),
           ],
-        })),
+        }));
+      },
 
-      removeCombatant: (id) =>
+      removeCombatant: (id) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.filter((c) => c.id !== id),
-        })),
+        }));
+      },
 
-      setInitiative: (id, value) =>
+      setInitiative: (id, value) => {
+        if (guardExpired()) return;
         set((state) => {
           const updated = state.combatants.map((c) =>
             c.id === id ? { ...c, initiative: value } : c
           );
           const sorted = assignInitiativeOrder(sortByInitiative(updated));
           return { combatants: sorted };
-        }),
+        });
+      },
 
-      batchSetInitiatives: (entries) =>
+      batchSetInitiatives: (entries) => {
+        if (guardExpired()) return;
         set((state) => {
           const initMap = new Map(entries.map((e) => [e.id, e.value]));
           const updated = state.combatants.map((c) =>
             initMap.has(c.id) ? { ...c, initiative: initMap.get(c.id)! } : c
           );
           return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
-        }),
+        });
+      },
 
-      setGroupInitiative: (groupId, value) =>
+      setGroupInitiative: (groupId, value) => {
+        if (guardExpired()) return;
         set((state) => {
           const updated = state.combatants.map((c) =>
             c.monster_group_id === groupId ? { ...c, initiative: value } : c
           );
           return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
-        }),
+        });
+      },
 
-      reorderCombatants: (newOrder) =>
-        set({ combatants: assignInitiativeOrder(newOrder) }),
+      reorderCombatants: (newOrder) => {
+        if (guardExpired()) return;
+        set({ combatants: assignInitiativeOrder(newOrder) });
+      },
 
-      updateCombatantStats: (id, stats) =>
+      updateCombatantStats: (id, stats) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
@@ -113,29 +230,37 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             }
             return updated;
           }),
-        })),
+        }));
+      },
 
-      updatePlayerNotes: (id, notes) =>
+      updatePlayerNotes: (id, notes) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id ? { ...c, player_notes: notes } : c
           ),
-        })),
+        }));
+      },
 
-      updateDmNotes: (id, notes) =>
+      updateDmNotes: (id, notes) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id ? { ...c, dm_notes: notes } : c
           ),
-        })),
+        }));
+      },
 
-      startCombat: () =>
+      startCombat: () => {
+        if (guardExpired()) return;
         set((state) => {
           const sorted = assignInitiativeOrder(sortByInitiative(state.combatants));
           return { phase: "combat", combatants: sorted, currentTurnIndex: 0, roundNumber: 1, combatStartTime: Date.now() };
-        }),
+        });
+      },
 
-      advanceTurn: () =>
+      advanceTurn: () => {
+        if (guardExpired()) return;
         set((state) => {
           const { combatants, currentTurnIndex, roundNumber } = state;
           if (combatants.length === 0) return state;
@@ -168,9 +293,11 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             currentTurnIndex: next,
             roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
           };
-        }),
+        });
+      },
 
-      applyDamage: (id, amount) =>
+      applyDamage: (id, amount) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
@@ -183,9 +310,11 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             }
             return { ...c, current_hp: Math.max(0, c.current_hp - remaining), temp_hp: newTempHp };
           }),
-        })),
+        }));
+      },
 
-      applyHealing: (id, amount) =>
+      applyHealing: (id, amount) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
@@ -193,16 +322,20 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             const resetSaves = c.current_hp === 0 && newHp > 0;
             return { ...c, current_hp: newHp, ...(resetSaves ? { death_saves: undefined, is_defeated: false } : {}) };
           }),
-        })),
+        }));
+      },
 
-      setTempHp: (id, value) =>
+      setTempHp: (id, value) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id ? { ...c, temp_hp: Math.min(9999, Math.max(c.temp_hp, value)) } : c
           ),
-        })),
+        }));
+      },
 
-      toggleCondition: (id, condition) =>
+      toggleCondition: (id, condition) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
@@ -221,9 +354,11 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
               condition_durations: durations,
             };
           }),
-        })),
+        }));
+      },
 
-      setDefeated: (id, isDefeated) =>
+      setDefeated: (id, isDefeated) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id
@@ -235,16 +370,11 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
                 }
               : c
           ),
-        })),
+        }));
+      },
 
-      toggleHidden: (id) =>
-        set((state) => ({
-          combatants: state.combatants.map((c) =>
-            c.id === id ? { ...c, is_hidden: !c.is_hidden } : c
-          ),
-        })),
-
-      addDeathSaveSuccess: (id) =>
+      addDeathSaveSuccess: (id) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
@@ -252,9 +382,11 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             const newSuccesses = Math.min(saves.successes + 1, 3);
             return { ...c, death_saves: { ...saves, successes: newSuccesses } };
           }),
-        })),
+        }));
+      },
 
-      addDeathSaveFailure: (id) =>
+      addDeathSaveFailure: (id) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
@@ -265,26 +397,37 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             }
             return { ...c, death_saves: { ...saves, failures: newFailures } };
           }),
-        })),
+        }));
+      },
 
-      resetDeathSaves: (id) =>
+      resetDeathSaves: (id) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id ? { ...c, death_saves: undefined } : c
           ),
-        })),
+        }));
+      },
 
-      setRulesetVersion: (id, version) =>
+      setRulesetVersion: (id, version) => {
+        if (guardExpired()) return;
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id ? { ...c, ruleset_version: version } : c
           ),
-        })),
+        }));
+      },
 
       resetCombat: () => set(initialState),
 
+      resetForNewSession: () => {
+        resetGuestSession();
+        set(initialState);
+      },
+
       hydrateCombatants: (combatants) => set({ combatants }),
-    }),
+    };
+    },
     {
       name: "guest-combat-v1",
       storage: createJSONStorage(() =>

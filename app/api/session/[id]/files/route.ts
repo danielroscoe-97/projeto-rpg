@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
+import { withRateLimit } from "@/lib/rate-limit";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -34,9 +35,9 @@ function matchBytes(buffer: Uint8Array, magic: number[]): boolean {
   return magic.every((byte, i) => buffer[i] === byte);
 }
 
-export async function POST(
+const postHandler: Parameters<typeof withRateLimit>[0] = async function postHandler(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: sessionId } = await params;
   const supabase = await createClient();
@@ -106,9 +107,9 @@ export async function POST(
   }
 }
 
-export async function DELETE(
+const deleteHandler: Parameters<typeof withRateLimit>[0] = async function deleteHandler(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: sessionId } = await params;
   const supabase = await createClient();
@@ -143,4 +144,8 @@ export async function DELETE(
     captureError(err, { component: "SessionFilesAPI", action: "deleteFile", category: "database" });
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
-}
+};
+
+const rateLimitConfig = { max: 10, window: "15 m" } as const;
+export const POST = withRateLimit(postHandler, rateLimitConfig);
+export const DELETE = withRateLimit(deleteHandler, rateLimitConfig);

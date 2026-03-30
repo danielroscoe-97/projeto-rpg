@@ -16,7 +16,7 @@ export interface TestAccount {
 // ── DM Accounts ──────────────────────────────────────────────
 
 export const DM_PRIMARY: TestAccount = {
-  email: "dm.primary@test-pocketdm.com",
+  email: "dm.primary@test-taverna.com",
   password: "TestDM_Primary!1",
   displayName: "Mestre Primário",
   locale: "pt-BR",
@@ -24,7 +24,7 @@ export const DM_PRIMARY: TestAccount = {
 };
 
 export const DM_PRO: TestAccount = {
-  email: "dm.pro@test-pocketdm.com",
+  email: "dm.pro@test-taverna.com",
   password: "TestDM_Pro!2",
   displayName: "Mestre Pro",
   locale: "pt-BR",
@@ -32,7 +32,7 @@ export const DM_PRO: TestAccount = {
 };
 
 export const DM_ENGLISH: TestAccount = {
-  email: "dm.english@test-pocketdm.com",
+  email: "dm.english@test-taverna.com",
   password: "TestDM_English!3",
   displayName: "English DM",
   locale: "en",
@@ -42,7 +42,7 @@ export const DM_ENGLISH: TestAccount = {
 // ── Player Accounts ──────────────────────────────────────────
 
 export const PLAYER_WARRIOR: TestAccount = {
-  email: "player.warrior@test-pocketdm.com",
+  email: "player.warrior@test-taverna.com",
   password: "TestPlayer_War!1",
   displayName: "Thorin Guerreiro",
   locale: "pt-BR",
@@ -50,7 +50,7 @@ export const PLAYER_WARRIOR: TestAccount = {
 };
 
 export const PLAYER_MAGE: TestAccount = {
-  email: "player.mage@test-pocketdm.com",
+  email: "player.mage@test-taverna.com",
   password: "TestPlayer_Mage!2",
   displayName: "Elara Maga",
   locale: "pt-BR",
@@ -58,7 +58,7 @@ export const PLAYER_MAGE: TestAccount = {
 };
 
 export const PLAYER_HEALER: TestAccount = {
-  email: "player.healer@test-pocketdm.com",
+  email: "player.healer@test-taverna.com",
   password: "TestPlayer_Heal!3",
   displayName: "Lyra Curandeira",
   locale: "pt-BR",
@@ -66,7 +66,7 @@ export const PLAYER_HEALER: TestAccount = {
 };
 
 export const PLAYER_ENGLISH: TestAccount = {
-  email: "player.english@test-pocketdm.com",
+  email: "player.english@test-taverna.com",
   password: "TestPlayer_EN!4",
   displayName: "John Ranger",
   locale: "en",
@@ -74,7 +74,7 @@ export const PLAYER_ENGLISH: TestAccount = {
 };
 
 export const PLAYER_FRESH: TestAccount = {
-  email: "player.fresh@test-pocketdm.com",
+  email: "player.fresh@test-taverna.com",
   password: "TestPlayer_Fresh!5",
   displayName: "Novato",
   locale: "pt-BR",
@@ -82,7 +82,7 @@ export const PLAYER_FRESH: TestAccount = {
 };
 
 export const PLAYER_AUDIO: TestAccount = {
-  email: "player.maxaudio@test-pocketdm.com",
+  email: "player.maxaudio@test-taverna.com",
   password: "TestPlayer_Audio!6",
   displayName: "DJ Bardo",
   locale: "pt-BR",
@@ -90,7 +90,7 @@ export const PLAYER_AUDIO: TestAccount = {
 };
 
 export const PLAYER_TRIAL: TestAccount = {
-  email: "player.trial@test-pocketdm.com",
+  email: "player.trial@test-taverna.com",
   password: "TestPlayer_Trial!7",
   displayName: "Trial Player",
   locale: "pt-BR",

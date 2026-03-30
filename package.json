@@ -16,7 +16,9 @@
     "fetch-all-5etools": "ts-node scripts/fetch-5etools-bestiary.ts && ts-node scripts/fetch-5etools-spells.ts && ts-node scripts/fetch-5etools-conditions.ts && ts-node scripts/fetch-5etools-items.ts",
     "validate:srd": "npx tsx scripts/validate-srd-crossrefs.ts",
     "e2e": "playwright test",
-    "e2e:headed": "playwright test --headed"
+    "e2e:headed": "playwright test --headed",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
