@@ -32,6 +32,7 @@ interface GuestCombatActions {
   setTempHp: (id: string, value: number) => void;
   toggleCondition: (id: string, condition: string) => void;
   setDefeated: (id: string, isDefeated: boolean) => void;
+  toggleHidden: (id: string) => void;
   addDeathSaveSuccess: (id: string) => void;
   addDeathSaveFailure: (id: string) => void;
   resetDeathSaves: (id: string) => void;
@@ -233,6 +234,13 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
                   death_saves: undefined,
                 }
               : c
+          ),
+        })),
+
+      toggleHidden: (id) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, is_hidden: !c.is_hidden } : c
           ),
         })),
 
