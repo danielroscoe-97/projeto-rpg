@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Users, FileText, Swords, ChevronDown } from "lucide-react";
+import { Users, FileText, Swords, UserCircle, ChevronDown } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
+import { NpcList } from "@/components/campaign/NpcList";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface Props {
@@ -62,6 +63,10 @@ export function CampaignSections({
           campaignId={campaignId}
           campaignName={campaignName}
         />
+      </Section>
+
+      <Section icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
+        <NpcList campaignId={campaignId} />
       </Section>
 
       <Section icon={FileText} title={t("section_notes")} defaultOpen={false}>
