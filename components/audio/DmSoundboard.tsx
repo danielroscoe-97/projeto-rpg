@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Volume2, Square } from "lucide-react";
 import { useAudioStore } from "@/lib/stores/audio-store";
-import { getAmbientPresets, getSfxPresets } from "@/lib/utils/audio-presets";
+import { getAmbientPresets, getMusicPresets, getSfxPresets } from "@/lib/utils/audio-presets";
 
 const SFX_COOLDOWN_MS = 1500;
 
@@ -31,6 +31,7 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
   const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
 
   const ambientPresets = getAmbientPresets();
+  const musicPresets = getMusicPresets();
   const sfxPresets = getSfxPresets();
 
   // Cleanup
@@ -249,6 +250,36 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
                 </button>
               </div>
             )}
+
+            {/* Music Section */}
+            <h4 className="text-muted-foreground text-xs font-medium mb-2 mt-3 uppercase tracking-wider">
+              {t("dm_music_section")}
+            </h4>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {musicPresets.map((preset) => {
+                const isActive = activeAmbientId === preset.id;
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => handleAmbientToggle(preset.id)}
+                    className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                      isActive
+                        ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                        : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
+                    }`}
+                  >
+                    <span className="text-lg leading-none">{preset.icon}</span>
+                    <span className="text-[10px] leading-tight text-center truncate w-full">
+                      {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
+                    </span>
+                    {isActive && (
+                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
             {/* SFX Section */}
             <h4 className="text-muted-foreground text-xs font-medium mb-2 mt-3 uppercase tracking-wider">

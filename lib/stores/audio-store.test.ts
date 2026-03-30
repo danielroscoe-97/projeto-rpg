@@ -89,15 +89,15 @@ describe("audio-store", () => {
 
   describe("playSound", () => {
     it("plays a preset sound", () => {
-      useAudioStore.getState().playSound("fireball", "preset", "TestPlayer");
+      useAudioStore.getState().playSound("spell", "preset", "TestPlayer");
       expect(mockPlay).toHaveBeenCalled();
-      expect(useAudioStore.getState().activeAudioId).toBe("fireball");
+      expect(useAudioStore.getState().activeAudioId).toBe("spell");
       expect(useAudioStore.getState().lastSoundLabel).toContain("TestPlayer");
     });
 
     it("does not play when muted", () => {
       useAudioStore.setState({ isMuted: true });
-      useAudioStore.getState().playSound("fireball", "preset", "TestPlayer");
+      useAudioStore.getState().playSound("spell", "preset", "TestPlayer");
       expect(mockPlay).not.toHaveBeenCalled();
       expect(useAudioStore.getState().activeAudioId).toBeNull();
     });
@@ -115,7 +115,7 @@ describe("audio-store", () => {
 
     it("stops previous audio before playing new one", () => {
       // Play first sound
-      useAudioStore.getState().playSound("fireball", "preset", "Player1");
+      useAudioStore.getState().playSound("spell", "preset", "Player1");
       const firstAudio = useAudioStore.getState().activeAudio;
 
       // Play second sound
@@ -126,8 +126,8 @@ describe("audio-store", () => {
 
   describe("stopAllAudio", () => {
     it("stops active audio and clears state", () => {
-      useAudioStore.getState().playSound("fireball", "preset", "TestPlayer");
-      expect(useAudioStore.getState().activeAudioId).toBe("fireball");
+      useAudioStore.getState().playSound("spell", "preset", "TestPlayer");
+      expect(useAudioStore.getState().activeAudioId).toBe("spell");
 
       useAudioStore.getState().stopAllAudio();
       expect(mockPause).toHaveBeenCalled();

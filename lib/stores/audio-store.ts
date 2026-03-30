@@ -109,7 +109,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 
     // Ambient sounds loop continuously
     const preset = source === "preset" ? getPresetById(soundId) : null;
-    audio.loop = preset?.category === "ambient";
+    audio.loop = preset?.category === "ambient" || preset?.category === "music";
 
     audio.play().catch(() => {
       // Browser blocked autoplay — ignored silently
