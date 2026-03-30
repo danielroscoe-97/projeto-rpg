@@ -748,7 +748,6 @@ export function GuestCombatClient() {
     removeCombatant,
     addCombatant,
     updateCombatantStats,
-    setRulesetVersion,
     updateDmNotes,
     updatePlayerNotes,
     hydrateCombatants,
@@ -1076,10 +1075,6 @@ export function GuestCombatClient() {
       }
     },
     []
-  );
-  const handleSwitchVersion = useCallback(
-    (id: string, version: RulesetVersion) => setRulesetVersion(id, version),
-    [setRulesetVersion]
   );
   const handleUpdateDmNotes = useCallback(
     (id: string, notes: string) => updateDmNotes(id, notes),

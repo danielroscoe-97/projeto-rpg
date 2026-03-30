@@ -5,7 +5,16 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Pocket DM — Combat Tracker D&D 5e";
 
-export default function OgImage() {
+export default async function OgImage() {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+  // Load Cinzel 700 for brand consistency (edge runtime has no access to next/font)
+  const cinzelData = await fetch(
+    new URL("/fonts/cinzel-latin-700-normal.woff2", baseUrl),
+  ).then((r) => r.arrayBuffer());
+
   return new ImageResponse(
     (
       <div
@@ -18,7 +27,7 @@ export default function OgImage() {
           height: "100%",
           background: "linear-gradient(135deg, #0f0e12 0%, #1a1820 60%, #0f0e12 100%)",
           color: "#e8e4d0",
-          fontFamily: "Georgia, serif",
+          fontFamily: "Cinzel, Georgia, serif",
           position: "relative",
         }}
       >
@@ -43,6 +52,7 @@ export default function OgImage() {
             color: "#D4A853",
             letterSpacing: -2,
             marginBottom: 12,
+            fontFamily: "Cinzel, Georgia, serif",
           }}
         >
           Pocket DM
@@ -86,6 +96,17 @@ export default function OgImage() {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 },
+    {
+      width: 1200,
+      height: 630,
+      fonts: [
+        {
+          name: "Cinzel",
+          data: cinzelData,
+          weight: 700,
+          style: "normal",
+        },
+      ],
+    },
   );
 }

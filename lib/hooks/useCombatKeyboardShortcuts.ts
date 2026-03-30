@@ -238,14 +238,14 @@ export function useCombatKeyboardShortcuts({
 
         case "+":
         case "=": // unshifted = key on most keyboards maps to "=" but user may press Shift+= for "+"
-          if (!e.ctrlKey && !e.metaKey) {
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
             e.preventDefault();
             opts.onOpenHpHeal();
           }
           break;
 
         case "-":
-          if (!e.ctrlKey && !e.metaKey) {
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
             e.preventDefault();
             opts.onOpenHpDamage();
           }

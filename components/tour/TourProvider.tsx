@@ -29,7 +29,7 @@ function getEffectiveSteps() {
 }
 
 export function TourProvider() {
-  const { currentStep, isActive, isCompleted, startTour, goToStep, skipTour, completeTour } =
+  const { currentStep, isActive, startTour, goToStep, skipTour, completeTour } =
     useTourStore();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -39,9 +39,13 @@ export function TourProvider() {
   // Wait for SRD to be ready before auto-starting the tour.
   // Without this, new visitors (no IndexedDB cache) see the tour start while the
   // SRD loading screen is still covering the page, causing mispositioned tooltips.
+  // Note: initial store state is { is_loading: false, monsters: [] }, so we must
+  // check monsters.length > 0 (not !is_loading) to avoid firing immediately on mount.
   const srdMonsters = useSrdStore((s) => s.monsters);
+  const srdError = useSrdStore((s) => s.error);
   const srdIsLoading = useSrdStore((s) => s.is_loading);
-  const srdReady = !srdIsLoading || srdMonsters.length > 0;
+  // Ready when data arrived OR when loading definitively failed (so tour still shows on SRD error)
+  const srdReady = srdMonsters.length > 0 || (!!srdError && !srdIsLoading);
   // Snapshot of combatants before combat phase, so "Back" can restore setup state
   const setupSnapshotRef = useRef<import("@/lib/types/combat").Combatant[] | null>(null);
   // Track the last combatant auto-added by the tour (for undo on back)
