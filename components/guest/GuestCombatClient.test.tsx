@@ -56,6 +56,11 @@ jest.mock("@/components/guest/GuestUpsellModal", () => ({
     isOpen ? <div data-testid="mock-upsell-modal">Upsell</div> : null,
 }));
 
+jest.mock("@/components/guest/GuestExpiryModal", () => ({
+  GuestExpiryModal: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="mock-expiry-modal">Expired</div> : null,
+}));
+
 jest.mock("@/components/combat/MonsterSearchPanel", () => ({
   MonsterSearchPanel: () => <div data-testid="mock-monster-search" />,
 }));
@@ -88,6 +93,7 @@ function resetStore() {
     combatants: [],
     currentTurnIndex: 0,
     roundNumber: 1,
+    isExpired: false,
   });
 }
 
@@ -290,12 +296,12 @@ describe("GuestCombatClient", () => {
     render(<GuestCombatClient />);
 
     // Form should not be visible initially
-    expect(screen.queryByTestId("mock-add-form")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("mid-combat-add-panel")).not.toBeInTheDocument();
 
     // Click add combatant
     fireEvent.click(screen.getByTestId("add-combatant-btn"));
 
-    expect(screen.getByTestId("mock-add-form")).toBeInTheDocument();
+    expect(screen.getByTestId("mid-combat-add-panel")).toBeInTheDocument();
   });
 
   it("ends encounter and returns to setup phase", () => {

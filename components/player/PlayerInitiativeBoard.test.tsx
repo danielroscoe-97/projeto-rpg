@@ -100,9 +100,10 @@ describe("PlayerInitiativeBoard", () => {
         currentTurnIndex={0}
         roundNumber={2}
         rulesetVersion="2014"
+        registeredName="Aragorn"
       />
     );
-    expect(screen.getAllByText("40").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/40/).length).toBeGreaterThan(0);
   });
 
   it("shows HP status label for monsters", () => {

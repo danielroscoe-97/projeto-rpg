@@ -61,7 +61,7 @@ function renderRow(overrides: Partial<Combatant> = {}) {
 describe("CombatantSetupRow", () => {
   it("renders all fields with correct values", () => {
     renderRow();
-    expect(screen.getByTestId("setup-init-c1")).toHaveValue(12);
+    expect(screen.getByTestId("setup-init-c1")).toHaveValue("12");
     expect(screen.getByTestId("setup-name-c1")).toHaveValue("Goblin");
     expect(screen.getByTestId("setup-hp-c1")).toHaveValue(7);
     expect(screen.getByTestId("setup-ac-c1")).toHaveValue(15);
@@ -107,9 +107,13 @@ describe("CombatantSetupRow", () => {
     expect(h.onNotesChange).toHaveBeenCalled();
   });
 
-  it("calls onRemove when ✕ is clicked", async () => {
+  it("calls onRemove when confirmed via alert dialog", async () => {
     const h = renderRow();
+    // Click the remove button — opens confirmation dialog
     await userEvent.click(screen.getByTestId("setup-remove-c1"));
+    // Click the confirm action in the alert dialog
+    const confirmBtn = await screen.findByText("combat.setup_remove_confirm_action");
+    await userEvent.click(confirmBtn);
     expect(h.onRemove).toHaveBeenCalledWith("c1");
   });
 

@@ -6,16 +6,21 @@
 import type { Combatant } from "@/lib/types/combat";
 
 const mockSend = jest.fn();
-const mockSubscribe = jest.fn();
 const mockUnsubscribe = jest.fn();
+
+const mockChannel = {
+  subscribe: jest.fn((cb?: (status: string) => void) => {
+    if (cb) cb("SUBSCRIBED");
+    return mockChannel;
+  }),
+  send: mockSend,
+  unsubscribe: mockUnsubscribe,
+  state: "joined",
+};
 
 jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
-    channel: () => ({
-      subscribe: mockSubscribe,
-      send: mockSend,
-      unsubscribe: mockUnsubscribe,
-    }),
+    channel: () => mockChannel,
   }),
 }));
 
@@ -28,7 +33,8 @@ import { broadcastEvent, cleanupDmChannel, getDmChannel } from "./broadcast";
 
 beforeEach(() => {
   mockSend.mockClear();
-  mockSubscribe.mockClear();
+  mockChannel.subscribe.mockClear();
+  mockChannel.state = "joined";
   cleanupDmChannel();
 });
 

@@ -8,18 +8,19 @@
 
 // ── Supabase mock ────────────────────────────────────────────────
 const mockSend = jest.fn();
-const mockSubscribe = jest.fn((cb: (status: string) => void) => {
-  cb("SUBSCRIBED");
-});
 const mockUnsubscribe = jest.fn();
-const mockChannel = jest.fn(() => ({
+const mockChannelInstance = {
   send: mockSend,
-  subscribe: mockSubscribe,
+  subscribe: jest.fn((cb?: (status: string) => void) => {
+    if (cb) cb("SUBSCRIBED");
+    return mockChannelInstance;
+  }),
   unsubscribe: mockUnsubscribe,
-}));
+  state: "joined",
+};
 
 jest.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({ channel: mockChannel }),
+  createClient: () => ({ channel: () => mockChannelInstance }),
 }));
 
 jest.mock("@/lib/errors/capture", () => ({
@@ -94,6 +95,7 @@ function makePlayer(overrides?: Partial<Combatant>): Combatant {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockChannelInstance.state = "joined";
   cleanupDmChannel();
 });
 

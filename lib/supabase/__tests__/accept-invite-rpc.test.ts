@@ -20,6 +20,16 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:5
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "test-anon-key";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "test-service-key";
 
+const hasLiveSupabase = SUPABASE_SERVICE_KEY !== "test-service-key" && SUPABASE_ANON_KEY !== "test-anon-key";
+
+if (!hasLiveSupabase) {
+  describe("RPC — accept_campaign_invite (skipped — no live Supabase)", () => {
+    it.skip("requires SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY env vars", () => {});
+  });
+}
+
+const describeIfLive = hasLiveSupabase ? describe : describe.skip;
+
 function serviceClient() {
   return createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 }
@@ -125,7 +135,7 @@ afterEach(async () => {
 // accept_campaign_invite() Tests
 // ===========================================================================
 
-describe("RPC — accept_campaign_invite()", () => {
+describeIfLive("RPC — accept_campaign_invite()", () => {
   it("accepts a valid invite → membership created, invite marked accepted", async () => {
     const dm = await createTestUser("dm-invite-valid@test.local");
     const player = await createTestUser("player-invite-valid@test.local");

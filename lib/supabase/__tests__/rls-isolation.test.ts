@@ -15,12 +15,26 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 // ---------------------------------------------------------------------------
-// Env & helpers
+// Skip guard — these tests require a live Supabase instance
 // ---------------------------------------------------------------------------
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "test-anon-key";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "test-service-key";
+
+const hasLiveSupabase = SUPABASE_SERVICE_KEY !== "test-service-key" && SUPABASE_ANON_KEY !== "test-anon-key";
+
+if (!hasLiveSupabase) {
+  describe("RLS Isolation Tests (skipped — no live Supabase)", () => {
+    it.skip("requires SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY env vars", () => {});
+  });
+}
+
+const describeIfLive = hasLiveSupabase ? describe : describe.skip;
+
+// ---------------------------------------------------------------------------
+// Env & helpers
+// ---------------------------------------------------------------------------
 
 /** Service-role client — bypasses RLS for setup/teardown. */
 function serviceClient() {
@@ -246,7 +260,7 @@ afterEach(async () => {
 // DM Isolation Tests
 // ===========================================================================
 
-describe("RLS — DM Isolation", () => {
+describeIfLive("RLS — DM Isolation", () => {
   it("DM A creates campaign → DM B CANNOT see DM A's campaign", async () => {
     const dmA = await createTestUser("dm-a-camp@test.local");
     const dmB = await createTestUser("dm-b-camp@test.local");
@@ -310,7 +324,7 @@ describe("RLS — DM Isolation", () => {
 // Player Isolation Tests
 // ===========================================================================
 
-describe("RLS — Player Isolation", () => {
+describeIfLive("RLS — Player Isolation", () => {
   it("Player with Session A token CANNOT access Session B", async () => {
     const dm = await createTestUser("dm-player-iso@test.local");
     const player = await createTestUser("player-iso@test.local");
@@ -447,7 +461,7 @@ describe("RLS — Player Isolation", () => {
 // Campaign Member Isolation Tests
 // ===========================================================================
 
-describe("RLS — Campaign Member Isolation", () => {
+describeIfLive("RLS — Campaign Member Isolation", () => {
   it("Member of Campaign A CANNOT see Campaign B", async () => {
     const dmA = await createTestUser("dm-mem-a@test.local");
     const dmB = await createTestUser("dm-mem-b@test.local");
@@ -556,7 +570,7 @@ describe("RLS — Campaign Member Isolation", () => {
 // Cross-Role (Dual-Role) Tests
 // ===========================================================================
 
-describe("RLS — Cross-Role (Dual-Role)", () => {
+describeIfLive("RLS — Cross-Role (Dual-Role)", () => {
   it("User is DM in Campaign A and Player in Campaign B — data is isolated", async () => {
     const userDual = await createTestUser("dual-role@test.local");
     const otherDm = await createTestUser("other-dm@test.local");
