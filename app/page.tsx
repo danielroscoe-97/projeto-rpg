@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Swords, Smartphone, Sparkles, BookOpen, Save, Moon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
@@ -260,44 +262,44 @@ function SectionDivider() {
 
 // ── Features ─────────────────────────────────────────────────────────────────
 function FeaturesSection() {
-  const features = [
+  const features: { icon: LucideIcon; tag: string | null; title: string; description: string }[] = [
     {
-      emoji: "⚔️",
+      icon: Swords,
       tag: null,
       title: "Combat Tracker Completo",
       description:
         "Iniciativa automática, HP com temp HP, 13 condições D&D, derrota, adicionar/remover combatentes no meio do combate.",
     },
     {
-      emoji: "📱",
+      icon: Smartphone,
       tag: "Popular",
       title: "Player View em Tempo Real",
       description:
         "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem fricção. Tudo atualiza ao vivo.",
     },
     {
-      emoji: "🔮",
+      icon: Sparkles,
       tag: null,
       title: "Oráculo de Magias & Monstros",
       description:
         "Busca instantânea em 3000+ monstros e 900+ magias. Stat blocks inline, descrições de magia em modal. Funciona offline.",
     },
     {
-      emoji: "📖",
+      icon: BookOpen,
       tag: "Único",
       title: "Regras 2014 & 2024",
       description:
         "Alterne entre as versões de regras por monstro instantaneamente, no meio do combate, sem reiniciar o encontro.",
     },
     {
-      emoji: "💾",
+      icon: Save,
       tag: null,
       title: "Salvar & Retomar",
       description:
         "Fechou o navegador? Sem problema. O encontro persiste automaticamente. Retome de onde parou.",
     },
     {
-      emoji: "🌙",
+      icon: Moon,
       tag: null,
       title: "Dark Mode RPG",
       description:
@@ -344,8 +346,8 @@ function FeaturesSection() {
                   {f.tag}
                 </span>
               )}
-              <div className="w-14 h-14 mb-4 rounded-xl bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-2xl group-hover:border-gold/50 group-hover:from-gold/25 group-hover:scale-110 transition-all duration-[200ms]">
-                {f.emoji}
+              <div className="bg-amber-400/10 rounded-full p-3 w-fit mb-4 group-hover:bg-amber-400/15 transition-all duration-[200ms]">
+                <f.icon className="w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-[200ms]" />
               </div>
               <h3 className="font-display text-foreground text-lg mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
@@ -362,8 +364,8 @@ function FeaturesSection() {
               style={{ animationDelay: `${i * 0.05}s` }}
             >
               <summary className="flex items-center gap-3 px-3.5 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 flex items-center justify-center text-base">
-                  {f.emoji}
+                <div className="bg-amber-400/10 rounded-full p-2.5 shrink-0 w-fit">
+                  <f.icon className="w-5 h-5 text-amber-400" />
                 </div>
                 <h3 className="font-display text-foreground text-sm leading-tight flex-1">{f.title}</h3>
                 <svg
