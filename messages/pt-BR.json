@@ -1569,5 +1569,25 @@
     "app_title": "Algo Deu Errado",
     "app_description": "Ocorreu um erro inesperado no app. O erro foi reportado automaticamente.",
     "app_dashboard": "Ir para o Dashboard"
+  },
+  "character": {
+    "create": "Criar Personagem",
+    "edit": "Editar Personagem",
+    "name": "Nome",
+    "race": "Raca",
+    "class": "Classe",
+    "level": "Nivel",
+    "hp": "Pontos de Vida",
+    "ac": "Classe de Armadura",
+    "notes": "Notas",
+    "select_race": "Selecionar raca",
+    "select_class": "Selecionar classe",
+    "save_success": "Personagem salvo!",
+    "delete_confirm": "Excluir este personagem?",
+    "upload_token": "Enviar Token",
+    "drag_drop": "Arraste uma imagem ou clique",
+    "token_updated": "Token atualizado!",
+    "no_characters": "Nenhum personagem",
+    "create_first": "Crie seu primeiro personagem"
   }
 }
