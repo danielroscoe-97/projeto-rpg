@@ -28,11 +28,9 @@ interface PlayerBottomBarProps {
   isPlayerTurn?: boolean;
   /** Callback when player marks a death save */
   onDeathSave?: (result: "success" | "failure") => void;
-  /** Whether a death save action is pending (debounce) */
-  deathSavePending?: boolean;
 }
 
-export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, deathSavePending }: PlayerBottomBarProps) {
+export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave }: PlayerBottomBarProps) {
   const t = useTranslations("player");
 
   const currentHp = character.current_hp;
@@ -69,7 +67,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
               failures={deathSaves?.failures ?? 0}
               onAddSuccess={() => onDeathSave?.("success")}
               onAddFailure={() => onDeathSave?.("failure")}
-              readOnly={!isPlayerTurn || deathSavePending}
+              readOnly={!isPlayerTurn}
               playerContext
             />
           </div>

@@ -712,7 +712,6 @@ export function PlayerInitiativeBoard({
           deathSaves={primaryPlayerChar.death_saves}
           isPlayerTurn={isPlayerTurn}
           onDeathSave={handleDeathSave}
-          deathSavePending={deathSavePending}
         />
       )}
 
