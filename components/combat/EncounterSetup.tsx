@@ -675,7 +675,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
               type="button"
               onClick={handlePrepareShare}
               disabled={isCreatingSession}
-              className="px-3 py-2 text-sm font-medium rounded-md bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[44px] flex items-center gap-1.5"
+              className="px-4 py-2 text-sm font-semibold rounded-md bg-gold/90 text-surface-primary hover:bg-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[44px] flex items-center gap-2 shadow-[0_0_12px_rgba(212,168,83,0.3)]"
               data-testid="share-prepare-btn"
             >
               <Share2 className="w-4 h-4" aria-hidden="true" />

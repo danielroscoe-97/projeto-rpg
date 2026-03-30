@@ -398,7 +398,7 @@
     "search_filter_min": "Min",
     "search_filter_max": "Max",
     "search_no_results": "No monsters found for \"{query}\"",
-    "setup_col_init": "Init",
+    "setup_col_init": "Initiative",
     "setup_col_name": "Name / Alias",
     "setup_col_name_tooltip": "Real Name (DM only) and Alias (shown to players). Click the shield icon on a monster to edit its alias.",
     "setup_col_hp": "HP",

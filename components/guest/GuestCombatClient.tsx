@@ -8,8 +8,8 @@ import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { CombatantRow } from "@/components/combat/CombatantRow";
-import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { CombatTimer } from "@/components/combat/CombatTimer";
+import { TurnTimer } from "@/components/combat/TurnTimer";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
@@ -723,6 +723,9 @@ export function GuestCombatClient() {
   const tg = useTranslations("guest");
   const tCommon = useTranslations("common");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [midCombatRuleset] = useState<RulesetVersion>("2014");
+  const [midCombatAddRow, setMidCombatAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
+  const [midCombatAddRowRole, setMidCombatAddRowRole] = useState<CombatantRole>(DEFAULT_ADD_ROW_ROLE);
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
@@ -748,7 +751,15 @@ export function GuestCombatClient() {
     updatePlayerNotes,
     hydrateCombatants,
     resetCombat,
+    addDeathSaveSuccess,
+    addDeathSaveFailure,
   } = useGuestCombatStore();
+
+  // Turn timer — resets each time currentTurnIndex changes
+  const [turnStartedAt, setTurnStartedAt] = useState<number | null>(null);
+  useEffect(() => {
+    if (phase === "combat") setTurnStartedAt(Date.now());
+  }, [currentTurnIndex, phase]);
 
   // Keyboard shortcuts (space = next turn, arrow keys, D/H/C, etc.)
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -847,6 +858,81 @@ export function GuestCombatClient() {
     },
     [addCombatant, hydrateCombatants]
   );
+
+  const handleMidCombatSelectMonster = useCallback(
+    (monster: SrdMonster, options?: { isHidden?: boolean }) => {
+      const currentCombatants = useGuestCombatStore.getState().combatants;
+      const numberedName = getGuestNumberedName(monster.name, currentCombatants);
+      const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
+      const displayName = generateCreatureName(monster.type, existingNames);
+      const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+      addCombatant({
+        name: numberedName, current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
+        ac: monster.armor_class, spell_save_dc: null, initiative: rollResult.total,
+        initiative_breakdown: { roll: rollResult.rolls[0], modifier: rollResult.modifier },
+        initiative_order: null, conditions: [], ruleset_version: monster.ruleset_version,
+        is_defeated: false, is_hidden: options?.isHidden ?? false, is_player: false,
+        monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
+        display_name: displayName, monster_group_id: null, group_order: null,
+        dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
+      });
+      const all = useGuestCombatStore.getState().combatants;
+      hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
+    },
+    [addCombatant, hydrateCombatants]
+  );
+
+  const handleMidCombatSelectMonsterGroup = useCallback(
+    (monster: SrdMonster, qty: number, options?: { isHidden?: boolean }) => {
+      const groupId = crypto.randomUUID();
+      const initResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
+      const currentCombatants = useGuestCombatStore.getState().combatants;
+      const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
+      const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
+      const newCombatants: Omit<Combatant, "id">[] = [];
+      for (let i = 1; i <= qty; i++) {
+        newCombatants.push({
+          name: `${monster.name} ${i}`, current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
+          ac: monster.armor_class, spell_save_dc: null, initiative: initResult.total,
+          initiative_breakdown: { roll: initResult.rolls[0], modifier: initResult.modifier },
+          initiative_order: null, conditions: [], ruleset_version: monster.ruleset_version,
+          is_defeated: false, is_hidden: options?.isHidden ?? false, is_player: false,
+          monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
+          display_name: `${groupDisplayBase} ${i}`, monster_group_id: groupId, group_order: i,
+          dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
+        });
+      }
+      useGuestCombatStore.getState().addMonsterGroup(newCombatants);
+      const all = useGuestCombatStore.getState().combatants;
+      hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
+    },
+    [hydrateCombatants]
+  );
+
+  const handleMidCombatAddFromRow = useCallback(() => {
+    const name = midCombatAddRow.name.trim();
+    if (!name) return;
+    const hp = midCombatAddRow.hp.trim() ? parseInt(midCombatAddRow.hp, 10) : 0;
+    const acVal = midCombatAddRow.ac.trim() ? parseInt(midCombatAddRow.ac, 10) : 0;
+    const initVal = midCombatAddRow.initiative.trim() ? parseInt(midCombatAddRow.initiative, 10) : null;
+    const currentCombatants = useGuestCombatStore.getState().combatants;
+    const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
+    const displayName = generateCreatureName(null, existingNames);
+    addCombatant({
+      name, current_hp: isNaN(hp) || hp < 0 ? 0 : hp, max_hp: isNaN(hp) || hp < 0 ? 0 : hp, temp_hp: 0,
+      ac: isNaN(acVal) || acVal < 0 ? 0 : acVal, spell_save_dc: null,
+      initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
+      initiative_order: null, conditions: [], ruleset_version: null,
+      is_defeated: false, is_hidden: false, is_player: midCombatAddRowRole === "player",
+      monster_id: null, token_url: null, creature_type: null, display_name: displayName,
+      monster_group_id: null, group_order: null, dm_notes: "", player_notes: midCombatAddRow.notes.trim(),
+      player_character_id: null, combatant_role: midCombatAddRowRole,
+    });
+    const all = useGuestCombatStore.getState().combatants;
+    hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
+    setMidCombatAddRow(EMPTY_ADD_ROW);
+    setMidCombatAddRowRole(DEFAULT_ADD_ROW_ROLE);
+  }, [addCombatant, hydrateCombatants, midCombatAddRow, midCombatAddRowRole]);
 
   const handleRemoveCombatant = useCallback(
     (id: string) => {
@@ -1038,12 +1124,14 @@ export function GuestCombatClient() {
   return (
     <>
       <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat" data-tour-id="tour-complete">
+        <div className="sticky top-0 z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-foreground font-semibold">
               {t("round")} <span className="font-mono text-gold">{roundNumber}</span>
             </h2>
             {combatStartTime && <CombatTimer startTime={combatStartTime} />}
+            {turnStartedAt && <TurnTimer startTime={turnStartedAt} />}
           </div>
           <div className="flex items-center gap-3 flex-wrap" data-tour-id="combat-controls">
             {/* Encerrar combate */}
@@ -1097,10 +1185,32 @@ export function GuestCombatClient() {
         </div>
 
         {showAddForm && (
-          <AddCombatantForm
-            onAdd={handleAddCombatant}
-            onClose={() => setShowAddForm(false)}
-          />
+          <div className="space-y-3 p-3 bg-white/[0.04] rounded-md border border-border" data-testid="mid-combat-add-panel">
+            <MonsterSearchPanel
+              rulesetVersion={midCombatRuleset}
+              onSelectMonster={handleMidCombatSelectMonster}
+              onSelectMonsterGroup={handleMidCombatSelectMonsterGroup}
+            />
+            <div
+              className="flex flex-wrap items-center gap-1.5 md:grid md:gap-x-1.5 md:items-center bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5"
+              style={{ gridTemplateColumns: "64px 1fr 64px 56px 1fr 170px" }}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleMidCombatAddFromRow(); } }}
+              data-testid="mid-combat-add-row"
+            >
+              <input type="text" inputMode="numeric" pattern="-?[0-9]*" value={midCombatAddRow.initiative} onChange={(e) => { const raw = e.target.value; if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) setMidCombatAddRow((f) => ({ ...f, initiative: raw })); }} placeholder={t("setup_col_init")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] w-16 md:w-full text-center font-mono" />
+              <input type="text" value={midCombatAddRow.name} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, name: e.target.value }))} placeholder={t("setup_col_name")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] basis-full md:basis-auto md:w-full min-w-0" />
+              <input type="number" value={midCombatAddRow.hp} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, hp: e.target.value }))} placeholder={t("setup_col_hp")} min={1} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <input type="number" value={midCombatAddRow.ac} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, ac: e.target.value }))} placeholder={t("setup_col_ac")} min={1} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <input type="text" value={midCombatAddRow.notes} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, notes: e.target.value }))} placeholder={t("setup_col_notes")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] hidden md:block w-full min-w-0 text-muted-foreground" />
+              <div className="flex items-center gap-1 md:w-full">
+                {(() => { const config = ADD_ROW_ROLE_CONFIG[midCombatAddRowRole]; const Icon = config.icon; const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(midCombatAddRowRole) + 1) % COMBATANT_ROLE_CYCLE.length]; return (<button type="button" onClick={() => setMidCombatAddRowRole(nextRole)} className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`} title={t("setup_role_tooltip")} data-testid="mid-add-row-role"><Icon className="w-3.5 h-3.5" /><span>{t(config.label)}</span></button>); })()}
+                <button type="button" onClick={handleMidCombatAddFromRow} className="flex-1 py-1.5 px-3 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center" data-testid="mid-add-row-btn">{t("setup_add")}</button>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button type="button" onClick={() => setShowAddForm(false)} className="px-3 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]">{tCommon("close")}</button>
+            </div>
+          </div>
         )}
 
         <div
@@ -1134,6 +1244,8 @@ export function GuestCombatClient() {
                   onUpdatePlayerNotes={handleUpdatePlayerNotes}
                   allCombatants={combatants}
                   onApplyToMultiple={handleApplyToMultiple}
+                  onAddDeathSaveSuccess={addDeathSaveSuccess}
+                  onAddDeathSaveFailure={addDeathSaveFailure}
                 />
               );
             }}

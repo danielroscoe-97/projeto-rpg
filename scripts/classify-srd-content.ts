@@ -74,8 +74,8 @@ const NON_SRD_MM_MONSTERS = new Set([
 
 // ── SRD source books ────────────────────────────────────────────
 // Primary sources that contain SRD content
-const SRD_MONSTER_SOURCES = new Set(["MM"]);
-const SRD_SPELL_SOURCES = new Set(["PHB"]);
+const SRD_MONSTER_SOURCES = new Set(["MM", "XMM"]);
+const SRD_SPELL_SOURCES = new Set(["PHB", "XPHB"]);
 
 // ── Known non-SRD spells from PHB ───────────────────────────────
 // Most PHB spells are in the SRD, but a few aren't

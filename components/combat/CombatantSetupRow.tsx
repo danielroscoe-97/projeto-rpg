@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string }> = {
   player: { icon: User, color: "text-blue-400 hover:text-blue-300 border-blue-400/30 hover:border-blue-400/50" },
@@ -175,6 +176,7 @@ export function CombatantSetupRow({
           type="text"
           value={combatant.name}
           onChange={(e) => onNameChange(combatant.id, e.target.value)}
+          onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter" || e.key === "Escape") (e.target as HTMLInputElement).blur(); }}
           placeholder={t("setup_name_placeholder")}
           className={`${inputClass} flex-1 min-w-0`}
           aria-label={t("setup_name_aria")}
@@ -341,15 +343,23 @@ export function CombatantSetupRow({
             <Copy className="w-3.5 h-3.5" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => onRemove(combatant.id)}
-          className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs text-center min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 flex items-center justify-center"
-          aria-label={t("setup_remove_aria", { name: combatant.name })}
-          data-testid={`setup-remove-${combatant.id}`}
-        >
-          {t("setup_remove")}
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button type="button" className="text-muted-foreground/40 hover:text-red-400 transition-colors text-xs text-center min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 flex items-center justify-center" aria-label={t("setup_remove_aria", { name: combatant.name })} data-testid={`setup-remove-${combatant.id}`}>
+              {t("setup_remove")}
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("setup_remove_confirm_title", { name: combatant.name })}</AlertDialogTitle>
+              <AlertDialogDescription>{t("setup_remove_confirm_desc")}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t("setup_remove_confirm_cancel")}</AlertDialogCancel>
+              <AlertDialogAction onClick={() => onRemove(combatant.id)} className="bg-red-900/60 text-red-300 hover:bg-red-900/80">{t("setup_remove_confirm_action")}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

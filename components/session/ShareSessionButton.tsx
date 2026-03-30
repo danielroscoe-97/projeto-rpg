@@ -95,7 +95,17 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
           <Button
             variant="gold"
             size="sm"
-            onClick={() => setShowQr((v) => !v)}
+            onClick={() => {
+              const opening = !showQr;
+              setShowQr(opening);
+              if (opening && joinUrl) {
+                navigator.clipboard.writeText(joinUrl).then(() => {
+                  setCopied(true);
+                  if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+                  copiedTimerRef.current = setTimeout(() => { copiedTimerRef.current = null; setCopied(false); }, 3000);
+                }).catch(() => {});
+              }
+            }}
             className="min-h-[44px]"
             aria-label={t("share_qr_toggle")}
             data-testid="share-session-qr-toggle"

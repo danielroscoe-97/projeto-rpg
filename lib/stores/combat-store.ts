@@ -30,6 +30,8 @@ const initialState: EncounterState = {
   undoStack: [],
   lastAddedCombatantId: null,
   expandedGroups: {},
+  combatStartedAt: null,
+  turnStartedAt: null,
 };
 
 export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, get) => ({
@@ -98,7 +100,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     set({ combatants: assignInitiativeOrder(newOrder) }),
 
   startCombat: () =>
-    set({ is_active: true, current_turn_index: 0 }),
+    set({ is_active: true, current_turn_index: 0, combatStartedAt: Date.now(), turnStartedAt: Date.now() }),
 
   hydrateCombatants: (combatants) => set({ combatants }),
 
@@ -124,11 +126,21 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         if (!sorted[next].is_defeated) break;
       }
       if (sorted[next].is_defeated) return state;
+      // Increment condition durations for the combatant whose turn is starting
+      const nextCombatant = sorted[next];
+      if (nextCombatant.conditions.length > 0 && nextCombatant.condition_durations) {
+        const updatedDurations = { ...nextCombatant.condition_durations };
+        for (const cond of nextCombatant.conditions) {
+          if (cond in updatedDurations) updatedDurations[cond]++;
+        }
+        sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
+      }
       return {
         combatants: sorted,
         undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
+        turnStartedAt: Date.now(),
       };
     }),
 
@@ -198,11 +210,18 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         undoStack: target ? pushUndo(state.undoStack, { type: "condition", combatantId: id, condition, wasAdded: !has }) : state.undoStack,
         combatants: state.combatants.map((c) => {
           if (c.id !== id) return c;
+          const durations = { ...(c.condition_durations ?? {}) };
+          if (has) {
+            delete durations[condition];
+          } else {
+            durations[condition] = 0;
+          }
           return {
             ...c,
             conditions: has
               ? c.conditions.filter((cond) => cond !== condition)
               : [...c.conditions, condition],
+            condition_durations: durations,
           };
         }),
       };
@@ -214,10 +233,44 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       return {
         undoStack: target ? pushUndo(state.undoStack, { type: "defeated", combatantId: id, wasDefeated: target.is_defeated, previousHp: target.current_hp }) : state.undoStack,
         combatants: state.combatants.map((c) =>
-          c.id === id ? { ...c, is_defeated, current_hp: is_defeated ? 0 : c.current_hp } : c
+          c.id === id
+            ? {
+                ...c,
+                is_defeated,
+                current_hp: is_defeated ? 0 : c.current_hp,
+                death_saves: is_defeated ? c.death_saves : undefined,
+              }
+            : c
         ),
       };
     }),
+
+  addDeathSaveSuccess: (id) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        const saves = c.death_saves ?? { successes: 0, failures: 0 };
+        return { ...c, death_saves: { ...saves, successes: Math.min(saves.successes + 1, 3) } };
+      }),
+    })),
+
+  addDeathSaveFailure: (id) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        const saves = c.death_saves ?? { successes: 0, failures: 0 };
+        const newFailures = Math.min(saves.failures + 1, 3);
+        if (newFailures >= 3) return { ...c, is_defeated: true, death_saves: { ...saves, failures: 3 } };
+        return { ...c, death_saves: { ...saves, failures: newFailures } };
+      }),
+    })),
+
+  resetDeathSaves: (id) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, death_saves: undefined } : c
+      ),
+    })),
 
   toggleHidden: (id) =>
     set((state) => ({

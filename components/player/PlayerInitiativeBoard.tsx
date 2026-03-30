@@ -7,7 +7,7 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { PlayerBottomBar } from "@/components/player/PlayerBottomBar";
 import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
 import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOverlay";
-import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
+import { getHpBarColor, getHpThresholdKey, getHpStatus } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords, Skull, User, Bug } from "lucide-react";
@@ -155,6 +155,8 @@ interface PlayerInitiativeBoardProps {
   customAudioUrls?: Record<string, string>;
   /** The registered player name for this session (used to identify "my" turn) */
   registeredName?: string;
+  /** Callback when the player ends their own turn */
+  onEndTurn?: () => void;
 }
 
 export function PlayerInitiativeBoard({
@@ -170,6 +172,7 @@ export function PlayerInitiativeBoard({
   customAudioFiles = [],
   customAudioUrls = {},
   registeredName,
+  onEndTurn,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
@@ -320,6 +323,17 @@ export function PlayerInitiativeBoard({
                 </span>
               )}
             </div>
+            {/* Pass turn button — only when it's this player's turn */}
+            {isPlayerTurn && onEndTurn && (
+              <button
+                type="button"
+                onClick={onEndTurn}
+                className="shrink-0 px-4 py-2 bg-gold/20 text-gold font-medium text-sm rounded-lg active:bg-gold/40 lg:hover:bg-gold/30 transition-colors min-h-[44px]"
+                data-testid="player-end-turn-btn"
+              >
+                {t("end_turn")}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -449,13 +463,18 @@ export function PlayerInitiativeBoard({
           const isOwnChar = ownChar !== null && combatant.id === ownChar.id;
           const isNewlyRevealed = revealedIds.has(combatant.id);
 
-          // Player characters: show full HP bar
-          const hpPct = isPlayer && combatant.max_hp && combatant.max_hp > 0
+          // Only own character gets full HP bar; other players get status badge
+          const showFullHp = isOwnChar;
+          const hpPct = showFullHp && combatant.max_hp && combatant.max_hp > 0
             ? Math.max(0, Math.min(1, (combatant.current_hp ?? 0) / combatant.max_hp))
             : 0;
-          const hpBarColor = isPlayer ? getHpBarColor(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : "";
-          const hpThresholdKey = isPlayer ? getHpThresholdKey(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : null;
-          const hasTempHp = isPlayer && (combatant.temp_hp ?? 0) > 0;
+          const hpBarColor = showFullHp ? getHpBarColor(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : "";
+          const hpThresholdKey = showFullHp ? getHpThresholdKey(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : null;
+          const hasTempHp = showFullHp && (combatant.temp_hp ?? 0) > 0;
+          // For other players (not own char), compute hp_status from their HP values
+          const otherPlayerHpStatus = isPlayer && !isOwnChar && combatant.current_hp != null && combatant.max_hp != null
+            ? getHpStatus(combatant.current_hp, combatant.max_hp)
+            : null;
 
           // Visual differentiation: players = blue left border, monsters = red left border
           const typeBorderClass = isPlayer
@@ -521,8 +540,8 @@ export function PlayerInitiativeBoard({
                 )}
               </div>
 
-              {/* HP display — full bar for players, status label for monsters */}
-              {isPlayer ? (
+              {/* HP display — full bar for own character only, status badge for everyone else */}
+              {showFullHp ? (
                 <div className="mt-1.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-sm lg:text-xs">{t("hp_label")}</span>
@@ -554,9 +573,9 @@ export function PlayerInitiativeBoard({
                     />
                   </div>
                 </div>
-              ) : combatant.hp_status ? (
+              ) : (combatant.hp_status || otherPlayerHpStatus) ? (
                 <div className="mt-1.5">
-                  <HpStatusBadge status={combatant.hp_status} />
+                  <HpStatusBadge status={combatant.hp_status || otherPlayerHpStatus!} />
                 </div>
               ) : null}
 

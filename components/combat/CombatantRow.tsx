@@ -11,6 +11,7 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { HpAdjuster } from "./HpAdjuster";
 import { ConditionSelector } from "./ConditionSelector";
+import { DeathSaveTracker } from "./DeathSaveTracker";
 // MonsterActionBar — not yet implemented (CP.1.3), import removed to unblock build
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
@@ -43,6 +44,8 @@ export interface CombatantRowProps {
   /** Callback for applying HP changes to multiple targets (AoE). */
   onApplyToMultiple?: (targetIds: string[], amount: number, mode: import("./HpAdjuster").HpMode) => void;
   onToggleHidden?: (id: string) => void;
+  onAddDeathSaveSuccess?: (id: string) => void;
+  onAddDeathSaveFailure?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -68,6 +71,8 @@ export function CombatantRow({
   rollMode,
   onApplyToMultiple,
   onToggleHidden,
+  onAddDeathSaveSuccess,
+  onAddDeathSaveFailure,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -593,7 +598,7 @@ export function CombatantRow({
             >
               {t("cond_button")}
             </button>
-            {!combatant.is_defeated && (
+            {!combatant.is_defeated ? (
               <button
                 type="button"
                 onClick={() => onSetDefeated?.(combatant.id, true)}
@@ -602,6 +607,16 @@ export function CombatantRow({
                 data-testid={`defeat-btn-${combatant.id}`}
               >
                 {t("defeat")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onSetDefeated?.(combatant.id, false)}
+                className="px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600/50 border border-emerald-500/30"
+                aria-label={t("revive_aria")}
+                data-testid={`revive-btn-${combatant.id}`}
+              >
+                {t("revive")}
               </button>
             )}
             <button
@@ -701,6 +716,16 @@ export function CombatantRow({
           />
         )}
       </div>
+
+      {/* Death Save Tracker — player-type creatures at 0 HP, not yet defeated */}
+      {showActions && combatant.is_player && combatant.current_hp === 0 && combatant.max_hp > 0 && !combatant.is_defeated && onAddDeathSaveSuccess && onAddDeathSaveFailure && (
+        <DeathSaveTracker
+          successes={combatant.death_saves?.successes ?? 0}
+          failures={combatant.death_saves?.failures ?? 0}
+          onAddSuccess={() => onAddDeathSaveSuccess(combatant.id)}
+          onAddFailure={() => onAddDeathSaveFailure(combatant.id)}
+        />
+      )}
 
       {/* TODO: Monster Action Bar — CP.1.3 (MonsterActionBar component not yet implemented) */}
 

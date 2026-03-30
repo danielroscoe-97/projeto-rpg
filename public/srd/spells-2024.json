@@ -15,7 +15,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aid-xphb-2024",
@@ -33,7 +33,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "alarm-xphb-2024",
@@ -51,7 +51,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "alter-self-xphb-2024",
@@ -69,7 +69,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animal-friendship-xphb-2024",
@@ -87,7 +87,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animal-messenger-xphb-2024",
@@ -105,7 +105,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animal-shapes-xphb-2024",
@@ -123,7 +123,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animate-dead-xphb-2024",
@@ -141,7 +141,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animate-objects-xphb-2024",
@@ -159,7 +159,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "antilife-shell-xphb-2024",
@@ -177,7 +177,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "antimagic-field-xphb-2024",
@@ -195,7 +195,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "antipathy-sympathy-xphb-2024",
@@ -213,7 +213,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arcane-eye-xphb-2024",
@@ -231,7 +231,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arcane-gate-xphb-2024",
@@ -249,7 +249,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arcane-lock-xphb-2024",
@@ -267,7 +267,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arcane-vigor-xphb-2024",
@@ -285,7 +285,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "armor-of-agathys-xphb-2024",
@@ -303,7 +303,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arms-of-hadar-xphb-2024",
@@ -321,7 +321,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "astral-projection-xphb-2024",
@@ -339,7 +339,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "augury-xphb-2024",
@@ -357,7 +357,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aura-of-life-xphb-2024",
@@ -375,7 +375,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aura-of-purity-xphb-2024",
@@ -393,7 +393,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aura-of-vitality-xphb-2024",
@@ -411,7 +411,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "awaken-xphb-2024",
@@ -429,7 +429,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bane-xphb-2024",
@@ -447,7 +447,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "banishing-smite-xphb-2024",
@@ -465,7 +465,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "banishment-xphb-2024",
@@ -483,7 +483,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "barkskin-xphb-2024",
@@ -501,7 +501,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "beacon-of-hope-xphb-2024",
@@ -519,7 +519,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "beast-sense-xphb-2024",
@@ -537,7 +537,7 @@
     "classes": [],
     "ritual": true,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "befuddlement-xphb-2024",
@@ -555,7 +555,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bestow-curse-xphb-2024",
@@ -573,7 +573,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bigby-s-hand-xphb-2024",
@@ -591,7 +591,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blade-barrier-xphb-2024",
@@ -609,7 +609,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blade-ward-xphb-2024",
@@ -627,7 +627,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bless-xphb-2024",
@@ -645,7 +645,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blight-xphb-2024",
@@ -663,7 +663,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blinding-smite-xphb-2024",
@@ -681,7 +681,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blindness-deafness-xphb-2024",
@@ -699,7 +699,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blink-xphb-2024",
@@ -717,7 +717,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blur-xphb-2024",
@@ -735,7 +735,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "burning-hands-xphb-2024",
@@ -753,7 +753,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "call-lightning-xphb-2024",
@@ -771,7 +771,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "calm-emotions-xphb-2024",
@@ -789,7 +789,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chain-lightning-xphb-2024",
@@ -807,7 +807,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "charm-monster-xphb-2024",
@@ -825,7 +825,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "charm-person-xphb-2024",
@@ -843,7 +843,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chill-touch-xphb-2024",
@@ -861,7 +861,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chromatic-orb-xphb-2024",
@@ -879,7 +879,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "circle-of-death-xphb-2024",
@@ -897,7 +897,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "circle-of-power-xphb-2024",
@@ -915,7 +915,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "clairvoyance-xphb-2024",
@@ -933,7 +933,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "clone-xphb-2024",
@@ -951,7 +951,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cloud-of-daggers-xphb-2024",
@@ -969,7 +969,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cloudkill-xphb-2024",
@@ -987,7 +987,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "color-spray-xphb-2024",
@@ -1005,7 +1005,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "command-xphb-2024",
@@ -1023,7 +1023,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "commune-xphb-2024",
@@ -1041,7 +1041,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "commune-with-nature-xphb-2024",
@@ -1059,7 +1059,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "compelled-duel-xphb-2024",
@@ -1077,7 +1077,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "comprehend-languages-xphb-2024",
@@ -1095,7 +1095,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "compulsion-xphb-2024",
@@ -1113,7 +1113,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cone-of-cold-xphb-2024",
@@ -1131,7 +1131,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "confusion-xphb-2024",
@@ -1149,7 +1149,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-animals-xphb-2024",
@@ -1167,7 +1167,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-barrage-xphb-2024",
@@ -1185,7 +1185,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-celestial-xphb-2024",
@@ -1203,7 +1203,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-elemental-xphb-2024",
@@ -1221,7 +1221,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-fey-xphb-2024",
@@ -1239,7 +1239,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-minor-elementals-xphb-2024",
@@ -1257,7 +1257,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-volley-xphb-2024",
@@ -1275,7 +1275,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "conjure-woodland-beings-xphb-2024",
@@ -1293,7 +1293,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "contact-other-plane-xphb-2024",
@@ -1311,7 +1311,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "contagion-xphb-2024",
@@ -1329,7 +1329,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "contingency-xphb-2024",
@@ -1347,7 +1347,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "continual-flame-xphb-2024",
@@ -1365,7 +1365,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "control-water-xphb-2024",
@@ -1383,7 +1383,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "control-weather-xphb-2024",
@@ -1401,7 +1401,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cordon-of-arrows-xphb-2024",
@@ -1419,7 +1419,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "counterspell-xphb-2024",
@@ -1437,7 +1437,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "create-food-and-water-xphb-2024",
@@ -1455,7 +1455,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "create-or-destroy-water-xphb-2024",
@@ -1473,7 +1473,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "create-undead-xphb-2024",
@@ -1491,7 +1491,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "creation-xphb-2024",
@@ -1509,7 +1509,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "crown-of-madness-xphb-2024",
@@ -1527,7 +1527,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "crusader-s-mantle-xphb-2024",
@@ -1545,7 +1545,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cure-wounds-xphb-2024",
@@ -1563,7 +1563,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dancing-lights-xphb-2024",
@@ -1581,7 +1581,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "darkness-xphb-2024",
@@ -1599,7 +1599,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "darkvision-xphb-2024",
@@ -1617,7 +1617,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "daylight-xphb-2024",
@@ -1635,7 +1635,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "death-ward-xphb-2024",
@@ -1653,7 +1653,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "delayed-blast-fireball-xphb-2024",
@@ -1671,7 +1671,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "demiplane-xphb-2024",
@@ -1689,7 +1689,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "destructive-wave-xphb-2024",
@@ -1707,7 +1707,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "detect-evil-and-good-xphb-2024",
@@ -1725,7 +1725,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "detect-magic-xphb-2024",
@@ -1743,7 +1743,7 @@
     "classes": [],
     "ritual": true,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "detect-poison-and-disease-xphb-2024",
@@ -1761,7 +1761,7 @@
     "classes": [],
     "ritual": true,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "detect-thoughts-xphb-2024",
@@ -1779,7 +1779,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dimension-door-xphb-2024",
@@ -1797,7 +1797,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "disguise-self-xphb-2024",
@@ -1815,7 +1815,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "disintegrate-xphb-2024",
@@ -1833,7 +1833,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dispel-evil-and-good-xphb-2024",
@@ -1851,7 +1851,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dispel-magic-xphb-2024",
@@ -1869,7 +1869,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dissonant-whispers-xphb-2024",
@@ -1887,7 +1887,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "divination-xphb-2024",
@@ -1905,7 +1905,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "divine-favor-xphb-2024",
@@ -1923,7 +1923,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "divine-smite-xphb-2024",
@@ -1941,7 +1941,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "divine-word-xphb-2024",
@@ -1959,7 +1959,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dominate-beast-xphb-2024",
@@ -1977,7 +1977,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dominate-monster-xphb-2024",
@@ -1995,7 +1995,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dominate-person-xphb-2024",
@@ -2013,7 +2013,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dragon-s-breath-xphb-2024",
@@ -2031,7 +2031,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "drawmij-s-instant-summons-xphb-2024",
@@ -2049,7 +2049,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dream-xphb-2024",
@@ -2067,7 +2067,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "druidcraft-xphb-2024",
@@ -2085,7 +2085,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "earthquake-xphb-2024",
@@ -2103,7 +2103,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "eldritch-blast-xphb-2024",
@@ -2121,7 +2121,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "elemental-weapon-xphb-2024",
@@ -2139,7 +2139,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "elementalism-xphb-2024",
@@ -2157,7 +2157,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "enhance-ability-xphb-2024",
@@ -2175,7 +2175,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "enlarge-reduce-xphb-2024",
@@ -2193,7 +2193,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ensnaring-strike-xphb-2024",
@@ -2211,7 +2211,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "entangle-xphb-2024",
@@ -2229,7 +2229,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "enthrall-xphb-2024",
@@ -2247,7 +2247,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "etherealness-xphb-2024",
@@ -2265,7 +2265,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "evard-s-black-tentacles-xphb-2024",
@@ -2283,7 +2283,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "expeditious-retreat-xphb-2024",
@@ -2301,7 +2301,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "eyebite-xphb-2024",
@@ -2319,7 +2319,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fabricate-xphb-2024",
@@ -2337,7 +2337,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "faerie-fire-xphb-2024",
@@ -2355,7 +2355,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "false-life-xphb-2024",
@@ -2373,7 +2373,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fear-xphb-2024",
@@ -2391,7 +2391,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "feather-fall-xphb-2024",
@@ -2409,7 +2409,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "feign-death-xphb-2024",
@@ -2427,7 +2427,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "find-familiar-xphb-2024",
@@ -2445,7 +2445,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "find-steed-xphb-2024",
@@ -2463,7 +2463,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "find-the-path-xphb-2024",
@@ -2481,7 +2481,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "find-traps-xphb-2024",
@@ -2499,7 +2499,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "finger-of-death-xphb-2024",
@@ -2517,7 +2517,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fire-bolt-xphb-2024",
@@ -2535,7 +2535,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fire-shield-xphb-2024",
@@ -2553,7 +2553,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fire-storm-xphb-2024",
@@ -2571,7 +2571,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fireball-xphb-2024",
@@ -2589,7 +2589,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flame-blade-xphb-2024",
@@ -2607,7 +2607,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flame-strike-xphb-2024",
@@ -2625,7 +2625,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flaming-sphere-xphb-2024",
@@ -2643,7 +2643,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flesh-to-stone-xphb-2024",
@@ -2661,7 +2661,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fly-xphb-2024",
@@ -2679,7 +2679,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fog-cloud-xphb-2024",
@@ -2697,7 +2697,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "forbiddance-xphb-2024",
@@ -2715,7 +2715,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "forcecage-xphb-2024",
@@ -2733,7 +2733,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "foresight-xphb-2024",
@@ -2751,7 +2751,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fount-of-moonlight-xphb-2024",
@@ -2769,7 +2769,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "freedom-of-movement-xphb-2024",
@@ -2787,7 +2787,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "friends-xphb-2024",
@@ -2805,7 +2805,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gaseous-form-xphb-2024",
@@ -2823,7 +2823,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gate-xphb-2024",
@@ -2841,7 +2841,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "geas-xphb-2024",
@@ -2859,7 +2859,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gentle-repose-xphb-2024",
@@ -2877,7 +2877,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-insect-xphb-2024",
@@ -2895,7 +2895,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "glibness-xphb-2024",
@@ -2913,7 +2913,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "globe-of-invulnerability-xphb-2024",
@@ -2931,7 +2931,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "glyph-of-warding-xphb-2024",
@@ -2949,7 +2949,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goodberry-xphb-2024",
@@ -2967,7 +2967,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "grasping-vine-xphb-2024",
@@ -2985,7 +2985,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "grease-xphb-2024",
@@ -3003,7 +3003,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "greater-invisibility-xphb-2024",
@@ -3021,7 +3021,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "greater-restoration-xphb-2024",
@@ -3039,7 +3039,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guardian-of-faith-xphb-2024",
@@ -3057,7 +3057,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guards-and-wards-xphb-2024",
@@ -3075,7 +3075,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guidance-xphb-2024",
@@ -3093,7 +3093,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guiding-bolt-xphb-2024",
@@ -3111,7 +3111,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gust-of-wind-xphb-2024",
@@ -3129,7 +3129,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hail-of-thorns-xphb-2024",
@@ -3147,7 +3147,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hallow-xphb-2024",
@@ -3165,7 +3165,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hallucinatory-terrain-xphb-2024",
@@ -3183,7 +3183,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "harm-xphb-2024",
@@ -3201,7 +3201,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "haste-xphb-2024",
@@ -3219,7 +3219,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "heal-xphb-2024",
@@ -3237,7 +3237,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "healing-word-xphb-2024",
@@ -3255,7 +3255,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "heat-metal-xphb-2024",
@@ -3273,7 +3273,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hellish-rebuke-xphb-2024",
@@ -3291,7 +3291,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "heroes-feast-xphb-2024",
@@ -3309,7 +3309,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "heroism-xphb-2024",
@@ -3327,7 +3327,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hex-xphb-2024",
@@ -3345,7 +3345,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hold-monster-xphb-2024",
@@ -3363,7 +3363,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hold-person-xphb-2024",
@@ -3381,7 +3381,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "holy-aura-xphb-2024",
@@ -3399,7 +3399,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hunger-of-hadar-xphb-2024",
@@ -3417,7 +3417,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hunter-s-mark-xphb-2024",
@@ -3435,7 +3435,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hypnotic-pattern-xphb-2024",
@@ -3453,7 +3453,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ice-knife-xphb-2024",
@@ -3471,7 +3471,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ice-storm-xphb-2024",
@@ -3489,7 +3489,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "identify-xphb-2024",
@@ -3507,7 +3507,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "illusory-script-xphb-2024",
@@ -3525,7 +3525,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "imprisonment-xphb-2024",
@@ -3543,7 +3543,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "incendiary-cloud-xphb-2024",
@@ -3561,7 +3561,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "inflict-wounds-xphb-2024",
@@ -3579,7 +3579,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "insect-plague-xphb-2024",
@@ -3597,7 +3597,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "invisibility-xphb-2024",
@@ -3615,7 +3615,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "jallarzi-s-storm-of-radiance-xphb-2024",
@@ -3633,7 +3633,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "jump-xphb-2024",
@@ -3651,7 +3651,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "knock-xphb-2024",
@@ -3669,7 +3669,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "legend-lore-xphb-2024",
@@ -3687,7 +3687,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "leomund-s-secret-chest-xphb-2024",
@@ -3705,7 +3705,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "leomund-s-tiny-hut-xphb-2024",
@@ -3723,7 +3723,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lesser-restoration-xphb-2024",
@@ -3741,7 +3741,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "levitate-xphb-2024",
@@ -3759,7 +3759,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "light-xphb-2024",
@@ -3777,7 +3777,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lightning-arrow-xphb-2024",
@@ -3795,7 +3795,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lightning-bolt-xphb-2024",
@@ -3813,7 +3813,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "locate-animals-or-plants-xphb-2024",
@@ -3831,7 +3831,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "locate-creature-xphb-2024",
@@ -3849,7 +3849,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "locate-object-xphb-2024",
@@ -3867,7 +3867,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "longstrider-xphb-2024",
@@ -3885,7 +3885,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mage-armor-xphb-2024",
@@ -3903,7 +3903,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mage-hand-xphb-2024",
@@ -3921,7 +3921,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magic-circle-xphb-2024",
@@ -3939,7 +3939,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magic-jar-xphb-2024",
@@ -3957,7 +3957,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magic-missile-xphb-2024",
@@ -3975,7 +3975,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magic-mouth-xphb-2024",
@@ -3993,7 +3993,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magic-weapon-xphb-2024",
@@ -4011,7 +4011,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "major-image-xphb-2024",
@@ -4029,7 +4029,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mass-cure-wounds-xphb-2024",
@@ -4047,7 +4047,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mass-heal-xphb-2024",
@@ -4065,7 +4065,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mass-healing-word-xphb-2024",
@@ -4083,7 +4083,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mass-suggestion-xphb-2024",
@@ -4101,7 +4101,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "maze-xphb-2024",
@@ -4119,7 +4119,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "meld-into-stone-xphb-2024",
@@ -4137,7 +4137,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "melf-s-acid-arrow-xphb-2024",
@@ -4155,7 +4155,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mending-xphb-2024",
@@ -4173,7 +4173,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "message-xphb-2024",
@@ -4191,7 +4191,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "meteor-swarm-xphb-2024",
@@ -4209,7 +4209,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mind-blank-xphb-2024",
@@ -4227,7 +4227,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mind-sliver-xphb-2024",
@@ -4245,7 +4245,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mind-spike-xphb-2024",
@@ -4263,7 +4263,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "minor-illusion-xphb-2024",
@@ -4281,7 +4281,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mirage-arcane-xphb-2024",
@@ -4299,7 +4299,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mirror-image-xphb-2024",
@@ -4317,7 +4317,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mislead-xphb-2024",
@@ -4335,7 +4335,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "misty-step-xphb-2024",
@@ -4353,7 +4353,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "modify-memory-xphb-2024",
@@ -4371,7 +4371,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "moonbeam-xphb-2024",
@@ -4389,7 +4389,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mordenkainen-s-faithful-hound-xphb-2024",
@@ -4407,7 +4407,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mordenkainen-s-magnificent-mansion-xphb-2024",
@@ -4425,7 +4425,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mordenkainen-s-private-sanctum-xphb-2024",
@@ -4443,7 +4443,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mordenkainen-s-sword-xphb-2024",
@@ -4461,7 +4461,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "move-earth-xphb-2024",
@@ -4479,7 +4479,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "nondetection-xphb-2024",
@@ -4497,7 +4497,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "nystul-s-magic-aura-xphb-2024",
@@ -4515,7 +4515,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "otiluke-s-freezing-sphere-xphb-2024",
@@ -4533,7 +4533,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "otiluke-s-resilient-sphere-xphb-2024",
@@ -4551,7 +4551,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "otto-s-irresistible-dance-xphb-2024",
@@ -4569,7 +4569,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pass-without-trace-xphb-2024",
@@ -4587,7 +4587,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "passwall-xphb-2024",
@@ -4605,7 +4605,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "phantasmal-force-xphb-2024",
@@ -4623,7 +4623,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "phantasmal-killer-xphb-2024",
@@ -4641,7 +4641,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "phantom-steed-xphb-2024",
@@ -4659,7 +4659,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "planar-ally-xphb-2024",
@@ -4677,7 +4677,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "planar-binding-xphb-2024",
@@ -4695,7 +4695,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "plane-shift-xphb-2024",
@@ -4713,7 +4713,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "plant-growth-xphb-2024",
@@ -4731,7 +4731,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "poison-spray-xphb-2024",
@@ -4749,7 +4749,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "polymorph-xphb-2024",
@@ -4767,7 +4767,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "power-word-fortify-xphb-2024",
@@ -4785,7 +4785,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "power-word-heal-xphb-2024",
@@ -4803,7 +4803,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "power-word-kill-xphb-2024",
@@ -4821,7 +4821,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "power-word-stun-xphb-2024",
@@ -4839,7 +4839,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "prayer-of-healing-xphb-2024",
@@ -4857,7 +4857,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "prestidigitation-xphb-2024",
@@ -4875,7 +4875,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "prismatic-spray-xphb-2024",
@@ -4893,7 +4893,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "prismatic-wall-xphb-2024",
@@ -4911,7 +4911,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "produce-flame-xphb-2024",
@@ -4929,7 +4929,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "programmed-illusion-xphb-2024",
@@ -4947,7 +4947,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "project-image-xphb-2024",
@@ -4965,7 +4965,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "protection-from-energy-xphb-2024",
@@ -4983,7 +4983,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "protection-from-evil-and-good-xphb-2024",
@@ -5001,7 +5001,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "protection-from-poison-xphb-2024",
@@ -5019,7 +5019,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "purify-food-and-drink-xphb-2024",
@@ -5037,7 +5037,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "raise-dead-xphb-2024",
@@ -5055,7 +5055,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "rary-s-telepathic-bond-xphb-2024",
@@ -5073,7 +5073,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ray-of-enfeeblement-xphb-2024",
@@ -5091,7 +5091,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ray-of-frost-xphb-2024",
@@ -5109,7 +5109,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ray-of-sickness-xphb-2024",
@@ -5127,7 +5127,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "regenerate-xphb-2024",
@@ -5145,7 +5145,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "reincarnate-xphb-2024",
@@ -5163,7 +5163,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "remove-curse-xphb-2024",
@@ -5181,7 +5181,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "resistance-xphb-2024",
@@ -5199,7 +5199,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "resurrection-xphb-2024",
@@ -5217,7 +5217,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "reverse-gravity-xphb-2024",
@@ -5235,7 +5235,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "revivify-xphb-2024",
@@ -5253,7 +5253,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "rope-trick-xphb-2024",
@@ -5271,7 +5271,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sacred-flame-xphb-2024",
@@ -5289,7 +5289,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sanctuary-xphb-2024",
@@ -5307,7 +5307,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "scorching-ray-xphb-2024",
@@ -5325,7 +5325,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "scrying-xphb-2024",
@@ -5343,7 +5343,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "searing-smite-xphb-2024",
@@ -5361,7 +5361,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "see-invisibility-xphb-2024",
@@ -5379,7 +5379,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "seeming-xphb-2024",
@@ -5397,7 +5397,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sending-xphb-2024",
@@ -5415,7 +5415,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sequester-xphb-2024",
@@ -5433,7 +5433,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shapechange-xphb-2024",
@@ -5451,7 +5451,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shatter-xphb-2024",
@@ -5469,7 +5469,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shield-xphb-2024",
@@ -5487,7 +5487,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shield-of-faith-xphb-2024",
@@ -5505,7 +5505,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shillelagh-xphb-2024",
@@ -5523,7 +5523,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shining-smite-xphb-2024",
@@ -5541,7 +5541,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shocking-grasp-xphb-2024",
@@ -5559,7 +5559,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "silence-xphb-2024",
@@ -5577,7 +5577,7 @@
     "classes": [],
     "ritual": true,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "silent-image-xphb-2024",
@@ -5595,7 +5595,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "simulacrum-xphb-2024",
@@ -5613,7 +5613,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sleep-xphb-2024",
@@ -5631,7 +5631,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sleet-storm-xphb-2024",
@@ -5649,7 +5649,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "slow-xphb-2024",
@@ -5667,7 +5667,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sorcerous-burst-xphb-2024",
@@ -5685,7 +5685,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spare-the-dying-xphb-2024",
@@ -5703,7 +5703,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "speak-with-animals-xphb-2024",
@@ -5721,7 +5721,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "speak-with-dead-xphb-2024",
@@ -5739,7 +5739,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "speak-with-plants-xphb-2024",
@@ -5757,7 +5757,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spider-climb-xphb-2024",
@@ -5775,7 +5775,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spike-growth-xphb-2024",
@@ -5793,7 +5793,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spirit-guardians-xphb-2024",
@@ -5811,7 +5811,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spiritual-weapon-xphb-2024",
@@ -5829,7 +5829,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "staggering-smite-xphb-2024",
@@ -5847,7 +5847,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "starry-wisp-xphb-2024",
@@ -5865,7 +5865,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "steel-wind-strike-xphb-2024",
@@ -5883,7 +5883,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "stinking-cloud-xphb-2024",
@@ -5901,7 +5901,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "stone-shape-xphb-2024",
@@ -5919,7 +5919,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "stoneskin-xphb-2024",
@@ -5937,7 +5937,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "storm-of-vengeance-xphb-2024",
@@ -5955,7 +5955,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "suggestion-xphb-2024",
@@ -5973,7 +5973,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-aberration-xphb-2024",
@@ -5991,7 +5991,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-beast-xphb-2024",
@@ -6009,7 +6009,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-celestial-xphb-2024",
@@ -6027,7 +6027,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-construct-xphb-2024",
@@ -6045,7 +6045,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-dragon-xphb-2024",
@@ -6063,7 +6063,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-elemental-xphb-2024",
@@ -6081,7 +6081,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-fey-xphb-2024",
@@ -6099,7 +6099,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-fiend-xphb-2024",
@@ -6117,7 +6117,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "summon-undead-xphb-2024",
@@ -6135,7 +6135,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sunbeam-xphb-2024",
@@ -6153,7 +6153,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sunburst-xphb-2024",
@@ -6171,7 +6171,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swift-quiver-xphb-2024",
@@ -6189,7 +6189,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "symbol-xphb-2024",
@@ -6207,7 +6207,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "synaptic-static-xphb-2024",
@@ -6225,7 +6225,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tasha-s-bubbling-cauldron-xphb-2024",
@@ -6243,7 +6243,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tasha-s-hideous-laughter-xphb-2024",
@@ -6261,7 +6261,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "telekinesis-xphb-2024",
@@ -6279,7 +6279,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "telepathy-xphb-2024",
@@ -6297,7 +6297,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "teleport-xphb-2024",
@@ -6315,7 +6315,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "teleportation-circle-xphb-2024",
@@ -6333,7 +6333,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tenser-s-floating-disk-xphb-2024",
@@ -6351,7 +6351,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thaumaturgy-xphb-2024",
@@ -6369,7 +6369,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thorn-whip-xphb-2024",
@@ -6387,7 +6387,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thunderclap-xphb-2024",
@@ -6405,7 +6405,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thunderous-smite-xphb-2024",
@@ -6423,7 +6423,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thunderwave-xphb-2024",
@@ -6441,7 +6441,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "time-stop-xphb-2024",
@@ -6459,7 +6459,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "toll-the-dead-xphb-2024",
@@ -6477,7 +6477,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tongues-xphb-2024",
@@ -6495,7 +6495,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "transport-via-plants-xphb-2024",
@@ -6513,7 +6513,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tree-stride-xphb-2024",
@@ -6531,7 +6531,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "true-polymorph-xphb-2024",
@@ -6549,7 +6549,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "true-resurrection-xphb-2024",
@@ -6567,7 +6567,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "true-seeing-xphb-2024",
@@ -6585,7 +6585,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "true-strike-xphb-2024",
@@ -6603,7 +6603,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tsunami-xphb-2024",
@@ -6621,7 +6621,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "unseen-servant-xphb-2024",
@@ -6639,7 +6639,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vampiric-touch-xphb-2024",
@@ -6657,7 +6657,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vicious-mockery-xphb-2024",
@@ -6675,7 +6675,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vitriolic-sphere-xphb-2024",
@@ -6693,7 +6693,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wall-of-fire-xphb-2024",
@@ -6711,7 +6711,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wall-of-force-xphb-2024",
@@ -6729,7 +6729,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wall-of-ice-xphb-2024",
@@ -6747,7 +6747,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wall-of-stone-xphb-2024",
@@ -6765,7 +6765,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wall-of-thorns-xphb-2024",
@@ -6783,7 +6783,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "warding-bond-xphb-2024",
@@ -6801,7 +6801,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "water-breathing-xphb-2024",
@@ -6819,7 +6819,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "water-walk-xphb-2024",
@@ -6837,7 +6837,7 @@
     "classes": [],
     "ritual": true,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "web-xphb-2024",
@@ -6855,7 +6855,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "weird-xphb-2024",
@@ -6873,7 +6873,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wind-walk-xphb-2024",
@@ -6891,7 +6891,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wind-wall-xphb-2024",
@@ -6909,7 +6909,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wish-xphb-2024",
@@ -6927,7 +6927,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "witch-bolt-xphb-2024",
@@ -6945,7 +6945,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "word-of-radiance-xphb-2024",
@@ -6963,7 +6963,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "word-of-recall-xphb-2024",
@@ -6981,7 +6981,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wrathful-smite-xphb-2024",
@@ -6999,7 +6999,7 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yolande-s-regal-presence-xphb-2024",
@@ -7017,7 +7017,7 @@
     "classes": [],
     "ritual": false,
     "concentration": true,
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "zone-of-truth-xphb-2024",
@@ -7035,6 +7035,6 @@
     "classes": [],
     "ritual": false,
     "concentration": false,
-    "is_srd": false
+    "is_srd": true
   }
 ]

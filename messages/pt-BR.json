@@ -398,7 +398,7 @@
     "search_filter_min": "Min",
     "search_filter_max": "Max",
     "search_no_results": "Nenhum monstro encontrado para \"{query}\"",
-    "setup_col_init": "Inic.",
+    "setup_col_init": "Iniciativa",
     "setup_col_name": "Nome / Apelido",
     "setup_col_name_tooltip": "Nome Real (só DM) e Apelido (visível para jogadores). Clique no ícone de escudo em um monstro para editar o apelido.",
     "setup_col_hp": "HP",

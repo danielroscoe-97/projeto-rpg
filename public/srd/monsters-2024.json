@@ -61,7 +61,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Aarakocra%20Skirmisher.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aarakocra-skirmisher-xmm-2024",
@@ -111,7 +111,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Merfolk%20Skirmisher.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aberrant-cultist-xmm-2024",
@@ -178,7 +178,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "aberrant-spirit-xphb-2024",
@@ -337,7 +337,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Aboleth.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "abominable-yeti-xmm-2024",
@@ -405,7 +405,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Abominable%20Yeti.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-black-dragon-xmm-2024",
@@ -490,7 +490,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Black%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-blue-dragon-xmm-2024",
@@ -571,7 +571,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Blue%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-brass-dragon-xmm-2024",
@@ -658,7 +658,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Brass%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-bronze-dragon-xmm-2024",
@@ -748,7 +748,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Bronze%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-copper-dragon-xmm-2024",
@@ -834,7 +834,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Copper%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-gold-dragon-xmm-2024",
@@ -925,7 +925,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Gold%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-green-dragon-xmm-2024",
@@ -1012,7 +1012,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Green%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-red-dragon-xmm-2024",
@@ -1093,7 +1093,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Red%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-silver-dragon-xmm-2024",
@@ -1178,7 +1178,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Silver%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "adult-white-dragon-xmm-2024",
@@ -1260,7 +1260,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20White%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "air-elemental-xmm-2024",
@@ -1317,7 +1317,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Air%20Elemental.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "allosaurus-xmm-2024",
@@ -1366,7 +1366,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Allosaurus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-black-dragon-xmm-2024",
@@ -1451,7 +1451,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Black%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-blue-dragon-xmm-2024",
@@ -1532,7 +1532,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Blue%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-brass-dragon-xmm-2024",
@@ -1619,7 +1619,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Brass%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-bronze-dragon-xmm-2024",
@@ -1709,7 +1709,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Bronze%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-copper-dragon-xmm-2024",
@@ -1795,7 +1795,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Copper%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-gold-dragon-xmm-2024",
@@ -1886,7 +1886,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Gold%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-green-dragon-xmm-2024",
@@ -1973,7 +1973,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Green%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-red-dragon-xmm-2024",
@@ -2054,7 +2054,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Red%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-silver-dragon-xmm-2024",
@@ -2139,7 +2139,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20Silver%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ancient-white-dragon-xmm-2024",
@@ -2221,7 +2221,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ancient%20White%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animal-lord-xmm-2024",
@@ -2316,7 +2316,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy%20Lord.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animated-armor-xmm-2024",
@@ -2363,7 +2363,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Animated%20Armor.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animated-broom-xmm-2024",
@@ -2412,7 +2412,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CM/Animated%20Broom.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animated-flying-sword-xmm-2024",
@@ -2458,7 +2458,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flying%20Sword.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "animated-object-xphb-2024",
@@ -2544,7 +2544,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rug%20of%20Smothering.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ankheg-xmm-2024",
@@ -2597,7 +2597,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ankheg.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ankylosaurus-xmm-2024",
@@ -2646,7 +2646,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ankylosaurus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ape-xmm-2024",
@@ -2701,7 +2701,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ape.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arcanaloth-xmm-2024",
@@ -2784,7 +2784,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Arcanaloth.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "arch-hag-xmm-2024",
@@ -2876,7 +2876,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Annis%20Hag.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "archelon-xmm-2024",
@@ -2931,7 +2931,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elephant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "archmage-xmm-2024",
@@ -3002,7 +3002,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Archmage.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "archpriest-xmm-2024",
@@ -3072,7 +3072,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa%20Archpriest.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "assassin-xmm-2024",
@@ -3135,7 +3135,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Assassin.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "avatar-of-death-xdmg-2024",
@@ -3231,7 +3231,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Awakened%20Shrub.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "awakened-tree-xmm-2024",
@@ -3274,7 +3274,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Awakened%20Tree.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "axe-beak-xmm-2024",
@@ -3317,7 +3317,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Axe%20Beak.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "azer-pyromancer-xmm-2024",
@@ -3387,7 +3387,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Azer.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "azer-sentinel-xmm-2024",
@@ -3441,7 +3441,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CM/Sapphire%20Sentinel.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "baboon-xmm-2024",
@@ -3490,7 +3490,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Baboon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "badger-xmm-2024",
@@ -3536,7 +3536,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Badger.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "balor-xmm-2024",
@@ -3610,7 +3610,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Balor.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bandit-xmm-2024",
@@ -3657,7 +3657,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bandit-captain-xmm-2024",
@@ -3720,7 +3720,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit%20Captain.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bandit-crime-lord-xmm-2024",
@@ -3783,7 +3783,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPP/Doomguard%20Doom%20Lord.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bandit-deceiver-xmm-2024",
@@ -3846,7 +3846,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "banshee-xmm-2024",
@@ -3913,7 +3913,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Banshee.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "barbed-devil-xmm-2024",
@@ -3991,7 +3991,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Barbed%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "barlgura-xmm-2024",
@@ -4058,7 +4058,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Barlgura.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "basilisk-xmm-2024",
@@ -4101,7 +4101,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Basilisk.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bat-xmm-2024",
@@ -4145,7 +4145,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bearded-devil-xmm-2024",
@@ -4205,7 +4205,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bearded%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "beast-of-the-land-xphb-2024",
@@ -4419,7 +4419,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Behir.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "beholder-xmm-2024",
@@ -4597,7 +4597,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Berserker.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "berserker-commander-xmm-2024",
@@ -4659,7 +4659,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Warrior%20Commander.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bestial-spirit-xphb-2024",
@@ -4773,7 +4773,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Black%20Bear.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "black-dragon-wyrmling-xmm-2024",
@@ -4837,7 +4837,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Black%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "black-pudding-xmm-2024",
@@ -4899,7 +4899,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Black%20Pudding.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blink-dog-xmm-2024",
@@ -4945,7 +4945,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blink%20Dog.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blob-of-annihilation-xmm-2024",
@@ -5029,7 +5029,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Elder%20Oblex.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blood-hawk-xmm-2024",
@@ -5080,7 +5080,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blood%20Hawk.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blue-dragon-wyrmling-xmm-2024",
@@ -5139,7 +5139,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Blue%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "blue-slaad-xmm-2024",
@@ -5245,7 +5245,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Boar.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bone-devil-xmm-2024",
@@ -5314,7 +5314,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bone%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bone-naga-xmm-2024",
@@ -5370,7 +5370,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Guardian%20Naga.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "brass-dragon-wyrmling-xmm-2024",
@@ -5429,7 +5429,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Brass%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "brazen-gorgon-xmm-2024",
@@ -5491,7 +5491,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Gorgon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bronze-dragon-wyrmling-xmm-2024",
@@ -5559,7 +5559,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bronze%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "brown-bear-xmm-2024",
@@ -5613,7 +5613,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Brown%20Bear.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bugbear-stalker-xmm-2024",
@@ -5675,7 +5675,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/VRGR/Carrion%20Stalker.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bugbear-warrior-xmm-2024",
@@ -5730,7 +5730,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bullywug%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bulette-xmm-2024",
@@ -5784,7 +5784,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bulette.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bulette-pup-xmm-2024",
@@ -5830,7 +5830,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bulette.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bullywug-bog-sage-xmm-2024",
@@ -5898,7 +5898,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CM/Master%20Sage.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "bullywug-warrior-xmm-2024",
@@ -5953,7 +5953,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bugbear%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cambion-xmm-2024",
@@ -6019,7 +6019,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cambion.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "camel-xmm-2024",
@@ -6064,7 +6064,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Camel.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "carrion-crawler-xmm-2024",
@@ -6177,7 +6177,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "celestial-spirit-xphb-2024",
@@ -6287,7 +6287,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Giff%20Shock%20Trooper.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "centaur-warden-xmm-2024",
@@ -6350,7 +6350,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/EFA/Kundarak%20Warden.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chain-devil-xmm-2024",
@@ -6418,7 +6418,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chain%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chasme-xmm-2024",
@@ -6480,7 +6480,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chasme.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chimera-xmm-2024",
@@ -6542,7 +6542,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chimera.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "chuul-xmm-2024",
@@ -6605,7 +6605,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Chuul.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "clay-golem-xmm-2024",
@@ -6669,7 +6669,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Clay%20Golem.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cloaker-xmm-2024",
@@ -6732,7 +6732,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cloaker.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cloud-giant-xmm-2024",
@@ -6799,7 +6799,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cloud%20Giant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cockatrice-xmm-2024",
@@ -6843,7 +6843,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cockatrice.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cockatrice-regent-xmm-2024",
@@ -6907,7 +6907,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cockatrice.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "colossus-xmm-2024",
@@ -6991,7 +6991,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BGG/Flesh%20Colossus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "commoner-xmm-2024",
@@ -7039,7 +7039,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Commoner.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "constrictor-snake-xmm-2024",
@@ -7090,7 +7090,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Constrictor%20Snake.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "construct-spirit-xphb-2024",
@@ -7210,7 +7210,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Copper%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "couatl-xmm-2024",
@@ -7274,7 +7274,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Couatl.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "crab-xmm-2024",
@@ -7325,7 +7325,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Crab.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "crawling-claw-xmm-2024",
@@ -7369,7 +7369,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Crawling%20Claw.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "crocodile-xmm-2024",
@@ -7422,7 +7422,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Crocodile.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cultist-xmm-2024",
@@ -7470,7 +7470,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cultist-fanatic-xmm-2024",
@@ -7528,7 +7528,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cult%20Fanatic.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cultist-hierophant-xmm-2024",
@@ -7591,7 +7591,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cyclops-oracle-xmm-2024",
@@ -7658,7 +7658,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MOT/Oracle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "cyclops-sentry-xmm-2024",
@@ -7714,7 +7714,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MOT/Returned%20Sentry.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dao-xmm-2024",
@@ -7791,7 +7791,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dao.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "darkmantle-xmm-2024",
@@ -7841,7 +7841,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Darkmantle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "death-cultist-xmm-2024",
@@ -7904,7 +7904,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "death-dog-xmm-2024",
@@ -7954,7 +7954,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Dog.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "death-knight-xmm-2024",
@@ -8047,7 +8047,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Knight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "death-knight-aspirant-xmm-2024",
@@ -8119,7 +8119,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Death%20Knight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "death-slaad-xmm-2024",
@@ -8303,7 +8303,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Deer.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "demilich-xmm-2024",
@@ -8381,7 +8381,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Demilich.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "deva-xmm-2024",
@@ -8452,7 +8452,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Deva.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dire-wolf-xmm-2024",
@@ -8503,7 +8503,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dire%20Wolf.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dire-worg-xmm-2024",
@@ -8564,7 +8564,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Worg.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "displacer-beast-xmm-2024",
@@ -8700,7 +8700,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Djinni.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "doppelganger-xmm-2024",
@@ -8759,7 +8759,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Doppelganger.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dracolich-xmm-2024",
@@ -8852,7 +8852,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Adult%20Blue%20Dracolich.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "draconic-spirit-xphb-2024",
@@ -8953,7 +8953,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Draft%20Horse.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dragon-turtle-xmm-2024",
@@ -9017,7 +9017,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dragon%20Turtle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dretch-xmm-2024",
@@ -9064,7 +9064,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dretch.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "drider-xmm-2024",
@@ -9136,7 +9136,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Drider.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "druid-xmm-2024",
@@ -9196,7 +9196,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Druid.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dryad-xmm-2024",
@@ -9263,7 +9263,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dryad.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "dust-mephit-xmm-2024",
@@ -9323,7 +9323,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Dust%20Mephit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "eagle-xmm-2024",
@@ -9369,7 +9369,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Eagle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "earth-elemental-xmm-2024",
@@ -9430,7 +9430,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Earth%20Elemental.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "efreeti-xmm-2024",
@@ -9502,7 +9502,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Efreeti.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "elemental-cataclysm-xmm-2024",
@@ -9587,7 +9587,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Air%20Elemental.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "elemental-cultist-xmm-2024",
@@ -9655,7 +9655,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "elemental-spirit-xphb-2024",
@@ -9757,7 +9757,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elephant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "elk-xmm-2024",
@@ -9802,7 +9802,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elk.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "empyrean-xmm-2024",
@@ -9887,7 +9887,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Empyrean.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "empyrean-iota-xmm-2024",
@@ -9952,7 +9952,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Empyrean.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "erinyes-xmm-2024",
@@ -10029,7 +10029,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Erinyes.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ettercap-xmm-2024",
@@ -10098,7 +10098,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ettercap.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ettin-xmm-2024",
@@ -10151,7 +10151,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ettin.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "faerie-dragon-adult-xmm-2024",
@@ -10216,7 +10216,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Faerie%20Dragon%20(Blue).webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "faerie-dragon-youth-xmm-2024",
@@ -10281,7 +10281,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Faerie%20Dragon%20(Blue).webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fey-spirit-xphb-2024",
@@ -10391,7 +10391,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Cultist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fiendish-spirit-xphb-2024",
@@ -10525,7 +10525,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fire%20Elemental.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fire-giant-xmm-2024",
@@ -10583,7 +10583,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fire%20Giant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flameskull-xmm-2024",
@@ -10651,7 +10651,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flameskull.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flaming-skeleton-xmm-2024",
@@ -10711,7 +10711,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/PaBTSO/Dwarf%20Skeleton.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flesh-golem-xmm-2024",
@@ -10779,7 +10779,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flesh%20Golem.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flumph-xmm-2024",
@@ -10844,7 +10844,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flumph.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "flying-snake-xmm-2024",
@@ -10894,7 +10894,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Flying%20Snake.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "fomorian-xmm-2024",
@@ -10948,7 +10948,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fomorian.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "frog-xmm-2024",
@@ -11004,7 +11004,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Frog.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "frost-giant-xmm-2024",
@@ -11062,7 +11062,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Frost%20Giant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "galeb-duhr-xmm-2024",
@@ -11109,7 +11109,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Galeb%20Duhr.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gargoyle-xmm-2024",
@@ -11164,7 +11164,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gargoyle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gas-spore-fungus-xmm-2024",
@@ -11213,7 +11213,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gelatinous-cube-xmm-2024",
@@ -11269,7 +11269,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gelatinous%20Cube.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ghast-xmm-2024",
@@ -11323,7 +11323,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghast.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ghast-gravecaller-xmm-2024",
@@ -11386,7 +11386,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghast.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ghost-xmm-2024",
@@ -11455,7 +11455,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghost.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ghoul-xmm-2024",
@@ -11506,7 +11506,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghoul.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-ape-xmm-2024",
@@ -11562,7 +11562,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Ape.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-axe-beak-xmm-2024",
@@ -11615,7 +11615,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Axe%20Beak.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-badger-xmm-2024",
@@ -11661,7 +11661,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Badger.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-bat-xmm-2024",
@@ -11705,7 +11705,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Bat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-boar-xmm-2024",
@@ -11755,7 +11755,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Boar.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-centipede-xmm-2024",
@@ -11799,7 +11799,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Centipede.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-constrictor-snake-xmm-2024",
@@ -11853,7 +11853,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Constrictor%20Snake.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-crab-xmm-2024",
@@ -11904,7 +11904,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Crab.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-crocodile-xmm-2024",
@@ -11963,7 +11963,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Crocodile.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-eagle-xmm-2024",
@@ -12013,7 +12013,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Eagle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-elk-xmm-2024",
@@ -12061,7 +12061,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Elk.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-fire-beetle-xmm-2024",
@@ -12110,7 +12110,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Fire%20Beetle.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-fly-xdmg-2024",
@@ -12209,7 +12209,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Frog.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-goat-xmm-2024",
@@ -12257,7 +12257,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Goat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-hyena-xmm-2024",
@@ -12302,7 +12302,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Hyena.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-insect-xphb-2024",
@@ -12411,7 +12411,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Lizard.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-octopus-xmm-2024",
@@ -12468,7 +12468,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Octopus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-owl-xmm-2024",
@@ -12526,7 +12526,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Owl.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-rat-xmm-2024",
@@ -12579,7 +12579,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Rat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-scorpion-xmm-2024",
@@ -12630,7 +12630,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Scorpion.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-seahorse-xmm-2024",
@@ -12679,7 +12679,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Seahorse.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-shark-xmm-2024",
@@ -12734,7 +12734,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Shark.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-spider-xmm-2024",
@@ -12794,7 +12794,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Spider.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-squid-xmm-2024",
@@ -12861,7 +12861,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Ape.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-toad-xmm-2024",
@@ -12918,7 +12918,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Toad.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-venomous-snake-xmm-2024",
@@ -12964,7 +12964,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Constrictor%20Snake.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-vulture-xmm-2024",
@@ -13015,7 +13015,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Vulture.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-wasp-xmm-2024",
@@ -13064,7 +13064,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Wasp.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-weasel-xmm-2024",
@@ -13112,7 +13112,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Weasel.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "giant-wolf-spider-xmm-2024",
@@ -13164,7 +13164,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Giant%20Wolf%20Spider.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gibbering-mouther-xmm-2024",
@@ -13221,7 +13221,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gibbering%20Mouther.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "githyanki-dracomancer-xmm-2024",
@@ -13290,7 +13290,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Githyanki%20Knight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "githyanki-knight-xmm-2024",
@@ -13544,7 +13544,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/VGM/Mind%20Flayer%20Psion.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "githzerai-zerth-xmm-2024",
@@ -13685,7 +13685,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Glabrezu.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gladiator-xmm-2024",
@@ -13749,7 +13749,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gladiator.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gnoll-demoniac-xmm-2024",
@@ -13807,7 +13807,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Gnoll%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gnoll-fang-of-yeenoghu-xmm-2024",
@@ -13862,7 +13862,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gnoll%20Fang%20of%20Yeenoghu.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gnoll-pack-lord-xmm-2024",
@@ -13917,7 +13917,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gnoll%20Pack%20Lord.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gnoll-warrior-xmm-2024",
@@ -13964,7 +13964,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sahuagin%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goat-xmm-2024",
@@ -14012,7 +14012,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goblin-boss-xmm-2024",
@@ -14070,7 +14070,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin%20Boss.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goblin-hexer-xmm-2024",
@@ -14130,7 +14130,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Goblin%20Boss.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goblin-minion-xmm-2024",
@@ -14175,7 +14175,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Goblin%20Boss.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goblin-warrior-xmm-2024",
@@ -14224,7 +14224,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bugbear%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gold-dragon-wyrmling-xmm-2024",
@@ -14292,7 +14292,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gold%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gorgon-xmm-2024",
@@ -14341,7 +14341,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gorgon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "goristro-xmm-2024",
@@ -14413,7 +14413,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goristro.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "graveyard-revenant-xmm-2024",
@@ -14474,7 +14474,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Revenant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gray-ooze-xmm-2024",
@@ -14529,7 +14529,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gray%20Ooze.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gray-slaad-xmm-2024",
@@ -14656,7 +14656,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Green%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "green-hag-xmm-2024",
@@ -14726,7 +14726,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Green%20Hag.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "green-slaad-xmm-2024",
@@ -14903,7 +14903,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Grick.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "grick-ancient-xmm-2024",
@@ -14961,7 +14961,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Grick.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "griffon-xmm-2024",
@@ -15011,7 +15011,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Griffon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "grimlock-xmm-2024",
@@ -15059,7 +15059,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Grimlock.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guard-xmm-2024",
@@ -15104,7 +15104,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Guard.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guard-captain-xmm-2024",
@@ -15158,7 +15158,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit%20Captain.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "guardian-naga-xmm-2024",
@@ -15230,7 +15230,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Guardian%20Naga.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "gulthias-blight-xmm-2024",
@@ -15292,7 +15292,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/LoX/Astral%20Blight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "half-dragon-xmm-2024",
@@ -15355,7 +15355,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MCV3MC/Ender%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "harpy-xmm-2024",
@@ -15403,7 +15403,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Harpy.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "haunting-revenant-xmm-2024",
@@ -15466,7 +15466,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Revenant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hawk-xmm-2024",
@@ -15512,7 +15512,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hawk.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hell-hound-xmm-2024",
@@ -15570,7 +15570,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hell%20Hound.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "helmed-horror-xmm-2024",
@@ -15629,7 +15629,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Helmed%20Horror.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hezrou-xmm-2024",
@@ -15693,7 +15693,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hezrou.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hill-giant-xmm-2024",
@@ -15746,7 +15746,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hill%20Giant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hippogriff-xmm-2024",
@@ -15801,7 +15801,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hippogriff.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hippopotamus-xmm-2024",
@@ -15858,7 +15858,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Elephant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hobgoblin-captain-xmm-2024",
@@ -15914,7 +15914,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hobgoblin%20Captain.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hobgoblin-warlord-xmm-2024",
@@ -15980,7 +15980,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hobgoblin%20Warlord.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hobgoblin-warrior-xmm-2024",
@@ -16032,7 +16032,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Bugbear%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "homunculus-xmm-2024",
@@ -16084,7 +16084,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Homunculus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hook-horror-xmm-2024",
@@ -16206,7 +16206,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Horned%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hunter-shark-xmm-2024",
@@ -16257,7 +16257,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hunter%20Shark.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hydra-xmm-2024",
@@ -16320,7 +16320,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hydra.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "hyena-xmm-2024",
@@ -16370,7 +16370,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Hyena.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ice-devil-xmm-2024",
@@ -16443,7 +16443,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ice%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ice-mephit-xmm-2024",
@@ -16503,7 +16503,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ice%20Mephit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "imp-xmm-2024",
@@ -16564,7 +16564,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Imp.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "incubus-xmm-2024",
@@ -16627,7 +16627,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Incubus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "intellect-devourer-xmm-2024",
@@ -16754,7 +16754,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Invisible%20Stalker.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "iron-golem-xmm-2024",
@@ -16822,7 +16822,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Iron%20Golem.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "jackal-xmm-2024",
@@ -16868,7 +16868,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Jackal.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "jackalwere-xmm-2024",
@@ -16932,7 +16932,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Jackalwere.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "juvenile-shadow-dragon-xmm-2024",
@@ -16999,7 +16999,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Shadow%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "kenku-xmm-2024",
@@ -17055,7 +17055,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kenku.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "killer-whale-xmm-2024",
@@ -17107,7 +17107,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Killer%20Whale.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "knight-xmm-2024",
@@ -17166,7 +17166,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Knight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "kobold-warrior-xmm-2024",
@@ -17218,7 +17218,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/TftYP/Dread%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "kraken-xmm-2024",
@@ -17308,7 +17308,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kraken.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "kuo-toa-xmm-2024",
@@ -17500,7 +17500,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Kuo-toa%20Monitor.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "kuo-toa-whip-xmm-2024",
@@ -17616,7 +17616,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ghoul.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lamia-xmm-2024",
@@ -17676,7 +17676,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lamia.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "larva-xmm-2024",
@@ -17719,7 +17719,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/DMG/Larva.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lemure-xmm-2024",
@@ -17767,7 +17767,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lemure.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lich-xmm-2024",
@@ -17858,7 +17858,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lich.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lion-xmm-2024",
@@ -17921,7 +17921,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lion.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lizard-xmm-2024",
@@ -17970,7 +17970,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Lizard.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lizardfolk-geomancer-xmm-2024",
@@ -18032,7 +18032,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/HotB/Lizardfolk%20Warden.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "lizardfolk-sovereign-xmm-2024",
@@ -18091,7 +18091,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Sovereign.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mage-xmm-2024",
@@ -18158,7 +18158,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mage.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mage-apprentice-xmm-2024",
@@ -18212,7 +18212,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/HoL/Apprentice.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magma-mephit-xmm-2024",
@@ -18267,7 +18267,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Magma%20Mephit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "magmin-xmm-2024",
@@ -18315,7 +18315,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Magmin.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mammoth-xmm-2024",
@@ -18365,7 +18365,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mammoth.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "manes-xmm-2024",
@@ -18408,7 +18408,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Manes.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "manes-vaporspawn-xmm-2024",
@@ -18460,7 +18460,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Manes.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "manticore-xmm-2024",
@@ -18512,7 +18512,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Manticore.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "marid-xmm-2024",
@@ -18589,7 +18589,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Marid.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "marilith-xmm-2024",
@@ -18666,7 +18666,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Marilith.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mastiff-xmm-2024",
@@ -18711,7 +18711,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mastiff.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "medusa-xmm-2024",
@@ -18772,7 +18772,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Medusa.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "merfolk-skirmisher-xmm-2024",
@@ -18821,7 +18821,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Aarakocra%20Skirmisher.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "merfolk-wavebender-xmm-2024",
@@ -18890,7 +18890,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Merfolk%20Skirmisher.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "merrow-xmm-2024",
@@ -18951,7 +18951,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Merrow.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mezzoloth-xmm-2024",
@@ -19017,7 +19017,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mezzoloth.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mimic-xmm-2024",
@@ -19071,7 +19071,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mimic.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mind-flayer-xmm-2024",
@@ -19267,7 +19267,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Baphomet.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "minotaur-skeleton-xmm-2024",
@@ -19314,7 +19314,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Minotaur%20Skeleton.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "modron-duodrone-xmm-2024",
@@ -19648,7 +19648,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mud%20Mephit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mule-xmm-2024",
@@ -19698,7 +19698,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mule.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mummy-xmm-2024",
@@ -19751,7 +19751,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "mummy-lord-xmm-2024",
@@ -19848,7 +19848,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy%20Lord.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "myconid-adult-xmm-2024",
@@ -19904,7 +19904,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Adult.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "myconid-sovereign-xmm-2024",
@@ -19968,7 +19968,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Sovereign.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "myconid-spore-servant-xmm-2024",
@@ -20011,7 +20011,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/OotA/Chuul%20Spore%20Servant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "myconid-sprout-xmm-2024",
@@ -20063,7 +20063,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Myconid%20Sprout.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "nalfeshnee-xmm-2024",
@@ -20134,7 +20134,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nalfeshnee.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "needle-blight-xmm-2024",
@@ -20181,7 +20181,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Needle%20Blight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "night-hag-xmm-2024",
@@ -20254,7 +20254,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Night%20Hag.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "nightmare-xmm-2024",
@@ -20311,7 +20311,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nightmare.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "noble-xmm-2024",
@@ -20363,7 +20363,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Noble.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "noble-prodigy-xmm-2024",
@@ -20427,7 +20427,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Noble.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "nothic-xmm-2024",
@@ -20483,7 +20483,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nothic.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "nycaloth-xmm-2024",
@@ -20543,7 +20543,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Nycaloth.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ochre-jelly-xmm-2024",
@@ -20601,7 +20601,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ochre%20Jelly.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "octopus-xmm-2024",
@@ -20662,7 +20662,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Octopus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ogre-xmm-2024",
@@ -20709,7 +20709,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ogre.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ogre-zombie-xmm-2024",
@@ -20759,7 +20759,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ogre%20Zombie.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ogrillon-ogre-xmm-2024",
@@ -20806,7 +20806,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ogre.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "oni-xmm-2024",
@@ -20884,7 +20884,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Oni.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "otherworldly-steed-xphb-2024",
@@ -20990,7 +20990,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Otyugh.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "owl-xmm-2024",
@@ -21042,7 +21042,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Owl.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "owlbear-xmm-2024",
@@ -21092,7 +21092,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Owlbear.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "panther-xmm-2024",
@@ -21139,7 +21139,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Panther.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pegasus-xmm-2024",
@@ -21190,7 +21190,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pegasus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "performer-xmm-2024",
@@ -21245,7 +21245,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Performer%20Legend.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "performer-legend-xmm-2024",
@@ -21317,7 +21317,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Performer.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "performer-maestro-xmm-2024",
@@ -21382,7 +21382,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Performer.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "peryton-xmm-2024",
@@ -21442,7 +21442,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Peryton.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "phase-spider-xmm-2024",
@@ -21505,7 +21505,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Phase%20Spider.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "piercer-xmm-2024",
@@ -21609,7 +21609,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/ToA/Almiraj.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pirate-xmm-2024",
@@ -21663,7 +21663,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Neogi%20Pirate.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pirate-admiral-xmm-2024",
@@ -21728,7 +21728,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/GoS/Pirate%20Bosun.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pirate-captain-xmm-2024",
@@ -21792,7 +21792,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/GoS/Pirate%20Captain.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pit-fiend-xmm-2024",
@@ -21875,7 +21875,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pit%20Fiend.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pixie-xmm-2024",
@@ -21931,7 +21931,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pixie.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pixie-wonderbringer-xmm-2024",
@@ -21996,7 +21996,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pixie.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "planetar-xmm-2024",
@@ -22076,7 +22076,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Planetar.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "plesiosaurus-xmm-2024",
@@ -22128,7 +22128,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Plesiosaurus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "polar-bear-xmm-2024",
@@ -22179,7 +22179,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Polar%20Bear.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "poltergeist-xmm-2024",
@@ -22236,7 +22236,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Poltergeist.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pony-xmm-2024",
@@ -22281,7 +22281,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pony.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "priest-xmm-2024",
@@ -22345,7 +22345,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Priest.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "priest-acolyte-xmm-2024",
@@ -22404,7 +22404,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Acolyte.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "primeval-owlbear-xmm-2024",
@@ -22467,7 +22467,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Owlbear.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pseudodragon-xmm-2024",
@@ -22527,7 +22527,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pseudodragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "psychic-gray-ooze-xmm-2024",
@@ -22587,7 +22587,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Gray%20Ooze.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "pteranodon-xmm-2024",
@@ -22638,7 +22638,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Pteranodon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "purple-worm-xmm-2024",
@@ -22698,7 +22698,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Purple%20Worm.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "quaggoth-xmm-2024",
@@ -22816,7 +22816,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Quaggoth%20Thonot.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "quasit-xmm-2024",
@@ -22878,7 +22878,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Quasit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "questing-knight-xmm-2024",
@@ -22947,7 +22947,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/ERLW/Bone%20Knight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "rakshasa-xmm-2024",
@@ -23015,7 +23015,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rakshasa.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "rat-xmm-2024",
@@ -23066,7 +23066,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "raven-xmm-2024",
@@ -23117,7 +23117,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Raven.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "red-dragon-wyrmling-xmm-2024",
@@ -23176,7 +23176,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Red%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "red-slaad-xmm-2024",
@@ -23289,7 +23289,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Reef%20Shark.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "remorhaz-xmm-2024",
@@ -23338,7 +23338,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Remorhaz.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "revenant-xmm-2024",
@@ -23403,7 +23403,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Revenant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "rhinoceros-xmm-2024",
@@ -23446,7 +23446,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rhinoceros.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "riding-horse-xmm-2024",
@@ -23489,7 +23489,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Riding%20Horse.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "roc-xmm-2024",
@@ -23546,7 +23546,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Roc.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "roper-xmm-2024",
@@ -23610,7 +23610,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Roper.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "rust-monster-xmm-2024",
@@ -23675,7 +23675,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Rust%20Monster.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "saber-toothed-tiger-xmm-2024",
@@ -23733,7 +23733,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Saber-Toothed%20Tiger.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sahuagin-baron-xmm-2024",
@@ -23805,7 +23805,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Sahuagin%20Baron.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sahuagin-priest-xmm-2024",
@@ -23877,7 +23877,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Kraken%20Priest.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sahuagin-warrior-xmm-2024",
@@ -23940,7 +23940,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Gnoll%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "salamander-xmm-2024",
@@ -23997,7 +23997,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Salamander.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "salamander-fire-snake-xmm-2024",
@@ -24046,7 +24046,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Fire%20Snake.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "salamander-inferno-master-xmm-2024",
@@ -24110,7 +24110,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/GoS/Drowned%20Master.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "satyr-xmm-2024",
@@ -24166,7 +24166,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Satyr.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "satyr-revelmaster-xmm-2024",
@@ -24229,7 +24229,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Satyr.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "scarecrow-xmm-2024",
@@ -24276,7 +24276,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Scarecrow.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "scorpion-xmm-2024",
@@ -24319,7 +24319,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Scorpion.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "scout-xmm-2024",
@@ -24375,7 +24375,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Scout.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "scout-captain-xmm-2024",
@@ -24439,7 +24439,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Bandit%20Captain.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sea-hag-xmm-2024",
@@ -24504,7 +24504,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Sea%20Hag.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "seahorse-xmm-2024",
@@ -24556,7 +24556,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Giant%20Seahorse.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shadow-xmm-2024",
@@ -24610,7 +24610,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shadow.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shadow-demon-xmm-2024",
@@ -24672,7 +24672,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shadow%20Demon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shadow-dragon-xmm-2024",
@@ -24753,7 +24753,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MCV3MC/Ender%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shambling-mound-xmm-2024",
@@ -24812,7 +24812,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shambling%20Mound.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shield-guardian-xmm-2024",
@@ -24877,7 +24877,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Shield%20Guardian.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "shrieker-fungus-xmm-2024",
@@ -24920,7 +24920,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "silver-dragon-wyrmling-xmm-2024",
@@ -24982,7 +24982,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Silver%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "skeleton-xmm-2024",
@@ -25029,7 +25029,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Skeleton.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "slaad-tadpole-xmm-2024",
@@ -25080,7 +25080,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Slaad%20Tadpole.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "smoke-mephit-xmm-2024",
@@ -25136,7 +25136,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Smoke%20Mephit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "solar-xmm-2024",
@@ -25224,7 +25224,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Solar.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spectator-xmm-2024",
@@ -25336,7 +25336,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Specter.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sphinx-of-lore-xmm-2024",
@@ -25415,7 +25415,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sphinx%20of%20Secrets.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sphinx-of-secrets-xmm-2024",
@@ -25484,7 +25484,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sphinx%20of%20Lore.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sphinx-of-valor-xmm-2024",
@@ -25567,7 +25567,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Sphinx%20of%20Lore.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sphinx-of-wonder-xmm-2024",
@@ -25625,7 +25625,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/FRAiF/Domestic%20Wonder.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spider-xmm-2024",
@@ -25680,7 +25680,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spider.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spined-devil-xmm-2024",
@@ -25741,7 +25741,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spined%20Devil.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spirit-naga-xmm-2024",
@@ -25806,7 +25806,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spirit%20Naga.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "sprite-xmm-2024",
@@ -25866,7 +25866,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Sprite.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spy-xmm-2024",
@@ -25921,7 +25921,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Spy.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "spy-master-xmm-2024",
@@ -25989,7 +25989,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Duergar%20Mind%20Master.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "steam-mephit-xmm-2024",
@@ -26048,7 +26048,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Steam%20Mephit.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "stirge-xmm-2024",
@@ -26092,7 +26092,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Stirge.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "stone-giant-xmm-2024",
@@ -26156,7 +26156,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Stone%20Giant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "stone-golem-xmm-2024",
@@ -26220,7 +26220,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Stone%20Golem.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "storm-giant-xmm-2024",
@@ -26296,7 +26296,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Storm%20Giant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "succubus-xmm-2024",
@@ -26363,7 +26363,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Succubus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-bats-xmm-2024",
@@ -26412,7 +26412,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Bats.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-crawling-claws-xmm-2024",
@@ -26461,7 +26461,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/ToA/Ankylosaurus%20Zombie.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-dretches-xmm-2024",
@@ -26517,7 +26517,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoA/Ayperobo%20Swarm.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-insects-xmm-2024",
@@ -26569,7 +26569,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Insects.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-larvae-xmm-2024",
@@ -26617,7 +26617,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoA/Ayperobo%20Swarm.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-lemures-xmm-2024",
@@ -26673,7 +26673,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoA/Ayperobo%20Swarm.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-piranhas-xmm-2024",
@@ -26726,7 +26726,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Bats.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-rats-xmm-2024",
@@ -26775,7 +26775,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Rats.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-ravens-xmm-2024",
@@ -26830,7 +26830,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Ravens.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-stirges-xmm-2024",
@@ -26879,7 +26879,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/VRGR/Swarm%20of%20Gremishkas.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "swarm-of-venomous-snakes-xmm-2024",
@@ -26928,7 +26928,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Swarm%20of%20Poisonous%20Snakes.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tarrasque-xmm-2024",
@@ -27022,7 +27022,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tarrasque.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thri-kreen-marauder-xmm-2024",
@@ -27077,7 +27077,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Thri-kreen%20Gladiator.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "thri-kreen-psion-xmm-2024",
@@ -27138,7 +27138,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/BAM/Thri-kreen%20Gladiator.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tiger-xmm-2024",
@@ -27184,7 +27184,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tiger.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tough-xmm-2024",
@@ -27236,7 +27236,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Tough%20Boss.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tough-boss-xmm-2024",
@@ -27296,7 +27296,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Goblin%20Boss.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "treant-xmm-2024",
@@ -27356,7 +27356,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Treant.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tree-blight-xmm-2024",
@@ -27407,7 +27407,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/CoS/Tree%20Blight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "triceratops-xmm-2024",
@@ -27454,7 +27454,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Triceratops.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "troglodyte-xmm-2024",
@@ -27509,7 +27509,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Troglodyte.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "troll-xmm-2024",
@@ -27567,7 +27567,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Troll.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "troll-limb-xmm-2024",
@@ -27619,7 +27619,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MPMM/Dire%20Troll.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "twig-blight-xmm-2024",
@@ -27669,7 +27669,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Twig%20Blight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "tyrannosaurus-rex-xmm-2024",
@@ -27725,7 +27725,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Tyrannosaurus%20Rex.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "ultroloth-xmm-2024",
@@ -27798,7 +27798,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Ultroloth.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "umber-hulk-xmm-2024",
@@ -27993,7 +27993,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Unicorn.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vampire-xmm-2024",
@@ -28083,7 +28083,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vampire.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vampire-familiar-xmm-2024",
@@ -28143,7 +28143,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MOT/Akroan%20Hoplite.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vampire-nightbringer-xmm-2024",
@@ -28206,7 +28206,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/IDRotF/Gnoll%20Vampire.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vampire-spawn-xmm-2024",
@@ -28272,7 +28272,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vampire%20Spawn.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vampire-umbral-lord-xmm-2024",
@@ -28360,7 +28360,7 @@
     ],
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Mummy%20Lord.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "venomous-snake-xmm-2024",
@@ -28404,7 +28404,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Constrictor%20Snake.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vine-blight-xmm-2024",
@@ -28454,7 +28454,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vine%20Blight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "violet-fungus-xmm-2024",
@@ -28501,7 +28501,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "violet-fungus-necrohulk-xmm-2024",
@@ -28552,7 +28552,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Violet%20Fungus.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vrock-xmm-2024",
@@ -28621,7 +28621,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vrock.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "vulture-xmm-2024",
@@ -28672,7 +28672,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Vulture.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "warhorse-xmm-2024",
@@ -28717,7 +28717,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Warhorse.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "warhorse-skeleton-xmm-2024",
@@ -28760,7 +28760,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Warhorse%20Skeleton.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "warrior-commander-xmm-2024",
@@ -28825,7 +28825,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/XMM/Berserker%20Commander.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "warrior-infantry-xmm-2024",
@@ -28873,7 +28873,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Githyanki%20Warrior.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "warrior-veteran-xmm-2024",
@@ -28932,7 +28932,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Veteran.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "water-elemental-xmm-2024",
@@ -28993,7 +28993,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Water%20Elemental.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "water-weird-xmm-2024",
@@ -29046,7 +29046,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Water%20Weird.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "weasel-xmm-2024",
@@ -29094,7 +29094,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Weasel.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "werebear-xmm-2024",
@@ -29152,7 +29152,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Werebear.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wereboar-xmm-2024",
@@ -29209,7 +29209,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wereboar.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wererat-xmm-2024",
@@ -29268,7 +29268,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wererat.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "weretiger-xmm-2024",
@@ -29326,7 +29326,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Weretiger.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "werewolf-xmm-2024",
@@ -29389,7 +29389,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Werewolf.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "white-dragon-wyrmling-xmm-2024",
@@ -29454,7 +29454,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/White%20Dragon%20Wyrmling.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wight-xmm-2024",
@@ -29517,7 +29517,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wight.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "will-o-wisp-xmm-2024",
@@ -29574,7 +29574,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Will-o'-Wisp.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "winged-kobold-xmm-2024",
@@ -29631,7 +29631,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Winged%20Kobold.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "winter-wolf-xmm-2024",
@@ -29686,7 +29686,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Winter%20Wolf.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wolf-xmm-2024",
@@ -29737,7 +29737,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wolf.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "worg-xmm-2024",
@@ -29782,7 +29782,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Worg.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wraith-xmm-2024",
@@ -29839,7 +29839,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wraith.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "wyvern-xmm-2024",
@@ -29893,7 +29893,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Wyvern.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "xorn-xmm-2024",
@@ -29957,7 +29957,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Xorn.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yeti-xmm-2024",
@@ -30021,7 +30021,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yeti.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yochlol-xmm-2024",
@@ -30103,7 +30103,7 @@
       }
     ],
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yochlol.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-black-dragon-xmm-2024",
@@ -30167,7 +30167,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Black%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-blue-dragon-xmm-2024",
@@ -30226,7 +30226,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Blue%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-brass-dragon-xmm-2024",
@@ -30290,7 +30290,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Brass%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-bronze-dragon-xmm-2024",
@@ -30359,7 +30359,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Bronze%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-copper-dragon-xmm-2024",
@@ -30423,7 +30423,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Copper%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-gold-dragon-xmm-2024",
@@ -30493,7 +30493,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Gold%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-green-dragon-xmm-2024",
@@ -30558,7 +30558,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Green%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-red-dragon-xmm-2024",
@@ -30617,7 +30617,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Red%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-remorhaz-xmm-2024",
@@ -30666,7 +30666,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Remorhaz.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-silver-dragon-xmm-2024",
@@ -30729,7 +30729,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20Silver%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "young-white-dragon-xmm-2024",
@@ -30794,7 +30794,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Young%20White%20Dragon.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yuan-ti-abomination-xmm-2024",
@@ -30926,7 +30926,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/FTD/Draconian%20Infiltrator.webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yuan-ti-malison-type-1-xmm-2024",
@@ -30989,7 +30989,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Malison%20(Type%201).webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yuan-ti-malison-type-2-xmm-2024",
@@ -31048,7 +31048,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Malison%20(Type%202).webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "yuan-ti-malison-type-3-xmm-2024",
@@ -31111,7 +31111,7 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Yuan-ti%20Malison%20(Type%203).webp",
-    "is_srd": false
+    "is_srd": true
   },
   {
     "id": "zombie-xmm-2024",
@@ -31161,6 +31161,6 @@
     "legendary_actions": null,
     "reactions": null,
     "fallback_token_url": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/MM/Zombie.webp",
-    "is_srd": false
+    "is_srd": true
   }
 ]

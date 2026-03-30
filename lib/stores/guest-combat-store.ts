@@ -32,6 +32,9 @@ interface GuestCombatActions {
   setTempHp: (id: string, value: number) => void;
   toggleCondition: (id: string, condition: string) => void;
   setDefeated: (id: string, isDefeated: boolean) => void;
+  addDeathSaveSuccess: (id: string) => void;
+  addDeathSaveFailure: (id: string) => void;
+  resetDeathSaves: (id: string) => void;
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
   resetCombat: () => void;
   hydrateCombatants: (combatants: Combatant[]) => void;
@@ -143,7 +146,18 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             if (!combatants[next].is_defeated) break;
           }
           if (combatants[next].is_defeated) return state;
+          // Increment condition durations for the combatant whose turn is starting
+          const updatedCombatants = [...combatants];
+          const nextCombatant = updatedCombatants[next];
+          if (nextCombatant.conditions.length > 0 && nextCombatant.condition_durations) {
+            const updatedDurations = { ...nextCombatant.condition_durations };
+            for (const cond of nextCombatant.conditions) {
+              if (cond in updatedDurations) updatedDurations[cond]++;
+            }
+            updatedCombatants[next] = { ...nextCombatant, condition_durations: updatedDurations };
+          }
           return {
+            combatants: updatedCombatants,
             currentTurnIndex: next,
             roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
           };
@@ -183,11 +197,18 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
             const has = c.conditions.includes(condition);
+            const durations = { ...(c.condition_durations ?? {}) };
+            if (has) {
+              delete durations[condition];
+            } else {
+              durations[condition] = 0;
+            }
             return {
               ...c,
               conditions: has
                 ? c.conditions.filter((cond) => cond !== condition)
                 : [...c.conditions, condition],
+              condition_durations: durations,
             };
           }),
         })),
@@ -195,7 +216,44 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       setDefeated: (id, isDefeated) =>
         set((state) => ({
           combatants: state.combatants.map((c) =>
-            c.id === id ? { ...c, is_defeated: isDefeated, current_hp: isDefeated ? 0 : c.current_hp } : c
+            c.id === id
+              ? {
+                  ...c,
+                  is_defeated: isDefeated,
+                  current_hp: isDefeated ? 0 : c.current_hp,
+                  death_saves: isDefeated ? c.death_saves : undefined,
+                }
+              : c
+          ),
+        })),
+
+      addDeathSaveSuccess: (id) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            const saves = c.death_saves ?? { successes: 0, failures: 0 };
+            const newSuccesses = Math.min(saves.successes + 1, 3);
+            return { ...c, death_saves: { ...saves, successes: newSuccesses } };
+          }),
+        })),
+
+      addDeathSaveFailure: (id) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            const saves = c.death_saves ?? { successes: 0, failures: 0 };
+            const newFailures = Math.min(saves.failures + 1, 3);
+            if (newFailures >= 3) {
+              return { ...c, is_defeated: true, death_saves: { ...saves, failures: 3 } };
+            }
+            return { ...c, death_saves: { ...saves, failures: newFailures } };
+          }),
+        })),
+
+      resetDeathSaves: (id) =>
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, death_saves: undefined } : c
           ),
         })),
 

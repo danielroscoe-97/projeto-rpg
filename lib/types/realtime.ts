@@ -53,6 +53,7 @@ export interface RealtimeConditionChange {
   type: "combat:condition_change";
   combatant_id: string;
   conditions: string[];
+  condition_durations?: Record<string, number>;
 }
 
 export interface RealtimeCombatantAdd {

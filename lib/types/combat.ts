@@ -45,6 +45,10 @@ export interface Combatant {
   player_character_id: string | null;
   /** Visual role for manually-added combatants. Null = from compendium (has monster_id). */
   combatant_role: CombatantRole | null;
+  /** Death saving throws for player-type creatures at 0 HP. */
+  death_saves?: { successes: number; failures: number };
+  /** Tracks how many turns each condition has been active. Key = condition name, value = turn count. */
+  condition_durations?: Record<string, number>;
 }
 
 export type UndoEntry =
@@ -71,6 +75,10 @@ export interface EncounterState {
   lastAddedCombatantId: string | null;
   /** Client-side only: which monster groups are expanded (default collapsed). */
   expandedGroups: Record<string, boolean>;
+  /** Timestamp (ms) when combat started. Client-side only. */
+  combatStartedAt: number | null;
+  /** Timestamp (ms) when the current turn started. Client-side only. */
+  turnStartedAt: number | null;
 }
 
 export interface CombatActions {
@@ -104,6 +112,12 @@ export interface CombatActions {
   toggleCondition: (id: string, condition: string) => void;
   /** Mark a combatant as defeated (or un-defeat). */
   setDefeated: (id: string, is_defeated: boolean) => void;
+  /** Add a death save success for a player-type combatant. 3 successes = stabilized. */
+  addDeathSaveSuccess: (id: string) => void;
+  /** Add a death save failure for a player-type combatant. 3 failures = defeated. */
+  addDeathSaveFailure: (id: string) => void;
+  /** Reset death saves for a combatant (e.g. when healed above 0 HP). */
+  resetDeathSaves: (id: string) => void;
   /** Toggle hidden/visible state for a combatant (DM-only). Hidden combatants are invisible to players. */
   toggleHidden: (id: string) => void;
   /** Update a combatant's editable stats (name, display_name, max_hp, ac, spell_save_dc). Caps current_hp to new max_hp. */

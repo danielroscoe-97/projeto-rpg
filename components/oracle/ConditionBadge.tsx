@@ -44,14 +44,19 @@ const CONDITION_COLORS: Record<string, string> = {
   unconscious: "bg-slate-700",
 };
 
+const CIRCLED_DIGITS = ["⓪", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳"];
+function circledNumber(n: number): string {
+  return n >= 0 && n < CIRCLED_DIGITS.length ? CIRCLED_DIGITS[n] : `(${n})`;
+}
+
 interface ConditionBadgeProps {
   condition: string;
   rulesetVersion?: RulesetVersion;
-  /** When provided, a ✕ button is shown to remove the condition directly. */
   onRemove?: (condition: string) => void;
+  turnCount?: number;
 }
 
-export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }: ConditionBadgeProps) {
+export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove, turnCount }: ConditionBadgeProps) {
   const t = useTranslations("combat");
   const tc = useTranslations("conditions");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
@@ -85,6 +90,11 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove }:
       >
         {IconComponent && <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />}
         {displayName}
+        {turnCount != null && turnCount > 0 && (
+          <span className="ml-0.5 text-white/80 text-[10px]" title={`${turnCount} turn${turnCount !== 1 ? "s" : ""}`}>
+            {circledNumber(turnCount)}
+          </span>
+        )}
       </button>
       {onRemove && (
         <button
