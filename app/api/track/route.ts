@@ -47,6 +47,11 @@ const ALLOWED_EVENTS = new Set([
   "checkout:completed",
   "checkout:canceled",
   "subscription:canceled",
+  // Guest conversion funnel
+  "guest:session_expired",
+  "guest:expired_cta_signup",
+  "guest:expired_cta_reset",
+  "guest:combat_imported",
 ]);
 
 // In-process rate limiter: 60 events/min per IP

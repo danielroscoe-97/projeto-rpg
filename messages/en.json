@@ -1565,6 +1565,9 @@
     "invite_back": "Go to Homepage",
     "pricing_title": "Pricing Page Error",
     "pricing_description": "We couldn't load the pricing page. If this persists, contact us.",
-    "pricing_contact": "Contact Support"
+    "pricing_contact": "Contact Support",
+    "app_title": "Something Went Wrong",
+    "app_description": "An unexpected error occurred in the app. The error has been reported automatically.",
+    "app_dashboard": "Go to Dashboard"
   }
 }

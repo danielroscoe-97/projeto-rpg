@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import * as Sentry from "@sentry/nextjs";
 
-export default function JoinError({
+export default function AppError({
   error,
   reset,
 }: {
@@ -22,10 +22,10 @@ export default function JoinError({
     <div className="flex min-h-[60vh] w-full items-center justify-center p-6">
       <div className="text-center space-y-4 max-w-md">
         <h1 className="text-xl font-semibold text-white font-[family-name:var(--font-cinzel)]">
-          {t("invite_title")}
+          {t("app_title")}
         </h1>
         <p className="text-sm text-white/60">
-          {t("invite_description")}
+          {t("app_description")}
         </p>
         <div className="flex flex-col gap-3 pt-2">
           <button
@@ -36,10 +36,10 @@ export default function JoinError({
             {t("retry")}
           </button>
           <Link
-            href="/"
+            href="/app/dashboard"
             className="px-4 py-2 border border-gold/30 text-gold rounded-md text-sm min-h-[44px] flex items-center justify-center hover:bg-gold/10 transition-colors"
           >
-            {t("invite_back")}
+            {t("app_dashboard")}
           </Link>
         </div>
       </div>

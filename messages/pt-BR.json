@@ -1565,6 +1565,9 @@
     "invite_back": "Ir para a Página Inicial",
     "pricing_title": "Erro na Página de Preços",
     "pricing_description": "Não conseguimos carregar a página de preços. Se o problema persistir, entre em contato.",
-    "pricing_contact": "Contatar Suporte"
+    "pricing_contact": "Contatar Suporte",
+    "app_title": "Algo Deu Errado",
+    "app_description": "Ocorreu um erro inesperado no app. O erro foi reportado automaticamente.",
+    "app_dashboard": "Ir para o Dashboard"
   }
 }
