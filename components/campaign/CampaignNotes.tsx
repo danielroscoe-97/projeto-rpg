@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,40 +17,58 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
-import type { CampaignNote } from "@/lib/types/database";
+import { Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye } from "lucide-react";
+import { NotesFolderTree } from "./NotesFolderTree";
+import { NoteCard } from "./NoteCard";
+import {
+  getFolders,
+  createFolder,
+  updateFolder,
+  deleteFolder,
+  moveNoteToFolder,
+  toggleNoteShared,
+} from "@/lib/supabase/campaign-notes";
+import type { CampaignNote, CampaignNoteFolder } from "@/lib/types/database";
 
 interface CampaignNotesProps {
   campaignId: string;
+  isOwner?: boolean;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";
 
-export function CampaignNotes({ campaignId }: CampaignNotesProps) {
+export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps) {
   const supabase = createClient();
+  const t = useTranslations("notes");
   const [notes, setNotes] = useState<CampaignNote[]>([]);
+  const [folders, setFolders] = useState<CampaignNoteFolder[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [saveStatus, setSaveStatus] = useState<Record<string, SaveStatus>>({});
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
 
-  // Fetch notes on mount
+  // Fetch notes and folders on mount
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchData = async () => {
       try {
-        const { data, error } = await supabase
-          .from("campaign_notes")
-          .select("*")
-          .eq("campaign_id", campaignId)
-          .order("updated_at", { ascending: false });
+        const [notesRes, foldersData] = await Promise.all([
+          supabase
+            .from("campaign_notes")
+            .select("*")
+            .eq("campaign_id", campaignId)
+            .order("updated_at", { ascending: false }),
+          getFolders(campaignId),
+        ]);
 
-        if (error) throw error;
-        setNotes(data ?? []);
+        if (notesRes.error) throw notesRes.error;
+        setNotes(notesRes.data ?? []);
+        setFolders(foldersData);
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
-          action: "fetchNotes",
+          action: "fetchData",
           category: "network",
         });
       } finally {
@@ -56,8 +76,38 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
       }
     };
 
-    fetchNotes();
+    fetchData();
   }, [campaignId, supabase]);
+
+  // Note counts per folder
+  const noteCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    let unfiled = 0;
+    for (const note of notes) {
+      if (note.folder_id) {
+        counts[note.folder_id] = (counts[note.folder_id] ?? 0) + 1;
+      } else {
+        unfiled++;
+      }
+    }
+    counts["unfiled"] = unfiled;
+    return counts;
+  }, [notes]);
+
+  // Folder map for quick lookup
+  const folderMap = useMemo(() => {
+    const map = new Map<string, CampaignNoteFolder>();
+    for (const f of folders) map.set(f.id, f);
+    return map;
+  }, [folders]);
+
+  // Filter notes by selected folder
+  const filteredNotes = useMemo(() => {
+    if (selectedFolderId === null) {
+      return notes; // show all notes when "All/Unfiled" is selected
+    }
+    return notes.filter((n) => n.folder_id === selectedFolderId);
+  }, [notes, selectedFolderId]);
 
   // Flush pending saves and cleanup debounce timers on unmount
   const notesRef = useRef(notes);
@@ -67,7 +117,6 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
     return () => {
       Object.keys(timers).forEach((id) => {
         clearTimeout(timers[id]);
-        // Fire pending save for each note with a timer
         const note = notesRef.current.find((n) => n.id === id);
         if (note) {
           saveNote(id, { title: note.title, content: note.content });
@@ -80,11 +129,8 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
   const toggleExpanded = useCallback((id: string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);
@@ -152,7 +198,12 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
 
       const { data, error } = await supabase
         .from("campaign_notes")
-        .insert({ campaign_id: campaignId, user_id: user.id })
+        .insert({
+          campaign_id: campaignId,
+          user_id: user.id,
+          folder_id: selectedFolderId,
+          is_shared: false,
+        })
         .select()
         .single();
 
@@ -168,7 +219,7 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
         category: "network",
       });
     }
-  }, [campaignId, supabase]);
+  }, [campaignId, supabase, selectedFolderId]);
 
   const deleteNote = useCallback(
     async (id: string) => {
@@ -198,11 +249,101 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
     [supabase],
   );
 
-  const getPreviewText = (note: CampaignNote): string => {
-    if (!note.content) return "";
-    const firstLine = note.content.split("\n")[0];
-    return firstLine.length > 80 ? firstLine.slice(0, 80) + "..." : firstLine;
-  };
+  const handleToggleShared = useCallback(
+    async (noteId: string, isShared: boolean) => {
+      try {
+        await toggleNoteShared(noteId, isShared);
+        setNotes((prev) =>
+          prev.map((n) => (n.id === noteId ? { ...n, is_shared: isShared } : n)),
+        );
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "toggleShared",
+          category: "network",
+        });
+      }
+    },
+    [],
+  );
+
+  const handleMoveToFolder = useCallback(
+    async (noteId: string, folderId: string | null) => {
+      try {
+        await moveNoteToFolder(noteId, folderId);
+        setNotes((prev) =>
+          prev.map((n) =>
+            n.id === noteId ? { ...n, folder_id: folderId } : n,
+          ),
+        );
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "moveToFolder",
+          category: "network",
+        });
+      }
+    },
+    [],
+  );
+
+  // Folder CRUD handlers
+  const handleCreateFolder = useCallback(
+    async (name: string, parentId?: string | null) => {
+      try {
+        const newFolder = await createFolder(campaignId, name, parentId);
+        setFolders((prev) => [...prev, newFolder]);
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "createFolder",
+          category: "network",
+        });
+      }
+    },
+    [campaignId],
+  );
+
+  const handleRenameFolder = useCallback(
+    async (folderId: string, name: string) => {
+      try {
+        await updateFolder(folderId, name);
+        setFolders((prev) =>
+          prev.map((f) => (f.id === folderId ? { ...f, name } : f)),
+        );
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "renameFolder",
+          category: "network",
+        });
+      }
+    },
+    [],
+  );
+
+  const handleDeleteFolder = useCallback(
+    async (folderId: string) => {
+      try {
+        await deleteFolder(folderId);
+        setFolders((prev) => prev.filter((f) => f.id !== folderId));
+        // Unfiled notes that were in the deleted folder
+        setNotes((prev) =>
+          prev.map((n) =>
+            n.folder_id === folderId ? { ...n, folder_id: null } : n,
+          ),
+        );
+        if (selectedFolderId === folderId) setSelectedFolderId(null);
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "deleteFolder",
+          category: "network",
+        });
+      }
+    },
+    [selectedFolderId],
+  );
 
   if (loading) {
     return (
@@ -222,120 +363,210 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold text-foreground">
-          Notas da Campanha
+          {t("title")}
         </h2>
-        <Button
-          variant="goldOutline"
-          size="sm"
-          onClick={createNote}
-          className="gap-1.5"
-        >
-          <Plus className="w-4 h-4" />
-          Nova nota
-        </Button>
+        {isOwner && (
+          <Button
+            variant="goldOutline"
+            size="sm"
+            onClick={createNote}
+            className="gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            {t("new_note")}
+          </Button>
+        )}
       </div>
 
-      {/* Empty state */}
-      {notes.length === 0 && (
-        <div className="rounded-xl border border-border bg-surface-secondary p-8 text-center">
-          <p className="text-muted-foreground text-sm">
-            Nenhuma nota ainda. Crie uma nota para organizar sua campanha.
-          </p>
+      <div className="flex gap-4">
+        {/* Sidebar: Folder tree */}
+        <div className="w-48 shrink-0 space-y-2">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
+            {t("folders")}
+          </h3>
+          <NotesFolderTree
+            folders={folders}
+            selectedFolderId={selectedFolderId}
+            noteCounts={noteCounts}
+            onSelectFolder={setSelectedFolderId}
+            onCreateFolder={handleCreateFolder}
+            onRenameFolder={handleRenameFolder}
+            onDeleteFolder={handleDeleteFolder}
+            isOwner={isOwner}
+          />
         </div>
-      )}
 
-      {/* Note cards */}
-      <div className="space-y-3">
-        {notes.map((note) => {
-          const isExpanded = expandedIds.has(note.id);
-          const status = saveStatus[note.id] ?? "idle";
-
-          return (
-            <div
-              key={note.id}
-              className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all duration-200"
-            >
-              {/* Collapsed header */}
-              <button
-                type="button"
-                onClick={() => toggleExpanded(note.id)}
-                className="flex w-full items-center gap-3 p-4 text-left hover:bg-accent/5 transition-colors min-h-[48px]"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 text-amber-400 shrink-0" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
-                    {note.title || "Sem titulo"}
-                  </p>
-                  {!isExpanded && note.content && (
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
-                      {getPreviewText(note)}
-                    </p>
-                  )}
-                </div>
-                {/* Save indicator */}
-                {status !== "idle" && (
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {status === "saving" ? "Salvando..." : "Salvo"}
-                  </span>
-                )}
-              </button>
-
-              {/* Expanded content */}
-              {isExpanded && (
-                <div className="px-4 pb-4 space-y-3">
-                  <Input
-                    value={note.title}
-                    onChange={(e) =>
-                      handleFieldChange(note.id, "title", e.target.value)
-                    }
-                    placeholder="Titulo da nota..."
-                    className="font-medium"
-                    data-testid={`note-title-${note.id}`}
-                  />
-                  <textarea
-                    value={note.content}
-                    onChange={(e) => {
-                      handleFieldChange(note.id, "content", e.target.value);
-                      // Auto-resize
-                      const el = e.target;
-                      el.style.height = "auto";
-                      el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
-                    }}
-                    placeholder="Escreva sua nota aqui..."
-                    rows={3}
-                    className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
-                    style={{ minHeight: "4.5rem", maxHeight: "15rem" }}
-                    data-testid={`note-content-${note.id}`}
-                  />
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(note.updated_at).toLocaleDateString("pt-BR", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                    <Button
-                      variant="destructiveSubtle"
-                      size="sm"
-                      onClick={() => setDeleteTarget(note.id)}
-                      className="gap-1.5"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Excluir
-                    </Button>
-                  </div>
-                </div>
+        {/* Main: Notes list */}
+        <div className="flex-1 min-w-0 space-y-3">
+          {/* Empty state */}
+          {filteredNotes.length === 0 && (
+            <div className="rounded-xl border border-border bg-surface-secondary p-8 text-center">
+              <p className="text-muted-foreground text-sm">
+                {t("no_notes")}
+              </p>
+              {isOwner && (
+                <p className="text-muted-foreground/60 text-xs mt-1">
+                  {t("create_first")}
+                </p>
               )}
             </div>
-          );
-        })}
+          )}
+
+          {/* Note cards */}
+          {filteredNotes.map((note) => {
+            const isExpanded = expandedIds.has(note.id);
+            const status = saveStatus[note.id] ?? "idle";
+
+            return (
+              <div
+                key={note.id}
+                className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all duration-200"
+              >
+                {/* Collapsed header */}
+                <button
+                  type="button"
+                  onClick={() => toggleExpanded(note.id)}
+                  className="flex w-full items-center gap-3 p-4 text-left hover:bg-accent/5 transition-colors min-h-[48px]"
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="w-4 h-4 text-amber-400 shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {note.title || t("untitled")}
+                      </p>
+                      {/* Visibility badge */}
+                      {note.is_shared ? (
+                        <span className="flex items-center gap-0.5 text-xs text-emerald-400" title={t("shared_hint")}>
+                          <Eye className="w-3 h-3" />
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-0.5 text-xs text-muted-foreground/50" title={t("private_hint")}>
+                          <Lock className="w-3 h-3" />
+                        </span>
+                      )}
+                    </div>
+                    {!isExpanded && note.content && (
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        {note.content.split("\n")[0].slice(0, 80)}
+                        {note.content.length > 80 ? "..." : ""}
+                      </p>
+                    )}
+                  </div>
+                  {/* Save indicator */}
+                  {status !== "idle" && (
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {status === "saving" ? t("saving") : t("saved")}
+                    </span>
+                  )}
+                </button>
+
+                {/* Expanded content */}
+                {isExpanded && (
+                  <div className="px-4 pb-4 space-y-3">
+                    <Input
+                      value={note.title}
+                      onChange={(e) =>
+                        handleFieldChange(note.id, "title", e.target.value)
+                      }
+                      placeholder={t("title_placeholder")}
+                      className="font-medium"
+                      data-testid={`note-title-${note.id}`}
+                    />
+                    <textarea
+                      value={note.content}
+                      onChange={(e) => {
+                        handleFieldChange(note.id, "content", e.target.value);
+                        const el = e.target;
+                        el.style.height = "auto";
+                        el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
+                      }}
+                      placeholder={t("content_placeholder")}
+                      rows={3}
+                      className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
+                      style={{ minHeight: "4.5rem", maxHeight: "15rem" }}
+                      data-testid={`note-content-${note.id}`}
+                    />
+
+                    {/* Controls row */}
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-4">
+                        {/* Shared toggle */}
+                        {isOwner && (
+                          <label className="flex items-center gap-2 text-xs cursor-pointer">
+                            <Switch
+                              checked={note.is_shared}
+                              onCheckedChange={(checked) =>
+                                handleToggleShared(note.id, checked)
+                              }
+                              data-testid={`note-shared-toggle-${note.id}`}
+                            />
+                            <span className={note.is_shared ? "text-emerald-400" : "text-muted-foreground"}>
+                              {note.is_shared ? t("shared") : t("private")}
+                            </span>
+                            <span className="text-muted-foreground/50">
+                              {note.is_shared ? t("shared_hint") : t("private_hint")}
+                            </span>
+                          </label>
+                        )}
+
+                        {/* Folder selector */}
+                        {isOwner && folders.length > 0 && (
+                          <select
+                            value={note.folder_id ?? ""}
+                            onChange={(e) =>
+                              handleMoveToFolder(
+                                note.id,
+                                e.target.value || null,
+                              )
+                            }
+                            className="text-xs bg-surface-tertiary border border-input rounded px-2 py-1 text-foreground"
+                            data-testid={`note-folder-select-${note.id}`}
+                          >
+                            <option value="">{t("unfiled")}</option>
+                            {folders.map((f) => (
+                              <option key={f.id} value={f.id}>
+                                {f.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(note.updated_at).toLocaleDateString(
+                            undefined,
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
+                        </span>
+                      </div>
+
+                      {isOwner && (
+                        <Button
+                          variant="destructiveSubtle"
+                          size="sm"
+                          onClick={() => setDeleteTarget(note.id)}
+                          className="gap-1.5"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          {t("delete_note")}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Delete confirmation dialog */}
@@ -345,19 +576,18 @@ export function CampaignNotes({ campaignId }: CampaignNotesProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir nota</AlertDialogTitle>
+            <AlertDialogTitle>{t("delete_note")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir esta nota? Esta acao nao pode ser
-              desfeita.
+              {t("delete_note_confirm")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteTarget && deleteNote(deleteTarget)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Excluir
+              {t("delete_note")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

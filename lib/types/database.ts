@@ -503,6 +503,8 @@ export interface Database {
           user_id: string;
           title: string;
           content: string;
+          folder_id: string | null;
+          is_shared: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -512,13 +514,40 @@ export interface Database {
           user_id: string;
           title?: string;
           content?: string;
+          folder_id?: string | null;
+          is_shared?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           title?: string;
           content?: string;
+          folder_id?: string | null;
+          is_shared?: boolean;
           updated_at?: string;
+        };
+      };
+      campaign_note_folders: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          name: string;
+          parent_id: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          name: string;
+          parent_id?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
+          parent_id?: string | null;
+          sort_order?: number;
         };
       };
       session_tokens: {
@@ -571,3 +600,4 @@ export type ConditionType = Database["public"]["Tables"]["condition_types"]["Row
 export type SessionToken = Database["public"]["Tables"]["session_tokens"]["Row"];
 export type MonsterPreset = Database["public"]["Tables"]["monster_presets"]["Row"];
 export type CampaignNote = Database["public"]["Tables"]["campaign_notes"]["Row"];
+export type CampaignNoteFolder = Database["public"]["Tables"]["campaign_note_folders"]["Row"];
