@@ -9,7 +9,6 @@ import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
 import { LpPricingSection } from "@/components/marketing/LpPricingSection";
-import { LandingGoogleButton } from "@/components/marketing/LandingGoogleButton";
 
 import { Button } from "@/components/ui/button";
 import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
@@ -216,12 +215,6 @@ function HeroSection() {
             </Link>
           </div>
 
-          {/* Google OAuth quick-start */}
-          <LandingGoogleButton
-            label="Continuar com Google"
-            loadingLabel="Conectando..."
-            className="w-full"
-          />
         </div>
 
         {/* Stats strip */}
@@ -917,11 +910,6 @@ function FinalCtaSection() {
             Começar Agora — é Grátis
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
-          <LandingGoogleButton
-            label="Continuar com Google"
-            loadingLabel="Conectando..."
-            className="w-full max-w-xs"
-          />
           <Link
             href="/try"
             className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
