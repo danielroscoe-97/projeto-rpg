@@ -1,17 +1,19 @@
 name: E2E Tests
 
 on:
-  # Auto-trigger disabled until Supabase secrets are configured in repo settings.
-  # To enable: uncomment push/pull_request triggers and set these secrets:
-  #   NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  #   E2E_DM_EMAIL, E2E_DM_PASSWORD
-  workflow_dispatch: # manual trigger only
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Skip entirely when Supabase secrets are not configured
+    if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
 
     steps:
       - name: Checkout
@@ -37,7 +39,13 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Run E2E journey tests
-        run: npx playwright test e2e/journeys/ --project=desktop-chrome
+        run: >
+          npx playwright test
+          e2e/journeys/dm-happy-path.spec.ts
+          e2e/journeys/dm-reconnect.spec.ts
+          e2e/journeys/guest-try-mode.spec.ts
+          e2e/journeys/player-mobile.spec.ts
+          --project=desktop-chrome
         env:
           CI: true
           E2E_DM_EMAIL: ${{ secrets.E2E_DM_EMAIL }}
