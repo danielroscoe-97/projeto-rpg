@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Users } from "lucide-react";
 import { MemberCard } from "./MemberCard";
 import { InvitePlayerDialog } from "./InvitePlayerDialog";
+import { MembersListSkeleton } from "@/components/ui/skeletons/MembersListSkeleton";
 import { getCampaignMembersAction } from "@/lib/actions/invite-actions";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
@@ -55,24 +56,17 @@ export function MembersList({
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="space-y-3">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="bg-card border border-border rounded-lg p-4 h-20 animate-pulse"
-          />
-        ))}
-      </div>
-    );
+    return <MembersListSkeleton count={3} />;
   }
 
   if (members.length === 0) {
     return (
-      <div className="text-center py-8" data-testid="members-empty">
-        <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+      <div className="rounded-lg border border-border bg-card p-8 text-center" data-testid="members-empty">
+        <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+          <Users className="w-6 h-6 text-amber-400/60" />
+        </div>
         <p className="text-sm text-muted-foreground">{t("no_members")}</p>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-xs text-muted-foreground/60 mt-1">
           {t("invite_first")}
         </p>
         {isOwner && (

@@ -82,7 +82,10 @@ describe("CampaignNotes", () => {
 
   it("renders new note button for owner", async () => {
     render(<CampaignNotes campaignId="c1" isOwner={true} />);
-    expect(await screen.findByText("New note")).toBeInTheDocument();
+    // Wait for loading to complete (title appears after loading)
+    expect(await screen.findByText("Campaign Notes")).toBeInTheDocument();
+    // "New note" appears in header and/or empty state CTA
+    expect(screen.getAllByText("New note").length).toBeGreaterThanOrEqual(1);
   });
 
   it("hides new note button for non-owner", async () => {

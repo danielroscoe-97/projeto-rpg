@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { ChevronDown, ChevronRight, Skull, Swords, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -210,6 +211,7 @@ function EncounterCard({ encounter }: { encounter: FinishedEncounter }) {
 // ── Main component ───────────────────────────────────────────────────────────
 
 export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
+  const t = useTranslations("dashboard");
   const [encounters, setEncounters] = useState<FinishedEncounter[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -304,7 +306,7 @@ export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
   if (loading) {
     return (
       <div className="space-y-3" data-testid="encounter-history-loading">
-        <h2 className="text-lg font-semibold text-foreground">Historico de Combates</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("encounter_history_title")}</h2>
         {[1, 2, 3].map((i) => (
           <EncounterCardSkeleton key={i} />
         ))}
@@ -317,7 +319,7 @@ export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
   if (error) {
     return (
       <div className="space-y-3" data-testid="encounter-history-error">
-        <h2 className="text-lg font-semibold text-foreground">Historico de Combates</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("encounter_history_title")}</h2>
         <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 text-sm text-destructive">
           {error}
         </div>
@@ -330,11 +332,16 @@ export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
   if (encounters.length === 0) {
     return (
       <div className="space-y-3" data-testid="encounter-history-empty">
-        <h2 className="text-lg font-semibold text-foreground">Historico de Combates</h2>
-        <div className="flex flex-col items-center gap-2 py-8 text-center">
-          <Swords className="w-10 h-10 text-muted-foreground/30" aria-hidden="true" />
+        <h2 className="text-lg font-semibold text-foreground">{t("encounter_history_title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-8 text-center">
+          <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+            <Swords className="w-6 h-6 text-amber-400/60" aria-hidden="true" />
+          </div>
           <p className="text-muted-foreground text-sm">
-            Nenhum combate finalizado ainda.
+            {t("encounter_history_empty")}
+          </p>
+          <p className="text-muted-foreground/60 text-xs mt-1">
+            {t("encounter_history_empty_desc")}
           </p>
         </div>
       </div>
@@ -345,7 +352,7 @@ export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
 
   return (
     <div className="space-y-3" data-testid="encounter-history">
-      <h2 className="text-lg font-semibold text-foreground">Historico de Combates</h2>
+      <h2 className="text-lg font-semibold text-foreground">{t("encounter_history_title")}</h2>
 
       <div className="space-y-2">
         {encounters.map((enc) => (
@@ -362,7 +369,7 @@ export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
             disabled={loadingMore}
             data-testid="encounter-history-load-more"
           >
-            {loadingMore ? "Carregando..." : "Carregar mais"}
+            {loadingMore ? t("encounter_history_loading") : t("encounter_history_load_more")}
           </Button>
         </div>
       )}

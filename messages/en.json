@@ -99,7 +99,10 @@
     "checklist_click_link": "Click the confirmation link",
     "email_delay_notice": "The email may take up to 2 minutes to arrive",
     "tab_login": "Login",
-    "tab_signup": "Sign Up"
+    "tab_signup": "Sign Up",
+    "google_login": "Continue with Google",
+    "google_login_loading": "Connecting...",
+    "or_separator": "or"
   },
   "signup": {
     "role_selection_title": "How will you use Pocket DM?",
@@ -336,7 +339,17 @@
     "invite_accepted_redirect": "Invite accepted! Redirecting to campaign...",
     "player_count_label": "{count} players",
     "view_campaign": "View",
-    "dm_label": "DM"
+    "dm_label": "DM",
+    "encounter_history_title": "Combat History",
+    "encounter_history_empty": "No finished combats yet.",
+    "encounter_history_empty_desc": "Start a combat session and complete it to see history here.",
+    "encounter_history_loading": "Loading...",
+    "encounter_history_load_more": "Load more",
+    "encounter_history_error": "Failed to load encounters",
+    "encounter_history_rounds": "{count} round(s)",
+    "encounter_history_combatants_label": "Combatants",
+    "encounter_history_monsters_defeated": "{count} monster(s) defeated",
+    "encounter_history_pcs_fallen": "{count} PC(s) fallen"
   },
   "sidebar": {
     "overview": "Overview",
@@ -1320,7 +1333,16 @@
     "testimonial_3_author": "New DM",
     "how_it_works_cta": "Try Combat Tracker — Free",
     "no_account_needed": "No account needed",
-    "cta_primary": "Start Free"
+    "cta_primary": "Start Free",
+    "google_cta": "Continue with Google",
+    "google_cta_loading": "Connecting..."
+  },
+  "empty_states": {
+    "campaigns": "Create your first campaign",
+    "campaigns_desc": "Organize sessions, NPCs and notes",
+    "combats": "No combats yet",
+    "combats_desc": "Start a session to begin",
+    "generic_create": "Create"
   },
   "pro": {
     "badge": {

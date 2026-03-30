@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye } from "lucide-react";
+import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
 import {
@@ -346,16 +347,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   );
 
   if (loading) {
-    return (
-      <div className="space-y-3">
-        {[1, 2].map((i) => (
-          <div
-            key={i}
-            className="h-16 rounded-xl bg-surface-secondary animate-pulse"
-          />
-        ))}
-      </div>
-    );
+    return <NotesListSkeleton count={2} />;
   }
 
   return (
@@ -400,14 +392,28 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         <div className="flex-1 min-w-0 space-y-3">
           {/* Empty state */}
           {filteredNotes.length === 0 && (
-            <div className="rounded-xl border border-border bg-surface-secondary p-8 text-center">
+            <div className="rounded-lg border border-border bg-card p-8 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+                <Plus className="w-6 h-6 text-amber-400/60" />
+              </div>
               <p className="text-muted-foreground text-sm">
                 {t("no_notes")}
               </p>
               {isOwner && (
-                <p className="text-muted-foreground/60 text-xs mt-1">
-                  {t("create_first")}
-                </p>
+                <>
+                  <p className="text-muted-foreground/60 text-xs mt-1">
+                    {t("create_first")}
+                  </p>
+                  <Button
+                    variant="goldOutline"
+                    size="sm"
+                    onClick={createNote}
+                    className="mt-4 gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t("new_note")}
+                  </Button>
+                </>
               )}
             </div>
           )}

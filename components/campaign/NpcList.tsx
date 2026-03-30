@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { NpcCard } from "./NpcCard";
 import { NpcForm } from "./NpcForm";
+import { NpcCardSkeleton } from "@/components/ui/skeletons/NpcCardSkeleton";
 import {
   getNpcs,
   createNpc,
@@ -134,16 +135,7 @@ export function NpcList({ campaignId }: NpcListProps) {
   }, []);
 
   if (loading) {
-    return (
-      <div className="space-y-3">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-20 rounded-lg bg-surface-secondary animate-pulse"
-          />
-        ))}
-      </div>
-    );
+    return <NpcCardSkeleton count={3} />;
   }
 
   return (
