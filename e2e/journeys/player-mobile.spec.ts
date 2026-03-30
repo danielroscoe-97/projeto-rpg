@@ -19,11 +19,15 @@ import {
 } from "../helpers/combat";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
+// This test requires Supabase Realtime WebSocket between two browser contexts.
+// Skip when SUPABASE_REALTIME_E2E is not set (local dev), run in CI with live Supabase.
+const hasRealtimeE2E = !!process.env.SUPABASE_REALTIME_E2E;
+
 test.describe("Player Mobile Journey", () => {
-  // FIXME: requires Supabase Realtime between two browser contexts (DM ↔ Player).
-  // Late-join toast broadcast is not reliable in local dev without a stable WS connection.
-  // Re-enable once E2E runs against a dedicated staging Supabase project.
-  test.fixme("Player joins on mobile, sees initiative board, no numeric monster HP", async ({
+  // eslint-disable-next-line playwright/no-skipped-test
+  test.skip(!hasRealtimeE2E, "Requires SUPABASE_REALTIME_E2E=1 (live Supabase Realtime)");
+
+  test("Player joins on mobile, sees initiative board, no numeric monster HP", async ({
     browser,
   }) => {
     // Create two browser contexts: desktop DM + mobile player
