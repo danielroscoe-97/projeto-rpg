@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, LayoutGrid, List, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,16 @@ import {
   deleteNpc,
   toggleNpcVisibility,
 } from "@/lib/supabase/campaign-npcs";
+import { getCampaignNoteNpcLinks } from "@/lib/supabase/note-npc-links";
+import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignNpc, CampaignNpcInsert } from "@/lib/types/campaign-npcs";
+import type { NoteNpcLink } from "@/lib/types/note-npc-links";
+
+interface NoteInfo {
+  id: string;
+  title: string;
+}
 
 type ViewMode = "grid" | "list";
 type FilterMode = "all" | "visible" | "hidden";
@@ -36,6 +44,8 @@ interface NpcListProps {
 export function NpcList({ campaignId }: NpcListProps) {
   const t = useTranslations("npcs");
   const [npcs, setNpcs] = useState<CampaignNpc[]>([]);
+  const [npcLinks, setNpcLinks] = useState<NoteNpcLink[]>([]);
+  const [noteInfos, setNoteInfos] = useState<NoteInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [filter, setFilter] = useState<FilterMode>("all");
@@ -43,12 +53,32 @@ export function NpcList({ campaignId }: NpcListProps) {
   const [editingNpc, setEditingNpc] = useState<CampaignNpc | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignNpc | null>(null);
 
-  // Fetch NPCs on mount
+  // Fetch NPCs, links, and note titles on mount
   useEffect(() => {
-    const fetchNpcs = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getNpcs(campaignId);
-        setNpcs(data);
+        const [npcsData, linksData] = await Promise.all([
+          getNpcs(campaignId),
+          getCampaignNoteNpcLinks(campaignId),
+        ]);
+        setNpcs(npcsData);
+        setNpcLinks(linksData);
+
+        // Fetch note titles for linked notes
+        if (linksData.length > 0) {
+          const supabase = createClient();
+          const noteIds = [...new Set(linksData.map((l) => l.note_id))];
+          const { data: notesData } = await supabase
+            .from("campaign_notes")
+            .select("id, title")
+            .in("id", noteIds);
+          setNoteInfos(
+            (notesData ?? []).map((n: { id: string; title: string }) => ({
+              id: n.id,
+              title: n.title,
+            })),
+          );
+        }
       } catch (err) {
         captureError(err, {
           component: "NpcList",
@@ -59,8 +89,24 @@ export function NpcList({ campaignId }: NpcListProps) {
         setLoading(false);
       }
     };
-    fetchNpcs();
+    fetchData();
   }, [campaignId]);
+
+  // Build related notes map per NPC
+  const relatedNotesMap = useMemo(() => {
+    const noteMap = new Map<string, NoteInfo>();
+    for (const n of noteInfos) noteMap.set(n.id, n);
+
+    const map = new Map<string, NoteInfo[]>();
+    for (const link of npcLinks) {
+      const note = noteMap.get(link.note_id);
+      if (!note) continue;
+      const existing = map.get(link.npc_id) ?? [];
+      existing.push(note);
+      map.set(link.npc_id, existing);
+    }
+    return map;
+  }, [npcLinks, noteInfos]);
 
   const filteredNpcs = npcs.filter((npc) => {
     if (filter === "visible") return npc.is_visible_to_players;
@@ -247,6 +293,7 @@ export function NpcList({ campaignId }: NpcListProps) {
             <NpcCard
               key={npc.id}
               npc={npc}
+              relatedNotes={relatedNotesMap.get(npc.id)}
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}

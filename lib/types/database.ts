@@ -565,6 +565,22 @@ export interface Database {
           sort_order?: number;
         };
       };
+      note_npc_links: {
+        Row: {
+          id: string;
+          note_id: string;
+          npc_id: string;
+        };
+        Insert: {
+          id?: string;
+          note_id: string;
+          npc_id: string;
+        };
+        Update: {
+          note_id?: string;
+          npc_id?: string;
+        };
+      };
       session_tokens: {
         Row: {
           id: string;

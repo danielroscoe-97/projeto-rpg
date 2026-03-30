@@ -218,6 +218,14 @@
     "delete_note_confirm": "Are you sure you want to delete this note? This action cannot be undone.",
     "cancel": "Cancel"
   },
+  "links": {
+    "related_npcs": "Related NPCs",
+    "related_notes": "Related Notes",
+    "link_npc": "Link NPC",
+    "unlink_npc": "Unlink",
+    "no_links": "No links",
+    "select_npc": "Select NPC..."
+  },
   "npcs": {
     "title": "NPCs",
     "add_npc": "New NPC",

@@ -20,6 +20,7 @@ import {
 import { Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye } from "lucide-react";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
+import { NpcTagSelector } from "./NpcTagSelector";
 import {
   getFolders,
   createFolder,
@@ -28,7 +29,15 @@ import {
   moveNoteToFolder,
   toggleNoteShared,
 } from "@/lib/supabase/campaign-notes";
+import {
+  getCampaignNoteNpcLinks,
+  linkNoteToNpc,
+  unlinkNoteFromNpc,
+} from "@/lib/supabase/note-npc-links";
+import { getNpcs } from "@/lib/supabase/campaign-npcs";
 import type { CampaignNote, CampaignNoteFolder } from "@/lib/types/database";
+import type { NoteNpcLink } from "@/lib/types/note-npc-links";
+import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 
 interface CampaignNotesProps {
   campaignId: string;
@@ -40,8 +49,11 @@ type SaveStatus = "idle" | "saving" | "saved";
 export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps) {
   const supabase = createClient();
   const t = useTranslations("notes");
+  const tLinks = useTranslations("links");
   const [notes, setNotes] = useState<CampaignNote[]>([]);
   const [folders, setFolders] = useState<CampaignNoteFolder[]>([]);
+  const [npcLinks, setNpcLinks] = useState<NoteNpcLink[]>([]);
+  const [campaignNpcs, setCampaignNpcs] = useState<CampaignNpc[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [saveStatus, setSaveStatus] = useState<Record<string, SaveStatus>>({});
@@ -53,18 +65,22 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [notesRes, foldersData] = await Promise.all([
+        const [notesRes, foldersData, linksData, npcsData] = await Promise.all([
           supabase
             .from("campaign_notes")
             .select("*")
             .eq("campaign_id", campaignId)
             .order("updated_at", { ascending: false }),
           getFolders(campaignId),
+          getCampaignNoteNpcLinks(campaignId),
+          getNpcs(campaignId),
         ]);
 
         if (notesRes.error) throw notesRes.error;
         setNotes(notesRes.data ?? []);
         setFolders(foldersData);
+        setNpcLinks(linksData);
+        setCampaignNpcs(npcsData);
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
@@ -108,6 +124,58 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     }
     return notes.filter((n) => n.folder_id === selectedFolderId);
   }, [notes, selectedFolderId]);
+
+  // Links per note for quick lookup
+  const linksByNote = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const link of npcLinks) {
+      const existing = map.get(link.note_id) ?? [];
+      existing.push(link.npc_id);
+      map.set(link.note_id, existing);
+    }
+    return map;
+  }, [npcLinks]);
+
+  // NPC map for quick name lookup
+  const npcMap = useMemo(() => {
+    const map = new Map<string, CampaignNpc>();
+    for (const npc of campaignNpcs) map.set(npc.id, npc);
+    return map;
+  }, [campaignNpcs]);
+
+  const handleLinkNpc = useCallback(
+    async (noteId: string, npcId: string) => {
+      try {
+        const link = await linkNoteToNpc(noteId, npcId);
+        setNpcLinks((prev) => [...prev, link]);
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "linkNpc",
+          category: "network",
+        });
+      }
+    },
+    [],
+  );
+
+  const handleUnlinkNpc = useCallback(
+    async (noteId: string, npcId: string) => {
+      try {
+        await unlinkNoteFromNpc(noteId, npcId);
+        setNpcLinks((prev) =>
+          prev.filter((l) => !(l.note_id === noteId && l.npc_id === npcId)),
+        );
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "unlinkNpc",
+          category: "network",
+        });
+      }
+    },
+    [],
+  );
 
   // Flush pending saves and cleanup debounce timers on unmount
   const notesRef = useRef(notes);
@@ -455,6 +523,23 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                         {note.content.length > 80 ? "..." : ""}
                       </p>
                     )}
+                    {/* Linked NPC chips in collapsed view */}
+                    {!isExpanded && (linksByNote.get(note.id) ?? []).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {(linksByNote.get(note.id) ?? []).map((npcId) => {
+                          const npc = npcMap.get(npcId);
+                          if (!npc) return null;
+                          return (
+                            <span
+                              key={npcId}
+                              className="inline-flex items-center bg-purple-400/10 text-purple-400 rounded-full px-2 py-0.5 text-xs"
+                            >
+                              {npc.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   {/* Save indicator */}
                   {status !== "idle" && (
@@ -490,6 +575,42 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       style={{ minHeight: "4.5rem", maxHeight: "15rem" }}
                       data-testid={`note-content-${note.id}`}
                     />
+
+                    {/* NPC tag selector */}
+                    {isOwner && campaignNpcs.length > 0 && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {tLinks("related_npcs")}
+                        </p>
+                        <NpcTagSelector
+                          availableNpcs={campaignNpcs}
+                          linkedNpcIds={linksByNote.get(note.id) ?? []}
+                          onLink={(npcId) => handleLinkNpc(note.id, npcId)}
+                          onUnlink={(npcId) => handleUnlinkNpc(note.id, npcId)}
+                        />
+                      </div>
+                    )}
+
+                    {/* Linked NPC chips (read-only for non-owners) */}
+                    {!isOwner && (linksByNote.get(note.id) ?? []).length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs font-medium text-muted-foreground mr-1">
+                          {tLinks("related_npcs")}:
+                        </span>
+                        {(linksByNote.get(note.id) ?? []).map((npcId) => {
+                          const npc = npcMap.get(npcId);
+                          if (!npc) return null;
+                          return (
+                            <span
+                              key={npcId}
+                              className="inline-flex items-center bg-purple-400/10 text-purple-400 rounded-full px-2 py-0.5 text-xs"
+                            >
+                              {npc.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
 
                     {/* Controls row */}
                     <div className="flex items-center justify-between flex-wrap gap-2">

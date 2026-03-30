@@ -2,19 +2,27 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Eye, EyeOff, Pencil, Trash2, User, ChevronDown, ChevronUp } from "lucide-react";
+import { Eye, EyeOff, Pencil, Trash2, User, ChevronDown, ChevronUp, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 
+interface RelatedNote {
+  id: string;
+  title: string;
+}
+
 interface NpcCardProps {
   npc: CampaignNpc;
+  relatedNotes?: RelatedNote[];
   onEdit: (npc: CampaignNpc) => void;
   onDelete: (npc: CampaignNpc) => void;
   onToggleVisibility: (npc: CampaignNpc) => void;
+  onNoteClick?: (noteId: string) => void;
 }
 
-export function NpcCard({ npc, onEdit, onDelete, onToggleVisibility }: NpcCardProps) {
+export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibility, onNoteClick }: NpcCardProps) {
   const t = useTranslations("npcs");
+  const tLinks = useTranslations("links");
   const [expanded, setExpanded] = useState(false);
 
   const { stats } = npc;
@@ -141,6 +149,29 @@ export function NpcCard({ npc, onEdit, onDelete, onToggleVisibility }: NpcCardPr
           <p className="text-xs text-muted-foreground whitespace-pre-wrap">
             {stats.notes}
           </p>
+        </div>
+      )}
+
+      {/* Related notes */}
+      {relatedNotes && relatedNotes.length > 0 && (
+        <div className="mt-3 pt-2 border-t border-border" data-testid={`npc-related-notes-${npc.id}`}>
+          <p className="text-xs font-medium text-muted-foreground mb-1">
+            {tLinks("related_notes")}
+          </p>
+          <div className="space-y-0.5">
+            {relatedNotes.map((note) => (
+              <button
+                key={note.id}
+                type="button"
+                onClick={() => onNoteClick?.(note.id)}
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-left"
+                data-testid={`npc-note-link-${note.id}`}
+              >
+                <FileText className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{note.title || t("notes")}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
