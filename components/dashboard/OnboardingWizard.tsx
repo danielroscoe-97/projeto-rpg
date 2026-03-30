@@ -424,7 +424,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
   async function handleCopyLink() {
     if (!state.sessionLink) return;
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}${state.sessionLink}`);
+      await navigator.clipboard.writeText(state.sessionLink ?? "");
       setState((s) => ({ ...s, copyError: null }));
     } catch {
       setState((s) => ({ ...s, copyError: t("launch_copy_error") }));
@@ -872,7 +872,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
           <>
             <Button
               variant="goldOutline"
-              onClick={() => setState((s) => ({ ...s, step: "choose", error: null }))}
+              onClick={() => setState((s) => ({ ...s, step: effectiveSource === "guest_combat" ? "welcome" : "choose", error: null }))}
             >
               {tc("back")}
             </Button>
