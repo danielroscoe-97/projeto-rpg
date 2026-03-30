@@ -6,6 +6,7 @@
  * verify GuestBanner with timer, apply damage, signup CTA.
  */
 import { test, expect } from "@playwright/test";
+import { waitForSrdReady } from "../helpers/combat";
 
 test.describe("Guest Try Mode Journey", () => {
   test("Full guest combat flow without authentication", async ({ page }) => {
@@ -23,6 +24,9 @@ test.describe("Guest Try Mode Journey", () => {
     // 2-3. Reload so the tour store reads the persisted "completed" state
     await page.reload();
     await page.waitForLoadState("domcontentloaded");
+
+    // Wait for SRD loading screen to finish (fetches bundles on first visit)
+    await waitForSrdReady(page);
 
     // 4. Search monster "Goblin" via SRD panel
     const srdSearchInput = page.locator('[data-testid="srd-search-input"]');
