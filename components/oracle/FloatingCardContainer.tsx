@@ -600,6 +600,23 @@ export function FloatingCardContainer() {
         }}
         data-testid="floating-cards-container"
       >
+        {/* Invisible backdrop — click outside any card to close the topmost one */}
+        {expandedCards.length > 0 && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 0,
+              pointerEvents: "auto",
+            }}
+            aria-hidden="true"
+            onClick={() => {
+              const topmost = [...expandedCards].sort((a, b) => b.zIndex - a.zIndex)[0];
+              if (topmost) unpinCard(topmost.id);
+            }}
+          />
+        )}
+
         {/* Expanded cards */}
         {expandedCards.map((card) => (
           <DraggableCard

@@ -14,10 +14,13 @@ import "./globals.css";
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
+const siteTitle = "Pocket DM — Combat Tracker D&D 5e";
+const siteDescription = "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP e condições em tempo real.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Pocket DM — Combat Tracker D&D 5e",
-  description: "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP e condições em tempo real.",
+  title: siteTitle,
+  description: siteDescription,
   manifest: "/manifest.json",
   icons: {
     apple: "/icons/apple-touch-icon.png",
@@ -29,6 +32,27 @@ export const metadata: Metadata = {
   },
   other: {
     "mobile-web-app-capable": "yes",
+  },
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: "/",
+    siteName: "Pocket DM",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: siteTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/opengraph-image"],
   },
 };
 

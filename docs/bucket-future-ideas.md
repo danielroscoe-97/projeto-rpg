@@ -79,6 +79,13 @@
 | F-33 | Compendium expandido (spells, items, feats) | Party Mode 2026-03-30 | Além de rules, ter searchable database completa |
 | F-34 | Wizard de personagem completo (multi-step visual) | Party Mode 2026-03-30 | MasterApp tem com cards bonitos. Nós faremos versão simplificada primeiro (Sprint 3) |
 
+## Geração & IA (Feedback André — 2026-03-30)
+
+| # | Item | Origem | Notas |
+|---|------|--------|-------|
+| F-35 | Gerador de encontro aleatório por ambiente + espólio automático | Feedback André 2026-03-30 | Configurar ecossistema (floresta, dungeon, planície) + nível do grupo → gera encontro balanceado. Bônus: espólio automático ao encerrar combate com base nos participantes |
+| F-36 | Gerar PCs prontos por classe e nível | Feedback André 2026-03-30 | Buscar/gerar PCs pré-prontos por classe+nível (ex: "Barbarian lv 3"). Requer banco de PCs pré-gerados ou integração com gerador. Classes já existem em lib/data/classes.ts |
+
 ## Tech Debt (Baixa prioridade)
 
 | # | Item | Origem | Notas |
@@ -88,5 +95,5 @@
 
 ---
 
-> **Última atualização:** 2026-03-30
+> **Última atualização:** 2026-03-30 (F-35, F-36 adicionados — feedback André Gomes Mamba)
 > **Revisado por:** Dani_ + BMAD Party Mode

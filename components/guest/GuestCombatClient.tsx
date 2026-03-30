@@ -1267,7 +1267,6 @@ export function GuestCombatClient() {
                   onRemoveCombatant={handleRemoveCombatant}
                   onUpdateStats={handleUpdateStats}
                   onSetInitiative={handleSetInitiative}
-                  onSwitchVersion={handleSwitchVersion}
                   onUpdateDmNotes={handleUpdateDmNotes}
                   onUpdatePlayerNotes={handleUpdatePlayerNotes}
                   allCombatants={combatants}

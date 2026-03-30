@@ -171,7 +171,8 @@ export const CombatantRow = memo(function CombatantRow({
   };
 
   const isMonster = !!combatant.monster_id;
-  const canSwitchVersion = isMonster && combatant.ruleset_version !== null;
+  // Only show the ruleset switch button if a handler is provided — callers omit it during combat
+  const canSwitchVersion = isMonster && combatant.ruleset_version !== null && !!onSwitchVersion;
   const otherVersion: RulesetVersion = combatant.ruleset_version === "2024" ? "2014" : "2024";
 
   return (

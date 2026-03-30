@@ -512,7 +512,7 @@ export function MonsterSearchPanel({
                   data-testid={`ver-ficha-${monster.id}`}
                 >
                   <span aria-hidden>📖</span>
-                  <span>Ver Ficha</span>
+                  <span>{t("ver_ficha")}</span>
                 </button>
               </li>
             );

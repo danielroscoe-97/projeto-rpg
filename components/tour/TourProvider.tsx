@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useTourStore } from "@/lib/stores/tour-store";
 import { useGuestCombatStore } from "@/lib/stores/guest-combat-store";
+import { useSrdStore } from "@/lib/stores/srd-store";
 import { TourOverlay } from "./TourOverlay";
 import { TourTooltip } from "./TourTooltip";
 import { TourHelpButton } from "./TourHelpButton";
@@ -34,6 +35,13 @@ export function TourProvider() {
   const [mounted, setMounted] = useState(false);
   const [pulseTarget, setPulseTarget] = useState(false);
   const advancingRef = useRef(false);
+
+  // Wait for SRD to be ready before auto-starting the tour.
+  // Without this, new visitors (no IndexedDB cache) see the tour start while the
+  // SRD loading screen is still covering the page, causing mispositioned tooltips.
+  const srdMonsters = useSrdStore((s) => s.monsters);
+  const srdIsLoading = useSrdStore((s) => s.is_loading);
+  const srdReady = !srdIsLoading || srdMonsters.length > 0;
   // Snapshot of combatants before combat phase, so "Back" can restore setup state
   const setupSnapshotRef = useRef<import("@/lib/types/combat").Combatant[] | null>(null);
   // Track the last combatant auto-added by the tour (for undo on back)
@@ -42,9 +50,17 @@ export function TourProvider() {
   // Memoize effective steps — only recompute when mounted changes (avoids infinite re-render)
   const effectiveSteps = useMemo(() => getEffectiveSteps(), [mounted]);
 
-  // Auto-start tour on first visit
+  // Set mounted immediately (needed for portal/SSR guard)
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Auto-start tour on first visit — but only after SRD data is ready.
+  // New visitors (no IndexedDB cache) see a 3s SRD loading screen; starting the
+  // tour early causes mispositioned tooltips over the loading overlay.
+  // The 800ms delay guards against Zustand persist hydrating after first render (SSR mismatch).
+  useEffect(() => {
+    if (!srdReady) return;
     const timer = setTimeout(() => {
       // Read current state at timer time, not captured value at mount —
       // guards against Zustand persist hydrating after first render (SSR mismatch)
@@ -54,7 +70,7 @@ export function TourProvider() {
       }
     }, 800);
     return () => clearTimeout(timer);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [srdReady, startTour]);
 
   // Hide guest banner while tour is active
   useEffect(() => {
