@@ -384,6 +384,14 @@
     "setup_notes_aria": "Notas de {name}",
     "setup_remove": "Remover",
     "setup_remove_aria": "Remover {name}",
+    "setup_remove_confirm_title": "Remover {name}?",
+    "setup_remove_confirm_desc": "Este combatente será removido do encontro.",
+    "setup_remove_confirm_cancel": "Cancelar",
+    "setup_remove_confirm_action": "Remover",
+    "remove_confirm_title": "Remover {name} do combate?",
+    "remove_confirm_desc": "HP, condições e posição na iniciativa serão perdidos. Esta ação não pode ser desfeita.",
+    "remove_confirm_cancel": "Cancelar",
+    "remove_confirm_action": "Remover",
     "setup_alias_tooltip": "Barreira Anti-Metagame — Nome que seus jogadores verão na iniciativa",
     "setup_alias_placeholder": "Nome para jogadores...",
     "encounter_title": "Novo Encontro",
@@ -479,6 +487,7 @@
     "setup_name_aria": "Nome do combatente",
     "condition_view_aria": "Ver regras de {name}",
     "condition_remove_aria": "Remover condição {name}",
+    "condition_turn_count": "{count, plural, one {# turno} other {# turnos}}",
     "condition_add_aria": "Adicionar condição {name}",
     "setup_duplicate": "Duplicar",
     "setup_duplicate_aria": "Duplicar {name}",
@@ -868,7 +877,8 @@
     "next_up": "Próximo: {name}",
     "player_tag": "Jogador",
     "monster_tag": "Monstro",
-    "your_character": "Seu personagem"
+    "your_character": "Seu personagem",
+    "end_turn": "Passar Turno"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",

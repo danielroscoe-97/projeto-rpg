@@ -91,7 +91,7 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove, t
         {IconComponent && <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />}
         {displayName}
         {turnCount != null && turnCount > 0 && (
-          <span className="ml-0.5 text-white/80 text-[10px]" title={`${turnCount} turn${turnCount !== 1 ? "s" : ""}`}>
+          <span className="ml-0.5 text-white/80 text-[10px]" title={t("condition_turn_count", { count: turnCount })}>
             {circledNumber(turnCount)}
           </span>
         )}

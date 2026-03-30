@@ -660,6 +660,42 @@ export function CombatSessionClient({
     return () => { active = false; };
   }, [is_active, getSessionId]);
 
+  // Listen for player:end_turn — player passed their own turn
+  useEffect(() => {
+    const sid = getSessionId();
+    if (!sid || !is_active) return;
+    const ch = getDmChannel(sid);
+    let active = true;
+
+    const handlePlayerEndTurn = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      // Validate: only advance if it's actually a player's turn
+      const snap = useCombatStore.getState();
+      const current = snap.combatants[snap.current_turn_index];
+      if (!current?.is_player) return;
+      // Optional: check player_name matches current combatant
+      if (payload.player_name && current.name !== payload.player_name) return;
+      handleAdvanceTurn();
+    };
+
+    // Clean stale bindings
+    try {
+      const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
+      const broadcastBindings = bindings?.broadcast;
+      if (Array.isArray(broadcastBindings)) {
+        for (let i = broadcastBindings.length - 1; i >= 0; i--) {
+          if (broadcastBindings[i]?.filter?.event === "player:end_turn") {
+            broadcastBindings.splice(i, 1);
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
+    ch.on("broadcast", { event: "player:end_turn" }, handlePlayerEndTurn);
+
+    return () => { active = false; };
+  }, [is_active, getSessionId, handleAdvanceTurn]);
+
   // Show unified setup if not yet active
   if (!is_active) {
     return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
@@ -874,6 +910,7 @@ export function CombatSessionClient({
         onUpdatePlayerNotes={handleUpdatePlayerNotes}
         onApplyToMultiple={handleApplyToMultiple}
         onToggleHidden={handleToggleHidden}
+        onAdvanceTurn={handleAdvanceTurn}
         t={t}
       />
       </div>{/* end scrollable area */}
@@ -920,6 +957,7 @@ interface CombatListProps {
   onUpdatePlayerNotes: (id: string, notes: string) => void;
   onApplyToMultiple: (targetIds: string[], amount: number, mode: HpMode) => void;
   onToggleHidden: (id: string) => void;
+  onAdvanceTurn: () => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
 }
 
@@ -941,6 +979,7 @@ function CombatList({
   onUpdatePlayerNotes,
   onApplyToMultiple,
   onToggleHidden,
+  onAdvanceTurn,
   t,
 }: CombatListProps) {
   // Auto-scroll to active combatant when turn advances (skip initial mount)
@@ -989,6 +1028,9 @@ function CombatList({
                 allCombatants={combatants}
                 onApplyToMultiple={onApplyToMultiple}
                 onToggleHidden={onToggleHidden}
+                onAdvanceTurn={onAdvanceTurn}
+                onAddDeathSaveSuccess={(id) => useCombatStore.getState().addDeathSaveSuccess(id)}
+                onAddDeathSaveFailure={(id) => useCombatStore.getState().addDeathSaveFailure(id)}
               />
             </div>
           );

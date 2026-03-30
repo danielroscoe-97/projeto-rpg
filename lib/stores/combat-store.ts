@@ -178,11 +178,13 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         : null;
       return {
         undoStack: undoEntry ? pushUndo(state.undoStack, undoEntry) : state.undoStack,
-        combatants: state.combatants.map((c) =>
-          c.id === id
-            ? { ...c, current_hp: Math.min(c.max_hp, c.current_hp + amount) }
-            : c
-        ),
+        combatants: state.combatants.map((c) => {
+          if (c.id !== id) return c;
+          const newHp = Math.min(c.max_hp, c.current_hp + amount);
+          // Reset death saves when healed from 0 HP (D&D 5e rule)
+          const resetSaves = c.current_hp === 0 && newHp > 0;
+          return { ...c, current_hp: newHp, ...(resetSaves ? { death_saves: undefined, is_defeated: false } : {}) };
+        }),
       };
     }),
 

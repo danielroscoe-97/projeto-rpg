@@ -384,6 +384,14 @@
     "setup_notes_aria": "Notes for {name}",
     "setup_remove": "Remove",
     "setup_remove_aria": "Remove {name}",
+    "setup_remove_confirm_title": "Remove {name}?",
+    "setup_remove_confirm_desc": "This combatant will be removed from the encounter.",
+    "setup_remove_confirm_cancel": "Cancel",
+    "setup_remove_confirm_action": "Remove",
+    "remove_confirm_title": "Remove {name} from combat?",
+    "remove_confirm_desc": "HP, conditions, and initiative position will be lost. This action cannot be undone.",
+    "remove_confirm_cancel": "Cancel",
+    "remove_confirm_action": "Remove",
     "setup_alias_tooltip": "Anti-Metagame Barrier — Name your players will see in the initiative tracker",
     "setup_alias_placeholder": "Player-visible name...",
     "encounter_title": "New Encounter",
@@ -470,6 +478,7 @@
     "roll_init_single_aria": "Roll initiative for {name}",
     "condition_view_aria": "View {name} rules",
     "condition_remove_aria": "Remove condition {name}",
+    "condition_turn_count": "{count, plural, one {# turn} other {# turns}}",
     "condition_add_aria": "Add condition {name}",
     "setup_duplicate": "Duplicate",
     "setup_duplicate_aria": "Duplicate {name}",
@@ -868,7 +877,8 @@
     "next_up": "Next: {name}",
     "player_tag": "Player",
     "monster_tag": "Monster",
-    "your_character": "Your character"
+    "your_character": "Your character",
+    "end_turn": "End Turn"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",

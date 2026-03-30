@@ -17,6 +17,10 @@ import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import { Eye, EyeOff } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { Combatant } from "@/lib/types/combat";
 import type { RollMode } from "@/lib/dice/roll";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -46,6 +50,8 @@ export interface CombatantRowProps {
   onToggleHidden?: (id: string) => void;
   onAddDeathSaveSuccess?: (id: string) => void;
   onAddDeathSaveFailure?: (id: string) => void;
+  /** Callback to advance to next turn — attached to the ▶ indicator */
+  onAdvanceTurn?: () => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -73,6 +79,7 @@ export function CombatantRow({
   onToggleHidden,
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
+  onAdvanceTurn,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -195,13 +202,16 @@ export function CombatantRow({
 
           {/* Turn indicator — shape glyph (▶) satisfies NFR21: color is not the sole indicator */}
           {isCurrentTurn && (
-            <span
-              className="text-gold shrink-0 text-sm leading-none select-none"
-              aria-label={t("current_turn")}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onAdvanceTurn?.(); }}
+              className="text-gold shrink-0 text-sm leading-none select-none cursor-pointer hover:scale-125 transition-transform"
+              aria-label={t("next_turn")}
+              title={t("next_turn")}
               data-testid="current-turn-indicator"
             >
               ▶
-            </span>
+            </button>
           )}
 
           {/* Initiative badge — clickable to edit inline */}
@@ -470,6 +480,7 @@ export function CombatantRow({
                 key={condition}
                 condition={condition}
                 rulesetVersion={combatant.ruleset_version ?? "2014"}
+                turnCount={combatant.condition_durations?.[condition]}
                 onRemove={showActions ? (cond) => onToggleCondition?.(combatant.id, cond) : undefined}
               />
             ))}
@@ -675,15 +686,30 @@ export function CombatantRow({
                 {combatant.is_hidden ? t("hidden_indicator") : null}
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => onRemoveCombatant?.(combatant.id)}
-              className="px-2 py-1 text-xs rounded font-medium min-h-[28px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-              aria-label={t("remove_aria")}
-              data-testid={`remove-btn-${combatant.id}`}
-            >
-              {t("remove_button")}
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  className="px-2 py-1 text-xs rounded font-medium min-h-[28px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  aria-label={t("remove_aria")}
+                  data-testid={`remove-btn-${combatant.id}`}
+                >
+                  {t("remove_button")}
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("remove_confirm_title", { name: combatant.name })}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("remove_confirm_desc")}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("remove_confirm_cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onRemoveCombatant?.(combatant.id)} className="bg-red-900/60 text-red-300 hover:bg-red-900/80">
+                    {t("remove_confirm_action")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
 

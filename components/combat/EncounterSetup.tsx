@@ -732,7 +732,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
       {/* Column headers — always visible, aligned with both rows and add-row */}
       <div
-        className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground/60 uppercase tracking-wider md:grid md:gap-x-1.5 md:items-center"
+        className="flex items-center gap-1.5 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wider md:grid md:gap-x-1.5 md:items-center"
         style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
       >
         <span /> {/* drag handle / + icon spacer */}

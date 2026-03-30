@@ -1012,6 +1012,15 @@ export function PlayerJoinClient({
           customAudioFiles={playerAudioFiles}
           customAudioUrls={playerAudioUrls}
           registeredName={registeredName}
+          onEndTurn={() => {
+            if (channelRef.current) {
+              channelRef.current.send({
+                type: "broadcast",
+                event: "player:end_turn",
+                payload: { player_name: registeredName },
+              });
+            }
+          }}
         />
       </div>
     </div>

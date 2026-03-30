@@ -487,7 +487,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
       {/* Column headers — Sticky for usability in long lists */}
       <div
-        className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-wider border-b border-border/50 mb-1 md:grid md:gap-x-1.5 md:items-center"
+        className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider border-b border-border/50 mb-1 md:grid md:gap-x-1.5 md:items-center"
         style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
       >
         <span /> {/* drag handle spacer */}
@@ -890,15 +890,19 @@ export function GuestCombatClient() {
       const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
       const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
       const newCombatants: Omit<Combatant, "id">[] = [];
-      for (let i = 1; i <= qty; i++) {
+      const existingCount = currentCombatants.filter(
+        (c) => c.name.match(new RegExp(`^${monster.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} \\d+$`)) || c.name === monster.name
+      ).length;
+      for (let i = 0; i < qty; i++) {
+        const num = existingCount + i + 1;
         newCombatants.push({
-          name: `${monster.name} ${i}`, current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
+          name: `${monster.name} ${num}`, current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
           ac: monster.armor_class, spell_save_dc: null, initiative: initResult.total,
           initiative_breakdown: { roll: initResult.rolls[0], modifier: initResult.modifier },
           initiative_order: null, conditions: [], ruleset_version: monster.ruleset_version,
           is_defeated: false, is_hidden: options?.isHidden ?? false, is_player: false,
           monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
-          display_name: `${groupDisplayBase} ${i}`, monster_group_id: groupId, group_order: i,
+          display_name: `${groupDisplayBase} ${i + 1}`, monster_group_id: groupId, group_order: i + 1,
           dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
         });
       }
@@ -1183,6 +1187,7 @@ export function GuestCombatClient() {
             </button>
           </div>
         </div>
+        </div>{/* end sticky controls */}
 
         {showAddForm && (
           <div className="space-y-3 p-3 bg-white/[0.04] rounded-md border border-border" data-testid="mid-combat-add-panel">
@@ -1246,6 +1251,7 @@ export function GuestCombatClient() {
                   onApplyToMultiple={handleApplyToMultiple}
                   onAddDeathSaveSuccess={addDeathSaveSuccess}
                   onAddDeathSaveFailure={addDeathSaveFailure}
+                  onAdvanceTurn={advanceTurn}
                 />
               );
             }}
