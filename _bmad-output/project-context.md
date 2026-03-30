@@ -6,11 +6,11 @@ _Regras críticas e padrões que agentes AI devem seguir ao implementar código 
 
 ## O Que É Este Projeto
 
-**Combat Tracker gratuito para D&D 5e.** O DM gerencia combate no laptop, jogadores acompanham pelo celular em tempo real. Não é um VTT genérico — é focado exclusivamente em tracking de combate com regras oracle integrado.
+**Combat Tracker para D&D 5e — marca: Pocket DM.** O DM gerencia combate no laptop, jogadores acompanham pelo celular em tempo real. Não é um VTT genérico — é focado exclusivamente em tracking de combate com regras oracle integrado.
 
 **Proposta de valor principal:** Anti-metagaming — jogadores NUNCA veem dados numéricos exatos de monstros (HP, AC, DC). Veem apenas labels de status (LIGHT/MODERATE/HEAVY/CRITICAL).
 
-**Modelo:** Gratuito com guest mode de 60 minutos como funil de conversão. Auth por email (PKCE flow).
+**Modelo:** Freemium (Beta = tudo gratuito). Guest mode de 60 minutos como funil de conversão (banner warning, hard block planejado para o futuro). Auth por email (PKCE flow). Billing via Stripe preparado para ativação pós-beta.
 
 **Idiomas:** pt-BR (primário) + en. Toda UI é internacionalizada.
 
@@ -36,15 +36,29 @@ _Regras críticas e padrões que agentes AI devem seguir ao implementar código 
 | Command Palette | cmdk | 1.1 |
 | Icons | Lucide React | latest |
 | Testing | Jest + React Testing Library | 30 |
-| Monitoring | Sentry + Vercel Analytics | latest |
+| E2E Testing | Playwright | 1.58 |
+| Monitoring | Sentry (`@sentry/nextjs`) | 10.45 |
+| Analytics | Vercel Analytics | latest |
 | SRD Cache | idb (IndexedDB) | 8.0 |
 | AI Oracle | Google Gemini API | latest |
+| Animations | Framer Motion | 12.38 |
+| Notifications | Novu (`@novu/node` + `@novu/react`) | latest |
+| Background Jobs | Trigger.dev | 4.4 |
+| Payments | Stripe (preparação pós-beta) | 21 |
+| Rate Limiting | Upstash (`@upstash/ratelimit` + `@upstash/redis`) | latest |
+| Toasts | Sonner | 2.0 |
+| QR Codes | qrcode | 1.5 |
+| Markdown | react-markdown | 10.1 |
+| Virtualization | react-window | 2.2 |
+| Theme | next-themes | 0.4 |
 | Hosting | Vercel | — |
 
 **Environment Variables:**
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — Supabase anon key
 - `GEMINI_API_KEY` — Google Gemini (Oracle AI)
+- `STRIPE_SECRET_KEY` — Stripe (não configurado no beta)
+- `NOVU_API_KEY` — Novu notifications
 
 ---
 
@@ -81,9 +95,9 @@ Monstros e spells existem em duas versões (2014 e 2024) que **coexistem no mesm
 ### 4. Testes Obrigatórios
 
 - Todo código novo precisa de testes (Jest 30 + React Testing Library)
-- 215+ arquivos de teste existentes — manter cobertura
+- 558+ testes passando — manter cobertura
 - Test files: `*.test.ts` / `*.test.tsx`
-- **Não temos E2E** — gap conhecido no backlog
+- **E2E com Playwright** existe mas precisa de expansão — reports em `docs/qa-e2e-results-*.md`
 
 ### 5. Validação de Input
 
@@ -123,24 +137,46 @@ Toda ação de combate segue este fluxo:
 ### Eventos de Broadcast
 
 ```
-combat:hp_update         → current_hp, temp_hp (ou hp_status para monstros)
-combat:turn_advance      → current_turn_index, round_number
-combat:condition_change  → combatant_id, conditions[]
-combat:combatant_add     → combatant sanitizado
-combat:combatant_remove  → combatant_id
-combat:initiative_reorder → combatants[] reordenados
-combat:version_switch    → combatant_id, ruleset_version
-combat:defeated_change   → combatant_id, is_defeated
-combat:stats_update      → name, max_hp, ac, spell_save_dc
-combat:player_notes_update → combatant_id, player_notes
-session:state_sync       → encounter state completo (reconnect)
+── Combat ──
+combat:hp_update            → current_hp, temp_hp, death_saves (ou hp_status para monstros)
+combat:turn_advance         → current_turn_index, round_number, next_combatant_id?
+combat:condition_change     → combatant_id, conditions[], condition_durations?
+combat:combatant_add        → combatant sanitizado (hidden combatants NUNCA broadcast)
+combat:combatant_remove     → combatant_id
+combat:initiative_reorder   → combatants[] reordenados (hidden filtrados)
+combat:version_switch       → combatant_id, ruleset_version
+combat:defeated_change      → combatant_id, is_defeated
+combat:hidden_change        → combatant_id, is_hidden (convertido em add/remove para players)
+combat:stats_update         → name (players), display_name sanitizado (monsters)
+combat:player_notes_update  → combatant_id, player_notes
+combat:late_join_request    → player_name, hp, ac, initiative, request_id
+combat:late_join_response   → request_id, accepted
+combat:rejoin_request       → character_name, request_id, sender_token_id
+combat:rejoin_response      → request_id, accepted
+combat:session_revoked      → revoked_token_id
+
+── Session ──
+session:state_sync          → encounter state completo (reconnect)
+session:player_linked       → vincula jogador a personagem de campanha
+session:combat_stats        → stats[], encounter_name, rounds
+
+── Audio ──
+audio:play_sound            → sound_id, source, player_name, audio_url?
+audio:ambient_start         → sound_id
+audio:ambient_stop          → (sem payload)
+
+── Player ──
+player:death_save           → player_name, combatant_id, result
+
+── Atmosfera ──
+session:weather_change      → effect
 ```
 
-### Client Components (Não Server Actions)
+### Client Components (Predominantemente Client-Side)
 
-- App é predominantemente client-side (`"use client"` em ~97 componentes)
-- **NÃO usamos Server Actions** (`"use server"`)
-- Lógica server-side em API Routes: `/app/api/`
+- App é predominantemente client-side (`"use client"`)
+- **Exceção pontual:** `lib/actions/invite-actions.ts` usa `"use server"` para campaign invites
+- Lógica server-side principal em API Routes: `/app/api/`
 - Middleware (`middleware.ts`) faz auth refresh + i18n detection
 
 ### Zustand Stores (Separados por Domínio)
@@ -149,10 +185,16 @@ session:state_sync       → encounter state completo (reconnect)
 |-------|---------|-----------------|
 | Combat | `lib/stores/combat-store.ts` | Estado do encounter ativo (combatants, rounds, undo stack) |
 | Guest Combat | `lib/stores/guest-combat-store.ts` | Combate efêmero sem auth |
+| Guest Combat Stats | `lib/stores/guest-combat-stats.ts` | Estatísticas de combate no guest mode |
+| Combat Log | `lib/stores/combat-log-store.ts` | Log de ações de combate |
+| Combat Persist | `lib/stores/combat-persist.ts` | Backup local IndexedDB |
 | SRD | `lib/stores/srd-store.ts` | Inicialização e status dos bundles SRD |
 | Dice History | `lib/stores/dice-history-store.ts` | Histórico de rolagens |
 | Pinned Cards | `lib/stores/pinned-cards-store.ts` | Cards fixados do Oracle |
 | Tour | `lib/stores/tour-store.ts` | Guided onboarding tour (persist localStorage `guided-tour-v1`) |
+| Audio | `lib/stores/audio-store.ts` | DM soundboard, ambient, custom audio uploads |
+| Role | `lib/stores/role-store.ts` | Seleção de papel (DM/Player) |
+| Subscription | `lib/stores/subscription-store.ts` | Estado de assinatura e billing |
 
 ### Guided Onboarding Tour (Try Mode)
 

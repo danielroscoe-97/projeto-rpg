@@ -772,6 +772,10 @@ email_invites: pro
 
 ## Backlog V2+ — Especificado mas Não Agendado
 
+> **Repositório centralizado de itens adiados:** [bucket-future-ideas.md](bucket-future-ideas.md)
+> **Sprint plan ativo:** [sprint-plan-2026-03-30.md](sprint-plan-2026-03-30.md)
+> **Análise competitiva:** [competitive-analysis-masterapp-2026-03-30.md](competitive-analysis-masterapp-2026-03-30.md)
+
 ### Epic 6: Audio & Ambiance
 
 #### Story 6.1: Efeitos Sonoros por Turno

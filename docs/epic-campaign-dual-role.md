@@ -979,6 +979,8 @@ if (membership.data?.role === 'dm' || campaign.owner_id === user.id) {
 18. **D.5** — Upgrade anônimo → conta
 
 ### Sprint 5: Nice-to-have (2-3 dias)
+
+> Itens deste sprint foram movidos para [bucket-future-ideas.md](bucket-future-ideas.md) (F-27 a F-30).
 19. **C.3** — Edição do personagem pelo jogador
 20. **C.5** — Companheiros
 21. **C.6** — Histórico (visão jogador)

@@ -551,7 +551,8 @@ Landing Page → "Testar Grátis" (sem conta)
 
 ## 9. Ideias Futuras (V3+) — Catalogadas
 
-Estas ideias vieram das transcrições de áudio e ficam no backlog de longo prazo:
+Estas ideias vieram das transcrições de áudio e ficam no backlog de longo prazo.
+**Repositório centralizado:** [bucket-future-ideas.md](bucket-future-ideas.md) (inclui estes + itens da análise competitiva MasterApp 2026-03-30)
 
 | # | Ideia | Categoria | Notas |
 |---|-------|-----------|-------|

@@ -7,9 +7,11 @@ interface DeathSaveTrackerProps {
   failures: number;
   onAddSuccess: () => void;
   onAddFailure: () => void;
+  /** When true, show only indicators without action buttons */
+  readOnly?: boolean;
 }
 
-export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailure }: DeathSaveTrackerProps) {
+export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailure, readOnly = false }: DeathSaveTrackerProps) {
   const t = useTranslations("combat");
   const isStabilized = successes >= 3;
   const isDead = failures >= 3;
@@ -30,15 +32,17 @@ export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailu
         <>
           {/* Successes */}
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={onAddSuccess}
-              disabled={successes >= 3}
-              className="px-2 py-0.5 text-xs font-medium rounded bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[24px]"
-              data-testid="death-save-success-btn"
-            >
-              ✅ {t("death_saves_success")}
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={onAddSuccess}
+                disabled={successes >= 3}
+                className="px-2 py-0.5 text-xs font-medium rounded bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[24px]"
+                data-testid="death-save-success-btn"
+              >
+                ✅ {t("death_saves_success")}
+              </button>
+            )}
             <div className="flex gap-0.5">
               {[0, 1, 2].map((i) => (
                 <span
@@ -58,15 +62,17 @@ export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailu
 
           {/* Failures */}
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={onAddFailure}
-              disabled={failures >= 3}
-              className="px-2 py-0.5 text-xs font-medium rounded bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[24px]"
-              data-testid="death-save-failure-btn"
-            >
-              ❌ {t("death_saves_failure")}
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={onAddFailure}
+                disabled={failures >= 3}
+                className="px-2 py-0.5 text-xs font-medium rounded bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[24px]"
+                data-testid="death-save-failure-btn"
+              >
+                ❌ {t("death_saves_failure")}
+              </button>
+            )}
             <div className="flex gap-0.5">
               {[0, 1, 2].map((i) => (
                 <span

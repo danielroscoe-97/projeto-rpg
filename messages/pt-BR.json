@@ -884,7 +884,9 @@
     "player_tag": "Jogador",
     "monster_tag": "Monstro",
     "your_character": "Seu personagem",
-    "end_turn": "Passar Turno"
+    "end_turn": "Passar Turno",
+    "death_saves_your_turn": "É seu turno — role seu Teste contra Morte!",
+    "death_saves_waiting": "Testes contra Morte"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",

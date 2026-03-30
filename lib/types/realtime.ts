@@ -26,7 +26,8 @@ export type RealtimeEventType =
   | "session:weather_change"
   | "audio:play_sound"
   | "audio:ambient_start"
-  | "audio:ambient_stop";
+  | "audio:ambient_stop"
+  | "player:death_save";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -39,6 +40,8 @@ export interface RealtimeHpUpdate {
   is_player?: boolean;
   /** Calculated server-side for non-player combatants (LIGHT/MODERATE/HEAVY/CRITICAL) */
   hp_status?: string;
+  /** Death saves state — included when player is at 0 HP */
+  death_saves?: { successes: number; failures: number };
 }
 
 export interface RealtimeTurnAdvance {
@@ -186,6 +189,13 @@ export interface RealtimeAmbientStop {
   type: "audio:ambient_stop";
 }
 
+export interface RealtimePlayerDeathSave {
+  type: "player:death_save";
+  player_name: string;
+  combatant_id: string;
+  result: "success" | "failure";
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -208,7 +218,8 @@ export type RealtimeEvent =
   | RealtimeWeatherChange
   | RealtimeAudioPlay
   | RealtimeAmbientStart
-  | RealtimeAmbientStop;
+  | RealtimeAmbientStop
+  | RealtimePlayerDeathSave;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -256,6 +267,7 @@ export interface SanitizedPlayerHpUpdate {
   temp_hp: number;
   max_hp?: number;
   hp_status?: HpStatus;
+  death_saves?: { successes: number; failures: number };
 }
 
 /** Player-safe HP update for monsters (status only, no exact HP) */

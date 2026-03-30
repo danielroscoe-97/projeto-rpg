@@ -884,7 +884,9 @@
     "player_tag": "Player",
     "monster_tag": "Monster",
     "your_character": "Your character",
-    "end_turn": "End Turn"
+    "end_turn": "End Turn",
+    "death_saves_your_turn": "It's your turn — roll your Death Save!",
+    "death_saves_waiting": "Death Saves"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",

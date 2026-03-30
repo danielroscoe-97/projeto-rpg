@@ -38,6 +38,8 @@ interface PlayerCombatant {
   ruleset_version: string | null;
   /** HP status label for monsters (LIGHT/MODERATE/HEAVY/CRITICAL) */
   hp_status?: string;
+  /** Death saves state for players at 0 HP */
+  death_saves?: { successes: number; failures: number };
 }
 
 interface PrefilledCharacter {
@@ -358,6 +360,7 @@ export function PlayerJoinClient({
                 // Player character: full HP data (including max_hp if changed)
                 const updated = { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp };
                 if (payload.max_hp !== undefined) updated.max_hp = payload.max_hp;
+                if (payload.death_saves !== undefined) updated.death_saves = payload.death_saves;
                 return updated;
               })
             );

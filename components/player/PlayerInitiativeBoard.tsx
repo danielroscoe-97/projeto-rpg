@@ -15,6 +15,7 @@ import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherOverlay";
+import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 
 export interface CombatLogEntry {
   text: string;
@@ -38,6 +39,8 @@ interface PlayerCombatant {
   ruleset_version: string | null;
   /** HP status label for monsters (LIGHT/MODERATE/HEAVY/CRITICAL) */
   hp_status?: string;
+  /** Death saves state for players at 0 HP */
+  death_saves?: { successes: number; failures: number };
 }
 
 /** Visual config for monster HP status labels */
@@ -188,6 +191,20 @@ export function PlayerInitiativeBoard({
   }, [endTurnPending, onEndTurn]);
   // Reset pending state when turn changes (another player/DM advanced)
   useEffect(() => { setEndTurnPending(false); }, [currentTurnIndex]);
+
+  // Death save handler — broadcasts to DM channel
+  const handleDeathSave = useCallback((result: "success" | "failure") => {
+    if (!channelRef?.current || !ownCharRef.current) return;
+    channelRef.current.send({
+      type: "broadcast",
+      event: "player:death_save",
+      payload: {
+        player_name: registeredName,
+        combatant_id: ownCharRef.current.id,
+        result,
+      },
+    });
+  }, [channelRef, registeredName]);
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
 
@@ -241,6 +258,8 @@ export function PlayerInitiativeBoard({
   const ownChar = registeredName
     ? playerChars.find((c) => c.name === registeredName) ?? null
     : null;
+  const ownCharRef = useRef(ownChar);
+  ownCharRef.current = ownChar;
   const hasOwnChar = ownChar !== null;
 
   // Count revealed vs total for round 1 display
@@ -604,6 +623,25 @@ export function PlayerInitiativeBoard({
                   ))}
                 </div>
               )}
+
+              {/* Death Save Tracker — own character at 0 HP, not defeated */}
+              {isOwnChar && (combatant.current_hp ?? 0) === 0 && (combatant.max_hp ?? 0) > 0 && !combatant.is_defeated && (() => {
+                const isMyTurn = isCurrentTurn && isPlayerTurn;
+                return (
+                  <div className="mt-2">
+                    {isMyTurn && (
+                      <p className="text-xs text-red-300 mb-1">{t("death_saves_your_turn")}</p>
+                    )}
+                    <DeathSaveTracker
+                      successes={combatant.death_saves?.successes ?? 0}
+                      failures={combatant.death_saves?.failures ?? 0}
+                      onAddSuccess={() => handleDeathSave("success")}
+                      onAddFailure={() => handleDeathSave("failure")}
+                      readOnly={!isMyTurn}
+                    />
+                  </div>
+                );
+              })()}
             </motion.li>
           );
         })}

@@ -212,6 +212,7 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
         hp_status: event.max_hp
           ? getHpStatus(event.current_hp, event.max_hp)
           : undefined,
+        death_saves: event.death_saves,
       };
       return result;
     }
@@ -237,6 +238,9 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
     };
     return result;
   }
+
+  // player:death_save is player→DM only, never broadcast to other players
+  if (event.type === "player:death_save") return null;
 
   // Events that pass through unchanged (no sensitive data)
   return event;

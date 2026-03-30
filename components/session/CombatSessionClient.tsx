@@ -682,6 +682,36 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "player:end_turn" }, handlePlayerEndTurn);
 
+    // Listen for player:death_save — player marked a death save on their turn
+    const handlePlayerDeathSave = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { combatant_id, result } = payload as { combatant_id: string; result: "success" | "failure" };
+      if (!combatant_id || !result) return;
+      if (result === "success") {
+        useCombatStore.getState().addDeathSaveSuccess(combatant_id);
+      } else {
+        useCombatStore.getState().addDeathSaveFailure(combatant_id);
+      }
+      // Broadcast updated state to all players
+      const c = useCombatStore.getState().combatants.find((x) => x.id === combatant_id);
+      if (c) {
+        broadcastEvent(getSessionId()!, {
+          type: "combat:hp_update",
+          combatant_id,
+          current_hp: c.current_hp,
+          temp_hp: c.temp_hp,
+          max_hp: c.max_hp,
+          is_player: c.is_player,
+          death_saves: c.death_saves,
+        });
+      }
+      if (c?.is_defeated) {
+        broadcastEvent(getSessionId()!, { type: "combat:defeated_change", combatant_id, is_defeated: true });
+      }
+    };
+
+    ch.on("broadcast", { event: "player:death_save" }, handlePlayerDeathSave);
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef
   }, [is_active, getSessionId]);
