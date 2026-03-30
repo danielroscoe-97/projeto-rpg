@@ -1634,5 +1634,25 @@
     "app_title": "Something Went Wrong",
     "app_description": "An unexpected error occurred in the app. The error has been reported automatically.",
     "app_dashboard": "Go to Dashboard"
+  },
+  "character": {
+    "create": "Create Character",
+    "edit": "Edit Character",
+    "name": "Name",
+    "race": "Race",
+    "class": "Class",
+    "level": "Level",
+    "hp": "Hit Points",
+    "ac": "Armor Class",
+    "notes": "Notes",
+    "select_race": "Select race",
+    "select_class": "Select class",
+    "save_success": "Character saved!",
+    "delete_confirm": "Delete this character?",
+    "upload_token": "Upload Token",
+    "drag_drop": "Drag an image or click",
+    "token_updated": "Token updated!",
+    "no_characters": "No characters",
+    "create_first": "Create your first character"
   }
 }

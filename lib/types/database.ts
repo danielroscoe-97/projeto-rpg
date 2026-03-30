@@ -84,6 +84,11 @@ export interface Database {
           ac: number;
           spell_save_dc: number | null;
           dm_notes: string;
+          race: string | null;
+          class: string | null;
+          level: number | null;
+          notes: string | null;
+          token_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -96,6 +101,11 @@ export interface Database {
           ac: number;
           spell_save_dc?: number | null;
           dm_notes?: string;
+          race?: string | null;
+          class?: string | null;
+          level?: number | null;
+          notes?: string | null;
+          token_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -107,6 +117,11 @@ export interface Database {
           ac?: number;
           spell_save_dc?: number | null;
           dm_notes?: string;
+          race?: string | null;
+          class?: string | null;
+          level?: number | null;
+          notes?: string | null;
+          token_url?: string | null;
           updated_at?: string;
         };
       };
