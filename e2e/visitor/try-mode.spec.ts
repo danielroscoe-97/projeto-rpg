@@ -3,8 +3,7 @@ import { waitForSrdReady } from "../helpers/combat";
 
 test.describe("P0 — Visitor Try Mode", () => {
   test.beforeEach(async ({ page }) => {
-    // Dismiss the guided tour via localStorage before page load so the overlay
-    // doesn't intercept pointer events during interactions
+    // Pre-set tour as completed before page load
     await page.addInitScript(() => {
       localStorage.setItem(
         "guided-tour-v1",
@@ -13,6 +12,23 @@ test.describe("P0 — Visitor Try Mode", () => {
           version: 0,
         })
       );
+    });
+
+    // After navigation, re-dispatch storage event to force Zustand to re-hydrate.
+    // Needed because Zustand persist reads localStorage after first render (SSR mismatch).
+    page.on("load", async () => {
+      await page.evaluate(() => {
+        const val = localStorage.getItem("guided-tour-v1");
+        if (val) {
+          window.dispatchEvent(
+            new StorageEvent("storage", {
+              key: "guided-tour-v1",
+              newValue: val,
+              storageArea: localStorage,
+            })
+          );
+        }
+      }).catch(() => {/* ignore if page context is gone */});
     });
   });
 

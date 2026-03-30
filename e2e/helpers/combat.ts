@@ -12,6 +12,7 @@ export async function waitForSrdReady(page: Page) {
       const el = document.querySelector('[data-testid="srd-status"]');
       return el?.getAttribute("data-ready") === "true";
     },
+    undefined, // arg (not used by the function)
     { timeout: 20_000 }
   );
 }
