@@ -2,17 +2,21 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Users, FileText, Swords, UserCircle, ChevronDown } from "lucide-react";
+import { Users, UserPlus, FileText, Swords, UserCircle, ChevronDown } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
+import { MembersList } from "@/components/campaign/MembersList";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
 import type { PlayerCharacter } from "@/lib/types/database";
+import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 
 interface Props {
   campaignId: string;
   campaignName: string;
   initialCharacters: PlayerCharacter[];
+  isOwner: boolean;
+  initialMembers?: CampaignMemberWithUser[];
 }
 
 function Section({
@@ -52,11 +56,21 @@ export function CampaignSections({
   campaignId,
   campaignName,
   initialCharacters,
+  isOwner,
+  initialMembers,
 }: Props) {
   const t = useTranslations("campaign");
 
   return (
     <div className="space-y-4">
+      <Section icon={UserPlus} title={t("section_members")} defaultOpen={true}>
+        <MembersList
+          campaignId={campaignId}
+          isOwner={isOwner}
+          initialMembers={initialMembers}
+        />
+      </Section>
+
       <Section icon={Users} title={t("section_players")} defaultOpen={true}>
         <PlayerCharacterManager
           initialCharacters={initialCharacters}

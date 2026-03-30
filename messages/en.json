@@ -166,7 +166,31 @@
     "dm_label": "DM",
     "ac_label": "AC",
     "encounter_fallback": "Encounter",
-    "session_fallback": "Session"
+    "session_fallback": "Session",
+    "section_members": "Members"
+  },
+  "members": {
+    "title": "Members",
+    "invite": "Invite",
+    "invite_link": "Invite Link",
+    "copy_link": "Copy Link",
+    "link_copied": "Link copied!",
+    "remove_member": "Remove Member",
+    "remove_confirm": "Remove {name} from campaign?",
+    "removed_success": "Member removed",
+    "remove_error": "Failed to remove member",
+    "role_dm": "DM",
+    "role_player": "Player",
+    "status_active": "Active",
+    "status_pending": "Pending",
+    "no_members": "No members yet",
+    "invite_first": "Invite players to your campaign",
+    "last_active": "Last active",
+    "character": "Character",
+    "pending_invites": "Pending Invites",
+    "revoke_invite": "Revoke",
+    "cancel": "Cancel",
+    "confirm_remove": "Remove"
   },
   "notes": {
     "title": "Campaign Notes",

@@ -3,6 +3,8 @@
 import {
   acceptCampaignInvite as _acceptCampaignInvite,
   declineCampaignInvite as _declineCampaignInvite,
+  getCampaignMembers as _getCampaignMembers,
+  removeCampaignMember as _removeCampaignMember,
 } from "@/lib/supabase/campaign-membership";
 
 /**
@@ -16,4 +18,15 @@ export async function acceptInviteAction(token: string) {
 
 export async function declineInviteAction(inviteId: string) {
   return _declineCampaignInvite(inviteId);
+}
+
+export async function getCampaignMembersAction(campaignId: string) {
+  return _getCampaignMembers(campaignId);
+}
+
+export async function removeCampaignMemberAction(
+  campaignId: string,
+  targetUserId: string
+) {
+  return _removeCampaignMember(campaignId, targetUserId);
 }

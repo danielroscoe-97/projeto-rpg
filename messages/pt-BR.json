@@ -166,7 +166,31 @@
     "dm_label": "Mestre",
     "ac_label": "CA",
     "encounter_fallback": "Encontro",
-    "session_fallback": "Sessão"
+    "session_fallback": "Sessão",
+    "section_members": "Membros"
+  },
+  "members": {
+    "title": "Membros",
+    "invite": "Convidar",
+    "invite_link": "Link de Convite",
+    "copy_link": "Copiar Link",
+    "link_copied": "Link copiado!",
+    "remove_member": "Remover Membro",
+    "remove_confirm": "Remover {name} da campanha?",
+    "removed_success": "Membro removido",
+    "remove_error": "Falha ao remover membro",
+    "role_dm": "Mestre",
+    "role_player": "Jogador",
+    "status_active": "Ativo",
+    "status_pending": "Pendente",
+    "no_members": "Nenhum membro ainda",
+    "invite_first": "Convide jogadores para sua campanha",
+    "last_active": "Último acesso",
+    "character": "Personagem",
+    "pending_invites": "Convites Pendentes",
+    "revoke_invite": "Revogar",
+    "cancel": "Cancelar",
+    "confirm_remove": "Remover"
   },
   "notes": {
     "title": "Notas da Campanha",

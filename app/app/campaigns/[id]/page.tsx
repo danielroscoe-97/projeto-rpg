@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { CampaignSections } from './CampaignSections'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
-import { getCampaignMembership } from '@/lib/supabase/campaign-membership'
+import { getCampaignMembership, getCampaignMembers } from '@/lib/supabase/campaign-membership'
 
 export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -164,6 +164,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     { count: playerCount },
     { count: sessionCount },
     { data: dmSessions },
+    initialMembers,
   ] = await Promise.all([
     supabase
       .from('player_characters')
@@ -182,6 +183,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       .from('sessions')
       .select('id')
       .eq('campaign_id', id),
+    getCampaignMembers(id),
   ])
 
   // Count finished encounters across all sessions
@@ -235,6 +237,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         campaignId={campaign.id}
         campaignName={campaign.name}
         initialCharacters={characters ?? []}
+        isOwner={isOwner}
+        initialMembers={initialMembers}
       />
     </div>
   )
