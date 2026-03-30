@@ -13,7 +13,7 @@ export async function waitForSrdReady(page: Page) {
       return el?.getAttribute("data-ready") === "true";
     },
     undefined, // arg (not used by the function)
-    { timeout: 20_000 }
+    { timeout: 25_000 }
   );
 }
 

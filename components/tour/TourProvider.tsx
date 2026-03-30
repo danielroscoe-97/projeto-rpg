@@ -45,12 +45,15 @@ export function TourProvider() {
   // Auto-start tour on first visit
   useEffect(() => {
     setMounted(true);
-    if (!isCompleted && !isActive) {
-      const timer = setTimeout(() => {
+    const timer = setTimeout(() => {
+      // Read current state at timer time, not captured value at mount —
+      // guards against Zustand persist hydrating after first render (SSR mismatch)
+      const { isCompleted: completed, isActive: active } = useTourStore.getState();
+      if (!completed && !active) {
         startTour();
-      }, 800);
-      return () => clearTimeout(timer);
-    }
+      }
+    }, 800);
+    return () => clearTimeout(timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hide guest banner while tour is active
