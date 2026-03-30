@@ -1,8 +1,8 @@
 # Quick Spec: Combat UX Fixes — Batch 2 (9 itens)
 
 **Data:** 2026-03-29
-**Branch:** feat/combat-ux-batch2
-**Status:** Aprovado — partir pra implementação
+**Branch:** master (direct)
+**Status:** ✅ Implementado + CR fixes aplicados (2026-03-30)
 
 ---
 
@@ -63,15 +63,17 @@
 
 **Problema:** DM não sabe há quantos turnos uma condição está ativa.
 
-**Fix:**
-1. Mudar `conditions: string[]` para `conditions: Array<{ name: string; appliedAtRound: number; turnCount: number }>` no tipo Combatant
-2. Em `toggleCondition`, salvar `appliedAtRound: round_number` e `turnCount: 0`
-3. Em `advanceTurn`, incrementar `turnCount` para cada condição do combatant cujo turno acabou de passar
-4. Em `ConditionBadge.tsx`, exibir: `Frightened ②`
-5. Backwards-compatible: se `conditions` contém strings, tratar como `{ name: string, turnCount: 0 }`
-6. Atualizar realtime payload e player views
+**Implementação (diferente da spec original — mais simples e backwards-compatible):**
+1. Adicionado campo separado `condition_durations?: Record<string, number>` no tipo `Combatant` — mantém `conditions: string[]` intacto
+2. Em `toggleCondition`, setar `condition_durations[condition] = 0` on add, `delete` on remove
+3. Em `advanceTurn`, incrementar `condition_durations[cond]++` para cada condição do combatant cujo turno está começando
+4. Em `ConditionBadge.tsx`, prop `turnCount` exibe: `Frightened ②` usando circled digits Unicode (⓪-⑳)
+5. `condition_durations` adicionado ao tipo `RealtimeConditionChange` para sync com players
+6. Tooltip usa ICU plural: "3 turns" / "3 turnos"
 
-**Arquivos:** `lib/stores/combat-store.ts`, `lib/stores/guest-combat-store.ts`, `components/oracle/ConditionBadge.tsx`, `components/combat/CombatantRow.tsx`, `components/combat/ConditionSelector.tsx`, `lib/types/realtime.ts`, `components/player/*`
+**Decisão:** Usar campo separado ao invés de mudar a estrutura de `conditions[]` evita breaking changes em serialização, localStorage hydration, e realtime payloads.
+
+**Arquivos:** `lib/types/combat.ts`, `lib/types/realtime.ts`, `lib/stores/combat-store.ts`, `lib/stores/guest-combat-store.ts`, `components/oracle/ConditionBadge.tsx`, `components/combat/CombatantRow.tsx`
 
 ---
 
@@ -130,14 +132,78 @@
 
 ## Ordem de Execução
 
-| Ordem | Item | Esforço |
-|-------|------|---------|
-| 1 | Item 6 — Header sticky guest | ~5 min |
-| 2 | Item 8 — Headers visíveis | ~10 min |
-| 3 | Item 2 — Numeração grupo | ~15 min |
-| 4 | Item 3 — Teclado grupo | ~15 min |
-| 5 | Item 7 — ▶ clicável | ~10 min |
-| 6 | Item 4 — Confirm remover | ~20 min |
-| 7 | Item 1 — Monstros 2024 | ~30 min |
-| 8 | Item 5 — Contador condições | ~1h |
-| 9 | Item 9 — Timer turno | ~1h |
+| Ordem | Item | Esforço | Status |
+|-------|------|---------|--------|
+| 1 | Item 6 — Header sticky guest | ~5 min | ✅ |
+| 2 | Item 8 — Headers visíveis | ~10 min | ✅ |
+| 3 | Item 2 — Numeração grupo | ~15 min | ✅ |
+| 4 | Item 3 — Teclado grupo | ~15 min | ✅ |
+| 5 | Item 7 — ▶ clicável | ~10 min | ✅ |
+| 6 | Item 4 — Confirm remover | ~20 min | ✅ |
+| 7 | Item 1 — Monstros 2024 | ~30 min | ✅ |
+| 8 | Item 5 — Contador condições | ~1h | ✅ |
+| 9 | Item 9 — Timer turno | ~1h | ✅ |
+
+---
+
+## Code Review Fixes (2026-03-30)
+
+CR adversarial encontrou 8 issues nos itens acima. Todos corrigidos no commit `fix(combat): CR fixes`:
+
+### CR-1: toggleCondition não salvava condition_durations (CRITICAL)
+- **Problema:** `toggleCondition` em ambos stores atualizava `conditions[]` mas não `condition_durations{}`, então o contador no badge nunca funcionava.
+- **Fix:** Adicionado tracking de `condition_durations` — on add: `durations[condition] = 0`, on remove: `delete durations[condition]`
+- **Arquivos:** `lib/stores/combat-store.ts`, `lib/stores/guest-combat-store.ts`
+
+### CR-2: advanceTurn do guest não incrementava condition durations (CRITICAL)
+- **Problema:** Só o combat-store tinha a lógica de incremento. Guest store ficou sem.
+- **Fix:** Portada mesma lógica de incremento para `guest-combat-store.ts:advanceTurn`
+- **Arquivos:** `lib/stores/guest-combat-store.ts`
+
+### CR-3: Header do combate guest não era sticky (HIGH)
+- **Problema:** Toolbar com "Round X" e "Next Turn" scrollava com o conteúdo no guest.
+- **Fix:** Wrappado com `sticky top-0 z-30 bg-background` + closing tag correspondente
+- **Arquivos:** `components/guest/GuestCombatClient.tsx`
+
+### CR-4: AlertDialog faltando no CombatantRow — combate ativo (HIGH)
+- **Problema:** AlertDialog foi adicionado no setup (CombatantSetupRow) mas esquecido no combate ativo.
+- **Fix:** Import + wrapper AlertDialog no botão Remover + 4 i18n keys (`remove_confirm_*`)
+- **Arquivos:** `components/combat/CombatantRow.tsx`, `messages/en.json`, `messages/pt-BR.json`
+
+### CR-5: ▶ não era clicável para avançar turno (MEDIUM)
+- **Problema:** Indicador de turno ainda era `<span>`, não `<button>`.
+- **Fix:** Convertido para `<button>` com `onAdvanceTurn`, prop wired em CombatSessionClient e GuestCombatClient
+- **Arquivos:** `components/combat/CombatantRow.tsx`, `components/session/CombatSessionClient.tsx`, `components/guest/GuestCombatClient.tsx`
+
+### CR-6: Headers de colunas pouco visíveis (MEDIUM)
+- **Problema:** `text-[10px] text-muted-foreground/60` praticamente invisível.
+- **Fix:** Atualizado para `text-xs font-medium text-muted-foreground` + i18n "Iniciativa"/"Initiative"
+- **Arquivos:** `components/combat/EncounterSetup.tsx`, `components/guest/GuestCombatClient.tsx`, `messages/*.json`
+
+### CR-7: Group numbering conflitava no mid-combat guest (LOW)
+- **Problema:** `handleMidCombatSelectMonsterGroup` usava `${monster.name} ${i}` (1-indexed) sem contar existentes.
+- **Fix:** Conta combatants existentes com mesmo nome base antes de numerar
+- **Arquivos:** `components/guest/GuestCombatClient.tsx`
+
+### CR-8: TurnTimer flash de 0:00 (LOW)
+- **Problema:** `setElapsed(0)` hardcoded causava flash visual antes do interval calcular.
+- **Fix:** `setElapsed(Math.max(0, Math.floor((Date.now() - startTime) / 1000)))`
+- **Arquivos:** `components/combat/TurnTimer.tsx`
+
+---
+
+## Mudanças adicionais (2026-03-30)
+
+### Death Saves — Heal reset (regra D&D 5e)
+- `applyHealing` em ambos stores agora reseta `death_saves` e `is_defeated` quando HP sobe de 0
+- **Arquivos:** `lib/stores/combat-store.ts`, `lib/stores/guest-combat-store.ts`
+
+### ConditionBadge — ICU plural tooltip
+- `turnCount` tooltip usa formato ICU plural: `{count, plural, one {# turn} other {# turns}}`
+- **Arquivos:** `components/oracle/ConditionBadge.tsx`, `messages/*.json`
+
+### Player: Pass Turn button + hide other players' HP
+- PlayerInitiativeBoard esconde HP numérico de outros players (só mostra tier/barra)
+- Botão "Passar Turno" envia broadcast `player:end_turn` via Supabase Realtime
+- CombatSessionClient escuta e avança turno automaticamente (valida que é turno de player)
+- **Arquivos:** `components/player/PlayerInitiativeBoard.tsx`, `components/player/PlayerJoinClient.tsx`, `components/session/CombatSessionClient.tsx`
