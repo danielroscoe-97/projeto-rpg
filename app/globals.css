@@ -109,7 +109,6 @@ html {
   body > div,
   main,
   footer,
-  header,
   section {
     position: relative;
     z-index: 1;
