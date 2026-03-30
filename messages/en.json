@@ -260,6 +260,17 @@
     "view_campaign": "View",
     "dm_label": "DM"
   },
+  "sidebar": {
+    "overview": "Overview",
+    "campaigns": "Campaigns",
+    "combats": "Combats",
+    "soundboard": "Soundboard",
+    "settings": "Settings",
+    "quick_actions": "Quick Actions",
+    "new_combat": "New Combat",
+    "create_npc": "Create NPC",
+    "invite_player": "Invite Player"
+  },
   "onboarding": {
     "choose_title": "How do you want to start?",
     "choose_description": "Pick the path that fits your table.",

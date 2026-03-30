@@ -260,6 +260,17 @@
     "view_campaign": "Ver",
     "dm_label": "Mestre"
   },
+  "sidebar": {
+    "overview": "Visão Geral",
+    "campaigns": "Campanhas",
+    "combats": "Combates",
+    "soundboard": "Soundboard",
+    "settings": "Configurações",
+    "quick_actions": "Ações Rápidas",
+    "new_combat": "Novo Combate",
+    "create_npc": "Criar NPC",
+    "invite_player": "Convidar Jogador"
+  },
   "onboarding": {
     "choose_title": "Como você quer começar?",
     "choose_description": "Escolha o caminho ideal para sua mesa.",
