@@ -167,7 +167,8 @@
     "ac_label": "CA",
     "encounter_fallback": "Encontro",
     "session_fallback": "Sessão",
-    "section_members": "Membros"
+    "section_members": "Membros",
+    "section_mindmap": "Mapa Mental"
   },
   "members": {
     "title": "Membros",
@@ -1714,5 +1715,16 @@
     "token_updated": "Token atualizado!",
     "no_characters": "Nenhum personagem",
     "create_first": "Crie seu primeiro personagem"
+  },
+  "mindmap": {
+    "title": "Mapa Mental",
+    "campaign_node": "Campanha",
+    "npcs_group": "NPCs",
+    "notes_group": "Notas",
+    "members_group": "Membros",
+    "zoom_in": "Ampliar",
+    "zoom_out": "Reduzir",
+    "fit_view": "Ajustar Vista",
+    "loading": "Carregando mapa..."
   }
 }

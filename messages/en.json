@@ -167,7 +167,8 @@
     "ac_label": "AC",
     "encounter_fallback": "Encounter",
     "session_fallback": "Session",
-    "section_members": "Members"
+    "section_members": "Members",
+    "section_mindmap": "Mind Map"
   },
   "members": {
     "title": "Members",
@@ -1714,5 +1715,16 @@
     "token_updated": "Token updated!",
     "no_characters": "No characters",
     "create_first": "Create your first character"
+  },
+  "mindmap": {
+    "title": "Mind Map",
+    "campaign_node": "Campaign",
+    "npcs_group": "NPCs",
+    "notes_group": "Notes",
+    "members_group": "Members",
+    "zoom_in": "Zoom In",
+    "zoom_out": "Zoom Out",
+    "fit_view": "Fit View",
+    "loading": "Loading map..."
   }
 }
