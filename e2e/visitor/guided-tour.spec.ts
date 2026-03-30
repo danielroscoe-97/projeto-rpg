@@ -12,12 +12,19 @@ test.describe("P0 — Guided Tour (Logged-Out Onboarding)", () => {
   test.setTimeout(90_000);
 
   test.beforeEach(async ({ page }) => {
-    // Limpa localStorage para garantir que o tour não foi "completado" antes
+    // Pre-clear tour state before page loads via addInitScript — avoids the
+    // goto→removeItem→reload pattern which is flaky on mobile-safari (WebKit).
+    // Zustand persist reads localStorage on mount; clearing before navigation
+    // ensures the tour starts fresh with no completed/active state.
     await page.context().clearCookies();
+    await page.addInitScript(() => {
+      localStorage.removeItem("guided-tour-v1");
+    });
     await page.goto("/try");
-    await page.evaluate(() => localStorage.removeItem("guided-tour-v1"));
-    await page.reload();
     await page.waitForLoadState("domcontentloaded");
+    // Wait for SRD to be ready — SRD state changes trigger re-renders that
+    // can delay Zustand hydration on slower browsers (mobile-safari/WebKit).
+    await waitForSrdReady(page);
   });
 
   test("Tour auto-starts with welcome modal", async ({ page }) => {

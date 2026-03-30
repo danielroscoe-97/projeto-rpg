@@ -3,6 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
@@ -11,8 +13,11 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: [
           {
+            // HSTS: only in production. Dev server is HTTP-only; WebKit (Safari) unlike Chrome
+            // does NOT exempt localhost from HSTS and will upgrade all requests to HTTPS,
+            // causing SSL connect errors that break useEffect / React hydration.
             key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            value: isDev ? "max-age=0" : "max-age=63072000; includeSubDomains; preload",
           },
           {
             key: "X-Content-Type-Options",
@@ -47,7 +52,10 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "object-src 'none'",
-              "upgrade-insecure-requests",
+              // upgrade-insecure-requests only in production; in dev (HTTP localhost)
+              // this directive causes WebKit to upgrade static asset requests to HTTPS
+              // which fails with SSL connect errors (no cert on dev server).
+              ...(isDev ? [] : ["upgrade-insecure-requests"]),
             ].join("; "),
           },
         ],

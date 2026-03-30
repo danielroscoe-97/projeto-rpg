@@ -3,9 +3,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { SrdLoadingScreen } from "@/components/srd/SrdLoadingScreen";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { GuestBanner } from "@/components/guest/GuestBanner";
-import dynamic from "next/dynamic";
-
-const TourProvider = dynamic(() => import("@/components/tour/TourProvider").then(m => m.TourProvider));
+import { TourProvider } from "@/components/tour/TourProvider";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 
 export default function TryLayout({ children }: { children: React.ReactNode }) {
@@ -39,10 +37,12 @@ export default function TryLayout({ children }: { children: React.ReactNode }) {
           <div className="p-6">
             {children}
           </div>
-          <TourProvider />
           <DiceHistoryPanel />
         </main>
       </SrdLoadingScreen>
+      {/* TourProvider outside SrdLoadingScreen so it's never inside the `inert` wrapper.
+          The tour auto-starts before SRD loads and must be interactive from first render. */}
+      <TourProvider />
     </div>
   );
 }
