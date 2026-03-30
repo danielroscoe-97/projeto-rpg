@@ -14,3 +14,38 @@ user_name: Dani_
 communication_language: Brazilian Portuguese
 document_output_language: Brazilian Portuguese
 output_folder: _bmad-output
+
+# Installed Modules
+installed_modules:
+  - code: cis
+    name: "CIS: Creative Innovation Suite"
+    path: "_bmad/cis"
+  - code: tea
+    name: "Test Architect Enterprise"
+    path: "_bmad/tea"
+  - code: wds
+    name: "WDS: Whiteport Design Studio"
+    path: "_bmad/wds"
+
+# TEA Module Configuration
+test_artifacts: "{project-root}/_bmad-output/test-artifacts"
+tea_use_playwright_utils: true
+tea_use_pactjs_utils: false
+tea_pact_mcp: "none"
+tea_browser_automation: "auto"
+tea_execution_mode: "auto"
+tea_capability_probe: true
+test_stack_type: "fullstack"
+ci_platform: "github-actions"
+test_framework: "playwright"
+
+# WDS Module Configuration
+design_artifacts: "{project-root}/design-artifacts"
+project_type: "digital_product"
+design_system_mode: "component_library"
+methodology_version: "wds-v6"
+product_languages: ["pt", "en"]
+design_experience: "intermediate"
+
+# CIS Module Configuration
+visual_tools: "mermaid"

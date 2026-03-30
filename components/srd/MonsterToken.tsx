@@ -59,6 +59,16 @@ export function MonsterToken({
   const triedFallbackRef = useRef(false);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Sync when tokenUrl prop changes (e.g. SRD loads asynchronously after initial render)
+  useEffect(() => {
+    if (!tokenUrl) return;
+    if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    retriesRef.current = 0;
+    triedFallbackRef.current = false;
+    setCurrentSrc(tokenUrl);
+    setShowEmoji(false);
+  }, [tokenUrl]);
+
   // Cleanup retry timer on unmount
   useEffect(() => {
     return () => {
