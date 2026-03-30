@@ -15,6 +15,11 @@ import {
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 test.describe("DM Reconnect Journey", () => {
+  test.skip(
+    !process.env.E2E_DM_EMAIL && !process.env.E2E_DM_PASSWORD,
+    "Requires E2E_DM_EMAIL and E2E_DM_PASSWORD env vars — skipped without Supabase auth"
+  );
+
   test("Combat state persists after navigating away and returning", async ({ page }) => {
     // 1. Login and set up combat
     await loginAs(page, DM_PRIMARY);

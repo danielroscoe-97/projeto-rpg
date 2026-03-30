@@ -16,6 +16,11 @@ import {
 } from "../helpers/combat";
 
 test.describe("DM Happy Path Journey", () => {
+  test.skip(
+    !process.env.E2E_DM_EMAIL && !process.env.E2E_DM_PASSWORD,
+    "Requires E2E_DM_EMAIL and E2E_DM_PASSWORD env vars — skipped in local dev"
+  );
+
   test("Full DM combat lifecycle", async ({ page }) => {
     // 1. Login as DM
     await loginAsDM(page);
