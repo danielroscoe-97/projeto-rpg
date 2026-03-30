@@ -160,6 +160,8 @@ interface PlayerInitiativeBoardProps {
   registeredName?: string;
   /** Callback when the player ends their own turn */
   onEndTurn?: () => void;
+  /** Callback when the player marks a death save (optimistic update + broadcast) */
+  onDeathSave?: (combatantId: string, result: "success" | "failure") => void;
 }
 
 export function PlayerInitiativeBoard({
@@ -176,6 +178,7 @@ export function PlayerInitiativeBoard({
   customAudioUrls = {},
   registeredName,
   onEndTurn,
+  onDeathSave,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
@@ -199,19 +202,11 @@ export function PlayerInitiativeBoard({
   // Reset pending state when turn changes
   useEffect(() => { setDeathSavePending(false); }, [currentTurnIndex]);
   const handleDeathSave = useCallback((result: "success" | "failure") => {
-    if (deathSavePending || !channelRef?.current || !ownCharRef.current) return;
+    if (deathSavePending || !ownCharRef.current || !onDeathSave) return;
     setDeathSavePending(true);
-    channelRef.current.send({
-      type: "broadcast",
-      event: "player:death_save",
-      payload: {
-        player_name: registeredName,
-        combatant_id: ownCharRef.current.id,
-        result,
-      },
-    });
+    onDeathSave(ownCharRef.current.id, result);
     deathSaveCooldownRef.current = setTimeout(() => setDeathSavePending(false), 2000);
-  }, [deathSavePending, channelRef, registeredName]);
+  }, [deathSavePending, onDeathSave]);
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
 

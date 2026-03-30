@@ -14,6 +14,8 @@ import type { Plan } from "@/lib/types/subscription";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
 import type { PlayerAudioFile } from "@/lib/types/audio";
+import { useAudioStore } from "@/lib/stores/audio-store";
+import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
 
 
 const SpellSearch = lazy(() =>
@@ -532,6 +534,27 @@ export function PlayerJoinClient({
             setWeatherEffect(payload.effect);
           }
         })
+        .on("broadcast", { event: "audio:play_sound" }, ({ payload }) => {
+          // DM played an SFX — play it on the player side too
+          if (payload.sound_id && payload.source) {
+            useAudioStore.getState().playSound(
+              payload.sound_id,
+              payload.source,
+              payload.player_name ?? "DM",
+              payload.audio_url
+            );
+          }
+        })
+        .on("broadcast", { event: "audio:ambient_start" }, ({ payload }) => {
+          // DM started ambient/music — play it on the player side (looped)
+          if (payload.sound_id) {
+            useAudioStore.getState().playAmbient(payload.sound_id);
+          }
+        })
+        .on("broadcast", { event: "audio:ambient_stop" }, () => {
+          // DM stopped ambient/music — stop it on the player side
+          useAudioStore.getState().stopAmbient();
+        })
         .on("broadcast", { event: "combat:started" }, ({ payload }) => {
           setActive(true);
           if (payload?.encounter_id) {
@@ -972,6 +995,9 @@ export function PlayerJoinClient({
           </div>
         </div>
 
+        {/* Audio Autoplay Unlock Banner (Story 4) */}
+        <AudioUnlockBanner />
+
         {/* Spell Oracle (Story 5-4) */}
         {showOracle && (
           <div className="bg-card border border-border rounded-md p-4" data-testid="player-oracle">
@@ -1026,6 +1052,36 @@ export function PlayerJoinClient({
               event: "player:end_turn",
               payload: { player_name: registeredName },
             });
+          }}
+          onDeathSave={(combatantId, result) => {
+            const ch = channelRef.current;
+            if (!ch || connectionStatus !== "connected") {
+              toast.error(tRef.current("sync_offline"));
+              return;
+            }
+            // Broadcast to DM
+            ch.send({
+              type: "broadcast",
+              event: "player:death_save",
+              payload: {
+                player_name: registeredName,
+                combatant_id: combatantId,
+                result,
+              },
+            });
+            // Optimistic local update — show the dot immediately
+            updateCombatants((prev) =>
+              prev.map((c) => {
+                if (c.id !== combatantId) return c;
+                const saves = c.death_saves ?? { successes: 0, failures: 0 };
+                return {
+                  ...c,
+                  death_saves: result === "success"
+                    ? { ...saves, successes: Math.min(saves.successes + 1, 3) }
+                    : { ...saves, failures: Math.min(saves.failures + 1, 3) },
+                };
+              })
+            );
           }}
         />
       </div>
