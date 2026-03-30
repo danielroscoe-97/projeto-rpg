@@ -5,6 +5,7 @@ import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
 import type {
   CampaignMember,
+  CampaignMemberWithUser,
   CampaignInviteWithDetails,
   UserMembership,
 } from "@/lib/types/campaign-membership";
@@ -484,5 +485,146 @@ export async function leaveCampaign(
 
   trackServerEvent("campaign:member_left", {
     properties: { campaign_id: campaignId, user_id: userId },
+  });
+}
+
+/**
+ * Returns all members of a campaign with user details (display_name, email).
+ * Sorts DM first, then by display_name.
+ */
+export async function getCampaignMembers(
+  campaignId: string
+): Promise<CampaignMemberWithUser[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("campaign_members")
+    .select(
+      `
+      id,
+      campaign_id,
+      user_id,
+      role,
+      joined_at,
+      status,
+      users!campaign_members_user_id_fkey (
+        display_name,
+        email
+      )
+    `
+    )
+    .eq("campaign_id", campaignId)
+    .eq("status", "active");
+
+  if (error) {
+    captureError(new Error(`Failed to fetch campaign members: ${error.message}`), {
+      component: "getCampaignMembers",
+      action: "fetchMembers",
+      category: "database",
+      extra: { campaignId, code: error.code },
+    });
+    return [];
+  }
+
+  if (!data || data.length === 0) return [];
+
+  // Fetch character names for players
+  const playerUserIds = data
+    .filter((m: Record<string, unknown>) => m.role === "player")
+    .map((m: Record<string, unknown>) => m.user_id as string);
+
+  const characterMap: Record<string, string> = {};
+  if (playerUserIds.length > 0) {
+    const { data: characters } = await supabase
+      .from("player_characters")
+      .select("user_id, name")
+      .eq("campaign_id", campaignId)
+      .in("user_id", playerUserIds);
+
+    for (const pc of characters ?? []) {
+      if (!characterMap[pc.user_id]) {
+        characterMap[pc.user_id] = pc.name;
+      }
+    }
+  }
+
+  const members: CampaignMemberWithUser[] = data.map(
+    (row: Record<string, unknown>) => {
+      const user = row.users as Record<string, unknown> | null;
+      const userId = row.user_id as string;
+
+      return {
+        id: row.id as string,
+        campaign_id: row.campaign_id as string,
+        user_id: userId,
+        role: row.role as CampaignMemberWithUser["role"],
+        joined_at: row.joined_at as string,
+        status: row.status as CampaignMemberWithUser["status"],
+        display_name: (user?.display_name as string) ?? null,
+        email: (user?.email as string) ?? "",
+        character_name: characterMap[userId] ?? null,
+      };
+    }
+  );
+
+  // Sort: DM first, then by display_name
+  members.sort((a, b) => {
+    if (a.role !== b.role) return a.role === "dm" ? -1 : 1;
+    const nameA = (a.display_name ?? a.email).toLowerCase();
+    const nameB = (b.display_name ?? b.email).toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+
+  return members;
+}
+
+/**
+ * Removes a member from a campaign. Only the campaign owner (DM) can do this.
+ * Cannot remove the DM themselves.
+ */
+export async function removeCampaignMember(
+  campaignId: string,
+  targetUserId: string
+): Promise<void> {
+  const supabase = await createClient();
+
+  // Verify caller is the campaign owner
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Authentication required");
+
+  const { data: campaign } = await supabase
+    .from("campaigns")
+    .select("owner_id")
+    .eq("id", campaignId)
+    .single();
+
+  if (!campaign || campaign.owner_id !== user.id) {
+    throw new Error("Only the campaign owner can remove members");
+  }
+
+  if (targetUserId === user.id) {
+    throw new Error("Cannot remove yourself as DM");
+  }
+
+  const { error } = await supabase
+    .from("campaign_members")
+    .delete()
+    .eq("campaign_id", campaignId)
+    .eq("user_id", targetUserId);
+
+  if (error) {
+    captureError(new Error(`Failed to remove member: ${error.message}`), {
+      component: "removeCampaignMember",
+      action: "deleteMember",
+      category: "database",
+      extra: { campaignId, targetUserId, code: error.code },
+    });
+    throw new Error(`Failed to remove member: ${error.message}`);
+  }
+
+  trackServerEvent("campaign:member_removed", {
+    properties: { campaign_id: campaignId, removed_user_id: targetUserId },
   });
 }

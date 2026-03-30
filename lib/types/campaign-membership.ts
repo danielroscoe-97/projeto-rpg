@@ -32,6 +32,18 @@ export interface UserMembership {
   character_level?: number | null;
 }
 
+export interface CampaignMemberWithUser {
+  id: string;
+  campaign_id: string;
+  user_id: string;
+  role: CampaignRole;
+  joined_at: string;
+  status: MembershipStatus;
+  display_name: string | null;
+  email: string;
+  character_name: string | null;
+}
+
 export interface CampaignInviteWithDetails {
   id: string;
   campaign_id: string;
