@@ -99,7 +99,10 @@
     "checklist_click_link": "Clique no link de confirmação",
     "email_delay_notice": "O email pode levar até 2 minutos para chegar",
     "tab_login": "Entrar",
-    "tab_signup": "Criar Conta"
+    "tab_signup": "Criar Conta",
+    "google_login": "Continuar com Google",
+    "google_login_loading": "Conectando...",
+    "or_separator": "ou"
   },
   "signup": {
     "role_selection_title": "Como você vai usar o Pocket DM?",
@@ -345,7 +348,17 @@
     "invite_accepted_redirect": "Convite aceito! Redirecionando para a campanha...",
     "player_count_label": "{count} jogadores",
     "view_campaign": "Ver",
-    "dm_label": "Mestre"
+    "dm_label": "Mestre",
+    "encounter_history_title": "Historico de Combates",
+    "encounter_history_empty": "Nenhum combate finalizado ainda.",
+    "encounter_history_empty_desc": "Inicie uma sessao de combate e finalize-a para ver o historico aqui.",
+    "encounter_history_loading": "Carregando...",
+    "encounter_history_load_more": "Carregar mais",
+    "encounter_history_error": "Erro ao carregar encontros",
+    "encounter_history_rounds": "{count} rodada(s)",
+    "encounter_history_combatants_label": "Combatentes",
+    "encounter_history_monsters_defeated": "{count} monstro(s) derrotado(s)",
+    "encounter_history_pcs_fallen": "{count} PC(s) caiu/cairam"
   },
   "sidebar": {
     "overview": "Visão Geral",
@@ -1329,7 +1342,16 @@
     "testimonial_3_author": "Mestra iniciante",
     "how_it_works_cta": "Testar Combat Tracker — Grátis",
     "no_account_needed": "Sem cadastro necessário",
-    "cta_primary": "Começar Grátis"
+    "cta_primary": "Começar Grátis",
+    "google_cta": "Continuar com Google",
+    "google_cta_loading": "Conectando..."
+  },
+  "empty_states": {
+    "campaigns": "Crie sua primeira campanha",
+    "campaigns_desc": "Organize sessões, NPCs e notas",
+    "combats": "Nenhum combate ainda",
+    "combats_desc": "Inicie uma sessão para começar",
+    "generic_create": "Criar"
   },
   "pro": {
     "badge": {

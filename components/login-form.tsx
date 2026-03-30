@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { trackEvent } from "@/lib/analytics/track";
 import { getAuthErrorKey } from "@/lib/auth/translate-error";
+import { GoogleOAuthButton } from "@/components/auth/GoogleOAuthButton";
 
 export function LoginForm({
   className,
@@ -154,6 +155,19 @@ export function LoginForm({
           )}
         </Button>
       </form>
+
+      {/* Separator */}
+      <div className="relative my-5">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/[0.08]" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-card px-3 text-muted-foreground/60">{t("or_separator")}</span>
+        </div>
+      </div>
+
+      {/* Google OAuth */}
+      <GoogleOAuthButton namespace="auth" />
 
       {/* Footer link */}
       <p className="mt-5 text-center text-sm text-muted-foreground/60">
