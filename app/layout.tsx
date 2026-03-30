@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -26,25 +26,26 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const cinzel = Cinzel({
+const cinzel = localFont({
+  src: [
+    { path: "../public/fonts/cinzel-latin-400-normal.woff2", weight: "400" },
+    { path: "../public/fonts/cinzel-latin-600-normal.woff2", weight: "600" },
+    { path: "../public/fonts/cinzel-latin-700-normal.woff2", weight: "700" },
+  ],
   variable: "--font-cinzel",
   display: "swap",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const jakarta = localFont({
+  src: "../public/fonts/plus-jakarta-sans-latin-wght-normal.woff2",
   variable: "--font-jakarta",
   display: "swap",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
-const jetbrains = JetBrains_Mono({
+const jetbrains = localFont({
+  src: "../public/fonts/jetbrains-mono-latin-wght-normal.woff2",
   variable: "--font-mono",
   display: "swap",
-  subsets: ["latin"],
-  weight: ["400", "700"],
 });
 
 export default async function RootLayout({
