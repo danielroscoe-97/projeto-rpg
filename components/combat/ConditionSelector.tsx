@@ -150,7 +150,7 @@ export function ConditionSelector({
         type="button"
         onClick={onClose}
         className="mt-2 px-2 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
-        aria-label="Close condition selector"
+        aria-label={tcombat("close_condition_selector")}
         data-testid="condition-close-btn"
       >
         {tc("done")}

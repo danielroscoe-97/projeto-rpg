@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { X, Shield, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { PlayerCharacter } from "@/lib/types/database";
@@ -35,9 +36,15 @@ type SaveStatus = "idle" | "saving" | "saved";
 function NotesField({
   characterId,
   initialNotes,
+  placeholder,
+  savingLabel,
+  savedLabel,
 }: {
   characterId: string;
   initialNotes: string;
+  placeholder: string;
+  savingLabel: string;
+  savedLabel: string;
 }) {
   const [value, setValue] = useState(initialNotes);
   const [status, setStatus] = useState<SaveStatus>("idle");
@@ -93,18 +100,18 @@ function NotesField({
       <textarea
         value={value}
         onChange={handleChange}
-        placeholder="Notas do DM..."
+        placeholder={placeholder}
         rows={2}
         className="w-full bg-background/50 border border-border rounded-md px-2 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/50 resize-y focus:outline-none focus:ring-1 focus:ring-gold/40"
       />
       <div className="h-4 mt-0.5">
         {status === "saving" && (
           <span className="text-[10px] text-muted-foreground animate-pulse">
-            Salvando...
+            {savingLabel}
           </span>
         )}
         {status === "saved" && (
-          <span className="text-[10px] text-emerald-400">Salvo</span>
+          <span className="text-[10px] text-emerald-400">{savedLabel}</span>
         )}
       </div>
     </div>
@@ -112,6 +119,7 @@ function NotesField({
 }
 
 export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
+  const t = useTranslations("combat");
   const [characters, setCharacters] = useState<PlayerCharacter[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -164,7 +172,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
       {/* Drawer panel */}
       <div
         role="dialog"
-        aria-label="Player Characters"
+        aria-label={t("player_drawer_title")}
         data-testid="player-drawer"
         className={`fixed top-0 right-0 h-full w-full sm:w-[320px] bg-card border-l border-border z-[51] shadow-xl transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${
           open ? "translate-x-0" : "translate-x-full"
@@ -173,13 +181,13 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <h2 className="text-sm font-semibold text-foreground">
-            Player Characters
+            {t("player_drawer_title")}
           </h2>
           <button
             type="button"
             onClick={onClose}
             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-white/[0.06] transition-colors min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
-            aria-label="Close player drawer"
+            aria-label={t("close_player_drawer")}
             data-testid="player-drawer-close"
           >
             <X className="w-4 h-4" />
@@ -190,7 +198,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
         <div className="overflow-y-auto h-[calc(100%-49px)] px-4 py-3 space-y-4">
           {!campaignId && (
             <p className="text-sm text-muted-foreground text-center py-8">
-              Sessao sem campanha vinculada
+              {t("player_drawer_no_campaign")}
             </p>
           )}
 
@@ -202,7 +210,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
 
           {campaignId && !loading && characters.length === 0 && (
             <p className="text-sm text-muted-foreground text-center py-8">
-              Nenhum personagem nesta campanha.
+              {t("player_drawer_empty")}
             </p>
           )}
 
@@ -269,6 +277,9 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
                 <NotesField
                   characterId={pc.id}
                   initialNotes={pc.dm_notes ?? ""}
+                  placeholder={t("player_drawer_notes_placeholder")}
+                  savingLabel={t("player_drawer_saving")}
+                  savedLabel={t("player_drawer_saved")}
                 />
               </div>
             );

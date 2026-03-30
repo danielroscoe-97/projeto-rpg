@@ -821,7 +821,16 @@
     "weather_ash": "Ash",
     "hide_from_players": "Hide from players",
     "reveal_to_players": "Reveal to players",
-    "hidden_indicator": "Hidden"
+    "hidden_indicator": "Hidden",
+    "close_condition_selector": "Close condition selector",
+    "combatants_list": "Combatants",
+    "player_drawer_title": "Player Characters",
+    "close_player_drawer": "Close player drawer",
+    "player_drawer_no_campaign": "Session has no linked campaign",
+    "player_drawer_empty": "No characters in this campaign.",
+    "player_drawer_notes_placeholder": "DM notes...",
+    "player_drawer_saving": "Saving...",
+    "player_drawer_saved": "Saved"
   },
   "conditions": {
     "blinded": "Blinded",

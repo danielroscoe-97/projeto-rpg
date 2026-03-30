@@ -188,8 +188,23 @@ export const CombatantRow = memo(function CombatantRow({
     >
       {/* === ZERO-TAP TIER: always visible === */}
       <div className="px-3 py-1.5">
-        {/* Name row */}
-        <div className="flex items-center gap-1.5 mb-1">
+        {/* Name row — entire row clickable to open stat block (UX 2) */}
+        <div
+          className={`flex items-center gap-1.5 mb-1 ${canExpand ? "cursor-pointer" : ""}`}
+          onClick={() => {
+            if (canExpand && fullMonster) {
+              pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+            }
+          }}
+          role={canExpand ? "button" : undefined}
+          tabIndex={canExpand ? 0 : undefined}
+          onKeyDown={canExpand ? (e) => {
+            if ((e.key === "Enter" || e.key === " ") && fullMonster) {
+              e.preventDefault();
+              pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+            }
+          } : undefined}
+        >
           {/* Drag handle */}
           {dragHandleProps && (
             <span
@@ -250,7 +265,7 @@ export const CombatantRow = memo(function CombatantRow({
             ) : (
               <button
                 type="button"
-                onClick={() => openInlineEdit("initiative", combatant.initiative !== null ? String(combatant.initiative) : "")}
+                onClick={(e) => { e.stopPropagation(); openInlineEdit("initiative", combatant.initiative !== null ? String(combatant.initiative) : ""); }}
                 className="flex-shrink-0 px-1.5 py-0.5 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors"
                 title={t("edit_initiative_title")}
                 data-testid={`initiative-badge-${combatant.id}`}
@@ -260,18 +275,10 @@ export const CombatantRow = memo(function CombatantRow({
             )
           )}
 
-          {/* Monster token — clickable to open stat block */}
+          {/* Monster token */}
           {combatant.monster_id && (
-            <button
-              type="button"
-              onClick={() => {
-                if (canExpand && fullMonster) {
-                  pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
-                }
-              }}
-              className={`flex-shrink-0 rounded-full ${canExpand ? "cursor-pointer hover:ring-2 hover:ring-gold/60 transition-shadow" : "cursor-default"}`}
-              disabled={!canExpand}
-              aria-label={canExpand ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
+            <div
+              className={`flex-shrink-0 rounded-full ${canExpand ? "hover:ring-2 hover:ring-gold/60 transition-shadow" : ""}`}
               data-testid={`token-btn-${combatant.id}`}
             >
               <MonsterToken
@@ -281,23 +288,16 @@ export const CombatantRow = memo(function CombatantRow({
                 name={combatant.name}
                 size={32}
               />
-            </button>
+            </div>
           )}
 
-          {/* Name — clickable to open pinned card if monster */}
-          <button
-            type="button"
-            onClick={() => {
-              if (canExpand && fullMonster) {
-                pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
-              }
-            }}
+          {/* Name — click handled by parent row */}
+          <div
             className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] flex items-center gap-1.5 ${
               canExpand
-                ? "text-foreground hover:text-gold cursor-pointer"
-                : "text-foreground cursor-default"
+                ? "text-foreground hover:text-gold"
+                : "text-foreground"
             }`}
-            disabled={!canExpand}
             data-testid={`combatant-name-${combatant.id}`}
           >
             <span>{combatant.name}</span>
@@ -306,10 +306,11 @@ export const CombatantRow = memo(function CombatantRow({
                 — {combatant.display_name}
               </span>
             )}
-          </button>
+          </div>
 
-          {/* HP display — inline with name */}
-          <div className="flex items-center gap-0.5 text-xs font-mono flex-shrink-0" data-testid={`hp-display-${combatant.id}`}>
+          {/* HP display — inline with name; stopPropagation to prevent parent row click */}
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+          <div className="flex items-center gap-0.5 text-xs font-mono flex-shrink-0" onClick={(e) => e.stopPropagation()} data-testid={`hp-display-${combatant.id}`}>
             {/* Current HP — click to set directly */}
             {showActions && inlineEditTarget === "current" ? (
               <input

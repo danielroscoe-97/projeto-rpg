@@ -507,8 +507,8 @@ export function MonsterSearchPanel({
                     pinCard("monster", monster.id, monster.ruleset_version)
                   }
                   className="flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-gold hover:bg-gold/10 rounded transition-all shrink-0 border border-transparent hover:border-gold/30"
-                  aria-label={`Ver ficha de ${monster.name}`}
-                  title={`Ver ficha de ${monster.name}`}
+                  aria-label={t("setup_view_card_aria", { name: monster.name })}
+                  title={t("setup_view_card_aria", { name: monster.name })}
                   data-testid={`ver-ficha-${monster.id}`}
                 >
                   <span aria-hidden>📖</span>

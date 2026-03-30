@@ -35,6 +35,7 @@ const TYPE_CONFIG: Record<CombatLogEntry["type"], { color: string; Icon: React.E
 
 export function CombatActionLog({ open, onClose }: CombatActionLogProps) {
   const t = useTranslations("combat");
+  const tc = useTranslations("common");
   const entries = useCombatLogStore((s) => s.entries);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +70,7 @@ export function CombatActionLog({ open, onClose }: CombatActionLogProps) {
             type="button"
             onClick={onClose}
             className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Close"
+            aria-label={tc("close")}
           >
             <X className="w-4 h-4" />
           </button>

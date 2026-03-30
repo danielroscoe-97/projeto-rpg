@@ -821,7 +821,16 @@
     "weather_ash": "Cinzas",
     "hide_from_players": "Ocultar dos jogadores",
     "reveal_to_players": "Revelar para jogadores",
-    "hidden_indicator": "Oculto"
+    "hidden_indicator": "Oculto",
+    "close_condition_selector": "Fechar seletor de condições",
+    "combatants_list": "Combatentes",
+    "player_drawer_title": "Personagens dos Jogadores",
+    "close_player_drawer": "Fechar painel de jogadores",
+    "player_drawer_no_campaign": "Sessão sem campanha vinculada",
+    "player_drawer_empty": "Nenhum personagem nesta campanha.",
+    "player_drawer_notes_placeholder": "Notas do DM...",
+    "player_drawer_saving": "Salvando...",
+    "player_drawer_saved": "Salvo"
   },
   "conditions": {
     "blinded": "Cego",

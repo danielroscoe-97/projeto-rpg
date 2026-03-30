@@ -759,7 +759,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       </div>
 
       {/* Combatant list (insertion order, drag-reorderable) */}
-      <div className="space-y-1" data-testid="setup-combatant-list" role="list" aria-label="Combatants">
+      <div className="space-y-1" data-testid="setup-combatant-list" role="list" aria-label={t("combatants_list")}>
         <SortableCombatantList
           combatants={combatants}
           onReorder={reorderCombatants}
