@@ -17,9 +17,9 @@ export default defineConfig({
     navigationTimeout: 15_000,
   },
   webServer: {
-    command: "npm run dev",
+    command: process.env.CI ? "npm start" : "npm run dev",
     port: 3000,
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
   projects: [
