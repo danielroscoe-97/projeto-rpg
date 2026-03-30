@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 import type { UserRole } from "@/lib/stores/role-store";
@@ -15,6 +15,7 @@ import {
 
 export default async function DashboardPage() {
   const t = await getTranslations("dashboard");
+  const ts = await getTranslations("sidebar");
   const supabase = await createClient();
   const {
     data: { user },
@@ -32,11 +33,10 @@ export default async function DashboardPage() {
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
 
-  // Fetch memberships (dual-role: DM + Player campaigns) — needed before onboarding check
+  // Fetch memberships (dual-role: DM + Player campaigns)
   const memberships = await getUserMemberships(user.id);
 
   // Onboarding redirect — new DMs with no campaigns go through the wizard
-  // Skip if user already has any memberships (as player or DM)
   if (userRole !== "player" && memberships.length === 0) {
     const { count, error: countErr } = await supabase
       .from("campaigns")
@@ -49,7 +49,7 @@ export default async function DashboardPage() {
   // Fetch pending invites
   const pendingInvites = await getPendingInvites(userEmail);
 
-  // Fetch campaigns owned by user (for CampaignManager backward compat)
+  // Fetch campaigns owned by user
   const { data: rawCampaigns } = await supabase
     .from("campaigns")
     .select("id, name, created_at, player_characters(count)")
@@ -64,20 +64,14 @@ export default async function DashboardPage() {
       (c.player_characters as { count: number }[])[0]?.count ?? 0,
   }));
 
-  // Fetch active/saved encounters for resume
+  // Fetch active encounters for resume
   const { data: rawEncounters } = await supabase
     .from("encounters")
     .select("id, name, round_number, is_active, updated_at, session_id, sessions!inner(id, name, owner_id)")
     .eq("sessions.owner_id", user.id)
     .eq("is_active", true)
     .order("updated_at", { ascending: false })
-    .limit(10);
-
-  // Fetch preset count for quick-access card
-  const { count: presetCount } = await supabase
-    .from("monster_presets")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", user.id);
+    .limit(5);
 
   const savedEncounters: SavedEncounterRow[] = (rawEncounters ?? []).map((e) => ({
     session_id: e.session_id as string,
@@ -93,24 +87,15 @@ export default async function DashboardPage() {
     title: t("title"),
     description: t("description"),
     new_session: t("new_session"),
-    presets_title: t("presets_title"),
-    presets_count: t("presets_count"),
-    presets_manage: t("presets_manage"),
-    player_welcome: t("player_welcome"),
-    player_join_hint: t("player_join_hint"),
     dm_tables_title: t("dm_tables_title"),
     player_tables_title: t("player_tables_title"),
     pending_invites: t("pending_invites"),
     quick_combat: t("quick_combat"),
-    create_first_campaign: t("create_first_campaign"),
-    create_first_campaign_desc: t("create_first_campaign_desc"),
     waiting_for_invite: t("waiting_for_invite"),
     waiting_for_invite_desc: t("waiting_for_invite_desc"),
     try_quick_combat: t("try_quick_combat"),
     active_session: t("active_session"),
     no_active_session: t("no_active_session"),
-    tab_dm: t("tab_dm"),
-    tab_player: t("tab_player"),
     invited_by: t("invited_by"),
     accept_invite: t("accept_invite"),
     decline_invite: t("decline_invite"),
@@ -119,15 +104,23 @@ export default async function DashboardPage() {
     invite_accepted_redirect: t("invite_accepted_redirect"),
     player_count_label: t("player_count_label", { count: "{count}" }),
     dm_label: t("dm_label"),
+    encounters_round: t("encounters_round"),
+    encounters_in_progress: t("encounters_in_progress"),
+    campaigns_players_plural: t("campaigns_players_plural"),
+    campaigns_manage: t("campaigns_manage_players"),
+    // Quick actions
+    quick_actions: ts("quick_actions"),
+    new_combat: ts("new_combat"),
+    create_npc: ts("create_npc"),
+    invite_player: ts("invite_player"),
   };
 
   return (
     <div>
       <GuestDataImportModal />
-      <DashboardContent
+      <DashboardOverview
         campaigns={campaigns}
         savedEncounters={savedEncounters}
-        presetCount={presetCount ?? 0}
         userId={user.id}
         userRole={userRole}
         memberships={memberships}

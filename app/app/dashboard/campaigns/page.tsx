@@ -1,0 +1,81 @@
+export const dynamic = "force-dynamic";
+
+import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
+
+import { CampaignManager } from "@/components/dashboard/CampaignManager";
+import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
+import { PendingInvites } from "@/components/dashboard/PendingInvites";
+import { CampaignsPageClient } from "@/components/dashboard/CampaignsPageClient";
+import type { UserRole } from "@/lib/stores/role-store";
+import {
+  getUserMemberships,
+  getPendingInvites,
+} from "@/lib/supabase/campaign-membership";
+
+export default async function CampaignsPage() {
+  const t = await getTranslations("dashboard");
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/auth/login");
+
+  const { data: userData } = await supabase
+    .from("users")
+    .select("role, email")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const userRole = (userData?.role as UserRole) ?? "both";
+  const userEmail = userData?.email ?? user.email ?? "";
+
+  const memberships = await getUserMemberships(user.id);
+  const pendingInvites = await getPendingInvites(userEmail);
+
+  const { data: rawCampaigns } = await supabase
+    .from("campaigns")
+    .select("id, name, created_at, player_characters(count)")
+    .eq("owner_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const campaigns = (rawCampaigns ?? []).map((c) => ({
+    id: c.id as string,
+    name: c.name as string,
+    created_at: c.created_at as string,
+    player_count:
+      (c.player_characters as { count: number }[])[0]?.count ?? 0,
+  }));
+
+  const playerMemberships = memberships.filter((m) => m.role === "player");
+
+  const translations = {
+    campaigns_title: t("campaigns_title"),
+    dm_tables_title: t("dm_tables_title"),
+    player_tables_title: t("player_tables_title"),
+    pending_invites: t("pending_invites"),
+    invited_by: t("invited_by"),
+    accept_invite: t("accept_invite"),
+    decline_invite: t("decline_invite"),
+    invite_accept_error: t("invite_accept_error"),
+    invite_decline_error: t("invite_decline_error"),
+    invite_accepted_redirect: t("invite_accepted_redirect"),
+    active_session: t("active_session"),
+    no_active_session: t("no_active_session"),
+    player_count_label: t("player_count_label", { count: "{count}" }),
+    dm_label: t("dm_label"),
+  };
+
+  return (
+    <CampaignsPageClient
+      campaigns={campaigns}
+      userId={user.id}
+      userRole={userRole}
+      playerMemberships={playerMemberships}
+      pendingInvites={pendingInvites}
+      translations={translations}
+    />
+  );
+}
