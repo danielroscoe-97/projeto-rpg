@@ -1013,13 +1013,16 @@ export function PlayerJoinClient({
           customAudioUrls={playerAudioUrls}
           registeredName={registeredName}
           onEndTurn={() => {
-            if (channelRef.current) {
-              channelRef.current.send({
-                type: "broadcast",
-                event: "player:end_turn",
-                payload: { player_name: registeredName },
-              });
+            const ch = channelRef.current;
+            if (!ch || connectionStatus !== "connected") {
+              toast.error(tRef.current("sync_offline"));
+              return;
             }
+            ch.send({
+              type: "broadcast",
+              event: "player:end_turn",
+              payload: { player_name: registeredName },
+            });
           }}
         />
       </div>

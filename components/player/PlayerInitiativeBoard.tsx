@@ -176,6 +176,18 @@ export function PlayerInitiativeBoard({
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
+  // Debounce for end turn button — prevents double-tap race condition
+  const [endTurnPending, setEndTurnPending] = useState(false);
+  const endTurnCooldownRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => { return () => { if (endTurnCooldownRef.current) clearTimeout(endTurnCooldownRef.current); }; }, []);
+  const handleEndTurn = useCallback(() => {
+    if (endTurnPending || !onEndTurn) return;
+    setEndTurnPending(true);
+    onEndTurn();
+    endTurnCooldownRef.current = setTimeout(() => setEndTurnPending(false), 2000);
+  }, [endTurnPending, onEndTurn]);
+  // Reset pending state when turn changes (another player/DM advanced)
+  useEffect(() => { setEndTurnPending(false); }, [currentTurnIndex]);
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
 
@@ -327,11 +339,12 @@ export function PlayerInitiativeBoard({
             {isPlayerTurn && onEndTurn && (
               <button
                 type="button"
-                onClick={onEndTurn}
-                className="shrink-0 px-4 py-2 bg-gold/20 text-gold font-medium text-sm rounded-lg active:bg-gold/40 lg:hover:bg-gold/30 transition-colors min-h-[44px]"
+                onClick={handleEndTurn}
+                disabled={endTurnPending}
+                className="shrink-0 px-4 py-2 bg-gold/20 text-gold font-medium text-sm rounded-lg active:bg-gold/40 lg:hover:bg-gold/30 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="player-end-turn-btn"
               >
-                {t("end_turn")}
+                {endTurnPending ? "..." : t("end_turn")}
               </button>
             )}
           </div>

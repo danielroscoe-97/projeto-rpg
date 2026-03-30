@@ -669,12 +669,11 @@ export function CombatSessionClient({
 
     const handlePlayerEndTurn = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
-      // Validate: only advance if it's actually a player's turn
+      // Validate: only advance if it's actually a player's turn and name matches
       const snap = useCombatStore.getState();
       const current = snap.combatants[snap.current_turn_index];
       if (!current?.is_player) return;
-      // Optional: check player_name matches current combatant
-      if (payload.player_name && current.name !== payload.player_name) return;
+      if (!payload.player_name || current.name !== payload.player_name) return;
       handleAdvanceTurn();
     };
 
