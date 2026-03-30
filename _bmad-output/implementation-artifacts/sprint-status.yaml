@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-27  # Story specs created for all V2 epics
+last_updated: 2026-03-30  # Epic 14 DM Onboarding — CR + DS + 10 patches
 project: projeto-rpg
 
 project_key: NOKEY
@@ -182,6 +182,15 @@ development_status:
   13-11-dark-state-ui-and-reveal-animation: done
   13-12-mobile-touch-audit-and-polish: done
   epic-13-retrospective: optional
+
+  # Epic 14: Onboarding Guiado — Área Logada do Mestre (2026-03-30)
+  epic-14-dm-onboarding: in-progress
+  epic-14-dm-onboarding-wizard-humanization: done         # feat(epic-11) 659cba5
+  epic-14-dm-onboarding-dashboard-tour: done              # feat(epic-11) 659cba5
+  epic-14-dm-onboarding-ux-polish: done                   # fix(feedback) 6b5cc60 + a8289b7
+  epic-14-dm-onboarding-code-review: done                 # CR 2026-03-30 — 10 patches triaged
+  epic-14-dm-onboarding-bug-fixes: done                   # DS 2026-03-30 — P1-P10 corrigidos
+  epic-14-dm-onboarding-retrospective: optional
 
   # ============================================================
   # V2 EPICS — PRD V2 (2026-03-27)
