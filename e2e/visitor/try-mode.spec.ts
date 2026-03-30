@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { waitForSrdReady } from "../helpers/combat";
 
 test.describe("P0 — Visitor Try Mode", () => {
   test.beforeEach(async ({ page }) => {
@@ -38,11 +39,15 @@ test.describe("P0 — Visitor Try Mode", () => {
 
     // Encounter setup shows add-row form (visible in DOM even during SRD loading)
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 15_000 });
+    // No interaction needed — just visibility check, inert state is irrelevant here
   });
 
   test("Visitor can add combatant manually", async ({ page }) => {
     await page.goto("/try");
     await page.waitForLoadState("domcontentloaded");
+    // Wait for SRD to finish loading — children are wrapped in `inert` during load,
+    // which blocks form submissions even with force:true
+    await waitForSrdReady(page);
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
 
     // Fill in combatant details
@@ -51,9 +56,9 @@ test.describe("P0 — Visitor Try Mode", () => {
     await page.fill('[data-testid="add-row-ac"]', "15");
     await page.fill('[data-testid="add-row-init"]', "12");
 
-    // Click "Adicionar" — force:true bypasses coverage by floating UI elements
-    // (SRD loading screen during init, DiceHistoryPanel pill in bottom-right)
-    await page.click('[data-testid="add-row-btn"]', { force: true });
+    // Submit via Enter — the add-row div has onKeyDown that calls handleAddFromRow on Enter.
+    // More reliable than clicking the button which may be covered by floating elements.
+    await page.press('[data-testid="add-row-init"]', "Enter");
 
     // Combatant row should appear — name is in an input inside setup-row
     await expect(
@@ -64,14 +69,16 @@ test.describe("P0 — Visitor Try Mode", () => {
   test("Visitor can add 2 combatants and start combat", async ({ page }) => {
     await page.goto("/try");
     await page.waitForLoadState("domcontentloaded");
+    // Wait for SRD — children are inert during loading, blocking form interactions
+    await waitForSrdReady(page);
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
 
-    // Add combatant 1
+    // Add combatant 1 — submit via Enter (onKeyDown on add-row div)
     await page.fill('[data-testid="add-row-name"]', "Fighter");
     await page.fill('[data-testid="add-row-hp"]', "45");
     await page.fill('[data-testid="add-row-ac"]', "18");
     await page.fill('[data-testid="add-row-init"]', "15");
-    await page.click('[data-testid="add-row-btn"]', { force: true });
+    await page.press('[data-testid="add-row-init"]', "Enter");
     await expect(page.locator('[data-testid^="setup-row-"]').first()).toBeVisible({ timeout: 5_000 });
 
     // Add combatant 2
@@ -79,15 +86,19 @@ test.describe("P0 — Visitor Try Mode", () => {
     await page.fill('[data-testid="add-row-hp"]', "30");
     await page.fill('[data-testid="add-row-ac"]', "12");
     await page.fill('[data-testid="add-row-init"]', "10");
-    await page.click('[data-testid="add-row-btn"]', { force: true });
+    await page.press('[data-testid="add-row-init"]', "Enter");
 
     // Should now have 2 combatant rows
     await expect(page.locator('[data-testid^="setup-row-"]')).toHaveCount(2, { timeout: 5_000 });
 
-    // Start combat
+    // Start combat — use native DOM click to bypass floating UI overlays
     const startBtn = page.locator('[data-testid="start-combat-btn"]');
     await expect(startBtn).toBeVisible();
-    await startBtn.click({ force: true });
+    await expect(startBtn).toBeEnabled({ timeout: 3_000 });
+    await startBtn.scrollIntoViewIfNeeded();
+    await page.evaluate(() => {
+      (document.querySelector('[data-testid="start-combat-btn"]') as HTMLButtonElement)?.click();
+    });
 
     // Active combat should appear
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 10_000 });

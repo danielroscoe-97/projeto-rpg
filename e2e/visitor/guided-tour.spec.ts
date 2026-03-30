@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { waitForSrdReady } from "../helpers/combat";
 
 /**
  * P0 — Guided Tour (onboarding deslogado)
@@ -108,10 +109,15 @@ test.describe("P0 — Guided Tour (Logged-Out Onboarding)", () => {
     const tooltip = page.locator('[data-testid="tour-tooltip"]');
     await expect(tooltip).toBeVisible({ timeout: 15_000 });
 
+    // Wait for SRD to load before advancing — the tour auto-adds a goblin at step
+    // "monster-added" by clicking the first SRD search result. If SRD isn't loaded
+    // yet, the auto-add fails and combatants.length=0 blocks the setup→combat transition.
+    await waitForSrdReady(page);
+
     // Percorre todos os steps de setup clicando Next
-    // Steps: welcome(0), monster-search(1), monster-result(2), import-hint(3),
-    //        add-row(4), roll-initiative(5), start-combat(6)
-    const setupSteps = 7;
+    // Steps: welcome(0), monster-search(1), monster-result(2), monster-added(3),
+    //        add-row(4), import-hint(5), roll-initiative(6), start-combat(7)
+    const setupSteps = 8;
     for (let i = 0; i < setupSteps; i++) {
       await expect(tooltip).toBeVisible({ timeout: 10_000 });
       const nextBtn = page.locator('[data-testid="tour-next"]');
@@ -128,7 +134,7 @@ test.describe("P0 — Guided Tour (Logged-Out Onboarding)", () => {
 
     // Deve estar na fase de combat ou complete
     // Percorre os steps de combat
-    const combatSteps = isMobile ? 2 : 3; // mobile pula keyboard-tip
+    const combatSteps = isMobile ? 3 : 4; // desktop: combat-controls→hp-adjust→next-turn→keyboard-tip; mobile pula keyboard-tip
     for (let i = 0; i < combatSteps; i++) {
       const nextBtn = page.locator('[data-testid="tour-next"]');
       if (await nextBtn.isVisible({ timeout: 10_000 }).catch(() => false)) {
@@ -140,7 +146,9 @@ test.describe("P0 — Guided Tour (Logged-Out Onboarding)", () => {
     // === COMPLETE PHASE ===
     // O último step é o tour-complete modal com confetti
     await page.waitForTimeout(2_000);
-    const finishBtn = page.locator('[data-testid="tour-finish"], [data-testid="tour-got-it"]');
+    // Both tour-got-it and tour-finish are visible on the complete step — use .first()
+    // to avoid Playwright strict-mode violation (multiple matches).
+    const finishBtn = page.locator('[data-testid="tour-got-it"], [data-testid="tour-finish"]').first();
     if (await finishBtn.isVisible({ timeout: 10_000 }).catch(() => false)) {
       // Tour complete — verifica que botão de criar conta existe
       const createAccountLink = page.locator('a[href*="/auth/sign-up"]');

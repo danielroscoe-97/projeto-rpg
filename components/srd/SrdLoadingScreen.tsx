@@ -39,7 +39,11 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
   const t = useTranslations("srd_loading");
   const [showLoader, setShowLoader] = useState(true);
   const [messageSlot, setMessageSlot] = useState(0);
-  const [pickedIndices] = useState(() => pickRandom(LOADING_MESSAGE_KEYS.length, MESSAGES_TO_SHOW));
+  // Initialize with a stable default for SSR, randomize after mount to avoid hydration mismatch
+  const [pickedIndices, setPickedIndices] = useState([0, 1, 2]);
+  useEffect(() => {
+    setPickedIndices(pickRandom(LOADING_MESSAGE_KEYS.length, MESSAGES_TO_SHOW));
+  }, []);
   const minTimeRef = useRef(false);
   const srdReadyRef = useRef(false);
 
