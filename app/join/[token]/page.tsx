@@ -148,16 +148,29 @@ export default async function JoinPage({ params }: JoinPageProps) {
   const dmPlan = (["free","pro","mesa"].includes(session.dm_plan) ? session.dm_plan : "free") as Plan;
 
   // Fetch already-registered player names for this session (enables rejoin without cookies)
+  // Include last_seen_at to determine active/inactive status for DM-approval flow
   const { data: registeredTokens } = await supabase
     .from("session_tokens")
-    .select("player_name")
+    .select("player_name, last_seen_at")
     .eq("session_id", session.id)
     .eq("is_active", true)
     .not("player_name", "is", null);
 
+  const ACTIVE_THRESHOLD_MS = 60_000; // 60s — consider player "active" if seen within this window
+  const now = Date.now();
+
   const registeredPlayerNames = (registeredTokens ?? [])
     .map((t) => t.player_name!)
     .filter(Boolean);
+
+  const registeredPlayersWithStatus = (registeredTokens ?? [])
+    .filter((t) => t.player_name)
+    .map((t) => ({
+      name: t.player_name!,
+      isActive: t.last_seen_at
+        ? now - new Date(t.last_seen_at).getTime() < ACTIVE_THRESHOLD_MS
+        : false,
+    }));
 
   return (
     <PlayerJoinClient
@@ -173,6 +186,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       prefilledCharacters={prefilledCharacters}
       dmPlan={dmPlan}
       registeredPlayerNames={registeredPlayerNames}
+      registeredPlayersWithStatus={registeredPlayersWithStatus}
     />
   );
 }

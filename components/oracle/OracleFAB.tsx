@@ -23,7 +23,7 @@ export function OracleFAB() {
     <button
       type="button"
       onClick={handleClick}
-      className="lg:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gold text-surface-primary shadow-lg shadow-gold/20 flex items-center justify-center hover:bg-gold/90 active:scale-95 transition-all"
+      className="lg:hidden fixed bottom-6 left-6 z-40 w-14 h-14 rounded-full bg-gold text-surface-primary shadow-lg shadow-gold/20 flex items-center justify-center hover:bg-gold/90 active:scale-95 transition-all"
       aria-label={t("trigger_aria")}
     >
       <svg

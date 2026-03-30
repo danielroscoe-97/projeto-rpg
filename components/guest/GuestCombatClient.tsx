@@ -24,6 +24,8 @@ import type { Combatant, CombatantRole } from "@/lib/types/combat";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
+import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
+import { setLastHpMode } from "@/components/combat/HpAdjuster";
 
 interface AddRowForm {
   initiative: string;
@@ -747,6 +749,55 @@ export function GuestCombatClient() {
     hydrateCombatants,
     resetCombat,
   } = useGuestCombatStore();
+
+  // Keyboard shortcuts (space = next turn, arrow keys, D/H/C, etc.)
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
+
+  useCombatKeyboardShortcuts({
+    enabled: phase === "combat",
+    onNextTurn: advanceTurn,
+    combatantCount: combatants.length,
+    focusedIndex,
+    onFocusChange: (idx) => {
+      const clamped = Math.max(0, Math.min(idx, combatants.length - 1));
+      setFocusedIndex(clamped);
+      const el = document.querySelector(`[data-testid="initiative-list"] > :nth-child(${clamped + 1})`);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    },
+    onToggleExpand: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        const btn = document.querySelector(`[data-testid="expand-toggle-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    onOpenHpDamage: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        setLastHpMode("damage");
+        const btn = document.querySelector(`[data-testid="hp-btn-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    onOpenHpHeal: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        setLastHpMode("heal");
+        const btn = document.querySelector(`[data-testid="hp-btn-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    onOpenConditions: () => {
+      const c = combatants[focusedIndex];
+      if (c) {
+        const btn = document.querySelector(`[data-testid="conditions-btn-${c.id}"]`) as HTMLButtonElement | null;
+        btn?.click();
+      }
+    },
+    cheatsheetOpen,
+    onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
+  });
 
   const openUpsell = useCallback((trigger: UpsellTrigger) => {
     // Save current combat state to localStorage before showing upsell

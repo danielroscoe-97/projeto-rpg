@@ -17,11 +17,16 @@ export type RealtimeEventType =
   | "combat:player_notes_update"
   | "combat:late_join_request"
   | "combat:late_join_response"
+  | "combat:rejoin_request"
+  | "combat:rejoin_response"
+  | "combat:session_revoked"
   | "session:state_sync"
   | "session:player_linked"
   | "session:combat_stats"
   | "session:weather_change"
-  | "audio:play_sound";
+  | "audio:play_sound"
+  | "audio:ambient_start"
+  | "audio:ambient_stop";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -118,6 +123,29 @@ export interface RealtimeLateJoinResponse {
   accepted: boolean;
 }
 
+export interface RealtimeRejoinRequest {
+  type: "combat:rejoin_request";
+  /** Name the player chose to rejoin as */
+  character_name: string;
+  request_id: string;
+  /** Whether the character currently has an active session */
+  is_active_session: boolean;
+  /** Token ID of the sender — used to revoke the correct session when another device takes over */
+  sender_token_id: string;
+}
+
+export interface RealtimeRejoinResponse {
+  type: "combat:rejoin_response";
+  request_id: string;
+  accepted: boolean;
+}
+
+export interface RealtimeSessionRevoked {
+  type: "combat:session_revoked";
+  /** Token ID of the session being revoked */
+  revoked_token_id: string;
+}
+
 export interface RealtimeStateSync {
   type: "session:state_sync";
   combatants: Combatant[];
@@ -148,6 +176,15 @@ export interface RealtimeAudioPlay {
   audio_url?: string;
 }
 
+export interface RealtimeAmbientStart {
+  type: "audio:ambient_start";
+  sound_id: string;
+}
+
+export interface RealtimeAmbientStop {
+  type: "audio:ambient_stop";
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -162,10 +199,15 @@ export type RealtimeEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
+  | RealtimeRejoinRequest
+  | RealtimeRejoinResponse
+  | RealtimeSessionRevoked
   | RealtimeStateSync
   | RealtimeCombatStats
   | RealtimeWeatherChange
-  | RealtimeAudioPlay;
+  | RealtimeAudioPlay
+  | RealtimeAmbientStart
+  | RealtimeAmbientStop;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -245,6 +287,11 @@ export type SanitizedEvent =
   | RealtimePlayerNotesUpdate
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
+  | RealtimeRejoinRequest
+  | RealtimeRejoinResponse
+  | RealtimeSessionRevoked
   | RealtimeCombatStats
   | RealtimeWeatherChange
-  | RealtimeAudioPlay;
+  | RealtimeAudioPlay
+  | RealtimeAmbientStart
+  | RealtimeAmbientStop;

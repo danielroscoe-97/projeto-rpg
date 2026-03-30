@@ -30,6 +30,10 @@ interface AudioState {
   activeAudio: HTMLAudioElement | null;
   lastSoundLabel: string | null;
 
+  /** Ambient loop state */
+  activeAmbientId: string | null;
+  activeAmbientAudio: HTMLAudioElement | null;
+
   /** Preloaded signed URLs for player custom audio */
   playerAudioUrls: Record<string, string>;
   preloadedAudio: Record<string, HTMLAudioElement>;
@@ -37,6 +41,8 @@ interface AudioState {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   playSound: (soundId: string, source: "preset" | "custom", playerName: string, url?: string) => void;
+  playAmbient: (presetId: string) => void;
+  stopAmbient: () => void;
   stopAllAudio: () => void;
   preloadPlayerAudio: (audioFiles: PlayerAudioFile[]) => Promise<void>;
   cleanup: () => void;
@@ -48,6 +54,8 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   activeAudioId: null,
   activeAudio: null,
   lastSoundLabel: null,
+  activeAmbientId: null,
+  activeAmbientAudio: null,
   playerAudioUrls: {},
   preloadedAudio: {},
 
@@ -55,17 +63,20 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     const clamped = Math.max(0, Math.min(1, volume));
     set({ volume: clamped });
     localStorage.setItem(LS_VOLUME_KEY, String(clamped));
-    // Update active audio volume
-    const { activeAudio, isMuted } = get();
-    if (activeAudio) activeAudio.volume = isMuted ? 0 : clamped;
+    const { activeAudio, activeAmbientAudio, isMuted } = get();
+    const effectiveVol = isMuted ? 0 : clamped;
+    if (activeAudio) activeAudio.volume = effectiveVol;
+    if (activeAmbientAudio) activeAmbientAudio.volume = effectiveVol;
   },
 
   toggleMute: () => {
     const next = !get().isMuted;
     set({ isMuted: next });
     localStorage.setItem(LS_MUTED_KEY, String(next));
-    const { activeAudio, volume } = get();
-    if (activeAudio) activeAudio.volume = next ? 0 : volume;
+    const { activeAudio, activeAmbientAudio, volume } = get();
+    const effectiveVol = next ? 0 : volume;
+    if (activeAudio) activeAudio.volume = effectiveVol;
+    if (activeAmbientAudio) activeAmbientAudio.volume = effectiveVol;
   },
 
   playSound: (soundId, source, playerName, url) => {
@@ -118,13 +129,70 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     };
   },
 
+  playAmbient: (presetId) => {
+    const { activeAmbientId, activeAmbientAudio, isMuted, volume } = get();
+
+    // Toggle off if same ambient
+    if (activeAmbientId === presetId) {
+      if (activeAmbientAudio) {
+        activeAmbientAudio.pause();
+        activeAmbientAudio.currentTime = 0;
+      }
+      set({ activeAmbientId: null, activeAmbientAudio: null });
+      return;
+    }
+
+    // Stop current ambient with quick fade
+    if (activeAmbientAudio) {
+      const old = activeAmbientAudio;
+      // Quick fade out (300ms)
+      const fadeStep = 0.05;
+      const fadeInterval = setInterval(() => {
+        if (old.volume > fadeStep) {
+          old.volume -= fadeStep;
+        } else {
+          clearInterval(fadeInterval);
+          old.pause();
+          old.currentTime = 0;
+        }
+      }, 20);
+    }
+
+    const preset = getPresetById(presetId);
+    if (!preset) return;
+
+    const audio = new Audio(preset.file);
+    audio.loop = true;
+    audio.volume = isMuted ? 0 : volume;
+    audio.play().catch(() => {});
+
+    set({
+      activeAmbientId: presetId,
+      activeAmbientAudio: audio,
+      lastSoundLabel: `${preset.icon} ${preset.id}`,
+    });
+  },
+
+  stopAmbient: () => {
+    const { activeAmbientAudio } = get();
+    if (activeAmbientAudio) {
+      activeAmbientAudio.pause();
+      activeAmbientAudio.currentTime = 0;
+    }
+    set({ activeAmbientId: null, activeAmbientAudio: null });
+  },
+
   stopAllAudio: () => {
-    const { activeAudio } = get();
+    const { activeAudio, activeAmbientAudio } = get();
     if (activeAudio) {
       activeAudio.pause();
       activeAudio.currentTime = 0;
     }
-    set({ activeAudioId: null, activeAudio: null });
+    if (activeAmbientAudio) {
+      activeAmbientAudio.pause();
+      activeAmbientAudio.currentTime = 0;
+    }
+    set({ activeAudioId: null, activeAudio: null, activeAmbientId: null, activeAmbientAudio: null });
   },
 
   preloadPlayerAudio: async (audioFiles) => {
@@ -169,10 +237,14 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   },
 
   cleanup: () => {
-    const { activeAudio, preloadedAudio } = get();
+    const { activeAudio, activeAmbientAudio, preloadedAudio } = get();
     if (activeAudio) {
       activeAudio.pause();
       activeAudio.currentTime = 0;
+    }
+    if (activeAmbientAudio) {
+      activeAmbientAudio.pause();
+      activeAmbientAudio.currentTime = 0;
     }
     // Release preloaded audio elements
     Object.values(preloadedAudio).forEach((audio) => {
@@ -182,6 +254,8 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({
       activeAudioId: null,
       activeAudio: null,
+      activeAmbientId: null,
+      activeAmbientAudio: null,
       playerAudioUrls: {},
       preloadedAudio: {},
       lastSoundLabel: null,

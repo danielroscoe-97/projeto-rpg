@@ -593,19 +593,17 @@ export function CombatantRow({
             >
               {t("cond_button")}
             </button>
-            <button
-              type="button"
-              onClick={() => onSetDefeated?.(combatant.id, !combatant.is_defeated)}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                combatant.is_defeated
-                  ? "bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/50"
-                  : "bg-red-900/20 text-red-400 hover:bg-red-900/40"
-              }`}
-              aria-label={combatant.is_defeated ? t("revive_aria") : t("defeat_aria")}
-              data-testid={`defeat-btn-${combatant.id}`}
-            >
-              {combatant.is_defeated ? t("revive") : t("defeat")}
-            </button>
+            {!combatant.is_defeated && (
+              <button
+                type="button"
+                onClick={() => onSetDefeated?.(combatant.id, true)}
+                className="px-2 py-1 text-xs rounded font-medium min-h-[28px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-red-900/20 text-red-400 hover:bg-red-900/40"
+                aria-label={t("defeat_aria")}
+                data-testid={`defeat-btn-${combatant.id}`}
+              >
+                {t("defeat")}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => togglePanel("edit")}

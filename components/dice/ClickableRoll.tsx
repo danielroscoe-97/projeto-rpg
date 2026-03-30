@@ -22,11 +22,13 @@ export interface ClickableRollProps {
   notation: string;
   /** Contextual label shown in the popover, e.g. "Tentacle (attack)" */
   label?: string;
+  /** Source creature/combatant name, e.g. "Goblin 2" */
+  source?: string;
   /** Override the visible text (defaults to notation) */
   children?: React.ReactNode;
 }
 
-export function ClickableRoll({ notation, label = "", children }: ClickableRollProps) {
+export function ClickableRoll({ notation, label = "", source, children }: ClickableRollProps) {
   const [result, setResult] = useState<RollResult | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ x: number; y: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -79,6 +81,7 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
       }
 
       const r = roll(notation, label, mode);
+      if (source) r.source = source;
 
       // Guard: don't show popover for invalid/empty results
       if (r.dice.length === 0 && r.modifier === 0) return;
@@ -99,7 +102,7 @@ export function ClickableRoll({ notation, label = "", children }: ClickableRollP
       const rect = e.currentTarget.getBoundingClientRect();
       setPopoverPos({ x: rect.left, y: rect.bottom + 6 });
     },
-    [notation, label, isD20],
+    [notation, label, source, isD20],
   );
 
   const dismiss = useCallback(() => {

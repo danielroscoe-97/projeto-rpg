@@ -195,7 +195,7 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       setDefeated: (id, isDefeated) =>
         set((state) => ({
           combatants: state.combatants.map((c) =>
-            c.id === id ? { ...c, is_defeated: isDefeated } : c
+            c.id === id ? { ...c, is_defeated: isDefeated, current_hp: isDefeated ? 0 : c.current_hp } : c
           ),
         })),
 

@@ -19,6 +19,9 @@ const PRESETS: AudioPreset[] = [
   { id: "ambient-forest", name_key: "audio.preset_ambient_forest", file: "/sounds/ambient/forest.mp3", icon: "\uD83C\uDF32", category: "ambient" },
   { id: "ambient-ocean", name_key: "audio.preset_ambient_ocean", file: "/sounds/ambient/ocean.mp3", icon: "\uD83C\uDF0A", category: "ambient" },
   { id: "ambient-creek", name_key: "audio.preset_ambient_creek", file: "/sounds/ambient/creek.mp3", icon: "\uD83C\uDFDE\uFE0F", category: "ambient" },
+  { id: "ambient-wind", name_key: "audio.preset_ambient_wind", file: "/sounds/ambient/wind.mp3", icon: "\uD83C\uDFD4\uFE0F", category: "ambient" },
+  { id: "ambient-bonfire", name_key: "audio.preset_ambient_bonfire", file: "/sounds/ambient/bonfire.mp3", icon: "\uD83D\uDD25", category: "ambient" },
+  { id: "ambient-thunder-storm", name_key: "audio.preset_ambient_thunder_storm", file: "/sounds/ambient/thunder-storm.mp3", icon: "\u26C8\uFE0F", category: "ambient" },
 ];
 
 export function getPresetById(id: string): AudioPreset | undefined {
@@ -27,4 +30,12 @@ export function getPresetById(id: string): AudioPreset | undefined {
 
 export function getAllPresets(): AudioPreset[] {
   return PRESETS;
+}
+
+export function getAmbientPresets(): AudioPreset[] {
+  return PRESETS.filter((p) => p.category === "ambient");
+}
+
+export function getSfxPresets(): AudioPreset[] {
+  return PRESETS.filter((p) => p.category !== "ambient");
 }

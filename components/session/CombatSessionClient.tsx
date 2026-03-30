@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
+import { DmSoundboard } from "@/components/audio/DmSoundboard";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
@@ -39,6 +40,7 @@ import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
+import { rejoinAsPlayer } from "@/lib/supabase/player-registration";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -472,47 +474,68 @@ export function CombatSessionClient({
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
   });
 
-  // Handle accepting a late-join request
+  // Handle accepting a late-join or rejoin request
   const handleAcceptJoinRequest = useCallback((req: JoinRequest) => {
     const sid = getSessionId();
-    handleAddCombatant({
-      name: req.player_name,
-      current_hp: req.hp ?? 0,
-      max_hp: req.hp ?? 0,
-      temp_hp: 0,
-      ac: req.ac ?? 0,
-      spell_save_dc: null,
-      initiative: req.initiative,
-      initiative_order: null,
-      conditions: [],
-      ruleset_version: null,
-      is_defeated: false,
-      is_hidden: false,
-      is_player: true,
-      monster_id: null,
-      token_url: null,
-      creature_type: null,
-      display_name: null,
-      monster_group_id: null,
-      group_order: null,
-      dm_notes: "",
-      player_notes: "",
-      player_character_id: null,
-      combatant_role: null,
-    } as Omit<Combatant, "id">);
-    broadcastEvent(sid, {
-      type: "combat:late_join_response",
-      request_id: req.request_id,
-      accepted: true,
-    } as import("@/lib/types/realtime").RealtimeEvent);
+
+    if (req.isRejoin) {
+      // Rejoin request — character already exists in combat, just approve
+      broadcastEvent(sid, {
+        type: "combat:rejoin_response",
+        request_id: req.request_id,
+        accepted: true,
+      } as import("@/lib/types/realtime").RealtimeEvent);
+
+      // If taking over an active session, broadcast session_revoked so the old device disconnects
+      if (req.isActiveSession && req.senderTokenId) {
+        broadcastEvent(sid, {
+          type: "combat:session_revoked",
+          revoked_token_id: req.senderTokenId,
+        } as import("@/lib/types/realtime").RealtimeEvent);
+      }
+    } else {
+      // Late-join request — create new combatant
+      handleAddCombatant({
+        name: req.player_name,
+        current_hp: req.hp ?? 0,
+        max_hp: req.hp ?? 0,
+        temp_hp: 0,
+        ac: req.ac ?? 0,
+        spell_save_dc: null,
+        initiative: req.initiative,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: null,
+        is_defeated: false,
+        is_hidden: false,
+        is_player: true,
+        monster_id: null,
+        token_url: null,
+        creature_type: null,
+        display_name: null,
+        monster_group_id: null,
+        group_order: null,
+        dm_notes: "",
+        player_notes: "",
+        player_character_id: null,
+        combatant_role: null,
+      } as Omit<Combatant, "id">);
+      broadcastEvent(sid, {
+        type: "combat:late_join_response",
+        request_id: req.request_id,
+        accepted: true,
+      } as import("@/lib/types/realtime").RealtimeEvent);
+    }
+
     setJoinRequests((prev) => prev.filter((r) => r.request_id !== req.request_id));
   }, [getSessionId, handleAddCombatant]);
 
-  // Handle rejecting a late-join request
+  // Handle rejecting a late-join or rejoin request
   const handleRejectJoinRequest = useCallback((req: JoinRequest) => {
     const sid = getSessionId();
+    const eventType = req.isRejoin ? "combat:rejoin_response" : "combat:late_join_response";
     broadcastEvent(sid, {
-      type: "combat:late_join_response",
+      type: eventType,
       request_id: req.request_id,
       accepted: false,
     } as import("@/lib/types/realtime").RealtimeEvent);
@@ -546,13 +569,34 @@ export function CombatSessionClient({
       });
     };
 
-    // Remove any stale late-join bindings before adding the new one.
+    const handleRejoinRequest = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { character_name, request_id, is_active_session, sender_token_id } = payload as {
+        character_name: string; request_id: string; is_active_session: boolean; sender_token_id: string;
+      };
+      setJoinRequests((prev) => {
+        if (prev.some((r) => r.request_id === request_id)) return prev;
+        return [...prev, {
+          request_id,
+          player_name: character_name,
+          hp: null,
+          ac: null,
+          initiative: 0,
+          isRejoin: true,
+          isActiveSession: is_active_session,
+          senderTokenId: sender_token_id,
+        }];
+      });
+    };
+
+    // Remove any stale bindings before adding new ones.
     try {
       const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
       const broadcastBindings = bindings?.broadcast;
       if (Array.isArray(broadcastBindings)) {
         for (let i = broadcastBindings.length - 1; i >= 0; i--) {
-          if (broadcastBindings[i]?.filter?.event === "combat:late_join_request") {
+          const event = broadcastBindings[i]?.filter?.event;
+          if (event === "combat:late_join_request" || event === "combat:rejoin_request") {
             broadcastBindings.splice(i, 1);
           }
         }
@@ -560,6 +604,7 @@ export function CombatSessionClient({
     } catch { /* bindings structure may differ across versions — ignore */ }
 
     ch.on("broadcast", { event: "combat:late_join_request" }, handleLateJoin);
+    ch.on("broadcast", { event: "combat:rejoin_request" }, handleRejoinRequest);
 
     return () => {
       active = false;
@@ -659,6 +704,7 @@ export function CombatSessionClient({
             {turnPending ? t("next_turn_saving") : t("next_turn")}
             <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
           </button>
+          <DmSoundboard onBroadcast={(event, payload) => broadcastEvent(getSessionId(), { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)} />
           <DmAudioControls />
           <button
             type="button"
