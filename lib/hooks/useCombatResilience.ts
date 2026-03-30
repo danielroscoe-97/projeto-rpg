@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import { saveCombatBackup } from "@/lib/stores/combat-persist";
 import { reconcileFullState } from "@/lib/supabase/combat-sync";
+import { replayOfflineQueue } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 
 const MAX_RETRIES = 3;
@@ -141,8 +142,14 @@ export function useCombatResilience() {
       if (wasOfflineRef.current) {
         wasOfflineRef.current = false;
         // Small delay to let the network stabilize
-        timerRef.current = setTimeout(() => {
-          if (mountedRef.current) syncToDatabase();
+        timerRef.current = setTimeout(async () => {
+          if (!mountedRef.current) return;
+          // Replay queued broadcast events first, then sync full state to DB
+          const state = useCombatStore.getState();
+          if (state.session_id) {
+            await replayOfflineQueue(state.session_id);
+          }
+          syncToDatabase();
         }, 1500);
       }
     };

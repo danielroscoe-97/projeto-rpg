@@ -35,6 +35,17 @@ jest.mock("@/lib/errors/capture", () => ({
   captureWarning: jest.fn(),
 }));
 
+jest.mock("@/lib/realtime/broadcast-server", () => ({
+  broadcastViaServer: jest.fn().mockResolvedValue(false),
+}));
+
+jest.mock("@/lib/realtime/offline-queue", () => ({
+  enqueueAction: jest.fn(),
+  getSyncStatus: jest.fn().mockReturnValue("online"),
+  setSyncStatus: jest.fn(),
+  replayQueue: jest.fn(),
+}));
+
 import {
   broadcastEvent,
   cleanupDmChannel,

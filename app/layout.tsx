@@ -7,6 +7,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import "./globals.css";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -16,6 +18,18 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Pocket DM — Combat Tracker D&D 5e",
   description: "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP e condições em tempo real.",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Pocket DM",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
@@ -24,6 +38,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
+  themeColor: "#D4A853",
 };
 
 const cinzel = localFont({
@@ -76,6 +91,8 @@ export default async function RootLayout({
         </Suspense>
         <Analytics />
         <Toaster richColors position="top-right" />
+        <ServiceWorkerRegistration />
+        <InstallPrompt />
         <div id="floating-cards-root" />
       </body>
     </html>

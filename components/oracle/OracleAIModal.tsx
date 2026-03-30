@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import ReactMarkdown from "react-markdown";
+import dynamic from "next/dynamic";
+
+const ReactMarkdown = dynamic(() => import("react-markdown").then(m => m.default), {
+  ssr: false,
+  loading: () => <div className="animate-pulse h-4 bg-surface-secondary rounded w-3/4" />,
+});
 import { RefreshCw, X } from "lucide-react";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { OracleAIData } from "@/lib/stores/pinned-cards-store";

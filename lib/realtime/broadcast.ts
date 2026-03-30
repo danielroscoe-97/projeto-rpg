@@ -14,6 +14,13 @@ import type {
 import type { Combatant } from "@/lib/types/combat";
 import { getHpStatus } from "@/lib/utils/hp-status";
 import { captureError, captureWarning } from "@/lib/errors/capture";
+import {
+  enqueueAction,
+  getSyncStatus,
+  setSyncStatus,
+  replayQueue,
+} from "@/lib/realtime/offline-queue";
+import { broadcastViaServer } from "@/lib/realtime/broadcast-server";
 
 let channel: RealtimeChannel | null = null;
 let currentSessionId: string | null = null;
@@ -313,25 +320,66 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     }
   }
 
+  // If browser is offline, enqueue immediately
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    setSyncStatus("offline");
+    enqueueAction(sessionId, event);
+    return;
+  }
+
   const ch = getDmChannel(sessionId);
   const safeEvent = sanitizePayload(event);
   if (!safeEvent || !validateEvent(safeEvent)) return;
 
   const doSend = () => {
+    try {
+      ch.send({
+        type: "broadcast",
+        event: safeEvent.type,
+        payload: safeEvent,
+      });
+    } catch {
+      setSyncStatus("offline");
+      enqueueAction(sessionId, event);
+    }
+  };
+
+  const state = (ch as unknown as { state: string }).state;
+  if (state === "joined") {
+    doSend();
+  } else if (state === "closed" || state === "errored") {
+    setSyncStatus("offline");
+    enqueueAction(sessionId, event);
+  } else {
+    waitForChannel().then(doSend);
+  }
+
+  // Phase 1 (dual mode): Also send via server-side API for secure sanitization.
+  // Server re-sanitizes and broadcasts to players — this is the anti-metagaming gate.
+  // Fire-and-forget: server broadcast is supplementary; client already sent above.
+  // In Phase 3, client-side send above will be removed and only server remains.
+  broadcastViaServer(sessionId, event).catch(() => {
+    // Server broadcast failed — client-side already handled it above
+  });
+}
+
+/** Replay queued offline actions for a session.
+ *  Call this when connectivity is restored. */
+export async function replayOfflineQueue(sessionId: string): Promise<void> {
+  setSyncStatus("syncing");
+  const result = await replayQueue(sessionId, async (sid, evt) => {
+    const ch = getDmChannel(sid);
+    const safeEvent = sanitizePayload(evt);
+    if (!safeEvent || !validateEvent(safeEvent)) return;
+    await waitForChannel();
     ch.send({
       type: "broadcast",
       event: safeEvent.type,
       payload: safeEvent,
     });
-  };
+  });
 
-  // If channel is still subscribing, wait for it before sending
-  const state = (ch as unknown as { state: string }).state;
-  if (state === "joined") {
-    doSend();
-  } else {
-    waitForChannel().then(doSend);
-  }
+  setSyncStatus(result.failed > 0 ? "error" : "online");
 }
 
 /** Cleanup the DM channel (call when leaving session). */

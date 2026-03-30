@@ -28,6 +28,18 @@ jest.mock("@/lib/errors/capture", () => ({
   captureWarning: jest.fn(),
 }));
 
+// Mock server-side broadcast — return false to test client-side fallback path
+jest.mock("@/lib/realtime/broadcast-server", () => ({
+  broadcastViaServer: jest.fn().mockResolvedValue(false),
+}));
+
+jest.mock("@/lib/realtime/offline-queue", () => ({
+  enqueueAction: jest.fn(),
+  getSyncStatus: jest.fn().mockReturnValue("online"),
+  setSyncStatus: jest.fn(),
+  replayQueue: jest.fn(),
+}));
+
 import { broadcastEvent, cleanupDmChannel } from "../broadcast";
 import type { Combatant } from "@/lib/types/combat";
 

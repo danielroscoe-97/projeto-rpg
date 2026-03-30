@@ -7,7 +7,12 @@ import { AccountDeletion } from "@/components/settings/AccountDeletion";
 import { SpellSearch } from "@/components/oracle/SpellSearch";
 import { MonsterSearch } from "@/components/oracle/MonsterSearch";
 import { ConditionLookup } from "@/components/oracle/ConditionLookup";
-import { SubscriptionPanel } from "@/components/billing/SubscriptionPanel";
+import dynamic from "next/dynamic";
+
+const SubscriptionPanel = dynamic(() => import("@/components/billing/SubscriptionPanel").then(m => m.SubscriptionPanel), {
+  ssr: false,
+  loading: () => <div className="animate-pulse h-32 bg-surface-secondary rounded-lg" />,
+});
 import { ImportManagement } from "@/components/import/ImportManagement";
 import { RoleSelector } from "@/components/settings/RoleSelector";
 

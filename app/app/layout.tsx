@@ -12,6 +12,7 @@ import { OracleAIModal } from "@/components/oracle/OracleAIModal";
 import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { unstable_cache } from "next/cache";
 import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
 
@@ -169,6 +170,7 @@ export default async function AppLayout({
         rightSlot={<><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
       />
       <SrdInitializer />
+      <ConnectionStatus />
       <ErrorBoundary name="Oracle">
         <FloatingCardContainer />
         <CommandPalette />

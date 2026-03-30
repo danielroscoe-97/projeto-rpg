@@ -80,8 +80,12 @@ export type RateLimitResult = {
  * Check if an identifier (typically IP) has exceeded the rate limit.
  * Returns `{ limited: false }` if Redis is unavailable (fail-open).
  */
-export async function checkRateLimit(identifier: string): Promise<RateLimitResult> {
-  const limiter = createRatelimit();
+export async function checkRateLimit(
+  identifier: string,
+  maxRequests?: number,
+  window?: string
+): Promise<RateLimitResult> {
+  const limiter = createRatelimit(maxRequests, window);
 
   if (!limiter) {
     // Fail-open: no Redis available

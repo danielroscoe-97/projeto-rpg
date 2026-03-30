@@ -1,0 +1,244 @@
+/**
+ * Server-safe sanitization logic for broadcast events.
+ * Extracted from broadcast.ts so it can run both client-side and in API routes.
+ * Does NOT depend on browser APIs or Zustand stores.
+ */
+
+import type { Combatant } from "@/lib/types/combat";
+import type {
+  RealtimeEvent,
+  SanitizedEvent,
+  SanitizedCombatant,
+  SanitizedCombatantAdd,
+  SanitizedStateSync,
+  SanitizedInitiativeReorder,
+  SanitizedPlayerHpUpdate,
+  SanitizedMonsterHpUpdate,
+  SanitizedStatsUpdate,
+} from "@/lib/types/realtime";
+import { getHpStatus } from "@/lib/utils/hp-status";
+
+/** Sanitize a combatant for player-visible broadcast. */
+export function sanitizeCombatant(c: Combatant): SanitizedCombatant {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { dm_notes, display_name, ...base } = c;
+
+  if (c.is_player) {
+    return {
+      ...base,
+      current_hp: c.current_hp,
+      max_hp: c.max_hp,
+      temp_hp: c.temp_hp,
+      ac: c.ac,
+      spell_save_dc: c.spell_save_dc,
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { current_hp, max_hp, temp_hp, ac, spell_save_dc, ...safe } = base;
+
+  return {
+    ...safe,
+    name: display_name || base.name,
+    hp_status: getHpStatus(c.current_hp, c.max_hp),
+  };
+}
+
+/**
+ * Sanitize a DM event for player-safe broadcast (server-side version).
+ * Takes the full combatants list for turn-index adjustment (server knows all combatants).
+ * Returns null when the event should be suppressed.
+ */
+export function sanitizePayloadServer(
+  event: RealtimeEvent,
+  allCombatants?: Combatant[]
+): SanitizedEvent | null {
+  // Audio / weather / stats pass through unchanged
+  if (event.type === "audio:play_sound") return event;
+  if (event.type === "session:weather_change") return event;
+  if (event.type === "session:combat_stats") return event;
+
+  // Player death saves are DM-only, never broadcast
+  if (event.type === "player:death_save") return null;
+
+  // Turn advance: adjust index for visible combatants
+  if (event.type === "combat:turn_advance") {
+    return {
+      ...event,
+      current_turn_index: adjustTurnIndex(event.current_turn_index, allCombatants),
+    };
+  }
+
+  // Combatant add: suppress hidden, sanitize others
+  if (event.type === "combat:combatant_add") {
+    if (event.combatant.is_hidden) return null;
+    const result: SanitizedCombatantAdd = {
+      type: event.type,
+      combatant: sanitizeCombatant(event.combatant),
+    };
+    return result;
+  }
+
+  // Hidden change: safety net — block raw state
+  if (event.type === "combat:hidden_change") {
+    return {
+      type: "combat:combatant_remove",
+      combatant_id: event.combatant_id,
+    } as SanitizedEvent;
+  }
+
+  // State sync: filter hidden, adjust turn index
+  if (event.type === "session:state_sync") {
+    const visible = event.combatants.filter((c) => !c.is_hidden);
+
+    let adjustedTurnIndex = event.current_turn_index;
+    const turnCombatant = event.combatants[event.current_turn_index];
+    if (turnCombatant) {
+      if (turnCombatant.is_hidden) {
+        adjustedTurnIndex = -1;
+      } else {
+        const visibleIdx = visible.findIndex((c) => c.id === turnCombatant.id);
+        adjustedTurnIndex = visibleIdx >= 0 ? visibleIdx : event.current_turn_index;
+      }
+    }
+
+    const result: SanitizedStateSync = {
+      type: event.type,
+      combatants: visible.map(sanitizeCombatant),
+      current_turn_index: adjustedTurnIndex,
+      round_number: event.round_number,
+      ...(event.encounter_id ? { encounter_id: event.encounter_id } : {}),
+    };
+    return result;
+  }
+
+  // Initiative reorder: filter hidden
+  if (event.type === "combat:initiative_reorder") {
+    const visible = event.combatants.filter((c) => !c.is_hidden);
+    const result: SanitizedInitiativeReorder = {
+      type: event.type,
+      combatants: visible.map(sanitizeCombatant),
+    };
+    return result;
+  }
+
+  // HP update: full data for players, status-only for monsters
+  if (event.type === "combat:hp_update") {
+    if (event.is_player) {
+      const result: SanitizedPlayerHpUpdate = {
+        type: event.type,
+        combatant_id: event.combatant_id,
+        current_hp: event.current_hp,
+        temp_hp: event.temp_hp,
+        max_hp: event.max_hp,
+        hp_status: event.max_hp
+          ? getHpStatus(event.current_hp, event.max_hp)
+          : undefined,
+        death_saves: event.death_saves,
+      };
+      return result;
+    }
+    const result: SanitizedMonsterHpUpdate = {
+      type: event.type,
+      combatant_id: event.combatant_id,
+      hp_status: getHpStatus(event.current_hp, event.max_hp ?? event.current_hp),
+    };
+    return result;
+  }
+
+  // Stats update: hide real name for non-players
+  if (event.type === "combat:stats_update") {
+    const visibleName = event.is_player
+      ? event.name
+      : event.display_name !== undefined
+        ? event.display_name || undefined
+        : undefined;
+    const result: SanitizedStatsUpdate = {
+      type: event.type,
+      combatant_id: event.combatant_id,
+      name: visibleName,
+    };
+    return result;
+  }
+
+  // Per-combatant events for hidden combatants — suppress
+  const combatantTargetedTypes = [
+    "combat:hp_update",
+    "combat:condition_change",
+    "combat:defeated_change",
+    "combat:stats_update",
+    "combat:player_notes_update",
+    "combat:version_switch",
+  ];
+  if (combatantTargetedTypes.includes(event.type) && "combatant_id" in event) {
+    const combatant = allCombatants?.find(
+      (c) => c.id === (event as { combatant_id: string }).combatant_id
+    );
+    if (combatant?.is_hidden) return null;
+  }
+
+  // Everything else passes through unchanged
+  return event;
+}
+
+function adjustTurnIndex(dmIndex: number, allCombatants?: Combatant[]): number {
+  if (!allCombatants) return dmIndex;
+  const turnCombatant = allCombatants[dmIndex];
+  if (!turnCombatant) return dmIndex;
+  if (turnCombatant.is_hidden) return -1;
+  let visibleIdx = 0;
+  for (let i = 0; i < dmIndex; i++) {
+    if (!allCombatants[i].is_hidden) visibleIdx++;
+  }
+  return visibleIdx;
+}
+
+// ── Server-side event validation ─────────────────────────────────────────────
+
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export function validateEventData(event: RealtimeEvent): ValidationError | null {
+  if (!event.type) {
+    return { field: "type", message: "Event type is required" };
+  }
+
+  switch (event.type) {
+    case "combat:hp_update":
+      if (event.current_hp < 0) {
+        return { field: "current_hp", message: "HP cannot be negative" };
+      }
+      if (!event.combatant_id) {
+        return { field: "combatant_id", message: "Combatant ID is required" };
+      }
+      break;
+
+    case "combat:turn_advance":
+      if (event.current_turn_index < 0) {
+        return { field: "current_turn_index", message: "Turn index must be >= 0" };
+      }
+      if (event.round_number < 1) {
+        return { field: "round_number", message: "Round number must be >= 1" };
+      }
+      break;
+
+    case "combat:condition_change":
+      if (!event.combatant_id) {
+        return { field: "combatant_id", message: "Combatant ID is required" };
+      }
+      if (!Array.isArray(event.conditions)) {
+        return { field: "conditions", message: "Conditions must be an array" };
+      }
+      break;
+
+    case "combat:combatant_add":
+      if (!event.combatant?.name) {
+        return { field: "combatant.name", message: "Combatant name is required" };
+      }
+      break;
+  }
+
+  return null;
+}

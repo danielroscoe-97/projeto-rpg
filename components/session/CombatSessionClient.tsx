@@ -27,7 +27,11 @@ import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
-import { DmSoundboard } from "@/components/audio/DmSoundboard";
+import dynamic from "next/dynamic";
+
+const DmSoundboard = dynamic(() => import("@/components/audio/DmSoundboard").then(m => m.DmSoundboard), {
+  ssr: false,
+});
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";

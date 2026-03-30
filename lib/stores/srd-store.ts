@@ -16,14 +16,9 @@ import {
   getCachedItems,
   setCachedItems,
 } from "@/lib/srd/srd-cache";
-import {
-  buildMonsterIndex,
-  buildSpellIndex,
-  buildItemIndex,
-  setConditionData,
-  mergeImportedMonsters,
-} from "@/lib/srd/srd-search";
+import { srdSearchProvider } from "@/lib/srd/fuse-search-provider";
 import { getImportedMonsters } from "@/lib/import/import-cache";
+import type { RulesetVersion } from "@/lib/types/database";
 
 interface SrdState {
   monsters: SrdMonster[];
@@ -31,11 +26,15 @@ interface SrdState {
   conditions: SrdCondition[];
   items: SrdItem[];
   is_loading: boolean;
+  /** Tracks which SRD versions have been loaded */
+  loadedVersions: Set<RulesetVersion>;
   error: string | null;
 }
 
 interface SrdActions {
   initializeSrd: () => Promise<void>;
+  /** Load an additional SRD version on demand (e.g. DM switches version mid-combat) */
+  loadVersionOnDemand: (version: RulesetVersion) => Promise<void>;
 }
 
 type SrdStore = SrdState & SrdActions;
@@ -46,6 +45,7 @@ const initialState: SrdState = {
   conditions: [],
   items: [],
   is_loading: false,
+  loadedVersions: new Set(),
   error: null,
 };
 
@@ -61,6 +61,10 @@ async function loadWithCache<T>(
   return data;
 }
 
+/** Default version loaded on init (most recent ruleset, smaller bundle). */
+const PRIMARY_VERSION: RulesetVersion = "2024";
+const DEFERRED_VERSION: RulesetVersion = "2014";
+
 export const useSrdStore = create<SrdStore>((set, get) => ({
   ...initialState,
 
@@ -69,27 +73,18 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
     if (is_loading || monsters.length > 0) return;
     set({ is_loading: true, error: null });
     try {
-      const [monsters2014, monsters2024, spells2014, spells2024, conditions, items] =
+      // Phase 1: Load primary version + conditions + items (critical path)
+      const [monstersPrimary, spellsPrimary, conditions, items] =
         await Promise.all([
           loadWithCache(
-            () => getCachedMonsters("2014"),
-            (d) => setCachedMonsters("2014", d),
-            () => loadMonsters("2014")
+            () => getCachedMonsters(PRIMARY_VERSION),
+            (d) => setCachedMonsters(PRIMARY_VERSION, d),
+            () => loadMonsters(PRIMARY_VERSION)
           ),
           loadWithCache(
-            () => getCachedMonsters("2024"),
-            (d) => setCachedMonsters("2024", d),
-            () => loadMonsters("2024")
-          ),
-          loadWithCache(
-            () => getCachedSpells("2014"),
-            (d) => setCachedSpells("2014", d),
-            () => loadSpells("2014")
-          ),
-          loadWithCache(
-            () => getCachedSpells("2024"),
-            (d) => setCachedSpells("2024", d),
-            () => loadSpells("2024")
+            () => getCachedSpells(PRIMARY_VERSION),
+            (d) => setCachedSpells(PRIMARY_VERSION, d),
+            () => loadSpells(PRIMARY_VERSION)
           ),
           loadWithCache(
             () => getCachedConditions(),
@@ -103,10 +98,10 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
           ),
         ]);
 
-      buildMonsterIndex([...monsters2014, ...monsters2024]);
-      buildSpellIndex([...spells2014, ...spells2024]);
-      buildItemIndex(items);
-      setConditionData(conditions);
+      srdSearchProvider.buildMonsterIndex(monstersPrimary);
+      srdSearchProvider.buildSpellIndex(spellsPrimary);
+      srdSearchProvider.buildItemIndex(items);
+      srdSearchProvider.setConditionData(conditions);
 
       // Merge imported content if extended compendium was previously accepted
       try {
@@ -115,7 +110,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         if (accepted) {
           const imported = await getImportedMonsters();
           if (imported.length > 0) {
-            mergeImportedMonsters(imported);
+            srdSearchProvider.mergeImportedMonsters(imported);
           }
         }
       } catch {
@@ -123,16 +118,61 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
       }
 
       set({
-        monsters: [...monsters2014, ...monsters2024],
-        spells: [...spells2014, ...spells2024],
+        monsters: monstersPrimary,
+        spells: spellsPrimary,
         conditions,
         items,
         is_loading: false,
+        loadedVersions: new Set([PRIMARY_VERSION]),
+      });
+
+      // Phase 2: Defer loading of 2014 version (6.3MB) to idle time
+      const scheduleDeferred = typeof window !== "undefined" && "requestIdleCallback" in window
+        ? window.requestIdleCallback
+        : (cb: () => void) => setTimeout(cb, 2000);
+
+      scheduleDeferred(() => {
+        get().loadVersionOnDemand(DEFERRED_VERSION);
       });
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to load SRD content";
       set({ error: message, is_loading: false });
+    }
+  },
+
+  loadVersionOnDemand: async (version: RulesetVersion) => {
+    const { loadedVersions, monsters, spells } = get();
+    if (loadedVersions.has(version)) return;
+
+    try {
+      const [newMonsters, newSpells] = await Promise.all([
+        loadWithCache(
+          () => getCachedMonsters(version),
+          (d) => setCachedMonsters(version, d),
+          () => loadMonsters(version)
+        ),
+        loadWithCache(
+          () => getCachedSpells(version),
+          (d) => setCachedSpells(version, d),
+          () => loadSpells(version)
+        ),
+      ]);
+
+      const mergedMonsters = [...monsters, ...newMonsters];
+      const mergedSpells = [...spells, ...newSpells];
+
+      // Rebuild indexes with all loaded data
+      srdSearchProvider.buildMonsterIndex(mergedMonsters);
+      srdSearchProvider.buildSpellIndex(mergedSpells);
+
+      set({
+        monsters: mergedMonsters,
+        spells: mergedSpells,
+        loadedVersions: new Set([...loadedVersions, version]),
+      });
+    } catch {
+      // Deferred load failure is non-critical — user can retry via search
     }
   },
 }));

@@ -9,7 +9,11 @@ import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
 import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
-import { DmSoundboard } from "@/components/audio/DmSoundboard";
+import dynamic from "next/dynamic";
+
+const DmSoundboard = dynamic(() => import("@/components/audio/DmSoundboard").then(m => m.DmSoundboard), {
+  ssr: false,
+});
 import { useRoleStore } from "@/lib/stores/role-store";
 import { Button } from "@/components/ui/button";
 import type { UserRole, ActiveView } from "@/lib/stores/role-store";
