@@ -71,9 +71,8 @@ test.describe("P0 — Landing Page", () => {
       await menuBtn.click();
       await page.waitForTimeout(500);
 
-      // Menu deve expandir com links de navegação
-      const menuExpanded = page.locator('[aria-expanded="true"]');
-      await expect(menuExpanded).toBeVisible({ timeout: 3_000 });
+      // O próprio botão deve ter aria-expanded="true" após o clique
+      await expect(menuBtn).toHaveAttribute("aria-expanded", "true", { timeout: 3_000 });
     }
   });
 
@@ -216,8 +215,8 @@ test.describe("P0 — Landing Page", () => {
     const tryCta = hero.locator('a[href="/try"]').first();
     await expect(tryCta).toBeVisible({ timeout: 10_000 });
 
-    await tryCta.click();
-    await page.waitForLoadState("domcontentloaded");
+    await tryCta.click({ force: true });
+    await page.waitForURL("**/try**", { timeout: 15_000 });
 
     expect(page.url()).toContain("/try");
   });

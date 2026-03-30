@@ -1,9 +1,25 @@
 import { test, expect } from "@playwright/test";
+import { waitForSrdReady } from "../helpers/combat";
 
 test.describe("P0 — Visitor Try Mode", () => {
+  test.beforeEach(async ({ page }) => {
+    // Dismiss the guided tour via localStorage before page load so the overlay
+    // doesn't intercept pointer events during interactions
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "guided-tour-v1",
+        JSON.stringify({
+          state: { isActive: false, isCompleted: true, currentStep: 0 },
+          version: 0,
+        })
+      );
+    });
+  });
+
   test("Visitor can access /try and see encounter setup", async ({ page }) => {
     await page.goto("/try");
     await page.waitForLoadState("domcontentloaded");
+    await waitForSrdReady(page);
 
     // Encounter setup shows add-row form
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 15_000 });
@@ -12,6 +28,7 @@ test.describe("P0 — Visitor Try Mode", () => {
   test("Visitor can add combatant manually", async ({ page }) => {
     await page.goto("/try");
     await page.waitForLoadState("domcontentloaded");
+    await waitForSrdReady(page);
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
 
     // Fill in combatant details
@@ -32,6 +49,7 @@ test.describe("P0 — Visitor Try Mode", () => {
   test("Visitor can add 2 combatants and start combat", async ({ page }) => {
     await page.goto("/try");
     await page.waitForLoadState("domcontentloaded");
+    await waitForSrdReady(page);
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
 
     // Add combatant 1

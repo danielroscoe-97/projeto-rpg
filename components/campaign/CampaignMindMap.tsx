@@ -84,6 +84,7 @@ interface CampaignMindMapProps {
 
 export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapProps) {
   const t = useTranslations("mindmap");
+  const tNotes = useTranslations("notes");
   const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
@@ -194,7 +195,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           type: "note",
           position: { x: 0, y: 0 },
           data: {
-            label: note.title || "Untitled",
+            label: note.title || tNotes("untitled"),
             isShared: note.is_shared,
             noteId: note.id,
           },

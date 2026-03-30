@@ -142,7 +142,7 @@ export function InviteAcceptClient({
           className="w-full min-h-[44px]"
           disabled={isSubmitting || !name.trim()}
         >
-          {isSubmitting ? "..." : "Criar Personagem e Entrar"}
+          {isSubmitting ? "..." : t("create_character_and_join")}
         </Button>
       </form>
     </div>

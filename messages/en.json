@@ -171,7 +171,8 @@
     "encounter_fallback": "Encounter",
     "session_fallback": "Session",
     "section_members": "Members",
-    "section_mindmap": "Mind Map"
+    "section_mindmap": "Mind Map",
+    "create_character_and_join": "Create Character & Join"
   },
   "members": {
     "title": "Members",
@@ -749,8 +750,6 @@
     "expand_stat_block": "Expand stat block",
     "pin_stat_block": "Pin {name} stat block",
     "conditions_aria": "{name} conditions",
-    "concentration_label": "Concentrating",
-    "concentration_with_spell": "Concentrating: {spell}",
     "dying_label": "Dying",
     "turn_reminder_condition": "{name} has {condition} — can attempt save at end of turn",
     "shortcut_log": "Combat log",
@@ -997,7 +996,6 @@
     "auto_join_prefilled": "Your stats were loaded automatically. Review and join!",
     "dm_turn": "DM's turn",
     "turn_of": "{name}'s turn",
-    "your_turn_banner": "It's your turn!",
     "next_up": "Next: {name}",
     "player_tag": "Player",
     "monster_tag": "Monster",

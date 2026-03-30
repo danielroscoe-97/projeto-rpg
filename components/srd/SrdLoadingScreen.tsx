@@ -100,11 +100,21 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      {/* Sentinel for E2E tests — updates immediately, not gated by framer-motion exit animation */}
+      <span data-testid="srd-status" data-ready={String(!showLoader)} style={{ display: "none" }} />
+      {/* Wrapper disables pointer-events immediately when loading ends,
+          before framer-motion's exit animation completes */}
+      <div
+        data-testid="srd-loading"
+        className="fixed inset-0 z-[9999]"
+        style={{ pointerEvents: showLoader ? "auto" : "none" }}
+        aria-hidden={!showLoader}
+      >
       <AnimatePresence>
         {showLoader && (
           <motion.div
             key="srd-loader"
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-surface-primary"
+            className="w-full h-full flex flex-col items-center justify-center bg-surface-primary"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
@@ -144,6 +154,7 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
       {/* Prevent keyboard interaction with children while loader is visible */}
       <div inert={showLoader || undefined} aria-hidden={showLoader || undefined}>
         {children}

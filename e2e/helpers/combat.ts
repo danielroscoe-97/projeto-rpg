@@ -1,6 +1,22 @@
 import { type Page, expect } from "@playwright/test";
 
 /**
+ * Wait for the SRD loading screen to stop blocking interactions.
+ * The wrapper div ([data-testid="srd-loading"]) gets pointer-events:none immediately
+ * when loading ends, before framer-motion exit animation completes.
+ * Max wait: 20s (covers FALLBACK_TIMEOUT_MS=15s + buffer).
+ */
+export async function waitForSrdReady(page: Page) {
+  await page.waitForFunction(
+    () => {
+      const el = document.querySelector('[data-testid="srd-status"]');
+      return el?.getAttribute("data-ready") === "true";
+    },
+    { timeout: 20_000 }
+  );
+}
+
+/**
  * Search for a monster in the SRD search panel and add it to the encounter.
  * Assumes the monster search panel is already visible (via add-combatant-btn or setup flow).
  */
