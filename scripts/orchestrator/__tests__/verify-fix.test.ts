@@ -25,9 +25,15 @@ vi.mock("../slack.js", () => ({
   notifyError: vi.fn(async () => {}),
 }));
 
-// Mock claude-runner
+// Mock claude-runner with controllable responses
+let claudeResponse: { output: string; exitCode: number; isRateLimited: boolean } = { output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false };
+let claudeResponseQueue: Array<{ output: string; exitCode: number; isRateLimited: boolean }> = [];
+
 vi.mock("../claude-runner.js", () => ({
-  runClaude: vi.fn(async () => ({ output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false })),
+  runClaude: vi.fn(async () => {
+    if (claudeResponseQueue.length > 0) return claudeResponseQueue.shift()!;
+    return claudeResponse;
+  }),
 }));
 
 // Mock git-mutex
@@ -43,14 +49,14 @@ vi.mock("../worktree.js", () => ({
 }));
 
 import { execFileSync } from "child_process";
-import { runClaude } from "../claude-runner.js";
 
 const mockExecFileSync = vi.mocked(execFileSync);
-const mockRunClaude = vi.mocked(runClaude);
 
 describe("verifyAndFix", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    claudeResponse = { output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false };
+    claudeResponseQueue = [];
   });
 
   it("should pass on first attempt when tests pass and QA says ALL_CRITERIA_MET", async () => {
@@ -60,7 +66,7 @@ describe("verifyAndFix", () => {
     mockExecFileSync.mockReturnValue("Tests passed");
 
     // QA says all criteria met
-    mockRunClaude.mockResolvedValue({ output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false });
+    claudeResponse = { output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false };
 
     const worktree = { path: "/tmp/bmad/test", branch: "feat/test", storyId: "test" };
     const result = await verifyAndFix(worktree, "spec content");
@@ -90,9 +96,10 @@ describe("verifyAndFix", () => {
     });
 
     // First call: fix agent, second call: QA passes
-    mockRunClaude
-      .mockResolvedValueOnce({ output: "Fixed the issue", exitCode: 0, isRateLimited: false })  // fix
-      .mockResolvedValueOnce({ output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false }); // QA
+    claudeResponseQueue = [
+      { output: "Fixed the issue", exitCode: 0, isRateLimited: false },  // fix
+      { output: "ALL_CRITERIA_MET", exitCode: 0, isRateLimited: false }, // QA
+    ];
 
     const worktree = { path: "/tmp/bmad/test", branch: "feat/test", storyId: "test" };
     const result = await verifyAndFix(worktree, "spec content");
@@ -116,7 +123,7 @@ describe("verifyAndFix", () => {
     });
 
     // Fix agent always returns but doesn't actually fix
-    mockRunClaude.mockResolvedValue({ output: "Tried to fix", exitCode: 0, isRateLimited: false });
+    claudeResponse = { output: "Tried to fix", exitCode: 0, isRateLimited: false };
 
     const worktree = { path: "/tmp/bmad/test", branch: "feat/test", storyId: "test" };
     const result = await verifyAndFix(worktree, "spec content", 3);
@@ -132,7 +139,7 @@ describe("verifyAndFix", () => {
     mockExecFileSync.mockReturnValue("Tests passed");
 
     // QA never says ALL_CRITERIA_MET, then fix agent runs, repeat
-    mockRunClaude.mockResolvedValue({ output: "Missing criterion X", exitCode: 0, isRateLimited: false });
+    claudeResponse = { output: "Missing criterion X", exitCode: 0, isRateLimited: false };
 
     const worktree = { path: "/tmp/bmad/test", branch: "feat/test", storyId: "test" };
     const result = await verifyAndFix(worktree, "spec content", 2);

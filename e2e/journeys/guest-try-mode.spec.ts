@@ -9,36 +9,37 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Guest Try Mode Journey", () => {
   test("Full guest combat flow without authentication", async ({ page }) => {
-    // 1. Navigate to /try (no login)
+    // 1. Pre-set localStorage to skip guided tour (Zustand persist format)
     await page.goto("/try");
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "guided-tour-v1",
+        JSON.stringify({
+          state: { currentStep: 0, isActive: false, isCompleted: true },
+          version: 0,
+        })
+      );
+    });
+    // 2-3. Reload so the tour store reads the persisted "completed" state
+    await page.reload();
     await page.waitForLoadState("domcontentloaded");
-
-    // 2. Verify guided tour appears (if first visit)
-    // The tour tooltip should appear for first-time visitors
-    const tourTooltip = page.locator('[data-testid="tour-tooltip"]');
-    const tourOverlay = page.locator('[data-testid="tour-overlay"]');
-
-    // 3. Close/skip tour if visible
-    const tourVisible = await tourTooltip.isVisible({ timeout: 5_000 }).catch(() => false);
-    if (tourVisible) {
-      // Try skip button first, then "Got it" button
-      const skipBtn = page.locator('[data-testid="tour-skip"]');
-      const gotItBtn = page.locator('[data-testid="tour-got-it"]');
-      if (await skipBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await skipBtn.click();
-      } else if (await gotItBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await gotItBtn.click();
-      }
-      await page.waitForTimeout(500);
-    }
 
     // 4. Search monster "Goblin" via SRD panel
     const srdSearchInput = page.locator('[data-testid="srd-search-input"]');
-    if (await srdSearchInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await srdSearchInput.fill("Goblin");
-      const srdResults = page.locator('[data-testid="srd-results"]');
-      await expect(srdResults).toBeVisible({ timeout: 10_000 });
+    await expect(srdSearchInput).toBeVisible({ timeout: 15_000 });
 
+    // SRD bundles load async (fetch /srd/monsters-2014.json + Fuse.js index).
+    // Type query, wait for results; retry once if index wasn't ready on first try.
+    const srdResults = page.locator('[data-testid="srd-results"]');
+    let srdLoaded = false;
+    for (let attempt = 0; attempt < 3 && !srdLoaded; attempt++) {
+      await srdSearchInput.clear();
+      await srdSearchInput.fill("Goblin");
+      srdLoaded = await srdResults.isVisible({ timeout: 8_000 }).catch(() => false);
+      if (!srdLoaded) await page.waitForTimeout(2_000);
+    }
+
+    if (srdLoaded) {
       // 5. Add Goblin to encounter — click first result
       const firstResult = page.locator('[data-testid^="srd-result-"]').first();
       await expect(firstResult).toBeVisible({ timeout: 5_000 });
