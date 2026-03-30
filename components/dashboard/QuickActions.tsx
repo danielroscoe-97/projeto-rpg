@@ -42,7 +42,7 @@ const ACTIONS = [
 
 export function QuickActions({ translations: t, campaignId }: QuickActionsProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-tour-id="dash-quick-actions">
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         {t.quick_actions}
       </h3>
@@ -58,6 +58,7 @@ export function QuickActions({ translations: t, campaignId }: QuickActionsProps)
             <Link
               key={action.key}
               href={href}
+              data-testid={`quick-action-${action.key}`}
               className={`flex items-center gap-3 bg-card border border-border rounded-lg px-4 py-3 transition-all duration-200 group ${action.bgHover}`}
             >
               <Icon

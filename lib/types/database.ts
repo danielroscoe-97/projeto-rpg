@@ -3,6 +3,19 @@
 
 export type RulesetVersion = "2014" | "2024";
 
+export type OnboardingSource = "fresh" | "guest_combat" | "guest_browse";
+
+export interface UserOnboarding {
+  user_id: string;
+  source: OnboardingSource;
+  wizard_completed: boolean;
+  wizard_step: string | null;
+  dashboard_tour_completed: boolean;
+  guest_data_migrated: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface MonsterPresetEntry {
   monster_id: string;
   name: string;

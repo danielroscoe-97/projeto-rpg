@@ -76,7 +76,7 @@ export function GuestBanner() {
         }
         {" "}
         <Link
-          href="/auth/sign-up"
+          href="/auth/sign-up?from=guest-combat"
           className="text-gold hover:underline underline-offset-2 transition-colors font-medium"
         >
           {t("signup_cta")}
@@ -90,7 +90,7 @@ export function GuestBanner() {
           await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-              redirectTo: `${window.location.origin}/app/dashboard`,
+              redirectTo: `${window.location.origin}/auth/callback?from=guest-combat`,
               queryParams: { access_type: "offline", prompt: "consent" },
             },
           });

@@ -115,7 +115,7 @@ export function GuestUpsellModal({ isOpen, onClose, trigger }: GuestUpsellModalP
 
           {/* Email sign-up */}
           <Link
-            href="/auth/sign-up"
+            href="/auth/sign-up?from=guest-combat"
             className="relative overflow-hidden w-full text-center px-6 py-3 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] min-h-[48px] flex items-center justify-center btn-shimmer"
           >
             {t("upsell_email")}

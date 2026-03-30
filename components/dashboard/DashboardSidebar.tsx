@@ -21,6 +21,7 @@ interface SidebarTranslations {
   combats: string;
   soundboard: string;
   settings: string;
+  nav_label: string;
 }
 
 interface DashboardSidebarProps {
@@ -53,7 +54,9 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
         initial={false}
         animate={{ width: collapsed ? 64 : 256 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
-        className="hidden lg:flex flex-col fixed left-0 top-[72px] bottom-0 z-30 bg-[#1a1a2e] border-r border-white/[0.08] overflow-hidden"
+        className="hidden lg:flex flex-col fixed left-0 top-[72px] bottom-0 z-30 bg-background border-r border-white/[0.08] overflow-hidden"
+        data-testid="sidebar"
+        data-tour-id="dash-sidebar"
       >
         {/* Brand */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.08]">
@@ -85,7 +88,7 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 py-3 px-2 space-y-1" aria-label="Dashboard navigation">
+        <nav className="flex-1 py-3 px-2 space-y-1" aria-label={t.nav_label}>
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -93,8 +96,11 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
               <Link
                 key={item.key}
                 href={item.href}
+                data-testid={`nav-${item.key}`}
+                data-tour-id={item.key === "combats" ? "dash-nav-combats" : item.key === "soundboard" ? "dash-nav-soundboard" : undefined}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50",
                   active
                     ? "bg-amber-400/10 text-amber-400"
                     : "text-muted-foreground hover:text-foreground hover:bg-white/[0.05]",
@@ -125,8 +131,10 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
 
       {/* Mobile Bottom Navigation */}
       <nav
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#1a1a2e] border-t border-white/[0.08] px-2 pb-[env(safe-area-inset-bottom)]"
-        aria-label="Dashboard navigation"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-white/[0.08] px-2 pb-[env(safe-area-inset-bottom)]"
+        aria-label={t.nav_label}
+        data-testid="bottom-nav"
+        data-tour-id="dash-bottom-nav"
       >
         <div className="flex items-center justify-around py-1.5">
           {NAV_ITEMS.map((item) => {
@@ -136,8 +144,10 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
               <Link
                 key={item.key}
                 href={item.href}
+                data-testid={`nav-${item.key}`}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-[10px] font-medium transition-colors min-w-[56px]",
+                  "flex flex-col items-center gap-0.5 px-3 rounded-lg text-xs font-medium transition-colors min-w-[56px] min-h-[44px] justify-center",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50",
                   active
                     ? "text-amber-400"
                     : "text-muted-foreground hover:text-foreground"

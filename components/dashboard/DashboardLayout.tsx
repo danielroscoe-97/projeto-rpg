@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardSidebar } from "./DashboardSidebar";
+import { DashboardTourProvider } from "@/components/tour/DashboardTourProvider";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -10,17 +11,34 @@ interface DashboardLayoutProps {
     combats: string;
     soundboard: string;
     settings: string;
+    nav_label: string;
   };
+  showDashboardTour?: boolean;
+  tourDelayMs?: number;
+  tourSource?: string;
 }
 
-export function DashboardLayout({ children, translations }: DashboardLayoutProps) {
+export function DashboardLayout({
+  children,
+  translations,
+  showDashboardTour = false,
+  tourDelayMs = 1200,
+  tourSource,
+}: DashboardLayoutProps) {
   return (
     <div className="flex min-h-0">
       <DashboardSidebar translations={translations} />
       {/* Main content — offset for sidebar on desktop, bottom nav padding on mobile */}
-      <div className="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      <div className="flex-1 lg:ml-64 pb-20 lg:pb-0" data-tour-id="dash-overview">
         {children}
       </div>
+      {showDashboardTour && (
+        <DashboardTourProvider
+          shouldAutoStart={showDashboardTour}
+          delayMs={tourDelayMs}
+          source={tourSource}
+        />
+      )}
     </div>
   );
 }

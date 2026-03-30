@@ -60,6 +60,12 @@ interface DashboardOverviewProps {
     new_combat: string;
     create_npc: string;
     invite_player: string;
+    view_all: string;
+    dm_empty_title: string;
+    dm_empty_desc: string;
+    dm_empty_cta: string;
+    combats_empty_title: string;
+    combats_empty_cta: string;
   };
 }
 
@@ -90,11 +96,12 @@ export function DashboardOverview({
       : "dm";
 
   const isDmFirst = effectiveView === "dm";
+  const isDmRole = userRole !== "player";
 
   return (
     <>
       {/* Header */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4" data-testid="dashboard-overview">
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-foreground">{t.title}</h1>
           <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
@@ -103,6 +110,7 @@ export function DashboardOverview({
           <div className="flex items-center sm:justify-end">
             <Link
               href="/app/session/new"
+              data-tour-id="dash-new-session"
               className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] w-full sm:w-auto sm:min-w-[240px] shrink-0"
             >
               <Swords className="inline-block w-4 h-4" aria-hidden="true" />{" "}
@@ -131,7 +139,7 @@ export function DashboardOverview({
       )}
 
       {/* Quick Actions */}
-      <div className="mb-8">
+      <div className="mb-8" data-testid="quick-actions">
         <QuickActions
           translations={{
             quick_actions: t.quick_actions,
@@ -164,56 +172,95 @@ export function DashboardOverview({
         </>
       )}
 
-      {/* No campaigns at all */}
+      {/* No campaigns at all — show different empty state based on role */}
       {!hasDmCampaigns && !hasPlayerCampaigns && (
-        <div className="flex flex-col items-center gap-3 py-12 text-center">
-          <Image
-            src="/art/icons/pet-cat.png"
-            alt=""
-            width={64}
-            height={64}
-            className="pixel-art opacity-40 float-gentle"
-            aria-hidden="true"
-            unoptimized
-          />
-          <p className="text-muted-foreground text-sm font-medium">
-            {t.waiting_for_invite}
-          </p>
-          <p className="text-muted-foreground/60 text-xs">{t.waiting_for_invite_desc}</p>
-          <Button variant="gold" className="mt-2 min-h-[44px]" asChild>
-            <Link href="/app/session/new">{t.try_quick_combat}</Link>
-          </Button>
-        </div>
+        isDmRole ? (
+          <div className="flex flex-col items-center gap-3 py-12 text-center" data-testid="dm-empty-state">
+            <Image
+              src="/art/icons/carta.png"
+              alt=""
+              width={64}
+              height={64}
+              className="pixel-art opacity-40 float-gentle"
+              aria-hidden="true"
+              unoptimized
+            />
+            <p className="text-foreground text-base font-medium">
+              {t.dm_empty_title}
+            </p>
+            <p className="text-muted-foreground/70 text-sm">{t.dm_empty_desc}</p>
+            <Button variant="gold" className="mt-2 min-h-[44px]" asChild>
+              <Link href="/app/onboarding">{t.dm_empty_cta}</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3 py-12 text-center" data-testid="player-empty-state">
+            <Image
+              src="/art/icons/pet-cat.png"
+              alt=""
+              width={64}
+              height={64}
+              className="pixel-art opacity-40 float-gentle"
+              aria-hidden="true"
+              unoptimized
+            />
+            <p className="text-muted-foreground text-sm font-medium">
+              {t.waiting_for_invite}
+            </p>
+            <p className="text-muted-foreground/60 text-xs">{t.waiting_for_invite_desc}</p>
+            <Button variant="gold" className="mt-2 min-h-[44px]" asChild>
+              <Link href="/app/session/new">{t.try_quick_combat}</Link>
+            </Button>
+          </div>
+        )
       )}
 
       {/* Recent Combats */}
-      {savedEncounters.length > 0 && (
-        <div className="mt-8 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {t.quick_combat}
-            </h2>
-            <Link
-              href="/app/dashboard/combats"
-              className="text-xs text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1"
-            >
-              View all <ChevronRight className="w-3 h-3" />
-            </Link>
+      <div className="mt-8 space-y-3" data-testid="recent-combats">
+        {savedEncounters.length > 0 ? (
+          <>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                {t.quick_combat}
+              </h2>
+              <Link
+                href="/app/dashboard/combats"
+                className="text-xs text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1"
+              >
+                {t.view_all} <ChevronRight className="w-3 h-3" />
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {savedEncounters.slice(0, 3).map((enc) => (
+                <CombatHistoryCard
+                  key={enc.session_id}
+                  combat={enc}
+                  translations={{
+                    round: t.encounters_round,
+                    in_progress: t.encounters_in_progress,
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-3 py-8 text-center rounded-lg border border-border bg-white/[0.02]" data-testid="combats-empty-state">
+            <Image
+              src="/art/icons/potion.png"
+              alt=""
+              width={40}
+              height={40}
+              className="pixel-art opacity-30"
+              aria-hidden="true"
+              unoptimized
+            />
+            <p className="text-muted-foreground/70 text-sm">{t.combats_empty_title}</p>
+            <Button variant="goldOutline" size="sm" asChild>
+              <Link href="/app/session/new">{t.combats_empty_cta}</Link>
+            </Button>
           </div>
-          <div className="space-y-2">
-            {savedEncounters.slice(0, 3).map((enc) => (
-              <CombatHistoryCard
-                key={enc.session_id}
-                combat={enc}
-                translations={{
-                  round: t.encounters_round,
-                  in_progress: t.encounters_in_progress,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Quick Combat Link */}
       <div className="mt-8">
@@ -247,9 +294,10 @@ function OverviewDmSection({
   const displayCampaigns = campaigns.slice(0, 4);
 
   return (
-    <div className="mb-8 space-y-3">
+    <div className="mb-8 space-y-3" data-testid="dm-campaigns" data-tour-id="dash-campaigns">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-amber-400 uppercase tracking-wider">
+        <h2 className="text-sm font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+          <span aria-hidden="true">⚔️</span>
           {t.dm_tables_title}
         </h2>
         {campaigns.length > 4 && (
@@ -257,7 +305,7 @@ function OverviewDmSection({
             href="/app/dashboard/campaigns"
             className="text-xs text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1"
           >
-            View all <ChevronRight className="w-3 h-3" />
+            {t.view_all} <ChevronRight className="w-3 h-3" />
           </Link>
         )}
       </div>
@@ -285,8 +333,9 @@ function OverviewPlayerSection({
   t: DashboardOverviewProps["translations"];
 }) {
   return (
-    <div className="mb-8 space-y-3">
-      <h2 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider">
+    <div className="mb-8 space-y-3" data-testid="player-campaigns">
+      <h2 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+        <span aria-hidden="true">🎭</span>
         {t.player_tables_title}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

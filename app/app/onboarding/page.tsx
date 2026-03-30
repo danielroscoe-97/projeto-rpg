@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
+import type { OnboardingSource } from "@/lib/types/database";
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
@@ -22,9 +23,19 @@ export default async function OnboardingPage() {
     redirect("/app/dashboard");
   }
 
+  // Fetch onboarding source for contextual welcome
+  const { data: onboardingData } = await supabase
+    .from("user_onboarding")
+    .select("source, wizard_step")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const source: OnboardingSource = (onboardingData?.source as OnboardingSource) ?? "fresh";
+  const savedStep = onboardingData?.wizard_step ?? null;
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <OnboardingWizard userId={user.id} />
+      <OnboardingWizard userId={user.id} source={source} savedStep={savedStep} />
     </div>
   );
 }

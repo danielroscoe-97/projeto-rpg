@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
@@ -18,8 +19,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { WelcomeScreen } from "@/components/dashboard/WelcomeScreen";
+import { getGuestEncounterData, getGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
+import type { OnboardingSource } from "@/lib/types/database";
 
 const MAX_PLAYERS = 8;
+const SESSION_STORAGE_KEY = "onboarding-wizard-state";
+const PERSIST_DEBOUNCE_MS = 1000;
 
 const STEP_ICONS: Record<number, string> = {
   1: "/art/icons/carta.png",
@@ -29,8 +35,8 @@ const STEP_ICONS: Record<number, string> = {
 };
 
 let _playerIdCounter = 0;
-function newPlayer(): PlayerInput {
-  return { _id: ++_playerIdCounter, name: "", max_hp: 20, ac: 10, spell_save_dc: null };
+function newPlayer(name = "", max_hp = 10, ac = 10): PlayerInput {
+  return { _id: ++_playerIdCounter, name, max_hp, ac, spell_save_dc: null };
 }
 
 interface PlayerInput {
@@ -41,7 +47,7 @@ interface PlayerInput {
   spell_save_dc: number | null;
 }
 
-type WizardStep = "choose" | 1 | 2 | 3 | 4 | "done";
+type WizardStep = "welcome" | "choose" | 1 | 2 | 3 | 4 | "done";
 
 interface WizardState {
   step: WizardStep;
@@ -53,34 +59,149 @@ interface WizardState {
   error: string | null;
   copyError: string | null;
   fieldErrors: Set<string>;
+  showCelebration: boolean;
 }
 
 interface OnboardingWizardProps {
   userId: string;
+  source?: OnboardingSource;
+  savedStep?: string | null;
 }
 
-export function OnboardingWizard({ userId }: OnboardingWizardProps) {
+function readSessionStorage(): Partial<WizardState> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Restore Set from array
+    if (parsed.fieldErrors) parsed.fieldErrors = new Set(parsed.fieldErrors);
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionStorage(state: Partial<WizardState>) {
+  if (typeof window === "undefined") return;
+  try {
+    const toSave = {
+      step: state.step,
+      campaignName: state.campaignName,
+      players: state.players,
+      encounterName: state.encounterName,
+    };
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(toSave));
+  } catch {
+    // storage unavailable
+  }
+}
+
+export function OnboardingWizard({ userId, source = "fresh", savedStep }: OnboardingWizardProps) {
   const router = useRouter();
   const t = useTranslations("onboarding");
   const tc = useTranslations("common");
-  const [state, setState] = useState<WizardState>({
-    step: "choose",
-    campaignName: "",
-    players: [newPlayer()],
-    encounterName: "First Encounter",
-    sessionLink: null,
-    isSubmitting: false,
-    error: null,
-    copyError: null,
-    fieldErrors: new Set<string>(),
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Read guest data (client-side only)
+  const [guestData] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const enc = getGuestEncounterData();
+    if (enc && enc.combatants.length > 0) return enc;
+    const snap = getGuestCombatSnapshot();
+    if (snap && snap.combatants.length > 0) return {
+      combatants: snap.combatants,
+      roundNumber: snap.roundNumber,
+      currentTurnIndex: snap.currentTurnIndex,
+      phase: "combat" as const,
+    };
+    return null;
   });
+
+  const guestPreview = guestData && guestData.combatants.length > 0
+    ? { combatantCount: guestData.combatants.length, roundNumber: guestData.roundNumber ?? 1 }
+    : null;
+
+  const effectiveSource: OnboardingSource =
+    (source === "fresh" && guestPreview) ? "guest_combat" : source;
+
+  // Build initial players from guest data (PCs only — no monster_id)
+  const [initialPlayers] = useState<PlayerInput[]>(() => {
+    if (effectiveSource === "guest_combat" && guestData) {
+      const pcs = guestData.combatants.filter(
+        (c: { monster_id?: string | null; name: string; max_hp?: number; ac?: number }) => !c.monster_id
+      );
+      if (pcs.length > 0) {
+        return pcs.slice(0, MAX_PLAYERS).map((pc: { name: string; max_hp?: number; ac?: number }) =>
+          newPlayer(pc.name ?? "", pc.max_hp ?? 10, pc.ac ?? 10)
+        );
+      }
+    }
+    return [newPlayer()];
+  });
+
+  const initialCampaignName = effectiveSource === "guest_combat" ? "Minha campanha" : "";
+
+  // Determine initial step: sessionStorage → savedStep → welcome
+  const [initialStep] = useState<WizardStep>(() => {
+    const ss = readSessionStorage();
+    if (ss?.step && ss.step !== "done") return ss.step as WizardStep;
+    if (savedStep) {
+      const parsed = savedStep as WizardStep;
+      if (["welcome", "choose", 1, 2, 3, 4].includes(parsed as number | string)) return parsed;
+    }
+    return "welcome";
+  });
+
+  const [state, setState] = useState<WizardState>(() => {
+    const ss = readSessionStorage();
+    return {
+      step: initialStep,
+      campaignName: (ss?.campaignName as string) ?? initialCampaignName,
+      players: (ss?.players as PlayerInput[]) ?? initialPlayers,
+      encounterName: (ss?.encounterName as string) ?? "First Encounter",
+      sessionLink: null,
+      isSubmitting: false,
+      error: null,
+      copyError: null,
+      fieldErrors: new Set<string>(),
+      showCelebration: false,
+    };
+  });
+
+  // Persist state to sessionStorage (debounced) and DB
+  const persistProgress = useCallback((newState: WizardState) => {
+    writeSessionStorage(newState);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      if (newState.step === "done" || newState.step === "welcome") return;
+      try {
+        const supabase = createClient();
+        await supabase
+          .from("user_onboarding")
+          .update({ wizard_step: String(newState.step) })
+          .eq("user_id", userId);
+      } catch {
+        // best-effort
+      }
+    }, PERSIST_DEBOUNCE_MS);
+  }, [userId]);
+
+  // Clear session storage on unmount if done
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   // ── Step 1 ────────────────────────────────────────────────────────
   function handleCampaignNameChange(value: string) {
     setState((s) => {
       const fe = new Set(s.fieldErrors);
       fe.delete("campaign-name");
-      return { ...s, campaignName: value, error: null, fieldErrors: fe };
+      const next = { ...s, campaignName: value, error: null, fieldErrors: fe };
+      persistProgress(next);
+      return next;
     });
   }
 
@@ -94,15 +215,15 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       setState((s) => ({ ...s, error: t("campaign_name_max"), fieldErrors: new Set(["campaign-name"]) }));
       return;
     }
-    setState((s) => ({ ...s, step: 2, error: null, fieldErrors: new Set() }));
+    setState((s) => {
+      const next = { ...s, step: 2 as WizardStep, error: null, fieldErrors: new Set<string>() };
+      persistProgress(next);
+      return next;
+    });
   }
 
   // ── Step 2 ────────────────────────────────────────────────────────
-  function handlePlayerChange(
-    index: number,
-    field: keyof PlayerInput,
-    value: string
-  ) {
+  function handlePlayerChange(index: number, field: keyof PlayerInput, value: string) {
     setState((s) => {
       const updated = s.players.map((p, i) => {
         if (i !== index) return p;
@@ -114,28 +235,36 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       const fe = new Set(s.fieldErrors);
       const player = s.players[index];
       fe.delete(`player-${field}-${player._id}`);
-      return { ...s, players: updated, error: null, fieldErrors: fe };
+      const next = { ...s, players: updated, error: null, fieldErrors: fe };
+      persistProgress(next);
+      return next;
     });
   }
 
   function handleAddPlayer() {
     if (state.players.length >= MAX_PLAYERS) return;
-    setState((s) => ({ ...s, players: [...s.players, newPlayer()] }));
+    setState((s) => {
+      const next = { ...s, players: [...s.players, newPlayer()] };
+      persistProgress(next);
+      return next;
+    });
   }
 
   function handleRemovePlayer(index: number) {
-    setState((s) => ({
-      ...s,
-      players: s.players.filter((_, i) => i !== index),
-    }));
+    setState((s) => {
+      const next = { ...s, players: s.players.filter((_, i) => i !== index) };
+      persistProgress(next);
+      return next;
+    });
   }
 
   function handleStep2Next() {
     const errors = new Set<string>();
     for (const p of state.players) {
       if (!p.name.trim()) errors.add(`player-name-${p._id}`);
-      if (!p.max_hp || isNaN(p.max_hp) || p.max_hp <= 0 || p.max_hp > 9999) errors.add(`player-hp-${p._id}`);
-      if (!p.ac || isNaN(p.ac) || p.ac <= 0 || p.ac > 99) errors.add(`player-ac-${p._id}`);
+      // HP/AC are optional — but if provided they must be valid numbers
+      if (p.max_hp && (isNaN(p.max_hp) || p.max_hp <= 0 || p.max_hp > 9999)) errors.add(`player-hp-${p._id}`);
+      if (p.ac && (isNaN(p.ac) || p.ac <= 0 || p.ac > 99)) errors.add(`player-ac-${p._id}`);
       if (
         p.spell_save_dc !== null &&
         (isNaN(p.spell_save_dc) || p.spell_save_dc <= 0 || p.spell_save_dc > 99)
@@ -150,7 +279,17 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       }));
       return;
     }
-    setState((s) => ({ ...s, step: 3, error: null, fieldErrors: new Set() }));
+    // Apply defaults for empty HP/AC
+    const playersWithDefaults = state.players.map((p) => ({
+      ...p,
+      max_hp: p.max_hp || 10,
+      ac: p.ac || 10,
+    }));
+    setState((s) => {
+      const next = { ...s, players: playersWithDefaults, step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
+      persistProgress(next);
+      return next;
+    });
   }
 
   // ── Step 3 ────────────────────────────────────────────────────────
@@ -158,7 +297,9 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     setState((s) => {
       const fe = new Set(s.fieldErrors);
       fe.delete("encounter-name");
-      return { ...s, encounterName: value, error: null, fieldErrors: fe };
+      const next = { ...s, encounterName: value, error: null, fieldErrors: fe };
+      persistProgress(next);
+      return next;
     });
   }
 
@@ -172,7 +313,11 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       setState((s) => ({ ...s, error: t("encounter_name_max"), fieldErrors: new Set(["encounter-name"]) }));
       return;
     }
-    setState((s) => ({ ...s, step: 4, error: null, fieldErrors: new Set() }));
+    setState((s) => {
+      const next = { ...s, step: 4 as WizardStep, error: null, fieldErrors: new Set<string>() };
+      persistProgress(next);
+      return next;
+    });
   }
 
   // ── Step 4 submit ─────────────────────────────────────────────────
@@ -199,14 +344,12 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       const characters = state.players.map((p) => ({
         campaign_id: campaign.id,
         name: p.name.trim(),
-        max_hp: p.max_hp,
-        current_hp: p.max_hp,
-        ac: p.ac,
+        max_hp: p.max_hp || 10,
+        current_hp: p.max_hp || 10,
+        ac: p.ac || 10,
         spell_save_dc: p.spell_save_dc ?? null,
       }));
-      const { error: pcErr } = await supabase
-        .from("player_characters")
-        .insert(characters);
+      const { error: pcErr } = await supabase.from("player_characters").insert(characters);
       if (pcErr) {
         captureError(pcErr, { component: "OnboardingWizard", action: "insertPlayers", category: "database" });
         throw new Error(t("error_players"));
@@ -228,7 +371,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         throw new Error(t("error_session"));
       }
 
-      // 4. Create Encounter (named by DM in Step 3)
+      // 4. Create Encounter
       const { error: encErr } = await supabase.from("encounters").insert({
         session_id: session.id,
         name: encounterName,
@@ -249,17 +392,24 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         throw new Error(t("error_link"));
       }
 
+      // 6. Mark wizard_completed
+      await supabase
+        .from("user_onboarding")
+        .update({ wizard_completed: true, wizard_step: null })
+        .eq("user_id", userId);
+
+      // Clear sessionStorage
+      try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
+
       setState((s) => ({
         ...s,
         sessionLink: `/join/${token}`,
         step: "done",
         isSubmitting: false,
+        showCelebration: true,
       }));
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : t("error_generic");
+      const message = err instanceof Error ? err.message : t("error_generic");
       setState((s) => ({ ...s, error: message, isSubmitting: false }));
     }
   }
@@ -267,16 +417,28 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   async function handleCopyLink() {
     if (!state.sessionLink) return;
     try {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}${state.sessionLink}`
-      );
+      await navigator.clipboard.writeText(`${window.location.origin}${state.sessionLink}`);
       setState((s) => ({ ...s, copyError: null }));
     } catch {
-      setState((s) => ({
-        ...s,
-        copyError: t("launch_copy_error"),
-      }));
+      setState((s) => ({ ...s, copyError: t("launch_copy_error") }));
     }
+  }
+
+  // ── Welcome Step ──────────────────────────────────────────────────
+  if (state.step === "welcome") {
+    return (
+      <WelcomeScreen
+        source={effectiveSource}
+        guestPreview={guestPreview}
+        onContinue={() => {
+          if (effectiveSource === "guest_combat") {
+            setState((s) => ({ ...s, step: 1 }));
+          } else {
+            setState((s) => ({ ...s, step: "choose" }));
+          }
+        }}
+      />
+    );
   }
 
   // ── Choose Path (step 0) ─────────────────────────────────────────
@@ -364,10 +526,18 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   // ── Render Campaign Wizard (steps 1-4 + done) ───────────────────
   const stepLabels = [t("step_campaign"), t("step_players"), t("step_encounter"), t("step_launch")];
 
+  // Campaign name label/placeholder vary by source
+  const campaignNameLabel = effectiveSource === "guest_combat"
+    ? t("campaign_name_label")
+    : t("campaign_name_label");
+  const campaignNamePlaceholder = effectiveSource === "guest_combat"
+    ? "Minha campanha"
+    : t("campaign_name_placeholder");
+
   return (
-    <Card className="max-w-lg w-full">
+    <Card className="max-w-lg w-full" data-testid="onboarding-wizard">
       <CardHeader>
-        <div className="flex gap-2 mb-2" aria-label="Onboarding progress">
+        <div className="flex gap-2 mb-2" aria-label="Onboarding progress" role="group">
           {stepLabels.map((label, i) => {
             const num = i + 1;
             const isActive =
@@ -434,16 +604,17 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         {state.step === 1 && (
           <div className="space-y-2">
             <Label htmlFor="campaign-name" className="text-foreground">
-              {t("campaign_name_label")}
+              {campaignNameLabel}
             </Label>
             <Input
               id="campaign-name"
-              placeholder={t("campaign_name_placeholder")}
+              placeholder={campaignNamePlaceholder}
               value={state.campaignName}
               onChange={(e) => handleCampaignNameChange(e.target.value)}
               maxLength={50}
               className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60${state.fieldErrors.has("campaign-name") ? " field-error" : ""}`}
               aria-invalid={state.fieldErrors.has("campaign-name") || undefined}
+              aria-describedby={state.fieldErrors.has("campaign-name") ? "campaign-name-error" : undefined}
               onKeyDown={(e) => e.key === "Enter" && handleStep1Next()}
             />
             <p className="text-xs text-muted-foreground text-right">
@@ -487,11 +658,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       placeholder={t("players_name_placeholder")}
                       value={player.name}
                       maxLength={50}
-                      onChange={(e) =>
-                        handlePlayerChange(index, "name", e.target.value)
-                      }
+                      onChange={(e) => handlePlayerChange(index, "name", e.target.value)}
                       className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${state.fieldErrors.has(`player-name-${player._id}`) ? " field-error" : ""}`}
                       aria-invalid={state.fieldErrors.has(`player-name-${player._id}`) || undefined}
+                      aria-describedby={state.fieldErrors.has(`player-name-${player._id}`) ? "players-error" : undefined}
                     />
                   </div>
                   <div className="space-y-1">
@@ -499,18 +669,18 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       htmlFor={`player-hp-${player._id}`}
                       className="text-foreground text-xs"
                     >
-                      {t("players_hp_label")}
+                      {t("players_hp_label")}{" "}
+                      <span className="text-muted-foreground">{tc("optional")}</span>
                     </Label>
                     <Input
                       id={`player-hp-${player._id}`}
                       type="number"
                       min={1}
                       max={9999}
-                      value={player.max_hp}
-                      onChange={(e) =>
-                        handlePlayerChange(index, "max_hp", e.target.value)
-                      }
-                      className={`bg-white/[0.04] border-border text-foreground h-8 text-sm${state.fieldErrors.has(`player-hp-${player._id}`) ? " field-error" : ""}`}
+                      placeholder="10"
+                      value={player.max_hp || ""}
+                      onChange={(e) => handlePlayerChange(index, "max_hp", e.target.value)}
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/40 h-8 text-sm${state.fieldErrors.has(`player-hp-${player._id}`) ? " field-error" : ""}`}
                       aria-invalid={state.fieldErrors.has(`player-hp-${player._id}`) || undefined}
                     />
                   </div>
@@ -519,18 +689,18 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       htmlFor={`player-ac-${player._id}`}
                       className="text-foreground text-xs"
                     >
-                      {t("players_ac_label")}
+                      {t("players_ac_label")}{" "}
+                      <span className="text-muted-foreground">{tc("optional")}</span>
                     </Label>
                     <Input
                       id={`player-ac-${player._id}`}
                       type="number"
                       min={1}
                       max={99}
-                      value={player.ac}
-                      onChange={(e) =>
-                        handlePlayerChange(index, "ac", e.target.value)
-                      }
-                      className={`bg-white/[0.04] border-border text-foreground h-8 text-sm${state.fieldErrors.has(`player-ac-${player._id}`) ? " field-error" : ""}`}
+                      placeholder="10"
+                      value={player.ac || ""}
+                      onChange={(e) => handlePlayerChange(index, "ac", e.target.value)}
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/40 h-8 text-sm${state.fieldErrors.has(`player-ac-${player._id}`) ? " field-error" : ""}`}
                       aria-invalid={state.fieldErrors.has(`player-ac-${player._id}`) || undefined}
                     />
                   </div>
@@ -549,13 +719,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                       max={99}
                       placeholder={tc("dash")}
                       value={player.spell_save_dc ?? ""}
-                      onChange={(e) =>
-                        handlePlayerChange(
-                          index,
-                          "spell_save_dc",
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => handlePlayerChange(index, "spell_save_dc", e.target.value)}
                       className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${state.fieldErrors.has(`player-dc-${player._id}`) ? " field-error" : ""}`}
                       aria-invalid={state.fieldErrors.has(`player-dc-${player._id}`) || undefined}
                     />
@@ -563,6 +727,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 </div>
               </div>
             ))}
+            {/* Hint text */}
+            <p className="text-xs text-muted-foreground/70 text-center">
+              {t("players_hint")}
+            </p>
             {state.players.length < MAX_PLAYERS && (
               <Button
                 type="button"
@@ -591,6 +759,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               maxLength={50}
               className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60${state.fieldErrors.has("encounter-name") ? " field-error" : ""}`}
               aria-invalid={state.fieldErrors.has("encounter-name") || undefined}
+              aria-describedby={state.fieldErrors.has("encounter-name") ? "encounter-name-error" : undefined}
               onKeyDown={(e) => e.key === "Enter" && handleStep3Next()}
             />
             <p className="text-xs text-muted-foreground text-right">
@@ -615,7 +784,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               <ul className="space-y-1">
                 {state.players.map((p) => (
                   <li key={p._id} className="text-sm text-foreground/80">
-                    {p.name} — HP {p.max_hp} · AC {p.ac}
+                    {p.name} — HP {p.max_hp || 10} · AC {p.ac || 10}
                     {p.spell_save_dc !== null ? ` · DC ${p.spell_save_dc}` : ""}
                   </li>
                 ))}
@@ -630,9 +799,22 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           </div>
         )}
 
-        {/* ── Done: Session Link ── */}
+        {/* ── Done: Session Link + Celebration ── */}
         {state.step === "done" && state.sessionLink && (
           <div className="space-y-3">
+            {/* Gold flash celebration */}
+            {state.showCelebration && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2 p-3 rounded-lg bg-gold/10 border border-gold/30"
+                role="status"
+                aria-live="polite"
+              >
+                <CheckCircle className="w-5 h-5 text-gold shrink-0" aria-hidden="true" />
+                <p className="text-sm font-medium text-gold">{t("campaign_created")}</p>
+              </motion.div>
+            )}
             <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                 {t("launch_session_link_label")}
@@ -651,7 +833,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
               {t("launch_copy_link")}
             </Button>
             {state.copyError && (
-              <p className="text-xs text-red-400">{state.copyError}</p>
+              <p className="text-xs text-red-400" role="alert">{state.copyError}</p>
             )}
             <p className="text-xs text-muted-foreground text-center">
               {t("launch_share_hint")}
@@ -661,13 +843,18 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
 
         {/* Error message */}
         {state.error && (
-          <p className="text-sm text-red-400" role="alert">
+          <p
+            id="form-error"
+            className="text-sm text-red-400"
+            role="alert"
+            aria-live="polite"
+          >
             {state.error}
           </p>
         )}
       </CardContent>
 
-      <CardFooter className="flex gap-3 justify-end">
+      <CardFooter className="flex gap-3 justify-end flex-wrap">
         {state.step === 1 && (
           <>
             <Button
@@ -744,12 +931,32 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           </>
         )}
         {state.step === "done" && (
-          <Button
-            onClick={() => router.push("/app/dashboard")}
-            variant="gold"
-          >
-            {t("go_to_dashboard")}
-          </Button>
+          <div className="flex gap-2 w-full flex-col sm:flex-row">
+            {effectiveSource === "guest_combat" && (
+              <Button
+                variant="goldOutline"
+                onClick={() => {
+                  const imported = typeof window !== "undefined"
+                    ? sessionStorage.getItem("imported-encounter-id")
+                    : null;
+                  if (imported) {
+                    router.push(`/app/session/${imported}`);
+                  } else {
+                    router.push("/app/session/new");
+                  }
+                }}
+              >
+                {t("go_back_to_combat")}
+              </Button>
+            )}
+            <Button
+              onClick={() => router.push("/app/dashboard?from=wizard")}
+              variant="gold"
+              className="flex-1 sm:flex-none"
+            >
+              {t("go_to_dashboard")}
+            </Button>
+          </div>
         )}
       </CardFooter>
     </Card>

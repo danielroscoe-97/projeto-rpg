@@ -39,6 +39,23 @@ export async function GET(request: NextRequest) {
       .eq("id", user.id);
   }
 
+  // Update onboarding source from ?from= param (e.g. guest-combat → 'guest_combat')
+  async function updateOnboardingSource(): Promise<void> {
+    const from = searchParams.get("from");
+    if (!from) return;
+    const sourceMap: Record<string, string> = {
+      "guest-combat": "guest_combat",
+      "guest-browse": "guest_browse",
+    };
+    const source = sourceMap[from];
+    if (!source) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase
+      .from("user_onboarding")
+      .upsert({ user_id: user.id, source }, { onConflict: "user_id" });
+  }
+
   // Determine redirect: new signups go to onboarding, otherwise to specified next
   async function getRedirectTarget(): Promise<string> {
     // If invite params present, preserve them
@@ -63,6 +80,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       await saveRoleFromParams();
+      await updateOnboardingSource();
       const target = await getRedirectTarget();
       await syncLocaleAndRedirect(target);
     } else {
@@ -78,6 +96,7 @@ export async function GET(request: NextRequest) {
     });
     if (!error) {
       await saveRoleFromParams();
+      await updateOnboardingSource();
       const target = await getRedirectTarget();
       await syncLocaleAndRedirect(target);
     } else {

@@ -62,6 +62,8 @@ export function GuestDataImportModal() {
       clearGuestCombatSnapshot();
       setGuestData(null);
       trackEvent("guest:combat_imported");
+      // Save imported session_id for the dashboard tour CTA
+      try { sessionStorage.setItem("imported-encounter-id", session_id); } catch { /* ignore */ }
       router.push(`/app/session/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("import_error"));

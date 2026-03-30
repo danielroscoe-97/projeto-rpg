@@ -8,6 +8,7 @@ import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 import type { UserRole } from "@/lib/stores/role-store";
+import type { UserOnboarding } from "@/lib/types/database";
 import {
   getUserMemberships,
   getPendingInvites,
@@ -36,15 +37,29 @@ export default async function DashboardPage() {
   // Fetch memberships (dual-role: DM + Player campaigns)
   const memberships = await getUserMemberships(user.id);
 
-  // Onboarding redirect — new DMs with no campaigns go through the wizard
-  if (userRole !== "player" && memberships.length === 0) {
-    const { count, error: countErr } = await supabase
-      .from("campaigns")
-      .select("id", { count: "exact", head: true })
-      .eq("owner_id", user.id);
+  // Fetch onboarding state
+  const { data: onboardingData } = await supabase
+    .from("user_onboarding")
+    .select("wizard_completed, dashboard_tour_completed, source")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
-    if (!countErr && count === 0) redirect("/app/onboarding");
+  const onboarding = onboardingData as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
+
+  // Onboarding redirect — DMs who haven't completed the wizard and have no campaigns
+  if (userRole !== "player") {
+    const wizardDone = onboarding?.wizard_completed ?? false;
+    if (!wizardDone && memberships.length === 0) {
+      const { count, error: countErr } = await supabase
+        .from("campaigns")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id);
+
+      if (!countErr && count === 0) redirect("/app/onboarding");
+    }
   }
+
+  const showDashboardTour = onboarding ? !onboarding.dashboard_tour_completed : false;
 
   // Fetch pending invites
   const pendingInvites = await getPendingInvites(userEmail);
@@ -113,6 +128,13 @@ export default async function DashboardPage() {
     new_combat: ts("new_combat"),
     create_npc: ts("create_npc"),
     invite_player: ts("invite_player"),
+    // Story 11.0 additions
+    view_all: t("view_all"),
+    dm_empty_title: t("dm_empty_title"),
+    dm_empty_desc: t("dm_empty_desc"),
+    dm_empty_cta: t("dm_empty_cta"),
+    combats_empty_title: t("combats_empty_title"),
+    combats_empty_cta: t("combats_empty_cta"),
   };
 
   return (

@@ -26,7 +26,8 @@ export function CombatHistoryCard({ combat, translations: t }: CombatHistoryCard
   return (
     <Link
       href={`/app/session/${combat.session_id}`}
-      className="block bg-card border border-border rounded-lg p-4 hover:border-amber-400/30 transition-all duration-200 group"
+      data-testid={`combat-card-${combat.session_id}`}
+      className="block bg-card border border-border rounded-lg p-4 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all duration-200 group"
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
