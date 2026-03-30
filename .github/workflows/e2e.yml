@@ -1,10 +1,11 @@
 name: E2E Tests
 
 on:
-  push:
-    branches: [master, main]
-  pull_request:
-    branches: [master, main]
+  # Auto-trigger disabled until Supabase secrets are configured in repo settings.
+  # To enable: uncomment push/pull_request triggers and set these secrets:
+  #   NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  #   E2E_DM_EMAIL, E2E_DM_PASSWORD
+  workflow_dispatch: # manual trigger only
 
 jobs:
   e2e:
