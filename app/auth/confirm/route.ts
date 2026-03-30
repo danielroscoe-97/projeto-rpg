@@ -49,11 +49,12 @@ export async function GET(request: NextRequest) {
     };
     const source = sourceMap[from];
     if (!source) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    // Reuse authenticated user from outer scope (session already exchanged)
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
     await supabase
       .from("user_onboarding")
-      .upsert({ user_id: user.id, source }, { onConflict: "user_id" });
+      .upsert({ user_id: authUser.id, source }, { onConflict: "user_id" });
   }
 
   // Determine redirect: new signups go to onboarding, otherwise to specified next

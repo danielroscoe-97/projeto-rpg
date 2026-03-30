@@ -3,7 +3,7 @@
 
 export type RulesetVersion = "2014" | "2024";
 
-export type OnboardingSource = "fresh" | "guest_combat" | "guest_browse";
+export type OnboardingSource = "fresh" | "guest_combat" | "guest_browse" | "returning_no_campaign";
 
 export interface UserOnboarding {
   user_id: string;

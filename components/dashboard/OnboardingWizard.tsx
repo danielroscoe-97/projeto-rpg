@@ -76,6 +76,11 @@ function readSessionStorage(): Partial<WizardState> | null {
     const parsed = JSON.parse(raw);
     // Restore Set from array
     if (parsed.fieldErrors) parsed.fieldErrors = new Set(parsed.fieldErrors);
+    // Sync _playerIdCounter to avoid collisions with restored player _ids
+    if (Array.isArray(parsed.players)) {
+      const maxId = parsed.players.reduce((m: number, p: { _id?: number }) => Math.max(m, p._id ?? 0), 0);
+      if (maxId >= _playerIdCounter) _playerIdCounter = maxId;
+    }
     return parsed;
   } catch {
     return null;
@@ -140,14 +145,16 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
     return [newPlayer()];
   });
 
-  const initialCampaignName = effectiveSource === "guest_combat" ? "Minha campanha" : "";
+  const initialCampaignName = effectiveSource === "guest_combat" ? t("campaign_name_guest_default") : "";
 
   // Determine initial step: sessionStorage → savedStep → welcome
   const [initialStep] = useState<WizardStep>(() => {
     const ss = readSessionStorage();
     if (ss?.step && ss.step !== "done") return ss.step as WizardStep;
     if (savedStep) {
-      const parsed = savedStep as WizardStep;
+      // savedStep comes from DB as string — convert numeric strings to numbers
+      const num = Number(savedStep);
+      const parsed: WizardStep = !isNaN(num) && num >= 1 && num <= 4 ? (num as WizardStep) : (savedStep as WizardStep);
       if (["welcome", "choose", 1, 2, 3, 4].includes(parsed as number | string)) return parsed;
     }
     return "welcome";
@@ -329,7 +336,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
     const encounterName = state.encounterName.trim();
 
     try {
-      // 1. Create Campaign
+      // 1. Create Campaign — delete any orphaned campaign first (retry-safe)
+      await supabase.from("campaigns").delete().eq("owner_id", userId);
       const { data: campaign, error: campaignErr } = await supabase
         .from("campaigns")
         .insert({ owner_id: userId, name: campaignName })
@@ -392,18 +400,17 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
         throw new Error(t("error_link"));
       }
 
-      // 6. Mark wizard_completed
+      // 6. Mark wizard_completed (upsert garante que funciona mesmo se row não existe)
       await supabase
         .from("user_onboarding")
-        .update({ wizard_completed: true, wizard_step: null })
-        .eq("user_id", userId);
+        .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
 
       // Clear sessionStorage
       try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
 
       setState((s) => ({
         ...s,
-        sessionLink: `/join/${token}`,
+        sessionLink: `${window.location.origin}/join/${token}`,
         step: "done",
         isSubmitting: false,
         showCelebration: true,
@@ -467,7 +474,15 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
           {/* Quick Combat Path — Primary */}
           <button
             type="button"
-            onClick={() => router.push("/app/session/new")}
+            onClick={async () => {
+              try {
+                const supabase = createClient();
+                await supabase
+                  .from("user_onboarding")
+                  .upsert({ user_id: userId, wizard_completed: true }, { onConflict: "user_id" });
+              } catch { /* best-effort */ }
+              router.push("/app/session/new");
+            }}
             className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 cursor-pointer"
           >
             <Image
@@ -527,11 +542,9 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
   const stepLabels = [t("step_campaign"), t("step_players"), t("step_encounter"), t("step_launch")];
 
   // Campaign name label/placeholder vary by source
-  const campaignNameLabel = effectiveSource === "guest_combat"
-    ? t("campaign_name_label")
-    : t("campaign_name_label");
+  const campaignNameLabel = t("campaign_name_label");
   const campaignNamePlaceholder = effectiveSource === "guest_combat"
-    ? "Minha campanha"
+    ? t("campaign_name_guest_default")
     : t("campaign_name_placeholder");
 
   return (

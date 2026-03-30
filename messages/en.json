@@ -401,6 +401,7 @@
     "campaign_name_description": "Give your group a name — you can change it later.",
     "campaign_name_label": "Campaign name",
     "campaign_name_placeholder": "e.g. Curse of Strahd",
+    "campaign_name_guest_default": "My campaign",
     "players_title": "Add your players",
     "players_description": "Add your players. Only the name is required.",
     "players_label": "Player",

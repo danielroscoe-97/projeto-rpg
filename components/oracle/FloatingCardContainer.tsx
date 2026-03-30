@@ -80,6 +80,7 @@ function DraggableCard({
       {...listeners}
       onPointerDown={handlePointerDown}
       data-testid={`floating-card-${card.id}`}
+      data-floating-card
     >
       {children}
     </div>
@@ -422,6 +423,29 @@ export function FloatingCardContainer() {
     return () => mql.removeEventListener("change", handler);
   }, []);
 
+  // Click outside any floating card closes the topmost one (replaces full-page backdrop
+  // which blocked all page interaction)
+  useEffect(() => {
+    if (cards.length === 0) return;
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      // If click is inside a floating card or its portal, ignore
+      if (target.closest("[data-floating-card]") || target.closest("[data-testid='floating-cards-container']")) return;
+      const visible = cards.filter((c) => !c.isMinimized);
+      if (visible.length === 0) return;
+      const topmost = [...visible].sort((a, b) => b.zIndex - a.zIndex)[0];
+      if (topmost) unpinCard(topmost.id);
+    }
+    // Use timeout so the current click (that opened the card) doesn't immediately close it
+    const timer = setTimeout(() => {
+      window.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [cards, unpinCard]);
+
   // Escape closes topmost visible card; Shift+Escape closes all (confirm at 3+)
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -600,22 +624,8 @@ export function FloatingCardContainer() {
         }}
         data-testid="floating-cards-container"
       >
-        {/* Invisible backdrop — click outside any card to close the topmost one */}
-        {expandedCards.length > 0 && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 0,
-              pointerEvents: "auto",
-            }}
-            aria-hidden="true"
-            onClick={() => {
-              const topmost = [...expandedCards].sort((a, b) => b.zIndex - a.zIndex)[0];
-              if (topmost) unpinCard(topmost.id);
-            }}
-          />
-        )}
+        {/* Click-outside detection via window listener instead of full-page backdrop.
+            Previous approach (position:fixed inset:0) blocked all page interaction. */}
 
         {/* Expanded cards */}
         {expandedCards.map((card) => (

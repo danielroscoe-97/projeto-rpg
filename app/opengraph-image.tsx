@@ -11,9 +11,13 @@ export default async function OgImage() {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   // Load Cinzel 700 for brand consistency (edge runtime has no access to next/font)
-  const cinzelData = await fetch(
-    new URL("/fonts/cinzel-latin-700-normal.woff2", baseUrl),
-  ).then((r) => r.arrayBuffer());
+  let cinzelData: ArrayBuffer | null = null;
+  try {
+    const res = await fetch(new URL("/fonts/cinzel-latin-700-normal.woff2", baseUrl));
+    if (res.ok) cinzelData = await res.arrayBuffer();
+  } catch {
+    // font unavailable — fall back to Georgia
+  }
 
   return new ImageResponse(
     (
@@ -99,14 +103,18 @@ export default async function OgImage() {
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: "Cinzel",
-          data: cinzelData,
-          weight: 700,
-          style: "normal",
-        },
-      ],
+      ...(cinzelData
+        ? {
+            fonts: [
+              {
+                name: "Cinzel",
+                data: cinzelData,
+                weight: 700 as const,
+                style: "normal" as const,
+              },
+            ],
+          }
+        : {}),
     },
   );
 }

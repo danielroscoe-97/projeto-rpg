@@ -198,6 +198,7 @@ export const CombatantRow = memo(function CombatantRow({
           }}
           role={canExpand ? "button" : undefined}
           tabIndex={canExpand ? 0 : undefined}
+          aria-label={canExpand ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
           onKeyDown={canExpand ? (e) => {
             if ((e.key === "Enter" || e.key === " ") && fullMonster) {
               e.preventDefault();

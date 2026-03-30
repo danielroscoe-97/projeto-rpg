@@ -21,10 +21,11 @@ export function WelcomeScreen({ source, guestPreview, onContinue }: WelcomeScree
   const t = useTranslations("onboarding_welcome");
 
   const isGuestCombat = source === "guest_combat";
+  const isReturning = source === "returning_no_campaign";
 
-  const title = isGuestCombat ? t("guest_title") : t("fresh_title");
-  const subtitle = isGuestCombat ? t("guest_subtitle") : t("fresh_subtitle");
-  const cta = isGuestCombat ? t("guest_cta") : t("fresh_cta");
+  const title = isGuestCombat ? t("guest_title") : isReturning ? t("returning_title") : t("fresh_title");
+  const subtitle = isGuestCombat ? t("guest_subtitle") : isReturning ? t("returning_subtitle") : t("fresh_subtitle");
+  const cta = isGuestCombat ? t("guest_cta") : isReturning ? t("returning_cta") : t("fresh_cta");
 
   return (
     <motion.div

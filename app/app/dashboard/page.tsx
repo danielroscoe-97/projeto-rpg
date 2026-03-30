@@ -59,8 +59,6 @@ export default async function DashboardPage() {
     }
   }
 
-  const showDashboardTour = onboarding ? !onboarding.dashboard_tour_completed : false;
-
   // Fetch pending invites
   const pendingInvites = await getPendingInvites(userEmail);
 
