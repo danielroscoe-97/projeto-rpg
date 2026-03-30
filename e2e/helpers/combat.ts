@@ -43,15 +43,23 @@ export async function addManualCombatant(
   page: Page,
   opts: { name: string; hp?: string; ac?: string; initiative?: string }
 ) {
-  await page.fill('[data-testid="add-row-name"]', opts.name);
+  // Wait for the add-row form to be ready
+  const nameInput = page.locator('[data-testid="add-row-name"]');
+  await expect(nameInput).toBeVisible({ timeout: 5_000 });
+
+  // Fill fields with small delays to survive hydration re-renders
+  if (opts.initiative) {
+    await page.locator('[data-testid="add-row-init"]').fill(opts.initiative);
+  }
+  await nameInput.fill(opts.name);
+  // Verify name was actually filled (hydration can wipe it)
+  await expect(nameInput).toHaveValue(opts.name, { timeout: 2_000 });
+
   if (opts.hp) {
-    await page.fill('[data-testid="add-row-hp"]', opts.hp);
+    await page.locator('[data-testid="add-row-hp"]').fill(opts.hp);
   }
   if (opts.ac) {
-    await page.fill('[data-testid="add-row-ac"]', opts.ac);
-  }
-  if (opts.initiative) {
-    await page.fill('[data-testid="add-row-init"]', opts.initiative);
+    await page.locator('[data-testid="add-row-ac"]').fill(opts.ac);
   }
   await page.click('[data-testid="add-row-btn"]');
   // Wait for combatant to appear in the list
@@ -70,16 +78,21 @@ export async function startCombat(page: Page) {
   await expect(startBtn).toBeVisible({ timeout: 5_000 });
   await startBtn.click();
 
-  // Wait for active combat view to appear
+  // Starting combat triggers: Supabase save → router.push(/app/session/[id])
+  // Wait for the redirect away from /session/new first
+  await page.waitForURL(/\/app\/session\/(?!new)/, { timeout: 30_000, waitUntil: "domcontentloaded" }).catch(() => {});
+
+  // Wait for active combat view to appear after redirect + SSR hydration
   try {
-    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 30_000 });
   } catch {
-    // Retry click if first attempt was swallowed
+    // Retry click if first attempt was swallowed (still on setup page)
     const retryBtn = page.locator('[data-testid="start-combat-btn"]');
     if (await retryBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await retryBtn.click();
+      await page.waitForURL(/\/app\/session\/(?!new)/, { timeout: 30_000, waitUntil: "domcontentloaded" }).catch(() => {});
     }
-    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 30_000 });
   }
 }
 

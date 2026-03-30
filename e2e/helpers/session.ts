@@ -24,6 +24,11 @@ export async function goToNewSession(page: Page) {
     await quickBtn.click();
     await expect(addRow).toBeVisible({ timeout: 10_000 });
   }
+
+  // Wait for React hydration to complete — SSR hydration mismatch re-renders
+  // the entire tree and can wipe values filled too early
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(1_000);
 }
 
 /**
