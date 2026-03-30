@@ -56,6 +56,20 @@ jest.mock("@/lib/supabase/campaign-npcs", () => ({
   toggleNpcVisibility: jest.fn(),
 }));
 
+jest.mock("@/lib/supabase/note-npc-links", () => ({
+  getCampaignNoteNpcLinks: jest.fn().mockResolvedValue([]),
+}));
+
+jest.mock("@/lib/supabase/client", () => ({
+  createClient: jest.fn(() => ({
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        in: jest.fn(() => ({ data: [], error: null })),
+      })),
+    })),
+  })),
+}));
+
 jest.mock("@/lib/errors/capture", () => ({
   captureError: jest.fn(),
 }));
