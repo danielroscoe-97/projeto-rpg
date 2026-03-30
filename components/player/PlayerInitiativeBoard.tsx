@@ -193,8 +193,14 @@ export function PlayerInitiativeBoard({
   useEffect(() => { setEndTurnPending(false); }, [currentTurnIndex]);
 
   // Death save handler — broadcasts to DM channel
+  const [deathSavePending, setDeathSavePending] = useState(false);
+  const deathSaveCooldownRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => { return () => { if (deathSaveCooldownRef.current) clearTimeout(deathSaveCooldownRef.current); }; }, []);
+  // Reset pending state when turn changes
+  useEffect(() => { setDeathSavePending(false); }, [currentTurnIndex]);
   const handleDeathSave = useCallback((result: "success" | "failure") => {
-    if (!channelRef?.current || !ownCharRef.current) return;
+    if (deathSavePending || !channelRef?.current || !ownCharRef.current) return;
+    setDeathSavePending(true);
     channelRef.current.send({
       type: "broadcast",
       event: "player:death_save",
@@ -204,7 +210,8 @@ export function PlayerInitiativeBoard({
         result,
       },
     });
-  }, [channelRef, registeredName]);
+    deathSaveCooldownRef.current = setTimeout(() => setDeathSavePending(false), 2000);
+  }, [deathSavePending, channelRef, registeredName]);
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
 
@@ -457,6 +464,24 @@ export function PlayerInitiativeBoard({
                     ))}
                   </div>
                 )}
+                {/* Death saves — desktop own-char card */}
+                {currentHp === 0 && maxHp > 0 && !pc.is_defeated && (
+                  <div className="mt-3">
+                    {isPlayerTurn ? (
+                      <p className="text-xs text-red-300 mb-1">{t("death_saves_your_turn")}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground mb-1">{t("death_saves_waiting")}</p>
+                    )}
+                    <DeathSaveTracker
+                      successes={pc.death_saves?.successes ?? 0}
+                      failures={pc.death_saves?.failures ?? 0}
+                      onAddSuccess={() => handleDeathSave("success")}
+                      onAddFailure={() => handleDeathSave("failure")}
+                      readOnly={!isPlayerTurn}
+                      playerContext
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -629,8 +654,10 @@ export function PlayerInitiativeBoard({
                 const isMyTurn = isCurrentTurn && isPlayerTurn;
                 return (
                   <div className="mt-2">
-                    {isMyTurn && (
+                    {isMyTurn ? (
                       <p className="text-xs text-red-300 mb-1">{t("death_saves_your_turn")}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground mb-1">{t("death_saves_waiting")}</p>
                     )}
                     <DeathSaveTracker
                       successes={combatant.death_saves?.successes ?? 0}
@@ -638,6 +665,7 @@ export function PlayerInitiativeBoard({
                       onAddSuccess={() => handleDeathSave("success")}
                       onAddFailure={() => handleDeathSave("failure")}
                       readOnly={!isMyTurn}
+                      playerContext
                     />
                   </div>
                 );
@@ -681,6 +709,10 @@ export function PlayerInitiativeBoard({
             ruleset_version: primaryPlayerChar.ruleset_version,
           }}
           rulesetVersion={rulesetVersion}
+          deathSaves={primaryPlayerChar.death_saves}
+          isPlayerTurn={isPlayerTurn}
+          onDeathSave={handleDeathSave}
+          deathSavePending={deathSavePending}
         />
       )}
 

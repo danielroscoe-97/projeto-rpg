@@ -9,9 +9,11 @@ interface DeathSaveTrackerProps {
   onAddFailure: () => void;
   /** When true, show only indicators without action buttons */
   readOnly?: boolean;
+  /** When true, use larger touch targets (44px) for mobile player view */
+  playerContext?: boolean;
 }
 
-export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailure, readOnly = false }: DeathSaveTrackerProps) {
+export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailure, readOnly = false, playerContext = false }: DeathSaveTrackerProps) {
   const t = useTranslations("combat");
   const isStabilized = successes >= 3;
   const isDead = failures >= 3;
@@ -37,7 +39,7 @@ export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailu
                 type="button"
                 onClick={onAddSuccess}
                 disabled={successes >= 3}
-                className="px-2 py-0.5 text-xs font-medium rounded bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[24px]"
+                className={`font-medium rounded bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${playerContext ? "px-4 py-2 text-sm min-h-[44px]" : "px-2 py-0.5 text-xs min-h-[24px]"}`}
                 data-testid="death-save-success-btn"
               >
                 ✅ {t("death_saves_success")}
@@ -67,7 +69,7 @@ export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailu
                 type="button"
                 onClick={onAddFailure}
                 disabled={failures >= 3}
-                className="px-2 py-0.5 text-xs font-medium rounded bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[24px]"
+                className={`font-medium rounded bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${playerContext ? "px-4 py-2 text-sm min-h-[44px]" : "px-2 py-0.5 text-xs min-h-[24px]"}`}
                 data-testid="death-save-failure-btn"
               >
                 ❌ {t("death_saves_failure")}

@@ -5,6 +5,7 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Shield } from "lucide-react";
+import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 
 interface PlayerBottomBarProps {
   character: {
@@ -21,9 +22,17 @@ interface PlayerBottomBarProps {
   rulesetVersion: RulesetVersion;
   /** Callback when a player edits their own character's note */
   onPlayerNote?: (combatantId: string, note: string) => void;
+  /** Death saves state — shown when HP=0 */
+  deathSaves?: { successes: number; failures: number };
+  /** Whether it's the player's turn */
+  isPlayerTurn?: boolean;
+  /** Callback when player marks a death save */
+  onDeathSave?: (result: "success" | "failure") => void;
+  /** Whether a death save action is pending (debounce) */
+  deathSavePending?: boolean;
 }
 
-export function PlayerBottomBar({ character, rulesetVersion }: PlayerBottomBarProps) {
+export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, deathSavePending }: PlayerBottomBarProps) {
   const t = useTranslations("player");
 
   const currentHp = character.current_hp;
@@ -34,62 +43,86 @@ export function PlayerBottomBar({ character, rulesetVersion }: PlayerBottomBarPr
   const hpThresholdKey = getHpThresholdKey(currentHp, maxHp);
   const hasTempHp = tempHp > 0;
 
+  // Show death saves instead of HP bar when at 0 HP
+  const showDeathSaves = currentHp === 0 && maxHp > 0 && !character.is_defeated;
+
   return (
     <div
       className="fixed bottom-0 inset-x-0 z-40 bg-black/90 backdrop-blur-sm border-t border-border/50 safe-area-pb lg:hidden"
       data-testid={`player-bottom-bar-${character.id}`}
     >
       <div className="px-4 py-2.5 space-y-1.5">
-        {/* Compact single-line: Name | HP bar | HP numbers | AC */}
-        <div className="flex items-center gap-3">
-          {/* Name — compact */}
-          <span className="text-foreground text-sm font-semibold truncate max-w-[100px]">
-            {character.name}
-          </span>
-
-          {character.is_defeated && (
-            <span className="text-xs text-red-400 font-medium shrink-0">
-              {t("defeated")}
-            </span>
-          )}
-
-          {/* HP bar — flexible middle */}
-          <div className="flex-1 min-w-0">
-            <div
-              className="h-4 bg-white/[0.06] rounded-full overflow-hidden"
-              role="progressbar"
-              aria-valuenow={currentHp}
-              aria-valuemin={0}
-              aria-valuemax={maxHp}
-              aria-label={t("hp_aria", { name: character.name }) + (hpThresholdKey ? ` — ${t(hpThresholdKey)}` : "")}
-            >
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${hpBarColor}`}
-                style={{ width: `${hpPct * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* HP numbers */}
-          <span className="text-foreground text-sm font-mono font-bold shrink-0">
-            {currentHp}<span className="text-muted-foreground text-xs font-normal">/{maxHp}</span>
-            {hasTempHp && (
-              <span className="text-[#9f7aea] ml-1 text-xs">
-                +{tempHp}
+        {showDeathSaves ? (
+          /* Death saves mode — replaces HP bar when at 0 HP */
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-foreground text-sm font-semibold truncate max-w-[100px]">
+                {character.name}
               </span>
+              <span className="text-xs text-red-400 font-medium">0 HP</span>
+            </div>
+            {isPlayerTurn && (
+              <p className="text-xs text-red-300 mb-1">{t("death_saves_your_turn")}</p>
             )}
-          </span>
-
-          {/* AC */}
-          {character.ac != null && (
-            <div className="flex items-center gap-0.5 shrink-0 text-muted-foreground">
-              <Shield className="w-3.5 h-3.5" aria-hidden="true" />
-              <span className="text-foreground text-sm font-mono font-semibold">
-                {character.ac}
+            <DeathSaveTracker
+              successes={deathSaves?.successes ?? 0}
+              failures={deathSaves?.failures ?? 0}
+              onAddSuccess={() => onDeathSave?.("success")}
+              onAddFailure={() => onDeathSave?.("failure")}
+              readOnly={!isPlayerTurn || deathSavePending}
+              playerContext
+            />
+          </div>
+        ) : (
+          /* Normal HP mode */
+          <>
+            <div className="flex items-center gap-3">
+              <span className="text-foreground text-sm font-semibold truncate max-w-[100px]">
+                {character.name}
               </span>
+
+              {character.is_defeated && (
+                <span className="text-xs text-red-400 font-medium shrink-0">
+                  {t("defeated")}
+                </span>
+              )}
+
+              <div className="flex-1 min-w-0">
+                <div
+                  className="h-4 bg-white/[0.06] rounded-full overflow-hidden"
+                  role="progressbar"
+                  aria-valuenow={currentHp}
+                  aria-valuemin={0}
+                  aria-valuemax={maxHp}
+                  aria-label={t("hp_aria", { name: character.name }) + (hpThresholdKey ? ` — ${t(hpThresholdKey)}` : "")}
+                >
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${hpBarColor}`}
+                    style={{ width: `${hpPct * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              <span className="text-foreground text-sm font-mono font-bold shrink-0">
+                {currentHp}<span className="text-muted-foreground text-xs font-normal">/{maxHp}</span>
+                {hasTempHp && (
+                  <span className="text-[#9f7aea] ml-1 text-xs">
+                    +{tempHp}
+                  </span>
+                )}
+              </span>
+
+              {character.ac != null && (
+                <div className="flex items-center gap-0.5 shrink-0 text-muted-foreground">
+                  <Shield className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span className="text-foreground text-sm font-mono font-semibold">
+                    {character.ac}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* Condition badges — only if present */}
         {character.conditions.length > 0 && (
