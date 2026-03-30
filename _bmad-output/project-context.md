@@ -223,22 +223,37 @@ session:weather_change      → effect
 app/
 ├── page.tsx                    # Landing page (marketing)
 ├── layout.tsx                  # Root layout (i18n, theme, auth providers)
-├── auth/                       # Auth flows (login, signup, confirm, forgot-password)
+├── auth/                       # Auth flows (login, signup, confirm, forgot-password, update-password)
 ├── app/                        # Rotas protegidas (requer auth)
 │   ├── dashboard/              # DM dashboard (campanhas, encounters salvos)
 │   ├── session/[id]/           # Sessão de combate (view principal do DM)
 │   ├── session/new/            # Criar nova sessão
 │   ├── compendium/             # Navegador SRD (monstros, spells, conditions)
-│   ├── campaigns/[id]/         # Detalhe da campanha
+│   ├── campaigns/[id]/         # Detalhe da campanha (DM + Player view)
+│   ├── checkout/success/       # Stripe checkout success
 │   ├── presets/                # Presets de monstros
 │   ├── settings/               # Configurações da conta
-│   └── onboarding/             # Wizard de primeiro acesso
+│   └── onboarding/             # Wizard de primeiro acesso + role selection
 ├── api/                        # API Routes
 │   ├── session/[id]/state/     # State sync endpoint (reconnect fallback)
+│   ├── session/[id]/files/     # File sharing (upload/download)
 │   ├── oracle-ai/              # Google Gemini proxy
-│   └── account/delete/         # Account deletion (GDPR)
+│   ├── account/delete/         # Account deletion (GDPR)
+│   ├── admin/                  # Admin endpoints (content, metrics, users)
+│   ├── billing-portal/         # Stripe customer portal
+│   ├── checkout/               # Stripe checkout session
+│   ├── webhooks/stripe/        # Stripe webhooks
+│   ├── campaign/[id]/invites/  # Campaign invite management
+│   ├── player-audio/           # Player audio upload/playback
+│   ├── track/                  # Analytics event tracking
+│   ├── trial/                  # Trial management
+│   └── user/language/          # Language preference
 ├── join/[token]/               # Player join via token (sem auth)
+├── invite/[token]/             # Campaign invite acceptance
 ├── try/                        # Guest mode (60 min, sem login)
+├── monsters/                   # SEO pages: monster index + detail (/monsters/[slug])
+├── spells/                     # SEO pages: spell index + detail (/spells/[slug])
+├── pricing/                    # Pricing page
 ├── admin/                      # Admin panel (métricas, users, SRD editing)
 └── legal/                      # Privacy policy, attribution
 
@@ -249,32 +264,51 @@ components/
 ├── session/         # Session management (CombatSessionClient, ShareSessionButton)
 ├── dashboard/       # DM dashboard (CampaignManager, OnboardingWizard)
 ├── admin/           # Admin (MetricsDashboard, ContentEditor, UserManager)
+├── analytics/       # Page view tracking (LandingPageTracker, PageViewTracker)
+├── audio/           # DM soundboard (DmSoundboard, DmAudioControls, PlayerSoundboard)
+├── billing/         # Billing UI (ProBadge, ProGate, SubscriptionPanel, TrialBanner)
+├── campaign/        # Campaign management (CampaignNotes, InvitePlayerDialog, PlayerCampaignView)
 ├── compendium/      # Compendium browser
-├── guest/           # Guest mode (GuestBanner, GuestCombatClient)
+├── guest/           # Guest mode (GuestBanner, GuestCombatClient, GuestUpsellModal)
+├── homebrew/        # Homebrew content (HomebrewCreator, StatBlockImporter)
+├── import/          # External content import (ImportContentModal, ExternalContentGate)
 ├── dice/            # Dice UI (DiceHistoryPanel, ClickableRoll)
 ├── presets/         # Preset management
 ├── marketing/       # Landing page (HeroParticles, ScrollReveal)
 ├── layout/          # Navbar, DmSyncDot
+├── settings/        # Settings components (LanguageSwitcher)
 ├── srd/             # SrdInitializer, MonsterToken
+├── tour/            # Guided onboarding (TourProvider, TourOverlay, TourTooltip)
 ├── ui/              # shadcn/ui primitives + ErrorBoundary
 └── auth/            # Auth forms
 
 lib/
-├── stores/          # Zustand stores
+├── stores/          # Zustand stores (12 stores — ver tabela acima)
+├── actions/         # Server Actions (pontual: invite-actions.ts)
 ├── hooks/           # Custom hooks (useCombatActions, useCombatKeyboardShortcuts)
 ├── realtime/        # WebSocket broadcast, channel hooks, reconnect
 ├── supabase/        # Client/server Supabase clients, DB access functions
 ├── srd/             # SRD loader, search, cache
 ├── types/           # TypeScript types (combat.ts, database.ts, realtime.ts)
-├── utils/           # Utilities (initiative, hp-status, sanitize, dice)
+├── utils/           # Utilities (initiative, hp-status, sanitize, dice, cr-calculator)
+├── combat/          # Combat logic (parse-action, action parsing)
+├── analytics/       # Analytics helpers
+├── auth/            # Auth utilities
+├── constants/       # App constants
+├── design/          # Design tokens (RPG visual system, pixel sprites)
+├── dice/            # Dice utilities
+├── errors/          # Error capture (Sentry integration)
+├── import/          # External content import logic
+├── notifications/   # Novu notification workflows
+├── parser/          # Content parsers
 ├── validation/      # Zod schemas
 └── oracle-ai/       # AI system prompt
 
-supabase/migrations/ # 12 migration files (schema completo)
-scripts/             # SRD data import e bundle generation
-messages/            # i18n: pt-BR.json, en.json
+supabase/migrations/ # 39 migration files (001–039)
+scripts/             # SRD data import, bundle generation, orchestrator
+messages/            # i18n: pt-BR.json, en.json (32 namespaces)
 public/srd/          # Static SRD bundles (JSON, CDN-cached)
-docs/                # Sprint documentation
+docs/                # Sprint docs, specs, QA reports (~54 markdown files)
 _bmad-output/        # Architecture, PRD, epics, tech specs
 ```
 
@@ -285,37 +319,49 @@ _bmad-output/        # Architecture, PRD, epics, tech specs
 ### Relações Principais
 
 ```
-User (DM) ──1:N──► Campaign ──1:N──► PlayerCharacter
-     │
-     └──1:N──► Session ──1:N──► Encounter ──1:N──► Combatant
-                  │                                    │
-                  └──1:N──► SessionToken          monster_id? ──► Monster
-                            (player access)       player_character_id? ──► PlayerCharacter
+User ──1:N──► Campaign ──1:N──► PlayerCharacter
+  │               │
+  │               └──N:M──► CampaignMember (User como Player)
+  │               └──1:N──► CampaignInvite
+  │
+  └──1:N──► Session ──1:N──► Encounter ──1:N──► Combatant
+                │                                    │
+                └──1:N──► SessionToken          monster_id? ──► Monster
+                          (player access)       player_character_id? ──► PlayerCharacter
 ```
 
 ### Distinções Importantes
 
 - **Session ≠ Encounter**: Session contém tokens de acesso, lifecycle, estado da conexão. Encounter contém combatants e rounds. Uma session pode ter múltiplos encounters.
 - **Combatant dual-type**: `monster_id` (ref Monster) OU `player_character_id` (ref PlayerCharacter) — nunca ambos.
+- **Combatant fields V2**: `display_name` (anti-metagaming), `is_hidden` (oculto de players), `player_notes` (notas do jogador).
 - **Conditions**: `TEXT[]` (PostgreSQL array) no combatant — lista de strings.
 - **Session Tokens**: Efêmeros, scoped por sessão, auto-expiram. Usados para player access sem auth.
 - **SRD Tables**: `monsters` e `spells` com unique constraint `(name, version)`.
+- **Campaign Members**: Dual-role — um User pode ser DM em uma campanha e Player em outra. `campaign_members` table com `role` (dm/player).
+- **Campaign Invites**: Via email ou join_code. Acceptance via `accept_campaign_invite()` function (SECURITY DEFINER, FOR UPDATE SKIP LOCKED).
 
 ### Tabelas
 
 | Tabela | Descrição | RLS |
 |--------|-----------|-----|
-| `users` | DM accounts + admin flag + language pref | owner-only |
-| `campaigns` | Grupos de jogadores salvos | owner-only |
-| `player_characters` | PCs em uma campanha (HP, AC, DC) | campaign owner |
-| `sessions` | Sessões de jogo ativas/arquivadas | owner + token holders |
+| `users` | DM accounts + admin flag + language pref + role | owner-only |
+| `campaigns` | Grupos de jogadores (join_code, notes) | owner + members |
+| `campaign_members` | Membership DM↔Player em campanhas | campaign-based |
+| `campaign_invites` | Convites para campanhas (token, email, 7d expiry) | owner + recipient |
+| `player_characters` | PCs (HP, AC, DC, race, class, level, user_id, dm_notes) | campaign owner + player |
+| `sessions` | Sessões de jogo ativas/arquivadas (notes, files) | owner + token holders |
 | `encounters` | Combates dentro de uma sessão | session owner |
-| `combatants` | Monstros + PCs no combate (HP, initiative, conditions, notes) | encounter owner |
+| `combatants` | Monstros + PCs (HP, initiative, conditions, notes, is_hidden, display_name) | encounter owner |
 | `monsters` | SRD monsters (2014 + 2024) | public read |
 | `spells` | SRD spells (2014 + 2024) | public read |
 | `condition_types` | Condições D&D (Blinded, Charmed, etc.) | public read |
 | `session_tokens` | Tokens efêmeros de acesso player | session owner |
 | `monster_presets` | Presets customizados de monstros | owner-only |
+| `analytics_events` | Tracking de eventos do funil | admin-only |
+| `subscriptions` | Assinaturas Stripe (preparação pós-beta) | owner-only |
+| `feature_flags` | Feature flags para gating | admin-only |
+| `homebrew` | Conteúdo homebrew de usuários | owner-only |
 
 ---
 
@@ -369,10 +415,13 @@ User (DM) ──1:N──► Campaign ──1:N──► PlayerCharacter
 ## Documentação de Sprint
 
 - Sprint docs em `docs/` com nome `{tipo}-sprint-{data}.md`
+- Quick specs em `docs/quick-spec-*.md` e `docs/quick-specs/`
+- QA reports em `docs/qa-*.md`
 - Tracking de épicos: `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - Tech specs detalhados: `_bmad-output/implementation-artifacts/`
 - Architecture, PRD, UX spec: `_bmad-output/planning-artifacts/`
-- Épicos definidos em `_bmad-output/planning-artifacts/epics.md` (10 épicos totais)
+- Épicos definidos em `_bmad-output/planning-artifacts/epics.md` (9 épicos V2 + estabilização)
+- **Índice mestre**: `docs/index.md` — consultar PRIMEIRO para encontrar qualquer documento
 
 ---
 

@@ -11,6 +11,11 @@ workflowType: 'prd'
 
 # Product Requirements Document - projeto-rpg
 
+> **⚠️ V1 SNAPSHOT** — Este PRD reflete o escopo original do MVP (V1). Para o estado atual do projeto (V2+), consulte:
+> - `docs/prd-v2.md` — PRD V2 com features expandidas
+> - `_bmad-output/planning-artifacts/epics.md` — Épicos V2 (41 stories)
+> - `_bmad-output/project-context.md` — Contexto técnico atualizado
+
 **Author:** Dani_
 **Date:** 2026-03-24
 

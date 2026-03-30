@@ -49,9 +49,9 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 **Scale & Complexity:**
 - Primary domain: Full-stack web application with real-time multiplayer layer
 - Complexity level: Medium
-- Estimated core data entities: 9–10 (User, Campaign, PlayerCharacter, Session,
-  Encounter, Combatant, Monster, Spell, ConditionType — Session distinct from
-  Encounter to hold access tokens, lifecycle state, and player connections)
+- Estimated core data entities: 17 (User, Campaign, CampaignMember, CampaignInvite,
+  PlayerCharacter, Session, Encounter, Combatant, Monster, Spell, ConditionType,
+  SessionToken, MonsterPreset, AnalyticsEvent, Subscription, FeatureFlag, Homebrew)
 - SRD content volume: ~725 versioned entities (static, CDN-served)
 - Target concurrent load: ≥1,000 active sessions (DM + up to 6 players each)
 
@@ -139,7 +139,8 @@ npx create-next-app@latest projeto-rpg --template with-supabase
 - Vercel deployment pipeline — zero-config CI/CD from GitHub push
 
 **Testing Framework:**
-- Not included in starter — Jest + React Testing Library to be added manually
+- Jest 30 + React Testing Library (558+ unit/integration tests)
+- Playwright for E2E testing (needs expansion)
 
 **Code Organization:**
 - `app/` — App Router pages and layouts (SSR marketing + CSR app routes)
@@ -159,6 +160,18 @@ npx create-next-app@latest projeto-rpg --template with-supabase
 - `@dnd-kit/core` + `@dnd-kit/sortable` — drag-and-drop initiative reordering (FR8)
 - `zustand` — client-side combat state management (optimistic UI pattern)
 - `idb` — IndexedDB wrapper for offline SRD cache (NFR6)
+- `framer-motion` — animações e transições
+- `stripe` — pagamentos (preparação pós-beta)
+- `@novu/node` + `@novu/react` — notificações in-app e email
+- `@trigger.dev/sdk` — background jobs (cleanup, trial expiry)
+- `@upstash/ratelimit` + `@upstash/redis` — rate limiting persistente
+- `@sentry/nextjs` — error monitoring
+- `sonner` — toast notifications
+- `qrcode` — QR codes para session links
+- `react-markdown` — renderização de conteúdo markdown
+- `react-window` — virtualização de listas longas
+- `next-themes` — theme switching (dark/light)
+- `@playwright/test` — E2E testing
 
 **Note:** Project initialization using this command should be the first
 implementation story in the development backlog.
@@ -168,7 +181,7 @@ implementation story in the development backlog.
 ### Decision Priority Analysis
 
 **Critical Decisions (Block Implementation):**
-- Data schema: 10 tables with ruleset_version as first-class field
+- Data schema: 17 tables with ruleset_version as first-class field (39 migrations)
 - Auth model: Supabase Auth (DM) + Supabase Anonymous Auth (Player) + admin flag
 - Real-time pattern: Dual-write (channel broadcast + DB persist)
 - API approach: Direct Supabase client + Next.js API routes for admin only
@@ -181,19 +194,23 @@ implementation story in the development backlog.
 - Component organization by feature domain
 
 **Deferred Decisions (Post-MVP):**
-- Staging environment, custom WebSocket server, multi-region deployment,
-  advanced monitoring, payment/subscription infrastructure
+- Staging environment, custom WebSocket server, multi-region deployment
+- **Now Implemented (V2):** Payment/subscription via Stripe, Novu notifications,
+  Trigger.dev background jobs, Upstash rate limiting, Playwright E2E, campaign
+  membership system, homebrew content
 
 ### Data Architecture
 
-- **Schema:** 10 tables — User, Campaign, PlayerCharacter, Session, Encounter,
-  Combatant, Monster, Spell, ConditionType, SessionToken
+- **Schema:** 17 tables — User, Campaign, CampaignMember, CampaignInvite,
+  PlayerCharacter, Session, Encounter, Combatant, Monster, Spell, ConditionType,
+  SessionToken, MonsterPreset, AnalyticsEvent, Subscription, FeatureFlag, Homebrew
 - **Ruleset versioning:** `ruleset_version ENUM('2014','2024')` on Monster and
   Spell tables. Both versions coexist; queries always filter by version. 2024
   content never overwrites 2014 rows (NFR26)
 - **Combatant model:** `current_hp`, `max_hp`, `temp_hp` (INTEGER DEFAULT 0),
   `ac`, `spell_save_dc`, `initiative`, `conditions` (TEXT[] array),
-  `ruleset_version`, `is_defeated` (BOOLEAN)
+  `ruleset_version`, `is_defeated` (BOOLEAN), `display_name` (TEXT, anti-metagaming),
+  `is_hidden` (BOOLEAN, oculto de players), `player_notes` (TEXT), `dm_notes` (TEXT)
 - **SRD content seeding:** Import from 5e-database JSON via Supabase migration
   seed file. One-time import becomes versioned SQL data. No runtime third-party
   API dependency
@@ -222,7 +239,8 @@ implementation story in the development backlog.
   - Authorization enforced at DB layer via Supabase RLS — no per-endpoint
     auth middleware required
 - **Rate limiting:** Supabase Auth built-in rate limiting on auth endpoints +
-  Vercel Edge middleware for custom limits on API routes (NFR14)
+  Upstash Redis (`@upstash/ratelimit`) for persistent rate limiting on API routes (NFR14).
+  Migration 016 adds `rate_limits` table
 - **Input sanitization:** Server-side via Supabase RPC or Next.js API route
   validation before any write (NFR16)
 
@@ -284,9 +302,10 @@ implementation story in the development backlog.
 - **CI/CD:** GitHub push → Vercel auto-deploy. Preview deployments on PRs,
   production deploy on `main` merge. Supabase migrations run manually via CLI
   before deploy (automated migration pipeline is V2)
-- **Monitoring:** Vercel Analytics (free tier, Web Vitals) + Supabase Dashboard
-  (query performance, auth events, Realtime connections) + Sentry free tier
-  (error tracking, session replay for debugging)
+- **Monitoring:** Vercel Analytics (Web Vitals) + Supabase Dashboard
+  (query performance, auth events, Realtime connections) + Sentry (`@sentry/nextjs`
+  v10.45, error tracking with capture helpers in `lib/errors/`).
+  Custom analytics via `analytics_events` table + `/api/track` endpoint
 - **Logging:** Vercel serverless function logs + Supabase Postgres logs. No
   custom logging infrastructure for V1
 - **SRD CDN delivery:** Vercel serves `/public/srd/*.json` at edge automatically.
@@ -355,10 +374,13 @@ implementation story in the development backlog.
 - Error: `{ error: { message: string, code: string } }`
 
 **Realtime event payloads:**
-- Event naming: `domain:action` in snake_case — `combat:hp_update`,
-  `combat:turn_advance`, `combat:condition_change`, `combat:combatant_add`,
-  `combat:combatant_remove`, `combat:initiative_reorder`,
-  `combat:version_switch`, `session:state_sync`
+- Event naming: `domain:action` in snake_case — 22 event types across 4 domains.
+  See `_bmad-output/project-context.md` section "Eventos de Broadcast" for the
+  complete list. Core events include: `combat:hp_update`, `combat:turn_advance`,
+  `combat:condition_change`, `combat:combatant_add`, `combat:combatant_remove`,
+  `combat:initiative_reorder`, `combat:version_switch`, `combat:hidden_change`,
+  `combat:late_join_request/response`, `combat:rejoin_request/response`,
+  `session:state_sync`, `audio:play_sound`, `player:death_save`
 - Payload structure: flat object with `snake_case` keys matching DB columns
 
 **Dates:** ISO 8601 strings everywhere — `2026-03-24T19:00:00Z`. PostgreSQL
@@ -369,7 +391,9 @@ TypeScript types explicitly include `| null` for nullable fields.
 
 ### Zustand Store Pattern
 
-- One store per domain: `combat-store.ts`, `session-store.ts`, `srd-store.ts`
+- One store per domain: 12 stores total (see `project-context.md` for complete list).
+  Core: `combat-store.ts`, `guest-combat-store.ts`, `srd-store.ts`, `audio-store.ts`,
+  `role-store.ts`, `subscription-store.ts`, `dice-history-store.ts`, etc.
 - State interface + Actions interface per store
 - Actions follow verb + noun pattern: `updateHP`, `advanceTurn`, `applyCondition`
 - **All combat mutations follow the optimistic update pattern:**
@@ -437,12 +461,16 @@ projeto-rpg/
 ├── supabase/
 │   ├── config.toml                     # Local Supabase config
 │   ├── seed.sql                        # SRD content seeding (monsters + spells)
-│   └── migrations/
+│   └── migrations/                     # 39 migration files (001–039)
 │       ├── 001_initial_schema.sql      # Users, campaigns, player_characters
 │       ├── 002_session_tables.sql      # Sessions, encounters, combatants
 │       ├── 003_srd_content.sql         # Monsters, spells, condition_types
 │       ├── 004_session_tokens.sql      # Player anonymous join tokens
-│       └── 005_rls_policies.sql        # All RLS policies (DM, Player, Admin)
+│       ├── 005_rls_policies.sql        # All RLS policies (DM, Player, Admin)
+│       ├── ...                         # 006-039: notes, analytics, subscriptions,
+│       │                               # feature_flags, campaign_members, invites,
+│       │                               # homebrew, player_audio, join_code, etc.
+│       └── 039_campaigns_join_code.sql # Latest migration
 │
 ├── scripts/
 │   └── generate-srd-bundles.ts         # Build-time: export SRD → /public/srd/*.json
@@ -570,10 +598,14 @@ projeto-rpg/
 │   │   ├── middleware.ts               # Auth middleware for protected routes
 │   │   └── admin.ts                    # Service-role client (admin API routes only)
 │   │
-│   ├── stores/
+│   ├── stores/                         # 12 Zustand stores (see project-context.md)
 │   │   ├── combat-store.ts             # Zustand: combatants, initiative, HP, conditions
-│   │   ├── session-store.ts            # Zustand: session metadata, encounter state
-│   │   └── srd-store.ts               # Zustand: loaded SRD data, search index
+│   │   ├── guest-combat-store.ts       # Zustand: ephemeral combat (no auth)
+│   │   ├── srd-store.ts               # Zustand: loaded SRD data, search index
+│   │   ├── audio-store.ts             # Zustand: DM soundboard, ambient, custom audio
+│   │   ├── role-store.ts              # Zustand: DM/Player role selection
+│   │   ├── subscription-store.ts      # Zustand: billing/subscription state
+│   │   └── ...                        # + dice-history, pinned-cards, tour, combat-log, etc.
 │   │
 │   ├── realtime/
 │   │   ├── use-realtime-channel.ts     # Hook: subscribe to session:{id} channel

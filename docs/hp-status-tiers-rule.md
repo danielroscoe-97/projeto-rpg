@@ -11,7 +11,7 @@ Todas as barras de HP no combate (logado e deslogado, DM e jogador) DEVEM usar e
 | **LIGHT**    | > 70%        | Verde (`bg-green-500`) | `text-green-400`    |
 | **MODERATE** | 40% – 70%   | Amarelo (`bg-amber-400`) | `text-amber-400`  |
 | **HEAVY**    | 10% – 40%   | Vermelho (`bg-red-500`) | `text-red-500`     |
-| **CRITICAL** | ≤ 10%        | Preto (`bg-gray-900`)  | `text-gray-300` + caveira |
+| **CRITICAL** | ≤ 10%        | Vermelho escuro (`bg-red-900`) | `text-red-300` + caveira |
 
 ## Thresholds
 
