@@ -592,20 +592,6 @@ export function CombatSessionClient({
       });
     };
 
-    // Remove any stale bindings before adding new ones.
-    try {
-      const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
-      const broadcastBindings = bindings?.broadcast;
-      if (Array.isArray(broadcastBindings)) {
-        for (let i = broadcastBindings.length - 1; i >= 0; i--) {
-          const event = broadcastBindings[i]?.filter?.event;
-          if (event === "combat:late_join_request" || event === "combat:rejoin_request") {
-            broadcastBindings.splice(i, 1);
-          }
-        }
-      }
-    } catch { /* bindings structure may differ across versions — ignore */ }
-
     ch.on("broadcast", { event: "combat:late_join_request" }, handleLateJoin);
     ch.on("broadcast", { event: "combat:rejoin_request" }, handleRejoinRequest);
 
@@ -641,19 +627,6 @@ export function CombatSessionClient({
       const label = preset ? `${preset.icon} ${preset.id}` : sound_id;
       toast(`🔊 ${sanitizedName}: ${label}`, { duration: 2000 });
     };
-
-    // Clean stale audio bindings before adding new one
-    try {
-      const bindings = (ch as unknown as { bindings: Record<string, { filter: { event: string } }[]> }).bindings;
-      const broadcastBindings = bindings?.broadcast;
-      if (Array.isArray(broadcastBindings)) {
-        for (let i = broadcastBindings.length - 1; i >= 0; i--) {
-          if (broadcastBindings[i]?.filter?.event === "audio:play_sound") {
-            broadcastBindings.splice(i, 1);
-          }
-        }
-      }
-    } catch { /* ignore */ }
 
     ch.on("broadcast", { event: "audio:play_sound" }, handleAudioPlay);
 
@@ -933,14 +906,18 @@ export function CombatSessionClient({
         onAdvanceTurn={handleAdvanceTurn}
         onAddDeathSaveSuccess={(id) => {
           useCombatStore.getState().addDeathSaveSuccess(id);
+          const sid = getSessionId();
+          if (!sid) return;
           const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-          if (c) broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
+          if (c) broadcastEvent(sid, { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
         }}
         onAddDeathSaveFailure={(id) => {
           useCombatStore.getState().addDeathSaveFailure(id);
+          const sid = getSessionId();
+          if (!sid) return;
           const c = useCombatStore.getState().combatants.find((x) => x.id === id);
-          if (c?.is_defeated) broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
-          if (c) broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
+          if (c?.is_defeated) broadcastEvent(sid, { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
+          if (c) broadcastEvent(sid, { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
         }}
         t={t}
       />

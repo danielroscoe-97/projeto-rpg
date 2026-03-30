@@ -86,6 +86,9 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       }
     }
 
+    const t = await getTranslations("campaign")
+    const tDash = await getTranslations("dashboard")
+
     // Fetch combat history (finished encounters)
     let combatHistory: { id: string; name: string; round_number: number }[] = []
     if (historySessions && historySessions.length > 0) {
@@ -103,9 +106,6 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         round_number: e.round_number ?? 0,
       }))
     }
-
-    const t = await getTranslations("campaign")
-    const tDash = await getTranslations("dashboard")
 
     return (
       <PlayerCampaignView

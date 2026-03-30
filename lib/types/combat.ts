@@ -53,8 +53,8 @@ export interface Combatant {
 
 export type UndoEntry =
   | { type: "hp"; combatantId: string; previousHp: number; previousTempHp: number; action: "damage" | "heal" | "temp" }
-  | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean }
-  | { type: "defeated"; combatantId: string; wasDefeated: boolean; previousHp: number }
+  | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean; previousDurations?: Record<string, number> }
+  | { type: "defeated"; combatantId: string; wasDefeated: boolean; previousHp: number; previousDeathSaves?: { successes: number; failures: number } }
   | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[] };
 
 /** @deprecated Use UndoEntry instead. Kept for backwards compatibility. */

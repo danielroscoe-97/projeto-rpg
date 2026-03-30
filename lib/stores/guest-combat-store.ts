@@ -138,26 +138,32 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
         set((state) => {
           const { combatants, currentTurnIndex, roundNumber } = state;
           if (combatants.length === 0) return state;
-          let next = currentTurnIndex;
+
+          // Re-sort by initiative (applies mid-combat initiative changes)
+          const currentCombatantId = combatants[currentTurnIndex]?.id;
+          const sorted = assignInitiativeOrder(sortByInitiative([...combatants]));
+          const sortedIndex = sorted.findIndex((c) => c.id === currentCombatantId);
+          const baseIndex = sortedIndex >= 0 ? sortedIndex : Math.min(currentTurnIndex, sorted.length - 1);
+
+          let next = baseIndex;
           let roundBumped = false;
-          for (let i = 0; i < combatants.length; i++) {
-            next = (next + 1) % combatants.length;
-            if (next === 0 && combatants.length > 1) roundBumped = true;
-            if (!combatants[next].is_defeated) break;
+          for (let i = 0; i < sorted.length; i++) {
+            next = (next + 1) % sorted.length;
+            if (next === 0 && sorted.length > 1) roundBumped = true;
+            if (!sorted[next].is_defeated) break;
           }
-          if (combatants[next].is_defeated) return state;
+          if (sorted[next].is_defeated) return state;
           // Increment condition durations for the combatant whose turn is starting
-          const updatedCombatants = [...combatants];
-          const nextCombatant = updatedCombatants[next];
+          const nextCombatant = sorted[next];
           if (nextCombatant.conditions.length > 0 && nextCombatant.condition_durations) {
             const updatedDurations = { ...nextCombatant.condition_durations };
             for (const cond of nextCombatant.conditions) {
               if (cond in updatedDurations) updatedDurations[cond]++;
             }
-            updatedCombatants[next] = { ...nextCombatant, condition_durations: updatedDurations };
+            sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
           }
           return {
-            combatants: updatedCombatants,
+            combatants: sorted,
             currentTurnIndex: next,
             roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
           };
@@ -191,7 +197,7 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       setTempHp: (id, value) =>
         set((state) => ({
           combatants: state.combatants.map((c) =>
-            c.id === id ? { ...c, temp_hp: Math.min(9999, Math.max(0, value)) } : c
+            c.id === id ? { ...c, temp_hp: Math.min(9999, Math.max(c.temp_hp, value)) } : c
           ),
         })),
 
@@ -319,15 +325,21 @@ export function clearGuestEncounterData() {
 
 /** Auto-number combatants with the same base name.
  *  e.g. adding two "Goblin" monsters produces ["Goblin 1", "Goblin 2"].
+ *  Uses max-number approach to avoid duplicates after removals.
  */
 export function getGuestNumberedName(
   baseName: string,
   existingCombatants: Combatant[]
 ): string {
-  const sameBase = existingCombatants.filter((c) =>
-    c.name.match(new RegExp(`^${escapeRegex(baseName)} \\d+$`))
-  );
-  return `${baseName} ${sameBase.length + 1}`;
+  const escaped = escapeRegex(baseName);
+  const pattern = new RegExp(`^${escaped} (\\d+)$`);
+  let maxNum = 0;
+  for (const c of existingCombatants) {
+    if (c.name === baseName) maxNum = Math.max(maxNum, 1);
+    const match = c.name.match(pattern);
+    if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
+  }
+  return `${baseName} ${maxNum + 1}`;
 }
 
 function escapeRegex(s: string) {

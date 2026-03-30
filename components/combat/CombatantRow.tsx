@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { getMonsterById } from "@/lib/srd/srd-search";
@@ -58,7 +58,7 @@ export interface CombatantRowProps {
 
 type OpenPanel = "hp" | "conditions" | "edit" | "actions" | null;
 
-export function CombatantRow({
+export const CombatantRow = memo(function CombatantRow({
   combatant,
   isCurrentTurn,
   showActions = false,
@@ -402,7 +402,7 @@ export function CombatantRow({
               className="text-muted-foreground/60 text-xs hover:text-muted-foreground transition-colors px-1 min-h-[32px] flex items-center"
               aria-expanded={isExpanded}
               aria-controls={`stat-block-combatant-${combatant.id}`}
-              aria-label={isExpanded ? "Collapse stat block" : "Expand stat block"}
+              aria-label={isExpanded ? t("collapse_stat_block") : t("expand_stat_block")}
               data-testid={`expand-toggle-${combatant.id}`}
             >
               {isExpanded ? "▲" : "▼"}
@@ -472,7 +472,7 @@ export function CombatantRow({
           <div
             className="flex flex-wrap gap-1"
             role="list"
-            aria-label={`${combatant.name} conditions`}
+            aria-label={t("conditions_aria", { name: combatant.name })}
             data-testid={`conditions-${combatant.id}`}
           >
             {combatant.conditions.map((condition) => (
@@ -581,7 +581,7 @@ export function CombatantRow({
                 type="button"
                 onClick={() => pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014")}
                 className="px-2 py-1 text-xs rounded font-medium min-h-[28px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                aria-label={`Pin ${combatant.name} stat block`}
+                aria-label={t("pin_stat_block", { name: combatant.name })}
                 data-testid={`pin-btn-${combatant.id}`}
               >
                 📌
@@ -790,4 +790,4 @@ export function CombatantRow({
       </AnimatePresence>
     </li>
   );
-}
+});

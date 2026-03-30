@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Share2, Lock, User, UserCircle, Sparkles, Skull } from "lucide-react";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
@@ -177,8 +177,9 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         .map((c) => c.display_name!);
       const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
       for (let i = 1; i <= qty; i++) {
+        const allExisting = [...currentCombatants, ...newCombatants] as Combatant[];
         newCombatants.push({
-          name: `${monster.name} ${i}`,
+          name: getGuestNumberedName(monster.name, allExisting),
           current_hp: monster.hit_points,
           max_hp: monster.hit_points,
           temp_hp: 0,
@@ -755,6 +756,13 @@ export function GuestCombatClient() {
     addDeathSaveFailure,
   } = useGuestCombatStore();
 
+  // O(1) index lookup for combatant rows (avoids O(n²) findIndex in renderItem)
+  const combatantIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    combatants.forEach((c, i) => map.set(c.id, i));
+    return map;
+  }, [combatants]);
+
   // Turn timer — resets each time currentTurnIndex changes
   const [turnStartedAt, setTurnStartedAt] = useState<number | null>(null);
   useEffect(() => {
@@ -890,13 +898,10 @@ export function GuestCombatClient() {
       const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
       const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
       const newCombatants: Omit<Combatant, "id">[] = [];
-      const existingCount = currentCombatants.filter(
-        (c) => c.name.match(new RegExp(`^${monster.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} \\d+$`)) || c.name === monster.name
-      ).length;
       for (let i = 0; i < qty; i++) {
-        const num = existingCount + i + 1;
+        const allExisting = [...currentCombatants, ...newCombatants] as Combatant[];
         newCombatants.push({
-          name: `${monster.name} ${num}`, current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
+          name: getGuestNumberedName(monster.name, allExisting), current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
           ac: monster.armor_class, spell_save_dc: null, initiative: initResult.total,
           initiative_breakdown: { roll: initResult.rolls[0], modifier: initResult.modifier },
           initiative_order: null, conditions: [], ruleset_version: monster.ruleset_version,
@@ -1229,7 +1234,7 @@ export function GuestCombatClient() {
             combatants={combatants}
             onReorder={handleReorderCombatants}
             renderItem={(c, dragHandleProps) => {
-              const index = combatants.findIndex((x) => x.id === c.id);
+              const index = combatantIndexMap.get(c.id) ?? -1;
               return (
                 <CombatantRow
                   combatant={c}

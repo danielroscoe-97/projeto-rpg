@@ -71,7 +71,7 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove, t
     ? "bg-purple-600"
     : (CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]");
   const displayName = isConcentration
-    ? (concentrationSpell ? `Concentrating: ${concentrationSpell}` : "Concentrating")
+    ? (concentrationSpell ? t("concentration_with_spell", { spell: concentrationSpell }) : t("concentration_label"))
     : tc(condition.toLowerCase());
   const IconComponent = isConcentration ? Focus : CONDITION_ICONS[condition.toLowerCase()];
 

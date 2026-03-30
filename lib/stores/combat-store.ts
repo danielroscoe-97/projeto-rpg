@@ -54,7 +54,10 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       combatants: state.combatants.filter((c) => c.id !== id),
     })),
 
-  clearEncounter: () => set(initialState),
+  clearEncounter: () => {
+    try { localStorage.removeItem("combat-timers"); } catch { /* ignore */ }
+    set(initialState);
+  },
 
   setEncounterId: (encounter_id, session_id) =>
     set({ encounter_id, session_id }),
@@ -106,17 +109,20 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   },
 
   hydrateCombatants: (combatants) => {
-    // Restore timer timestamps from localStorage on hydration (survives page refresh)
+    // Restore timer timestamps from localStorage only during active combat (survives page refresh)
+    const { is_active } = get();
     let combatStartedAt: number | null = null;
     let turnStartedAt: number | null = null;
-    try {
-      const saved = localStorage.getItem("combat-timers");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        combatStartedAt = parsed.combatStartedAt ?? null;
-        turnStartedAt = parsed.turnStartedAt ?? null;
-      }
-    } catch { /* ignore */ }
+    if (is_active) {
+      try {
+        const saved = localStorage.getItem("combat-timers");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          combatStartedAt = parsed.combatStartedAt ?? null;
+          turnStartedAt = parsed.turnStartedAt ?? null;
+        }
+      } catch { /* ignore */ }
+    }
     set({ combatants, combatStartedAt, turnStartedAt });
   },
 
@@ -225,7 +231,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       const target = state.combatants.find((c) => c.id === id);
       const has = target?.conditions.includes(condition) ?? false;
       return {
-        undoStack: target ? pushUndo(state.undoStack, { type: "condition", combatantId: id, condition, wasAdded: !has }) : state.undoStack,
+        undoStack: target ? pushUndo(state.undoStack, { type: "condition", combatantId: id, condition, wasAdded: !has, previousDurations: target.condition_durations ? { ...target.condition_durations } : undefined }) : state.undoStack,
         combatants: state.combatants.map((c) => {
           if (c.id !== id) return c;
           const durations = { ...(c.condition_durations ?? {}) };
@@ -249,7 +255,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     set((state) => {
       const target = state.combatants.find((c) => c.id === id);
       return {
-        undoStack: target ? pushUndo(state.undoStack, { type: "defeated", combatantId: id, wasDefeated: target.is_defeated, previousHp: target.current_hp }) : state.undoStack,
+        undoStack: target ? pushUndo(state.undoStack, { type: "defeated", combatantId: id, wasDefeated: target.is_defeated, previousHp: target.current_hp, previousDeathSaves: target.death_saves }) : state.undoStack,
         combatants: state.combatants.map((c) =>
           c.id === id
             ? {
@@ -353,12 +359,12 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           undoStack: stack,
           combatants: state.combatants.map((c) => {
             if (c.id !== entry.combatantId) return c;
-            // If the action added the condition, undo = remove it. If it removed, undo = add it back.
             return {
               ...c,
               conditions: entry.wasAdded
                 ? c.conditions.filter((cond) => cond !== entry.condition)
                 : [...c.conditions, entry.condition],
+              condition_durations: entry.previousDurations ? { ...entry.previousDurations } : c.condition_durations,
             };
           }),
         });
@@ -368,7 +374,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           undoStack: stack,
           combatants: state.combatants.map((c) =>
             c.id === entry.combatantId
-              ? { ...c, is_defeated: entry.wasDefeated, current_hp: entry.previousHp }
+              ? { ...c, is_defeated: entry.wasDefeated, current_hp: entry.previousHp, death_saves: entry.previousDeathSaves }
               : c
           ),
         });
@@ -479,16 +485,21 @@ useCombatStore.subscribe(
 
 /** Auto-number combatants with the same base name.
  *  e.g. adding two "Goblin" monsters produces ["Goblin 1", "Goblin 2"].
- *  Returns the numbered name to use for the next addition.
+ *  Uses max-number approach to avoid duplicates after removals.
  */
 export function getNumberedName(
   baseName: string,
   existingCombatants: Combatant[]
 ): string {
-  const sameBase = existingCombatants.filter(
-    (c) => c.name.match(new RegExp(`^${escapeRegex(baseName)} \\d+$`))
-  );
-  return `${baseName} ${sameBase.length + 1}`;
+  const escaped = escapeRegex(baseName);
+  const pattern = new RegExp(`^${escaped} (\\d+)$`);
+  let maxNum = 0;
+  for (const c of existingCombatants) {
+    if (c.name === baseName) maxNum = Math.max(maxNum, 1);
+    const match = c.name.match(pattern);
+    if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
+  }
+  return `${baseName} ${maxNum + 1}`;
 }
 
 function escapeRegex(s: string) {

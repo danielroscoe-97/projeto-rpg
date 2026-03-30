@@ -228,8 +228,8 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     snap.setTempHp(id, value);
 
-    // Compute expected post-set values from snapshot (mirrors store logic: max of current temp_hp and value)
-    const newTempHp = Math.max(before.temp_hp, value);
+    // Compute expected post-set values from snapshot (mirrors store logic: max of current temp_hp and value, capped at 9999)
+    const newTempHp = Math.min(9999, Math.max(before.temp_hp, value));
 
     broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: before.current_hp, temp_hp: newTempHp, max_hp: before.max_hp, is_player: before.is_player });
     persistHpChange(id, before.current_hp, newTempHp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
