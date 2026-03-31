@@ -60,7 +60,10 @@ export function DashboardTourProvider({
     [mounted]
   );
 
-  // Auto-start tour — detect ?from=wizard for shorter delay
+  // Auto-start tour — wait for both the delay AND the page content to be in the DOM.
+  // The layout mounts before the page (children) finishes loading, so a fixed delay
+  // can fire while the skeleton is still showing. We poll for a content element
+  // that only exists once the real page has rendered.
   useEffect(() => {
     setMounted(true);
     if (!shouldAutoStart) return;
@@ -69,14 +72,46 @@ export function DashboardTourProvider({
       && new URLSearchParams(window.location.search).get("from") === "wizard";
     const effectiveDelay = fromWizard ? 800 : delayMs;
 
-    const timer = setTimeout(() => {
+    // Use the quick-actions element as a proxy for "page content is ready".
+    // It lives inside DashboardOverview (the actual page), not the layout shell.
+    const CONTENT_READY_SELECTOR = '[data-tour-id="dash-quick-actions"]';
+    const MAX_EXTRA_WAIT_MS = 8000;
+
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+    const tryStart = () => {
       const { isCompleted: done, isActive: active } = useDashboardTourStore.getState();
-      if (!done && !active) {
+      if (done || active) return true;
+      if (document.querySelector(CONTENT_READY_SELECTOR)) {
         startTour();
+        return true;
+      }
+      return false;
+    };
+
+    const timer = setTimeout(() => {
+      if (!tryStart()) {
+        // Content not ready yet — poll every 200 ms until it appears or times out
+        const pollStart = Date.now();
+        pollInterval = setInterval(() => {
+          if (tryStart()) {
+            clearInterval(pollInterval!);
+            pollInterval = null;
+          } else if (Date.now() - pollStart >= MAX_EXTRA_WAIT_MS) {
+            clearInterval(pollInterval!);
+            pollInterval = null;
+            // Timeout fallback: start tour even if content selector never appeared
+            const { isCompleted: done, isActive: active } = useDashboardTourStore.getState();
+            if (!done && !active) startTour();
+          }
+        }, 200);
       }
     }, effectiveDelay);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (pollInterval) clearInterval(pollInterval);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mark tour completed in DB when done or skipped

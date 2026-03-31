@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { createSessionToken } from "@/lib/supabase/session-token";
+import { createSessionToken, getExistingSessionToken } from "@/lib/supabase/session-token";
 import { Button } from "@/components/ui/button";
 import QRCode from "qrcode";
 
@@ -27,6 +27,18 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
       if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
     };
   }, []);
+
+  // Auto-load existing token on mount — avoids requiring an extra click when
+  // the session already has an active token (e.g. created during onboarding)
+  useEffect(() => {
+    let cancelled = false;
+    getExistingSessionToken(sessionId).then((existing) => {
+      if (!cancelled && existing) {
+        setJoinUrl(existing.joinUrl);
+      }
+    }).catch(() => { /* silent — user can still click to generate */ });
+    return () => { cancelled = true; };
+  }, [sessionId]);
 
   // Render QR code to canvas when URL is ready and QR panel is open
   useEffect(() => {

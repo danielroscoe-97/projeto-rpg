@@ -10,6 +10,25 @@ function generateToken(): string {
     .slice(0, 32);
 }
 
+/** Fetches the existing active token for a session without creating one.
+ *  Returns null if no active token exists. */
+export async function getExistingSessionToken(
+  sessionId: string
+): Promise<{ token: string; joinUrl: string } | null> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("session_tokens")
+    .select("token")
+    .eq("session_id", sessionId)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (!data?.token) return null;
+  const joinUrl = `${window.location.origin}/join/${data.token}`;
+  return { token: data.token, joinUrl };
+}
+
 /** Creates a session token and returns the shareable join URL.
  *  Returns the existing active token if one already exists for the session. */
 export async function createSessionToken(
