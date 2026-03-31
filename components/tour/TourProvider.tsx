@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useTourStore } from "@/lib/stores/tour-store";
 import { useGuestCombatStore } from "@/lib/stores/guest-combat-store";
-import { useSrdStore } from "@/lib/stores/srd-store";
 import { TourOverlay } from "./TourOverlay";
 import { TourTooltip } from "./TourTooltip";
 import { TourHelpButton } from "./TourHelpButton";
@@ -36,16 +35,10 @@ export function TourProvider() {
   const [pulseTarget, setPulseTarget] = useState(false);
   const advancingRef = useRef(false);
 
-  // Wait for SRD to be ready before auto-starting the tour.
-  // Without this, new visitors (no IndexedDB cache) see the tour start while the
-  // SRD loading screen is still covering the page, causing mispositioned tooltips.
-  // Note: initial store state is { is_loading: false, monsters: [] }, so we must
-  // check monsters.length > 0 (not !is_loading) to avoid firing immediately on mount.
-  const srdMonsters = useSrdStore((s) => s.monsters);
-  const srdError = useSrdStore((s) => s.error);
-  const srdIsLoading = useSrdStore((s) => s.is_loading);
-  // Ready when data arrived OR when loading definitively failed (so tour still shows on SRD error)
-  const srdReady = srdMonsters.length > 0 || (!!srdError && !srdIsLoading);
+  // Track whether the SRD loading screen has fully dismissed (including its fade-out animation).
+  // We poll the DOM sentinel instead of the Zustand store so we respect the loading screen's
+  // minimum display time — the store becomes "ready" before the screen is actually gone.
+  const [screenDismissed, setScreenDismissed] = useState(false);
   // Snapshot of combatants before combat phase, so "Back" can restore setup state
   const setupSnapshotRef = useRef<import("@/lib/types/combat").Combatant[] | null>(null);
   // Track the last combatant auto-added by the tour (for undo on back)
@@ -59,22 +52,38 @@ export function TourProvider() {
     setMounted(true);
   }, []);
 
-  // Auto-start tour on first visit — but only after SRD data is ready.
-  // New visitors (no IndexedDB cache) see a 3s SRD loading screen; starting the
-  // tour early causes mispositioned tooltips over the loading overlay.
-  // The 800ms delay guards against Zustand persist hydrating after first render (SSR mismatch).
+  // Poll the DOM sentinel that SrdLoadingScreen exposes once its fade-out animation is done.
+  // Using the DOM (not the Zustand store) ensures we respect the 3-second minimum display
+  // time enforced by SrdLoadingScreen — the store fires "ready" before the screen is gone.
   useEffect(() => {
-    if (!srdReady) return;
-    const timer = setTimeout(() => {
-      // Read current state at timer time, not captured value at mount —
-      // guards against Zustand persist hydrating after first render (SSR mismatch)
-      const { isCompleted: completed, isActive: active } = useTourStore.getState();
-      if (!completed && !active) {
-        startTour();
+    const POLL_INTERVAL_MS = 150;
+    const FADE_BUFFER_MS = 500; // SrdLoadingScreen fade-out is 0.4s; add a small buffer
+    const FALLBACK_MS = 20000;  // Give up and start tour after 20s regardless
+
+    const startTime = Date.now();
+    const poll = setInterval(() => {
+      const sentinel = document.querySelector('[data-testid="srd-status"]');
+      const isReady = sentinel?.getAttribute("data-ready") === "true";
+      const timedOut = Date.now() - startTime >= FALLBACK_MS;
+
+      if (isReady || timedOut) {
+        clearInterval(poll);
+        // Extra buffer so the fade-out animation finishes before the tour overlay appears
+        setTimeout(() => setScreenDismissed(true), isReady ? FADE_BUFFER_MS : 0);
       }
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [srdReady, startTour]);
+    }, POLL_INTERVAL_MS);
+
+    return () => clearInterval(poll);
+  }, []);
+
+  // Auto-start tour on first visit — fires after the loading screen has fully dismissed
+  useEffect(() => {
+    if (!screenDismissed) return;
+    const { isCompleted: completed, isActive: active } = useTourStore.getState();
+    if (!completed && !active) {
+      startTour();
+    }
+  }, [screenDismissed, startTour]);
 
   // Hide guest banner while tour is active
   useEffect(() => {
