@@ -102,6 +102,23 @@ export function PlayerJoinClient({
   const [authReady, setAuthReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
+  const connectionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stableConnectionStatus = useRef<ConnectionStatus>("connecting");
+  const setDebouncedConnectionStatus = useCallback((status: ConnectionStatus) => {
+    // "connected" is always applied immediately; transient states are debounced
+    if (status === "connected") {
+      if (connectionTimerRef.current) { clearTimeout(connectionTimerRef.current); connectionTimerRef.current = null; }
+      stableConnectionStatus.current = status;
+      setConnectionStatus(status);
+    } else if (stableConnectionStatus.current !== status) {
+      if (connectionTimerRef.current) clearTimeout(connectionTimerRef.current);
+      connectionTimerRef.current = setTimeout(() => {
+        connectionTimerRef.current = null;
+        stableConnectionStatus.current = status;
+        setConnectionStatus(status);
+      }, 1500);
+    }
+  }, []);
   const [showOracle, setShowOracle] = useState(false);
   const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -564,7 +581,7 @@ export function PlayerJoinClient({
         })
         .subscribe((status) => {
           if (status === "SUBSCRIBED") {
-            setConnectionStatus("connected");
+            setDebouncedConnectionStatus("connected");
             disconnectedAtRef.current = null;
             reconnectBackoffRef.current = 1000;
             // Stop polling if active
@@ -575,7 +592,7 @@ export function PlayerJoinClient({
             // Fetch full state on reconnect to catch anything missed
             if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
           } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
-            setConnectionStatus("disconnected");
+            setDebouncedConnectionStatus("disconnected");
             if (!disconnectedAtRef.current) {
               disconnectedAtRef.current = Date.now();
             }
@@ -601,7 +618,7 @@ export function PlayerJoinClient({
               createChannel();
             }, delay);
           } else {
-            setConnectionStatus("connecting");
+            setDebouncedConnectionStatus("connecting");
           }
         });
 
@@ -627,6 +644,10 @@ export function PlayerJoinClient({
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
+      }
+      if (connectionTimerRef.current) {
+        clearTimeout(connectionTimerRef.current);
+        connectionTimerRef.current = null;
       }
       if (presenceChannelRef.current) {
         supabase.removeChannel(presenceChannelRef.current);
@@ -1041,6 +1062,7 @@ export function PlayerJoinClient({
           customAudioFiles={playerAudioFiles}
           customAudioUrls={playerAudioUrls}
           registeredName={registeredName}
+          sessionId={sessionId}
           onEndTurn={() => {
             const ch = channelRef.current;
             if (!ch || connectionStatus !== "connected") {
