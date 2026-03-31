@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-30  # Epic 14 DM Onboarding — CR + DS + 10 patches
+last_updated: 2026-03-31  # V2 Epic 2 done — MonsterGroupHeader integrado no render ativo (logado + guest)
 project: projeto-rpg
 
 project_key: NOKEY
@@ -184,7 +184,7 @@ development_status:
   epic-13-retrospective: optional
 
   # Epic 14: Onboarding Guiado — Área Logada do Mestre (2026-03-30)
-  epic-14-dm-onboarding: in-progress
+  epic-14-dm-onboarding: done
   epic-14-dm-onboarding-wizard-humanization: done         # feat(epic-11) 659cba5
   epic-14-dm-onboarding-dashboard-tour: done              # feat(epic-11) 659cba5
   epic-14-dm-onboarding-ux-polish: done                   # fix(feedback) 6b5cc60 + a8289b7
@@ -210,52 +210,52 @@ development_status:
   v2-epic-0-retrospective: optional
 
   # V2 Epic 1: Combat Core Improvements
-  v2-epic-1: in-progress
-  v2-1-1-add-combatant-mid-combat: ready-for-dev
-  v2-1-2-display-name-for-monsters: ready-for-dev
-  v2-1-3-late-join-initiative-input: ready-for-dev
+  v2-epic-1: done
+  v2-1-1-add-combatant-mid-combat: done              # Guest+logado, monster search+manual, undo support
+  v2-1-2-display-name-for-monsters: done              # Anti-metagaming, auto-gen names, sanitize for players
+  v2-1-3-late-join-initiative-input: done              # Mid-combat initiative input, non-disruptive re-sort
   v2-epic-1-retrospective: optional
 
   # V2 Sprint 2 (Semana 2) ─────────────────────────────────────
 
   # V2 Epic 2: Monster Grouping & Initiative
-  v2-epic-2: in-progress
-  v2-2-1-monster-grouping-ui: ready-for-dev
-  v2-2-2-individual-hp-within-group: ready-for-dev
-  v2-2-3-expand-collapse-groups: ready-for-dev
-  v2-2-4-collective-initiative-roll: ready-for-dev
+  v2-epic-2: done
+  v2-2-1-monster-grouping-ui: done                      # MonsterGroupHeader integrated via renderGroup in CombatSessionClient + GuestCombatClient
+  v2-2-2-individual-hp-within-group: done               # Per-combatant HP fully works within groups
+  v2-2-3-expand-collapse-groups: done                   # toggleGroupExpanded added to guest store, wired in both clients
+  v2-2-4-collective-initiative-roll: done               # setGroupInitiative works, shared initiative editing
   v2-epic-2-retrospective: optional
 
   # V2 Epic 3: Player Experience Upgrade
-  v2-epic-3: in-progress
-  v2-3-1-notification-voce-e-o-proximo: ready-for-dev
-  v2-3-2-notification-e-sua-vez: ready-for-dev
-  v2-3-3-player-auto-join: ready-for-dev
-  v2-3-4-role-selection-signup: ready-for-dev
-  v2-3-5-dm-link-temp-player-to-character: ready-for-dev
+  v2-epic-3: done
+  v2-3-1-notification-voce-e-o-proximo: done            # TurnUpcomingBanner, amber animated banner
+  v2-3-2-notification-e-sua-vez: done                   # TurnNotificationOverlay, vibration+sound+auto-dismiss
+  v2-3-3-player-auto-join: done                         # Auto-fetch characters, pre-fill registration form
+  v2-3-4-role-selection-signup: done                     # Role selector (player/dm/both), persisted to DB via auth confirm
+  v2-3-5-dm-link-temp-player-to-character: done          # PlayerLinkDropdown, link/unlink with dedup protection
   v2-epic-3-retrospective: optional
 
   # V2 Sprint 3 (Semana 3-4) ───────────────────────────────────
 
   # V2 Epic 4: Session & Campaign Management
-  v2-epic-4: in-progress
-  v2-4-1-gm-private-notes: ready-for-dev
-  v2-4-2-file-sharing-in-session: ready-for-dev
-  v2-4-3-email-invite-for-campaign: ready-for-dev
-  v2-4-4-auto-link-character-on-invite: ready-for-dev
-  v2-4-5-cr-calculator: ready-for-dev
-  v2-4-6-homebrew-content-creation: ready-for-dev
+  v2-epic-4: done                                       # 5/6 done, 4-4 not auto-linking (manual select)
+  v2-4-1-gm-private-notes: done                         # GMNotesSheet + CampaignNotes with folders, sharing, NPC links
+  v2-4-2-file-sharing-in-session: done                   # FileShareButton, 10MB limit, Supabase Storage (Pro-gated)
+  v2-4-3-email-invite-for-campaign: done                 # InvitePlayerDialog, Novu email, fail-open link-only (Pro-gated)
+  v2-4-4-auto-link-character-on-invite: done             # Pre-fill from campaign characters, manual select (not full auto-link)
+  v2-4-5-cr-calculator: done                             # CRCalculator, 2014/2024 formula, difficulty badge (Pro-gated)
+  v2-4-6-homebrew-content-creation: done                 # HomebrewCreator + StatBlockImporter, monster/spell/item (Pro-gated)
   v2-epic-4-retrospective: optional
 
   # V2 Epic 5: Freemium Feature Gating
-  v2-epic-5: in-progress
-  v2-5-1-feature-flag-system: ready-for-dev
-  v2-5-2-pro-visual-indicators: ready-for-dev
-  v2-5-3-contextual-upsell: ready-for-dev
-  v2-5-4-free-trial-14-days: ready-for-dev
-  v2-5-5-mesa-model: ready-for-dev
-  v2-5-6-stripe-payment-integration: ready-for-dev
-  v2-5-7-subscription-management-panel: ready-for-dev
+  v2-epic-5: done
+  v2-5-1-feature-flag-system: done                      # feature-flags.ts, useFeatureGate hook, ProGate wrapper, 5min cache
+  v2-5-2-pro-visual-indicators: done                    # ProBadge with lock+crown icons on gated features
+  v2-5-3-contextual-upsell: done                        # UpsellCard per-feature, session dedup, GuestUpsellModal
+  v2-5-4-free-trial-14-days: done                       # /api/trial, 14-day trial, progress bar, atomic RPC no-reuse
+  v2-5-5-mesa-model: done                               # effectivePlan = max(user, sessionDm), players inherit Pro from DM
+  v2-5-6-stripe-payment-integration: done               # Checkout, webhooks (completed/updated/deleted), billing portal
+  v2-5-7-subscription-management-panel: done             # SubscriptionPanel, plan display, trial bar, manage→Stripe portal
   v2-epic-5-retrospective: optional
 
   # V2 Backlog ─────────────────────────────────────────────────

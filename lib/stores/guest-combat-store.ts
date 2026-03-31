@@ -96,6 +96,7 @@ interface GuestCombatState {
   roundNumber: number;
   combatStartTime: number | null;
   isExpired: boolean;
+  expandedGroups: Record<string, boolean>;
 }
 
 interface GuestCombatActions {
@@ -105,6 +106,7 @@ interface GuestCombatActions {
   setInitiative: (id: string, value: number | null) => void;
   batchSetInitiatives: (entries: Array<{ id: string; value: number }>) => void;
   setGroupInitiative: (groupId: string, value: number) => void;
+  toggleGroupExpanded: (groupId: string) => void;
   reorderCombatants: (newOrder: Combatant[]) => void;
   updateCombatantStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   updatePlayerNotes: (id: string, notes: string) => void;
@@ -135,6 +137,7 @@ const initialState: GuestCombatState = {
   roundNumber: 1,
   combatStartTime: null,
   isExpired: false,
+  expandedGroups: {},
 };
 
 export const useGuestCombatStore = create<GuestCombatStore>()(
@@ -212,6 +215,15 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           );
           return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
         });
+      },
+
+      toggleGroupExpanded: (groupId) => {
+        set((state) => ({
+          expandedGroups: {
+            ...state.expandedGroups,
+            [groupId]: !state.expandedGroups[groupId],
+          },
+        }));
       },
 
       reorderCombatants: (newOrder) => {

@@ -8,6 +8,7 @@ import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { CombatantRow } from "@/components/combat/CombatantRow";
+import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
@@ -757,6 +758,9 @@ export function GuestCombatClient() {
     isExpired,
     checkExpiry,
     resetForNewSession,
+    expandedGroups,
+    toggleGroupExpanded,
+    setGroupInitiative,
   } = useGuestCombatStore();
 
   // O(1) index lookup for combatant rows (avoids O(n²) findIndex in renderItem)
@@ -1270,6 +1274,48 @@ export function GuestCombatClient() {
                   onAddDeathSaveFailure={addDeathSaveFailure}
                   onAdvanceTurn={advanceTurn}
                 />
+              );
+            }}
+            renderGroup={(groupId, members, dragHandleProps) => {
+              const isExpanded = expandedGroups[groupId] ?? true;
+              const isCurrentTurn = members.some(
+                (m) => (combatantIndexMap.get(m.id) ?? -1) === currentTurnIndex
+              );
+              return (
+                <MonsterGroupHeader
+                  groupName={getGroupBaseName(members)}
+                  members={members}
+                  isExpanded={isExpanded}
+                  onToggle={() => toggleGroupExpanded(groupId)}
+                  groupInitiative={getGroupInitiative(members)}
+                  onSetGroupInitiative={(value) => setGroupInitiative(groupId, value)}
+                  isCurrentTurn={isCurrentTurn}
+                >
+                  {members.map((c, i) => (
+                    <CombatantRow
+                      key={c.id}
+                      combatant={c}
+                      isCurrentTurn={(combatantIndexMap.get(c.id) ?? -1) === currentTurnIndex}
+                      showActions
+                      dragHandleProps={i === 0 ? dragHandleProps : {}}
+                      onApplyDamage={handleApplyDamage}
+                      onApplyHealing={handleApplyHealing}
+                      onSetTempHp={handleSetTempHp}
+                      onToggleCondition={handleToggleCondition}
+                      onSetDefeated={handleSetDefeated}
+                      onRemoveCombatant={handleRemoveCombatant}
+                      onUpdateStats={handleUpdateStats}
+                      onSetInitiative={handleSetInitiative}
+                      onUpdateDmNotes={handleUpdateDmNotes}
+                      onUpdatePlayerNotes={handleUpdatePlayerNotes}
+                      allCombatants={combatants}
+                      onApplyToMultiple={handleApplyToMultiple}
+                      onAddDeathSaveSuccess={addDeathSaveSuccess}
+                      onAddDeathSaveFailure={addDeathSaveFailure}
+                      onAdvanceTurn={advanceTurn}
+                    />
+                  ))}
+                </MonsterGroupHeader>
               );
             }}
           />

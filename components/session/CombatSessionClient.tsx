@@ -21,6 +21,7 @@ import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcu
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { useCombatResilience } from "@/lib/hooks/useCombatResilience";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
+import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
 import { broadcastEvent, getDmChannel, registerHiddenLookup } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
@@ -85,7 +86,7 @@ export function CombatSessionClient({
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
 
-  const { combatants, is_active, setError } =
+  const { combatants, is_active, setError, expandedGroups, toggleGroupExpanded, setGroupInitiative } =
     useCombatStore();
   const current_turn_index = useCombatStore((s) => s.current_turn_index);
   const round_number = useCombatStore((s) => s.round_number);
@@ -926,6 +927,9 @@ export function CombatSessionClient({
           if (c?.is_defeated) broadcastEvent(sid, { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
           if (c) broadcastEvent(sid, { type: "combat:hp_update", combatant_id: id, current_hp: c.current_hp, temp_hp: c.temp_hp, max_hp: c.max_hp, is_player: c.is_player });
         }}
+        expandedGroups={expandedGroups}
+        onToggleGroupExpanded={toggleGroupExpanded}
+        onSetGroupInitiative={setGroupInitiative}
         t={t}
       />
       </div>{/* end scrollable area */}
@@ -975,6 +979,9 @@ interface CombatListProps {
   onAdvanceTurn: () => void;
   onAddDeathSaveSuccess?: (id: string) => void;
   onAddDeathSaveFailure?: (id: string) => void;
+  expandedGroups: Record<string, boolean>;
+  onToggleGroupExpanded: (groupId: string) => void;
+  onSetGroupInitiative: (groupId: string, value: number) => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
 }
 
@@ -999,6 +1006,9 @@ function CombatList({
   onAdvanceTurn,
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
+  expandedGroups,
+  onToggleGroupExpanded,
+  onSetGroupInitiative,
   t,
 }: CombatListProps) {
   // Auto-scroll to active combatant when turn advances (skip initial mount)
@@ -1052,6 +1062,54 @@ function CombatList({
                 onAddDeathSaveFailure={onAddDeathSaveFailure}
               />
             </div>
+          );
+        }}
+        renderGroup={(groupId, members, dragHandleProps) => {
+          const isExpanded = expandedGroups[groupId] ?? true;
+          const isCurrentTurn = members.some(
+            (m) => combatants.findIndex((x) => x.id === m.id) === currentTurnIndex
+          );
+          return (
+            <MonsterGroupHeader
+              groupName={getGroupBaseName(members)}
+              members={members}
+              isExpanded={isExpanded}
+              onToggle={() => onToggleGroupExpanded(groupId)}
+              groupInitiative={getGroupInitiative(members)}
+              onSetGroupInitiative={(value) => onSetGroupInitiative(groupId, value)}
+              isCurrentTurn={isCurrentTurn}
+            >
+              {members.map((c, i) => {
+                const index = combatants.findIndex((x) => x.id === c.id);
+                return (
+                  <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+                    <CombatantRow
+                      combatant={c}
+                      isCurrentTurn={index === currentTurnIndex}
+                      showActions
+                      dragHandleProps={i === 0 ? dragHandleProps : {}}
+                      onApplyDamage={onApplyDamage}
+                      onApplyHealing={onApplyHealing}
+                      onSetTempHp={onSetTempHp}
+                      onToggleCondition={onToggleCondition}
+                      onSetDefeated={onSetDefeated}
+                      onRemoveCombatant={onRemoveCombatant}
+                      onUpdateStats={onUpdateStats}
+                      onSetInitiative={onSetInitiative}
+                      onSwitchVersion={onSwitchVersion}
+                      onUpdateDmNotes={onUpdateDmNotes}
+                      onUpdatePlayerNotes={onUpdatePlayerNotes}
+                      allCombatants={combatants}
+                      onApplyToMultiple={onApplyToMultiple}
+                      onToggleHidden={onToggleHidden}
+                      onAdvanceTurn={onAdvanceTurn}
+                      onAddDeathSaveSuccess={onAddDeathSaveSuccess}
+                      onAddDeathSaveFailure={onAddDeathSaveFailure}
+                    />
+                  </div>
+                );
+              })}
+            </MonsterGroupHeader>
           );
         }}
       />

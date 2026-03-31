@@ -62,12 +62,15 @@ interface SortableCombatantListProps {
   combatants: Combatant[];
   onReorder: (newOrder: Combatant[], movedId?: string) => void;
   renderItem: (combatant: Combatant, dragHandleProps: Record<string, unknown>) => React.ReactNode;
+  /** If provided, group blocks render via this callback instead of calling renderItem per member. */
+  renderGroup?: (groupId: string, members: Combatant[], dragHandleProps: Record<string, unknown>) => React.ReactNode;
 }
 
 export function SortableCombatantList({
   combatants,
   onReorder,
   renderItem,
+  renderGroup,
 }: SortableCombatantListProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -118,7 +121,7 @@ export function SortableCombatantList({
     >
       <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
         {blocks.map((block) => (
-          <SortableBlock key={block.id} block={block} renderItem={renderItem} />
+          <SortableBlock key={block.id} block={block} renderItem={renderItem} renderGroup={renderGroup} />
         ))}
       </SortableContext>
 
@@ -140,9 +143,10 @@ export function SortableCombatantList({
 interface SortableBlockProps {
   block: SortableBlock;
   renderItem: (combatant: Combatant, dragHandleProps: Record<string, unknown>) => React.ReactNode;
+  renderGroup?: (groupId: string, members: Combatant[], dragHandleProps: Record<string, unknown>) => React.ReactNode;
 }
 
-function SortableBlock({ block, renderItem }: SortableBlockProps) {
+function SortableBlock({ block, renderItem, renderGroup }: SortableBlockProps) {
   const {
     attributes,
     listeners,
@@ -168,18 +172,18 @@ function SortableBlock({ block, renderItem }: SortableBlockProps) {
     );
   }
 
-  // Group: render all members inside one draggable container.
-  // Only the first member gets the drag handle; others get an empty
-  // handle (they can't be dragged individually).
+  // Group: if renderGroup provided, delegate fully; otherwise fall back to flat rendering.
   return (
     <div
       ref={setNodeRef}
       style={style}
       className="border-l-2 border-gold/30 rounded-l-sm"
     >
-      {block.members.map((c, i) => (
-        <div key={c.id}>{renderItem(c, i === 0 ? dragHandleProps : {})}</div>
-      ))}
+      {renderGroup
+        ? renderGroup(block.groupId, block.members, dragHandleProps)
+        : block.members.map((c, i) => (
+            <div key={c.id}>{renderItem(c, i === 0 ? dragHandleProps : {})}</div>
+          ))}
     </div>
   );
 }
