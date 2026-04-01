@@ -22,6 +22,7 @@ import { useAudioStore } from "@/lib/stores/audio-store";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { isConcentrating, showConcentrationCheck } from "@/lib/combat/concentration";
 import { showDeathSavePrompt, showTurnConditionReminder } from "@/lib/combat/save-prompts";
+import { hasZeroHpSurvivalTrait } from "@/lib/combat/zero-hp-traits";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { parseDamageModifiers, applyDamageModifier } from "@/lib/combat/parse-resistances";
 import { getMonsterById } from "@/lib/srd/srd-search";
@@ -213,6 +214,49 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
         targetName: before.name,
         description: `${before.name} at 0 HP — death saves required`,
       });
+    }
+
+    // CF-04: Auto-defeat non-player combatants at 0 HP
+    if (newCurrentHp === 0 && !before.is_player) {
+      const { hasTrait, traitName } = hasZeroHpSurvivalTrait(before);
+      if (hasTrait) {
+        toast(`${before.name} has ${traitName}. Auto-defeat?`, {
+          duration: 10000,
+          action: {
+            label: "Yes",
+            onClick: () => {
+              useCombatStore.getState().setDefeated(id, true);
+              broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
+              broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: 0, temp_hp: 0 });
+              persistDefeated(id, true).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+              useCombatLogStore.getState().addEntry({
+                round: useCombatStore.getState().round_number,
+                type: "defeat",
+                actorName: getCurrentActorName(),
+                targetName: before.name,
+                description: `${before.name} defeated`,
+              });
+            },
+          },
+          cancel: {
+            label: "No",
+            onClick: () => {},
+          },
+        });
+      } else {
+        useCombatStore.getState().setDefeated(id, true);
+        broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
+        broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: 0, temp_hp: 0 });
+        persistDefeated(id, true).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+        toast(`${before.name} defeated!`, { duration: 3000 });
+        useCombatLogStore.getState().addEntry({
+          round: roundNumber,
+          type: "defeat",
+          actorName: getCurrentActorName(),
+          targetName: before.name,
+          description: `${before.name} defeated`,
+        });
+      }
     }
   }, [setError, getSessionId]);
 

@@ -48,36 +48,11 @@ beforeEach(() => {
 });
 
 describe("EncounterSetup", () => {
-  it("renders the add-row, start button, and empty state", () => {
+  it("renders the start button and empty state", () => {
     render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
-    expect(screen.getByTestId("add-row")).toBeInTheDocument();
     expect(screen.getByTestId("start-combat-btn")).toBeInTheDocument();
     expect(screen.getByTestId("start-combat-btn")).toBeDisabled();
     expect(screen.getByText("combat.setup_empty")).toBeInTheDocument();
-  });
-
-  it("adds a combatant via the add-row", async () => {
-    render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
-    await userEvent.type(screen.getByTestId("add-row-init"), "15");
-    await userEvent.type(screen.getByTestId("add-row-name"), "Goblin");
-    await userEvent.type(screen.getByTestId("add-row-hp"), "7");
-    await userEvent.type(screen.getByTestId("add-row-ac"), "15");
-    await userEvent.click(screen.getByTestId("add-row-btn"));
-
-    const { combatants } = useCombatStore.getState();
-    expect(combatants).toHaveLength(1);
-    expect(combatants[0].name).toBe("Goblin");
-    expect(combatants[0].max_hp).toBe(7);
-  });
-
-  it("clears the add-row after adding", async () => {
-    render(<EncounterSetup onStartCombat={mockOnStartCombat} />);
-    await userEvent.type(screen.getByTestId("add-row-name"), "Orc");
-    await userEvent.type(screen.getByTestId("add-row-hp"), "15");
-    await userEvent.type(screen.getByTestId("add-row-ac"), "13");
-    await userEvent.click(screen.getByTestId("add-row-btn"));
-
-    expect(screen.getByTestId("add-row-name")).toHaveValue("");
   });
 
   it("shows combatant rows after adding", async () => {

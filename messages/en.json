@@ -679,6 +679,11 @@
     "monster_quantity_decrease": "Decrease quantity",
     "monster_quantity_increase": "Increase quantity",
     "monster_quantity_group_hint": "Will be added as a group",
+    "monster_quantity_group_label": "Group:",
+    "monster_quantity_group_btn": "group",
+    "omnibar_manual_add": "Manual",
+    "omnibar_manual_title": "Add manually",
+    "omnibar_players_section": "Campaign Players",
     "add_as_hidden": "Add as hidden creature",
     "group_active": "active",
     "group_edit_initiative_title": "Edit group initiative",
@@ -833,7 +838,11 @@
     "player_drawer_empty": "No characters in this campaign.",
     "player_drawer_notes_placeholder": "DM notes...",
     "player_drawer_saving": "Saving...",
-    "player_drawer_saved": "Saved"
+    "player_drawer_saved": "Saved",
+    "encounter_name_modal_title": "Name this encounter",
+    "encounter_name_modal_suggestion": "You can rename or keep the suggested name.",
+    "encounter_name_modal_skip": "Skip",
+    "encounter_name_modal_save": "Save"
   },
   "conditions": {
     "blinded": "Blinded",

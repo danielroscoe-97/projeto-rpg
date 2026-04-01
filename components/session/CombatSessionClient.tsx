@@ -46,6 +46,17 @@ import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { rejoinAsPlayer } from "@/lib/supabase/player-registration";
+import { generateEncounterName } from "@/lib/utils/encounter-name";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -72,7 +83,7 @@ export function CombatSessionClient({
 }: CombatSessionClientProps) {
   const router = useRouter();
   const t = useTranslations("combat");
-  const [addMode, setAddMode] = useState<"choose" | "monster" | "manual" | null>(null);
+  const [addMode, setAddMode] = useState<"open" | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
   // Session created on-demand by EncounterSetup for sharing before combat
@@ -82,6 +93,9 @@ export function CombatSessionClient({
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
+  const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [pendingEncounterName, setPendingEncounterName] = useState("");
+  const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number } | null>(null);
 
   const { combatants, is_active, setError, expandedGroups, toggleGroupExpanded, setGroupInitiative } =
     useCombatStore();
@@ -112,32 +126,51 @@ export function CombatSessionClient({
     getSessionId,
   } = useCombatActions({ sessionId, onNavigate: (path) => router.push(path) });
 
-  // Intercept end encounter: compute stats and show leaderboard before navigating
-  const handleEndEncounter = useCallback(() => {
-    const logEntries = useCombatLogStore.getState().entries;
-    const stats = computeCombatStats(logEntries);
-    const rounds = getMaxRound(logEntries);
-    const name = useCombatStore.getState().encounter_name;
-
-    // If there are actionable stats, show the leaderboard overlay
-    if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0)) {
-      setLeaderboardData(stats);
-      setLeaderboardMeta({ name, rounds });
-      // Broadcast stats to player view
+  const proceedAfterNaming = useCallback((finalName: string) => {
+    useCombatStore.setState({ encounter_name: finalName });
+    const pending = pendingStats;
+    if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
+      setLeaderboardData(pending.stats);
+      setLeaderboardMeta({ name: finalName, rounds: pending.rounds });
       const sid = getSessionId();
       if (sid) {
         broadcastEvent(sid, {
           type: "session:combat_stats",
-          stats,
-          encounter_name: name,
-          rounds,
+          stats: pending.stats,
+          encounter_name: finalName,
+          rounds: pending.rounds,
         });
       }
     } else {
-      // No meaningful stats — proceed directly
       doEndEncounter();
     }
-  }, [doEndEncounter, getSessionId]);
+    setPendingStats(null);
+  }, [doEndEncounter, getSessionId, pendingStats]);
+
+  // Intercept end encounter: show name modal, then compute stats and show leaderboard
+  const handleEndEncounter = useCallback(() => {
+    const logEntries = useCombatLogStore.getState().entries;
+    const stats = computeCombatStats(logEntries);
+    const rounds = getMaxRound(logEntries);
+    const state = useCombatStore.getState();
+    const existingName = state.encounter_name.trim();
+    const suggestedName = existingName || generateEncounterName(state.combatants);
+
+    setPendingEncounterName(suggestedName);
+    setPendingStats({ stats, rounds });
+    setNameModalOpen(true);
+  }, []);
+
+  const handleNameModalSkip = useCallback(() => {
+    setNameModalOpen(false);
+    proceedAfterNaming(pendingEncounterName);
+  }, [pendingEncounterName, proceedAfterNaming]);
+
+  const handleNameModalSave = useCallback(() => {
+    setNameModalOpen(false);
+    const finalName = pendingEncounterName.trim() || "Encounter";
+    proceedAfterNaming(finalName);
+  }, [pendingEncounterName, proceedAfterNaming]);
 
   const handleDismissLeaderboard = useCallback(() => {
     setLeaderboardData(null);
@@ -727,7 +760,7 @@ export function CombatSessionClient({
           </button>
           <button
             type="button"
-            onClick={() => setAddMode((prev) => (prev ? null : "choose"))}
+            onClick={() => setAddMode((prev) => (prev ? null : "open"))}
             className="px-3 py-2 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
             aria-label="Add combatant"
             data-testid="add-combatant-btn"
@@ -794,77 +827,56 @@ export function CombatSessionClient({
       />
 
       {addMode && (
-        <div className="p-3 bg-white/[0.04] rounded-md space-y-3" data-testid="add-combatant-panel">
-          {/* Mode chooser */}
-          {addMode === "choose" && (
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setAddMode("monster")}
-                className="flex-1 px-4 py-3 bg-purple-900/30 text-purple-300 font-medium rounded-md hover:bg-purple-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
-                data-testid="add-mode-monster"
-              >
-                {t("add_mid_combat_monster")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setAddMode("manual")}
-                className="flex-1 px-4 py-3 bg-blue-900/30 text-blue-300 font-medium rounded-md hover:bg-blue-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
-                data-testid="add-mode-manual"
-              >
-                {t("add_mid_combat_manual")}
-              </button>
-            </div>
-          )}
-
-          {/* Monster search mode */}
-          {addMode === "monster" && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setAddMode("choose")}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  data-testid="add-back-btn"
-                >
-                  &larr; {t("add_mid_combat_back")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAddMode(null)}
-                  className="text-xs text-muted-foreground hover:text-foreground/80 transition-colors"
-                  data-testid="add-close-btn"
-                >
-                  &times;
-                </button>
-              </div>
-              <MonsterSearchPanel
-                rulesetVersion={rulesetVersion}
-                onSelectMonster={handleSelectMonster}
-                onSelectMonsterGroup={handleSelectMonsterGroup}
-              />
-            </div>
-          )}
-
-          {/* Manual entry mode */}
-          {addMode === "manual" && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setAddMode("choose")}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  data-testid="add-back-btn"
-                >
-                  &larr; {t("add_mid_combat_back")}
-                </button>
-              </div>
-              <AddCombatantForm
-                onAdd={handleAddCombatant}
-                onClose={() => setAddMode(null)}
-              />
-            </div>
-          )}
+        <div className="p-3 bg-white/[0.04] rounded-md space-y-2" data-testid="add-combatant-panel">
+          <div className="flex items-center justify-end">
+            <button
+              type="button"
+              onClick={() => setAddMode(null)}
+              className="text-xs text-muted-foreground hover:text-foreground/80 transition-colors"
+              data-testid="add-close-btn"
+            >
+              &times;
+            </button>
+          </div>
+          <MonsterSearchPanel
+            rulesetVersion={rulesetVersion}
+            onSelectMonster={handleSelectMonster}
+            onSelectMonsterGroup={handleSelectMonsterGroup}
+            showManualAdd
+            onManualAdd={(data) => {
+              const currentCombatants = useCombatStore.getState().combatants;
+              const numberedName = getNumberedName(data.name, currentCombatants);
+              const existingNames = currentCombatants
+                .filter((c) => !c.is_player && c.display_name)
+                .map((c) => c.display_name!);
+              const displayName = generateCreatureName(null, existingNames);
+              addCombatantAction({
+                name: numberedName,
+                current_hp: data.hp ?? 0,
+                max_hp: data.hp ?? 0,
+                temp_hp: 0,
+                ac: data.ac ?? 0,
+                spell_save_dc: null,
+                initiative: data.initiative ?? null,
+                initiative_order: null,
+                conditions: [],
+                ruleset_version: null,
+                is_defeated: false,
+                is_hidden: false,
+                is_player: false,
+                monster_id: null,
+                token_url: null,
+                creature_type: null,
+                display_name: displayName,
+                monster_group_id: null,
+                group_order: null,
+                dm_notes: "",
+                player_notes: "",
+                player_character_id: null,
+                combatant_role: "player",
+              });
+            }}
+          />
         </div>
       )}
       </div>{/* end sticky controls */}
@@ -912,6 +924,32 @@ export function CombatSessionClient({
       </div>{/* end scrollable area */}
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
+
+      <AlertDialog open={nameModalOpen} onOpenChange={setNameModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("encounter_name_modal_title")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("encounter_name_modal_suggestion")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <input
+            type="text"
+            value={pendingEncounterName}
+            onChange={(e) => setPendingEncounterName(e.target.value)}
+            maxLength={60}
+            className="w-full bg-card border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
+            autoFocus
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleNameModalSave(); } }}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleNameModalSkip}>
+              {t("encounter_name_modal_skip")}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleNameModalSave}>
+              {t("encounter_name_modal_save")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AnimatePresence>
         {leaderboardData && (
@@ -988,7 +1026,6 @@ function CombatList({
   onSetGroupInitiative,
   t,
 }: CombatListProps) {
-  // Auto-scroll to active combatant when turn advances (skip initial mount)
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (isFirstRender.current) {
@@ -996,8 +1033,9 @@ function CombatList({
       return;
     }
     requestAnimationFrame(() => {
-      const activeCard = document.querySelector('[aria-current="true"]') as HTMLElement | null;
-      activeCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (document.querySelector('[data-panel-open="true"]')) return;
+      const el = document.querySelector(`[data-combatant-index="${currentTurnIndex}"]`) as HTMLElement | null;
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }, [currentTurnIndex]);
 
@@ -1017,6 +1055,7 @@ function CombatList({
             <div className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
               <CombatantRow
                 combatant={c}
+                index={index}
                 isCurrentTurn={index === currentTurnIndex}
                 showActions
                 dragHandleProps={dragHandleProps}
@@ -1062,6 +1101,7 @@ function CombatList({
                   <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
                     <CombatantRow
                       combatant={c}
+                      index={index}
                       isCurrentTurn={index === currentTurnIndex}
                       showActions
                       dragHandleProps={i === 0 ? dragHandleProps : {}}

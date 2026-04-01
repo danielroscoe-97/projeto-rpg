@@ -21,6 +21,7 @@ import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
+import { generateEncounterName } from "@/lib/utils/encounter-name";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { resetDmChannel } from "@/lib/realtime/broadcast";
 
@@ -618,11 +619,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   // Start combat
   const handleStartCombat = async () => {
     const trimmedName = encounterName.trim();
-    if (!trimmedName) {
-      setNameError(true);
-      setSubmitError(t("error_encounter_name_required"));
-      return;
-    }
     setNameError(false);
     if (combatants.length === 0) {
       setSubmitError(t("error_no_combatants"));
@@ -637,7 +633,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     setSubmitError(null);
     setIsPending(true);
     try {
-      await onStartCombat(trimmedName);
+      const finalName = trimmedName || generateEncounterName(combatants);
+      await onStartCombat(finalName);
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : t("error_start_combat")
@@ -689,7 +686,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       {/* Encounter name + difficulty badge (inline) */}
       <div>
         <label htmlFor="encounter-name" className="text-sm font-medium text-foreground">
-          {t("encounter_name_label")} <span className="text-red-400">*</span>
+          {t("encounter_name_label")}
         </label>
         <div className="mt-1 flex items-center gap-3 flex-wrap">
           <input
@@ -723,12 +720,73 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         <PresetLoader onLoad={handleLoadPreset} />
       </div>
 
-      {/* SRD Monster Search */}
+      {/* OmniBar: SRD Monster Search + Campaign Players + Manual Add */}
       <MonsterSearchPanel
         rulesetVersion={rulesetVersion}
         onSelectMonster={handleSelectMonster}
         onMonsterAdded={handleMonsterAdded}
         onSelectMonsterGroup={handleSelectMonsterGroup}
+        campaignPlayers={preloadedPlayers?.map((pc) => ({ id: pc.id, name: pc.name, hp: pc.max_hp, ac: pc.ac, spell_save_dc: pc.spell_save_dc })) ?? []}
+        onSelectPlayer={(player) => {
+          const currentCombatants = useCombatStore.getState().combatants;
+          if (currentCombatants.some((c) => c.player_character_id === player.id)) return;
+          const numberedName = getNumberedName(player.name, currentCombatants);
+          addCombatant({
+            name: numberedName,
+            current_hp: player.hp,
+            max_hp: player.hp,
+            temp_hp: 0,
+            ac: player.ac,
+            spell_save_dc: player.spell_save_dc ?? null,
+            initiative: null,
+            initiative_order: null,
+            conditions: [],
+            ruleset_version: null,
+            is_defeated: false,
+            is_hidden: false,
+            is_player: true,
+            monster_id: null,
+            token_url: null,
+            creature_type: null,
+            display_name: null,
+            monster_group_id: null,
+            group_order: null,
+            dm_notes: "",
+            player_notes: "",
+            player_character_id: player.id,
+            combatant_role: null,
+          });
+        }}
+        showManualAdd
+        onManualAdd={(data) => {
+          const numberedName = getNumberedName(data.name, useCombatStore.getState().combatants);
+          const displayName = getDefaultDisplayName(null, useCombatStore.getState().combatants);
+          addCombatant({
+            name: numberedName,
+            current_hp: data.hp ?? 0,
+            max_hp: data.hp ?? 0,
+            temp_hp: 0,
+            ac: data.ac ?? 0,
+            spell_save_dc: null,
+            initiative: data.initiative ?? null,
+            initiative_order: null,
+            conditions: [],
+            ruleset_version: null,
+            is_defeated: false,
+            is_hidden: false,
+            is_player: false,
+            monster_id: null,
+            token_url: null,
+            creature_type: null,
+            display_name: displayName,
+            monster_group_id: null,
+            group_order: null,
+            dm_notes: "",
+            player_notes: "",
+            player_character_id: null,
+            combatant_role: "player",
+          });
+        }}
       />
 
       {/* Column headers — always visible, aligned with both rows and add-row */}
@@ -798,88 +856,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             <span className="text-xs">{t("setup_empty_preset_hint")}</span>
           </div>
         )}
-      </div>
-
-      {/* Bottom add-row — always visible */}
-      <div
-        className={`flex flex-wrap items-center gap-1.5 md:grid md:gap-x-1.5 md:items-center bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
-        style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
-        data-testid="add-row"
-        onKeyDown={addRowKeyDown}
-      >
-        <span className="w-5 md:w-auto text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
-
-        <input
-          ref={initInputRef}
-          type="text"
-          inputMode="numeric"
-          pattern="-?[0-9]*"
-          value={addRow.initiative}
-          onChange={(e) => {
-            const raw = e.target.value;
-            if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) {
-              setAddRow((f) => ({ ...f, initiative: raw }));
-            }
-          }}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_col_init")}
-          aria-label={t("setup_init_aria")}
-          className={`${inputClass} w-12 md:w-full text-center font-mono`}
-          data-testid="add-row-init"
-        />
-        <span className="hidden md:block" /> {/* monster token spacer */}
-        <input
-          type="text"
-          value={addRow.name}
-          onChange={(e) => {
-            lastSelectedMonster.current = null;
-            setAddRow((f) => ({ ...f, name: e.target.value }));
-            if (addRowErrors.has("name")) setAddRowErrors((prev) => { const n = new Set(prev); n.delete("name"); return n; });
-          }}
-          placeholder={t("setup_col_name")}
-          className={`${inputClass} basis-full md:basis-auto md:w-full min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
-          aria-label={t("setup_name_aria")}
-          aria-invalid={addRowErrors.has("name") || undefined}
-          data-testid="add-row-name"
-        />
-        <input
-          type="number"
-          value={addRow.hp}
-          onChange={(e) => setAddRow((f) => ({ ...f, hp: e.target.value }))}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_col_hp")}
-          min={1}
-          aria-label={t("setup_hp_aria")}
-          className={`${inputClass} w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-          data-testid="add-row-hp"
-        />
-        <input
-          type="number"
-          value={addRow.ac}
-          onChange={(e) => setAddRow((f) => ({ ...f, ac: e.target.value }))}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_col_ac")}
-          min={1}
-          aria-label={t("setup_ac_aria")}
-          className={`${inputClass} w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-          data-testid="add-row-ac"
-        />
-        <input
-          type="text"
-          value={addRow.notes}
-          onChange={(e) => setAddRow((f) => ({ ...f, notes: e.target.value }))}
-          placeholder={t("setup_col_notes")}
-          className={`${inputClass} hidden md:block w-full min-w-0 text-muted-foreground`}
-          data-testid="add-row-notes"
-        />
-        <button
-          type="button"
-          onClick={handleAddFromRow}
-          className="w-auto md:w-full flex-shrink-0 py-1.5 px-3 md:px-0 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
-          data-testid="add-row-btn"
-        >
-          {t("setup_add")}
-        </button>
       </div>
 
       {/* Error */}

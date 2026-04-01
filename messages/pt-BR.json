@@ -679,6 +679,11 @@
     "monster_quantity_decrease": "Diminuir quantidade",
     "monster_quantity_increase": "Aumentar quantidade",
     "monster_quantity_group_hint": "Serão adicionados como grupo",
+    "monster_quantity_group_label": "Grupo:",
+    "monster_quantity_group_btn": "grupo",
+    "omnibar_manual_add": "Manual",
+    "omnibar_manual_title": "Adicionar manualmente",
+    "omnibar_players_section": "Players da Campanha",
     "add_as_hidden": "Adicionar como criatura oculta",
     "group_active": "ativos",
     "group_edit_initiative_title": "Editar iniciativa do grupo",
@@ -833,7 +838,11 @@
     "player_drawer_empty": "Nenhum personagem nesta campanha.",
     "player_drawer_notes_placeholder": "Notas do DM...",
     "player_drawer_saving": "Salvando...",
-    "player_drawer_saved": "Salvo"
+    "player_drawer_saved": "Salvo",
+    "encounter_name_modal_title": "Nomear este encontro",
+    "encounter_name_modal_suggestion": "Renomeie ou mantenha o nome sugerido.",
+    "encounter_name_modal_skip": "Pular",
+    "encounter_name_modal_save": "Salvar"
   },
   "conditions": {
     "blinded": "Cego",

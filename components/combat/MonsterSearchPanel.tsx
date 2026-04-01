@@ -82,6 +82,14 @@ function getTypes(monsters: SrdMonster[]): string[] {
 
 // ─── Props ──────────────────────────────────────────────────────────────────
 
+export interface CampaignPlayer {
+  id: string;
+  name: string;
+  hp: number;
+  ac: number;
+  spell_save_dc?: number | null;
+}
+
 interface MonsterSearchPanelProps {
   rulesetVersion: RulesetVersion;
   onSelectMonster: (monster: SrdMonster, options?: { isHidden?: boolean }) => void;
@@ -89,6 +97,16 @@ interface MonsterSearchPanelProps {
   onMonsterAdded?: () => void;
   /** Called when quantity > 1 to add a monster group */
   onSelectMonsterGroup?: (monster: SrdMonster, quantity: number, options?: { isHidden?: boolean }) => void;
+  /** Campaign players available for search — shown below monsters */
+  campaignPlayers?: CampaignPlayer[];
+  /** Called when a campaign player is selected */
+  onSelectPlayer?: (player: CampaignPlayer) => void;
+  /** Show manual add button and form */
+  showManualAdd?: boolean;
+  /** Called for manual add */
+  onManualAdd?: (data: { name: string; hp?: number; ac?: number; initiative?: number }) => void;
+  /** Placeholder override */
+  placeholder?: string;
 }
 
 const DEBOUNCE_MS = 200;
@@ -100,6 +118,11 @@ export function MonsterSearchPanel({
   onSelectMonster,
   onMonsterAdded,
   onSelectMonsterGroup,
+  campaignPlayers,
+  onSelectPlayer,
+  showManualAdd,
+  onManualAdd,
+  placeholder,
 }: MonsterSearchPanelProps) {
   const t = useTranslations("combat");
   const tImport = useTranslations("import");
@@ -116,8 +139,13 @@ export function MonsterSearchPanel({
   const [crMin, setCrMin] = useState("");
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
-  const [quantity, setQuantity] = useState(1);
   const [isHidden, setIsHidden] = useState(false);
+  const [rowQuantities, setRowQuantities] = useState<Record<string, number>>({});
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualName, setManualName] = useState("");
+  const [manualHp, setManualHp] = useState("");
+  const [manualAc, setManualAc] = useState("");
+  const [manualInit, setManualInit] = useState("");
 
   const [activeIndex, setActiveIndex] = useState(-1);
   const [gateOpen, setGateOpen] = useState(false);
@@ -205,20 +233,50 @@ export function MonsterSearchPanel({
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
       const opts = isHidden ? { isHidden: true } : undefined;
-      if (quantity > 1 && onSelectMonsterGroup) {
-        onSelectMonsterGroup(monster, quantity, opts);
-      } else {
-        onSelectMonster(monster, opts);
-      }
+      onSelectMonster(monster, opts);
       onMonsterAdded?.();
       setQuery("");
       setResults([]);
       setActiveIndex(-1);
-      setQuantity(1);
+      setRowQuantities({});
       setIsHidden(false);
     },
-    [onSelectMonster, onMonsterAdded, onSelectMonsterGroup, quantity, isHidden]
+    [onSelectMonster, onMonsterAdded, isHidden]
   );
+
+  const handleSelectGroup = useCallback(
+    (monster: SrdMonster, qty: number) => {
+      if (!onSelectMonsterGroup) return;
+      const opts = isHidden ? { isHidden: true } : undefined;
+      onSelectMonsterGroup(monster, qty, opts);
+      onMonsterAdded?.();
+      setQuery("");
+      setResults([]);
+      setActiveIndex(-1);
+      setRowQuantities({});
+      setIsHidden(false);
+    },
+    [onSelectMonsterGroup, onMonsterAdded, isHidden]
+  );
+
+  // Filter campaign players by query
+  const matchedPlayers = query.trim() && campaignPlayers
+    ? campaignPlayers.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()))
+    : [];
+
+  const handleManualSubmit = () => {
+    const name = manualName.trim();
+    if (!name || !onManualAdd) return;
+    const hp = manualHp ? parseInt(manualHp, 10) : undefined;
+    const ac = manualAc ? parseInt(manualAc, 10) : undefined;
+    const init = manualInit ? parseInt(manualInit, 10) : undefined;
+    onManualAdd({ name, hp: hp && !isNaN(hp) ? hp : undefined, ac: ac && !isNaN(ac) ? ac : undefined, initiative: init && !isNaN(init) ? init : undefined });
+    setManualName("");
+    setManualHp("");
+    setManualAc("");
+    setManualInit("");
+    setManualOpen(false);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!results.length) return;
@@ -250,30 +308,44 @@ export function MonsterSearchPanel({
 
   return (
     <div className="space-y-1">
-      {/* Label + filter toggle */}
-      <div className="flex items-center justify-between">
+      {/* Label + filter toggle + manual add */}
+      <div className="flex items-center justify-between gap-2">
         <label className="text-foreground/80 text-xs font-medium block">
           {t("search_monsters")}
         </label>
-        <button
-          type="button"
-          onClick={() => setFiltersOpen((v) => !v)}
-          className={`text-[11px] flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
-            hasFilters
-              ? "text-gold bg-gold/10 hover:bg-gold/20"
-              : "text-muted-foreground/60 hover:text-muted-foreground"
-          }`}
-          aria-expanded={filtersOpen}
-        >
-          <span>⚙</span>
-          {t("search_filters")}
-          {hasFilters && (
-            <span className="bg-gold text-surface-primary text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
-              {(crMin !== "" || crMax !== "" ? 1 : 0) + selectedTypes.size}
-            </span>
+        <div className="flex items-center gap-2">
+          {showManualAdd && onManualAdd && (
+            <button
+              type="button"
+              onClick={() => setManualOpen((v) => !v)}
+              className={`text-[11px] flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
+                manualOpen ? "text-gold bg-gold/10" : "text-muted-foreground/60 hover:text-muted-foreground"
+              }`}
+            >
+              <span>+</span>
+              {t("omnibar_manual_add")}
+            </button>
           )}
-          <span className="text-[10px]">{filtersOpen ? "▲" : "▼"}</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            className={`text-[11px] flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
+              hasFilters
+                ? "text-gold bg-gold/10 hover:bg-gold/20"
+                : "text-muted-foreground/60 hover:text-muted-foreground"
+            }`}
+            aria-expanded={filtersOpen}
+          >
+            <span>⚙</span>
+            {t("search_filters")}
+            {hasFilters && (
+              <span className="bg-gold text-surface-primary text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                {(crMin !== "" || crMax !== "" ? 1 : 0) + selectedTypes.size}
+              </span>
+            )}
+            <span className="text-[10px]">{filtersOpen ? "▲" : "▼"}</span>
+          </button>
+        </div>
       </div>
 
       {/* Search input */}
@@ -284,7 +356,7 @@ export function MonsterSearchPanel({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={t("search_monsters_placeholder")}
+          placeholder={placeholder ?? t("search_monsters_placeholder")}
           className="w-full bg-card border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 focus:border-gold/60 transition-colors"
           data-testid="srd-search-input"
           aria-autocomplete="list"
@@ -389,43 +461,6 @@ export function MonsterSearchPanel({
         </div>
       )}
 
-      {/* Quantity stepper */}
-      {onSelectMonsterGroup && (
-        <div className="flex items-center gap-2">
-          <label className="text-foreground/80 text-xs font-medium">
-            {t("monster_quantity")}
-          </label>
-          <div className="flex items-center gap-0.5">
-            <button
-              type="button"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              disabled={quantity <= 1}
-              className="w-7 h-7 flex items-center justify-center text-sm font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label={t("monster_quantity_decrease")}
-            >
-              -
-            </button>
-            <span className="w-8 text-center text-sm font-mono text-foreground" data-testid="quantity-display">
-              {quantity}
-            </span>
-            <button
-              type="button"
-              onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-              disabled={quantity >= 20}
-              className="w-7 h-7 flex items-center justify-center text-sm font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label={t("monster_quantity_increase")}
-            >
-              +
-            </button>
-          </div>
-          {quantity > 1 && (
-            <span className="text-[11px] text-gold/80">
-              {t("monster_quantity_group_hint")}
-            </span>
-          )}
-        </div>
-      )}
-
       {/* Hidden checkbox */}
       <label className="flex items-center gap-2 cursor-pointer select-none">
         <input
@@ -450,13 +485,14 @@ export function MonsterSearchPanel({
         >
           {results.map((monster, idx) => {
             const typePrimary = monster.type?.split(" ")[0] ?? "";
+            const rowQty = rowQuantities[monster.id] ?? 1;
             return (
               <li
                 key={monster.id}
                 id={`monster-result-${idx}`}
                 role="option"
                 aria-selected={idx === activeIndex}
-                className={`flex items-center gap-3 px-3 py-2 transition-colors cursor-pointer ${
+                className={`px-3 py-2 transition-colors ${
                   idx === activeIndex
                     ? "bg-white/[0.10]"
                     : "hover:bg-white/[0.04]"
@@ -464,67 +500,178 @@ export function MonsterSearchPanel({
                 data-testid={`srd-result-${monster.id}`}
                 {...(idx === 0 ? { "data-tour-id": "monster-result" } : {})}
               >
-                {/* Monster token thumbnail */}
-                <MonsterToken
-                  tokenUrl={monster.token_url}
-                  fallbackTokenUrl={monster.fallback_token_url}
-                  creatureType={monster.type}
-                  name={monster.name}
-                  size={36}
-                />
-
-                {/* Info — clickable to select */}
-                <button
-                  type="button"
-                  onClick={() => handleSelect(monster)}
-                  className="flex-1 min-w-0 text-left"
-                >
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-foreground text-sm font-medium">
-                      {monster.name}
-                    </span>
-                    <CrBadge cr={monster.cr} />
-                    <VersionBadge version={monster.ruleset_version} />
-                    {monster.is_srd === false && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400">
-                        {tImport("badge_external")}
+                {/* Top row: token + info + ficha */}
+                <div className="flex items-center gap-3">
+                  <MonsterToken
+                    tokenUrl={monster.token_url}
+                    fallbackTokenUrl={monster.fallback_token_url}
+                    creatureType={monster.type}
+                    name={monster.name}
+                    size={36}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-foreground text-sm font-medium">
+                        {monster.name}
                       </span>
-                    )}
+                      <CrBadge cr={monster.cr} />
+                      <VersionBadge version={monster.ruleset_version} />
+                      {monster.is_srd === false && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400">
+                          {tImport("badge_external")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground/70">
+                      <span className="capitalize">{typePrimary}</span>
+                      <span>·</span>
+                      <span>HP {monster.hit_points}</span>
+                      <span>·</span>
+                      <span>AC {monster.armor_class}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground/70">
-                    <span className="capitalize">{typePrimary}</span>
-                    <span>·</span>
-                    <span>HP {monster.hit_points}</span>
-                    <span>·</span>
-                    <span>AC {monster.armor_class}</span>
-                  </div>
-                </button>
-
-                {/* Ver Ficha button */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    pinCard("monster", monster.id, monster.ruleset_version)
-                  }
-                  className="flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-gold hover:bg-gold/10 rounded transition-all shrink-0 border border-transparent hover:border-gold/30"
-                  aria-label={t("setup_view_card_aria", { name: monster.name })}
-                  title={t("setup_view_card_aria", { name: monster.name })}
-                  data-testid={`ver-ficha-${monster.id}`}
-                >
-                  <span aria-hidden>📖</span>
-                  <span>{t("ver_ficha")}</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => pinCard("monster", monster.id, monster.ruleset_version)}
+                    className="flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-gold hover:bg-gold/10 rounded transition-all shrink-0 border border-transparent hover:border-gold/30"
+                    aria-label={t("setup_view_card_aria", { name: monster.name })}
+                    title={t("setup_view_card_aria", { name: monster.name })}
+                    data-testid={`ver-ficha-${monster.id}`}
+                  >
+                    <span aria-hidden>📖</span>
+                    <span>{t("ver_ficha")}</span>
+                  </button>
+                </div>
+                {/* Bottom row: Add ×1 + inline group stepper */}
+                <div className="flex items-center gap-2 mt-1.5 ml-[48px]">
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(monster)}
+                    className="px-3 py-1 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+                    data-testid={`add-one-${monster.id}`}
+                  >
+                    {t("setup_add")}
+                  </button>
+                  {onSelectMonsterGroup && (
+                    <div className="flex items-center gap-1 ml-auto">
+                      <span className="text-[11px] text-muted-foreground/60">{t("monster_quantity_group_label")}</span>
+                      <button
+                        type="button"
+                        onClick={() => setRowQuantities((prev) => ({ ...prev, [monster.id]: Math.max(2, rowQty - 1) }))}
+                        disabled={rowQty <= 2}
+                        className="w-6 h-6 flex items-center justify-center text-xs font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        -
+                      </button>
+                      <span className="w-6 text-center text-xs font-mono text-foreground">{rowQty > 1 ? rowQty : 2}</span>
+                      <button
+                        type="button"
+                        onClick={() => setRowQuantities((prev) => ({ ...prev, [monster.id]: Math.min(20, (rowQty > 1 ? rowQty : 2) + 1) }))}
+                        disabled={rowQty >= 20}
+                        className="w-6 h-6 flex items-center justify-center text-xs font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectGroup(monster, rowQty > 1 ? rowQty : 2)}
+                        className="px-2 py-1 text-xs font-medium rounded bg-purple-600/80 text-white hover:bg-purple-500 transition-colors"
+                        data-testid={`add-group-${monster.id}`}
+                      >
+                        +{rowQty > 1 ? rowQty : 2} {t("monster_quantity_group_btn")}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </li>
             );
           })}
         </ul>
       )}
 
+      {/* Campaign player results */}
+      {matchedPlayers.length > 0 && onSelectPlayer && (
+        <div className="space-y-1">
+          <p className="text-[11px] text-muted-foreground/60 uppercase tracking-wider px-1">{t("omnibar_players_section")}</p>
+          <ul className="bg-card border border-border rounded-md overflow-hidden divide-y divide-white/[0.04]">
+            {matchedPlayers.map((player) => (
+              <li key={player.id} className="flex items-center gap-3 px-3 py-2 hover:bg-white/[0.04] transition-colors">
+                <span className="text-lg">⚔</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-foreground text-sm font-medium">{player.name}</span>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
+                    <span>HP {player.hp}</span>
+                    <span>·</span>
+                    <span>AC {player.ac}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { onSelectPlayer(player); setQuery(""); }}
+                  className="px-3 py-1 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+                >
+                  {t("setup_add")}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Empty results hint */}
-      {query.trim() && results.length === 0 && !isLoading && (
+      {query.trim() && results.length === 0 && matchedPlayers.length === 0 && !isLoading && (
         <p className="text-xs text-muted-foreground/50 text-center py-2">
           {t("search_no_results", { query })}
         </p>
+      )}
+
+      {/* Manual add form */}
+      {manualOpen && onManualAdd && (
+        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border">
+          <p className="text-xs font-medium text-foreground/80">{t("omnibar_manual_title")}</p>
+          <div className="grid grid-cols-4 gap-2">
+            <input
+              type="text"
+              value={manualName}
+              onChange={(e) => setManualName(e.target.value)}
+              placeholder={t("add_name_placeholder")}
+              className="col-span-4 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
+            />
+            <input
+              type="number"
+              value={manualHp}
+              onChange={(e) => setManualHp(e.target.value)}
+              placeholder="HP"
+              min={1}
+              className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <input
+              type="number"
+              value={manualAc}
+              onChange={(e) => setManualAc(e.target.value)}
+              placeholder="AC"
+              min={0}
+              className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <input
+              type="number"
+              value={manualInit}
+              onChange={(e) => setManualInit(e.target.value)}
+              placeholder={t("setup_col_init")}
+              className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <button
+              type="button"
+              onClick={handleManualSubmit}
+              disabled={!manualName.trim()}
+              className="px-3 py-1.5 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed min-h-[32px]"
+            >
+              {t("setup_add")}
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Import CTA footer */}

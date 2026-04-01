@@ -27,6 +27,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 
 export interface CombatantRowProps {
   combatant: Combatant;
+  index?: number;
   isCurrentTurn: boolean;
   /** When true, show action buttons (HP, conditions, defeat, edit, version). Only in active combat. */
   showActions?: boolean;
@@ -60,6 +61,7 @@ type OpenPanel = "hp" | "conditions" | "edit" | "actions" | null;
 
 export const CombatantRow = memo(function CombatantRow({
   combatant,
+  index,
   isCurrentTurn,
   showActions = false,
   onApplyDamage,
@@ -185,6 +187,8 @@ export const CombatantRow = memo(function CombatantRow({
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
       data-testid={`combatant-row-${combatant.id}`}
+      data-combatant-index={index}
+      data-panel-open={openPanel !== null ? "true" : "false"}
     >
       {/* === ZERO-TAP TIER: always visible === */}
       <div className="px-3 py-1.5">
