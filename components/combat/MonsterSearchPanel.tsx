@@ -641,6 +641,13 @@ export function MonsterSearchPanel({
             />
             <input
               type="number"
+              value={manualInit}
+              onChange={(e) => setManualInit(e.target.value)}
+              placeholder={t("setup_col_init")}
+              className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <input
+              type="number"
               value={manualHp}
               onChange={(e) => setManualHp(e.target.value)}
               placeholder="HP"
@@ -653,13 +660,6 @@ export function MonsterSearchPanel({
               onChange={(e) => setManualAc(e.target.value)}
               placeholder="AC"
               min={0}
-              className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
-            <input
-              type="number"
-              value={manualInit}
-              onChange={(e) => setManualInit(e.target.value)}
-              placeholder={t("setup_col_init")}
               className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <button
