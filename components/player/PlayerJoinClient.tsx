@@ -434,18 +434,24 @@ export function PlayerJoinClient({
               const prevHp = existing.current_hp ?? 0;
               const newHp = payload.current_hp;
               const delta = newHp - prevHp;
-              if (delta !== 0) {
+              const prevTemp = existing.temp_hp ?? 0;
+              const newTemp = payload.temp_hp ?? 0;
+              const tempDelta = newTemp - prevTemp;
+              if (delta !== 0 || tempDelta !== 0) {
                 if (hpDeltaTimerRef.current) clearTimeout(hpDeltaTimerRef.current);
-                const prevTemp = existing.temp_hp ?? 0;
-                const newTemp = payload.temp_hp ?? 0;
-                const isTempChange = delta === 0 && newTemp !== prevTemp;
+                // Temp-only change (current_hp unchanged but temp_hp changed)
+                const isTempOnly = delta === 0 && tempDelta !== 0;
                 setHpDelta({
                   combatantId: payload.combatant_id,
-                  delta,
-                  type: isTempChange ? "temp" : delta < 0 ? "damage" : "heal",
+                  delta: isTempOnly ? tempDelta : delta,
+                  type: isTempOnly ? "temp" : delta < 0 ? "damage" : "heal",
                   timestamp: Date.now(),
                 });
                 hpDeltaTimerRef.current = setTimeout(() => setHpDelta(null), 1500);
+              }
+              // Clear "fallen" overlay when character is healed back above 0 HP
+              if (newHp > 0 && (existing.current_hp ?? 0) === 0) {
+                setDeathSaveResolution(null);
               }
             }
             // Detect death save resolution for dramatic feedback
@@ -472,8 +478,8 @@ export function PlayerJoinClient({
                   } catch { /* ignore */ }
                   navigator.vibrate?.([500]);
                   if (deathSaveResolutionTimerRef.current) clearTimeout(deathSaveResolutionTimerRef.current);
+                  // "Fallen" is permanent — no auto-dismiss timer
                   setDeathSaveResolution({ combatantId: payload.combatant_id, result: "fallen", timestamp: Date.now() });
-                  deathSaveResolutionTimerRef.current = setTimeout(() => setDeathSaveResolution(null), 3000);
                 }
               }
             }
@@ -770,6 +776,11 @@ export function PlayerJoinClient({
         supabase.removeChannel(presenceChannelRef.current);
         presenceChannelRef.current = null;
       }
+      // Clean up story 2 timer refs
+      if (hpDeltaTimerRef.current) clearTimeout(hpDeltaTimerRef.current);
+      if (deathSaveResolutionTimerRef.current) clearTimeout(deathSaveResolutionTimerRef.current);
+      if (sessionRevokedTimerRef.current) clearTimeout(sessionRevokedTimerRef.current);
+      if (lateJoinMaxTimeoutRef.current) clearTimeout(lateJoinMaxTimeoutRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
@@ -1120,15 +1131,20 @@ export function PlayerJoinClient({
     <div className="min-h-screen bg-background p-4" data-testid="player-view">
       {/* B1: Session revoked banner — replaces silent toast */}
       {sessionRevokedBanner && (
-        <div className="fixed top-0 inset-x-0 z-50 bg-red-600 text-white px-4 py-3 flex items-center justify-between animate-[fade-in_300ms_ease-out] shadow-lg" data-testid="session-revoked-banner">
+        <div
+          className="fixed top-0 inset-x-0 z-50 bg-red-600 text-white px-4 py-3 flex items-center justify-between shadow-lg transition-opacity duration-300"
+          style={{ animation: "fade-in 300ms ease-out" }}
+          data-testid="session-revoked-banner"
+        >
           <span className="text-sm font-medium">{t("session_revoked_banner")}</span>
           <button
             type="button"
             onClick={() => {
               setSessionRevokedBanner(false);
+              // Navigate to lobby by resetting registration state
+              setIsRegistered(false);
+              setRegisteredName(undefined);
               setRejoinStatus("idle");
-              // Navigate to lobby by resetting state
-              window.location.reload();
             }}
             className="px-3 py-1 bg-white/20 text-white text-xs font-medium rounded hover:bg-white/30 transition-colors"
           >

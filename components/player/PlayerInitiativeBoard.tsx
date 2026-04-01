@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, ChevronDown } from "lucide-react";
+import { Swords, Skull, User, Bug } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -124,79 +124,6 @@ function PlayerNoteInput({ combatantId, onSubmit }: { combatantId: string; onSub
   );
 }
 
-
-function formatRelativeTime(timestamp: number, t: ReturnType<typeof useTranslations<"player">>): string {
-  const diff = Math.floor((Date.now() - timestamp) / 1000);
-  if (diff < 60) return t("log_time_now");
-  const min = Math.floor(diff / 60);
-  return t("log_time_minutes", { min });
-}
-
-const LOG_TYPE_COLORS: Record<CombatLogEntry["type"], string> = {
-  damage: "text-red-400",
-  heal: "text-green-400",
-  turn: "text-gold",
-  condition: "text-purple-400",
-};
-
-/** Collapsible combat log — collapsed by default on mobile, expanded on desktop */
-function CombatLogSection({ log, t }: { log: CombatLogEntry[]; t: ReturnType<typeof useTranslations<"player">> }) {
-  const [expanded, setExpanded] = useState(() => {
-    // Default: collapsed on mobile, expanded on desktop
-    if (typeof window === "undefined") return false;
-    return window.innerWidth >= 1024;
-  });
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-
-  // Auto-scroll to newest entry when expanded
-  useEffect(() => {
-    if (expanded && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [expanded, log.length]);
-
-  return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden" data-testid="combat-log">
-      <button
-        type="button"
-        onClick={() => setExpanded((p) => !p)}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <span>{t("combat_log_title")}</span>
-        <ChevronDown
-          className={`w-4 h-4 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-          aria-hidden="true"
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div
-              ref={scrollRef}
-              className="px-4 pb-3 space-y-1 max-h-40 overflow-y-auto"
-            >
-              {log.map((entry, i) => (
-                <div key={`${entry.timestamp}-${i}`} className="flex items-start gap-2 text-sm lg:text-xs">
-                  <span className="text-muted-foreground/50 shrink-0 text-xs">
-                    {formatRelativeTime(entry.timestamp, t)}
-                  </span>
-                  <span className={LOG_TYPE_COLORS[entry.type]}>
-                    {entry.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 interface PlayerInitiativeBoardProps {
   combatants: PlayerCombatant[];
@@ -406,9 +333,6 @@ export function PlayerInitiativeBoard({
     ownChar.id === nextCombatantId
   );
 
-  // Last 5 log entries for display
-  const visibleLog = combatLog?.slice(-5) ?? [];
-
   // Current player's character for bottom bar
   const primaryPlayerChar = ownChar;
 
@@ -512,7 +436,7 @@ export function PlayerInitiativeBoard({
             return (
               <div
                 key={pc.id}
-                className={`bg-card border-2 border-gold rounded-lg px-4 py-4 relative${isPlayerTurn ? " ring-2 ring-gold/50 shadow-[0_0_12px_rgba(212,168,83,0.3)] motion-reduce:ring-gold/30 motion-reduce:shadow-none" : ""}${hpDelta && hpDelta.combatantId === pc.id && currentHp === 0 ? " animate-[pulse-red_500ms_ease-in-out_2]" : ""}`}
+                className={`bg-card border-2 border-gold rounded-lg px-4 py-4 relative${isPlayerTurn ? " ring-2 ring-gold/50 shadow-[0_0_12px_rgba(212,168,83,0.3)] motion-reduce:ring-gold/30 motion-reduce:shadow-none" : ""}${hpDelta && hpDelta.combatantId === pc.id && currentHp === 0 ? " animate-[pulse-red_500ms_ease-in-out_2]" : ""}${(pc.death_saves?.failures ?? 0) >= 3 ? " opacity-30 grayscale" : ""}`}
                 data-testid={`own-character-${pc.id}`}
               >
                 {/* Death save resolution overlay */}
@@ -524,7 +448,8 @@ export function PlayerInitiativeBoard({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className={`absolute inset-0 z-10 flex items-center justify-center rounded-lg ${deathSaveResolution.result === "stabilized" ? "bg-green-500/20 ring-2 ring-green-400" : "bg-red-500/20 ring-2 ring-red-400"}`}
+                      className={`absolute inset-0 z-10 flex items-center justify-center rounded-lg opacity-100 filter-none ${deathSaveResolution.result === "stabilized" ? "bg-green-500/20 ring-2 ring-green-400" : "bg-red-500/20 ring-2 ring-red-400"}`}
+                      style={{ opacity: 1, filter: "none" }}
                     >
                       <span className={`text-2xl font-bold ${deathSaveResolution.result === "stabilized" ? "text-green-400" : "text-red-400"}`}>
                         {deathSaveResolution.result === "stabilized" ? t("death_save_stabilized_overlay") : t("death_save_fallen_overlay")}
@@ -624,11 +549,6 @@ export function PlayerInitiativeBoard({
             );
           })}
         </div>
-      )}
-
-      {/* Combat Log — collapsible section showing last 5 entries */}
-      {visibleLog.length > 0 && (
-        <CombatLogSection log={visibleLog} t={t} />
       )}
 
       {/* Round 1 reveal indicator */}
@@ -814,8 +734,6 @@ export function PlayerInitiativeBoard({
         })}
         </AnimatePresence>
       </ul>
-
-      {/* Combat log rendered above the initiative list */}
 
       {/* In-app notification overlay toggle */}
       <div className="flex justify-center py-2">

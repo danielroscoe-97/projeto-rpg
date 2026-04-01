@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
 interface DeathSaveTrackerProps {
@@ -23,29 +23,30 @@ export function DeathSaveTracker({ successes, failures, onAddSuccess, onAddFailu
   // Brief checkmark/X feedback after click
   const [successFlash, setSuccessFlash] = useState(false);
   const [failureFlash, setFailureFlash] = useState(false);
-  // Track last known counts to detect new saves for dot bounce
-  const prevSuccessesRef = useRef(successes);
-  const prevFailuresRef = useRef(failures);
+  // Dot bounce animation on new saves (skip on mount)
   const [bouncingSuccess, setBouncingSuccess] = useState(-1);
   const [bouncingFailure, setBouncingFailure] = useState(-1);
+  const mountedRef = useRef(false);
 
-  // Detect new save for dot bounce animation
-  if (successes !== prevSuccessesRef.current) {
-    const newDotIndex = successes - 1;
-    if (newDotIndex >= 0 && newDotIndex !== bouncingSuccess) {
-      setBouncingSuccess(newDotIndex);
-      setTimeout(() => setBouncingSuccess(-1), 400);
-    }
-    prevSuccessesRef.current = successes;
-  }
-  if (failures !== prevFailuresRef.current) {
-    const newDotIndex = failures - 1;
-    if (newDotIndex >= 0 && newDotIndex !== bouncingFailure) {
-      setBouncingFailure(newDotIndex);
-      setTimeout(() => setBouncingFailure(-1), 400);
-    }
-    prevFailuresRef.current = failures;
-  }
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    const dotIndex = successes - 1;
+    if (dotIndex < 0) return;
+    setBouncingSuccess(dotIndex);
+    const timer = setTimeout(() => setBouncingSuccess(-1), 400);
+    return () => clearTimeout(timer);
+  }, [successes]);
+
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    const dotIndex = failures - 1;
+    if (dotIndex < 0) return;
+    setBouncingFailure(dotIndex);
+    const timer = setTimeout(() => setBouncingFailure(-1), 400);
+    return () => clearTimeout(timer);
+  }, [failures]);
+
+  useEffect(() => { mountedRef.current = true; }, []);
 
   const handleSuccess = useCallback(() => {
     // Local UI feedback sound — not broadcast

@@ -1123,7 +1123,7 @@
     "your_character": "Your character",
     "end_turn": "End Turn",
     "end_turn_retry": "Trying again...",
-    "end_turn_error": "Connection issue",
+    "end_turn_error": "Connection issue — try refreshing",
     "death_saves_your_turn": "It's your turn — roll your Death Save!",
     "death_saves_waiting": "Death Saves",
     "death_save_stabilized_overlay": "Stabilized!",

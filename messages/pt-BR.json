@@ -1123,7 +1123,7 @@
     "your_character": "Seu personagem",
     "end_turn": "Passar Turno",
     "end_turn_retry": "Tentando novamente...",
-    "end_turn_error": "Problema de conexão",
+    "end_turn_error": "Problema de conexão — tente recarregar",
     "death_saves_your_turn": "É seu turno — role seu Teste contra Morte!",
     "death_saves_waiting": "Testes contra Morte",
     "death_save_stabilized_overlay": "Estabilizado!",
