@@ -9,6 +9,7 @@ import {
   ScrollText,
   Music,
   Settings,
+  User,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
@@ -21,6 +22,7 @@ interface SidebarTranslations {
   combats: string;
   soundboard: string;
   settings: string;
+  profile: string;
   nav_label: string;
 }
 
@@ -28,12 +30,19 @@ interface DashboardSidebarProps {
   translations: SidebarTranslations;
 }
 
-const NAV_ITEMS = [
+const NAV_ITEMS_DESKTOP = [
   { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
   { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music },
-  { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings },
+  { key: "settings" as const, href: "/app/settings", icon: Settings },
+] as const;
+
+const NAV_ITEMS_MOBILE = [
+  { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
+  { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
+  { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
+  { key: "profile" as const, href: "/app/settings", icon: User },
 ] as const;
 
 export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
@@ -43,6 +52,9 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
   const isActive = (href: string) => {
     if (href === "/app/dashboard") {
       return pathname === "/app/dashboard";
+    }
+    if (href === "/app/settings") {
+      return pathname === "/app/settings" || pathname.startsWith("/app/dashboard/settings");
     }
     return pathname.startsWith(href);
   };
@@ -89,7 +101,7 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
 
         {/* Nav Items */}
         <nav className="flex-1 py-3 px-2 space-y-1" aria-label={t.nav_label}>
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS_DESKTOP.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
             return (
@@ -137,7 +149,7 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
         data-tour-id="dash-bottom-nav"
       >
         <div className="flex items-center justify-around py-1.5">
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS_MOBILE.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
             return (

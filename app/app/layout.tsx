@@ -9,12 +9,11 @@ import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
 import { OracleAITrigger } from "@/components/oracle/OracleAITrigger";
 import { OracleAIModal } from "@/components/oracle/OracleAIModal";
-import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { unstable_cache } from "next/cache";
-import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
+import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings, Music } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -128,9 +127,18 @@ export default async function AppLayout({
         },
       ],
     },
-    // Only show Presets if user has DM access
+    // Only show Soundboard and Presets if user has DM access
     ...(hasDmAccess
       ? [
+          {
+            href: "/app/dashboard/soundboard",
+            label: (
+              <span className="inline-flex items-center gap-1.5">
+                <Music className="w-4 h-4" aria-hidden="true" />
+                {t("soundboard")}
+              </span>
+            ),
+          },
           {
             href: "/app/presets",
             label: (
@@ -175,7 +183,6 @@ export default async function AppLayout({
         <FloatingCardContainer />
         <CommandPalette />
         <OracleAIModal />
-        <OracleFAB />
         <DiceHistoryPanel />
       </ErrorBoundary>
       <main id="main-content" className="flex-1 pt-[72px] p-6 pb-28 lg:pb-6">
