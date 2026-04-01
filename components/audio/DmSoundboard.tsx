@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Volume2, Square } from "lucide-react";
+import { Volume2, Square, X } from "lucide-react";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getAmbientPresets, getMusicPresets, getSfxPresets } from "@/lib/utils/audio-presets";
 
@@ -24,9 +24,10 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const activeAmbientId = useAudioStore((s) => s.activeAmbientId);
+  const isLoopActive = useAudioStore((s) => s.isLoopActive);
+  const activeLoops = useAudioStore((s) => s.activeLoops);
   const playAmbient = useAudioStore((s) => s.playAmbient);
-  const stopAmbient = useAudioStore((s) => s.stopAmbient);
+  const stopLoop = useAudioStore((s) => s.stopLoop);
   const playSound = useAudioStore((s) => s.playSound);
   const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
 
@@ -55,18 +56,18 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
 
   const handleAmbientToggle = useCallback(
     (presetId: string) => {
-      const wasPlaying = activeAmbientId === presetId;
+      const wasPlaying = isLoopActive(presetId);
       playAmbient(presetId);
 
       if (onBroadcast) {
         if (wasPlaying) {
-          onBroadcast("audio:ambient_stop", {});
+          onBroadcast("audio:loop_stop", { sound_id: presetId });
         } else {
           onBroadcast("audio:ambient_start", { sound_id: presetId });
         }
       }
     },
-    [activeAmbientId, playAmbient, onBroadcast]
+    [isLoopActive, playAmbient, onBroadcast]
   );
 
   const handleSfxPlay = useCallback(
@@ -108,7 +109,7 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
 
         <div className="flex flex-wrap gap-2">
           {ambientPresets.map((preset) => {
-            const isActive = activeAmbientId === preset.id;
+            const isActive = isLoopActive(preset.id);
             return (
               <button
                 key={preset.id}
@@ -133,23 +134,41 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
           })}
         </div>
 
-        {activeAmbientId && (
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-xs text-emerald-400">
-              {t("dm_ambient_playing", {
-                name: t(
-                  `preset_${activeAmbientId.replace("ambient-", "ambient_")}` as Parameters<typeof t>[0]
-                ),
-              })}
-            </span>
-            <button
-              type="button"
-              onClick={() => { stopAmbient(); onBroadcast?.("audio:ambient_stop", {}); }}
-              className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[36px]"
-            >
-              <Square className="w-3 h-3" />
-              {t("dm_stop_ambient")}
-            </button>
+        {activeLoops.length > 0 && (
+          <div className="mt-2">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-medium text-emerald-400">
+                🎵 {t("now_playing_count", { count: activeLoops.length })}
+              </span>
+              <button
+                type="button"
+                onClick={() => { stopAllAudio(); onBroadcast?.("audio:ambient_stop", {}); }}
+                className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[36px]"
+              >
+                <Square className="w-3 h-3" />
+                {t("dm_stop_all")}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {activeLoops.map((loop) => (
+                <span
+                  key={loop.id}
+                  className="inline-flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full px-2 py-0.5 text-xs"
+                >
+                  {loop.icon} {t(`preset_${loop.label?.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof t>[0])}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      stopLoop(loop.id);
+                      onBroadcast?.("audio:loop_stop", { sound_id: loop.id });
+                    }}
+                    className="hover:text-red-400 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -163,7 +182,7 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
         type="button"
         onClick={() => setIsOpen((v) => !v)}
         className={`px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md transition-colors ${
-          isOpen || activeAmbientId
+          isOpen || activeLoops.length > 0
             ? "text-emerald-400 bg-emerald-500/10"
             : "text-muted-foreground hover:text-foreground"
         }`}
@@ -171,7 +190,7 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
         title={t("dm_soundboard")}
       >
         <Volume2 className="w-4 h-4" />
-        {activeAmbientId && (
+        {activeLoops.length > 0 && (
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
         )}
       </button>
@@ -188,7 +207,7 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-foreground text-sm font-semibold">{t("dm_soundboard")}</h3>
-              {(activeAmbientId) && (
+              {activeLoops.length > 0 && (
                 <button
                   type="button"
                   onClick={handleStopAll}
@@ -200,13 +219,44 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
               )}
             </div>
 
+            {/* Now Playing chips */}
+            {activeLoops.length > 0 && (
+              <div className="mb-3">
+                <div className="flex items-center mb-1.5">
+                  <span className="text-xs font-medium text-emerald-400">
+                    🎵 {t("now_playing_count", { count: activeLoops.length })}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {activeLoops.map((loop) => (
+                    <span
+                      key={loop.id}
+                      className="inline-flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full px-2 py-0.5 text-[10px]"
+                    >
+                      {loop.icon} {t(`preset_${loop.label?.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof t>[0])}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          stopLoop(loop.id);
+                          onBroadcast?.("audio:loop_stop", { sound_id: loop.id });
+                        }}
+                        className="hover:text-red-400 transition-colors"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Ambient Section */}
             <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
               {t("dm_ambient_section")}
             </h4>
             <div className="grid grid-cols-3 gap-2 mb-1">
               {ambientPresets.map((preset) => {
-                const isActive = activeAmbientId === preset.id;
+                const isActive = isLoopActive(preset.id);
                 return (
                   <button
                     key={preset.id}
@@ -230,34 +280,13 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
               })}
             </div>
 
-            {/* Active ambient indicator */}
-            {activeAmbientId && (
-              <div className="flex items-center justify-between mb-3 mt-1 px-1">
-                <span className="text-xs text-emerald-400">
-                  {t("dm_ambient_playing", {
-                    name: t(
-                      `preset_${activeAmbientId.replace("ambient-", "ambient_")}` as Parameters<typeof t>[0]
-                    ),
-                  })}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => { stopAmbient(); onBroadcast?.("audio:ambient_stop", {}); }}
-                  className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1"
-                >
-                  <Square className="w-3 h-3" />
-                  {t("dm_stop_ambient")}
-                </button>
-              </div>
-            )}
-
             {/* Music Section */}
             <h4 className="text-muted-foreground text-xs font-medium mb-2 mt-3 uppercase tracking-wider">
               {t("dm_music_section")}
             </h4>
             <div className="grid grid-cols-3 gap-2 mb-3">
               {musicPresets.map((preset) => {
-                const isActive = activeAmbientId === preset.id;
+                const isActive = isLoopActive(preset.id);
                 return (
                   <button
                     key={preset.id}

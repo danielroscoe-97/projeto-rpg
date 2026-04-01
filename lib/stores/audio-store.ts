@@ -23,6 +23,13 @@ function loadMuted(): boolean {
   return localStorage.getItem(LS_MUTED_KEY) === "true";
 }
 
+interface ActiveLoop {
+  id: string;
+  audio: HTMLAudioElement;
+  icon?: string;
+  label?: string;
+}
+
 interface AudioState {
   volume: number;
   isMuted: boolean;
@@ -30,7 +37,10 @@ interface AudioState {
   activeAudio: HTMLAudioElement | null;
   lastSoundLabel: string | null;
 
-  /** Ambient loop state */
+  /** Multiple active ambient/music loops */
+  activeLoops: ActiveLoop[];
+
+  /** Legacy getter — returns first active loop id (backward compat) */
   activeAmbientId: string | null;
   activeAmbientAudio: HTMLAudioElement | null;
 
@@ -41,9 +51,12 @@ interface AudioState {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   playSound: (soundId: string, source: "preset" | "custom", playerName: string, url?: string) => void;
+  /** Toggle a loop on/off. Supports multiple simultaneous loops. */
   playAmbient: (presetId: string) => void;
   stopAmbient: () => void;
+  stopLoop: (presetId: string) => void;
   stopAllAudio: () => void;
+  isLoopActive: (presetId: string) => boolean;
   preloadPlayerAudio: (audioFiles: PlayerAudioFile[]) => Promise<void>;
   cleanup: () => void;
 }
@@ -54,6 +67,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   activeAudioId: null,
   activeAudio: null,
   lastSoundLabel: null,
+  activeLoops: [],
   activeAmbientId: null,
   activeAmbientAudio: null,
   playerAudioUrls: {},
@@ -63,58 +77,55 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     const clamped = Math.max(0, Math.min(1, volume));
     set({ volume: clamped });
     localStorage.setItem(LS_VOLUME_KEY, String(clamped));
-    const { activeAudio, activeAmbientAudio, isMuted } = get();
+    const { activeAudio, activeLoops, isMuted } = get();
     const effectiveVol = isMuted ? 0 : clamped;
     if (activeAudio) activeAudio.volume = effectiveVol;
-    if (activeAmbientAudio) activeAmbientAudio.volume = effectiveVol;
+    for (const loop of activeLoops) {
+      loop.audio.volume = effectiveVol;
+    }
   },
 
   toggleMute: () => {
     const next = !get().isMuted;
     set({ isMuted: next });
     localStorage.setItem(LS_MUTED_KEY, String(next));
-    const { activeAudio, activeAmbientAudio, volume } = get();
+    const { activeAudio, activeLoops, volume } = get();
     const effectiveVol = next ? 0 : volume;
     if (activeAudio) activeAudio.volume = effectiveVol;
-    if (activeAmbientAudio) activeAmbientAudio.volume = effectiveVol;
+    for (const loop of activeLoops) {
+      loop.audio.volume = effectiveVol;
+    }
   },
 
   playSound: (soundId, source, playerName, url) => {
     const { isMuted, volume, activeAudio } = get();
     if (isMuted) return;
 
-    // Stop any currently playing audio
+    // Stop any currently playing one-shot
     if (activeAudio) {
       activeAudio.pause();
       activeAudio.currentTime = 0;
     }
 
-    // Resolve URL
     let audioUrl: string | undefined;
     if (source === "preset") {
       const preset = getPresetById(soundId);
       if (!preset) return;
       audioUrl = preset.file;
     } else {
-      // Custom: use provided URL or try preloaded
       audioUrl = url ?? get().playerAudioUrls[soundId];
     }
     if (!audioUrl) return;
 
-    // Check if we have a preloaded audio element
     const preloaded = get().preloadedAudio[soundId];
     const audio = preloaded ?? new Audio(audioUrl);
     audio.volume = volume;
     audio.currentTime = 0;
+    audio.loop = false;
 
-    // Ambient sounds loop continuously
+    audio.play().catch(() => {});
+
     const preset = source === "preset" ? getPresetById(soundId) : null;
-    audio.loop = preset?.category === "ambient" || preset?.category === "music";
-
-    audio.play().catch(() => {
-      // Browser blocked autoplay — ignored silently
-    });
-
     const label = `${playerName}: ${preset?.icon ?? "🔊"} ${preset?.id ?? soundId}`;
 
     set({
@@ -123,39 +134,26 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       lastSoundLabel: label,
     });
 
-    // Clear active state when audio ends
     audio.onended = () => {
       set({ activeAudioId: null, activeAudio: null });
     };
   },
 
   playAmbient: (presetId) => {
-    const { activeAmbientId, activeAmbientAudio, isMuted, volume } = get();
+    const { activeLoops, isMuted, volume } = get();
 
-    // Toggle off if same ambient
-    if (activeAmbientId === presetId) {
-      if (activeAmbientAudio) {
-        activeAmbientAudio.pause();
-        activeAmbientAudio.currentTime = 0;
-      }
-      set({ activeAmbientId: null, activeAmbientAudio: null });
+    // Toggle off if already active
+    const existing = activeLoops.find((l) => l.id === presetId);
+    if (existing) {
+      existing.audio.pause();
+      existing.audio.currentTime = 0;
+      const newLoops = activeLoops.filter((l) => l.id !== presetId);
+      set({
+        activeLoops: newLoops,
+        activeAmbientId: newLoops[0]?.id ?? null,
+        activeAmbientAudio: newLoops[0]?.audio ?? null,
+      });
       return;
-    }
-
-    // Stop current ambient with quick fade
-    if (activeAmbientAudio) {
-      const old = activeAmbientAudio;
-      // Quick fade out (300ms)
-      const fadeStep = 0.05;
-      const fadeInterval = setInterval(() => {
-        if (old.volume > fadeStep) {
-          old.volume -= fadeStep;
-        } else {
-          clearInterval(fadeInterval);
-          old.pause();
-          old.currentTime = 0;
-        }
-      }, 20);
     }
 
     const preset = getPresetById(presetId);
@@ -166,39 +164,72 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     audio.volume = isMuted ? 0 : volume;
     audio.play().catch(() => {});
 
+    const newLoop: ActiveLoop = {
+      id: presetId,
+      audio,
+      icon: preset.icon,
+      label: preset.id,
+    };
+    const newLoops = [...activeLoops, newLoop];
+
     set({
-      activeAmbientId: presetId,
-      activeAmbientAudio: audio,
+      activeLoops: newLoops,
+      activeAmbientId: newLoops[0]?.id ?? null,
+      activeAmbientAudio: newLoops[0]?.audio ?? null,
       lastSoundLabel: `${preset.icon} ${preset.id}`,
     });
   },
 
-  stopAmbient: () => {
-    const { activeAmbientAudio } = get();
-    if (activeAmbientAudio) {
-      activeAmbientAudio.pause();
-      activeAmbientAudio.currentTime = 0;
+  stopLoop: (presetId) => {
+    const { activeLoops } = get();
+    const loop = activeLoops.find((l) => l.id === presetId);
+    if (loop) {
+      loop.audio.pause();
+      loop.audio.currentTime = 0;
     }
-    set({ activeAmbientId: null, activeAmbientAudio: null });
+    const newLoops = activeLoops.filter((l) => l.id !== presetId);
+    set({
+      activeLoops: newLoops,
+      activeAmbientId: newLoops[0]?.id ?? null,
+      activeAmbientAudio: newLoops[0]?.audio ?? null,
+    });
+  },
+
+  stopAmbient: () => {
+    const { activeLoops } = get();
+    for (const loop of activeLoops) {
+      loop.audio.pause();
+      loop.audio.currentTime = 0;
+    }
+    set({ activeLoops: [], activeAmbientId: null, activeAmbientAudio: null });
   },
 
   stopAllAudio: () => {
-    const { activeAudio, activeAmbientAudio } = get();
+    const { activeAudio, activeLoops } = get();
     if (activeAudio) {
       activeAudio.pause();
       activeAudio.currentTime = 0;
     }
-    if (activeAmbientAudio) {
-      activeAmbientAudio.pause();
-      activeAmbientAudio.currentTime = 0;
+    for (const loop of activeLoops) {
+      loop.audio.pause();
+      loop.audio.currentTime = 0;
     }
-    set({ activeAudioId: null, activeAudio: null, activeAmbientId: null, activeAmbientAudio: null });
+    set({
+      activeAudioId: null,
+      activeAudio: null,
+      activeLoops: [],
+      activeAmbientId: null,
+      activeAmbientAudio: null,
+    });
+  },
+
+  isLoopActive: (presetId) => {
+    return get().activeLoops.some((l) => l.id === presetId);
   },
 
   preloadPlayerAudio: async (audioFiles) => {
     if (audioFiles.length === 0) return;
 
-    // Clean up existing preloaded audio for the same IDs to prevent memory leaks
     const existing = get().preloadedAudio;
     for (const file of audioFiles) {
       const old = existing[file.id];
@@ -216,7 +247,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       try {
         const { data } = await supabase.storage
           .from("player-audio")
-          .createSignedUrl(file.file_path, 3600); // 1h expiry
+          .createSignedUrl(file.file_path, 3600);
 
         if (data?.signedUrl) {
           urls[file.id] = data.signedUrl;
@@ -226,7 +257,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
           preloaded[file.id] = audio;
         }
       } catch {
-        // Skip failed preloads — will fallback to on-demand
+        // Skip failed preloads
       }
     }
 
@@ -237,16 +268,15 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   },
 
   cleanup: () => {
-    const { activeAudio, activeAmbientAudio, preloadedAudio } = get();
+    const { activeAudio, activeLoops, preloadedAudio } = get();
     if (activeAudio) {
       activeAudio.pause();
       activeAudio.currentTime = 0;
     }
-    if (activeAmbientAudio) {
-      activeAmbientAudio.pause();
-      activeAmbientAudio.currentTime = 0;
+    for (const loop of activeLoops) {
+      loop.audio.pause();
+      loop.audio.currentTime = 0;
     }
-    // Release preloaded audio elements
     Object.values(preloadedAudio).forEach((audio) => {
       audio.pause();
       audio.src = "";
@@ -254,6 +284,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({
       activeAudioId: null,
       activeAudio: null,
+      activeLoops: [],
       activeAmbientId: null,
       activeAmbientAudio: null,
       playerAudioUrls: {},

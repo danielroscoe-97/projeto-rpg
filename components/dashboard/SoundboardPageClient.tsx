@@ -10,7 +10,7 @@ import {
   getSfxPresets,
 } from "@/lib/utils/audio-presets";
 import { useAudioStore } from "@/lib/stores/audio-store";
-import { Play, Square } from "lucide-react";
+import { Play, Square, X } from "lucide-react";
 
 type PresetTab = "ambient" | "music" | "sfx";
 
@@ -21,9 +21,13 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const [loading, setLoading] = useState(true);
   const [presetTab, setPresetTab] = useState<PresetTab>("ambient");
 
-  const activeAmbientId = useAudioStore((s) => s.activeAmbientId);
+  const isLoopActive = useAudioStore((s) => s.isLoopActive);
+  const activeLoops = useAudioStore((s) => s.activeLoops);
   const playAmbient = useAudioStore((s) => s.playAmbient);
+  const stopLoop = useAudioStore((s) => s.stopLoop);
+  const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
   const playSound = useAudioStore((s) => s.playSound);
+  const activeAudioId = useAudioStore((s) => s.activeAudioId);
 
   const ambientPresets = getAmbientPresets();
   const musicPresets = getMusicPresets();
@@ -69,9 +73,21 @@ export function SoundboardPageClient({ title }: { title: string }) {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground mb-1">{title}</h1>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground mb-1">{title}</h1>
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
+        </div>
+        {(activeLoops.length > 0 || activeAudioId) && (
+          <button
+            type="button"
+            onClick={() => stopAllAudio()}
+            className="shrink-0 mt-1 px-3 py-2 text-xs font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors flex items-center gap-1.5 min-h-[36px]"
+          >
+            <Square className="w-3.5 h-3.5" />
+            {tAudio("dm_stop_all")}
+          </button>
+        )}
       </div>
 
       {/* ── Custom Sounds Section ── */}
@@ -110,9 +126,21 @@ export function SoundboardPageClient({ title }: { title: string }) {
 
       {/* ── Presets Section ── */}
       <section className="bg-card rounded-lg border border-border p-5">
-        <h2 className="text-foreground font-semibold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-          🎵 {t("presets")}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-foreground font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
+            🎵 {t("presets")}
+          </h2>
+          {(activeLoops.length > 0 || activeAudioId) && (
+            <button
+              type="button"
+              onClick={() => stopAllAudio()}
+              className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[28px] px-2"
+            >
+              <Square className="w-3 h-3" />
+              {tAudio("dm_stop_all")}
+            </button>
+          )}
+        </div>
 
         {/* Preset tabs */}
         <div className="flex gap-2 mb-4">
@@ -132,10 +160,46 @@ export function SoundboardPageClient({ title }: { title: string }) {
           ))}
         </div>
 
+        {/* Now Playing bar */}
+        {activeLoops.length > 0 && (
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-emerald-400">
+                🎵 {tAudio("now_playing_count", { count: activeLoops.length })}
+              </span>
+              <button
+                type="button"
+                onClick={() => stopAllAudio()}
+                className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[28px] px-2"
+              >
+                <Square className="w-3 h-3" />
+                {tAudio("dm_stop_all")}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {activeLoops.map((loop) => (
+                <span
+                  key={loop.id}
+                  className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full px-2.5 py-1 text-xs"
+                >
+                  {loop.icon} {tAudio(`preset_${loop.label?.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof tAudio>[0])}
+                  <button
+                    type="button"
+                    onClick={() => stopLoop(loop.id)}
+                    className="hover:text-red-400 transition-colors ml-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Preset grid */}
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
           {presetsByTab[presetTab].map((preset) => {
-            const isActive = activeAmbientId === preset.id;
+            const isActive = isLoopActive(preset.id);
             const isSfx = presetTab === "sfx";
 
             return (

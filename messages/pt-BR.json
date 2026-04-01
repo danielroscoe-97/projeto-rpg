@@ -1698,6 +1698,7 @@
     "dm_ambient_playing": "Tocando: {name}",
     "dm_stop_ambient": "Parar",
     "dm_stop_all": "Parar Tudo",
+    "now_playing_count": "Tocando ({count})",
     "atmosphere_label": "Atmosfera",
     "dashboard_ambient_title": "Sons Ambientes",
     "slot_empty": "Slot vazio",
