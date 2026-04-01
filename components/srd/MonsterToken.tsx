@@ -71,6 +71,7 @@ export function MonsterToken({
   const [showEmoji, setShowEmoji] = useState(false);
   const retriesRef = useRef(0);
   const triedFallbackRef = useRef(false);
+  const triedGithubDirectRef = useRef(false);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync when tokenUrl prop changes (e.g. SRD loads asynchronously after initial render)
@@ -79,6 +80,7 @@ export function MonsterToken({
     if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
     retriesRef.current = 0;
     triedFallbackRef.current = false;
+    triedGithubDirectRef.current = false;
     setCurrentSrc(tokenUrl);
     setShowEmoji(false);
   }, [tokenUrl]);
@@ -103,7 +105,7 @@ export function MonsterToken({
       return;
     }
 
-    // Try fallback URL
+    // Try fallback URL (proxied)
     if (!triedFallbackRef.current && fallbackTokenUrl) {
       triedFallbackRef.current = true;
       retriesRef.current = 0;
@@ -111,9 +113,16 @@ export function MonsterToken({
       return;
     }
 
+    // Try GitHub direct as last image attempt (bypasses proxy if it's down)
+    if (!triedGithubDirectRef.current && rawTokenUrl?.startsWith(GITHUB_TOKEN_PREFIX)) {
+      triedGithubDirectRef.current = true;
+      setCurrentSrc(rawTokenUrl);
+      return;
+    }
+
     // All attempts exhausted — show emoji
     setShowEmoji(true);
-  }, [tokenUrl, fallbackTokenUrl]);
+  }, [tokenUrl, fallbackTokenUrl, rawTokenUrl]);
 
   const sizeClass =
     size >= 64
