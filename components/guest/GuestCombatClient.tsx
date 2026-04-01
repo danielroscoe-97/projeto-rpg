@@ -488,6 +488,38 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           onSelectMonster={handleSelectMonster}
           onSelectMonsterGroup={handleSelectMonsterGroup}
           onMonsterAdded={handleMonsterAdded}
+          showManualAdd
+          onManualAdd={(data) => {
+            const currentCombatants = useGuestCombatStore.getState().combatants;
+            const numberedName = getGuestNumberedName(data.name, currentCombatants);
+            const existingNames = currentCombatants.filter((c: { is_player: boolean; display_name: string | null }) => !c.is_player && c.display_name).map((c: { display_name: string | null }) => c.display_name!);
+            const displayName = generateCreatureName(null, existingNames);
+            addCombatant({
+              name: numberedName,
+              current_hp: data.hp ?? 0,
+              max_hp: data.hp ?? 0,
+              temp_hp: 0,
+              ac: data.ac ?? 0,
+              spell_save_dc: null,
+              initiative: data.initiative ?? null,
+              initiative_order: null,
+              conditions: [],
+              ruleset_version: null,
+              is_defeated: false,
+              is_hidden: false,
+              is_player: false,
+              monster_id: null,
+              token_url: null,
+              creature_type: null,
+              display_name: displayName,
+              monster_group_id: null,
+              group_order: null,
+              dm_notes: "",
+              player_notes: "",
+              player_character_id: null,
+              combatant_role: null,
+            });
+          }}
         />
       </div>
 
@@ -537,103 +569,6 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         )}
       </div>
 
-      {/* Add row */}
-      <div
-        className={`flex flex-wrap items-center gap-1.5 md:grid md:gap-x-1.5 md:items-center bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 transition-colors${addRowGlow ? " glow-gold-flash" : ""}`}
-        style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
-        data-testid="add-row"
-        data-tour-id="add-row"
-        onKeyDown={addRowKeyDown}
-      >
-        <span className="w-5 md:w-auto text-center text-muted-foreground/20 text-sm flex-shrink-0">+</span>
-        <input
-          ref={initInputRef}
-          type="text"
-          inputMode="numeric"
-          pattern="-?[0-9]*"
-          value={addRow.initiative}
-          onChange={(e) => {
-            const raw = e.target.value;
-            if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) {
-              setAddRow((f) => ({ ...f, initiative: raw }));
-            }
-          }}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_col_init")}
-          className={`${inputClass} w-16 md:w-full text-center font-mono`}
-          data-testid="add-row-init"
-        />
-        <span className="hidden md:block" /> {/* token spacer */}
-        <input
-          type="text"
-          value={addRow.name}
-          onChange={(e) => {
-            lastSelectedMonster.current = null;
-            setAddRow((f) => ({ ...f, name: e.target.value }));
-            if (addRowErrors.has("name")) setAddRowErrors(new Set());
-          }}
-          placeholder={t("setup_col_name")}
-          className={`${inputClass} basis-full md:basis-auto md:w-full min-w-0${addRowErrors.has("name") ? " field-error" : ""}`}
-          aria-invalid={addRowErrors.has("name") || undefined}
-          data-testid="add-row-name"
-        />
-        <input
-          type="number"
-          value={addRow.hp}
-          onChange={(e) => setAddRow((f) => ({ ...f, hp: e.target.value }))}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_col_hp")}
-          min={1}
-          className={`${inputClass} w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-          data-testid="add-row-hp"
-        />
-        <input
-          type="number"
-          value={addRow.ac}
-          onChange={(e) => setAddRow((f) => ({ ...f, ac: e.target.value }))}
-          onFocus={selectOnFocus}
-          placeholder={t("setup_col_ac")}
-          min={1}
-          className={`${inputClass} w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-          data-testid="add-row-ac"
-        />
-        <input
-          type="text"
-          value={addRow.notes}
-          onChange={(e) => setAddRow((f) => ({ ...f, notes: e.target.value }))}
-          placeholder={t("setup_col_notes")}
-          className={`${inputClass} hidden md:block w-full min-w-0 text-muted-foreground`}
-          data-testid="add-row-notes"
-        />
-        {/* Role cycle button + Add button — share last grid column */}
-        <div className="flex items-center gap-1 md:w-full">
-        {(() => {
-          const config = ADD_ROW_ROLE_CONFIG[addRowRole];
-          const Icon = config.icon;
-          const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(addRowRole) + 1) % COMBATANT_ROLE_CYCLE.length];
-          return (
-            <button
-              type="button"
-              onClick={() => setAddRowRole(nextRole)}
-              className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`}
-              title={t("setup_role_tooltip")}
-              data-testid="add-row-role"
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{t(config.label)}</span>
-            </button>
-          );
-        })()}
-        <button
-          type="button"
-          onClick={handleAddFromRow}
-          className="flex-1 py-1.5 px-3 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center"
-          data-testid="add-row-btn"
-        >
-          {t("setup_add")}
-        </button>
-        </div>
-      </div>
 
       {submitError && (
         <p className="text-red-400 text-sm" role="alert">{submitError}</p>
