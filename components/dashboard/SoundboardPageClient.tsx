@@ -27,6 +27,7 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const stopLoop = useAudioStore((s) => s.stopLoop);
   const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
   const playSound = useAudioStore((s) => s.playSound);
+  const activeAudioId = useAudioStore((s) => s.activeAudioId);
 
   const ambientPresets = getAmbientPresets();
   const musicPresets = getMusicPresets();
@@ -113,9 +114,21 @@ export function SoundboardPageClient({ title }: { title: string }) {
 
       {/* ── Presets Section ── */}
       <section className="bg-card rounded-lg border border-border p-5">
-        <h2 className="text-foreground font-semibold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-          🎵 {t("presets")}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-foreground font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
+            🎵 {t("presets")}
+          </h2>
+          {(activeLoops.length > 0 || activeAudioId) && (
+            <button
+              type="button"
+              onClick={() => stopAllAudio()}
+              className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[28px] px-2"
+            >
+              <Square className="w-3 h-3" />
+              {tAudio("dm_stop_all")}
+            </button>
+          )}
+        </div>
 
         {/* Preset tabs */}
         <div className="flex gap-2 mb-4">
