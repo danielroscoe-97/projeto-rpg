@@ -2,8 +2,10 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock, User, UserCircle, Sparkles, Skull } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2 } from "lucide-react";
+import { toast } from "sonner";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
+import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
@@ -28,6 +30,7 @@ import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { setLastHpMode } from "@/components/combat/HpAdjuster";
+import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 
 interface AddRowForm {
   initiative: string;
@@ -733,6 +736,13 @@ export function GuestCombatClient() {
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
 
+  // Redirect URL for Google OAuth: returns to the confirm route with from=guest-combat
+  // so the callback can track onboarding source and preserve combat data
+  const googleRedirectTo =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/auth/confirm?from=guest-combat`
+      : undefined;
+
   const {
     phase,
     combatants,
@@ -763,6 +773,42 @@ export function GuestCombatClient() {
     setGroupInitiative,
   } = useGuestCombatStore();
 
+  // ─── Undo stack (Story 1.1) ─────────────────────────────────────────────────
+  const {
+    undoLastAction,
+    canUndo,
+    pushHpUndo,
+    pushConditionUndo,
+    pushDefeatedUndo,
+    pushTurnUndo,
+    pushHiddenUndo,
+  } = useGuestUndoStack();
+
+  const handleUndo = useCallback(() => {
+    const entry = undoLastAction();
+    if (!entry) {
+      toast(t("undo_empty"));
+      return;
+    }
+    switch (entry.type) {
+      case "hp":
+        toast(t("undo_hp"));
+        break;
+      case "condition":
+        toast(entry.wasAdded ? t("undo_condition_add", { condition: entry.condition }) : t("undo_condition_remove", { condition: entry.condition }));
+        break;
+      case "defeated":
+        toast(t("undo_defeated"));
+        break;
+      case "turn":
+        toast(t("undo_turn"));
+        break;
+      case "hidden":
+        toast(t("undo_hidden"));
+        break;
+    }
+  }, [undoLastAction, t]);
+
   // O(1) index lookup for combatant rows (avoids O(n²) findIndex in renderItem)
   const combatantIndexMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -776,13 +822,20 @@ export function GuestCombatClient() {
     if (phase === "combat") setTurnStartedAt(Date.now());
   }, [currentTurnIndex, phase]);
 
+  // Wrap advanceTurn to push undo entry first (Story 1.1)
+  const handleAdvanceTurn = useCallback(() => {
+    const store = useGuestCombatStore.getState();
+    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber);
+    advanceTurn();
+  }, [advanceTurn, pushTurnUndo]);
+
   // Keyboard shortcuts (space = next turn, arrow keys, D/H/C, etc.)
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
 
   useCombatKeyboardShortcuts({
     enabled: phase === "combat",
-    onNextTurn: advanceTurn,
+    onNextTurn: handleAdvanceTurn,
     combatantCount: combatants.length,
     focusedIndex,
     onFocusChange: (idx) => {
@@ -823,6 +876,7 @@ export function GuestCombatClient() {
     },
     cheatsheetOpen,
     onToggleCheatsheet: () => setCheatsheetOpen((v) => !v),
+    onUndo: handleUndo,
   });
 
   // Periodically check guest session expiry (every 30s)
@@ -993,6 +1047,7 @@ export function GuestCombatClient() {
       const store = useGuestCombatStore.getState();
       const actor = store.combatants[store.currentTurnIndex];
       const target = store.combatants.find((c) => c.id === id);
+      if (target) pushHpUndo(target, "damage");
       // Calculate effective damage (clamped by temp_hp + current_hp)
       const effectiveDamage = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
       applyDamage(id, amount);
@@ -1001,13 +1056,14 @@ export function GuestCombatClient() {
         stats.trackDamage(actor.display_name ?? actor.name, target.display_name ?? target.name, effectiveDamage);
       }
     },
-    [applyDamage]
+    [applyDamage, pushHpUndo]
   );
   const handleApplyHealing = useCallback(
     (id: string, amount: number) => {
       const store = useGuestCombatStore.getState();
       const actor = store.combatants[store.currentTurnIndex];
       const target = store.combatants.find((c) => c.id === id);
+      if (target) pushHpUndo(target, "heal");
       // Calculate effective healing (clamped by max_hp - current_hp)
       const effectiveHealing = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
       applyHealing(id, amount);
@@ -1016,29 +1072,57 @@ export function GuestCombatClient() {
         stats.trackHealing(actor.display_name ?? actor.name, effectiveHealing);
       }
     },
-    [applyHealing]
+    [applyHealing, pushHpUndo]
   );
   const handleSetTempHp = useCallback(
-    (id: string, value: number) => setTempHp(id, value),
-    [setTempHp]
+    (id: string, value: number) => {
+      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+      if (target) pushHpUndo(target, "temp");
+      setTempHp(id, value);
+    },
+    [setTempHp, pushHpUndo]
   );
   const handleToggleCondition = useCallback(
-    (id: string, condition: string) => toggleCondition(id, condition),
-    [toggleCondition]
+    (id: string, condition: string) => {
+      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+      if (target) {
+        const wasAdded = !target.conditions.includes(condition);
+        pushConditionUndo(id, condition, wasAdded);
+      }
+      toggleCondition(id, condition);
+    },
+    [toggleCondition, pushConditionUndo]
   );
   const handleSetDefeated = useCallback(
     (id: string, isDefeated: boolean) => {
+      const store = useGuestCombatStore.getState();
+      const target = store.combatants.find((c) => c.id === id);
+      if (target) pushDefeatedUndo(target);
       setDefeated(id, isDefeated);
       // Track kills when a combatant is defeated
       if (isDefeated) {
-        const store = useGuestCombatStore.getState();
         const actor = store.combatants[store.currentTurnIndex];
         if (actor) {
           useGuestCombatStats.getState().trackKill(actor.display_name ?? actor.name);
         }
       }
     },
-    [setDefeated]
+    [setDefeated, pushDefeatedUndo]
+  );
+  // Story 1.2 — toggle hidden flag (visual only, no broadcast in guest)
+  const handleToggleHidden = useCallback(
+    (id: string) => {
+      const store = useGuestCombatStore.getState();
+      const combatant = store.combatants.find((c) => c.id === id);
+      if (!combatant) return;
+      pushHiddenUndo(combatant);
+      store.hydrateCombatants(
+        store.combatants.map((c) =>
+          c.id === id ? { ...c, is_hidden: !c.is_hidden } : c
+        )
+      );
+    },
+    [pushHiddenUndo]
   );
   const handleUpdateStats = useCallback(
     (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) =>
@@ -1140,6 +1224,7 @@ export function GuestCombatClient() {
           isOpen={upsellOpen}
           onClose={() => setUpsellOpen(false)}
           trigger={upsellTrigger}
+          redirectTo={googleRedirectTo}
         />
         {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
       </>
@@ -1150,7 +1235,7 @@ export function GuestCombatClient() {
   return (
     <>
       <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat" data-tour-id="tour-complete">
-        <div className="sticky top-0 z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
+        <div className="sticky top-[72px] z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-foreground font-semibold">
@@ -1183,6 +1268,18 @@ export function GuestCombatClient() {
               {tCommon("save")}
             </button>
 
+            {/* Weather teaser — upsell para contas registradas (Story 1.7) */}
+            <button
+              type="button"
+              onClick={() => openUpsell("weather")}
+              className="px-2 py-2 text-muted-foreground/60 hover:text-muted-foreground bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+              aria-label={tg("weather_upsell_label")}
+              title={tg("weather_upsell_label")}
+              data-testid="weather-upsell-btn"
+            >
+              🌤️
+            </button>
+
             <span className="text-muted-foreground text-xs">
               {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
             </span>
@@ -1199,7 +1296,31 @@ export function GuestCombatClient() {
 
             <button
               type="button"
-              onClick={advanceTurn}
+              onClick={() => setCheatsheetOpen(true)}
+              className="px-3 py-2 bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] font-mono font-medium rounded-md transition-all duration-[250ms] text-sm min-h-[44px]"
+              aria-label="Keyboard shortcuts"
+              data-testid="cheatsheet-btn"
+              title={t("shortcut_title")}
+            >
+              ?
+            </button>
+
+            {/* Undo last action (Story 1.1) */}
+            <button
+              type="button"
+              onClick={handleUndo}
+              disabled={!canUndo()}
+              className="px-2 py-2 bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label={t("shortcut_undo_action")}
+              title={`${t("shortcut_undo_action")} (Ctrl+Z)`}
+              data-testid="undo-btn"
+            >
+              <Undo2 className="w-4 h-4" aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAdvanceTurn}
               className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
               aria-label="Advance to next turn"
               data-testid="next-turn-btn"
@@ -1270,9 +1391,10 @@ export function GuestCombatClient() {
                   onUpdatePlayerNotes={handleUpdatePlayerNotes}
                   allCombatants={combatants}
                   onApplyToMultiple={handleApplyToMultiple}
+                  onToggleHidden={handleToggleHidden}
                   onAddDeathSaveSuccess={addDeathSaveSuccess}
                   onAddDeathSaveFailure={addDeathSaveFailure}
-                  onAdvanceTurn={advanceTurn}
+                  onAdvanceTurn={handleAdvanceTurn}
                 />
               );
             }}
@@ -1310,9 +1432,10 @@ export function GuestCombatClient() {
                       onUpdatePlayerNotes={handleUpdatePlayerNotes}
                       allCombatants={combatants}
                       onApplyToMultiple={handleApplyToMultiple}
+                      onToggleHidden={handleToggleHidden}
                       onAddDeathSaveSuccess={addDeathSaveSuccess}
                       onAddDeathSaveFailure={addDeathSaveFailure}
-                      onAdvanceTurn={advanceTurn}
+                      onAdvanceTurn={handleAdvanceTurn}
                     />
                   ))}
                 </MonsterGroupHeader>
@@ -1338,6 +1461,7 @@ export function GuestCombatClient() {
         isOpen={upsellOpen}
         onClose={() => setUpsellOpen(false)}
         trigger={upsellTrigger}
+        redirectTo={googleRedirectTo}
       />
 
       {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
@@ -1350,6 +1474,11 @@ export function GuestCombatClient() {
           onClose={handleLeaderboardClose}
         />
       )}
+
+      <KeyboardCheatsheet
+        open={cheatsheetOpen}
+        onClose={() => setCheatsheetOpen(false)}
+      />
     </>
   );
 }

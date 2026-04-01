@@ -705,7 +705,7 @@ export function CombatSessionClient({
   // Active combat view
   return (
     <div className="w-full max-w-6xl mx-auto px-2" data-testid="active-combat">
-      <div className="sticky top-0 z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
+      <div className="sticky top-[72px] z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-foreground font-semibold">
