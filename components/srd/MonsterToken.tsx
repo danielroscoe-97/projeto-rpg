@@ -32,6 +32,18 @@ export function getCreatureEmoji(type: string | undefined): string {
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1500;
 
+const GITHUB_TOKEN_PREFIX =
+  "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/bestiary/tokens/";
+
+/** Rewrite GitHub raw URLs to our CDN-cached proxy to avoid 503 rate-limits. */
+function proxyUrl(url: string | undefined): string | undefined {
+  if (!url) return url;
+  if (url.startsWith(GITHUB_TOKEN_PREFIX)) {
+    return `/api/token/${url.slice(GITHUB_TOKEN_PREFIX.length)}`;
+  }
+  return url;
+}
+
 // ─── Props ──────────────────────────────────────────────────────────────────
 
 interface MonsterTokenProps {
@@ -47,12 +59,14 @@ interface MonsterTokenProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function MonsterToken({
-  tokenUrl,
-  fallbackTokenUrl,
+  tokenUrl: rawTokenUrl,
+  fallbackTokenUrl: rawFallbackTokenUrl,
   creatureType,
   name,
   size = 64,
 }: MonsterTokenProps) {
+  const tokenUrl = proxyUrl(rawTokenUrl);
+  const fallbackTokenUrl = proxyUrl(rawFallbackTokenUrl);
   const [currentSrc, setCurrentSrc] = useState<string | null>(tokenUrl ?? null);
   const [showEmoji, setShowEmoji] = useState(false);
   const retriesRef = useRef(0);
