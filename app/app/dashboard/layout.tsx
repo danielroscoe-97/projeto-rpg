@@ -16,6 +16,7 @@ export default async function DashboardRouteLayout({
     combats: t("combats"),
     soundboard: t("soundboard"),
     settings: t("settings"),
+    profile: t("profile"),
     nav_label: t("nav_label"),
   };
 

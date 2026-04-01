@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "@/components/settings/LanguageSwitcher";
+import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { AccountDeletion } from "@/components/settings/AccountDeletion";
 import { SpellSearch } from "@/components/oracle/SpellSearch";
 import { MonsterSearch } from "@/components/oracle/MonsterSearch";
@@ -15,12 +15,25 @@ const SubscriptionPanel = dynamic(() => import("@/components/billing/Subscriptio
 });
 import { ImportManagement } from "@/components/import/ImportManagement";
 import { RoleSelector } from "@/components/settings/RoleSelector";
+import { UserProfile } from "@/components/settings/UserProfile";
+import { SettingsForm } from "@/components/settings/SettingsForm";
 
 type Tab = "preferences" | "wiki" | "billing" | "account";
 type WikiTab = "spells" | "monsters" | "conditions";
 
-export function SettingsClient({ email }: { email: string }) {
+interface SettingsClientProps {
+  email: string;
+  displayName?: string;
+  avatarUrl?: string | null;
+}
+
+export function SettingsClient({ email, displayName = "", avatarUrl = null }: SettingsClientProps) {
   const t = useTranslations("settings");
+  const { loadSubscription } = useSubscriptionStore();
+
+  useEffect(() => {
+    loadSubscription();
+  }, [loadSubscription]);
 
   // Support ?tab=billing query param for deep linking from billing CTAs
   const [activeTab, setActiveTab] = useState<Tab>(() => {
@@ -70,7 +83,7 @@ export function SettingsClient({ email }: { email: string }) {
       </div>
 
       {/* Tab content */}
-      {activeTab === "preferences" && <PreferencesTab email={email} />}
+      {activeTab === "preferences" && <PreferencesTab email={email} displayName={displayName} avatarUrl={avatarUrl} />}
       {activeTab === "wiki" && (
         <WikiReferenceTab wikiTab={wikiTab} setWikiTab={setWikiTab} />
       )}
@@ -80,32 +93,19 @@ export function SettingsClient({ email }: { email: string }) {
   );
 }
 
-function PreferencesTab({ email }: { email: string }) {
-  const t = useTranslations("settings");
-
+function PreferencesTab({ email, displayName, avatarUrl }: { email: string; displayName: string; avatarUrl: string | null }) {
   return (
     <div className="space-y-6 animate-[fade-in_0.3s_ease-out]">
-      {/* Profile info */}
-      <section className="bg-card rounded-lg border border-border p-5">
-        <h2 className="text-foreground font-semibold mb-1">{t("profile_title")}</h2>
-        <p className="text-muted-foreground text-sm mb-4">{t("profile_description")}</p>
-        <div className="grid gap-3">
-          <div>
-            <span className="text-muted-foreground text-xs uppercase tracking-wider">{t("profile_email")}</span>
-            <p className="text-foreground text-sm mt-0.5">{email}</p>
-          </div>
-        </div>
-      </section>
+      {/* User profile with avatar, name, email, plan */}
+      <UserProfile email={email} displayName={displayName} avatarUrl={avatarUrl} />
 
       {/* Role */}
       <section className="bg-card rounded-lg border border-border p-5">
         <RoleSelector />
       </section>
 
-      {/* Language */}
-      <section className="bg-card rounded-lg border border-border p-5">
-        <LanguageSwitcher />
-      </section>
+      {/* Language, Theme, Notifications */}
+      <SettingsForm />
 
       {/* External content management */}
       <ImportManagement />

@@ -105,10 +105,40 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
             {rightSlot}
           </div>
 
-          {/* Hamburger (mobile) */}
-          <button
-            type="button"
-            className="lg:hidden ml-auto flex flex-col gap-[5px] p-2 min-h-[44px] min-w-[44px] items-center justify-center"
+          {/* Mobile right actions: search + hamburger */}
+          <div className="lg:hidden ml-auto flex items-center gap-1">
+            {/* Search trigger (mobile) — opens Command Palette */}
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(
+                  new KeyboardEvent("keydown", {
+                    key: "k",
+                    ctrlKey: true,
+                    bubbles: true,
+                  }),
+                );
+              }}
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Search"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+            </button>
+
+            {/* Hamburger */}
+            <button
+              type="button"
+              className="flex flex-col gap-[5px] p-2 min-h-[44px] min-w-[44px] items-center justify-center"
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-label={mobileOpen ? t("close_menu") : t("open_menu")}
             aria-expanded={mobileOpen}
@@ -129,6 +159,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
               }`}
             />
           </button>
+          </div>
         </div>
       </nav>
 

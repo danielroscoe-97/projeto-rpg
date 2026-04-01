@@ -9,7 +9,6 @@ import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
 import { OracleAITrigger } from "@/components/oracle/OracleAITrigger";
 import { OracleAIModal } from "@/components/oracle/OracleAIModal";
-import { OracleFAB } from "@/components/oracle/OracleFAB";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
@@ -175,7 +174,6 @@ export default async function AppLayout({
         <FloatingCardContainer />
         <CommandPalette />
         <OracleAIModal />
-        <OracleFAB />
         <DiceHistoryPanel />
       </ErrorBoundary>
       <main id="main-content" className="flex-1 pt-[72px] p-6 pb-28 lg:pb-6">

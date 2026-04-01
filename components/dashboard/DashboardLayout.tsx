@@ -11,6 +11,7 @@ interface DashboardLayoutProps {
     combats: string;
     soundboard: string;
     settings: string;
+    profile: string;
     nav_label: string;
   };
   showDashboardTour?: boolean;
