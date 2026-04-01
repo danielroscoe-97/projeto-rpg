@@ -13,7 +13,7 @@ import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { unstable_cache } from "next/cache";
-import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings } from "lucide-react";
+import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings, Music } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -127,9 +127,18 @@ export default async function AppLayout({
         },
       ],
     },
-    // Only show Presets if user has DM access
+    // Only show Soundboard and Presets if user has DM access
     ...(hasDmAccess
       ? [
+          {
+            href: "/app/dashboard/soundboard",
+            label: (
+              <span className="inline-flex items-center gap-1.5">
+                <Music className="w-4 h-4" aria-hidden="true" />
+                {t("soundboard")}
+              </span>
+            ),
+          },
           {
             href: "/app/presets",
             label: (

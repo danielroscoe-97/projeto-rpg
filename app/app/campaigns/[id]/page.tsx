@@ -4,6 +4,8 @@ import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { CampaignSections } from './CampaignSections'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
+import { CombatLaunchSheet } from '@/components/campaign/CombatLaunchSheet'
+import { Swords } from 'lucide-react'
 import { getCampaignMembership, getCampaignMembers } from '@/lib/supabase/campaign-membership'
 
 export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
@@ -164,6 +166,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     { count: playerCount },
     { count: sessionCount },
     { data: dmSessions },
+    { data: dmActiveSession },
     initialMembers,
   ] = await Promise.all([
     supabase
@@ -183,8 +186,20 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       .from('sessions')
       .select('id')
       .eq('campaign_id', id),
+    supabase
+      .from('sessions')
+      .select('id')
+      .eq('campaign_id', id)
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle(),
     getCampaignMembers(id),
   ])
+
+  // Get player emails for combat notifications
+  const playerEmails = (initialMembers ?? [])
+    .filter(m => m.role === 'player' && m.email)
+    .map(m => m.email)
 
   // Count finished encounters across all sessions
   let finishedEncounterCount = 0
@@ -215,7 +230,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
             </Link>
             <h1 className="text-2xl font-semibold text-foreground mt-1">{campaign.name}</h1>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
               <span className="text-amber-400 text-sm font-semibold">{playerCount ?? 0}</span>
               <span className="text-muted-foreground text-xs">{t("summary_players")}</span>
@@ -228,6 +243,20 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
               <span className="text-amber-400 text-sm font-semibold">{finishedEncounterCount}</span>
               <span className="text-muted-foreground text-xs">{t("summary_encounters")}</span>
             </div>
+            <CombatLaunchSheet
+              campaignId={campaign.id}
+              campaignName={campaign.name}
+              playerEmails={playerEmails}
+              activeSessionId={dmActiveSession?.id ?? null}
+            >
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gold text-surface-primary hover:brightness-110 transition-all min-h-[44px]"
+              >
+                <Swords className="w-4 h-4" />
+                {t("new_combat_button")}
+              </button>
+            </CombatLaunchSheet>
           </div>
         </div>
       </div>
