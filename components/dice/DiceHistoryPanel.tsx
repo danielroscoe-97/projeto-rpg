@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
 import {
   useDiceHistoryStore,
   initDiceHistoryListener,
@@ -17,8 +18,16 @@ import type { RollResult } from "@/lib/dice/roll";
 export function DiceHistoryPanel() {
   const t = useTranslations("dice");
   const locale = useLocale();
+  const pathname = usePathname();
   const { entries, isOpen, unreadCount, togglePanel, clear, markRead } =
     useDiceHistoryStore();
+
+  // Only show on routes where dice rolling is relevant
+  const showPanel =
+    pathname.startsWith("/app/session") ||
+    pathname.startsWith("/app/compendium") ||
+    pathname.startsWith("/app/campaigns/");
+
   // Init the CustomEvent listener for roll results
   useEffect(() => {
     return initDiceHistoryListener();
@@ -34,6 +43,8 @@ export function DiceHistoryPanel() {
       markReadRef.current();
     }
   }, [isOpen]);
+
+  if (!showPanel) return null;
 
   if (!isOpen) {
     const lastEntry = entries[0]; // First = newest (prepend order)
