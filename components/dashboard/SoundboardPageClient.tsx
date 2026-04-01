@@ -10,7 +10,7 @@ import {
   getSfxPresets,
 } from "@/lib/utils/audio-presets";
 import { useAudioStore } from "@/lib/stores/audio-store";
-import { Play, Square } from "lucide-react";
+import { Play, Square, X } from "lucide-react";
 
 type PresetTab = "ambient" | "music" | "sfx";
 
@@ -21,8 +21,11 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const [loading, setLoading] = useState(true);
   const [presetTab, setPresetTab] = useState<PresetTab>("ambient");
 
-  const activeAmbientId = useAudioStore((s) => s.activeAmbientId);
+  const isLoopActive = useAudioStore((s) => s.isLoopActive);
+  const activeLoops = useAudioStore((s) => s.activeLoops);
   const playAmbient = useAudioStore((s) => s.playAmbient);
+  const stopLoop = useAudioStore((s) => s.stopLoop);
+  const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
   const playSound = useAudioStore((s) => s.playSound);
 
   const ambientPresets = getAmbientPresets();
@@ -132,10 +135,46 @@ export function SoundboardPageClient({ title }: { title: string }) {
           ))}
         </div>
 
+        {/* Now Playing bar */}
+        {activeLoops.length > 0 && (
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-emerald-400">
+                🎵 {tAudio("now_playing_count", { count: activeLoops.length })}
+              </span>
+              <button
+                type="button"
+                onClick={() => stopAllAudio()}
+                className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[28px] px-2"
+              >
+                <Square className="w-3 h-3" />
+                {tAudio("dm_stop_all")}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {activeLoops.map((loop) => (
+                <span
+                  key={loop.id}
+                  className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full px-2.5 py-1 text-xs"
+                >
+                  {loop.icon} {tAudio(`preset_${loop.label?.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof tAudio>[0])}
+                  <button
+                    type="button"
+                    onClick={() => stopLoop(loop.id)}
+                    className="hover:text-red-400 transition-colors ml-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Preset grid */}
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
           {presetsByTab[presetTab].map((preset) => {
-            const isActive = activeAmbientId === preset.id;
+            const isActive = isLoopActive(preset.id);
             const isSfx = presetTab === "sfx";
 
             return (

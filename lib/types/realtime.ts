@@ -27,6 +27,7 @@ export type RealtimeEventType =
   | "audio:play_sound"
   | "audio:ambient_start"
   | "audio:ambient_stop"
+  | "audio:loop_stop"
   | "player:death_save";
 
 export interface RealtimeHpUpdate {
@@ -189,6 +190,11 @@ export interface RealtimeAmbientStop {
   type: "audio:ambient_stop";
 }
 
+export interface RealtimeLoopStop {
+  type: "audio:loop_stop";
+  sound_id: string;
+}
+
 export interface RealtimePlayerDeathSave {
   type: "player:death_save";
   player_name: string;
@@ -219,6 +225,7 @@ export type RealtimeEvent =
   | RealtimeAudioPlay
   | RealtimeAmbientStart
   | RealtimeAmbientStop
+  | RealtimeLoopStop
   | RealtimePlayerDeathSave;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
@@ -307,4 +314,5 @@ export type SanitizedEvent =
   | RealtimeWeatherChange
   | RealtimeAudioPlay
   | RealtimeAmbientStart
-  | RealtimeAmbientStop;
+  | RealtimeAmbientStop
+  | RealtimeLoopStop;

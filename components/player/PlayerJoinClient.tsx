@@ -569,8 +569,14 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "audio:ambient_stop" }, () => {
-          // DM stopped ambient/music — stop it on the player side
+          // DM stopped all ambient/music — stop all on the player side
           useAudioStore.getState().stopAmbient();
+        })
+        .on("broadcast", { event: "audio:loop_stop" }, ({ payload }) => {
+          // DM stopped a single loop — stop just that one on the player side
+          if (payload.sound_id) {
+            useAudioStore.getState().stopLoop(payload.sound_id);
+          }
         })
         .on("broadcast", { event: "combat:started" }, ({ payload }) => {
           setActive(true);
