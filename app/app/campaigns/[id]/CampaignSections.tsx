@@ -63,38 +63,44 @@ export function CampaignSections({
   const t = useTranslations("campaign");
 
   return (
-    <div className="space-y-4">
-      <Section icon={UserPlus} title={t("section_members")} defaultOpen={true}>
-        <MembersList
-          campaignId={campaignId}
-          isOwner={isOwner}
-          initialMembers={initialMembers}
-        />
-      </Section>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main column — content-heavy sections */}
+      <div className="lg:col-span-2 space-y-4">
+        <Section icon={Users} title={t("section_players")} defaultOpen={true}>
+          <PlayerCharacterManager
+            initialCharacters={initialCharacters}
+            campaignId={campaignId}
+            campaignName={campaignName}
+          />
+        </Section>
 
-      <Section icon={Users} title={t("section_players")} defaultOpen={true}>
-        <PlayerCharacterManager
-          initialCharacters={initialCharacters}
-          campaignId={campaignId}
-          campaignName={campaignName}
-        />
-      </Section>
+        <Section icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
+          <NpcList campaignId={campaignId} />
+        </Section>
 
-      <Section icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
-        <NpcList campaignId={campaignId} />
-      </Section>
+        <Section icon={FileText} title={t("section_notes")} defaultOpen={false}>
+          <CampaignNotes campaignId={campaignId} />
+        </Section>
+      </div>
 
-      <Section icon={FileText} title={t("section_notes")} defaultOpen={false}>
-        <CampaignNotes campaignId={campaignId} />
-      </Section>
+      {/* Sidebar — lighter sections */}
+      <div className="space-y-4">
+        <Section icon={UserPlus} title={t("section_members")} defaultOpen={false}>
+          <MembersList
+            campaignId={campaignId}
+            isOwner={isOwner}
+            initialMembers={initialMembers}
+          />
+        </Section>
 
-      <Section icon={Swords} title={t("section_encounters")} defaultOpen={false}>
-        <EncounterHistory campaignId={campaignId} />
-      </Section>
+        <Section icon={Swords} title={t("section_encounters")} defaultOpen={false}>
+          <EncounterHistory campaignId={campaignId} />
+        </Section>
 
-      <Section icon={Network} title={t("section_mindmap")} defaultOpen={false}>
-        <CampaignMindMap campaignId={campaignId} campaignName={campaignName} />
-      </Section>
+        <Section icon={Network} title={t("section_mindmap")} defaultOpen={false}>
+          <CampaignMindMap campaignId={campaignId} campaignName={campaignName} />
+        </Section>
+      </div>
     </div>
   );
 }

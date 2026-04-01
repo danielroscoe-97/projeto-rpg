@@ -300,6 +300,8 @@
     "campaigns_delete_confirm": "Are you sure you want to delete",
     "campaigns_delete_confirm_suffix": "? This will also remove all player characters.",
     "campaigns_delete_button": "Confirm Delete",
+    "campaigns_start_combat": "Combat",
+    "campaigns_notes": "Notes",
     "encounters_title": "Active Encounters",
     "encounters_empty": "No active encounters. Start a new combat session!",
     "encounters_start_combat": "Start new combat",

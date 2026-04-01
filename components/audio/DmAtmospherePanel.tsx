@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence, useMotionValue, useDragControls } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Square } from "lucide-react";
+import { Square, Minimize2, X } from "lucide-react";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import {
   getAmbientPresets,
@@ -13,8 +14,29 @@ import {
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 
 const SFX_COOLDOWN_MS = 1500;
+const STORAGE_KEY = "pocket-dm-atmosphere-position";
 
 type Tab = "sounds" | "weather" | "volume";
+
+interface SavedState {
+  x: number;
+  y: number;
+  collapsed: boolean;
+}
+
+function loadSavedState(): SavedState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return { x: -1, y: -1, collapsed: false };
+}
+
+function savePanelState(state: SavedState) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch { /* ignore */ }
+}
 
 const WEATHER_OPTIONS: { id: WeatherEffect; emoji: string }[] = [
   { id: "none", emoji: "----" },
@@ -39,15 +61,19 @@ export function DmAtmospherePanel({
   const t = useTranslations("audio");
   const tCombat = useTranslations("combat");
   const [isOpen, setIsOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("sounds");
   const [cooldownId, setCooldownId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const lastTriggerRef = useRef<number>(0);
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const dragControls = useDragControls();
 
   const activeAmbientId = useAudioStore((s) => s.activeAmbientId);
   const playAmbient = useAudioStore((s) => s.playAmbient);
-  const stopAmbient = useAudioStore((s) => s.stopAmbient);
   const playSound = useAudioStore((s) => s.playSound);
   const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
   const volume = useAudioStore((s) => s.volume);
@@ -59,26 +85,43 @@ export function DmAtmospherePanel({
   const musicPresets = getMusicPresets();
   const sfxPresets = getSfxPresets();
 
+  // Mount check for portal
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load saved position on open
+  useEffect(() => {
+    if (!isOpen) return;
+    const saved = loadSavedState();
+    setCollapsed(saved.collapsed);
+    if (saved.x >= 0 && saved.y >= 0) {
+      // Clamp to viewport
+      const maxX = window.innerWidth - (saved.collapsed ? 48 : 320);
+      const maxY = window.innerHeight - (saved.collapsed ? 48 : 200);
+      x.set(Math.min(saved.x, Math.max(0, maxX)));
+      y.set(Math.min(saved.y, Math.max(0, maxY)));
+    } else {
+      // Default: bottom-right
+      x.set(window.innerWidth - 340);
+      y.set(window.innerHeight - 500);
+    }
+  }, [isOpen, x, y]);
+
   useEffect(() => {
     return () => {
       if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
     };
   }, []);
 
-  // Click outside to close
-  useEffect(() => {
-    if (!isOpen) return;
-    const handle = (e: MouseEvent) => {
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [isOpen]);
+  const persistState = useCallback((overrides?: Partial<SavedState>) => {
+    savePanelState({
+      x: x.get(),
+      y: y.get(),
+      collapsed,
+      ...overrides,
+    });
+  }, [x, y, collapsed]);
 
   const handleAmbientToggle = useCallback(
     (presetId: string) => {
@@ -121,7 +164,12 @@ export function DmAtmospherePanel({
     onBroadcast?.("audio:ambient_stop", {});
   }, [stopAllAudio, onBroadcast]);
 
-  // Determine button state indicator
+  const toggleCollapse = useCallback(() => {
+    const next = !collapsed;
+    setCollapsed(next);
+    persistState({ collapsed: next });
+  }, [collapsed, persistState]);
+
   const hasActiveAudio = !!activeAmbientId;
   const hasActiveWeather = weatherEffect !== "none";
   const hasActiveAnything = hasActiveAudio || hasActiveWeather;
@@ -132,9 +180,297 @@ export function DmAtmospherePanel({
     { id: "volume", label: t("dm_volume"), icon: isMuted ? "🔇" : "🔊" },
   ];
 
+  // ── Floating panel content (rendered via portal) ──────────────────────────
+
+  const floatingPanel = isOpen && mounted ? createPortal(
+    <AnimatePresence>
+      {collapsed ? (
+        /* ── Collapsed: floating circle ── */
+        <motion.div
+          key="collapsed"
+          drag
+          dragMomentum={false}
+          dragElastic={0}
+          style={{ x, y }}
+          onDragEnd={() => persistState({ collapsed: true })}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.15 }}
+          className="fixed top-0 left-0 z-[60] w-12 h-12 bg-card border border-border rounded-full shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+        >
+          <button
+            type="button"
+            onClick={toggleCollapse}
+            className="w-full h-full flex items-center justify-center"
+          >
+            <span className="text-lg">🎭</span>
+            {hasActiveAnything && (
+              <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            )}
+          </button>
+        </motion.div>
+      ) : (
+        /* ── Expanded: full panel ── */
+        <motion.div
+          key="expanded"
+          drag
+          dragMomentum={false}
+          dragElastic={0}
+          dragControls={dragControls}
+          dragListener={false}
+          style={{ x, y }}
+          onDragEnd={() => persistState({ collapsed: false })}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.15 }}
+          className="fixed top-0 left-0 z-[60] w-80 bg-card border border-border rounded-xl shadow-2xl overflow-hidden select-none"
+        >
+          {/* Drag handle / header */}
+          <div
+            className="flex items-center justify-between px-3 py-2 border-b border-border cursor-grab active:cursor-grabbing"
+            onPointerDown={(e) => dragControls.start(e)}
+          >
+            <span className="text-xs text-gold font-medium flex items-center gap-1.5 pointer-events-none">
+              🎭 {t("atmosphere_label")}
+              {hasActiveAnything && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              )}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={toggleCollapse}
+                className="p-1 text-muted-foreground hover:text-foreground transition-colors rounded"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsOpen(false); persistState(); }}
+                className="p-1 text-muted-foreground hover:text-red-400 transition-colors rounded"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Tab bar */}
+          <div className="flex border-b border-border">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? "text-gold border-b-2 border-gold bg-gold/5"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="p-4 max-h-[60vh] overflow-y-auto">
+            {/* === SOUNDS TAB === */}
+            {activeTab === "sounds" && (
+              <div>
+                {hasActiveAudio && (
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs text-emerald-400">
+                      {t("dm_ambient_playing", {
+                        name: t(
+                          `preset_${activeAmbientId!.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof t>[0]
+                        ),
+                      })}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleStopAll}
+                      className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[28px] px-2"
+                    >
+                      <Square className="w-3 h-3" />
+                      {t("dm_stop_all")}
+                    </button>
+                  </div>
+                )}
+
+                {/* Ambient */}
+                <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
+                  {t("dm_ambient_section")}
+                </h4>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {ambientPresets.map((preset) => {
+                    const isActive = activeAmbientId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => handleAmbientToggle(preset.id)}
+                        className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                          isActive
+                            ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
+                            : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
+                        }`}
+                      >
+                        <span className="text-lg leading-none">{preset.icon}</span>
+                        <span className="text-[10px] leading-tight text-center truncate w-full">
+                          {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
+                        </span>
+                        {isActive && (
+                          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Music */}
+                <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
+                  {t("dm_music_section")}
+                </h4>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {musicPresets.map((preset) => {
+                    const isActive = activeAmbientId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => handleAmbientToggle(preset.id)}
+                        className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                          isActive
+                            ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                            : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
+                        }`}
+                      >
+                        <span className="text-lg leading-none">{preset.icon}</span>
+                        <span className="text-[10px] leading-tight text-center truncate w-full">
+                          {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
+                        </span>
+                        {isActive && (
+                          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* SFX */}
+                <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
+                  {t("dm_sfx_section")}
+                </h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {sfxPresets.map((preset) => {
+                    const isCooling = cooldownId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        disabled={isCooling}
+                        onClick={() => handleSfxPlay(preset.id)}
+                        className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                          isCooling
+                            ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
+                            : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
+                        }`}
+                      >
+                        <span className="text-lg leading-none">{preset.icon}</span>
+                        <span className="text-[10px] leading-tight text-center truncate w-full">
+                          {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
+                        </span>
+                        {isCooling && (
+                          <div className="absolute inset-0 rounded-lg overflow-hidden">
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_1.5s_linear_forwards]" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* === WEATHER TAB === */}
+            {activeTab === "weather" && (
+              <div>
+                <p className="text-muted-foreground text-xs mb-3">
+                  {tCombat("weather_title")}
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {WEATHER_OPTIONS.map((opt) => {
+                    const isActive = weatherEffect === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => onWeatherChange(opt.id)}
+                        className={`flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                          isActive
+                            ? "border-2 border-gold bg-gold/10 text-foreground"
+                            : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] border border-transparent"
+                        }`}
+                        aria-pressed={isActive}
+                        data-testid={`weather-btn-${opt.id}`}
+                      >
+                        <span className="text-lg leading-none">{opt.emoji}</span>
+                        <span className="text-[10px] leading-tight text-center">
+                          {tCombat(`weather_${opt.id}` as Parameters<typeof tCombat>[0])}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* === VOLUME TAB === */}
+            {activeTab === "volume" && (
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-sm text-muted-foreground">🔈</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={Math.round(volume * 100)}
+                    onChange={(e) => setVolume(Number(e.target.value) / 100)}
+                    className="flex-1 h-2 bg-white/[0.06] rounded-full appearance-none cursor-pointer accent-gold"
+                    aria-label={t("dm_volume")}
+                    data-testid="dm-volume-slider"
+                  />
+                  <span className="text-sm text-muted-foreground w-8 text-right font-mono">
+                    {Math.round(volume * 100)}%
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  className={`w-full px-3 py-2.5 text-sm rounded-md transition-colors min-h-[36px] ${
+                    isMuted
+                      ? "bg-red-900/20 text-red-400 hover:bg-red-900/40"
+                      : "bg-white/[0.06] text-foreground hover:bg-white/[0.1]"
+                  }`}
+                  data-testid="dm-mute-toggle"
+                >
+                  {isMuted ? `🔇 ${t("dm_muted")}` : `🔊 ${t("dm_unmuted")}`}
+                </button>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    document.body
+  ) : null;
+
+  // ── Toolbar toggle button ─────────────────────────────────────────────────
+
   return (
-    <div className="relative" ref={panelRef}>
-      {/* Single unified button */}
+    <>
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
@@ -153,228 +489,7 @@ export function DmAtmospherePanel({
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         )}
       </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-1 w-80 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden"
-          >
-            {/* Tab bar */}
-            <div className="flex border-b border-border">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? "text-gold border-b-2 border-gold bg-gold/5"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="p-4">
-              {/* === SOUNDS TAB === */}
-              {activeTab === "sounds" && (
-                <div>
-                  {/* Stop all */}
-                  {hasActiveAudio && (
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs text-emerald-400">
-                        {t("dm_ambient_playing", {
-                          name: t(
-                            `preset_${activeAmbientId!.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof t>[0]
-                          ),
-                        })}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={handleStopAll}
-                        className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 min-h-[28px] px-2"
-                      >
-                        <Square className="w-3 h-3" />
-                        {t("dm_stop_all")}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Ambient */}
-                  <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
-                    {t("dm_ambient_section")}
-                  </h4>
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    {ambientPresets.map((preset) => {
-                      const isActive = activeAmbientId === preset.id;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          onClick={() => handleAmbientToggle(preset.id)}
-                          className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                            isActive
-                              ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                              : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
-                          }`}
-                        >
-                          <span className="text-lg leading-none">{preset.icon}</span>
-                          <span className="text-[10px] leading-tight text-center truncate w-full">
-                            {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                          </span>
-                          {isActive && (
-                            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Music */}
-                  <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
-                    {t("dm_music_section")}
-                  </h4>
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    {musicPresets.map((preset) => {
-                      const isActive = activeAmbientId === preset.id;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          onClick={() => handleAmbientToggle(preset.id)}
-                          className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                            isActive
-                              ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
-                              : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
-                          }`}
-                        >
-                          <span className="text-lg leading-none">{preset.icon}</span>
-                          <span className="text-[10px] leading-tight text-center truncate w-full">
-                            {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                          </span>
-                          {isActive && (
-                            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* SFX */}
-                  <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
-                    {t("dm_sfx_section")}
-                  </h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    {sfxPresets.map((preset) => {
-                      const isCooling = cooldownId === preset.id;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          disabled={isCooling}
-                          onClick={() => handleSfxPlay(preset.id)}
-                          className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                            isCooling
-                              ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
-                              : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
-                          }`}
-                        >
-                          <span className="text-lg leading-none">{preset.icon}</span>
-                          <span className="text-[10px] leading-tight text-center truncate w-full">
-                            {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                          </span>
-                          {isCooling && (
-                            <div className="absolute inset-0 rounded-lg overflow-hidden">
-                              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_1.5s_linear_forwards]" />
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* === WEATHER TAB === */}
-              {activeTab === "weather" && (
-                <div>
-                  <p className="text-muted-foreground text-xs mb-3">
-                    {tCombat("weather_title")}
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {WEATHER_OPTIONS.map((opt) => {
-                      const isActive = weatherEffect === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          onClick={() => onWeatherChange(opt.id)}
-                          className={`flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                            isActive
-                              ? "border-2 border-gold bg-gold/10 text-foreground"
-                              : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] border border-transparent"
-                          }`}
-                          aria-pressed={isActive}
-                          data-testid={`weather-btn-${opt.id}`}
-                        >
-                          <span className="text-lg leading-none">{opt.emoji}</span>
-                          <span className="text-[10px] leading-tight text-center">
-                            {tCombat(`weather_${opt.id}` as Parameters<typeof tCombat>[0])}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* === VOLUME TAB === */}
-              {activeTab === "volume" && (
-                <div>
-                  {/* Volume slider */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-sm text-muted-foreground">🔈</span>
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      value={Math.round(volume * 100)}
-                      onChange={(e) => setVolume(Number(e.target.value) / 100)}
-                      className="flex-1 h-2 bg-white/[0.06] rounded-full appearance-none cursor-pointer accent-gold"
-                      aria-label={t("dm_volume")}
-                      data-testid="dm-volume-slider"
-                    />
-                    <span className="text-sm text-muted-foreground w-8 text-right font-mono">
-                      {Math.round(volume * 100)}%
-                    </span>
-                  </div>
-
-                  {/* Mute toggle */}
-                  <button
-                    type="button"
-                    onClick={toggleMute}
-                    className={`w-full px-3 py-2.5 text-sm rounded-md transition-colors min-h-[36px] ${
-                      isMuted
-                        ? "bg-red-900/20 text-red-400 hover:bg-red-900/40"
-                        : "bg-white/[0.06] text-foreground hover:bg-white/[0.1]"
-                    }`}
-                    data-testid="dm-mute-toggle"
-                  >
-                    {isMuted ? `🔇 ${t("dm_muted")}` : `🔊 ${t("dm_unmuted")}`}
-                  </button>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      {floatingPanel}
+    </>
   );
 }

@@ -203,36 +203,36 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <Link
-            href="/app/dashboard"
-            className="text-muted-foreground text-sm hover:text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-          >
-            {tDash("back_to_dashboard")}
-          </Link>
-          <h1 className="text-2xl font-semibold text-foreground mt-2">{campaign.name}</h1>
+      {/* Header Card */}
+      <div className="bg-card border border-border rounded-xl p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <Link
+              href="/app/dashboard"
+              className="text-muted-foreground text-sm hover:text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+            >
+              {tDash("back_to_dashboard")}
+            </Link>
+            <h1 className="text-2xl font-semibold text-foreground mt-1">{campaign.name}</h1>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
+              <span className="text-amber-400 text-sm font-semibold">{playerCount ?? 0}</span>
+              <span className="text-muted-foreground text-xs">{t("summary_players")}</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
+              <span className="text-amber-400 text-sm font-semibold">{sessionCount ?? 0}</span>
+              <span className="text-muted-foreground text-xs">{t("summary_sessions")}</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
+              <span className="text-amber-400 text-sm font-semibold">{finishedEncounterCount}</span>
+              <span className="text-muted-foreground text-xs">{t("summary_encounters")}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Summary Stats */}
-      <div className="flex flex-wrap gap-3">
-        <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border">
-          <span className="text-amber-400 text-sm font-semibold">{playerCount ?? 0}</span>
-          <span className="text-muted-foreground text-sm">{t("summary_players")}</span>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border">
-          <span className="text-amber-400 text-sm font-semibold">{sessionCount ?? 0}</span>
-          <span className="text-muted-foreground text-sm">{t("summary_sessions")}</span>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border">
-          <span className="text-amber-400 text-sm font-semibold">{finishedEncounterCount}</span>
-          <span className="text-muted-foreground text-sm">{t("summary_encounters")}</span>
-        </div>
-      </div>
-
-      {/* Collapsible Sections */}
+      {/* 2-Column Sections */}
       <CampaignSections
         campaignId={campaign.id}
         campaignName={campaign.name}

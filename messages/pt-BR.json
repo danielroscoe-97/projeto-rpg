@@ -300,6 +300,8 @@
     "campaigns_delete_confirm": "Tem certeza que deseja excluir",
     "campaigns_delete_confirm_suffix": "? Isso também removerá todos os personagens de jogadores.",
     "campaigns_delete_button": "Confirmar Exclusão",
+    "campaigns_start_combat": "Combate",
+    "campaigns_notes": "Notas",
     "encounters_title": "Encontros Ativos",
     "encounters_empty": "Nenhum encontro ativo. Inicie uma nova sessão de combate!",
     "encounters_start_combat": "Iniciar novo combate",
