@@ -1636,6 +1636,7 @@
     "dm_ambient_playing": "Playing: {name}",
     "dm_stop_ambient": "Stop",
     "dm_stop_all": "Stop All",
+    "atmosphere_label": "Atmosphere",
     "dashboard_ambient_title": "Ambient Sounds",
     "slot_empty": "Empty slot",
     "replace_sound": "Replace sound",

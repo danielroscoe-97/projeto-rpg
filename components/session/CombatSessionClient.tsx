@@ -27,10 +27,9 @@ import { broadcastEvent, getDmChannel, registerHiddenLookup } from "@/lib/realti
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
-import { DmAudioControls } from "@/components/audio/DmAudioControls";
 import dynamic from "next/dynamic";
 
-const DmSoundboard = dynamic(() => import("@/components/audio/DmSoundboard").then(m => m.DmSoundboard), {
+const DmAtmospherePanel = dynamic(() => import("@/components/audio/DmAtmospherePanel").then(m => m.DmAtmospherePanel), {
   ssr: false,
 });
 import { useAudioStore } from "@/lib/stores/audio-store";
@@ -42,7 +41,6 @@ import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
-import { BackgroundSelector } from "@/components/combat/BackgroundSelector";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
@@ -82,7 +80,6 @@ export function CombatSessionClient({
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
-  const [showWeatherSelector, setShowWeatherSelector] = useState(false);
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
 
@@ -748,22 +745,17 @@ export function CombatSessionClient({
             {turnPending ? t("next_turn_saving") : t("next_turn")}
             <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
           </button>
-          <DmSoundboard onBroadcast={(event, payload) => broadcastEvent(sessionId ?? "", { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)} />
-          <DmAudioControls />
-          <button
-            type="button"
-            onClick={() => setShowWeatherSelector((v) => !v)}
-            className={`px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
-              weatherEffect !== "none"
-                ? "bg-gold/10 text-gold border border-gold/30"
-                : "text-muted-foreground hover:text-foreground bg-white/[0.04]"
-            }`}
-            aria-label={t("weather_title")}
-            title={t("weather_title")}
-            data-testid="weather-toggle-btn"
-          >
-            {weatherEffect === "rain" ? "\uD83C\uDF27\uFE0F" : weatherEffect === "snow" ? "\u2744\uFE0F" : weatherEffect === "fog" ? "\uD83C\uDF2B\uFE0F" : weatherEffect === "storm" ? "\u26C8\uFE0F" : weatherEffect === "ash" ? "\uD83C\uDF0B" : "\uD83C\uDF24\uFE0F"}
-          </button>
+          <DmAtmospherePanel
+            onBroadcast={(event, payload) => broadcastEvent(sessionId ?? "", { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)}
+            weatherEffect={weatherEffect}
+            onWeatherChange={(effect) => {
+              setWeatherEffect(effect);
+              broadcastEvent(sessionId ?? "", {
+                type: "session:weather_change",
+                effect,
+              });
+            }}
+          />
           {campaignId && (
             <button
               type="button"
@@ -800,21 +792,6 @@ export function CombatSessionClient({
         onAcceptAll={handleAcceptAllJoinRequests}
         onRejectAll={handleRejectAllJoinRequests}
       />
-
-      {showWeatherSelector && (
-        <div className="p-3 bg-white/[0.04] rounded-md" data-testid="weather-selector-panel">
-          <BackgroundSelector
-            currentWeather={weatherEffect}
-            onWeatherChange={(effect) => {
-              setWeatherEffect(effect);
-              broadcastEvent(sessionId ?? "", {
-                type: "session:weather_change",
-                effect,
-              });
-            }}
-          />
-        </div>
-      )}
 
       {addMode && (
         <div className="p-3 bg-white/[0.04] rounded-md space-y-3" data-testid="add-combatant-panel">
