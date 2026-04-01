@@ -58,6 +58,8 @@ interface AudioState {
   stopAllAudio: () => void;
   isLoopActive: (presetId: string) => boolean;
   preloadPlayerAudio: (audioFiles: PlayerAudioFile[]) => Promise<void>;
+  /** Update signed URLs and preloaded audio elements (used by URL refresh timer) */
+  updatePlayerAudioUrls: (urls: Record<string, string>) => void;
   cleanup: () => void;
 }
 
@@ -265,6 +267,24 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       playerAudioUrls: { ...state.playerAudioUrls, ...urls },
       preloadedAudio: { ...state.preloadedAudio, ...preloaded },
     }));
+  },
+
+  updatePlayerAudioUrls: (urls) => {
+    const { preloadedAudio } = get();
+    // Clean up old preloaded elements and create new ones with fresh URLs
+    const newPreloaded: Record<string, HTMLAudioElement> = {};
+    for (const [id, url] of Object.entries(urls)) {
+      const old = preloadedAudio[id];
+      if (old) {
+        old.pause();
+        old.src = "";
+      }
+      const audio = new Audio(url);
+      audio.preload = "auto";
+      audio.load();
+      newPreloaded[id] = audio;
+    }
+    set({ playerAudioUrls: urls, preloadedAudio: newPreloaded });
   },
 
   cleanup: () => {

@@ -16,6 +16,8 @@ interface PlayerSoundboardProps {
   customAudioFiles: PlayerAudioFile[];
   /** Signed URLs for custom audio files (id → url) */
   customAudioUrls?: Record<string, string>;
+  /** Whether custom audio URLs are still being generated */
+  isLoadingAudio?: boolean;
 }
 
 export function PlayerSoundboard({
@@ -24,6 +26,7 @@ export function PlayerSoundboard({
   channelRef,
   customAudioFiles,
   customAudioUrls = {},
+  isLoadingAudio = false,
 }: PlayerSoundboardProps) {
   const t = useTranslations("audio");
   const [isOpen, setIsOpen] = useState(false);
@@ -67,6 +70,11 @@ export function PlayerSoundboard({
 
   const presets = getAllPresets();
 
+  // Derive loading state for custom sounds specifically
+  const hasCustomFiles = customAudioFiles.length > 0;
+  const customUrlsReady = Object.keys(customAudioUrls).length > 0;
+  const isCustomLoading = isLoadingAudio || (hasCustomFiles && !customUrlsReady);
+
   return (
     <>
       {/* FAB — Floating Action Button */}
@@ -83,7 +91,9 @@ export function PlayerSoundboard({
         title={isPlayerTurn ? t("soundboard") : t("disabled_not_turn")}
         data-testid="soundboard-fab"
       >
-        {isOpen ? "✕" : "🔊"}
+        {isOpen ? "✕" : isCustomLoading ? (
+          <span className="w-6 h-6 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+        ) : "🔊"}
       </button>
 
       {/* Soundboard Drawer */}
@@ -134,7 +144,7 @@ export function PlayerSoundboard({
             </div>
 
             {/* Custom Sounds Section */}
-            {customAudioFiles.length > 0 && (
+            {hasCustomFiles && (
               <>
                 <h3 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
                   {t("my_sounds")}
@@ -143,24 +153,38 @@ export function PlayerSoundboard({
                   {customAudioFiles.map((file) => {
                     const isCooling = cooldownId === file.id;
                     const signedUrl = customAudioUrls[file.id];
+                    const isLoading = isCustomLoading && !signedUrl;
                     return (
                       <motion.button
                         key={file.id}
                         type="button"
                         disabled={isCooling || !signedUrl}
                         onClick={() => handlePlaySound(file.id, "custom", signedUrl)}
-                        whileTap={!isCooling ? { scale: 0.9 } : undefined}
+                        whileTap={!isCooling && signedUrl ? { scale: 0.9 } : undefined}
                         className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                          isCooling
-                            ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
-                            : "bg-purple-900/20 text-foreground active:bg-purple-900/40 hover:bg-purple-900/30"
+                          isLoading
+                            ? "bg-purple-900/10 animate-pulse"
+                            : isCooling
+                              ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
+                              : "bg-purple-900/20 text-foreground active:bg-purple-900/40 hover:bg-purple-900/30"
                         }`}
                         data-testid={`custom-btn-${file.id}`}
                       >
-                        <span className="text-lg leading-none">🎵</span>
-                        <span className="text-[10px] leading-tight text-center truncate w-full">
-                          {file.file_name.replace(/\.mp3$/i, "")}
-                        </span>
+                        {isLoading ? (
+                          <>
+                            <span className="w-5 h-5 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
+                            <span className="text-[10px] leading-tight text-center truncate w-full text-muted-foreground/50">
+                              {file.file_name.replace(/\.mp3$/i, "")}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-lg leading-none">🎵</span>
+                            <span className="text-[10px] leading-tight text-center truncate w-full">
+                              {file.file_name.replace(/\.mp3$/i, "")}
+                            </span>
+                          </>
+                        )}
                         {isCooling && (
                           <div className="absolute inset-0 rounded-lg overflow-hidden">
                             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_2s_linear_forwards]" />

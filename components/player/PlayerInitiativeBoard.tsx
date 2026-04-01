@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug } from "lucide-react";
+import { Swords, Skull, User, Bug, ChevronDown } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -139,6 +139,65 @@ const LOG_TYPE_COLORS: Record<CombatLogEntry["type"], string> = {
   condition: "text-purple-400",
 };
 
+/** Collapsible combat log — collapsed by default on mobile, expanded on desktop */
+function CombatLogSection({ log, t }: { log: CombatLogEntry[]; t: ReturnType<typeof useTranslations<"player">> }) {
+  const [expanded, setExpanded] = useState(() => {
+    // Default: collapsed on mobile, expanded on desktop
+    if (typeof window === "undefined") return false;
+    return window.innerWidth >= 1024;
+  });
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll to newest entry when expanded
+  useEffect(() => {
+    if (expanded && scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [expanded, log.length]);
+
+  return (
+    <div className="bg-card border border-border rounded-lg overflow-hidden" data-testid="combat-log">
+      <button
+        type="button"
+        onClick={() => setExpanded((p) => !p)}
+        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <span>{t("combat_log_title")}</span>
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div
+              ref={scrollRef}
+              className="px-4 pb-3 space-y-1 max-h-40 overflow-y-auto"
+            >
+              {log.map((entry, i) => (
+                <div key={`${entry.timestamp}-${i}`} className="flex items-start gap-2 text-sm lg:text-xs">
+                  <span className="text-muted-foreground/50 shrink-0 text-xs">
+                    {formatRelativeTime(entry.timestamp, t)}
+                  </span>
+                  <span className={LOG_TYPE_COLORS[entry.type]}>
+                    {entry.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 interface PlayerInitiativeBoardProps {
   combatants: PlayerCombatant[];
   currentTurnIndex: number;
@@ -165,6 +224,12 @@ interface PlayerInitiativeBoardProps {
   onEndTurn?: () => void;
   /** Callback when the player marks a death save (optimistic update + broadcast) */
   onDeathSave?: (combatantId: string, result: "success" | "failure") => void;
+  /** Whether custom audio URLs are still loading */
+  isLoadingAudioUrls?: boolean;
+  /** HP delta visual feedback — shows floating +/-X on HP change */
+  hpDelta?: { combatantId: string; delta: number; type: "damage" | "heal" | "temp"; timestamp: number } | null;
+  /** Death save resolution overlay — "stabilized" or "fallen" */
+  deathSaveResolution?: { combatantId: string; result: "stabilized" | "fallen"; timestamp: number } | null;
 }
 
 export function PlayerInitiativeBoard({
@@ -183,21 +248,52 @@ export function PlayerInitiativeBoard({
   sessionId,
   onEndTurn,
   onDeathSave,
+  isLoadingAudioUrls = false,
+  hpDelta,
+  deathSaveResolution,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const turnRef = useRef<HTMLLIElement | null>(null);
-  // Debounce for end turn button — prevents double-tap race condition
-  const [endTurnPending, setEndTurnPending] = useState(false);
-  const endTurnCooldownRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => { return () => { if (endTurnCooldownRef.current) clearTimeout(endTurnCooldownRef.current); }; }, []);
+  // End Turn delivery confirmation states: idle → pending → confirmed/retry/error
+  const [endTurnState, setEndTurnState] = useState<"idle" | "pending" | "confirmed" | "retry" | "error">("idle");
+  const endTurnTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const endTurnPending = endTurnState !== "idle";
+  const clearEndTurnTimers = useCallback(() => {
+    for (const t of endTurnTimersRef.current) clearTimeout(t);
+    endTurnTimersRef.current = [];
+  }, []);
+  useEffect(() => { return () => clearEndTurnTimers(); }, [clearEndTurnTimers]);
   const handleEndTurn = useCallback(() => {
-    if (endTurnPending || !onEndTurn) return;
-    setEndTurnPending(true);
+    if (endTurnState !== "idle" || !onEndTurn) return;
+    setEndTurnState("pending");
     onEndTurn();
-    endTurnCooldownRef.current = setTimeout(() => setEndTurnPending(false), 2000);
-  }, [endTurnPending, onEndTurn]);
-  // Reset pending state when turn changes (another player/DM advanced)
-  useEffect(() => { setEndTurnPending(false); }, [currentTurnIndex]);
+    // 5s timeout → retry
+    const retryTimer = setTimeout(() => {
+      setEndTurnState("retry");
+      onEndTurn(); // Re-broadcast
+      // 10s total → error
+      const errorTimer = setTimeout(() => {
+        setEndTurnState("error");
+        const resetTimer = setTimeout(() => setEndTurnState("idle"), 5000);
+        endTurnTimersRef.current.push(resetTimer);
+      }, 5000);
+      endTurnTimersRef.current.push(errorTimer);
+    }, 5000);
+    endTurnTimersRef.current.push(retryTimer);
+  }, [endTurnState, onEndTurn]);
+  // When turn actually advances → confirmed (checkmark 500ms then reset)
+  useEffect(() => {
+    if (endTurnState === "pending" || endTurnState === "retry") {
+      clearEndTurnTimers();
+      setEndTurnState("confirmed");
+      const t = setTimeout(() => setEndTurnState("idle"), 500);
+      endTurnTimersRef.current.push(t);
+    } else {
+      setEndTurnState("idle");
+      clearEndTurnTimers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to turn changes
+  }, [currentTurnIndex]);
 
   // Death save handler — broadcasts to DM channel
   const [deathSavePending, setDeathSavePending] = useState(false);
@@ -236,16 +332,17 @@ export function PlayerInitiativeBoard({
     knownIdsRef.current = new Set(combatants.map((c) => c.id));
   }, [combatants]);
 
-  // Update max revealed index when turn advances in round 1
+  // Update max revealed index when turn advances or combatants change in round 1
   useEffect(() => {
-    if (roundNumber === 1 && currentTurnIndex > maxRevealedIndex) {
-      setMaxRevealedIndex(currentTurnIndex);
-    }
-    // When round 2 starts, reveal all
     if (roundNumber >= 2) {
+      // When round 2 starts, reveal all
       setMaxRevealedIndex(combatants.length - 1);
+    } else if (roundNumber === 1) {
+      // B3: Recalculate when combatants are added — include new combatant if their
+      // position is at or before the current turn index
+      setMaxRevealedIndex((prev) => Math.max(prev, currentTurnIndex));
     }
-  }, [currentTurnIndex, roundNumber, combatants.length, maxRevealedIndex]);
+  }, [currentTurnIndex, roundNumber, combatants.length]);
 
   // Progressive reveal: in round 1, only show combatants up to current turn
   const isRevealed = useCallback((index: number) => {
@@ -365,11 +462,20 @@ export function PlayerInitiativeBoard({
               <button
                 type="button"
                 onClick={handleEndTurn}
-                disabled={endTurnPending}
-                className="shrink-0 px-4 py-2 bg-gold/20 text-gold font-medium text-sm rounded-lg active:bg-gold/40 lg:hover:bg-gold/30 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={endTurnState !== "idle"}
+                className={`shrink-0 px-4 py-2 font-medium text-sm rounded-lg transition-colors min-h-[44px] disabled:cursor-not-allowed ${
+                  endTurnState === "confirmed" ? "bg-green-500/20 text-green-400" :
+                  endTurnState === "retry" ? "bg-amber-500/20 text-amber-400" :
+                  endTurnState === "error" ? "bg-red-500/20 text-red-400" :
+                  "bg-gold/20 text-gold active:bg-gold/40 lg:hover:bg-gold/30 disabled:opacity-50"
+                }`}
                 data-testid="player-end-turn-btn"
               >
-                {endTurnPending ? "..." : t("end_turn")}
+                {endTurnState === "idle" ? t("end_turn") :
+                 endTurnState === "pending" ? "..." :
+                 endTurnState === "confirmed" ? "✓" :
+                 endTurnState === "retry" ? t("end_turn_retry") :
+                 t("end_turn_error")}
               </button>
             )}
           </div>
@@ -406,9 +512,26 @@ export function PlayerInitiativeBoard({
             return (
               <div
                 key={pc.id}
-                className={`bg-card border-2 border-gold rounded-lg px-4 py-4${isPlayerTurn ? " ring-2 ring-gold/50 shadow-[0_0_12px_rgba(212,168,83,0.3)] motion-reduce:ring-gold/30 motion-reduce:shadow-none" : ""}`}
+                className={`bg-card border-2 border-gold rounded-lg px-4 py-4 relative${isPlayerTurn ? " ring-2 ring-gold/50 shadow-[0_0_12px_rgba(212,168,83,0.3)] motion-reduce:ring-gold/30 motion-reduce:shadow-none" : ""}${hpDelta && hpDelta.combatantId === pc.id && currentHp === 0 ? " animate-[pulse-red_500ms_ease-in-out_2]" : ""}`}
                 data-testid={`own-character-${pc.id}`}
               >
+                {/* Death save resolution overlay */}
+                <AnimatePresence>
+                  {deathSaveResolution && deathSaveResolution.combatantId === pc.id && (
+                    <motion.div
+                      key={deathSaveResolution.timestamp}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className={`absolute inset-0 z-10 flex items-center justify-center rounded-lg ${deathSaveResolution.result === "stabilized" ? "bg-green-500/20 ring-2 ring-green-400" : "bg-red-500/20 ring-2 ring-red-400"}`}
+                    >
+                      <span className={`text-2xl font-bold ${deathSaveResolution.result === "stabilized" ? "text-green-400" : "text-red-400"}`}>
+                        {deathSaveResolution.result === "stabilized" ? t("death_save_stabilized_overlay") : t("death_save_fallen_overlay")}
+                      </span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <div className="flex items-center gap-2 mb-3">
                   <Swords className="w-4 h-4 text-gold select-none" aria-hidden="true" />
                   <span className="text-foreground text-lg font-semibold truncate flex-1">
@@ -424,13 +547,29 @@ export function PlayerInitiativeBoard({
                 <div className="mb-2">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-                    <span className="text-foreground text-2xl font-mono font-bold">
+                    <span className={`text-foreground text-2xl font-mono font-bold relative${hpDelta && hpDelta.combatantId === pc.id ? (hpDelta.type === "damage" ? " animate-[flash-red_150ms_ease-in-out_2]" : " animate-[flash-green_150ms_ease-in-out_2]") : ""}`}>
                       {currentHp}<span className="text-muted-foreground text-base font-normal"> / {maxHp}</span>
                       {hpThresholdKey && (
                         <span className="text-xs font-mono ml-2 text-muted-foreground">
                           {t(hpThresholdKey)}
                         </span>
                       )}
+                      {/* Floating HP delta */}
+                      <AnimatePresence>
+                        {hpDelta && hpDelta.combatantId === pc.id && (
+                          <motion.span
+                            key={hpDelta.timestamp}
+                            initial={{ opacity: 1, y: 0 }}
+                            animate={{ opacity: 1, y: -20 }}
+                            exit={{ opacity: 0, y: -40 }}
+                            transition={{ duration: 1.5 }}
+                            className={`absolute -right-2 -top-2 text-lg font-bold pointer-events-none ${hpDelta.type === "damage" ? "text-red-400" : hpDelta.type === "temp" ? "text-purple-400" : "text-green-400"}`}
+                          >
+                            {hpDelta.delta > 0 ? "+" : ""}{hpDelta.delta}
+                            {hpDelta.type === "temp" && <span className="text-xs ml-0.5">temp</span>}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
                     </span>
                   </div>
                   {hasTempHp && (
@@ -487,8 +626,9 @@ export function PlayerInitiativeBoard({
         </div>
       )}
 
-      {false && (
-        <div className="hidden" />
+      {/* Combat Log — collapsible section showing last 5 entries */}
+      {visibleLog.length > 0 && (
+        <CombatLogSection log={visibleLog} t={t} />
       )}
 
       {/* Round 1 reveal indicator */}
@@ -675,7 +815,7 @@ export function PlayerInitiativeBoard({
         </AnimatePresence>
       </ul>
 
-      {/* Combat log temporarily disabled */}
+      {/* Combat log rendered above the initiative list */}
 
       {/* In-app notification overlay toggle */}
       <div className="flex justify-center py-2">
@@ -716,6 +856,9 @@ export function PlayerInitiativeBoard({
           deathSaves={primaryPlayerChar.death_saves}
           isPlayerTurn={isPlayerTurn}
           onDeathSave={handleDeathSave}
+          hpDelta={hpDelta && hpDelta.combatantId === primaryPlayerChar.id ? hpDelta : null}
+          onEndTurn={onEndTurn}
+          endTurnPending={endTurnPending}
         />
       )}
 
@@ -727,6 +870,7 @@ export function PlayerInitiativeBoard({
           channelRef={channelRef}
           customAudioFiles={customAudioFiles}
           customAudioUrls={customAudioUrls}
+          isLoadingAudio={isLoadingAudioUrls}
         />
       )}
     </div>

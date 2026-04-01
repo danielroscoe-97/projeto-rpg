@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -28,9 +29,15 @@ interface PlayerBottomBarProps {
   isPlayerTurn?: boolean;
   /** Callback when player marks a death save */
   onDeathSave?: (result: "success" | "failure") => void;
+  /** HP delta visual feedback */
+  hpDelta?: { combatantId: string; delta: number; type: "damage" | "heal" | "temp"; timestamp: number } | null;
+  /** Callback when player ends their turn */
+  onEndTurn?: () => void;
+  /** Whether end turn is pending */
+  endTurnPending?: boolean;
 }
 
-export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave }: PlayerBottomBarProps) {
+export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, hpDelta, onEndTurn, endTurnPending }: PlayerBottomBarProps) {
   const t = useTranslations("player");
 
   const currentHp = character.current_hp;
@@ -46,7 +53,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
 
   return (
     <div
-      className="fixed bottom-0 inset-x-0 z-40 bg-black/90 backdrop-blur-sm border-t border-border/50 safe-area-pb lg:hidden"
+      className={`fixed bottom-0 inset-x-0 z-40 bg-black/90 backdrop-blur-sm border-t-2 safe-area-pb lg:hidden transition-all duration-300 ease-in-out ${isPlayerTurn ? "border-amber-500 animate-pulse bg-amber-900/10" : "border-border/50"}`}
       data-testid={`player-bottom-bar-${character.id}`}
     >
       <div className="px-4 py-2.5 space-y-1.5">
@@ -101,13 +108,29 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                 </div>
               </div>
 
-              <span className="text-foreground text-sm font-mono font-bold shrink-0">
+              <span className={`text-foreground text-sm font-mono font-bold shrink-0 relative ${hpDelta ? (hpDelta.type === "damage" ? "animate-[flash-red_150ms_ease-in-out_2]" : "animate-[flash-green_150ms_ease-in-out_2]") : ""}`}>
                 {currentHp}<span className="text-muted-foreground text-xs font-normal">/{maxHp}</span>
                 {hasTempHp && (
                   <span className="text-[#9f7aea] ml-1 text-xs">
                     +{tempHp}
                   </span>
                 )}
+                {/* Floating HP delta */}
+                <AnimatePresence>
+                  {hpDelta && (
+                    <motion.span
+                      key={hpDelta.timestamp}
+                      initial={{ opacity: 1, y: 0 }}
+                      animate={{ opacity: 1, y: -20 }}
+                      exit={{ opacity: 0, y: -40 }}
+                      transition={{ duration: 1.5 }}
+                      className={`absolute -right-1 -top-4 text-sm font-bold pointer-events-none ${hpDelta.type === "damage" ? "text-red-400" : hpDelta.type === "temp" ? "text-purple-400" : "text-green-400"}`}
+                    >
+                      {hpDelta.delta > 0 ? "+" : ""}{hpDelta.delta}
+                      {hpDelta.type === "temp" && <span className="text-[10px] ml-0.5">temp</span>}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </span>
 
               {character.ac != null && (
@@ -117,6 +140,18 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                     {character.ac}
                   </span>
                 </div>
+              )}
+              {/* Inline End Turn button — mobile only, during player's turn */}
+              {isPlayerTurn && onEndTurn && (
+                <button
+                  type="button"
+                  onClick={onEndTurn}
+                  disabled={endTurnPending}
+                  className="shrink-0 px-3 py-1.5 bg-gold/20 text-gold font-medium text-xs rounded-lg active:bg-gold/40 transition-colors min-h-[36px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="player-bottom-bar-end-turn"
+                >
+                  {endTurnPending ? "..." : t("end_turn")}
+                </button>
               )}
             </div>
           </>

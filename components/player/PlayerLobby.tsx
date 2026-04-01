@@ -39,8 +39,8 @@ interface PlayerLobbyProps {
     hp: number | null;
     ac: number | null;
   }) => Promise<void>;
-  /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" | "polling" */
-  lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected" | "polling";
+  /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" | "polling" | "timeout" */
+  lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected" | "polling" | "timeout";
   /** Characters the authenticated player has in this campaign (auto-join pre-fill) */
   prefilledCharacters?: PrefilledCharacter[];
   /** Names of players already registered in this session (for cookie-less rejoin) */
@@ -209,6 +209,27 @@ export function PlayerLobby({
               </p>
             )}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Late-join timeout state — 2 minutes elapsed without DM response
+  if (lateJoinStatus === "timeout") {
+    return (
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
+        <div className="max-w-sm mx-auto w-full space-y-6 text-center">
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-amber-400 mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
+          <p className="text-amber-400 text-base lg:text-sm">{t("late_join_timeout")}</p>
+          <p className="text-muted-foreground text-sm">{t("late_join_timeout_hint")}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-3 lg:py-2 bg-gold text-foreground font-medium rounded-lg transition-colors min-h-[48px] text-base lg:text-sm"
+          >
+            {t("late_join_refresh")}
+          </button>
         </div>
       </div>
     );

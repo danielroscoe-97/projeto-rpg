@@ -128,7 +128,7 @@ export function PlayerJoinClient({
   // TODO: include weatherEffect in session:state_sync for reconnect support
   const [weatherEffect, setWeatherEffect] = useState<string>("none");
   const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
-  const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected" | "polling">("idle");
+  const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected" | "polling" | "timeout">("idle");
   const lateJoinRequestIdRef = useRef<string | null>(null);
   const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const lateJoinRegisteredRef = useRef(false);
@@ -144,8 +144,59 @@ export function PlayerJoinClient({
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTurnBroadcastRef = useRef<number>(0);
+  // HP delta visual feedback state
+  const [hpDelta, setHpDelta] = useState<{ combatantId: string; delta: number; type: "damage" | "heal" | "temp"; timestamp: number } | null>(null);
+  const hpDeltaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Death save resolution overlay state
+  const [deathSaveResolution, setDeathSaveResolution] = useState<{ combatantId: string; result: "stabilized" | "fallen"; timestamp: number } | null>(null);
+  const deathSaveResolutionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerAudioFiles, setPlayerAudioFiles] = useState<PlayerAudioFile[]>([]);
   const [playerAudioUrls, setPlayerAudioUrls] = useState<Record<string, string>>({});
+  const [isLoadingAudioUrls, setIsLoadingAudioUrls] = useState(false);
+  // Session revoked banner (B1 — replaces silent toast)
+  const [sessionRevokedBanner, setSessionRevokedBanner] = useState(false);
+  const sessionRevokedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioFilesRef = useRef<PlayerAudioFile[]>([]);
+
+  // Generate signed URLs for a list of audio files (shared by initial fetch + refresh)
+  const generateSignedUrls = useCallback(async (files: PlayerAudioFile[]): Promise<Record<string, string>> => {
+    const supabase = createClient();
+    const urls: Record<string, string> = {};
+    for (const file of files) {
+      try {
+        const { data: signedData } = await supabase.storage
+          .from("player-audio")
+          .createSignedUrl(file.file_path, 3600);
+        if (signedData?.signedUrl) urls[file.id] = signedData.signedUrl;
+      } catch { /* skip failed */ }
+    }
+    return urls;
+  }, []);
+
+  // Schedule URL refresh 50 minutes from now (10 min before 1h expiry)
+  const scheduleUrlRefresh = useCallback((files: PlayerAudioFile[], retryCount = 0) => {
+    if (audioRefreshTimerRef.current) clearTimeout(audioRefreshTimerRef.current);
+    const REFRESH_MS = 50 * 60 * 1000; // 50 minutes
+    audioRefreshTimerRef.current = setTimeout(async () => {
+      try {
+        const urls = await generateSignedUrls(files);
+        if (Object.keys(urls).length > 0) {
+          setPlayerAudioUrls(urls);
+          useAudioStore.getState().updatePlayerAudioUrls(urls);
+          // Schedule next refresh cycle
+          scheduleUrlRefresh(files);
+        } else if (retryCount < 3) {
+          // Retry after 60s on empty result
+          setTimeout(() => scheduleUrlRefresh(files, retryCount + 1), 60_000);
+        }
+      } catch {
+        if (retryCount < 3) {
+          setTimeout(() => scheduleUrlRefresh(files, retryCount + 1), 60_000);
+        }
+      }
+    }, REFRESH_MS);
+  }, [generateSignedUrls]);
 
   // Fetch player's custom audio files (authenticated players only)
   useEffect(() => {
@@ -156,25 +207,33 @@ export function PlayerJoinClient({
         if (!res.ok) return; // 401 for anonymous — expected
         const { data } = await res.json();
         if (!cancelled && data) {
-          setPlayerAudioFiles(data);
-          // Generate signed URLs for broadcasting to DM
-          const supabase = createClient();
-          const urls: Record<string, string> = {};
-          for (const file of data as PlayerAudioFile[]) {
-            const { data: signedData } = await supabase.storage
-              .from("player-audio")
-              .createSignedUrl(file.file_path, 3600);
-            if (signedData?.signedUrl) urls[file.id] = signedData.signedUrl;
+          const files = data as PlayerAudioFile[];
+          setPlayerAudioFiles(files);
+          audioFilesRef.current = files;
+          if (files.length > 0) {
+            setIsLoadingAudioUrls(true);
+            const urls = await generateSignedUrls(files);
+            if (!cancelled) {
+              setPlayerAudioUrls(urls);
+              setIsLoadingAudioUrls(false);
+              // Sync to audio store (single source of truth — no dual preload)
+              useAudioStore.getState().updatePlayerAudioUrls(urls);
+              // Schedule auto-refresh before expiry
+              scheduleUrlRefresh(files);
+            }
           }
-          if (!cancelled) setPlayerAudioUrls(urls);
         }
       } catch {
         // Silent — audio is best-effort
+        setIsLoadingAudioUrls(false);
       }
     }
     if (authReady) fetchPlayerAudio();
-    return () => { cancelled = true; };
-  }, [authReady]);
+    return () => {
+      cancelled = true;
+      if (audioRefreshTimerRef.current) clearTimeout(audioRefreshTimerRef.current);
+    };
+  }, [authReady, generateSignedUrls, scheduleUrlRefresh]);
 
   // Mesa model: seed session DM plan into subscription store
   useEffect(() => {
@@ -369,6 +428,55 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
           if (payload.combatant_id) {
+            // HP delta visual feedback — calculate before updating state
+            const existing = combatantsRef.current.find((c) => c.id === payload.combatant_id);
+            if (existing && payload.current_hp !== undefined) {
+              const prevHp = existing.current_hp ?? 0;
+              const newHp = payload.current_hp;
+              const delta = newHp - prevHp;
+              if (delta !== 0) {
+                if (hpDeltaTimerRef.current) clearTimeout(hpDeltaTimerRef.current);
+                const prevTemp = existing.temp_hp ?? 0;
+                const newTemp = payload.temp_hp ?? 0;
+                const isTempChange = delta === 0 && newTemp !== prevTemp;
+                setHpDelta({
+                  combatantId: payload.combatant_id,
+                  delta,
+                  type: isTempChange ? "temp" : delta < 0 ? "damage" : "heal",
+                  timestamp: Date.now(),
+                });
+                hpDeltaTimerRef.current = setTimeout(() => setHpDelta(null), 1500);
+              }
+            }
+            // Detect death save resolution for dramatic feedback
+            if (payload.death_saves) {
+              const prev = combatantsRef.current.find((c) => c.id === payload.combatant_id);
+              const prevSaves = prev?.death_saves;
+              const wasResolved = prevSaves && (prevSaves.successes >= 3 || prevSaves.failures >= 3);
+              if (!wasResolved) {
+                if (payload.death_saves.successes >= 3) {
+                  try {
+                    const audio = new Audio("/sounds/sfx/healing.mp3");
+                    audio.volume = 0.6;
+                    audio.play().catch(() => {});
+                  } catch { /* ignore */ }
+                  navigator.vibrate?.([100, 50, 100, 50, 100]);
+                  if (deathSaveResolutionTimerRef.current) clearTimeout(deathSaveResolutionTimerRef.current);
+                  setDeathSaveResolution({ combatantId: payload.combatant_id, result: "stabilized", timestamp: Date.now() });
+                  deathSaveResolutionTimerRef.current = setTimeout(() => setDeathSaveResolution(null), 3000);
+                } else if (payload.death_saves.failures >= 3) {
+                  try {
+                    const audio = new Audio("/sounds/sfx/death.mp3");
+                    audio.volume = 0.6;
+                    audio.play().catch(() => {});
+                  } catch { /* ignore */ }
+                  navigator.vibrate?.([500]);
+                  if (deathSaveResolutionTimerRef.current) clearTimeout(deathSaveResolutionTimerRef.current);
+                  setDeathSaveResolution({ combatantId: payload.combatant_id, result: "fallen", timestamp: Date.now() });
+                  deathSaveResolutionTimerRef.current = setTimeout(() => setDeathSaveResolution(null), 3000);
+                }
+              }
+            }
             updateCombatants((prev) =>
               prev.map((c) => {
                 if (c.id !== payload.combatant_id) return c;
@@ -535,7 +643,10 @@ export function PlayerJoinClient({
             setIsRegistered(false);
             setRegisteredName(undefined);
             setRejoinStatus("idle");
-            toast.error(tRef.current("rejoin_revoked"));
+            // Show persistent banner instead of silent toast
+            setSessionRevokedBanner(true);
+            if (sessionRevokedTimerRef.current) clearTimeout(sessionRevokedTimerRef.current);
+            sessionRevokedTimerRef.current = setTimeout(() => setSessionRevokedBanner(false), 5000);
           }
         })
         .on("broadcast", { event: "player:joined" }, ({ payload }) => {
@@ -896,6 +1007,7 @@ export function PlayerJoinClient({
 
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lateJoinMaxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleLateJoinRequest = useCallback(async (data: {
     name: string;
     initiative: number;
@@ -936,6 +1048,13 @@ export function PlayerJoinClient({
         setLateJoinStatus("polling");
       }
     }, 15_000);
+    // B2: 2-minute maximum timeout — stop polling, show timeout message
+    if (lateJoinMaxTimeoutRef.current) clearTimeout(lateJoinMaxTimeoutRef.current);
+    lateJoinMaxTimeoutRef.current = setTimeout(() => {
+      if (!lateJoinRegisteredRef.current) {
+        setLateJoinStatus("timeout");
+      }
+    }, 120_000);
   }, []);
 
   if (error) {
@@ -999,6 +1118,24 @@ export function PlayerJoinClient({
 
   return (
     <div className="min-h-screen bg-background p-4" data-testid="player-view">
+      {/* B1: Session revoked banner — replaces silent toast */}
+      {sessionRevokedBanner && (
+        <div className="fixed top-0 inset-x-0 z-50 bg-red-600 text-white px-4 py-3 flex items-center justify-between animate-[fade-in_300ms_ease-out] shadow-lg" data-testid="session-revoked-banner">
+          <span className="text-sm font-medium">{t("session_revoked_banner")}</span>
+          <button
+            type="button"
+            onClick={() => {
+              setSessionRevokedBanner(false);
+              setRejoinStatus("idle");
+              // Navigate to lobby by resetting state
+              window.location.reload();
+            }}
+            className="px-3 py-1 bg-white/20 text-white text-xs font-medium rounded hover:bg-white/30 transition-colors"
+          >
+            {t("session_revoked_rejoin")}
+          </button>
+        </div>
+      )}
       <div className="max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -1067,8 +1204,11 @@ export function PlayerJoinClient({
           channelRef={channelRef}
           customAudioFiles={playerAudioFiles}
           customAudioUrls={playerAudioUrls}
+          isLoadingAudioUrls={isLoadingAudioUrls}
           registeredName={registeredName}
           sessionId={sessionId}
+          hpDelta={hpDelta}
+          deathSaveResolution={deathSaveResolution}
           onEndTurn={() => {
             const ch = channelRef.current;
             if (!ch || connectionStatus !== "connected") {
