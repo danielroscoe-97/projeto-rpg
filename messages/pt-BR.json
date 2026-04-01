@@ -732,7 +732,7 @@
     "monster_quantity_group_hint": "Serão adicionados como grupo",
     "monster_quantity_group_label": "Grupo:",
     "monster_quantity_group_btn": "grupo",
-    "omnibar_manual_add": "Manual",
+    "omnibar_manual_add": "Monstro/Jogador Manual",
     "omnibar_manual_title": "Adicionar manualmente",
     "omnibar_players_section": "Players da Campanha",
     "auto_defeat_trait_confirm": "{name} tem {trait}. Derrotar automaticamente?",

@@ -732,7 +732,7 @@
     "monster_quantity_group_hint": "Will be added as a group",
     "monster_quantity_group_label": "Group:",
     "monster_quantity_group_btn": "group",
-    "omnibar_manual_add": "Manual",
+    "omnibar_manual_add": "Manual Monster/Player",
     "omnibar_manual_title": "Add manually",
     "omnibar_players_section": "Campaign Players",
     "auto_defeat_trait_confirm": "{name} has {trait}. Auto-defeat?",

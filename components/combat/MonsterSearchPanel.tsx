@@ -318,11 +318,11 @@ export function MonsterSearchPanel({
             <button
               type="button"
               onClick={() => setManualOpen((v) => !v)}
-              className={`text-[11px] flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
-                manualOpen ? "text-gold bg-gold/10" : "text-muted-foreground/60 hover:text-muted-foreground"
+              className={`text-xs font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md border transition-colors ${
+                manualOpen ? "text-gold border-gold/50 bg-gold/10" : "text-foreground/70 border-border hover:text-gold hover:border-gold/40 hover:bg-gold/5"
               }`}
             >
-              <span>+</span>
+              <span className="text-sm">+</span>
               {t("omnibar_manual_add")}
             </button>
           )}
