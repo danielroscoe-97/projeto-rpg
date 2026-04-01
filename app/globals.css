@@ -104,14 +104,21 @@ html {
   }
 
   /* Ensure content sits above body pseudo-elements (noise + gradient).
-     Excludes <nav> — the fixed Navbar manages its own z-index via Tailwind. */
+     Only applies to top-level layout containers — NOT section/article, which
+     would create competing stacking contexts and can push above the fixed Navbar. */
   #__next,
   body > div,
   main,
-  footer,
-  section {
+  footer {
     position: relative;
     z-index: 1;
+    /* Prevent stacking context from competing with fixed nav (z-50).
+       isolation: auto ensures children don't form a new stacking root. */
+  }
+
+  /* Fixed navbar must always sit above all content stacking contexts */
+  nav[aria-label="Main navigation"] {
+    z-index: 50 !important;
   }
 
   /* Typography: headings use Cinzel */

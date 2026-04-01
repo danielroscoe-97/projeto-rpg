@@ -152,3 +152,54 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   }
 });
+
+// ── Web Push — Turn Notifications ─────────────────────────────────────────────
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    payload = { title: "Pocket DM", body: event.data.text() };
+  }
+
+  const title = payload.title ?? "Pocket DM";
+  const options = {
+    body: payload.body ?? "É a sua vez!",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    tag: `turn-${payload.sessionId ?? "session"}`, // Collapse duplicate turn notifications
+    renotify: true,
+    requireInteraction: false,
+    data: {
+      url: payload.url ?? "/app/dashboard",
+    },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const url = event.notification.data?.url ?? "/app/dashboard";
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        // If the player tab is already open, focus it
+        for (const client of clientList) {
+          if (client.url.includes(url.split("?")[0]) && "focus" in client) {
+            return client.focus();
+          }
+        }
+        // Otherwise open a new tab
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(url);
+        }
+      })
+  );
+});

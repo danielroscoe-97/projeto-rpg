@@ -1056,7 +1056,14 @@
     "your_character": "Seu personagem",
     "end_turn": "Passar Turno",
     "death_saves_your_turn": "É seu turno — role seu Teste contra Morte!",
-    "death_saves_waiting": "Testes contra Morte"
+    "death_saves_waiting": "Testes contra Morte",
+    "push_notifications_enable": "🔔 Ativar notificações de turno",
+    "push_notifications_enable_aria": "Ativar notificações push para seu turno",
+    "push_notifications_on": "🔔 Notificações de turno ativadas",
+    "push_notifications_disable_aria": "Desativar notificações push",
+    "push_notifications_denied": "Notificações bloqueadas pelo navegador",
+    "push_notifications_requesting": "Solicitando permissão...",
+    "push_notifications_retry": "🔔 Tentar ativar notificações novamente"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",
@@ -1314,6 +1321,7 @@
     "try_encounter_name": "Combate de Teste",
     "save_requires_account": "Salvar (requer conta)",
     "share_requires_account": "Compartilhar (requer conta)",
+    "weather_upsell_label": "Efeitos climáticos (requer conta)",
     "expired_title": "Sessão expirada",
     "expired_body": "Crie uma conta gratuita para salvar seus combates e jogar sem limite de tempo.",
     "expired_cta_signup": "Criar conta grátis",

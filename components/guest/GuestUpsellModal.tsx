@@ -11,11 +11,13 @@ interface GuestUpsellModalProps {
   isOpen: boolean;
   onClose: () => void;
   trigger: UpsellTrigger;
+  /** Optional redirect URL after Google OAuth. Defaults to /auth/confirm?from=guest-combat */
+  redirectTo?: string;
 }
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function GuestUpsellModal({ isOpen, onClose, trigger }: GuestUpsellModalProps) {
+export function GuestUpsellModal({ isOpen, onClose, trigger, redirectTo }: GuestUpsellModalProps) {
   const t = useTranslations("guest");
   const tc = useTranslations("common");
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -110,8 +112,12 @@ export function GuestUpsellModal({ isOpen, onClose, trigger }: GuestUpsellModalP
 
         {/* Actions */}
         <div className="flex flex-col gap-3 pt-1">
-          {/* Google OAuth */}
-          <GoogleOAuthButton namespace="guest" data-testid="upsell-google-button" />
+          {/* Google OAuth — redirect back to guest combat so data is migrated */}
+          <GoogleOAuthButton
+            namespace="guest"
+            redirectTo={redirectTo}
+            data-testid="upsell-google-button"
+          />
 
           {/* Email sign-up */}
           <Link

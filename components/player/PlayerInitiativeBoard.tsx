@@ -16,6 +16,7 @@ import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherOverlay";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
+import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 
 export interface CombatLogEntry {
   text: string;
@@ -158,6 +159,8 @@ interface PlayerInitiativeBoardProps {
   customAudioUrls?: Record<string, string>;
   /** The registered player name for this session (used to identify "my" turn) */
   registeredName?: string;
+  /** Session ID — used for push notification subscription */
+  sessionId?: string;
   /** Callback when the player ends their own turn */
   onEndTurn?: () => void;
   /** Callback when the player marks a death save (optimistic update + broadcast) */
@@ -177,6 +180,7 @@ export function PlayerInitiativeBoard({
   customAudioFiles = [],
   customAudioUrls = {},
   registeredName,
+  sessionId,
   onEndTurn,
   onDeathSave,
 }: PlayerInitiativeBoardProps) {
@@ -673,7 +677,7 @@ export function PlayerInitiativeBoard({
 
       {/* Combat log temporarily disabled */}
 
-      {/* Notification toggle */}
+      {/* In-app notification overlay toggle */}
       <div className="flex justify-center py-2">
         <button
           type="button"
@@ -688,6 +692,11 @@ export function PlayerInitiativeBoard({
           {notificationsEnabled ? t("notifications_on") : t("notifications_off")}
         </button>
       </div>
+
+      {/* Push notification opt-in (Web Push API — native notifications when app is backgrounded) */}
+      {sessionId && registeredName && (
+        <TurnPushNotification sessionId={sessionId} playerName={registeredName} />
+      )}
 
       {/* Bottom-anchored bar for player's own character (mobile only) */}
       {primaryPlayerChar && primaryPlayerChar.current_hp != null && primaryPlayerChar.max_hp != null && (

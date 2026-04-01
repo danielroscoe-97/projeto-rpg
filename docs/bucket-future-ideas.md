@@ -28,6 +28,7 @@
 | F-10 | Geração aleatória de cenários (Epic 7.2) | prd-v2.md V3+ Backlog | 20h estimado, AI + Visual |
 | F-11 | Efeitos cinematográficos visuais (Epic 7.3) | prd-v2.md V3+ Backlog | 15h estimado |
 | F-12 | Presets de cenário com música (Epic 7.4) | prd-v2.md V3+ Backlog | 10h estimado |
+| F-37 | Dice roller basico (inline, com historico) | Gap Analysis G-07, 2026-03-30 | Mesa presencial usa dados fisicos. Reavaliar se analytics mostrarem demanda. 5/9 concorrentes tem |
 
 ## Áudio Avançado
 
@@ -95,5 +96,5 @@
 
 ---
 
-> **Última atualização:** 2026-03-30 (F-35, F-36 adicionados — feedback André Gomes Mamba)
+> **Última atualização:** 2026-03-30 (F-37 adicionado — Dice Roller confirmado como bucket pela gap analysis)
 > **Revisado por:** Dani_ + BMAD Party Mode

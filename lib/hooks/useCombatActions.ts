@@ -105,6 +105,24 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     // CP.2.1: Log turn advance
     const currentCombatant = combatants[nextIdx];
+
+    // Story 1.5: Fire-and-forget push notification to the current combatant (if player)
+    // Runs async — never blocks the UI or DB persist
+    if (currentCombatant?.is_player && !currentCombatant.is_defeated) {
+      const sid = getSessionId();
+      if (sid) {
+        fetch("/api/push/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: sid,
+            playerName: currentCombatant.name,
+          }),
+        }).catch(() => {
+          // Push notify is best-effort — silently ignore failures
+        });
+      }
+    }
     if (currentCombatant) {
       useCombatLogStore.getState().addEntry({
         round: nextRound,

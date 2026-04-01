@@ -1056,7 +1056,14 @@
     "your_character": "Your character",
     "end_turn": "End Turn",
     "death_saves_your_turn": "It's your turn — roll your Death Save!",
-    "death_saves_waiting": "Death Saves"
+    "death_saves_waiting": "Death Saves",
+    "push_notifications_enable": "🔔 Enable turn notifications",
+    "push_notifications_enable_aria": "Enable push notifications for your turn",
+    "push_notifications_on": "🔔 Turn notifications ON",
+    "push_notifications_disable_aria": "Disable push notifications",
+    "push_notifications_denied": "Notifications blocked by browser",
+    "push_notifications_requesting": "Requesting permission...",
+    "push_notifications_retry": "🔔 Retry enabling notifications"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",
@@ -1314,6 +1321,7 @@
     "try_encounter_name": "Test Combat",
     "save_requires_account": "Save (requires account)",
     "share_requires_account": "Share (requires account)",
+    "weather_upsell_label": "Weather effects (requires account)",
     "expired_title": "Session expired",
     "expired_body": "Create a free account to save your combats and play without time limits.",
     "expired_cta_signup": "Create free account",
