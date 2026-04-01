@@ -784,7 +784,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             dm_notes: "",
             player_notes: "",
             player_character_id: null,
-            combatant_role: "player",
+            combatant_role: null,
           });
         }}
       />

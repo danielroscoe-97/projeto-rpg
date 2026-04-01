@@ -873,7 +873,7 @@ export function CombatSessionClient({
                 dm_notes: "",
                 player_notes: "",
                 player_character_id: null,
-                combatant_role: "player",
+                combatant_role: null,
               });
             }}
           />
@@ -925,7 +925,7 @@ export function CombatSessionClient({
 
       <KeyboardCheatsheet open={cheatsheetOpen} onClose={() => setCheatsheetOpen(false)} />
 
-      <AlertDialog open={nameModalOpen} onOpenChange={setNameModalOpen}>
+      <AlertDialog open={nameModalOpen} onOpenChange={(open) => { if (!open) handleNameModalSkip(); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("encounter_name_modal_title")}</AlertDialogTitle>

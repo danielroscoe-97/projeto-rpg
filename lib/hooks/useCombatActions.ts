@@ -217,17 +217,16 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
 
     // CF-04: Auto-defeat non-player combatants at 0 HP
-    if (newCurrentHp === 0 && !before.is_player) {
+    if (newCurrentHp === 0 && !before.is_player && !before.is_defeated) {
       const { hasTrait, traitName } = hasZeroHpSurvivalTrait(before);
       if (hasTrait) {
-        toast(`${before.name} has ${traitName}. Auto-defeat?`, {
+        toast(t("auto_defeat_trait_confirm", { name: before.name, trait: traitName ?? "?" }), {
           duration: 10000,
           action: {
-            label: "Yes",
+            label: t("auto_defeat_yes"),
             onClick: () => {
               useCombatStore.getState().setDefeated(id, true);
               broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
-              broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: 0, temp_hp: 0 });
               persistDefeated(id, true).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
               useCombatLogStore.getState().addEntry({
                 round: useCombatStore.getState().round_number,
@@ -239,16 +238,15 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
             },
           },
           cancel: {
-            label: "No",
+            label: t("auto_defeat_no"),
             onClick: () => {},
           },
         });
       } else {
         useCombatStore.getState().setDefeated(id, true);
         broadcastEvent(getSessionId(), { type: "combat:defeated_change", combatant_id: id, is_defeated: true });
-        broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: 0, temp_hp: 0 });
         persistDefeated(id, true).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-        toast(`${before.name} defeated!`, { duration: 3000 });
+        toast(t("auto_defeat_confirmed", { name: before.name }), { duration: 3000 });
         useCombatLogStore.getState().addEntry({
           round: roundNumber,
           type: "defeat",

@@ -23,5 +23,5 @@ export function generateEncounterName(combatants: Combatant[]): string {
   if (uniqueNames.length === 0) return "Encounter";
   if (uniqueNames.length <= 3) return uniqueNames.join(" & ");
   const first2 = uniqueNames.slice(0, 2).join(", ");
-  return `${first2} & ${uniqueNames.length - 2} outros`;
+  return `${first2} & +${uniqueNames.length - 2}`;
 }

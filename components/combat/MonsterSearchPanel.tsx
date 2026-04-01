@@ -267,10 +267,10 @@ export function MonsterSearchPanel({
   const handleManualSubmit = () => {
     const name = manualName.trim();
     if (!name || !onManualAdd) return;
-    const hp = manualHp ? parseInt(manualHp, 10) : undefined;
-    const ac = manualAc ? parseInt(manualAc, 10) : undefined;
-    const init = manualInit ? parseInt(manualInit, 10) : undefined;
-    onManualAdd({ name, hp: hp && !isNaN(hp) ? hp : undefined, ac: ac && !isNaN(ac) ? ac : undefined, initiative: init && !isNaN(init) ? init : undefined });
+    const hp = manualHp !== "" ? parseInt(manualHp, 10) : undefined;
+    const ac = manualAc !== "" ? parseInt(manualAc, 10) : undefined;
+    const init = manualInit !== "" ? parseInt(manualInit, 10) : undefined;
+    onManualAdd({ name, hp: hp !== undefined && !isNaN(hp) ? hp : undefined, ac: ac !== undefined && !isNaN(ac) ? ac : undefined, initiative: init !== undefined && !isNaN(init) ? init : undefined });
     setManualName("");
     setManualHp("");
     setManualAc("");
