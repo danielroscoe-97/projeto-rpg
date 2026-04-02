@@ -271,7 +271,10 @@
     "saved": "Saved",
     "delete_note": "Delete",
     "delete_note_confirm": "Are you sure you want to delete this note? This action cannot be undone.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "player_notes_section": "Player Notes",
+    "player_notes_empty": "No players have written notes yet",
+    "player_notes_by": "by {name}"
   },
   "links": {
     "related_npcs": "Related NPCs",
@@ -423,6 +426,7 @@
     "overview": "Overview",
     "campaigns": "Campaigns",
     "combats": "Combats",
+    "characters": "Characters",
     "soundboard": "Soundboard",
     "settings": "Settings",
     "profile": "Profile",
@@ -431,6 +435,12 @@
     "create_npc": "Create NPC",
     "invite_player": "Invite Player",
     "nav_label": "Dashboard navigation"
+  },
+  "characters_page": {
+    "title": "My Characters",
+    "empty": "You don't have any characters yet",
+    "view_campaigns": "View Campaigns",
+    "loading": "Loading characters..."
   },
   "onboarding": {
     "choose_title": "How do you want to start?",
@@ -1084,6 +1094,14 @@
     "notes_title": "Campaign Notes",
     "notes_loading": "Loading notes...",
     "notes_none": "No shared notes yet.",
+    "my_notes": "My Notes",
+    "my_notes_add": "New note",
+    "my_notes_empty": "No personal notes",
+    "my_notes_saving": "Saving...",
+    "my_notes_saved": "Saved",
+    "my_notes_delete_confirm": "Delete note?",
+    "my_notes_limit": "Limit of 10 notes reached",
+    "my_notes_placeholder": "Write here...",
     "initiative_order": "Initiative order",
     "current_turn": "Current turn",
     "hp_label": "HP",
@@ -1434,7 +1452,15 @@
     "item_rarity_varies": "Varies",
     "item_rarity_unknown": "Unknown",
     "item_weapon_simple": "Simple",
-    "item_weapon_martial": "Martial"
+    "item_weapon_martial": "Martial",
+    "tab_feats": "Feats",
+    "feats_search_placeholder": "Search feat...",
+    "feats_filter_all": "All",
+    "feats_filter_has_prereq": "Has Prerequisite",
+    "feats_filter_no_prereq": "No Prerequisite",
+    "feats_count": "{count} feats found",
+    "feats_prerequisite": "Prerequisite",
+    "feats_pin": "Pin to combat"
   },
   "guest": {
     "guest_notice": "Guest mode — your combat won't be saved.",
@@ -1818,7 +1844,9 @@
     "dashboard_ambient_title": "Ambient Sounds",
     "slot_empty": "Empty slot",
     "replace_sound": "Replace sound",
-    "tap_to_enable_sound": "Tap to enable sound"
+    "tap_to_enable_sound": "Tap to enable sound",
+    "disabled_not_turn_short": "Your turn",
+    "turn_sfx_toggle": "Turn advance sound"
   },
   "lp_pricing": {
     "section_title": "Simple and transparent.",

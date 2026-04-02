@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Volume2, Square, X } from "lucide-react";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getAmbientPresets, getMusicPresets, getSfxPresets } from "@/lib/utils/audio-presets";
+import { isTurnSfxEnabled, setTurnSfxEnabled } from "@/lib/utils/turn-sfx";
 
 const SFX_COOLDOWN_MS = 1500;
 
@@ -34,6 +35,14 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
   const ambientPresets = getAmbientPresets();
   const musicPresets = getMusicPresets();
   const sfxPresets = getSfxPresets();
+
+  const [turnSfx, setTurnSfx] = useState(isTurnSfxEnabled);
+
+  const handleTurnSfxToggle = useCallback(() => {
+    const next = !turnSfx;
+    setTurnSfx(next);
+    setTurnSfxEnabled(next);
+  }, [turnSfx]);
 
   // Cleanup
   useEffect(() => {
@@ -217,6 +226,26 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
                   {t("dm_stop_all")}
                 </button>
               )}
+            </div>
+
+            {/* Turn SFX toggle */}
+            <div className="flex items-center justify-between mb-3 px-1">
+              <span className="text-xs text-muted-foreground">{t("turn_sfx_toggle")}</span>
+              <button
+                type="button"
+                onClick={handleTurnSfxToggle}
+                className={`relative w-8 h-4 rounded-full transition-colors ${
+                  turnSfx ? "bg-gold/60" : "bg-white/10"
+                }`}
+                aria-label={t("turn_sfx_toggle")}
+                data-testid="turn-sfx-toggle"
+              >
+                <span
+                  className={`absolute top-0.5 w-3 h-3 rounded-full transition-transform ${
+                    turnSfx ? "translate-x-4 bg-gold" : "translate-x-0.5 bg-gray-500"
+                  }`}
+                />
+              </button>
             </div>
 
             {/* Now Playing chips */}

@@ -166,6 +166,15 @@ export interface SrdCondition {
   category?: "condition" | "disease" | "status";
 }
 
+export interface SrdFeat {
+  id: string;
+  name: string;
+  description: string;
+  prerequisite: string | null;
+  source: string;
+  ruleset_version: string;
+}
+
 const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();
 
 /** @internal — exposed only for test isolation */
@@ -233,6 +242,23 @@ export async function loadConditions(): Promise<SrdCondition[]> {
     throw new Error(`Failed to load SRD conditions: ${res.status}`);
   }
   return res.json() as Promise<SrdCondition[]>;
+}
+
+const featCache = new Map<string, Promise<SrdFeat[]>>();
+
+export function loadFeats(): Promise<SrdFeat[]> {
+  const key = "all";
+  const cached = featCache.get(key);
+  if (cached) return cached;
+  const promise = fetch("/srd/feats.json").then((res) => {
+    if (!res.ok) {
+      featCache.delete(key);
+      throw new Error(`Failed to load SRD feats: ${res.status}`);
+    }
+    return res.json() as Promise<SrdFeat[]>;
+  });
+  featCache.set(key, promise);
+  return promise;
 }
 
 const itemCache = new Map<string, Promise<SrdItem[]>>();

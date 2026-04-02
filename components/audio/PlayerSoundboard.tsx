@@ -95,6 +95,14 @@ export function PlayerSoundboard({
           <span className="w-6 h-6 border-2 border-black/30 border-t-black rounded-full animate-spin" />
         ) : "🔊"}
       </button>
+      {!isPlayerTurn && (
+        <span
+          className="fixed bottom-[5.25rem] right-4 z-40 w-14 text-center text-muted-foreground text-[10px] leading-tight pointer-events-none"
+          data-testid="soundboard-turn-lock-label"
+        >
+          {t("disabled_not_turn_short")}
+        </span>
+      )}
 
       {/* Soundboard Drawer */}
       <AnimatePresence>

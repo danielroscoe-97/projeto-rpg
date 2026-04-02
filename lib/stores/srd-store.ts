@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import type { SrdMonster, SrdSpell, SrdCondition, SrdItem } from "@/lib/srd/srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat } from "@/lib/srd/srd-loader";
 import {
   loadMonsters,
   loadSpells,
   loadConditions,
   loadItems,
   loadMadMonsters,
+  loadFeats,
 } from "@/lib/srd/srd-loader";
 import {
   getCachedMonsters,
@@ -16,6 +17,8 @@ import {
   setCachedConditions,
   getCachedItems,
   setCachedItems,
+  getCachedFeats,
+  setCachedFeats,
 } from "@/lib/srd/srd-cache";
 import { srdSearchProvider } from "@/lib/srd/fuse-search-provider";
 import { getImportedMonsters } from "@/lib/import/import-cache";
@@ -26,6 +29,7 @@ interface SrdState {
   spells: SrdSpell[];
   conditions: SrdCondition[];
   items: SrdItem[];
+  feats: SrdFeat[];
   is_loading: boolean;
   /** Tracks which SRD versions have been loaded */
   loadedVersions: Set<RulesetVersion>;
@@ -45,6 +49,7 @@ const initialState: SrdState = {
   spells: [],
   conditions: [],
   items: [],
+  feats: [],
   is_loading: false,
   loadedVersions: new Set(),
   error: null,
@@ -134,6 +139,20 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
 
       scheduleDeferred(() => {
         get().loadVersionOnDemand(DEFERRED_VERSION);
+      });
+
+      // Phase 2b: Load feats (non-critical, deferred)
+      scheduleDeferred(async () => {
+        try {
+          const feats = await loadWithCache(
+            () => getCachedFeats(),
+            (d) => setCachedFeats(d),
+            () => loadFeats()
+          );
+          set({ feats });
+        } catch {
+          // Feats load failure is non-critical
+        }
       });
 
       // Phase 3: Load Monster-a-Day community monsters (non-critical)

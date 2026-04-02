@@ -31,6 +31,7 @@ import { assignInitiativeOrder, sortByInitiative, adjustInitiativeAfterReorder }
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import { applyGroupRename } from "@/lib/utils/group-rename";
+import { playTurnSfx } from "@/lib/utils/turn-sfx";
 
 /** Get the name of the combatant whose turn is currently active. */
 function getCurrentActorName(): string {
@@ -74,6 +75,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
 
     advanceTurn();
+    playTurnSfx();
     const postAdvance = useCombatStore.getState();
     const { current_turn_index: nextIdx, round_number: nextRound, combatants } = postAdvance;
     if (nextIdx === prevIdx && nextRound === prevRound) {

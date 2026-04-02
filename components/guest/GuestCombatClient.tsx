@@ -34,6 +34,7 @@ import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcu
 import { setLastHpMode } from "@/components/combat/HpAdjuster";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { applyGroupRename } from "@/lib/utils/group-rename";
+import { playTurnSfx } from "@/lib/utils/turn-sfx";
 
 interface AddRowForm {
   initiative: string;
@@ -770,6 +771,7 @@ export function GuestCombatClient() {
     const store = useGuestCombatStore.getState();
     pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber);
     advanceTurn();
+    playTurnSfx();
   }, [advanceTurn, pushTurnUndo]);
 
   // Keyboard shortcuts (space = next turn, arrow keys, D/H/C, etc.)

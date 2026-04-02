@@ -271,7 +271,10 @@
     "saved": "Salvo",
     "delete_note": "Excluir",
     "delete_note_confirm": "Tem certeza que deseja excluir esta nota? Esta ação não pode ser desfeita.",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "player_notes_section": "Notas dos Jogadores",
+    "player_notes_empty": "Nenhum jogador escreveu notas ainda",
+    "player_notes_by": "por {name}"
   },
   "links": {
     "related_npcs": "NPCs Relacionados",
@@ -423,6 +426,7 @@
     "overview": "Visão Geral",
     "campaigns": "Campanhas",
     "combats": "Combates",
+    "characters": "Personagens",
     "soundboard": "Soundboard",
     "settings": "Configurações",
     "profile": "Perfil",
@@ -431,6 +435,12 @@
     "create_npc": "Criar NPC",
     "invite_player": "Convidar Jogador",
     "nav_label": "Navegação do dashboard"
+  },
+  "characters_page": {
+    "title": "Meus Personagens",
+    "empty": "Você ainda não tem personagens",
+    "view_campaigns": "Ver Campanhas",
+    "loading": "Carregando personagens..."
   },
   "onboarding": {
     "choose_title": "Como você quer começar?",
@@ -1084,6 +1094,14 @@
     "notes_title": "Notas da Campanha",
     "notes_loading": "Carregando notas...",
     "notes_none": "Nenhuma nota compartilhada ainda.",
+    "my_notes": "Minhas Notas",
+    "my_notes_add": "Nova nota",
+    "my_notes_empty": "Sem notas pessoais",
+    "my_notes_saving": "Salvando...",
+    "my_notes_saved": "Salvo",
+    "my_notes_delete_confirm": "Excluir nota?",
+    "my_notes_limit": "Limite de 10 notas atingido",
+    "my_notes_placeholder": "Escreva aqui...",
     "initiative_order": "Ordem de iniciativa",
     "current_turn": "Turno atual",
     "hp_label": "HP",
@@ -1434,7 +1452,15 @@
     "item_rarity_varies": "Variável",
     "item_rarity_unknown": "Desconhecido",
     "item_weapon_simple": "Simples",
-    "item_weapon_martial": "Marcial"
+    "item_weapon_martial": "Marcial",
+    "tab_feats": "Talentos",
+    "feats_search_placeholder": "Buscar talento...",
+    "feats_filter_all": "Todos",
+    "feats_filter_has_prereq": "Com Pré-requisito",
+    "feats_filter_no_prereq": "Sem Pré-requisito",
+    "feats_count": "{count} talentos encontrados",
+    "feats_prerequisite": "Pré-requisito",
+    "feats_pin": "Fixar no combate"
   },
   "guest": {
     "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",
@@ -1818,7 +1844,9 @@
     "dashboard_ambient_title": "Sons Ambientes",
     "slot_empty": "Slot vazio",
     "replace_sound": "Substituir som",
-    "tap_to_enable_sound": "Toque para ativar som"
+    "tap_to_enable_sound": "Toque para ativar som",
+    "disabled_not_turn_short": "Seu turno",
+    "turn_sfx_toggle": "Som ao trocar turno"
   },
   "lp_pricing": {
     "section_title": "Simples e transparente.",
