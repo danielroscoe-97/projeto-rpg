@@ -258,6 +258,9 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   // player:poll_vote is player→DM only, never broadcast to other players
   if (event.type === "player:poll_vote") return null;
 
+  // player:hp_action is player→DM only, effect reaches others via combat:hp_update
+  if (event.type === "player:hp_action") return null;
+
   // Events that pass through unchanged (no sensitive data)
   return event;
 }

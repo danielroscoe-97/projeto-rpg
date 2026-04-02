@@ -156,6 +156,8 @@ export function PlayerJoinClient({
   const combatantsRef = useRef(initialCombatants);
   // Guard: timestamp of last optimistic death save update — prevents polling from overwriting
   const deathSaveOptimisticRef = useRef<number>(0);
+  // Guard: timestamp of last optimistic HP action update — prevents state_sync from overwriting (C.13)
+  const hpActionOptimisticRef = useRef<number>(0);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
@@ -488,6 +490,52 @@ export function PlayerJoinClient({
     });
   }, [addLogEntry]);
 
+  // C.13: Player HP self-management — broadcast to DM + optimistic local update
+  const handleHpAction = useCallback((combatantId: string, action: "damage" | "heal" | "temp_hp", amount: number) => {
+    const ch = channelRef.current;
+    if (!ch || connectionStatus !== "connected") {
+      toast.error(tRef.current("sync_offline"));
+      return;
+    }
+
+    // Broadcast to DM
+    ch.send({
+      type: "broadcast",
+      event: "player:hp_action",
+      payload: {
+        player_name: registeredName,
+        combatant_id: combatantId,
+        action,
+        amount,
+      },
+    });
+
+    // Optimistic local update with temp HP absorption
+    hpActionOptimisticRef.current = Date.now();
+    updateCombatants((prev) =>
+      prev.map((c) => {
+        if (c.id !== combatantId) return c;
+        if (action === "damage") {
+          let remaining = amount;
+          let newTempHp = c.temp_hp ?? 0;
+          if (newTempHp > 0) {
+            const absorbed = Math.min(newTempHp, remaining);
+            newTempHp -= absorbed;
+            remaining -= absorbed;
+          }
+          return { ...c, current_hp: Math.max(0, (c.current_hp ?? 0) - remaining), temp_hp: newTempHp };
+        }
+        if (action === "heal") {
+          return { ...c, current_hp: Math.min(c.max_hp ?? 0, (c.current_hp ?? 0) + amount) };
+        }
+        if (action === "temp_hp") {
+          return { ...c, temp_hp: Math.min(9999, Math.max(c.temp_hp ?? 0, amount)) };
+        }
+        return c;
+      })
+    );
+  }, [connectionStatus, registeredName, updateCombatants]);
+
   // Full state fetch via API — used on reconnect & polling fallback.
   // Uses /api/session/[id]/state which sanitizes monster data server-side.
   const fetchFullState = useCallback(async (_eid: string) => {
@@ -505,18 +553,24 @@ export function PlayerJoinClient({
       if (data.combatants) {
         // Preserve optimistic death saves for 5s after player click
         const isDeathSaveProtected = Date.now() - deathSaveOptimisticRef.current < 5000;
-        if (isDeathSaveProtected) {
+        // C.13: Preserve optimistic HP action for 5s after player self-report
+        const isHpActionProtected = Date.now() - hpActionOptimisticRef.current < 5000;
+        if (isDeathSaveProtected || isHpActionProtected) {
           updateCombatants((prev) => {
             const serverList = data.combatants as PlayerCombatant[];
             return serverList.map((sc) => {
               const local = prev.find((lc) => lc.id === sc.id);
-              if (local?.death_saves && sc.death_saves) {
-                // Keep whichever has more saves (optimistic is ahead of server)
+              // Preserve optimistic death saves
+              if (isDeathSaveProtected && local?.death_saves && sc.death_saves) {
                 const localTotal = (local.death_saves.successes ?? 0) + (local.death_saves.failures ?? 0);
                 const serverTotal = (sc.death_saves.successes ?? 0) + (sc.death_saves.failures ?? 0);
                 if (localTotal > serverTotal) {
                   return { ...sc, death_saves: local.death_saves };
                 }
+              }
+              // Preserve optimistic HP values
+              if (isHpActionProtected && local) {
+                return { ...sc, current_hp: local.current_hp, temp_hp: local.temp_hp };
               }
               return sc;
             });
@@ -1544,6 +1598,8 @@ export function PlayerJoinClient({
           sessionId={sessionId}
           hpDelta={hpDelta}
           deathSaveResolution={deathSaveResolution}
+          onHpAction={handleHpAction}
+          connectionStatus={connectionStatus}
           onEndTurn={() => {
             const ch = channelRef.current;
             if (!ch || connectionStatus !== "connected") {

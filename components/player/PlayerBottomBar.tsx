@@ -1,12 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Shield, Zap } from "lucide-react";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
+import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 
 interface PlayerBottomBarProps {
   character: {
@@ -36,10 +38,42 @@ interface PlayerBottomBarProps {
   onEndTurn?: () => void;
   /** Whether end turn is pending */
   endTurnPending?: boolean;
+  /** Callback when the player reports HP changes (damage/heal/temp) */
+  onHpAction?: (combatantId: string, action: "damage" | "heal" | "temp_hp", amount: number) => void;
+  /** Realtime connection status — used to disable HP action buttons when offline */
+  connectionStatus?: string;
 }
 
-export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, hpDelta, onEndTurn, endTurnPending }: PlayerBottomBarProps) {
+export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, hpDelta, onEndTurn, endTurnPending, onHpAction, connectionStatus }: PlayerBottomBarProps) {
   const t = useTranslations("player");
+
+  // B.07: AC/DC mid-combat flash — detect changes and flash amber for 1.5s
+  const prevAcRef = useRef<number | undefined>(undefined);
+  const prevDcRef = useRef<number | null | undefined>(undefined);
+  const [acFlash, setAcFlash] = useState(false);
+  const [dcFlash, setDcFlash] = useState(false);
+  const acFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dcFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (prevAcRef.current !== undefined && character.ac !== prevAcRef.current) {
+      setAcFlash(true);
+      if (acFlashTimerRef.current) clearTimeout(acFlashTimerRef.current);
+      acFlashTimerRef.current = setTimeout(() => { setAcFlash(false); acFlashTimerRef.current = null; }, 1500);
+    }
+    prevAcRef.current = character.ac;
+    if (prevDcRef.current !== undefined && character.spell_save_dc !== prevDcRef.current) {
+      setDcFlash(true);
+      if (dcFlashTimerRef.current) clearTimeout(dcFlashTimerRef.current);
+      dcFlashTimerRef.current = setTimeout(() => { setDcFlash(false); dcFlashTimerRef.current = null; }, 1500);
+    }
+    prevDcRef.current = character.spell_save_dc;
+  }, [character.ac, character.spell_save_dc]);
+  useEffect(() => {
+    return () => {
+      if (acFlashTimerRef.current) clearTimeout(acFlashTimerRef.current);
+      if (dcFlashTimerRef.current) clearTimeout(dcFlashTimerRef.current);
+    };
+  }, []);
 
   const currentHp = character.current_hp;
   const maxHp = character.max_hp;
@@ -137,7 +171,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
               {character.ac != null && (
                 <div className="flex items-center gap-0.5 shrink-0 text-muted-foreground">
                   <Shield className="w-3.5 h-3.5" aria-hidden="true" />
-                  <span className="text-foreground text-sm font-mono font-semibold">
+                  <span className={`text-sm font-mono font-semibold transition-colors duration-[1500ms] ${acFlash ? "text-amber-400" : "text-foreground"}`}>
                     {character.ac}
                   </span>
                 </div>
@@ -145,7 +179,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
               {character.spell_save_dc != null && (
                 <div className="flex items-center gap-0.5 shrink-0 text-muted-foreground">
                   <Zap className="w-3.5 h-3.5 text-purple-400" aria-hidden="true" />
-                  <span className="text-foreground text-sm font-mono font-semibold">
+                  <span className={`text-sm font-mono font-semibold transition-colors duration-[1500ms] ${dcFlash ? "text-amber-400" : "text-foreground"}`}>
                     {character.spell_save_dc}
                   </span>
                 </div>
@@ -163,6 +197,17 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                 </button>
               )}
             </div>
+            {/* HP self-management actions — mobile (C.13) */}
+            {onHpAction && (
+              <PlayerHpActions
+                characterId={character.id}
+                currentHp={currentHp}
+                maxHp={maxHp}
+                tempHp={tempHp}
+                connectionStatus={connectionStatus ?? "disconnected"}
+                onHpAction={onHpAction}
+              />
+            )}
           </>
         )}
 

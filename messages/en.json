@@ -934,7 +934,15 @@
     "encounter_name_modal_title": "Name this encounter",
     "encounter_name_modal_suggestion": "You can rename or keep the suggested name.",
     "encounter_name_modal_skip": "Skip",
-    "encounter_name_modal_save": "Save"
+    "encounter_name_modal_save": "Save",
+    "hp_damage": "\u2212Damage",
+    "hp_heal": "+Heal",
+    "hp_temp": "\ud83d\udee1Temp",
+    "hp_damage_title": "Damage taken",
+    "hp_heal_title": "Healing received",
+    "hp_temp_title": "Temp HP",
+    "hp_self_report": "(self-report)",
+    "hp_amount_placeholder": "Amount"
   },
   "conditions": {
     "blinded": "Blinded",

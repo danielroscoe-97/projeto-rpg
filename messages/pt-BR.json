@@ -934,7 +934,15 @@
     "encounter_name_modal_title": "Nomear este encontro",
     "encounter_name_modal_suggestion": "Renomeie ou mantenha o nome sugerido.",
     "encounter_name_modal_skip": "Pular",
-    "encounter_name_modal_save": "Salvar"
+    "encounter_name_modal_save": "Salvar",
+    "hp_damage": "\u2212Dano",
+    "hp_heal": "+Cura",
+    "hp_temp": "\ud83d\udee1Temp",
+    "hp_damage_title": "Dano sofrido",
+    "hp_heal_title": "Cura recebida",
+    "hp_temp_title": "Temp HP",
+    "hp_self_report": "(self-report)",
+    "hp_amount_placeholder": "Valor"
   },
   "conditions": {
     "blinded": "Cego",

@@ -18,6 +18,7 @@ import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherO
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
+import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 
 export interface CombatLogEntry {
   text: string;
@@ -176,6 +177,10 @@ interface PlayerInitiativeBoardProps {
   hpDelta?: { combatantId: string; delta: number; type: "damage" | "heal" | "temp"; timestamp: number } | null;
   /** Death save resolution overlay — "stabilized" or "fallen" */
   deathSaveResolution?: { combatantId: string; result: "stabilized" | "fallen"; timestamp: number } | null;
+  /** Callback when the player reports HP changes (damage/heal/temp) */
+  onHpAction?: (combatantId: string, action: "damage" | "heal" | "temp_hp", amount: number) => void;
+  /** Realtime connection status — used to disable HP action buttons when offline */
+  connectionStatus?: string;
 }
 
 export function PlayerInitiativeBoard({
@@ -197,6 +202,8 @@ export function PlayerInitiativeBoard({
   isLoadingAudioUrls = false,
   hpDelta,
   deathSaveResolution,
+  onHpAction,
+  connectionStatus,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
@@ -256,6 +263,38 @@ export function PlayerInitiativeBoard({
   }, [deathSavePending, onDeathSave]);
   // Spell browser state
   const [spellsOpen, setSpellsOpen] = useState(false);
+
+  // B.07: AC/DC mid-combat flash — detect changes and flash amber for 1.5s
+  const prevAcRef = useRef<number | undefined>(undefined);
+  const prevDcRef = useRef<number | null | undefined>(undefined);
+  const [acFlash, setAcFlash] = useState(false);
+  const [dcFlash, setDcFlash] = useState(false);
+  const acFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dcFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    const pc = registeredName ? combatants.find((c) => c.is_player && c.name === registeredName) : null;
+    if (!pc) return;
+    // AC changed
+    if (prevAcRef.current !== undefined && pc.ac !== prevAcRef.current) {
+      setAcFlash(true);
+      if (acFlashTimerRef.current) clearTimeout(acFlashTimerRef.current);
+      acFlashTimerRef.current = setTimeout(() => { setAcFlash(false); acFlashTimerRef.current = null; }, 1500);
+    }
+    prevAcRef.current = pc.ac;
+    // DC changed
+    if (prevDcRef.current !== undefined && pc.spell_save_dc !== prevDcRef.current) {
+      setDcFlash(true);
+      if (dcFlashTimerRef.current) clearTimeout(dcFlashTimerRef.current);
+      dcFlashTimerRef.current = setTimeout(() => { setDcFlash(false); dcFlashTimerRef.current = null; }, 1500);
+    }
+    prevDcRef.current = pc.spell_save_dc;
+  }, [combatants, registeredName]);
+  useEffect(() => {
+    return () => {
+      if (acFlashTimerRef.current) clearTimeout(acFlashTimerRef.current);
+      if (dcFlashTimerRef.current) clearTimeout(dcFlashTimerRef.current);
+    };
+  }, []);
 
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
@@ -524,18 +563,18 @@ export function PlayerInitiativeBoard({
                     <span className="text-xs text-muted-foreground/60">{t("turn_not_reached")}</span>
                   )}
                 </div>
-                {/* AC + Save DC — own character only */}
+                {/* AC + Save DC — own character only (B.07: flash amber on mid-combat change) */}
                 <div className="flex items-center gap-3 text-muted-foreground text-sm mb-2">
                   {pc.ac != null && (
                     <div className="flex items-center gap-1">
                       <Shield className="w-3.5 h-3.5" />
-                      <span className="text-foreground font-mono font-semibold">{pc.ac}</span>
+                      <span className={`font-mono font-semibold transition-colors duration-[1500ms] ${acFlash ? "text-amber-400" : "text-foreground"}`}>{pc.ac}</span>
                     </div>
                   )}
                   {pc.spell_save_dc != null && (
                     <div className="flex items-center gap-1">
                       <Zap className="w-3.5 h-3.5 text-purple-400" />
-                      <span className="text-foreground font-mono font-semibold">DC {pc.spell_save_dc}</span>
+                      <span className={`font-mono font-semibold transition-colors duration-[1500ms] ${dcFlash ? "text-amber-400" : "text-foreground"}`}>DC {pc.spell_save_dc}</span>
                     </div>
                   )}
                 </div>
@@ -586,6 +625,19 @@ export function PlayerInitiativeBoard({
                     />
                   </div>
                 </div>
+                {/* HP self-management actions — desktop own-char card (C.13) */}
+                {onHpAction && (
+                  <div className="mt-2">
+                    <PlayerHpActions
+                      characterId={pc.id}
+                      currentHp={currentHp}
+                      maxHp={maxHp}
+                      tempHp={tempHp}
+                      connectionStatus={connectionStatus ?? "disconnected"}
+                      onHpAction={onHpAction}
+                    />
+                  </div>
+                )}
                 {pc.conditions.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2" role="list" aria-label={`${pc.name} conditions`}>
                     {pc.conditions.map((condition) => (
@@ -920,6 +972,8 @@ export function PlayerInitiativeBoard({
           hpDelta={hpDelta && hpDelta.combatantId === primaryPlayerChar.id ? hpDelta : null}
           onEndTurn={onEndTurn}
           endTurnPending={endTurnPending}
+          onHpAction={onHpAction}
+          connectionStatus={connectionStatus}
         />
       )}
 
