@@ -146,7 +146,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
               <span className={`text-foreground text-sm font-mono font-bold shrink-0 relative ${hpDelta ? (hpDelta.type === "damage" ? "animate-[flash-red_150ms_ease-in-out_2]" : "animate-[flash-green_150ms_ease-in-out_2]") : ""}`}>
                 {currentHp}<span className="text-muted-foreground text-xs font-normal">/{maxHp}</span>
                 {hasTempHp && (
-                  <span className="text-[#9f7aea] ml-1 text-xs">
+                  <span className="text-temp-hp ml-1 text-xs">
                     +{tempHp}
                   </span>
                 )}

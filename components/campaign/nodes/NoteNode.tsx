@@ -20,7 +20,7 @@ function NoteNodeComponent({ data }: NoteNodeProps) {
   const textColor = data.isShared ? "text-blue-400" : "text-gray-400";
 
   return (
-    <div className={`px-4 py-3 rounded-lg border ${accent} bg-[#1a1a2e] shadow-md min-w-[120px]`}>
+    <div className={`px-4 py-3 rounded-lg border ${accent} bg-surface-overlay shadow-md min-w-[120px]`}>
       <Handle type="target" position={Position.Top} className="!bg-blue-400 !w-2 !h-2" />
       <div className="flex items-center gap-2">
         <FileText className={`h-4 w-4 ${textColor} flex-shrink-0`} />

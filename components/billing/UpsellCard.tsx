@@ -78,7 +78,7 @@ export function UpsellCard({ flagKey, open, onOpenChange }: UpsellCardProps) {
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={primaryAction}
-            className="bg-[#D4A853] hover:bg-[#C49A48] text-black font-medium"
+            className="bg-gold hover:bg-gold-hover text-black font-medium"
           >
             {primaryCta}
           </AlertDialogAction>

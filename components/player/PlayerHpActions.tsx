@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Minus, Plus, Shield } from "lucide-react";
+import { Minus, Plus, Shield, WifiOff } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface PlayerHpActionsProps {
@@ -33,6 +34,8 @@ export function PlayerHpActions({
   const t = useTranslations("player");
   const [activeAction, setActiveAction] = useState<HpActionType | null>(null);
   const [value, setValue] = useState("");
+  // UX.11 — track popover placement direction
+  const [popoverAbove, setPopoverAbove] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isOffline = connectionStatus !== "connected";
@@ -41,6 +44,15 @@ export function PlayerHpActions({
   useEffect(() => {
     if (activeAction && inputRef.current) {
       inputRef.current.focus();
+    }
+  }, [activeAction]);
+
+  // UX.11 — detect viewport space when popover opens
+  useEffect(() => {
+    if (activeAction && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      // If less than 80px above, open downward instead
+      setPopoverAbove(rect.top > 80);
     }
   }, [activeAction]);
 
@@ -61,20 +73,34 @@ export function PlayerHpActions({
     const amount = parseInt(value, 10);
     if (!activeAction || !amount || amount <= 0 || amount > 9999 || !Number.isInteger(amount)) return;
     onHpAction(characterId, activeAction, amount);
+
+    // UX.12 — toast confirmation after submit
+    if (activeAction === "damage") toast(`−${amount} HP ${t("hp_sent_suffix")}`);
+    else if (activeAction === "heal") toast(`+${amount} HP ${t("hp_sent_suffix")}`);
+    else toast(`+${amount} Temp HP ${t("hp_sent_suffix")}`);
+
     setActiveAction(null);
     setValue("");
-  }, [activeAction, value, characterId, onHpAction]);
+  }, [activeAction, value, characterId, onHpAction, t]);
 
-  const actions: Array<{ key: HpActionType; label: string; icon: typeof Minus; disabled: boolean }> = [
-    { key: "damage", label: t("hp_damage"), icon: Minus, disabled: currentHp <= 0 },
-    { key: "heal", label: t("hp_heal"), icon: Plus, disabled: false },
-    { key: "temp_hp", label: t("hp_temp"), icon: Shield, disabled: currentHp <= 0 },
+  const isDisabledByCondition = (key: HpActionType) => {
+    if (key === "heal") return false;
+    return currentHp <= 0;
+  };
+
+  const actions: Array<{ key: HpActionType; label: string; icon: typeof Minus }> = [
+    { key: "damage", label: t("hp_damage"), icon: Minus },
+    { key: "heal", label: t("hp_heal"), icon: Plus },
+    { key: "temp_hp", label: t("hp_temp"), icon: Shield },
   ];
 
   return (
     <div ref={containerRef} className="relative flex items-center gap-1">
-      {actions.map(({ key, label, icon: Icon, disabled }) => {
+      {actions.map(({ key, label, icon: Icon }) => {
         const config = ACTION_CONFIG[key];
+        const disabledByCondition = isDisabledByCondition(key);
+        const isDisabled = isOffline || disabledByCondition;
+
         return (
           <button
             key={key}
@@ -88,14 +114,26 @@ export function PlayerHpActions({
                 setValue("");
               }
             }}
-            disabled={isOffline || disabled}
+            disabled={isDisabled}
+            // UX.15 — distinct tooltip for disabled reason
+            title={
+              isOffline
+                ? t("hp_disabled_offline")
+                : disabledByCondition
+                  ? t("hp_disabled_unconscious")
+                  : undefined
+            }
             className={cn(
-              "flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium rounded border transition-colors",
-              isOffline || disabled
-                ? "opacity-30 pointer-events-none border-transparent"
-                : activeAction === key
-                  ? `${config.color} ${config.borderColor}`
-                  : `${config.color} border-transparent hover:${config.borderColor}`
+              // UX.14 — min touch target 44px, increased padding
+              "flex items-center gap-0.5 px-2.5 py-1.5 text-xs font-medium rounded border transition-colors min-h-[36px] touch-manipulation",
+              // UX.16 — distinct visual for offline vs disabled-by-condition
+              isOffline
+                ? "opacity-30 pointer-events-none border-transparent text-muted-foreground"
+                : disabledByCondition
+                  ? "opacity-50 pointer-events-none border-transparent text-muted-foreground"
+                  : activeAction === key
+                    ? `${config.color} ${config.borderColor}`
+                    : `${config.color} border-transparent hover:${config.borderColor}`
             )}
           >
             <Icon className="w-3 h-3" />
@@ -104,11 +142,17 @@ export function PlayerHpActions({
         );
       })}
 
-      {/* Inline popover — appears above the buttons */}
+      {/* UX.16 — offline indicator icon */}
+      {isOffline && (
+        <WifiOff className="w-3 h-3 text-muted-foreground opacity-50" />
+      )}
+
+      {/* UX.11 — popover with viewport-aware positioning */}
       {activeAction && (
         <div
           className={cn(
-            "absolute bottom-full mb-1 left-0 z-50 flex items-center gap-1.5 p-2 rounded-lg border shadow-xl bg-[#1a1a2e]",
+            "absolute left-0 z-50 flex items-center gap-1.5 p-2 rounded-lg border shadow-xl bg-surface-overlay",
+            popoverAbove ? "bottom-full mb-1" : "top-full mt-1",
             ACTION_CONFIG[activeAction].borderColor
           )}
         >

@@ -192,7 +192,7 @@ export const CombatantRow = memo(function CombatantRow({
       className={`bg-card border rounded-md overflow-hidden transition-all duration-500 ${
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
       } ${combatant.is_defeated ? "opacity-50 grayscale-[50%]" : isCritical ? "opacity-50 grayscale-[50%] border-2 border-red-500 animate-pulse" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
-        isCritical ? "" : (combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : "")
+        isCritical ? "" : (combatant.is_player ? "border-l-4 border-l-cool" : isMonster ? "border-l-4 border-l-red-500/60" : "")
       } ${combatant.is_hidden ? "border-dashed opacity-70" : ""}`}
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
@@ -444,7 +444,7 @@ export const CombatantRow = memo(function CombatantRow({
               </span>
             )}
             {hasTempHp && (
-              <span className="text-[#9f7aea] ml-0.5 text-[10px]" data-testid={`temp-hp-${combatant.id}`}>
+              <span className="text-temp-hp ml-0.5 text-[10px]" data-testid={`temp-hp-${combatant.id}`}>
                 {t("temp_hp", { value: combatant.temp_hp })}
               </span>
             )}

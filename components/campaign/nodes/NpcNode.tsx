@@ -18,7 +18,7 @@ interface NpcNodeProps {
 
 function NpcNodeComponent({ data }: NpcNodeProps) {
   return (
-    <div className="px-4 py-3 rounded-lg border border-purple-400/60 bg-[#1a1a2e] shadow-md min-w-[120px]">
+    <div className="px-4 py-3 rounded-lg border border-purple-400/60 bg-surface-overlay shadow-md min-w-[120px]">
       <Handle type="target" position={Position.Top} className="!bg-purple-400 !w-2 !h-2" />
       <div className="flex items-center gap-2">
         <UserCircle className="h-4 w-4 text-purple-400 flex-shrink-0" />

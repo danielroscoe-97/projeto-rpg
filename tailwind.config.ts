@@ -61,19 +61,40 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // Brand gold — CTA buttons, headings, primary accent
         gold: {
           DEFAULT: "#D4A853",
           light: "#E8C87A",
           dark: "#B8903D",
+          hover: "#C49A48", // hover state for gold CTAs
+        },
+        // Oracle AI accent — slightly cooler/greener gold than brand
+        oracle: {
+          DEFAULT: "#c9a959",
+          light: "#e8e4d0", // foreground text on oracle surfaces
         },
         warm: "#E8593C",
         cool: "#5B8DEF",
         "brand-red": "#C43C3C",
         "brand-green": "#4A9E5C",
+        // Purple — temporary HP indicator
+        "temp-hp": "#9f7aea",
+        // Surface depth scale — darkest to lightest
         surface: {
-          primary: "#13131E",
-          secondary: "#1A1A28",
-          tertiary: "#222234",
+          primary: "#13131E",   // page background
+          secondary: "#1A1A28", // panels, sidebars
+          tertiary: "#222234",  // cards, nested surfaces
+          deep: "#0e0e18",      // deepest bg (compendium scroll areas)
+          overlay: "#1a1a2e",   // modals, tooltips, overlays
+          auth: "#16213e",      // auth/dialog modals (blue-navy tint)
+        },
+        // SRD statblock colors — parchment theme
+        srd: {
+          parchment: "#fdf1dc", // statblock background
+          ink: "#1a1a1a",       // body text on parchment
+          header: "#7a200d",    // section headers, borders, labels
+          subtitle: "#e8d5b5",  // subtitles, metadata
+          accent: "#922610",    // secondary accent
         },
         rpg: {
           "fire-dark": "#7f1d1d",

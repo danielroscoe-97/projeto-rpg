@@ -62,7 +62,7 @@ export function KeyboardCheatsheet({ open, onClose }: KeyboardCheatsheetProps) {
         aria-modal="true"
         aria-label={t("shortcut_title")}
         tabIndex={-1}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[320px] rounded-xl border border-white/[0.10] bg-[#1a1a28] p-5 shadow-2xl animate-in zoom-in-95 fade-in-0 duration-150 outline-none"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[320px] rounded-xl border border-white/[0.10] bg-surface-secondary p-5 shadow-2xl animate-in zoom-in-95 fade-in-0 duration-150 outline-none"
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">{t("shortcut_title")}</h3>

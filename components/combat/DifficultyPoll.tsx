@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Coffee, Smile, Swords, Flame, Skull } from "lucide-react";
+import { Coffee, Smile, Swords, Flame, Skull, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const DIFFICULTY_OPTIONS = [
@@ -18,16 +19,24 @@ export { DIFFICULTY_OPTIONS };
 interface DifficultyPollProps {
   onVote: (vote: 1 | 2 | 3 | 4 | 5) => void;
   onSkip: () => void;
+  /** Guest/local-only mode — no broadcast, no waiting state */
+  isLocalOnly?: boolean;
 }
 
-export function DifficultyPoll({ onVote, onSkip }: DifficultyPollProps) {
+export function DifficultyPoll({ onVote, onSkip, isLocalOnly = false }: DifficultyPollProps) {
   const t = useTranslations("combat");
   const [myVote, setMyVote] = useState<number | null>(null);
   const hasVoted = myVote !== null;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="bg-[#1a1a2e] border border-white/10 rounded-xl p-6 max-w-sm w-full space-y-4">
+    // UX.05 — entrance animation
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="min-h-screen bg-background flex items-center justify-center p-4"
+    >
+      <div className="bg-surface-overlay border border-white/10 rounded-xl p-6 max-w-sm w-full space-y-4">
         <h2 className="text-center text-lg font-semibold text-foreground">
           {t("poll_title")}
         </h2>
@@ -45,7 +54,8 @@ export function DifficultyPoll({ onVote, onSkip }: DifficultyPollProps) {
                 }}
                 disabled={hasVoted}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg border transition-all",
+                  // UX.14-style: minimum touch target
+                  "flex flex-col items-center gap-1.5 px-2.5 py-2.5 rounded-lg border transition-all min-h-[44px] touch-manipulation",
                   myVote === opt.value
                     ? opt.bgActive
                     : hasVoted
@@ -54,25 +64,37 @@ export function DifficultyPoll({ onVote, onSkip }: DifficultyPollProps) {
                 )}
               >
                 <Icon className="w-6 h-6" />
-                <span className="text-[10px] leading-tight font-medium">
+                {/* UX.03 — text-xs not text-[10px] */}
+                <span className="text-xs leading-tight font-medium">
                   {t(opt.labelKey)}
                 </span>
               </button>
             );
           })}
         </div>
-        {hasVoted && (
+
+        {/* UX.01 — waiting state after vote (player only, not local-only) */}
+        {hasVoted && !isLocalOnly && (
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground animate-pulse">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            {t("poll_waiting_dm")}
+          </div>
+        )}
+        {hasVoted && isLocalOnly && (
           <p className="text-center text-sm text-gold">{t("poll_thanks")}</p>
         )}
-        {!hasVoted && (
-          <button
-            onClick={onSkip}
-            className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t("poll_skip")}
-          </button>
-        )}
+
+        {/* UX.02 — use invisible instead of conditional removal to avoid layout shift */}
+        <button
+          onClick={onSkip}
+          className={cn(
+            "w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors",
+            hasVoted ? "invisible" : "visible"
+          )}
+        >
+          {t("poll_skip")}
+        </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

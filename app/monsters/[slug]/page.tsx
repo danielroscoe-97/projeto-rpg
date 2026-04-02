@@ -133,13 +133,13 @@ export default async function MonsterPage({
 
         <main className="mx-auto max-w-4xl px-4 py-8">
           {/* Stat block card */}
-          <article className="bg-[#fdf1dc] text-[#1a1a1a] rounded-lg shadow-2xl overflow-hidden">
+          <article className="bg-srd-parchment text-srd-ink rounded-lg shadow-2xl overflow-hidden">
             {/* Header */}
-            <div className="bg-[#7a200d] px-6 py-4">
-              <h1 className="text-2xl font-bold text-[#fdf1dc] font-[family-name:var(--font-cinzel)]">
+            <div className="bg-srd-header px-6 py-4">
+              <h1 className="text-2xl font-bold text-srd-parchment font-[family-name:var(--font-cinzel)]">
                 {monster.name}
               </h1>
-              <p className="text-[#e8d5b5] text-sm italic">
+              <p className="text-srd-subtitle text-sm italic">
                 {monster.size} {monster.type}
                 {monster.alignment ? `, ${monster.alignment}` : ""}
               </p>
@@ -147,28 +147,28 @@ export default async function MonsterPage({
 
             <div className="px-6 py-4 space-y-4">
               {/* Basic stats */}
-              <div className="border-b-2 border-[#7a200d] pb-3 space-y-1 text-sm">
+              <div className="border-b-2 border-srd-header pb-3 space-y-1 text-sm">
                 <p>
-                  <strong className="text-[#7a200d]">Armor Class</strong>{" "}
+                  <strong className="text-srd-header">Armor Class</strong>{" "}
                   {monster.armor_class}
                 </p>
                 <p>
-                  <strong className="text-[#7a200d]">Hit Points</strong>{" "}
+                  <strong className="text-srd-header">Hit Points</strong>{" "}
                   {monster.hit_points}
                   {monster.hp_formula ? ` (${monster.hp_formula})` : ""}
                 </p>
                 <p>
-                  <strong className="text-[#7a200d]">Speed</strong>{" "}
+                  <strong className="text-srd-header">Speed</strong>{" "}
                   {formatSpeed(monster.speed)}
                 </p>
               </div>
 
               {/* Ability scores */}
-              <div className="border-b-2 border-[#7a200d] pb-3">
+              <div className="border-b-2 border-srd-header pb-3">
                 <div className="grid grid-cols-6 gap-2 text-center text-sm">
                   {abilities.map((a) => (
                     <div key={a.label}>
-                      <div className="font-bold text-[#7a200d]">{a.label}</div>
+                      <div className="font-bold text-srd-header">{a.label}</div>
                       <div>
                         {a.value} ({abilityMod(a.value)})
                       </div>
@@ -178,56 +178,56 @@ export default async function MonsterPage({
               </div>
 
               {/* Properties */}
-              <div className="border-b-2 border-[#7a200d] pb-3 space-y-1 text-sm">
+              <div className="border-b-2 border-srd-header pb-3 space-y-1 text-sm">
                 {savingThrows && (
                   <p>
-                    <strong className="text-[#7a200d]">Saving Throws</strong>{" "}
+                    <strong className="text-srd-header">Saving Throws</strong>{" "}
                     {savingThrows}
                   </p>
                 )}
                 {skills && (
                   <p>
-                    <strong className="text-[#7a200d]">Skills</strong> {skills}
+                    <strong className="text-srd-header">Skills</strong> {skills}
                   </p>
                 )}
                 {monster.damage_vulnerabilities && (
                   <p>
-                    <strong className="text-[#7a200d]">Damage Vulnerabilities</strong>{" "}
+                    <strong className="text-srd-header">Damage Vulnerabilities</strong>{" "}
                     {monster.damage_vulnerabilities}
                   </p>
                 )}
                 {monster.damage_resistances && (
                   <p>
-                    <strong className="text-[#7a200d]">Damage Resistances</strong>{" "}
+                    <strong className="text-srd-header">Damage Resistances</strong>{" "}
                     {monster.damage_resistances}
                   </p>
                 )}
                 {monster.damage_immunities && (
                   <p>
-                    <strong className="text-[#7a200d]">Damage Immunities</strong>{" "}
+                    <strong className="text-srd-header">Damage Immunities</strong>{" "}
                     {monster.damage_immunities}
                   </p>
                 )}
                 {monster.condition_immunities && (
                   <p>
-                    <strong className="text-[#7a200d]">Condition Immunities</strong>{" "}
+                    <strong className="text-srd-header">Condition Immunities</strong>{" "}
                     {monster.condition_immunities}
                   </p>
                 )}
                 {monster.senses && (
                   <p>
-                    <strong className="text-[#7a200d]">Senses</strong>{" "}
+                    <strong className="text-srd-header">Senses</strong>{" "}
                     {monster.senses}
                   </p>
                 )}
                 {monster.languages && (
                   <p>
-                    <strong className="text-[#7a200d]">Languages</strong>{" "}
+                    <strong className="text-srd-header">Languages</strong>{" "}
                     {monster.languages}
                   </p>
                 )}
                 <p>
-                  <strong className="text-[#7a200d]">Challenge</strong>{" "}
+                  <strong className="text-srd-header">Challenge</strong>{" "}
                   {monster.cr}
                   {monster.xp ? ` (${monster.xp.toLocaleString()} XP)` : ""}
                 </p>
@@ -248,7 +248,7 @@ export default async function MonsterPage({
               {/* Actions */}
               {monster.actions && monster.actions.length > 0 && (
                 <div className="space-y-2">
-                  <h2 className="text-lg font-bold text-[#7a200d] border-b border-[#7a200d] pb-1 font-[family-name:var(--font-cinzel)]">
+                  <h2 className="text-lg font-bold text-srd-header border-b border-srd-header pb-1 font-[family-name:var(--font-cinzel)]">
                     Actions
                   </h2>
                   {monster.actions.map((action, i) => (
@@ -263,7 +263,7 @@ export default async function MonsterPage({
               {/* Reactions */}
               {monster.reactions && monster.reactions.length > 0 && (
                 <div className="space-y-2">
-                  <h2 className="text-lg font-bold text-[#7a200d] border-b border-[#7a200d] pb-1 font-[family-name:var(--font-cinzel)]">
+                  <h2 className="text-lg font-bold text-srd-header border-b border-srd-header pb-1 font-[family-name:var(--font-cinzel)]">
                     Reactions
                   </h2>
                   {monster.reactions.map((reaction, i) => (
@@ -278,7 +278,7 @@ export default async function MonsterPage({
               {/* Legendary Actions */}
               {monster.legendary_actions && monster.legendary_actions.length > 0 && (
                 <div className="space-y-2">
-                  <h2 className="text-lg font-bold text-[#7a200d] border-b border-[#7a200d] pb-1 font-[family-name:var(--font-cinzel)]">
+                  <h2 className="text-lg font-bold text-srd-header border-b border-srd-header pb-1 font-[family-name:var(--font-cinzel)]">
                     Legendary Actions
                   </h2>
                   {monster.legendary_actions.map((la, i) => (

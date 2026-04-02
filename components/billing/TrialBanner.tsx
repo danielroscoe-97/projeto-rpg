@@ -39,13 +39,13 @@ export function TrialBanner() {
     ? "bg-red-500/10 border-red-500/30"
     : isUrgent
       ? "bg-amber-500/10 border-amber-500/30"
-      : "bg-[#D4A853]/10 border-[#D4A853]/30";
+      : "bg-gold/10 border-gold/30";
 
   const textColor = isExpired
     ? "text-red-400"
     : isUrgent
       ? "text-amber-400"
-      : "text-[#D4A853]";
+      : "text-gold";
 
   return (
     <div

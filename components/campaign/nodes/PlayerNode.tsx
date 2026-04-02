@@ -17,7 +17,7 @@ interface PlayerNodeProps {
 
 function PlayerNodeComponent({ data }: PlayerNodeProps) {
   return (
-    <div className="px-4 py-3 rounded-lg border border-emerald-400/60 bg-[#1a1a2e] shadow-md min-w-[120px]">
+    <div className="px-4 py-3 rounded-lg border border-emerald-400/60 bg-surface-overlay shadow-md min-w-[120px]">
       <Handle type="target" position={Position.Top} className="!bg-emerald-400 !w-2 !h-2" />
       <div className="flex items-center gap-2">
         <User className="h-4 w-4 text-emerald-400 flex-shrink-0" />

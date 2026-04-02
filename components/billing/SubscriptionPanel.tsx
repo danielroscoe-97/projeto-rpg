@@ -152,7 +152,7 @@ export function SubscriptionPanel() {
       {/* Current Plan */}
       <section className="bg-card rounded-lg border border-border p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Crown className="w-5 h-5 text-[#D4A853]" aria-hidden="true" />
+          <Crown className="w-5 h-5 text-gold" aria-hidden="true" />
           <h2 className="text-foreground font-semibold">{t("plan_title")}</h2>
         </div>
 
@@ -160,7 +160,7 @@ export function SubscriptionPanel() {
         {plan === "pro" && status === "active" && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-[#D4A853]/15 text-[#D4A853]">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-gold/15 text-gold">
                 {t("plan.pro")}
               </span>
               {cancelDate && (
@@ -197,7 +197,7 @@ export function SubscriptionPanel() {
         {status === "trialing" && trialDaysLeft > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-[#D4A853]/15 text-[#D4A853]">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-gold/15 text-gold">
                 {t("plan.trial")}
               </span>
               <span className="text-sm text-muted-foreground flex items-center gap-1">
@@ -208,7 +208,7 @@ export function SubscriptionPanel() {
             {/* Trial progress bar */}
             <div className="w-full bg-white/5 rounded-full h-2">
               <div
-                className="bg-[#D4A853] h-2 rounded-full transition-all duration-500"
+                className="bg-gold h-2 rounded-full transition-all duration-500"
                 style={{ width: `${((14 - trialDaysLeft) / 14) * 100}%` }}
               />
             </div>
@@ -217,7 +217,7 @@ export function SubscriptionPanel() {
                 type="button"
                 onClick={() => handleCheckout("month")}
                 disabled={actionLoading}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-[#D4A853] hover:bg-[#C49A48] text-black transition-colors min-h-[44px] disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-gold hover:bg-gold-hover text-black transition-colors min-h-[44px] disabled:opacity-50"
               >
                 {t("subscribe_now")}
               </button>
@@ -241,7 +241,7 @@ export function SubscriptionPanel() {
                   key={feature}
                   className="flex items-center gap-2 text-sm text-muted-foreground"
                 >
-                  <Lock className="w-3.5 h-3.5 text-[#D4A853]/50" aria-hidden="true" />
+                  <Lock className="w-3.5 h-3.5 text-gold/50" aria-hidden="true" />
                   {t(`features.${feature}`)}
                 </div>
               ))}
@@ -267,7 +267,7 @@ export function SubscriptionPanel() {
                     type="button"
                     onClick={handleStartTrial}
                     disabled={actionLoading}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-[#D4A853] hover:bg-[#C49A48] text-black transition-colors min-h-[44px] disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-gold hover:bg-gold-hover text-black transition-colors min-h-[44px] disabled:opacity-50"
                   >
                     {t("trial_cta")}
                   </button>
@@ -276,7 +276,7 @@ export function SubscriptionPanel() {
                   type="button"
                   onClick={() => handleCheckout("month")}
                   disabled={actionLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-[#D4A853]/30 text-[#D4A853] hover:bg-[#D4A853]/10 transition-colors min-h-[44px] disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-gold/30 text-gold hover:bg-gold/10 transition-colors min-h-[44px] disabled:opacity-50"
                 >
                   {t("upgrade_cta")}
                 </button>

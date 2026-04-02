@@ -37,7 +37,7 @@ export function LpPricingSection() {
     <section
       data-section="lp-pricing"
       id="precos"
-      className="py-14 md:py-24 px-4 md:px-6 relative overflow-hidden bg-[#0d0d14]"
+      className="py-14 md:py-24 px-4 md:px-6 relative overflow-hidden bg-surface-deep"
     >
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">

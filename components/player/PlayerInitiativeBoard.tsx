@@ -607,7 +607,7 @@ export function PlayerInitiativeBoard({
                     </span>
                   </div>
                   {hasTempHp && (
-                    <div className="text-sm text-[#9f7aea] font-mono mb-1">
+                    <div className="text-sm text-temp-hp font-mono mb-1">
                       {t("temp_hp", { value: tempHp })}
                     </div>
                   )}
@@ -863,7 +863,7 @@ export function PlayerInitiativeBoard({
                         </span>
                       )}
                       {hasTempHp && (
-                        <span className="text-[#9f7aea] ml-1 text-sm lg:text-xs">
+                        <span className="text-temp-hp ml-1 text-sm lg:text-xs">
                           {t("temp_hp", { value: combatant.temp_hp ?? 0 })}
                         </span>
                       )}
@@ -999,7 +999,7 @@ export function PlayerInitiativeBoard({
         <button
           type="button"
           onClick={() => setSpellsOpen(true)}
-          className="w-11 h-11 rounded-full bg-[#1a1a2e] border border-gold/30 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+          className="w-11 h-11 rounded-full bg-surface-overlay border border-gold/30 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
           aria-label={tc("spell_open")}
         >
           <BookOpen className="w-5 h-5 text-gold" />

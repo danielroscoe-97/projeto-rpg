@@ -27,7 +27,7 @@ export function SpellDescriptionModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-lg max-h-[85vh] overflow-y-auto !bg-[#1a1a1e] !border-white/[0.08] !p-0"
+        className="max-w-lg max-h-[85vh] overflow-y-auto !bg-surface-secondary !border-white/[0.08] !p-0"
         aria-describedby="spell-description"
         data-testid="spell-modal"
       >

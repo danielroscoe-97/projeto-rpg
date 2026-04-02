@@ -97,13 +97,13 @@ export default async function SpellPage({
         </nav>
 
         <main className="mx-auto max-w-4xl px-4 py-8">
-          <article className="bg-[#fdf1dc] text-[#1a1a1a] rounded-lg shadow-2xl overflow-hidden">
+          <article className="bg-srd-parchment text-srd-ink rounded-lg shadow-2xl overflow-hidden">
             {/* Header */}
-            <div className="bg-[#7a200d] px-6 py-4">
-              <h1 className="text-2xl font-bold text-[#fdf1dc] font-[family-name:var(--font-cinzel)]">
+            <div className="bg-srd-header px-6 py-4">
+              <h1 className="text-2xl font-bold text-srd-parchment font-[family-name:var(--font-cinzel)]">
                 {spell.name}
               </h1>
-              <p className="text-[#e8d5b5] text-sm italic">
+              <p className="text-srd-subtitle text-sm italic">
                 {levelSchool}
                 {spell.ritual ? " (ritual)" : ""}
               </p>
@@ -111,21 +111,21 @@ export default async function SpellPage({
 
             <div className="px-6 py-4 space-y-4">
               {/* Properties */}
-              <div className="border-b-2 border-[#7a200d] pb-3 space-y-1 text-sm">
+              <div className="border-b-2 border-srd-header pb-3 space-y-1 text-sm">
                 <p>
-                  <strong className="text-[#7a200d]">Casting Time</strong>{" "}
+                  <strong className="text-srd-header">Casting Time</strong>{" "}
                   {spell.casting_time}
                 </p>
                 <p>
-                  <strong className="text-[#7a200d]">Range</strong>{" "}
+                  <strong className="text-srd-header">Range</strong>{" "}
                   {spell.range}
                 </p>
                 <p>
-                  <strong className="text-[#7a200d]">Components</strong>{" "}
+                  <strong className="text-srd-header">Components</strong>{" "}
                   {spell.components}
                 </p>
                 <p>
-                  <strong className="text-[#7a200d]">Duration</strong>{" "}
+                  <strong className="text-srd-header">Duration</strong>{" "}
                   {spell.duration}
                   {spell.concentration ? " (concentration)" : ""}
                 </p>
@@ -133,9 +133,9 @@ export default async function SpellPage({
 
               {/* Classes */}
               {spell.classes?.length > 0 && (
-                <div className="border-b-2 border-[#7a200d] pb-3 text-sm">
+                <div className="border-b-2 border-srd-header pb-3 text-sm">
                   <p>
-                    <strong className="text-[#7a200d]">Classes</strong>{" "}
+                    <strong className="text-srd-header">Classes</strong>{" "}
                     {spell.classes.join(", ")}
                   </p>
                 </div>

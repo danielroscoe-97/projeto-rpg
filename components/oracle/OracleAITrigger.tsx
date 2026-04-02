@@ -17,7 +17,7 @@ export function OracleAITrigger() {
     <button
       type="button"
       onClick={handleClick}
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-[#c9a959] bg-[#c9a959]/10 border border-[#c9a959]/20 hover:bg-[#c9a959]/20 hover:text-[#e8e4d0] transition-all duration-[250ms] min-h-[36px]"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-oracle bg-oracle/10 border border-oracle/20 hover:bg-oracle/20 hover:text-oracle-light transition-all duration-[250ms] min-h-[36px]"
       aria-label={t("trigger_label")}
     >
       <span aria-hidden="true">✨</span>

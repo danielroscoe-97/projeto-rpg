@@ -316,7 +316,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   }
 
   return (
-    <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border bg-[#1a1a2e]">
+    <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border bg-surface-overlay">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -334,12 +334,12 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#ffffff10" />
         <Controls
           showInteractive={false}
-          className="!bg-[#1a1a2e] !border-border !shadow-lg [&>button]:!bg-[#1a1a2e] [&>button]:!border-border [&>button]:!text-muted-foreground [&>button:hover]:!bg-card"
+          className="!bg-surface-overlay !border-border !shadow-lg [&>button]:!bg-surface-overlay [&>button]:!border-border [&>button]:!text-muted-foreground [&>button:hover]:!bg-card"
         />
         <MiniMap
           nodeColor={minimapNodeColor}
           maskColor="rgba(0, 0, 0, 0.7)"
-          className="!bg-[#0d0d1a] !border-border"
+          className="!bg-surface-deep !border-border"
           pannable
           zoomable
         />

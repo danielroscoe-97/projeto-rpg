@@ -330,7 +330,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
               >
                 <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] h-full">
                   {/* Image placeholder */}
-                  <div className="h-28 bg-gradient-to-br from-[#1a1a28] to-[#12121a] flex items-center justify-center relative overflow-hidden">
+                  <div className="h-28 bg-gradient-to-br from-surface-secondary to-surface-deep flex items-center justify-center relative overflow-hidden">
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,168,83,0.06)_0%,transparent_70%)]" />
                     <Image
                       src={getPlaceholderIcon(index)}

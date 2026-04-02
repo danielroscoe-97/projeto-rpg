@@ -170,7 +170,7 @@ export function CommandPalette() {
       {/* Command Palette */}
       <div className="fixed inset-0 z-[61] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4 pointer-events-none">
         <Command
-          className="w-full max-w-[640px] rounded-xl border border-white/10 bg-[#1a1a28] shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150 pointer-events-auto"
+          className="w-full max-w-[640px] rounded-xl border border-white/10 bg-surface-secondary shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150 pointer-events-auto"
           label={t("label")}
           shouldFilter={false}
           onKeyDown={(e) => {

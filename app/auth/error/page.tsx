@@ -42,7 +42,7 @@ export default function Page() {
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
-          <Card className="bg-[#16213e] border-white/10">
+          <Card className="bg-surface-auth border-white/10">
             <CardHeader>
               <CardTitle className="text-2xl text-white">
                 {t("error_title")}

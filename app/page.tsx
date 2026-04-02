@@ -737,7 +737,7 @@ function ComparisonSection() {
 
   return (
     // Darker "stage" bg — breaks visual monotony from the rest of the page
-    <section data-section="comparison" id="comparativo" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden bg-[#0c0c16]">
+    <section data-section="comparison" id="comparativo" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden bg-surface-deep">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/[0.025] rounded-full blur-[140px]" />
       </div>

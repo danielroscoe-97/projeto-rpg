@@ -202,10 +202,10 @@ export function OracleAIModal() {
 
       {/* Modal */}
       <div className="fixed inset-0 z-[10002] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4">
-        <div className="w-full max-w-[640px] rounded-xl border border-[#c9a959]/30 bg-[#1a1a28] shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150">
+        <div className="w-full max-w-[640px] rounded-xl border border-oracle/30 bg-surface-secondary shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150">
           {/* Input */}
-          <div className="flex items-center border-b border-[#c9a959]/20 px-4">
-            <span className="shrink-0 mr-3 text-[#c9a959] text-sm" aria-hidden="true">✨</span>
+          <div className="flex items-center border-b border-oracle/20 px-4">
+            <span className="shrink-0 mr-3 text-oracle text-sm" aria-hidden="true">✨</span>
             <input
               ref={inputRef}
               type="text"
@@ -213,14 +213,14 @@ export function OracleAIModal() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t("placeholder")}
-              className="flex-1 h-12 bg-transparent text-[#c9a959] text-base placeholder:text-[#c9a959]/40 outline-none"
+              className="flex-1 h-12 bg-transparent text-oracle text-base placeholder:text-oracle/40 outline-none"
               disabled={streaming}
             />
             {query.trim() && !streaming && (
               <button
                 type="button"
                 onClick={() => handleAsk()}
-                className="mr-2 px-2 py-1 text-xs font-medium text-[#1a1a28] bg-[#c9a959] rounded hover:bg-[#c9a959]/80 transition-colors"
+                className="mr-2 px-2 py-1 text-xs font-medium text-black bg-oracle rounded hover:bg-oracle/80 transition-colors"
               >
                 {t("ask")}
               </button>
@@ -255,12 +255,12 @@ export function OracleAIModal() {
             {(streaming || response) && (
               <div className="space-y-3">
                 {/* Question echo */}
-                <p className="text-sm italic text-muted-foreground border-l-2 border-[#c9a959]/30 pl-3">
+                <p className="text-sm italic text-muted-foreground border-l-2 border-oracle/30 pl-3">
                   &ldquo;{question}&rdquo;
                 </p>
 
                 {/* Response text */}
-                <div className="oracle-ai-markdown text-sm text-[#e8e4d0] leading-relaxed">
+                <div className="oracle-ai-markdown text-sm text-oracle-light leading-relaxed">
                   <ReactMarkdown>{response}</ReactMarkdown>
                 </div>
 
@@ -275,7 +275,7 @@ export function OracleAIModal() {
 
                 {/* Sources */}
                 {sources.length > 0 && !streaming && (
-                  <div className="mt-3 pt-3 border-t border-[#c9a959]/20">
+                  <div className="mt-3 pt-3 border-t border-oracle/20">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t("sources")}</span>
                     <div className="flex flex-wrap gap-2 mt-1">
                       {sources.map((src, i) => (
@@ -284,7 +284,7 @@ export function OracleAIModal() {
                           href={src.uri}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#c9a959] hover:text-[#e8e4d0] border-b border-dotted border-[#c9a959]/40 transition-colors"
+                          className="text-xs text-oracle hover:text-oracle-light border-b border-dotted border-oracle/40 transition-colors"
                         >
                           {src.title || src.uri}
                         </a>
@@ -299,7 +299,7 @@ export function OracleAIModal() {
                     <button
                       type="button"
                       onClick={handlePin}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#c9a959] bg-[#c9a959]/10 rounded-lg border border-[#c9a959]/20 hover:bg-[#c9a959]/20 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-oracle bg-oracle/10 rounded-lg border border-oracle/20 hover:bg-oracle/20 transition-colors"
                     >
                       📌 {t("pin")}
                     </button>
@@ -327,7 +327,7 @@ export function OracleAIModal() {
                         setQuery(question);
                         handleAsk(question);
                       }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#c9a959] border border-[#c9a959]/40 rounded-lg hover:bg-[#c9a959]/10 transition-colors min-h-[44px]"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-oracle border border-oracle/40 rounded-lg hover:bg-oracle/10 transition-colors min-h-[44px]"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       {t("retry")}
@@ -337,7 +337,7 @@ export function OracleAIModal() {
                         href="/app/compendium"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#c9a959]/70 hover:text-[#c9a959] transition-colors"
+                        className="text-oracle/70 hover:text-oracle transition-colors"
                       >
                         {t("compendium_fallback")}
                       </a>
@@ -352,7 +352,7 @@ export function OracleAIModal() {
           <div className="border-t border-white/[0.08] px-4 py-2 flex items-center gap-4 text-[11px] text-muted-foreground">
             {query.trim() && (
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-[#c9a959]/15 text-[#c9a959] rounded text-[10px] font-mono border border-[#c9a959]/20">↵</kbd>
+                <kbd className="px-1 py-0.5 bg-oracle/15 text-oracle rounded text-[10px] font-mono border border-oracle/20">↵</kbd>
                 {t("ask")}
               </span>
             )}

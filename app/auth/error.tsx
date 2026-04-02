@@ -21,7 +21,7 @@ export default function AuthError({
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6">
       <div className="w-full max-w-sm">
-        <div className="bg-[#16213e] border border-white/10 rounded-lg p-6 space-y-4">
+        <div className="bg-surface-auth border border-white/10 rounded-lg p-6 space-y-4">
           <h1 className="text-xl font-semibold text-white font-[family-name:var(--font-cinzel)]">
             {t("auth_title")}
           </h1>

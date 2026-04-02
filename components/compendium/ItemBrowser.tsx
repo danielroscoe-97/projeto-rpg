@@ -440,8 +440,8 @@ export function ItemBrowser() {
       {/* Desktop: split panel */}
       <div className="hidden md:grid md:grid-cols-[minmax(320px,2fr)_3fr] gap-0 h-[calc(100vh-180px)] border border-white/[0.06] rounded-xl overflow-hidden">
         {/* LEFT: List panel */}
-        <div className="flex flex-col border-r border-white/[0.06] bg-[#13131e]/60">
-          <div className="p-3 border-b border-white/[0.06] bg-[#13131e]/95 backdrop-blur-sm">
+        <div className="flex flex-col border-r border-white/[0.06] bg-surface-primary/60">
+          <div className="p-3 border-b border-white/[0.06] bg-surface-primary/95 backdrop-blur-sm">
             {filterBar}
           </div>
 
@@ -467,7 +467,7 @@ export function ItemBrowser() {
         </div>
 
         {/* RIGHT: Detail panel */}
-        <div className="overflow-y-auto bg-[#0e0e18]/80">
+        <div className="overflow-y-auto bg-surface-deep/80">
           {selectedItem ? (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">

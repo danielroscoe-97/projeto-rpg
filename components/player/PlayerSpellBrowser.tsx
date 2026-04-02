@@ -104,7 +104,7 @@ export function PlayerSpellBrowser({
       <DialogContent
         className={cn(
           // Desktop: centered modal
-          "max-w-2xl max-h-[85vh] overflow-hidden !p-0 !bg-[#1a1a1e] !border-white/[0.08]",
+          "max-w-2xl max-h-[85vh] overflow-hidden !p-0 !bg-surface-secondary !border-white/[0.08]",
           // Mobile: full-screen override
           "max-[768px]:!max-w-none max-[768px]:!w-screen max-[768px]:!h-[100dvh] max-[768px]:!max-h-none max-[768px]:!rounded-none max-[768px]:!top-0 max-[768px]:!left-0 max-[768px]:!translate-x-0 max-[768px]:!translate-y-0"
         )}
@@ -221,7 +221,7 @@ export function PlayerSpellBrowser({
                         className="fixed inset-0 z-10"
                         onClick={() => setClassDropdownOpen(false)}
                       />
-                      <div className="absolute top-full left-0 mt-1 z-20 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-xl py-1 min-w-[140px] max-h-[200px] overflow-y-auto">
+                      <div className="absolute top-full left-0 mt-1 z-20 bg-surface-overlay border border-white/10 rounded-lg shadow-xl py-1 min-w-[140px] max-h-[200px] overflow-y-auto">
                         <button
                           type="button"
                           onClick={() => {

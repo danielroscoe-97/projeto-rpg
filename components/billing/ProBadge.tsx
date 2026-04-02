@@ -34,9 +34,9 @@ export function ProBadge({ flagKey, className = "" }: ProBadgeProps) {
         type="button"
         onClick={handleClick}
         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
-          bg-[#D4A853]/15 text-[#D4A853] border border-[#D4A853]/30
-          hover:bg-[#D4A853]/25 transition-colors cursor-pointer
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A853]/50
+          bg-gold/15 text-gold border border-gold/30
+          hover:bg-gold/25 transition-colors cursor-pointer
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50
           ${className}`}
         aria-label={t("badge.tooltip")}
         title={t("badge.tooltip")}
