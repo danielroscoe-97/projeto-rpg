@@ -1,15 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { User } from "lucide-react";
+import { User, Upload } from "lucide-react";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface CharacterCardProps {
   character: PlayerCharacter;
   onClick?: () => void;
+  onUploadToken?: () => void;
 }
 
-export function CharacterCard({ character, onClick }: CharacterCardProps) {
+export function CharacterCard({ character, onClick, onUploadToken }: CharacterCardProps) {
   const t = useTranslations("character");
 
   const subtitle = [character.race, character.class]
@@ -33,7 +34,7 @@ export function CharacterCard({ character, onClick }: CharacterCardProps) {
     >
       <div className="flex items-center gap-3">
         {/* Token avatar */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 relative group/avatar">
           {character.token_url ? (
             <img
               src={character.token_url}
@@ -44,6 +45,16 @@ export function CharacterCard({ character, onClick }: CharacterCardProps) {
             <div className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center ring-2 ring-amber-400/20">
               <User className="w-6 h-6 text-muted-foreground/40" />
             </div>
+          )}
+          {onUploadToken && (
+            <button
+              type="button"
+              aria-label="Upload token"
+              onClick={(e) => { e.stopPropagation(); onUploadToken(); }}
+              className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center"
+            >
+              <Upload className="w-4 h-4 text-white" />
+            </button>
           )}
         </div>
 

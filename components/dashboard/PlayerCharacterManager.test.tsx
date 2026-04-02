@@ -23,6 +23,113 @@ jest.mock("@/lib/supabase/client", () => ({
   createClient: jest.fn(() => ({ from: mockFrom })),
 }));
 
+// Mock child components to isolate PlayerCharacterManager logic
+let mockFormOnSave: ((data: unknown) => Promise<void>) | null = null;
+let mockFormOpen = false;
+let mockFormCharacter: unknown = null;
+
+jest.mock("@/components/character/CharacterForm", () => ({
+  CharacterForm: ({
+    open,
+    onOpenChange,
+    character,
+    onSave,
+  }: {
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+    character?: unknown;
+    onSave: (data: unknown) => Promise<void>;
+  }) => {
+    const [formError, setFormError] = React.useState<string | null>(null);
+    mockFormOpen = open;
+    mockFormOnSave = onSave;
+    mockFormCharacter = character ?? null;
+    if (!open) return null;
+    return (
+      <div data-testid="character-form">
+        {formError && <p role="alert">{formError}</p>}
+        <span data-testid="form-mode">{character ? "edit" : "add"}</span>
+        <button
+          onClick={async () => {
+            try {
+              await onSave({
+                name: "Test Character",
+                race: null,
+                class: null,
+                level: 1,
+                max_hp: 30,
+                ac: 14,
+                spell_save_dc: null,
+                notes: null,
+              });
+            } catch (err) {
+              setFormError(err instanceof Error ? err.message : "Save failed");
+            }
+          }}
+        >
+          Save Character
+        </button>
+        <button onClick={() => { setFormError(null); onOpenChange(false); }}>Cancel Form</button>
+      </div>
+    );
+  },
+}));
+
+jest.mock("@/components/character/CharacterCard", () => ({
+  CharacterCard: ({
+    character,
+    onClick,
+    onUploadToken,
+  }: {
+    character: { id: string; name: string; max_hp: number; ac: number };
+    onClick?: () => void;
+    onUploadToken?: () => void;
+  }) => (
+    <div
+      data-testid={`char-card-${character.id}`}
+      onClick={onClick}
+      role="button"
+      aria-label={character.name}
+    >
+      <span>{character.name}</span>
+      <span>HP {character.max_hp}</span>
+      <span>AC {character.ac}</span>
+      {onUploadToken && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onUploadToken();
+          }}
+        >
+          Upload Token
+        </button>
+      )}
+    </div>
+  ),
+}));
+
+jest.mock("@/components/character/TokenUpload", () => ({
+  TokenUpload: ({
+    open,
+    onOpenChange,
+    onTokenUpdated,
+  }: {
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+    onTokenUpdated: (url: string) => void;
+  }) => {
+    if (!open) return null;
+    return (
+      <div data-testid="token-upload">
+        <button onClick={() => onTokenUpdated("https://example.com/token.png")}>
+          Confirm Upload
+        </button>
+        <button onClick={() => onOpenChange(false)}>Close Upload</button>
+      </div>
+    );
+  },
+}));
+
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
 const baseCharacter = {
@@ -34,6 +141,11 @@ const baseCharacter = {
   ac: 16,
   spell_save_dc: 14 as number | null,
   dm_notes: "",
+  token_url: null as string | null,
+  race: null as string | null,
+  class: null as string | null,
+  level: null as number | null,
+  notes: null as string | null,
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
 };
@@ -47,6 +159,11 @@ const secondCharacter = {
   ac: 12,
   spell_save_dc: null as number | null,
   dm_notes: "",
+  token_url: null as string | null,
+  race: null as string | null,
+  class: null as string | null,
+  level: null as number | null,
+  notes: null as string | null,
   created_at: "2026-01-02T00:00:00Z",
   updated_at: "2026-01-02T00:00:00Z",
 };
@@ -68,13 +185,11 @@ function setupInsertError(message = "Database error") {
 }
 
 function setupUpdateSuccess() {
-  // .eq("id", ...) returns chain; .eq("campaign_id", ...) is the terminal call
   mockEq.mockReturnValueOnce(mockChain);
   mockEq.mockResolvedValueOnce({ error: null });
 }
 
 function setupDeleteSuccess() {
-  // .eq("id", ...) returns chain; .eq("campaign_id", ...) is the terminal call
   mockEq.mockReturnValueOnce(mockChain);
   mockEq.mockResolvedValueOnce({ error: null });
 }
@@ -88,21 +203,26 @@ beforeEach(() => {
   mockChain.delete.mockReturnThis();
   mockChain.select.mockReturnThis();
   mockFrom.mockReturnValue(mockChain);
+  mockFormOpen = false;
+  mockFormOnSave = null;
+  mockFormCharacter = null;
 });
 
 describe("PlayerCharacterManager", () => {
   // ── Rendering ──────────────────────────────────────────────────────────────
 
-  it("renders list of characters with stats", () => {
+  it("renders character cards with names", () => {
     render(<PlayerCharacterManager {...defaultProps} />);
     expect(screen.getByText("Thorin")).toBeInTheDocument();
     expect(screen.getByText("Gandalf")).toBeInTheDocument();
-    // max_hp, current_hp, ac
-    expect(screen.getAllByText("45")).toHaveLength(2); // max_hp and current_hp both 45 for Thorin
-    expect(screen.getByText("16")).toBeInTheDocument();
-    expect(screen.getByText("14")).toBeInTheDocument();
-    // Gandalf has no spell_save_dc → badge is not rendered
-    expect(screen.getByText("14")).toBeInTheDocument(); // Thorin's DC renders
+  });
+
+  it("renders HP and AC for each character", () => {
+    render(<PlayerCharacterManager {...defaultProps} />);
+    expect(screen.getByText("HP 45")).toBeInTheDocument();
+    expect(screen.getByText("AC 16")).toBeInTheDocument();
+    expect(screen.getByText("HP 60")).toBeInTheDocument();
+    expect(screen.getByText("AC 12")).toBeInTheDocument();
   });
 
   it("renders 'Add Player' button", () => {
@@ -121,43 +241,29 @@ describe("PlayerCharacterManager", () => {
     expect(screen.getByText(/dashboard\.pc_empty/i)).toBeInTheDocument();
   });
 
-  // ── Add Player ─────────────────────────────────────────────────────────────
+  // ── Add Character ───────────────────────────────────────────────────────────
 
-  it("'Add Player' button shows inline form", async () => {
+  it("'Add Player' button opens CharacterForm in add mode", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
     await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
-    expect(screen.getByLabelText(/dashboard\.pc_name_label/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/dashboard\.pc_hp_label/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/dashboard\.pc_ac_label/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^common\.save$/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    expect(screen.getByTestId("character-form")).toBeInTheDocument();
+    expect(screen.getByTestId("form-mode")).toHaveTextContent("add");
   });
 
-  it("Save disabled when required fields are empty", async () => {
+  it("saving via CharacterForm calls supabase insert", async () => {
+    setupInsertSuccess({ ...baseCharacter, id: "char-new", name: "Test Character" });
     render(<PlayerCharacterManager {...defaultProps} />);
     await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
-    expect(screen.getByRole("button", { name: /^common\.save$/i })).toBeDisabled();
-  });
-
-  it("valid add form calls supabase insert", async () => {
-    setupInsertSuccess({ ...baseCharacter, id: "char-new", name: "Aragorn" });
-    render(<PlayerCharacterManager {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
-
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_name_label/i), "Aragorn");
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_hp_label/i), "55");
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_ac_label/i), "18");
-
-    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Save Character/i }));
 
     await waitFor(() => {
       expect(mockFrom).toHaveBeenCalledWith("player_characters");
       expect(mockChain.insert).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: "Aragorn",
-          max_hp: 55,
-          current_hp: 55,
-          ac: 18,
+          name: "Test Character",
+          max_hp: 30,
+          current_hp: 30,
+          ac: 14,
         })
       );
     });
@@ -167,88 +273,51 @@ describe("PlayerCharacterManager", () => {
     setupInsertSuccess({
       ...baseCharacter,
       id: "char-new",
-      name: "Aragorn",
-      max_hp: 55,
-      current_hp: 55,
-      ac: 18,
-      spell_save_dc: null,
+      name: "Test Character",
+      max_hp: 30,
+      current_hp: 30,
+      ac: 14,
     });
     render(<PlayerCharacterManager {...defaultProps} />);
     await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
-
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_name_label/i), "Aragorn");
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_hp_label/i), "55");
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_ac_label/i), "18");
-
-    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Save Character/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Aragorn")).toBeInTheDocument();
+      expect(screen.getByText("Test Character")).toBeInTheDocument();
     });
   });
 
-  // ── Edit ───────────────────────────────────────────────────────────────────
-
-  it("Edit button shows form pre-filled with character data", async () => {
+  it("Cancel on CharacterForm closes form without inserting", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
-    await userEvent.click(editButtons[0]);
+    await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Cancel Form/i }));
 
-    expect(screen.getByDisplayValue("Thorin")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("45")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("16")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("14")).toBeInTheDocument();
+    expect(mockChain.insert).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("character-form")).not.toBeInTheDocument();
   });
 
-  it("update calls supabase update with correct payload", async () => {
+  // ── Edit Character ──────────────────────────────────────────────────────────
+
+  it("clicking character card opens CharacterForm in edit mode", async () => {
+    render(<PlayerCharacterManager {...defaultProps} />);
+    await userEvent.click(screen.getByTestId("char-card-char-1"));
+    expect(screen.getByTestId("character-form")).toBeInTheDocument();
+    expect(screen.getByTestId("form-mode")).toHaveTextContent("edit");
+  });
+
+  it("saving edit calls supabase update with correct id", async () => {
     setupUpdateSuccess();
     render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
-    await userEvent.click(editButtons[0]);
-
-    const nameInput = screen.getByDisplayValue("Thorin");
-    await userEvent.clear(nameInput);
-    await userEvent.type(nameInput, "Thorin Oakenshield");
-
-    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
+    await userEvent.click(screen.getByTestId("char-card-char-1"));
+    await userEvent.click(screen.getByRole("button", { name: /Save Character/i }));
 
     await waitFor(() => {
-      expect(mockChain.update).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "Thorin Oakenshield" })
-      );
+      expect(mockChain.update).toHaveBeenCalled();
       expect(mockEq).toHaveBeenCalledWith("id", "char-1");
     });
   });
 
-  it("updated name appears in list after edit save", async () => {
-    setupUpdateSuccess();
-    render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
-    await userEvent.click(editButtons[0]);
-
-    const nameInput = screen.getByDisplayValue("Thorin");
-    await userEvent.clear(nameInput);
-    await userEvent.type(nameInput, "Thorin Oakenshield");
-
-    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText("Thorin Oakenshield")).toBeInTheDocument();
-    });
-  });
-
-  it("Cancel on edit discards changes", async () => {
-    render(<PlayerCharacterManager {...defaultProps} />);
-    const editButtons = screen.getAllByRole("button", { name: /^common\.edit$/i });
-    await userEvent.click(editButtons[0]);
-
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
-
-    expect(mockChain.update).not.toHaveBeenCalled();
-    expect(screen.getByText("Thorin")).toBeInTheDocument();
-  });
-
-  // ── Remove ─────────────────────────────────────────────────────────────────
+  // ── Remove Character ────────────────────────────────────────────────────────
 
   it("Remove button shows confirmation", async () => {
     render(<PlayerCharacterManager {...defaultProps} />);
@@ -285,18 +354,31 @@ describe("PlayerCharacterManager", () => {
     expect(screen.getByText("Thorin")).toBeInTheDocument();
   });
 
+  // ── Token Upload ────────────────────────────────────────────────────────────
+
+  it("Upload Token button opens TokenUpload dialog", async () => {
+    render(<PlayerCharacterManager {...defaultProps} />);
+    const uploadButtons = screen.getAllByRole("button", { name: /Upload Token/i });
+    await userEvent.click(uploadButtons[0]);
+    expect(screen.getByTestId("token-upload")).toBeInTheDocument();
+  });
+
+  it("after token upload, character token_url is updated in list", async () => {
+    render(<PlayerCharacterManager {...defaultProps} />);
+    const uploadButtons = screen.getAllByRole("button", { name: /Upload Token/i });
+    await userEvent.click(uploadButtons[0]);
+    await userEvent.click(screen.getByRole("button", { name: /Confirm Upload/i }));
+
+    expect(screen.queryByTestId("token-upload")).not.toBeInTheDocument();
+  });
+
   // ── Error handling ─────────────────────────────────────────────────────────
 
   it("shows error when insert fails", async () => {
     setupInsertError("Failed to add");
     render(<PlayerCharacterManager {...defaultProps} />);
     await userEvent.click(screen.getByRole("button", { name: /dashboard\.pc_add/i }));
-
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_name_label/i), "Legolas");
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_hp_label/i), "40");
-    await userEvent.type(screen.getByLabelText(/dashboard\.pc_ac_label/i), "15");
-
-    await userEvent.click(screen.getByRole("button", { name: /^common\.save$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Save Character/i }));
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();

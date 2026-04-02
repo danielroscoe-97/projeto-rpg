@@ -426,27 +426,49 @@ Default: grupos colapsados (consistente com a DM view).
 
 ## Decisao de Design: Status Agregado
 
-**Opcao A — Media dos tiers (recomendada):** O status do grupo e a media dos tiers dos membros ativos. Reflete o estado geral do grupo.
+**DECISAO FINAL (2026-04-02):** Mostrar AMBOS — worst-case como badge principal + average como label secundario.
 
-**Opcao B — Pior tier:** O status do grupo e o pior tier entre os membros. Mais conservador, pode causar falsa urgencia se apenas 1 membro esta em CRITICAL.
+**Implementacao atual (`PlayerInitiativeBoard.tsx:724-729`):** usa worst-case (tier mais alto entre membros ativos). **Correto e aprovado.**
 
-**Opcao C — Moda:** O tier mais frequente entre os membros. Ignora outliers.
+**Display a adicionar:** label de media como texto secundario no header do grupo:
 
-**Recomendacao:** Opcao A (media) para a implementacao inicial. Pode ser revisado com feedback de playtest.
+```
+[CRITICAL] Goblin (2/3)   ← badge = pior tier
+avg: MODERATE             ← label = media dos ativos
+```
+
+**Racional:**
+- Worst-case como badge: evita falsa seguranca (se 1 membro esta CRITICAL, o DM e players precisam saber)
+- Average como label: contexto do estado geral do grupo — 1 CRITICAL + 2 LIGHT = avg MODERATE
+
+**Default de grupos: COLAPSADOS** — mantido como esta. Consistente com DM view, evita poluicao visual em combates com muitos grupos.
+
+---
+
+## Status de Implementacao (2026-04-02)
+
+**IMPLEMENTADO** — `PlayerInitiativeBoard.tsx` ja tem:
+- `expandedPlayerGroups` state com expand/collapse
+- `groupMap` computed por `monster_group_id`
+- Group header: nome, contagem ativa/total, badge worst-case HP, turn highlight
+- `sanitize-combatants.ts`: `monster_group_id` + `group_order` ja passam via `...rest`
+
+**Pendente (delta vs spec):**
+- [ ] Adicionar label de average HP status ao lado do badge worst-case no header do grupo
+- [ ] Testes unitarios para logica de agrupamento (`computeAggregateHpStatus`, `extractGroupName`)
 
 ---
 
 ## Definicao de Pronto
 
-- [ ] `monster_group_id` e `group_order` incluidos na sanitizacao para players
-- [ ] `PlayerInitiativeBoard` renderiza grupos colapsaveis
-- [ ] Header mostra nome, contagem e status agregado de HP
-- [ ] Expand revela membros individuais com tier de HP e condicoes
-- [ ] Anti-metagaming preservado (sem HP numerico, AC, spell DC)
-- [ ] Combatentes hidden nao aparecem (nem no grupo)
-- [ ] Indicador de turno atual funciona para monstros agrupados
-- [ ] Lista plana preservada para combatentes nao-agrupados
-- [ ] Backward-compatible (players com frontend antigo veem lista plana)
-- [ ] Testes manuais 1-9 passando
+- [x] `monster_group_id` e `group_order` incluidos na sanitizacao para players
+- [x] `PlayerInitiativeBoard` renderiza grupos colapsaveis (colapsado por default)
+- [x] Header mostra nome, contagem e status worst-case de HP
+- [x] Expand revela membros individuais com tier de HP e condicoes
+- [x] Anti-metagaming preservado (sem HP numerico, AC, spell DC)
+- [x] Indicador de turno atual funciona para monstros agrupados (border-gold)
+- [x] Lista plana preservada para combatentes nao-agrupados
+- [x] Backward-compatible (players com frontend antigo veem lista plana)
+- [ ] **DELTA:** Header do grupo exibe AMBOS: badge worst-case + label average HP status
 - [ ] Testes unitarios para logica de agrupamento
-- [ ] Nenhuma regressao na DM view ou Guest view
+- [ ] Testes manuais 1-9 passando (QA sign-off)

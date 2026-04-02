@@ -726,12 +726,17 @@ export function PlayerInitiativeBoard({
               const isGroupExpanded = expandedPlayerGroups[gid] ?? false;
               const hasGroupTurn = group.indices.includes(currentTurnIndex);
 
-              // Aggregate HP status — worst-case (IG-1: most critical member defines the group state)
+              // Aggregate HP status — worst-case badge + average label
               const tierSeverity: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
+              const tierLabel: Record<number, string> = { 0: "FULL", 1: "LIGHT", 2: "MODERATE", 3: "HEAVY", 4: "CRITICAL" };
               const worstSeverity = activeMembers.length > 0
                 ? Math.max(...activeMembers.map((m) => tierSeverity[m.hp_status ?? "LIGHT"] ?? 1))
                 : 4;
               const aggStatus = worstSeverity >= 4 ? "CRITICAL" : worstSeverity >= 3 ? "HEAVY" : worstSeverity >= 2 ? "MODERATE" : worstSeverity >= 1 ? "LIGHT" : "FULL";
+              const avgSeverity = activeMembers.length > 0
+                ? activeMembers.reduce((sum, m) => sum + (tierSeverity[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
+                : 4;
+              const avgStatus = tierLabel[Math.round(avgSeverity)] ?? "MODERATE";
 
               // Extract group name (remove trailing number/letter suffix)
               const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
@@ -756,8 +761,13 @@ export function PlayerInitiativeBoard({
                     <span className="text-muted-foreground text-xs shrink-0">
                       ({activeMembers.length}/{group.members.length})
                     </span>
-                    <div className="ml-auto">
+                    <div className="ml-auto flex items-center gap-1.5">
                       <HpStatusBadge status={aggStatus} />
+                      {avgStatus !== aggStatus && (
+                        <span className="text-muted-foreground text-[10px] hidden sm:inline">
+                          média {avgStatus}
+                        </span>
+                      )}
                     </div>
                   </div>
                   {/* Expanded members rendered below via the normal loop */}

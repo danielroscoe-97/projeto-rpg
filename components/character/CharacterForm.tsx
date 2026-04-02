@@ -23,6 +23,7 @@ interface CharacterFormData {
   level: string;
   max_hp: string;
   ac: string;
+  spell_save_dc: string;
   notes: string;
 }
 
@@ -33,6 +34,7 @@ const EMPTY_FORM: CharacterFormData = {
   level: "1",
   max_hp: "",
   ac: "",
+  spell_save_dc: "",
   notes: "",
 };
 
@@ -44,6 +46,7 @@ function formFromCharacter(character: PlayerCharacter): CharacterFormData {
     level: character.level ? String(character.level) : "1",
     max_hp: String(character.max_hp),
     ac: String(character.ac),
+    spell_save_dc: character.spell_save_dc ? String(character.spell_save_dc) : "",
     notes: character.notes ?? "",
   };
 }
@@ -59,6 +62,7 @@ interface CharacterFormProps {
     level: number;
     max_hp: number;
     ac: number;
+    spell_save_dc: number | null;
     notes: string | null;
   }) => Promise<void>;
 }
@@ -129,6 +133,11 @@ export function CharacterForm({
       setError("AC must be >= 1");
       return;
     }
+    const spellDc = form.spell_save_dc ? Number(form.spell_save_dc) : null;
+    if (form.spell_save_dc && (spellDc === null || isNaN(spellDc) || spellDc < 1)) {
+      setError("Spell Save DC must be >= 1");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -141,6 +150,7 @@ export function CharacterForm({
         level,
         max_hp: maxHp || 10,
         ac: ac || 10,
+        spell_save_dc: spellDc,
         notes: form.notes.trim() || null,
       });
       handleOpenChange(false);
@@ -288,6 +298,25 @@ export function CharacterForm({
                 className="bg-background border-border text-foreground"
               />
             </div>
+          </div>
+
+          {/* Spell Save DC */}
+          <div className="space-y-1.5">
+            <Label htmlFor="char-dc" className="text-foreground text-xs">
+              Spell Save DC <span className="text-muted-foreground/50">({tc("optional")})</span>
+            </Label>
+            <Input
+              id="char-dc"
+              data-testid="char-dc"
+              type="number"
+              min={1}
+              placeholder="—"
+              value={form.spell_save_dc}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, spell_save_dc: e.target.value }))
+              }
+              className="bg-background border-border text-foreground max-w-[120px]"
+            />
           </div>
 
           {/* Notes */}
