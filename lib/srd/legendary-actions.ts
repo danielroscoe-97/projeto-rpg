@@ -24,7 +24,7 @@ export function getLegendaryActionCount(monster: SrdMonster): number | null {
   const firstEntry = monster.legendary_actions[0];
   if (firstEntry?.desc) {
     const match = firstEntry.desc.match(/can take (\d+) legendary action/i);
-    if (match) return parseInt(match[1], 10);
+    if (match) return Math.min(parseInt(match[1], 10), 10);
   }
 
   // Fallback 3: D&D 5e default

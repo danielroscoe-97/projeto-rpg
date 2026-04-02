@@ -16,6 +16,7 @@ import { SortableCombatantList } from "@/components/combat/SortableCombatantList
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import { CRCalculator } from "@/components/combat/CRCalculator";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { getLegendaryActionCount } from "@/lib/srd/legendary-actions";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
@@ -256,7 +257,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
-        legendary_actions_total: null,
+        legendary_actions_total: getLegendaryActionCount(monster),
         legendary_actions_used: 0,
       });
 
@@ -305,7 +306,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           player_notes: "",
           player_character_id: null,
           combatant_role: null,
-          legendary_actions_total: null,
+          legendary_actions_total: getLegendaryActionCount(monster),
           legendary_actions_used: 0,
         });
       }

@@ -709,7 +709,7 @@ export function GuestCombatClient() {
     expandedGroups,
     toggleGroupExpanded,
     setGroupInitiative,
-    incrementLegendaryAction,
+    setLegendaryActionsUsed,
   } = useGuestCombatStore();
 
   // ─── Undo stack (Story 1.1) ─────────────────────────────────────────────────
@@ -1389,7 +1389,7 @@ export function GuestCombatClient() {
                   onAddDeathSaveSuccess={addDeathSaveSuccess}
                   onAddDeathSaveFailure={addDeathSaveFailure}
                   onAdvanceTurn={handleAdvanceTurn}
-                  onIncrementLegendaryAction={incrementLegendaryAction}
+                  onSetLegendaryActionsUsed={setLegendaryActionsUsed}
                 />
               );
             }}
@@ -1431,6 +1431,7 @@ export function GuestCombatClient() {
                       onAddDeathSaveSuccess={addDeathSaveSuccess}
                       onAddDeathSaveFailure={addDeathSaveFailure}
                       onAdvanceTurn={handleAdvanceTurn}
+                      onSetLegendaryActionsUsed={setLegendaryActionsUsed}
                     />
                   ))}
                 </MonsterGroupHeader>

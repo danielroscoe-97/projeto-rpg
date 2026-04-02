@@ -214,8 +214,8 @@ export function validateEventData(event: RealtimeEvent): ValidationError | null 
 
   switch (event.type) {
     case "combat:hp_update":
-      if (event.current_hp < 0) {
-        return { field: "current_hp", message: "HP cannot be negative" };
+      if (!Number.isFinite(event.current_hp) || event.current_hp < 0) {
+        return { field: "current_hp", message: "HP must be a finite non-negative number" };
       }
       if (!event.combatant_id) {
         return { field: "combatant_id", message: "Combatant ID is required" };

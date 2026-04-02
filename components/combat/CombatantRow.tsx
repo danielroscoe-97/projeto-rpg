@@ -53,7 +53,8 @@ export interface CombatantRowProps {
   onAddDeathSaveFailure?: (id: string) => void;
   /** Callback to advance to next turn — attached to the ▶ indicator */
   onAdvanceTurn?: () => void;
-  onIncrementLegendaryAction?: (id: string) => void;
+  /** Set legendary actions used to exact count (clicking dot i → sets to i+1 or i to undo). */
+  onSetLegendaryActionsUsed?: (id: string, count: number) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -83,7 +84,7 @@ export const CombatantRow = memo(function CombatantRow({
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
   onAdvanceTurn,
-  onIncrementLegendaryAction,
+  onSetLegendaryActionsUsed,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -183,13 +184,15 @@ export const CombatantRow = memo(function CombatantRow({
   // Only show the ruleset switch button if a handler is provided — callers omit it during combat
   const canSwitchVersion = isMonster && combatant.ruleset_version !== null && !!onSwitchVersion;
   const otherVersion: RulesetVersion = combatant.ruleset_version === "2024" ? "2014" : "2024";
+  // CRITICAL visual: ≤10% HP, alive (P-08)
+  const isCritical = combatant.max_hp > 0 && !combatant.is_defeated && combatant.current_hp / combatant.max_hp <= 0.1;
 
   return (
     <li
       className={`bg-card border rounded-md overflow-hidden transition-all duration-500 ${
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
-      } ${combatant.is_defeated ? "opacity-50" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
-        combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : ""
+      } ${combatant.is_defeated ? "opacity-50 grayscale-[50%]" : isCritical ? "opacity-50 grayscale-[50%] border-2 border-red-500 animate-pulse" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
+        isCritical ? "" : (combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : "")
       } ${combatant.is_hidden ? "border-dashed opacity-70" : ""}`}
       role="listitem"
       aria-current={isCurrentTurn ? true : undefined}
@@ -343,7 +346,9 @@ export const CombatantRow = memo(function CombatantRow({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (i >= combatant.legendary_actions_used) onIncrementLegendaryAction?.(combatant.id);
+                      // Clicking dot i: set used to i+1 if not already there, or i to toggle last dot off
+                      const target = i + 1 === combatant.legendary_actions_used ? i : i + 1;
+                      onSetLegendaryActionsUsed?.(combatant.id, target);
                     }}
                     className={`w-2.5 h-2.5 rounded-full border transition-colors ${
                       i < combatant.legendary_actions_used

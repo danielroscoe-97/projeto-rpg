@@ -237,10 +237,18 @@ export type RealtimeEvent =
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
-/** Combatant data safe for player broadcast — no DM-only fields, no monster stats. */
+/** Combatant data safe for player broadcast — no DM-only fields, no monster stats, no LA counts. */
 export type SanitizedCombatant = Omit<
   Combatant,
-  "dm_notes" | "display_name" | "current_hp" | "max_hp" | "temp_hp" | "ac" | "spell_save_dc"
+  | "dm_notes"
+  | "display_name"
+  | "current_hp"
+  | "max_hp"
+  | "temp_hp"
+  | "ac"
+  | "spell_save_dc"
+  | "legendary_actions_total"
+  | "legendary_actions_used"
 > & {
   /** Monsters get hp_status instead of exact HP values */
   hp_status?: HpStatus;

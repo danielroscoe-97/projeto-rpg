@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
@@ -354,6 +354,31 @@ export function PlayerInitiativeBoard({
     setExpandedPlayerGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
   }, []);
 
+  // Pre-compute monster group data once per combatants change (P-07: avoids IIFE mutation during render)
+  const groupMap = useMemo(() => {
+    const map = new Map<string, { members: PlayerCombatant[]; indices: number[] }>();
+    combatants.forEach((c, idx) => {
+      if (c.monster_group_id) {
+        if (!map.has(c.monster_group_id)) {
+          map.set(c.monster_group_id, { members: [], indices: [] });
+        }
+        const g = map.get(c.monster_group_id)!;
+        g.members.push(c);
+        g.indices.push(idx);
+      }
+    });
+    return map;
+  }, [combatants]);
+
+  // First-member IDs for group header rendering (stable Set, no mutation during render)
+  const groupFirstMemberIds = useMemo(() => {
+    const ids = new Set<string>();
+    groupMap.forEach((group) => {
+      if (group.members[0]) ids.add(group.members[0].id);
+    });
+    return ids;
+  }, [groupMap]);
+
   // "Você é o próximo!" — show when next_combatant_id matches THIS player
   const isPlayerUpcoming = !!(
     nextCombatantId &&
@@ -384,7 +409,7 @@ export function PlayerInitiativeBoard({
       {/* Always visible at the top when scrolling — h-14 fixed height */}
       {(currentCombatant || currentTurnIndex === -1) && (
         <div
-          className="sticky top-0 z-30 -mx-2 px-2 bg-background/95 border-b border-border"
+          className="sticky top-0 z-30 -mx-2 px-2 bg-background/95 backdrop-blur-sm border-b border-border"
           data-testid="sticky-turn-header"
         >
           <AnimatePresence mode="wait">
@@ -626,45 +651,30 @@ export function PlayerInitiativeBoard({
         data-testid="player-initiative-board"
       >
         <AnimatePresence mode="popLayout">
-        {(() => {
-          // Pre-compute monster groups for group headers
-          const groupMap = new Map<string, { members: PlayerCombatant[]; indices: number[] }>();
-          combatants.forEach((c, idx) => {
-            if (c.monster_group_id) {
-              if (!groupMap.has(c.monster_group_id)) {
-                groupMap.set(c.monster_group_id, { members: [], indices: [] });
-              }
-              const g = groupMap.get(c.monster_group_id)!;
-              g.members.push(c);
-              g.indices.push(idx);
-            }
-          });
-          const renderedGroups = new Set<string>();
-
-          return combatants.map((combatant, index) => {
+        {combatants.map((combatant, index) => {
           // Progressive reveal: hide unrevealed combatants in round 1
           if (!isRevealed(index)) return null;
 
           // Monster group handling
           if (combatant.monster_group_id && groupMap.has(combatant.monster_group_id)) {
             const gid = combatant.monster_group_id;
-            if (renderedGroups.has(gid)) {
-              // Already rendered this group's header — skip if collapsed
+            const isFirstMember = groupFirstMemberIds.has(combatant.id);
+            if (!isFirstMember) {
+              // Not the first member — skip if group is collapsed, otherwise render normally below
               if (!expandedPlayerGroups[gid]) return null;
             } else {
               // First member of the group — render group header
-              renderedGroups.add(gid);
               const group = groupMap.get(gid)!;
               const activeMembers = group.members.filter((m) => !m.is_defeated);
               const isGroupExpanded = expandedPlayerGroups[gid] ?? false;
               const hasGroupTurn = group.indices.includes(currentTurnIndex);
 
-              // Aggregate HP status from worst tier
+              // Aggregate HP status — worst-case (IG-1: most critical member defines the group state)
               const tierSeverity: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
-              const avgSeverity = activeMembers.length > 0
-                ? activeMembers.reduce((sum, m) => sum + (tierSeverity[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
+              const worstSeverity = activeMembers.length > 0
+                ? Math.max(...activeMembers.map((m) => tierSeverity[m.hp_status ?? "LIGHT"] ?? 1))
                 : 4;
-              const aggStatus = avgSeverity >= 3.5 ? "CRITICAL" : avgSeverity >= 2.5 ? "HEAVY" : avgSeverity >= 1.5 ? "MODERATE" : avgSeverity >= 0.5 ? "LIGHT" : "FULL";
+              const aggStatus = worstSeverity >= 4 ? "CRITICAL" : worstSeverity >= 3 ? "HEAVY" : worstSeverity >= 2 ? "MODERATE" : worstSeverity >= 1 ? "LIGHT" : "FULL";
 
               // Extract group name (remove trailing number/letter suffix)
               const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
@@ -744,7 +754,7 @@ export function PlayerInitiativeBoard({
                   : isOwnChar
                     ? "border-t border-r border-b border-border bg-card px-4 py-3"
                     : "border-t border-r border-b border-border px-4 py-3"
-              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-70 grayscale-[30%] border-2 border-red-500 animate-pulse" : ""} ${
+              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-50 grayscale-[50%] border-2 border-red-500 animate-pulse" : ""} ${
                 roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""
               } ${
                 isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
@@ -863,8 +873,7 @@ export function PlayerInitiativeBoard({
               })()}
             </motion.li>
           );
-        });
-        })()}
+        })}
         </AnimatePresence>
       </ul>
 

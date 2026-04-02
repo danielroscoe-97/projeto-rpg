@@ -45,14 +45,14 @@ export function CombatActionLog({ open, onClose, playerId }: CombatActionLogProp
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [userScrolled, setUserScrolled] = useState(false);
   const [hasNewEntry, setHasNewEntry] = useState(false);
-  const prevLenRef = useRef(entries.length);
-
   // Filter entries based on active tab + player filter
   const displayEntries = entries.filter((e) => {
     if (activeTab === "damage" && e.type !== "damage" && e.type !== "heal") return false;
     if (playerId && activeTab === "damage" && e.details?.targetId !== playerId) return false;
     return true;
   });
+
+  const prevLenRef = useRef(displayEntries.length);
 
   // Track user scroll position
   const handleScroll = () => {
@@ -65,15 +65,15 @@ export function CombatActionLog({ open, onClose, playerId }: CombatActionLogProp
 
   // Auto-scroll to bottom on new entries (unless user scrolled up)
   useEffect(() => {
-    if (entries.length > prevLenRef.current) {
+    if (displayEntries.length > prevLenRef.current) {
       if (!userScrolled && open && scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       } else if (userScrolled) {
         setHasNewEntry(true);
       }
     }
-    prevLenRef.current = entries.length;
-  }, [entries.length, open, userScrolled]);
+    prevLenRef.current = displayEntries.length;
+  }, [displayEntries.length, open, userScrolled]);
 
   // Scroll to bottom when opening or switching tabs
   useEffect(() => {
