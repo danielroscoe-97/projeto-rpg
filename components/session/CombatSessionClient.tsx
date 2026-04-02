@@ -97,6 +97,8 @@ export function CombatSessionClient({
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
+  // Broadcast-driven player status — fed to PlayersOnlinePanel for < 2s latency (spec 4.3.6)
+  const [playerBroadcastStatuses, setPlayerBroadcastStatuses] = useState<Record<string, "online" | "idle" | "offline">>({});
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
   const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number } | null>(null);
@@ -682,6 +684,36 @@ export function CombatSessionClient({
     };
   }, [is_active, getSessionId]);
 
+  // Listen for player presence broadcasts — spec 4.3.6, feeds PlayersOnlinePanel < 2s latency
+  useEffect(() => {
+    const sid = getSessionId();
+    if (!sid || !is_active) return;
+    const ch = getDmChannel(sid);
+    let active = true;
+
+    const markStatus = (name: string, status: "online" | "idle" | "offline") => {
+      if (!active || !name) return;
+      setPlayerBroadcastStatuses((prev) =>
+        prev[name] === status ? prev : { ...prev, [name]: status }
+      );
+    };
+
+    ch.on("broadcast", { event: "player:disconnecting" }, ({ payload }) => {
+      markStatus(payload?.player_name as string, "offline");
+    });
+    ch.on("broadcast", { event: "player:idle" }, ({ payload }) => {
+      markStatus(payload?.player_name as string, "idle");
+    });
+    ch.on("broadcast", { event: "player:active" }, ({ payload }) => {
+      markStatus(payload?.player_name as string, "online");
+    });
+    ch.on("broadcast", { event: "player:joined" }, ({ payload }) => {
+      markStatus((payload?.name ?? payload?.player_name) as string, "online");
+    });
+
+    return () => { active = false; };
+  }, [is_active, getSessionId]);
+
   // Listen for audio:play_sound events from players
   useEffect(() => {
     const sid = getSessionId();
@@ -945,7 +977,10 @@ export function CombatSessionClient({
       />
 
       {sessionId && (
-        <PlayersOnlinePanel sessionId={sessionId} />
+        <PlayersOnlinePanel
+          sessionId={sessionId}
+          broadcastStatuses={playerBroadcastStatuses}
+        />
       )}
 
       {addMode && (

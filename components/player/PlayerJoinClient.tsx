@@ -938,6 +938,7 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "combat:session_revoked" }, ({ payload }) => {
           // If our token was revoked (another device took over), disconnect gracefully
           if (payload.revoked_token_id === effectiveTokenId) {
+            clearPlayerIdentity(sessionId);
             setIsRegistered(false);
             setRegisteredName(undefined);
             // Show persistent banner instead of silent toast
@@ -1581,7 +1582,7 @@ export function PlayerJoinClient({
             {t("session_transferred")}
           </h1>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => router.push("/")}
             className="mt-4 px-6 py-2 bg-gold text-black rounded-md font-medium hover:bg-gold/90 transition-colors"
           >
             {t("back_to_home")}

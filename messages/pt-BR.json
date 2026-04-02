@@ -1164,8 +1164,6 @@
     "rejoin_status_inactive": "Desconectado",
     "reconnecting_as": "Reconectando, {name}...",
     "session_transferred": "Sessão transferida para outro dispositivo.",
-    "reconnect_banner_saving": "Reconectando... seu progresso está salvo",
-    "reconnect_banner_retry": "Conexão perdida. Toque para tentar novamente.",
     "lobby_login_link": "Tem uma conta? Faça login para vincular",
     "combat_in_progress": "Combate em andamento",
     "late_join_title": "Entrar no Combate Ativo",
