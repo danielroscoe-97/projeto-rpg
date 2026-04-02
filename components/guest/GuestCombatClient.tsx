@@ -674,8 +674,8 @@ export function GuestCombatClient() {
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
   const [spellsOpen, setSpellsOpen] = useState(false);
-  // C.15: Post-combat state machine (leaderboard → poll → done)
-  type GuestPostCombatPhase = "leaderboard" | "poll" | null;
+  // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
+  type GuestPostCombatPhase = "leaderboard" | null;
   const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
 
   // Redirect URL for Google OAuth: returns to the confirm route with from=guest-combat
@@ -1180,10 +1180,11 @@ export function GuestCombatClient() {
     }
   }, [resetCombat]);
 
-  // C.15: Leaderboard close → show poll
+  // UX.04 — Guest skips poll: no players to collect votes from, no DB persistence
+  // Going straight to dismiss avoids showing a voting UI whose data is silently discarded
   const handleLeaderboardClose = useCallback(() => {
-    setGuestPostCombatPhase("poll");
-  }, []);
+    handleGuestDismissAll();
+  }, [handleGuestDismissAll]);
 
   // C.15: Dismiss all post-combat screens — guest has no DB persistence
   const handleGuestDismissAll = useCallback(() => {
@@ -1483,14 +1484,7 @@ export function GuestCombatClient() {
         />
       )}
 
-      {guestPostCombatPhase === "poll" && (
-        <div className="fixed inset-0 z-50">
-          <DifficultyPoll
-            onVote={() => handleGuestDismissAll()}
-            onSkip={() => handleGuestDismissAll()}
-          />
-        </div>
-      )}
+      {/* UX.04 — Guest poll phase removed: DM jumps from leaderboard directly to dismiss */}
 
       <KeyboardCheatsheet
         open={cheatsheetOpen}

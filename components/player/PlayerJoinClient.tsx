@@ -189,6 +189,8 @@ export function PlayerJoinClient({
     rounds: number;
   } | null>(null);
   const [showPoll, setShowPoll] = useState(false);
+  // UX.18: transition screen after poll dismiss, before session:ended arrives
+  const [awaitingSessionEnd, setAwaitingSessionEnd] = useState(false);
   // A.6: Stores registration data for auto-join when DM starts combat
   const pendingRegistrationRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const isRegisteredRef = useRef(isRegistered);
@@ -1411,12 +1413,26 @@ export function PlayerJoinClient({
           handlePollVote(vote);
           setCombatStatsData(null);
           setShowPoll(false);
+          setAwaitingSessionEnd(true);
         }}
         onSkip={() => {
           setCombatStatsData(null);
           setShowPoll(false);
+          setAwaitingSessionEnd(true);
         }}
       />
+    );
+  }
+
+  // UX.18: limbo guard — waiting for session:ended after poll dismiss
+  if (awaitingSessionEnd && !sessionEnded) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <div className="w-6 h-6 rounded-full border-2 border-gold border-t-transparent animate-spin mx-auto" />
+          <p className="text-muted-foreground text-sm">{t("poll_awaiting_end")}</p>
+        </div>
+      </div>
     );
   }
 

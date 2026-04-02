@@ -1057,30 +1057,20 @@ export function CombatSessionClient({
             stats={leaderboardData}
             encounterName={leaderboardMeta.name}
             rounds={leaderboardMeta.rounds}
-            onClose={() => setPostCombatPhase("poll")}
+            // UX.08 — DM skips poll (biased as encounter creator), goes straight to result
+            onClose={() => setPostCombatPhase("result")}
           />
         )}
       </AnimatePresence>
 
-      {postCombatPhase === "poll" && (
-        <div className="fixed inset-0 z-50">
-          <DifficultyPoll
-            onVote={(vote) => {
-              setPollVotes((prev) => {
-                const n = new Map(prev);
-                n.set("DM", vote);
-                return n;
-              });
-              setPostCombatPhase("result");
-            }}
-            onSkip={() => setPostCombatPhase("result")}
-          />
-        </div>
-      )}
-
       {postCombatPhase === "result" && (
         <div className="fixed inset-0 z-50">
-          <PollResult votes={pollVotes} onClose={handleDismissAll} />
+          <PollResult
+            votes={pollVotes}
+            onClose={handleDismissAll}
+            // UX.10 — live player count so DM knows how many votes to wait for
+            totalPlayers={useCombatStore.getState().combatants.filter((c) => c.is_player).length}
+          />
         </div>
       )}
 
