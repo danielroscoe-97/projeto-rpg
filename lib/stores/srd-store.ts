@@ -175,8 +175,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
   },
 
   loadVersionOnDemand: async (version: RulesetVersion) => {
-    const { loadedVersions, monsters, spells } = get();
-    if (loadedVersions.has(version)) return;
+    if (get().loadedVersions.has(version)) return;
 
     try {
       const [newMonsters, newSpells] = await Promise.all([
@@ -192,6 +191,9 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         ),
       ]);
 
+      // Read current state AFTER await so MAD monsters added by Phase 3 are included
+      const { monsters, spells, loadedVersions } = get();
+      if (loadedVersions.has(version)) return;
       const mergedMonsters = [...monsters, ...newMonsters];
       const mergedSpells = [...spells, ...newSpells];
 

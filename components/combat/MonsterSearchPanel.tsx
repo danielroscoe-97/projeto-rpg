@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
-import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
+import { buildMonsterIndex, searchMonsters, mergeImportedMonsters } from "@/lib/srd/srd-search";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
@@ -158,15 +158,25 @@ export function MonsterSearchPanel({
   const [hasImported, setHasImported] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const madMonstersRef = useRef<SrdMonster[]>([]);
 
   // Check if user has imported content
   useEffect(() => {
     getImportedSources().then((s) => setHasImported(s.length > 0));
   }, [importOpen]);
 
-  // Load MAD monsters once (non-critical)
+  // Load MAD monsters once (non-critical) — also merge into global monsterMap
+  // so getMonsterById() can resolve them for pinned card ("Ver Ficha")
   useEffect(() => {
-    loadMadMonsters().then(setMadMonsters).catch(() => {});
+    loadMadMonsters()
+      .then((monsters) => {
+        madMonstersRef.current = monsters;
+        setMadMonsters(monsters);
+        if (monsters.length > 0) {
+          mergeImportedMonsters(monsters);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0 || sourceFilter !== "all";
@@ -181,6 +191,10 @@ export function MonsterSearchPanel({
       .then((monsters) => {
         if (!cancelled) {
           buildMonsterIndex(monsters);
+          // Re-merge MAD monsters after index rebuild (buildMonsterIndex wipes the map)
+          if (madMonstersRef.current.length > 0) {
+            mergeImportedMonsters(madMonstersRef.current);
+          }
           setAllMonsters(monsters);
           setIsLoading(false);
         }
