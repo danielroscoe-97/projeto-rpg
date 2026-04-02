@@ -330,17 +330,33 @@ export async function rejoinAsPlayer(
     return { tokenId: token.id, playerName: token.player_name };
   }
 
+  // IG-02: Freshness guard — if player sent a heartbeat in the last 10s they're still active.
+  // Prevents impersonation of a connected player by another participant with the session link.
+  if (token.last_seen_at) {
+    const msSinceHeartbeat = Date.now() - new Date(token.last_seen_at).getTime();
+    if (msSinceHeartbeat < 10_000) {
+      throw new Error("Player is still actively connected — cannot transfer token");
+    }
+  }
+
   // A.5: Atomic transfer — optimistic locking on current anon_user_id.
-  // If another device won the race and changed anon_user_id between our SELECT and this UPDATE,
-  // the .eq("anon_user_id", token.anon_user_id) filter matches 0 rows → maybeSingle returns null.
-  const { data: updated, error: updateError } = await supabase
+  // P-03 fix: when anon_user_id is null (token never had an owner), use .is() not .eq("")
+  // to correctly match NULL in PostgreSQL.
+  let transferQuery = supabase
     .from("session_tokens")
     .update({
       anon_user_id: anonUserId,
       last_seen_at: new Date().toISOString(),
     })
-    .eq("id", token.id)
-    .eq("anon_user_id", token.anon_user_id ?? "")
+    .eq("id", token.id);
+
+  if (token.anon_user_id === null) {
+    transferQuery = transferQuery.is("anon_user_id", null);
+  } else {
+    transferQuery = transferQuery.eq("anon_user_id", token.anon_user_id);
+  }
+
+  const { data: updated, error: updateError } = await transferQuery
     .select("id, anon_user_id")
     .maybeSingle();
 

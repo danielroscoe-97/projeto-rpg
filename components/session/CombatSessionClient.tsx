@@ -48,6 +48,7 @@ import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
+import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
 import { rejoinAsPlayer } from "@/lib/supabase/player-registration";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
 import {
@@ -942,6 +943,10 @@ export function CombatSessionClient({
         onAcceptAll={handleAcceptAllJoinRequests}
         onRejectAll={handleRejectAllJoinRequests}
       />
+
+      {sessionId && (
+        <PlayersOnlinePanel sessionId={sessionId} />
+      )}
 
       {addMode && (
         <div className="p-3 bg-white/[0.04] rounded-md space-y-2" data-testid="add-combatant-panel">

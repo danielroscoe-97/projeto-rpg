@@ -147,14 +147,8 @@ export function PlayerJoinClient({
   const lateJoinFinalStatusRef = useRef(false);
   const lateJoinRetryCountRef = useRef(0);
   const [lateJoinDeadline, setLateJoinDeadline] = useState<number | null>(null);
-  // Rejoin-with-approval state (for cookie-less reconnect during active combat)
-  const [rejoinStatus, setRejoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected" | "timeout">("idle");
-  const rejoinRequestIdRef = useRef<string | null>(null);
-  const rejoinCharacterRef = useRef<string | null>(null);
-  // A.5: Rejoin retry refs
-  const rejoinRetryCountRef = useRef(0);
+  // rejoinRetryTimerRef kept for clearAllTimers — safe to remove in a future cleanup pass
   const rejoinRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const rejoinStatusRef = useRef<"idle" | "waiting" | "accepted" | "rejected" | "timeout">("idle");
   // A.3: Unsub delay timer (session:ended → removeChannel after 500ms)
   const sessionEndedUnsubTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const presenceChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
@@ -307,10 +301,23 @@ export function PlayerJoinClient({
     const initAuth = async () => {
       const saved = loadPlayerIdentity(sessionId);
 
+      // P-06: check cancelled before any state update (even sync ones)
+      if (cancelled) return;
+
       // Show skeleton immediately if we have stored identity (Sally: no blank screen)
       if (saved?.playerName) {
         setReconnectingAs(saved.playerName);
       }
+
+      // IG-01: 5s cap on skeleton visibility — if reconnect takes longer, fall through to form
+      // (distinct from the 8s rejoin timeout; this is purely a UX cap)
+      let skeletonTimedOut = false;
+      const skeletonTimer = saved?.playerName
+        ? setTimeout(() => {
+            skeletonTimedOut = true;
+            if (!cancelled) setReconnectingAs(null);
+          }, 5000)
+        : null;
 
       try {
         const supabase = createClient();
@@ -343,13 +350,14 @@ export function PlayerJoinClient({
         }
 
         // STEP 2: If we have stored identity, try fast reconnect (8s timeout — Amelia)
-        if (saved?.tokenId && saved?.playerName) {
+        if (saved?.tokenId && saved?.playerName && !skeletonTimedOut) {
           try {
             const { tokenId: rejoinedId } = await withTimeout(
               rejoinAsPlayer(sessionId, saved.playerName, userId),
               8000
             );
 
+            if (skeletonTimer) clearTimeout(skeletonTimer);
             if (!cancelled) {
               setEffectiveTokenId(rejoinedId);
               setIsRegistered(true);
@@ -360,10 +368,13 @@ export function PlayerJoinClient({
             }
             return; // Reconnect successful — skip claimPlayerToken
           } catch {
-            // Reconnect failed (token revoked, session expired, timeout)
+            // Reconnect failed (token revoked, session expired, timeout, impersonation guard)
             clearPlayerIdentity(sessionId);
+            if (skeletonTimer) clearTimeout(skeletonTimer);
             if (!cancelled) setReconnectingAs(null);
           }
+        } else if (skeletonTimer) {
+          clearTimeout(skeletonTimer);
         }
 
         // STEP 3: Normal flow — claimPlayerToken
@@ -380,6 +391,7 @@ export function PlayerJoinClient({
           setAuthReady(true);
         }
       } catch (err) {
+        if (skeletonTimer) clearTimeout(skeletonTimer);
         captureError(err instanceof Error ? err : new Error(String(err)), {
           component: "PlayerJoinClient",
           action: "initAuth",
@@ -922,49 +934,12 @@ export function PlayerJoinClient({
             setLateJoinStatus("rejected");
           }
         })
-        .on("broadcast", { event: "combat:rejoin_response" }, ({ payload }) => {
-          if (payload.request_id !== rejoinRequestIdRef.current) return;
-          // A.5: Clear retry timer on DM response
-          if (rejoinRetryTimerRef.current) { clearTimeout(rejoinRetryTimerRef.current); rejoinRetryTimerRef.current = null; }
-          if (payload.accepted) {
-            rejoinStatusRef.current = "accepted";
-            setRejoinStatus("accepted");
-            // DM approved — now transfer token ownership
-            const charName = rejoinCharacterRef.current;
-            if (charName) {
-              (async () => {
-                try {
-                  const supabase = createClient();
-                  const { data: { session: authSession } } = await supabase.auth.getSession();
-                  const userId = authSession?.user?.id;
-                  if (!userId) throw new Error("No auth session");
-                  const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, charName, userId);
-                  setEffectiveTokenId(rejoinedTokenId);
-                  setIsRegistered(true);
-                  setRegisteredName(charName);
-                  rejoinStatusRef.current = "idle";
-                  setRejoinStatus("idle");
-                } catch (err) {
-                  rejoinStatusRef.current = "idle";
-                  setRejoinStatus("idle");
-                  toast.error(tRef.current("rejoin_error"));
-                  captureError(err instanceof Error ? err : new Error(String(err)), {
-                    component: "PlayerJoinClient", action: "rejoinAfterApproval", category: "auth",
-                  });
-                }
-              })();
-            }
-          } else {
-            rejoinStatusRef.current = "rejected";
-            setRejoinStatus("rejected");
-          }
-        })
+        // combat:rejoin_response removed — rejoin is now always auto-approve (John's simplification)
         .on("broadcast", { event: "combat:session_revoked" }, ({ payload }) => {
           // If our token was revoked (another device took over), disconnect gracefully
           if (payload.revoked_token_id === effectiveTokenId) {
             setIsRegistered(false);
             setRegisteredName(undefined);
-            setRejoinStatus("idle");
             // Show persistent banner instead of silent toast
             setSessionRevokedBanner(true);
             if (sessionRevokedTimerRef.current) clearTimeout(sessionRevokedTimerRef.current);
@@ -1675,8 +1650,6 @@ export function PlayerJoinClient({
         registeredPlayerNames={registeredPlayerNames}
         registeredPlayersWithStatus={registeredPlayersWithStatus}
         onRejoin={handleRejoin}
-        rejoinStatus={rejoinStatus}
-        onRejoinRetry={() => setRejoinStatus("idle")}
       />
     );
   }
@@ -1698,7 +1671,6 @@ export function PlayerJoinClient({
               // Navigate to lobby by resetting registration state
               setIsRegistered(false);
               setRegisteredName(undefined);
-              setRejoinStatus("idle");
             }}
             className="px-3 py-1 bg-white/20 text-white text-xs font-medium rounded hover:bg-white/30 transition-colors"
           >
