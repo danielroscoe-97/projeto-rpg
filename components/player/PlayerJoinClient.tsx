@@ -138,6 +138,8 @@ export function PlayerJoinClient({
   const rejoinCharacterRef = useRef<string | null>(null);
   const presenceChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const combatantsRef = useRef(initialCombatants);
+  // Guard: timestamp of last optimistic death save update — prevents polling from overwriting
+  const deathSaveOptimisticRef = useRef<number>(0);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -384,7 +386,27 @@ export function PlayerJoinClient({
         if (data.encounter.id) setCurrentEncounterId(data.encounter.id);
       }
       if (data.combatants) {
-        updateCombatants(data.combatants);
+        // Preserve optimistic death saves for 5s after player click
+        const isDeathSaveProtected = Date.now() - deathSaveOptimisticRef.current < 5000;
+        if (isDeathSaveProtected) {
+          updateCombatants((prev) => {
+            const serverList = data.combatants as PlayerCombatant[];
+            return serverList.map((sc) => {
+              const local = prev.find((lc) => lc.id === sc.id);
+              if (local?.death_saves && sc.death_saves) {
+                // Keep whichever has more saves (optimistic is ahead of server)
+                const localTotal = (local.death_saves.successes ?? 0) + (local.death_saves.failures ?? 0);
+                const serverTotal = (sc.death_saves.successes ?? 0) + (sc.death_saves.failures ?? 0);
+                if (localTotal > serverTotal) {
+                  return { ...sc, death_saves: local.death_saves };
+                }
+              }
+              return sc;
+            });
+          });
+        } else {
+          updateCombatants(data.combatants);
+        }
       }
       // Mesa model: update DM plan from API response
       if (data.dm_plan) {
@@ -1254,6 +1276,7 @@ export function PlayerJoinClient({
               },
             });
             // Optimistic local update — show the dot immediately
+            deathSaveOptimisticRef.current = Date.now();
             updateCombatants((prev) =>
               prev.map((c) => {
                 if (c.id !== combatantId) return c;
