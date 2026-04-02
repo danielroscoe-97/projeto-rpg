@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { buildMonsterIndex, searchMonsters } from "@/lib/srd/srd-search";
-import { loadMonsters } from "@/lib/srd/srd-loader";
+import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
 import { VersionBadge } from "@/components/session/RulesetSelector";
@@ -13,6 +13,8 @@ import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { ImportContentModal } from "@/components/import/ImportContentModal";
 import { getImportedSources } from "@/lib/import/import-cache";
 import type { RulesetVersion } from "@/lib/types/database";
+
+type SourceFilter = "all" | "srd" | "complete" | "mad";
 
 const CREATURE_COLORS: Record<string, string> = {
   aberration: "bg-purple-900/40 text-purple-300",
@@ -125,6 +127,7 @@ export function MonsterSearchPanel({
   placeholder,
 }: MonsterSearchPanelProps) {
   const t = useTranslations("combat");
+  const tCompendium = useTranslations("compendium");
   const tImport = useTranslations("import");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const { isActive: extendedActive } = useExtendedCompendium();
@@ -136,9 +139,11 @@ export function MonsterSearchPanel({
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [crMin, setCrMin] = useState("");
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [madMonsters, setMadMonsters] = useState<SrdMonster[]>([]);
   const [isHidden, setIsHidden] = useState(false);
   const [rowQuantities, setRowQuantities] = useState<Record<string, number>>({});
   const [manualOpen, setManualOpen] = useState(false);
@@ -159,7 +164,12 @@ export function MonsterSearchPanel({
     getImportedSources().then((s) => setHasImported(s.length > 0));
   }, [importOpen]);
 
-  const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0;
+  // Load MAD monsters once (non-critical)
+  useEffect(() => {
+    loadMadMonsters().then(setMadMonsters).catch(() => {});
+  }, []);
+
+  const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0 || sourceFilter !== "all";
   const shouldShowResults = query.trim() !== "" || hasFilters;
 
   // Load monster list when ruleset changes
@@ -190,25 +200,42 @@ export function MonsterSearchPanel({
   useEffect(() => {
     if (isLoading) return;
 
-    // P2 fix: don't show results unless user typed or has active filters
     if (!shouldShowResults) {
       setResults([]);
       return;
     }
 
     const timer = setTimeout(() => {
-      let base: SrdMonster[] = query.trim()
-        ? searchMonsters(query, rulesetVersion).map((r) => r.item)
-        : allMonsters;
+      const q = query.trim().toLowerCase();
+
+      let base: SrdMonster[];
+
+      if (sourceFilter === "mad") {
+        // MAD-only: simple name search (no Fuse)
+        base = q ? madMonsters.filter((m) => m.name.toLowerCase().includes(q)) : madMonsters;
+      } else {
+        // 5e.tools sources: use Fuse when there's a query
+        base = q ? searchMonsters(query, rulesetVersion).map((r) => r.item) : allMonsters;
+
+        if (sourceFilter === "srd") {
+          base = base.filter((m) => m.is_srd === true);
+        } else if (sourceFilter === "complete") {
+          // all 5e.tools — no extra filter
+        } else {
+          // "all" = SRD + MAD
+          base = base.filter((m) => m.is_srd !== false);
+          const madMatches = q
+            ? madMonsters.filter((m) => m.name.toLowerCase().includes(q))
+            : madMonsters;
+          base = [...base, ...madMatches];
+        }
+      }
 
       // Apply CR filter
       const min = crMin !== "" ? crToNum(crMin) : -Infinity;
       const max = crMax !== "" ? crToNum(crMax) : Infinity;
       if (crMin !== "" || crMax !== "") {
-        base = base.filter((m) => {
-          const n = crToNum(m.cr);
-          return n >= min && n <= max;
-        });
+        base = base.filter((m) => { const n = crToNum(m.cr); return n >= min && n <= max; });
       }
 
       // Apply type filter
@@ -219,16 +246,11 @@ export function MonsterSearchPanel({
         });
       }
 
-      // Filter non-SRD content unless extended compendium is active
-      if (!extendedActive) {
-        base = base.filter((m) => m.is_srd !== false);
-      }
-
-      setResults(base.slice(0, query.trim() ? 8 : 20));
+      setResults(base.slice(0, q ? 8 : 20));
       setActiveIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [query, rulesetVersion, allMonsters, isLoading, crMin, crMax, selectedTypes, shouldShowResults, extendedActive]);
+  }, [query, rulesetVersion, allMonsters, madMonsters, sourceFilter, isLoading, crMin, crMax, selectedTypes, shouldShowResults]);
 
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
@@ -340,7 +362,7 @@ export function MonsterSearchPanel({
             {t("search_filters")}
             {hasFilters && (
               <span className="bg-gold text-surface-primary text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                {(crMin !== "" || crMax !== "" ? 1 : 0) + selectedTypes.size}
+                {(crMin !== "" || crMax !== "" ? 1 : 0) + selectedTypes.size + (sourceFilter !== "all" ? 1 : 0)}
               </span>
             )}
             <span className="text-[10px]">{filtersOpen ? "▲" : "▼"}</span>
@@ -381,6 +403,29 @@ export function MonsterSearchPanel({
       {/* Filter panel */}
       {filtersOpen && (
         <div className="bg-card/50 border border-border/50 rounded-md p-3 space-y-3">
+          {/* Source filter */}
+          <div>
+            <p className="text-[11px] text-muted-foreground/70 uppercase tracking-wider mb-1.5">
+              {tCompendium("filter_source")}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {(["all", "srd", "complete", "mad"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSourceFilter(s)}
+                  className={`px-2 py-0.5 text-[11px] rounded-md font-medium transition-all border ${
+                    sourceFilter === s
+                      ? "bg-gold/20 text-gold border-gold/40"
+                      : "bg-white/[0.04] text-muted-foreground border-white/[0.06] hover:bg-white/[0.08]"
+                  }`}
+                >
+                  {tCompendium(`filter_source_${s}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* CR range */}
           <div>
             <p className="text-[11px] text-muted-foreground/70 uppercase tracking-wider mb-1.5">
