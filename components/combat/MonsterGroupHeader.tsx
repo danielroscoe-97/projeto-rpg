@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -58,16 +58,26 @@ export function MonsterGroupHeader({
     });
   });
 
+  // A.8: Debounce toggle to prevent rapid expand/collapse from double-click or event bubbling
+  const lastToggleRef = useRef(0);
+  const debouncedToggle = () => {
+    const now = Date.now();
+    if (now - lastToggleRef.current < 200) return;
+    lastToggleRef.current = now;
+    onToggle();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      onToggle();
+      e.stopPropagation(); // A.8
+      debouncedToggle();
     } else if (e.key === "ArrowRight" && !isExpanded) {
       e.preventDefault();
-      onToggle();
+      debouncedToggle();
     } else if (e.key === "ArrowLeft" && isExpanded) {
       e.preventDefault();
-      onToggle();
+      debouncedToggle();
     }
   };
 
@@ -92,7 +102,7 @@ export function MonsterGroupHeader({
         tabIndex={0}
         aria-expanded={isExpanded}
         className="flex items-center gap-2 px-3 py-1.5 bg-card cursor-pointer hover:bg-white/[0.04] transition-colors"
-        onClick={onToggle}
+        onClick={(e) => { e.stopPropagation(); debouncedToggle(); }}
         onKeyDown={handleKeyDown}
         data-testid={`group-header-${groupName}`}
       >

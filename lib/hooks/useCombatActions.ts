@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { assignInitiativeOrder, sortByInitiative, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
+import { applyGroupRename } from "@/lib/utils/group-rename";
 
 /** Get the name of the combatant whose turn is currently active. */
 function getCurrentActorName(): string {
@@ -403,6 +404,34 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const before = snap.combatants.find((x) => x.id === id);
     if (!before) return;
 
+    // A.7: Handle display_name with group rename propagation
+    if (stats.display_name !== undefined && stats.display_name !== null) {
+      const result = applyGroupRename(snap.combatants, id, stats.display_name);
+      if (result.type === "group_rename") {
+        // Apply group rename to all members
+        for (const [memberId, update] of result.updates) {
+          snap.updateCombatantStats(memberId, update);
+          broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: memberId, ...update });
+          persistCombatantStats(memberId, update).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+        }
+        // Process remaining stats (non display_name) for the target only
+        const { display_name: _, ...restStats } = stats;
+        if (Object.keys(restStats).length > 0) {
+          snap.updateCombatantStats(id, restStats);
+          const dbStats: Record<string, unknown> = {};
+          if (restStats.name !== undefined) dbStats.name = restStats.name;
+          const updatedMaxHp = restStats.max_hp !== undefined ? restStats.max_hp : before.max_hp;
+          const postCurrentHp = restStats.max_hp !== undefined && before.current_hp > updatedMaxHp ? updatedMaxHp : before.current_hp;
+          if (restStats.max_hp !== undefined) { dbStats.max_hp = restStats.max_hp; dbStats.current_hp = postCurrentHp; }
+          if (restStats.ac !== undefined) dbStats.ac = restStats.ac;
+          if (restStats.spell_save_dc !== undefined) dbStats.spell_save_dc = restStats.spell_save_dc;
+          broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...restStats });
+          persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+        }
+        return;
+      }
+    }
+
     snap.updateCombatantStats(id, stats);
 
     // Compute expected post-update current_hp from snapshot (mirrors store logic)
@@ -498,6 +527,11 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
         combatants: [],
         current_turn_index: -1,
         round_number: 0,
+      });
+      // A.3: Notify players that session ended — BEFORE expiring tokens/cleanup
+      broadcastEvent(sid, {
+        type: "session:ended",
+        reason: "dm_ended",
       });
       await expireSessionTokens(sid);
       cleanupDmChannel();

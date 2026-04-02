@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Swords, Users, LogIn, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
@@ -41,6 +41,12 @@ interface PlayerLobbyProps {
   }) => Promise<void>;
   /** Late-join state: "idle" | "waiting" | "accepted" | "rejected" | "polling" | "timeout" */
   lateJoinStatus?: "idle" | "waiting" | "accepted" | "rejected" | "polling" | "timeout";
+  /** Timestamp (ms) when late-join will timeout — for countdown display (A.4) */
+  lateJoinDeadline?: number | null;
+  /** Number of retry attempts used so far (A.4) */
+  lateJoinRetryCount?: number;
+  /** Called to retry late-join without page reload (A.4) */
+  onLateJoinRetry?: () => void;
   /** Characters the authenticated player has in this campaign (auto-join pre-fill) */
   prefilledCharacters?: PrefilledCharacter[];
   /** Names of players already registered in this session (for cookie-less rejoin) */
@@ -49,8 +55,8 @@ interface PlayerLobbyProps {
   registeredPlayersWithStatus?: Array<{ name: string; isActive: boolean }>;
   /** Called when a returning player selects their name to rejoin */
   onRejoin?: (playerName: string) => Promise<void>;
-  /** Rejoin approval status: idle | waiting | accepted | rejected */
-  rejoinStatus?: "idle" | "waiting" | "accepted" | "rejected";
+  /** Rejoin approval status: idle | waiting | accepted | rejected | timeout */
+  rejoinStatus?: "idle" | "waiting" | "accepted" | "rejected" | "timeout";
   /** Called when player wants to retry after rejection */
   onRejoinRetry?: () => void;
 }
@@ -64,6 +70,9 @@ export function PlayerLobby({
   isCombatActive = false,
   onLateJoinRequest,
   lateJoinStatus = "idle",
+  lateJoinDeadline,
+  lateJoinRetryCount = 0,
+  onLateJoinRetry,
   prefilledCharacters,
   registeredPlayerNames = [],
   registeredPlayersWithStatus = [],
@@ -85,6 +94,26 @@ export function PlayerLobby({
   const [errors, setErrors] = useState<Set<string>>(new Set());
   const [isRejoining, setIsRejoining] = useState(false);
   const [confirmActivePlayer, setConfirmActivePlayer] = useState<string | null>(null);
+
+  // A.4: Countdown for late-join deadline
+  const [countdown, setCountdown] = useState<string | null>(null);
+  useEffect(() => {
+    if (!lateJoinDeadline || (lateJoinStatus !== "waiting" && lateJoinStatus !== "polling")) {
+      setCountdown(null);
+      return;
+    }
+    const tick = () => {
+      const remaining = Math.max(0, lateJoinDeadline - Date.now());
+      const mins = Math.floor(remaining / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      setCountdown(`${mins}:${String(secs).padStart(2, "0")}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [lateJoinDeadline, lateJoinStatus]);
+
+  const MAX_LATE_JOIN_RETRIES = 3;
 
   const handleRejoinClick = async (playerName: string) => {
     if (!onRejoin || isRejoining) return;
@@ -203,6 +232,11 @@ export function PlayerLobby({
             <p className="text-muted-foreground text-base lg:text-sm mt-4">
               {t("late_join_waiting")}
             </p>
+            {countdown && (
+              <p className={`text-2xl font-mono mt-3 ${countdown.startsWith("0:0") ? "text-red-400" : "text-gold"}`}>
+                {countdown}
+              </p>
+            )}
             {lateJoinStatus === "polling" && (
               <p className="text-muted-foreground/60 text-xs mt-2">
                 {t("late_join_polling_hint")}
@@ -216,20 +250,25 @@ export function PlayerLobby({
 
   // Late-join timeout state — 2 minutes elapsed without DM response
   if (lateJoinStatus === "timeout") {
+    const exhaustedRetries = lateJoinRetryCount >= MAX_LATE_JOIN_RETRIES;
     return (
       <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
         <div className="max-w-sm mx-auto w-full space-y-6 text-center">
           <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-amber-400 mx-auto mb-3" aria-hidden="true" />
           <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
           <p className="text-amber-400 text-base lg:text-sm">{t("late_join_timeout")}</p>
-          <p className="text-muted-foreground text-sm">{t("late_join_timeout_hint")}</p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="px-4 py-3 lg:py-2 bg-gold text-foreground font-medium rounded-lg transition-colors min-h-[48px] text-base lg:text-sm"
-          >
-            {t("late_join_refresh")}
-          </button>
+          <p className="text-muted-foreground text-sm">
+            {exhaustedRetries ? t("late_join_max_retries") : t("late_join_timeout_hint")}
+          </p>
+          {!exhaustedRetries && onLateJoinRetry && (
+            <button
+              type="button"
+              onClick={onLateJoinRetry}
+              className="px-4 py-3 lg:py-2 bg-gold text-foreground font-medium rounded-lg transition-colors min-h-[48px] text-base lg:text-sm"
+            >
+              {t("late_join_retry")}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -243,13 +282,16 @@ export function PlayerLobby({
           <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-red-400 mx-auto mb-3" aria-hidden="true" />
           <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
           <p className="text-red-400 text-base lg:text-sm">{t("late_join_rejected")}</p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="px-4 py-3 lg:py-2 bg-card border border-border rounded-lg text-foreground text-base lg:text-sm active:bg-white/[0.06] lg:hover:bg-white/[0.06] transition-colors min-h-[48px]"
-          >
-            {t("late_join_retry")}
-          </button>
+          <p className="text-muted-foreground text-sm">{t("late_join_rejected_hint")}</p>
+          {onLateJoinRetry && (
+            <button
+              type="button"
+              onClick={onLateJoinRetry}
+              className="px-4 py-3 lg:py-2 bg-card border border-border rounded-lg text-foreground text-base lg:text-sm active:bg-white/[0.06] lg:hover:bg-white/[0.06] transition-colors min-h-[48px]"
+            >
+              {t("late_join_retry")}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -292,6 +334,29 @@ export function PlayerLobby({
               onRejoinRetry?.();
             }}
             className="px-4 py-3 lg:py-2 bg-card border border-border rounded-lg text-foreground text-base lg:text-sm active:bg-white/[0.06] lg:hover:bg-white/[0.06] transition-colors min-h-[48px]"
+          >
+            {t("late_join_retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // A.5: Rejoin timeout state — DM didn't respond after retries
+  if (rejoinStatus === "timeout") {
+    return (
+      <div className="min-h-screen bg-black lg:bg-background flex items-center justify-center p-4">
+        <div className="max-w-sm mx-auto w-full space-y-6 text-center">
+          <Swords className="w-10 h-10 lg:w-8 lg:h-8 text-amber-400 mx-auto mb-3" aria-hidden="true" />
+          <h1 className="text-foreground text-2xl lg:text-xl font-semibold">{sessionName}</h1>
+          <p className="text-amber-400 text-base lg:text-sm">{t("rejoin_timeout")}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setIsRejoining(false);
+              onRejoinRetry?.();
+            }}
+            className="px-4 py-3 lg:py-2 bg-gold text-foreground font-medium rounded-lg transition-colors min-h-[48px] text-base lg:text-sm"
           >
             {t("late_join_retry")}
           </button>

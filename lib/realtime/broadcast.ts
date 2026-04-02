@@ -12,7 +12,7 @@ import type {
   SanitizedStatsUpdate,
 } from "@/lib/types/realtime";
 import type { Combatant } from "@/lib/types/combat";
-import { getHpStatus } from "@/lib/utils/hp-status";
+import { getHpStatus, getHpPercentage } from "@/lib/utils/hp-status";
 import { captureError, captureWarning } from "@/lib/errors/capture";
 import {
   enqueueAction,
@@ -113,6 +113,7 @@ function sanitizeCombatant(c: Combatant): SanitizedCombatant {
     // Apply display_name as the visible name (anti-metagaming)
     name: display_name || base.name,
     hp_status: getHpStatus(c.current_hp, c.max_hp),
+    hp_percentage: getHpPercentage(c.current_hp, c.max_hp),
   };
 
   return result;
@@ -141,6 +142,9 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
 
   // Combat stats pass through unchanged — aggregated data, no sensitive fields
   if (event.type === "session:combat_stats") return event;
+
+  // session:ended passes through — no sensitive data (A.3)
+  if (event.type === "session:ended") return event;
 
   // Turn advance: adjust the turn index for the player-visible combatant list
   if (event.type === "combat:turn_advance") {
@@ -223,11 +227,13 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
       };
       return result;
     }
-    // Monster/NPC — only status label, no exact HP
+    // Monster/NPC — only status label + percentage, no exact HP
+    const maxHp = event.max_hp ?? event.current_hp;
     const result: SanitizedMonsterHpUpdate = {
       type: event.type,
       combatant_id: event.combatant_id,
-      hp_status: getHpStatus(event.current_hp, event.max_hp ?? event.current_hp),
+      hp_status: getHpStatus(event.current_hp, maxHp),
+      hp_percentage: getHpPercentage(event.current_hp, maxHp),
     };
     return result;
   }

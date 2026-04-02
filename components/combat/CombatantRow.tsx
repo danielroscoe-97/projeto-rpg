@@ -53,6 +53,7 @@ export interface CombatantRowProps {
   onAddDeathSaveFailure?: (id: string) => void;
   /** Callback to advance to next turn — attached to the ▶ indicator */
   onAdvanceTurn?: () => void;
+  onIncrementLegendaryAction?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -82,6 +83,7 @@ export const CombatantRow = memo(function CombatantRow({
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
   onAdvanceTurn,
+  onIncrementLegendaryAction,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -154,10 +156,15 @@ export const CombatantRow = memo(function CombatantRow({
       : undefined;
   const canExpand = fullMonster !== undefined;
 
+  // A.8: Manual monsters (no SRD) — can show inline partial stats
+  const isManualMonster = !combatant.monster_id && !combatant.is_player;
+  const canShowPartialStats = isManualMonster && (combatant.max_hp > 0 || combatant.ac > 0);
+  const isClickable = canExpand || canShowPartialStats;
+
   // Reset expansion if the monster data is no longer available (e.g. SRD reload)
   useEffect(() => {
-    if (!canExpand) setIsExpanded(false);
-  }, [canExpand]);
+    if (!canExpand && !canShowPartialStats) setIsExpanded(false);
+  }, [canExpand, canShowPartialStats]);
 
   // Close any open panel when combatant is defeated
   useEffect(() => {
@@ -165,7 +172,7 @@ export const CombatantRow = memo(function CombatantRow({
   }, [combatant.is_defeated]);
 
   const handleToggle = () => {
-    if (canExpand) setIsExpanded((prev) => !prev);
+    if (isClickable) setIsExpanded((prev) => !prev);
   };
 
   const togglePanel = (panel: OpenPanel) => {
@@ -179,7 +186,7 @@ export const CombatantRow = memo(function CombatantRow({
 
   return (
     <li
-      className={`bg-card border rounded-md overflow-hidden transition-colors ${
+      className={`bg-card border rounded-md overflow-hidden transition-all duration-500 ${
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
       } ${combatant.is_defeated ? "opacity-50" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
         combatant.is_player ? "border-l-4 border-l-[#5B8DEF]" : isMonster ? "border-l-4 border-l-red-500/60" : ""
@@ -194,19 +201,27 @@ export const CombatantRow = memo(function CombatantRow({
       <div className="px-3 py-1.5">
         {/* Name row — entire row clickable to open stat block (UX 2) */}
         <div
-          className={`flex items-center gap-1.5 mb-1 ${canExpand ? "cursor-pointer" : ""}`}
-          onClick={() => {
+          className={`flex items-center gap-1.5 mb-1 ${isClickable ? "cursor-pointer" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation(); // A.8: prevent bubble to MonsterGroupHeader
             if (canExpand && fullMonster) {
               pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+            } else if (canShowPartialStats) {
+              setIsExpanded((prev) => !prev);
             }
           }}
-          role={canExpand ? "button" : undefined}
-          tabIndex={canExpand ? 0 : undefined}
-          aria-label={canExpand ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
-          onKeyDown={canExpand ? (e) => {
-            if ((e.key === "Enter" || e.key === " ") && fullMonster) {
+          role={isClickable ? "button" : undefined}
+          tabIndex={isClickable ? 0 : undefined}
+          aria-label={isClickable ? t("setup_view_card_aria", { name: combatant.name }) : undefined}
+          onKeyDown={isClickable ? (e) => {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+              e.stopPropagation(); // A.8: prevent bubble
+              if (canExpand && fullMonster) {
+                pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014");
+              } else if (canShowPartialStats) {
+                setIsExpanded((prev) => !prev);
+              }
             }
           } : undefined}
         >
@@ -299,19 +314,48 @@ export const CombatantRow = memo(function CombatantRow({
           {/* Name — click handled by parent row */}
           <div
             className={`flex-1 text-left text-sm font-medium transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] flex items-center gap-1.5 ${
-              canExpand
+              isClickable
                 ? "text-foreground hover:text-gold"
                 : "text-foreground"
             }`}
             data-testid={`combatant-name-${combatant.id}`}
           >
-            <span>{combatant.name}</span>
+            <span className={combatant.is_defeated ? "line-through" : ""}>{combatant.name}</span>
             {combatant.display_name && !combatant.is_player && (
               <span className="text-xs text-muted-foreground/40 font-normal ml-1">
                 — {combatant.display_name}
               </span>
             )}
           </div>
+
+          {/* Legendary Actions dots — DM only */}
+          {combatant.legendary_actions_total != null && combatant.legendary_actions_total > 0 && showActions && (
+            <div
+              className="flex items-center gap-1 shrink-0"
+              aria-label={`Legendary Actions: ${combatant.legendary_actions_used}/${combatant.legendary_actions_total} used`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="text-[10px] text-muted-foreground font-medium">LA</span>
+              <div className="flex gap-0.5">
+                {Array.from({ length: combatant.legendary_actions_total }).map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (i >= combatant.legendary_actions_used) onIncrementLegendaryAction?.(combatant.id);
+                    }}
+                    className={`w-2.5 h-2.5 rounded-full border transition-colors ${
+                      i < combatant.legendary_actions_used
+                        ? "bg-gold border-gold/60"
+                        : "bg-transparent border-zinc-500 hover:border-gold/40"
+                    }`}
+                    aria-label={i < combatant.legendary_actions_used ? "Used" : "Available"}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* HP display — inline with name; stopPropagation to prevent parent row click */}
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -761,6 +805,44 @@ export const CombatantRow = memo(function CombatantRow({
       )}
 
       {/* TODO: Monster Action Bar — CP.1.3 (MonsterActionBar component not yet implemented) */}
+
+      {/* A.8: Inline partial stats for manual monsters (no SRD data) */}
+      <AnimatePresence>
+        {isExpanded && canShowPartialStats && !fullMonster && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-border px-4 py-3 bg-white/[0.03] space-y-1.5">
+              <div className="flex gap-4 text-sm">
+                <span className="text-muted-foreground">
+                  HP <span className="text-foreground font-mono">{combatant.current_hp}/{combatant.max_hp}</span>
+                </span>
+                {combatant.ac > 0 && (
+                  <span className="text-muted-foreground">
+                    {t("ac_label")} <span className="text-foreground font-mono">{combatant.ac}</span>
+                  </span>
+                )}
+                {combatant.spell_save_dc !== null && combatant.spell_save_dc !== undefined && (
+                  <span className="text-muted-foreground">
+                    {t("dc_label")} <span className="text-foreground font-mono">{combatant.spell_save_dc}</span>
+                  </span>
+                )}
+              </div>
+              {combatant.conditions.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {combatant.conditions.map((cond) => (
+                    <ConditionBadge key={cond} condition={cond} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* === ONE-TAP TIER: AC, DC, stat block === */}
       <AnimatePresence>

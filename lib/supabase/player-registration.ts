@@ -330,14 +330,27 @@ export async function rejoinAsPlayer(
     return { tokenId: token.id, playerName: token.player_name };
   }
 
-  // Transfer token ownership to the new anonymous user
-  await supabase
+  // A.5: Atomic transfer — optimistic locking on current anon_user_id.
+  // If another device won the race and changed anon_user_id between our SELECT and this UPDATE,
+  // the .eq("anon_user_id", token.anon_user_id) filter matches 0 rows → maybeSingle returns null.
+  const { data: updated, error: updateError } = await supabase
     .from("session_tokens")
     .update({
       anon_user_id: anonUserId,
       last_seen_at: new Date().toISOString(),
     })
-    .eq("id", token.id);
+    .eq("id", token.id)
+    .eq("anon_user_id", token.anon_user_id ?? "")
+    .select("id, anon_user_id")
+    .maybeSingle();
+
+  if (updateError) {
+    throw new Error(`Token transfer failed: ${updateError.message}`);
+  }
+
+  if (!updated) {
+    throw new Error("Token ownership conflict — another device claimed this token first");
+  }
 
   trackServerEvent("player:rejoined", {
     properties: { session_id: sessionId, token_id: token.id, player_name: name },

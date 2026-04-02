@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2 } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
 import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
@@ -19,6 +19,7 @@ import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { GuestExpiryModal } from "@/components/guest/GuestExpiryModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
+import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
@@ -31,6 +32,7 @@ import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { setLastHpMode } from "@/components/combat/HpAdjuster";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
+import { applyGroupRename } from "@/lib/utils/group-rename";
 
 interface AddRowForm {
   initiative: string;
@@ -156,6 +158,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       });
 
       setAddRow(EMPTY_ADD_ROW);
@@ -208,6 +212,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           player_notes: "",
           player_character_id: null,
           combatant_role: null,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
         });
       }
       addMonsterGroup(newCombatants);
@@ -273,6 +279,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       player_notes: addRow.notes.trim(),
       player_character_id: null,
       combatant_role: sel ? null : addRowRole,
+      legendary_actions_total: null,
+      legendary_actions_used: 0,
     });
 
     lastSelectedMonster.current = null;
@@ -345,33 +353,23 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   // Update display name — propagate to all group members if applicable
   const handleDisplayNameChange = useCallback(
     (id: string, displayName: string | null) => {
-      const store = useGuestCombatStore.getState();
-      const combatant = store.combatants.find((c) => c.id === id);
-
-      if (combatant?.monster_group_id && displayName) {
-        const groupMembers = store.combatants
-          .filter((c) => c.monster_group_id === combatant.monster_group_id)
-          .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
-
-        // Detect intent: trailing number matching this member's group_order → rename group
-        // Otherwise → individual rename
-        const trailingNum = displayName.match(/\s+(\d+)$/);
-        const isGroupRename = trailingNum
-          ? Number(trailingNum[1]) === (combatant.group_order ?? 0)
-          : false;
-
-        if (isGroupRename) {
-          const newBase = displayName.replace(/\s+\d+$/, "");
-          const updated = store.combatants.map((c) => {
-            const idx = groupMembers.findIndex((m) => m.id === c.id);
-            if (idx === -1) return c;
-            return { ...c, display_name: `${newBase} ${idx + 1}` };
-          });
-          store.hydrateCombatants(updated);
-        } else {
-          // Individual rename — save as-is on this member only
-          updateCombatantStats(id, { display_name: displayName });
-        }
+      if (!displayName) {
+        updateCombatantStats(id, { display_name: displayName });
+        return;
+      }
+      // A.7: Reuse shared group rename logic
+      const result = applyGroupRename(
+        useGuestCombatStore.getState().combatants,
+        id,
+        displayName
+      );
+      if (result.type === "group_rename") {
+        useGuestCombatStore.setState((state) => ({
+          combatants: state.combatants.map((c) => {
+            const update = result.updates.get(c.id);
+            return update ? { ...c, ...update } : c;
+          }),
+        }));
       } else {
         updateCombatantStats(id, { display_name: displayName });
       }
@@ -426,6 +424,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       });
     },
     [addCombatant]
@@ -518,6 +518,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               player_notes: "",
               player_character_id: null,
               combatant_role: null,
+              legendary_actions_total: null,
+              legendary_actions_used: 0,
             });
           }}
         />
@@ -670,6 +672,7 @@ export function GuestCombatClient() {
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
+  const [spellsOpen, setSpellsOpen] = useState(false);
 
   // Redirect URL for Google OAuth: returns to the confirm route with from=guest-combat
   // so the callback can track onboarding source and preserve combat data
@@ -706,6 +709,7 @@ export function GuestCombatClient() {
     expandedGroups,
     toggleGroupExpanded,
     setGroupInitiative,
+    incrementLegendaryAction,
   } = useGuestCombatStore();
 
   // ─── Undo stack (Story 1.1) ─────────────────────────────────────────────────
@@ -892,6 +896,7 @@ export function GuestCombatClient() {
         monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
         display_name: displayName, monster_group_id: null, group_order: null,
         dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
+        legendary_actions_total: null, legendary_actions_used: 0,
       });
       const all = useGuestCombatStore.getState().combatants;
       hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
@@ -918,6 +923,7 @@ export function GuestCombatClient() {
           monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
           display_name: `${groupDisplayBase} ${i + 1}`, monster_group_id: groupId, group_order: i + 1,
           dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
+          legendary_actions_total: null, legendary_actions_used: 0,
         });
       }
       useGuestCombatStore.getState().addMonsterGroup(newCombatants);
@@ -945,6 +951,7 @@ export function GuestCombatClient() {
       monster_id: null, token_url: null, creature_type: null, display_name: displayName,
       monster_group_id: null, group_order: null, dm_notes: "", player_notes: midCombatAddRow.notes.trim(),
       player_character_id: null, combatant_role: midCombatAddRowRole,
+      legendary_actions_total: null, legendary_actions_used: 0,
     });
     const all = useGuestCombatStore.getState().combatants;
     hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
@@ -1060,8 +1067,34 @@ export function GuestCombatClient() {
     [pushHiddenUndo]
   );
   const handleUpdateStats = useCallback(
-    (id: string, stats: { name?: string; max_hp?: number; ac?: number; spell_save_dc?: number | null }) =>
-      updateCombatantStats(id, stats),
+    (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
+      // A.7: Handle display_name with group rename propagation
+      if (stats.display_name !== undefined) {
+        const result = applyGroupRename(
+          useGuestCombatStore.getState().combatants,
+          id,
+          stats.display_name ?? ""
+        );
+        if (result.type === "group_rename") {
+          // Functional update to avoid race condition with concurrent HP updates
+          useGuestCombatStore.setState((state) => ({
+            combatants: state.combatants.map((c) => {
+              const update = result.updates.get(c.id);
+              return update ? { ...c, ...update } : c;
+            }),
+          }));
+        } else {
+          updateCombatantStats(id, { display_name: stats.display_name });
+        }
+        // Process remaining stats separately
+        const { display_name: _, ...restStats } = stats;
+        if (Object.keys(restStats).length > 0) {
+          updateCombatantStats(id, restStats);
+        }
+      } else {
+        updateCombatantStats(id, stats);
+      }
+    },
     [updateCombatantStats]
   );
   const handleReorderCombatants = useCallback(
@@ -1240,6 +1273,18 @@ export function GuestCombatClient() {
               ?
             </button>
 
+            {/* Spell browser (C.14) */}
+            <button
+              type="button"
+              onClick={() => setSpellsOpen(true)}
+              className="px-2 py-2 bg-white/[0.06] text-gold/70 hover:text-gold hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
+              aria-label={t("spell_open")}
+              title={t("spell_open")}
+              data-testid="spell-browser-btn"
+            >
+              <BookOpen className="w-4 h-4" aria-hidden="true" />
+            </button>
+
             {/* Undo last action (Story 1.1) */}
             <button
               type="button"
@@ -1265,6 +1310,20 @@ export function GuestCombatClient() {
             </button>
           </div>
         </div>
+        {/* Sticky turn indicator row */}
+        {phase === "combat" && (
+          <div className="flex items-center gap-2 py-1.5 border-t border-border/30">
+            <span className="text-gold text-sm leading-none select-none" aria-hidden="true">▶</span>
+            <span className="text-foreground text-sm font-medium truncate max-w-[200px]">
+              {combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
+            </span>
+            {combatants[currentTurnIndex + 1] && (
+              <span className="text-muted-foreground text-xs ml-auto truncate max-w-[160px]">
+                {t("next_label")}: {combatants[currentTurnIndex + 1].name}
+              </span>
+            )}
+          </div>
+        )}
         </div>{/* end sticky controls */}
 
         {showAddForm && (
@@ -1330,6 +1389,7 @@ export function GuestCombatClient() {
                   onAddDeathSaveSuccess={addDeathSaveSuccess}
                   onAddDeathSaveFailure={addDeathSaveFailure}
                   onAdvanceTurn={handleAdvanceTurn}
+                  onIncrementLegendaryAction={incrementLegendaryAction}
                 />
               );
             }}
@@ -1413,6 +1473,13 @@ export function GuestCombatClient() {
       <KeyboardCheatsheet
         open={cheatsheetOpen}
         onClose={() => setCheatsheetOpen(false)}
+      />
+
+      {/* Spell browser (C.14 — DM parity) */}
+      <PlayerSpellBrowser
+        open={spellsOpen}
+        onOpenChange={setSpellsOpen}
+        rulesetVersion={midCombatRuleset}
       />
     </>
   );

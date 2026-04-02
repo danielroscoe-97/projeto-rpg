@@ -20,6 +20,7 @@ import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
+import { applyGroupRename } from "@/lib/utils/group-rename";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
 import { getMonsterById } from "@/lib/srd/srd-search";
@@ -144,6 +145,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         player_notes: "",
         player_character_id: pc.id,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       };
       addCombatant(newCombatant);
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -204,6 +207,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           player_notes: "",
           player_character_id: null,
           combatant_role: null,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
         });
       })
       .subscribe();
@@ -251,6 +256,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       });
 
       lastSelectedMonster.current = null;
@@ -298,6 +305,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           player_notes: "",
           player_character_id: null,
           combatant_role: null,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
         });
       }
       useCombatStore.getState().addMonsterGroup(newCombatants);
@@ -369,6 +378,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       player_notes: addRow.notes.trim(),
       player_character_id: null,
       combatant_role: sel?.id ? null : "player",
+      legendary_actions_total: null,
+      legendary_actions_used: 0,
     });
 
     lastSelectedMonster.current = null;
@@ -407,6 +418,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           player_notes: "",
           player_character_id: pc.id,
           combatant_role: null,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
         };
         addCombatant(newCombatant);
         currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -447,6 +460,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             player_notes: "",
             player_character_id: null,
             combatant_role: null,
+            legendary_actions_total: null,
+            legendary_actions_used: 0,
           };
           addCombatant(newCombatant);
           currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -512,33 +527,19 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
   // Update display name — propagate to all group members if applicable
   const handleDisplayNameChange = useCallback(
     (id: string, displayName: string | null) => {
-      const store = useCombatStore.getState();
-      const combatant = store.combatants.find((c) => c.id === id);
-
-      if (combatant?.monster_group_id && displayName) {
-        const groupMembers = store.combatants
-          .filter((c) => c.monster_group_id === combatant.monster_group_id)
-          .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0));
-
-        // Detect intent: trailing number matching this member's group_order → rename group
-        // Otherwise → individual rename
-        const trailingNum = displayName.match(/\s+(\d+)$/);
-        const isGroupRename = trailingNum
-          ? Number(trailingNum[1]) === (combatant.group_order ?? 0)
-          : false;
-
-        if (isGroupRename) {
-          const newBase = displayName.replace(/\s+\d+$/, "");
-          const updated = store.combatants.map((c) => {
-            const idx = groupMembers.findIndex((m) => m.id === c.id);
-            if (idx === -1) return c;
-            return { ...c, display_name: `${newBase} ${idx + 1}` };
-          });
-          store.hydrateCombatants(updated);
-        } else {
-          // Individual rename — save as-is on this member only
-          updateCombatantStats(id, { display_name: displayName });
-        }
+      if (!displayName) {
+        updateCombatantStats(id, { display_name: displayName });
+        return;
+      }
+      const { combatants } = useCombatStore.getState();
+      const result = applyGroupRename(combatants, id, displayName);
+      if (result.type === "group_rename") {
+        useCombatStore.setState((state) => ({
+          combatants: state.combatants.map((c) => {
+            const update = result.updates.get(c.id);
+            return update ? { ...c, ...update } : c;
+          }),
+        }));
       } else {
         updateCombatantStats(id, { display_name: displayName });
       }
@@ -611,6 +612,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         player_notes: "",
         player_character_id: null,
         combatant_role: source.combatant_role,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       });
     },
     [addCombatant]
@@ -755,6 +758,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             player_notes: "",
             player_character_id: player.id,
             combatant_role: null,
+            legendary_actions_total: null,
+            legendary_actions_used: 0,
           });
         }}
         showManualAdd
@@ -785,6 +790,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
             player_notes: "",
             player_character_id: null,
             combatant_role: null,
+            legendary_actions_total: null,
+            legendary_actions_used: 0,
           });
         }}
       />

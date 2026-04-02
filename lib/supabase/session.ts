@@ -81,7 +81,7 @@ export async function persistDefeated(
 /** Persists editable stats for a combatant. */
 export async function persistCombatantStats(
   combatantId: string,
-  stats: { name?: string; max_hp?: number; current_hp?: number; ac?: number; spell_save_dc?: number | null }
+  stats: { name?: string; display_name?: string | null; max_hp?: number; current_hp?: number; ac?: number; spell_save_dc?: number | null }
 ): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase

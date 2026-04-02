@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -88,6 +90,7 @@ export function PlayerJoinClient({
   registeredPlayerNames = [],
   registeredPlayersWithStatus = [],
 }: PlayerJoinClientProps) {
+  const router = useRouter();
   const t = useTranslations("player");
   const tRef = useRef(t);
   tRef.current = t;
@@ -132,17 +135,28 @@ export function PlayerJoinClient({
   const lateJoinRequestIdRef = useRef<string | null>(null);
   const lateJoinDataRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const lateJoinRegisteredRef = useRef(false);
+  // A.4: Guard against race condition — prevent timers from overwriting final status
+  const lateJoinFinalStatusRef = useRef(false);
+  const lateJoinRetryCountRef = useRef(0);
+  const [lateJoinDeadline, setLateJoinDeadline] = useState<number | null>(null);
   // Rejoin-with-approval state (for cookie-less reconnect during active combat)
-  const [rejoinStatus, setRejoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected">("idle");
+  const [rejoinStatus, setRejoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected" | "timeout">("idle");
   const rejoinRequestIdRef = useRef<string | null>(null);
   const rejoinCharacterRef = useRef<string | null>(null);
+  // A.5: Rejoin retry refs
+  const rejoinRetryCountRef = useRef(0);
+  const rejoinRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rejoinStatusRef = useRef<"idle" | "waiting" | "accepted" | "rejected" | "timeout">("idle");
+  // A.3: Unsub delay timer (session:ended → removeChannel after 500ms)
+  const sessionEndedUnsubTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const presenceChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const combatantsRef = useRef(initialCombatants);
   // Guard: timestamp of last optimistic death save update — prevents polling from overwriting
   const deathSaveOptimisticRef = useRef<number>(0);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
+  const pollIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTurnBroadcastRef = useRef<number>(0);
@@ -160,6 +174,15 @@ export function PlayerJoinClient({
   const sessionRevokedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioFilesRef = useRef<PlayerAudioFile[]>([]);
+  // A.3: Session ended state
+  const [sessionEnded, setSessionEnded] = useState(false);
+  const [sessionEndedDuringLateJoin, setSessionEndedDuringLateJoin] = useState(false);
+  // A.6: Stores registration data for auto-join when DM starts combat
+  const pendingRegistrationRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
+  const isRegisteredRef = useRef(isRegistered);
+  const autoJoinInProgressRef = useRef(false);
+  // Keep ref in sync
+  useEffect(() => { isRegisteredRef.current = isRegistered; }, [isRegistered]);
 
   // Generate signed URLs for a list of audio files (shared by initial fetch + refresh)
   const generateSignedUrls = useCallback(async (files: PlayerAudioFile[]): Promise<Record<string, string>> => {
@@ -312,6 +335,79 @@ export function PlayerJoinClient({
   // Stable ref to createChannel — lets the visibility handler reuse the full channel setup
   const createChannelRef = useRef<(() => void) | null>(null);
 
+  // A.3: Centralized timer cleanup — used on session:ended and useEffect cleanup
+  const clearAllTimers = useCallback(() => {
+    if (turnPollRef.current) { clearInterval(turnPollRef.current); turnPollRef.current = null; }
+    if (pollIntervalRef.current) { clearTimeout(pollIntervalRef.current); pollIntervalRef.current = null; }
+    if (pollFallbackTimerRef.current) { clearTimeout(pollFallbackTimerRef.current); pollFallbackTimerRef.current = null; }
+    if (reconnectTimerRef.current) { clearTimeout(reconnectTimerRef.current); reconnectTimerRef.current = null; }
+    if (connectionTimerRef.current) { clearTimeout(connectionTimerRef.current); connectionTimerRef.current = null; }
+    if (lateJoinTimeoutRef.current) { clearTimeout(lateJoinTimeoutRef.current); lateJoinTimeoutRef.current = null; }
+    if (lateJoinMaxTimeoutRef.current) { clearTimeout(lateJoinMaxTimeoutRef.current); lateJoinMaxTimeoutRef.current = null; }
+    if (hpDeltaTimerRef.current) { clearTimeout(hpDeltaTimerRef.current); hpDeltaTimerRef.current = null; }
+    if (sessionRevokedTimerRef.current) { clearTimeout(sessionRevokedTimerRef.current); sessionRevokedTimerRef.current = null; }
+    if (audioRefreshTimerRef.current) { clearTimeout(audioRefreshTimerRef.current); audioRefreshTimerRef.current = null; }
+    if (rejoinRetryTimerRef.current) { clearTimeout(rejoinRetryTimerRef.current); rejoinRetryTimerRef.current = null; }
+    if (sessionEndedUnsubTimerRef.current) { clearTimeout(sessionEndedUnsubTimerRef.current); sessionEndedUnsubTimerRef.current = null; }
+  }, []);
+
+  // A.4: Reset late-join state for retry without page reload
+  const resetLateJoinState = useCallback(() => {
+    if (lateJoinTimeoutRef.current) { clearTimeout(lateJoinTimeoutRef.current); lateJoinTimeoutRef.current = null; }
+    if (lateJoinMaxTimeoutRef.current) { clearTimeout(lateJoinMaxTimeoutRef.current); lateJoinMaxTimeoutRef.current = null; }
+    lateJoinRequestIdRef.current = null;
+    lateJoinRegisteredRef.current = false;
+    lateJoinFinalStatusRef.current = false;
+    // Keep lateJoinDataRef so the form can pre-fill on retry
+    lateJoinRetryCountRef.current += 1;
+    setLateJoinStatus("idle");
+    setLateJoinDeadline(null);
+  }, []);
+
+  // A.1: Connection state machine — coordinates polling vs realtime
+  type ConnectionState = "CONNECTED" | "RECONNECTING" | "POLLING_FALLBACK";
+  const connStateRef = useRef<ConnectionState>("RECONNECTING");
+  const pollBackoffRef = useRef(2000);
+  // Ref to fetchFullState — breaks circular dependency (fetchFullState defined later)
+  const fetchFullStateRef = useRef<(eid: string) => Promise<void>>(async () => {});
+
+  const stopAllPolling = useCallback(() => {
+    if (pollIntervalRef.current) { clearTimeout(pollIntervalRef.current); pollIntervalRef.current = null; }
+    if (pollFallbackTimerRef.current) { clearTimeout(pollFallbackTimerRef.current); pollFallbackTimerRef.current = null; }
+  }, []);
+
+  const startPollingWithBackoff = useCallback((eid: string | null) => {
+    if (!eid) return;
+    if (pollIntervalRef.current) clearTimeout(pollIntervalRef.current);
+    pollBackoffRef.current = 2000;
+    const schedule = () => {
+      pollIntervalRef.current = setTimeout(() => {
+        if (connStateRef.current !== "POLLING_FALLBACK") return;
+        fetchFullStateRef.current(eid);
+        pollBackoffRef.current = Math.min(pollBackoffRef.current * 2, 30000);
+        schedule();
+      }, pollBackoffRef.current);
+    };
+    if (connStateRef.current === "POLLING_FALLBACK") {
+      fetchFullStateRef.current(eid);
+    }
+    schedule();
+  }, []);
+
+  const transitionTo = useCallback((next: ConnectionState, reason?: string) => {
+    const prev = connStateRef.current;
+    if (prev === next) return;
+    console.debug(`[PocketDM:conn] ${prev} -> ${next}${reason ? ` (${reason})` : ""}`);
+    connStateRef.current = next;
+    if (next === "CONNECTED") {
+      stopAllPolling();
+      pollBackoffRef.current = 2000;
+    }
+    if (next === "POLLING_FALLBACK") {
+      startPollingWithBackoff(encounterIdRef.current);
+    }
+  }, [stopAllPolling, startPollingWithBackoff]);
+
   // Combat log helpers
   const addLogEntry = useCallback((text: string, type: CombatLogEntry["type"]) => {
     setCombatLog((prev) => {
@@ -414,10 +510,33 @@ export function PlayerJoinClient({
           (["free","pro","mesa"].includes(data.dm_plan) ? data.dm_plan : "free") as Plan
         );
       }
+      // A.6: Auto-join fallback via polling — same logic as state_sync handler
+      if (
+        data.encounter?.is_active &&
+        data.encounter?.id &&
+        data.combatants?.length > 0 &&
+        isRegisteredRef.current &&
+        pendingRegistrationRef.current &&
+        !autoJoinInProgressRef.current
+      ) {
+        const regName = pendingRegistrationRef.current.name;
+        const alreadyIn = (data.combatants as PlayerCombatant[]).some(
+          (c) => c.is_player && c.name === regName
+        );
+        if (!alreadyIn) {
+          autoJoinInProgressRef.current = true;
+          registerPlayerCombatant(effectiveTokenId, sessionId, pendingRegistrationRef.current)
+            .then(() => { autoJoinInProgressRef.current = false; pendingRegistrationRef.current = null; })
+            .catch(() => { autoJoinInProgressRef.current = false; });
+        }
+      }
     } catch {
       // Silent failure — will retry
     }
-  }, [sessionId, updateTurnIndex, updateCombatants]);
+  }, [sessionId, updateTurnIndex, updateCombatants, effectiveTokenId]);
+
+  // A.1: Keep ref in sync for state machine polling
+  fetchFullStateRef.current = fetchFullState;
 
   // Subscribe to realtime channel for combat updates
   useEffect(() => {
@@ -437,10 +556,30 @@ export function PlayerJoinClient({
           if (payload.combatants) updateCombatants(payload.combatants);
           if (payload.round_number !== undefined) setRound(payload.round_number);
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
-          setNextCombatantId(null); // Clear on state sync / combat end
+          setNextCombatantId(null);
           // state_sync means combat is active — update state to exit lobby
           setActive(true);
           if (payload.encounter_id) setCurrentEncounterId(payload.encounter_id);
+          // A.6: Auto-register player when DM starts combat
+          // Guard: only on combat start (combatants non-empty + encounter_id present)
+          if (
+            payload.encounter_id &&
+            payload.combatants?.length > 0 &&
+            isRegisteredRef.current &&
+            pendingRegistrationRef.current &&
+            !autoJoinInProgressRef.current
+          ) {
+            const regName = pendingRegistrationRef.current.name;
+            const alreadyInCombatants = payload.combatants.some(
+              (c: PlayerCombatant) => c.is_player && c.name === regName
+            );
+            if (!alreadyInCombatants) {
+              autoJoinInProgressRef.current = true;
+              registerPlayerCombatant(effectiveTokenId, sessionId, pendingRegistrationRef.current)
+                .then(() => { autoJoinInProgressRef.current = false; pendingRegistrationRef.current = null; })
+                .catch(() => { autoJoinInProgressRef.current = false; });
+            }
+          }
         })
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
           lastTurnBroadcastRef.current = Date.now();
@@ -545,12 +684,23 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
           if (payload.combatant) {
-            updateCombatants((prev) => [...prev, payload.combatant]);
+            updateCombatants((prev) => {
+              const existingIndex = prev.findIndex((c) => c.id === payload.combatant.id);
+              if (existingIndex !== -1) {
+                // Dedup: merge incoming data over existing combatant (A.2)
+                if (process.env.NODE_ENV !== "production") {
+                  console.warn(`[PlayerJoinClient] Dedup: combatant_add for existing ID ${payload.combatant.id} — merging`);
+                }
+                return prev.map((c, i) => i === existingIndex ? { ...c, ...payload.combatant } : c);
+              }
+              return [...prev, payload.combatant];
+            });
             // Detect late-join acceptance: DM added our player combatant
             if (lateJoinRequestIdRef.current && !lateJoinRegisteredRef.current &&
                 payload.combatant.is_player &&
                 payload.combatant.name === lateJoinDataRef.current?.name) {
               lateJoinRegisteredRef.current = true;
+              lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
               if (lateJoinTimeoutRef.current) {
                 clearTimeout(lateJoinTimeoutRef.current);
                 lateJoinTimeoutRef.current = null;
@@ -610,6 +760,7 @@ export function PlayerJoinClient({
           }
           if (payload.accepted && !lateJoinRegisteredRef.current) {
             lateJoinRegisteredRef.current = true;
+            lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
             setLateJoinStatus("accepted");
             // Register the player in DB now that DM accepted
             if (lateJoinDataRef.current) {
@@ -619,8 +770,10 @@ export function PlayerJoinClient({
                   setRegisteredName(lateJoinDataRef.current?.name);
                 })
                 .catch((err) => {
-                  setLateJoinStatus("idle");
+                  // A.4 fix: reset guards so player can retry — DB failure should not lock them out permanently
+                  lateJoinFinalStatusRef.current = false;
                   lateJoinRegisteredRef.current = false;
+                  setLateJoinStatus("idle");
                   toast.error(tRef.current("registerError"));
                   captureError(err, {
                     component: "PlayerJoinClient",
@@ -636,7 +789,10 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:rejoin_response" }, ({ payload }) => {
           if (payload.request_id !== rejoinRequestIdRef.current) return;
+          // A.5: Clear retry timer on DM response
+          if (rejoinRetryTimerRef.current) { clearTimeout(rejoinRetryTimerRef.current); rejoinRetryTimerRef.current = null; }
           if (payload.accepted) {
+            rejoinStatusRef.current = "accepted";
             setRejoinStatus("accepted");
             // DM approved — now transfer token ownership
             const charName = rejoinCharacterRef.current;
@@ -651,8 +807,10 @@ export function PlayerJoinClient({
                   setEffectiveTokenId(rejoinedTokenId);
                   setIsRegistered(true);
                   setRegisteredName(charName);
+                  rejoinStatusRef.current = "idle";
                   setRejoinStatus("idle");
                 } catch (err) {
+                  rejoinStatusRef.current = "idle";
                   setRejoinStatus("idle");
                   toast.error(tRef.current("rejoin_error"));
                   captureError(err instanceof Error ? err : new Error(String(err)), {
@@ -662,6 +820,7 @@ export function PlayerJoinClient({
               })();
             }
           } else {
+            rejoinStatusRef.current = "rejected";
             setRejoinStatus("rejected");
           }
         })
@@ -724,29 +883,49 @@ export function PlayerJoinClient({
             fetchFullState(payload.encounter_id);
           }
         })
+        .on("broadcast", { event: "session:ended" }, () => {
+          // A.3: DM ended the session — show overlay, cleanup everything
+          setSessionEnded(true);
+          setActive(false);
+          // If player was in late-join waiting, mark it
+          if (lateJoinRequestIdRef.current && !lateJoinRegisteredRef.current) {
+            setSessionEndedDuringLateJoin(true);
+            setLateJoinStatus("idle");
+          }
+          clearAllTimers();
+          // Unsubscribe channels with small delay to ensure event processing completes
+          sessionEndedUnsubTimerRef.current = setTimeout(() => {
+            sessionEndedUnsubTimerRef.current = null;
+            if (channelRef.current) {
+              supabase.removeChannel(channelRef.current);
+              channelRef.current = null;
+            }
+            if (presenceChannelRef.current) {
+              supabase.removeChannel(presenceChannelRef.current);
+              presenceChannelRef.current = null;
+            }
+          }, 500);
+        })
         .subscribe((status) => {
           if (status === "SUBSCRIBED") {
             setDebouncedConnectionStatus("connected");
             disconnectedAtRef.current = null;
             reconnectBackoffRef.current = 1000;
-            // Stop polling if active
-            if (pollIntervalRef.current) {
-              clearInterval(pollIntervalRef.current);
-              pollIntervalRef.current = null;
-            }
-            // Fetch full state on reconnect to catch anything missed
+            // A.1: Transition to CONNECTED — stops all polling, fetches reconciliation state
+            transitionTo("CONNECTED", "SUBSCRIBED");
             if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
           } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
             setDebouncedConnectionStatus("disconnected");
             if (!disconnectedAtRef.current) {
               disconnectedAtRef.current = Date.now();
             }
-            // Start polling fallback after 3s (NFR9)
+            // A.1: Transition to RECONNECTING, then POLLING_FALLBACK after 3s
+            transitionTo("RECONNECTING", status);
             if (pollFallbackTimerRef.current) clearTimeout(pollFallbackTimerRef.current);
             pollFallbackTimerRef.current = setTimeout(() => {
               pollFallbackTimerRef.current = null;
-              if (disconnectedAtRef.current && encounterIdRef.current) {
-                startPolling(encounterIdRef.current);
+              if (connStateRef.current === "RECONNECTING" && encounterIdRef.current) {
+                transitionTo("POLLING_FALLBACK", "timeout 3s");
               }
             }, 3000);
 
@@ -778,31 +957,12 @@ export function PlayerJoinClient({
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-        reconnectTimerRef.current = null;
-      }
-      if (pollFallbackTimerRef.current) {
-        clearTimeout(pollFallbackTimerRef.current);
-        pollFallbackTimerRef.current = null;
-      }
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-        pollIntervalRef.current = null;
-      }
-      if (connectionTimerRef.current) {
-        clearTimeout(connectionTimerRef.current);
-        connectionTimerRef.current = null;
-      }
       if (presenceChannelRef.current) {
         supabase.removeChannel(presenceChannelRef.current);
         presenceChannelRef.current = null;
       }
-      // Clean up story 2 timer refs
-      if (hpDeltaTimerRef.current) clearTimeout(hpDeltaTimerRef.current);
+      clearAllTimers();
       if (deathSaveResolutionTimerRef.current) clearTimeout(deathSaveResolutionTimerRef.current);
-      if (sessionRevokedTimerRef.current) clearTimeout(sessionRevokedTimerRef.current);
-      if (lateJoinMaxTimeoutRef.current) clearTimeout(lateJoinMaxTimeoutRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
@@ -830,6 +990,7 @@ export function PlayerJoinClient({
 
         if (found && !lateJoinRegisteredRef.current) {
           lateJoinRegisteredRef.current = true;
+          lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
           if (lateJoinTimeoutRef.current) {
             clearTimeout(lateJoinTimeoutRef.current);
             lateJoinTimeoutRef.current = null;
@@ -858,29 +1019,48 @@ export function PlayerJoinClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- effectiveTokenId is stable after auth init
   }, [lateJoinStatus, sessionId, effectiveTokenId]);
 
+  // A.5: Heartbeat — update last_seen_at every 30s to keep player presence accurate
+  useEffect(() => {
+    if (!isRegistered || !active || !effectiveTokenId) return;
+    const supabase = createClient();
+    const heartbeat = async () => {
+      try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
+        if (!authSession?.user?.id) return;
+        await supabase
+          .from("session_tokens")
+          .update({ last_seen_at: new Date().toISOString() })
+          .eq("id", effectiveTokenId)
+          .eq("anon_user_id", authSession.user.id); // guard: don't renew if token transferred
+      } catch { /* heartbeat is best-effort */ }
+    };
+    heartbeat(); // immediate
+    const id = setInterval(heartbeat, 30_000);
+    return () => clearInterval(id);
+  }, [isRegistered, active, effectiveTokenId]);
+
   // Visibility change handler — reconnect when phone unlocks / tab regains focus
   useEffect(() => {
     if (!authReady || !sessionId) return;
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        // Phone unlocked or tab re-focused — fetch full state immediately
-        if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
-
-        // If realtime is disconnected, force reconnect via the same createChannel function
-        // (which re-attaches all broadcast event listeners — the previous inline version did not)
-        if (disconnectedAtRef.current && supabaseRef.current) {
-          if (channelRef.current) {
-            supabaseRef.current.removeChannel(channelRef.current);
-            channelRef.current = null;
-          }
-          if (reconnectTimerRef.current) {
-            clearTimeout(reconnectTimerRef.current);
-            reconnectTimerRef.current = null;
-          }
-          reconnectBackoffRef.current = 1000;
-          createChannelRef.current?.();
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState !== "visible") return;
+      // A.1: AWAIT fetch BEFORE reconnecting channel — prevents stale delta calculations
+      if (encounterIdRef.current) {
+        await fetchFullState(encounterIdRef.current);
+      }
+      // If realtime is disconnected, force reconnect via the same createChannel function
+      if (disconnectedAtRef.current && supabaseRef.current) {
+        if (channelRef.current) {
+          supabaseRef.current.removeChannel(channelRef.current);
+          channelRef.current = null;
         }
+        if (reconnectTimerRef.current) {
+          clearTimeout(reconnectTimerRef.current);
+          reconnectTimerRef.current = null;
+        }
+        reconnectBackoffRef.current = 1000;
+        createChannelRef.current?.();
       }
     };
 
@@ -898,18 +1078,8 @@ export function PlayerJoinClient({
     };
   }, [authReady, sessionId, fetchFullState]);
 
-  // Polling fallback — fetch latest state from DB (mobile-friendly interval).
-  // Clears any previous interval before starting so second-disconnect restarts correctly.
-  const startPolling = (eid: string) => {
-    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    const isMobile = typeof navigator !== "undefined" && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const interval = isMobile ? 5000 : 2000;
-    pollIntervalRef.current = setInterval(() => fetchFullState(eid), interval);
-  };
-
-  // Turn-sync polling fallback: periodically fetch state to catch missed
-  // combat:turn_advance broadcasts (Supabase Realtime is unreliable DM→player).
-  // Skips fetch if a broadcast arrived recently to avoid redundant API calls.
+  // A.1: Turn-sync safety net — runs at 15s interval when CONNECTED (reduced from 3s),
+  // or 3s when POLLING_FALLBACK. Suppressed during late-join "waiting".
   useEffect(() => {
     if (!active || !sessionId || !encounterIdRef.current) {
       if (turnPollRef.current) {
@@ -918,18 +1088,25 @@ export function PlayerJoinClient({
       }
       return;
     }
+    // A.1: Disable during late-join waiting — player isn't in combat yet
+    if (lateJoinStatus === "waiting") return;
     const eid = encounterIdRef.current;
     turnPollRef.current = setInterval(() => {
-      if (Date.now() - lastTurnBroadcastRef.current < 2000) return;
+      // A.1: Suppress when CONNECTED and recent broadcast arrived
+      if (connStateRef.current === "CONNECTED") {
+        if (Date.now() - lastTurnBroadcastRef.current < 2000) return;
+      }
+      // RECONNECTING — don't fetch, wait for transition
+      if (connStateRef.current === "RECONNECTING") return;
       fetchFullState(eid);
-    }, 3000);
+    }, connStateRef.current === "CONNECTED" ? 15000 : 3000);
     return () => {
       if (turnPollRef.current) {
         clearInterval(turnPollRef.current);
         turnPollRef.current = null;
       }
     };
-  }, [active, sessionId, fetchFullState]);
+  }, [active, sessionId, fetchFullState, lateJoinStatus]);
 
   // Player registration handler — MUST be before any early returns (Rules of Hooks)
   const handleRegister = useCallback(async (data: {
@@ -938,6 +1115,8 @@ export function PlayerJoinClient({
     hp: number | null;
     ac: number | null;
   }) => {
+    // A.6: Store registration data for auto-join if combat starts later
+    pendingRegistrationRef.current = data;
     await registerPlayerCombatant(effectiveTokenId, sessionId, data);
     setIsRegistered(true);
     setRegisteredName(data.name);
@@ -1012,13 +1191,15 @@ export function PlayerJoinClient({
       : Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
     rejoinRequestIdRef.current = requestId;
     rejoinCharacterRef.current = playerName;
+    rejoinStatusRef.current = "waiting";
     setRejoinStatus("waiting");
 
     // Determine if this character has an active session
     const playerStatus = registeredPlayersWithStatus.find((p) => p.name === playerName);
     const isActiveSession = playerStatus?.isActive ?? false;
 
-    if (channelRef.current) {
+    const sendRejoinReq = () => {
+      if (!channelRef.current) return;
       channelRef.current.send({
         type: "broadcast",
         event: "combat:rejoin_request",
@@ -1029,6 +1210,26 @@ export function PlayerJoinClient({
           sender_token_id: effectiveTokenId,
         },
       });
+    };
+
+    if (channelRef.current) {
+      sendRejoinReq();
+      // A.5: Schedule retries — 3 attempts × 15s
+      rejoinRetryCountRef.current = 0;
+      const scheduleRetry = () => {
+        rejoinRetryTimerRef.current = setTimeout(() => {
+          if (rejoinStatusRef.current !== "waiting") return;
+          rejoinRetryCountRef.current += 1;
+          if (rejoinRetryCountRef.current >= 3) {
+            rejoinStatusRef.current = "timeout";
+            setRejoinStatus("timeout");
+            return;
+          }
+          sendRejoinReq();
+          scheduleRetry();
+        }, 15_000);
+      };
+      scheduleRetry();
     } else {
       captureError(new Error("Cannot send rejoin request — channel not available"), {
         component: "PlayerJoinClient",
@@ -1073,17 +1274,21 @@ export function PlayerJoinClient({
         category: "realtime",
       });
     }
+    // A.4: Set deadline for countdown display
+    setLateJoinDeadline(Date.now() + 120_000);
     // After 15s without broadcast response, switch to polling-only mode.
     // Don't reject — DM may still accept; polling will pick it up.
     if (lateJoinTimeoutRef.current) clearTimeout(lateJoinTimeoutRef.current);
     lateJoinTimeoutRef.current = setTimeout(() => {
+      if (lateJoinFinalStatusRef.current) return; // A.4: guard
       if (lateJoinRequestIdRef.current === requestId && !lateJoinRegisteredRef.current) {
         setLateJoinStatus("polling");
       }
     }, 15_000);
-    // B2: 2-minute maximum timeout — stop polling, show timeout message
+    // 2-minute maximum timeout — stop polling, show timeout message
     if (lateJoinMaxTimeoutRef.current) clearTimeout(lateJoinMaxTimeoutRef.current);
     lateJoinMaxTimeoutRef.current = setTimeout(() => {
+      if (lateJoinFinalStatusRef.current) return; // A.4: guard
       if (!lateJoinRegisteredRef.current) {
         setLateJoinStatus("timeout");
       }
@@ -1098,6 +1303,35 @@ export function PlayerJoinClient({
           <p className="text-muted-foreground text-sm">{error}</p>
         </div>
       </div>
+    );
+  }
+
+  // A.3: Session ended overlay — shown after DM ends session (overlay over board, not full replace)
+  if (sessionEnded) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+      >
+        <div className="text-center space-y-4">
+          <h1 className="text-foreground text-xl font-semibold">
+            {t("session_ended")}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {sessionEndedDuringLateJoin
+              ? t("session_ended_before_join")
+              : t("session_ended_detail")}
+          </p>
+          <button
+            onClick={() => router.push("/")}
+            className="mt-4 px-6 py-2 bg-gold text-black rounded-md font-medium hover:bg-gold/90 transition-colors"
+          >
+            {t("back_to_home")}
+          </button>
+        </div>
+      </motion.div>
     );
   }
 
@@ -1139,6 +1373,9 @@ export function PlayerJoinClient({
         isCombatActive={true}
         onLateJoinRequest={handleLateJoinRequest}
         lateJoinStatus={lateJoinStatus}
+        lateJoinDeadline={lateJoinDeadline}
+        lateJoinRetryCount={lateJoinRetryCountRef.current}
+        onLateJoinRetry={resetLateJoinState}
         prefilledCharacters={prefilledCharacters}
         registeredPlayerNames={registeredPlayerNames}
         registeredPlayersWithStatus={registeredPlayersWithStatus}

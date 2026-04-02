@@ -23,6 +23,7 @@ export type RealtimeEventType =
   | "session:state_sync"
   | "session:player_linked"
   | "session:combat_stats"
+  | "session:ended"
   | "session:weather_change"
   | "audio:play_sound"
   | "audio:ambient_start"
@@ -167,6 +168,11 @@ export interface RealtimeCombatStats {
   rounds: number;
 }
 
+export interface RealtimeSessionEnded {
+  type: "session:ended";
+  reason?: "dm_ended" | "session_expired";
+}
+
 export interface RealtimeWeatherChange {
   type: "session:weather_change";
   effect: string;
@@ -219,6 +225,7 @@ export type RealtimeEvent =
   | RealtimeRejoinRequest
   | RealtimeRejoinResponse
   | RealtimeSessionRevoked
+  | RealtimeSessionEnded
   | RealtimeStateSync
   | RealtimeCombatStats
   | RealtimeWeatherChange
@@ -237,6 +244,8 @@ export type SanitizedCombatant = Omit<
 > & {
   /** Monsters get hp_status instead of exact HP values */
   hp_status?: HpStatus;
+  /** HP percentage (0-100) for monsters — avoids exposing exact HP */
+  hp_percentage?: number;
   /** Present for players, absent for monsters */
   current_hp?: number;
   max_hp?: number;
@@ -277,11 +286,12 @@ export interface SanitizedPlayerHpUpdate {
   death_saves?: { successes: number; failures: number };
 }
 
-/** Player-safe HP update for monsters (status only, no exact HP) */
+/** Player-safe HP update for monsters (status + percentage, no exact HP) */
 export interface SanitizedMonsterHpUpdate {
   type: "combat:hp_update";
   combatant_id: string;
   hp_status: HpStatus;
+  hp_percentage: number;
 }
 
 /** Player-safe stats update — only name changes reach players */
@@ -309,6 +319,7 @@ export type SanitizedEvent =
   | RealtimeLateJoinResponse
   | RealtimeRejoinRequest
   | RealtimeRejoinResponse
+  | RealtimeSessionEnded
   | RealtimeSessionRevoked
   | RealtimeCombatStats
   | RealtimeWeatherChange
