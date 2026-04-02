@@ -158,6 +158,11 @@ export function PlayerJoinClient({
   const deathSaveOptimisticRef = useRef<number>(0);
   // Guard: timestamp of last optimistic HP action update — prevents state_sync from overwriting (C.13)
   const hpActionOptimisticRef = useRef<number>(0);
+  // P1.03: Track which specific combatant was acted on — limit HP protection to that target only
+  const lastHpActionCombatantRef = useRef<string | null>(null);
+  // P1.02: Track deferred session:ended when leaderboard/poll is active
+  const pendingSessionEndRef = useRef(false);
+  const combatStatsActiveRef = useRef(false);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
@@ -514,6 +519,7 @@ export function PlayerJoinClient({
 
     // Optimistic local update with temp HP absorption
     hpActionOptimisticRef.current = Date.now();
+    lastHpActionCombatantRef.current = combatantId; // P1.03: track affected combatant
     updateCombatants((prev) =>
       prev.map((c) => {
         if (c.id !== combatantId) return c;
@@ -528,7 +534,9 @@ export function PlayerJoinClient({
           return { ...c, current_hp: Math.max(0, (c.current_hp ?? 0) - remaining), temp_hp: newTempHp };
         }
         if (action === "heal") {
-          return { ...c, current_hp: Math.min(c.max_hp ?? 0, (c.current_hp ?? 0) + amount) };
+          // P1.07: skip optimistic if max_hp unknown — avoids capping to 0
+          if (c.max_hp == null) return c;
+          return { ...c, current_hp: Math.min(c.max_hp, (c.current_hp ?? 0) + amount) };
         }
         if (action === "temp_hp") {
           return { ...c, temp_hp: Math.min(9999, Math.max(c.temp_hp ?? 0, amount)) };
@@ -570,8 +578,8 @@ export function PlayerJoinClient({
                   return { ...sc, death_saves: local.death_saves };
                 }
               }
-              // Preserve optimistic HP values
-              if (isHpActionProtected && local) {
+              // P1.03: Preserve optimistic HP only for the specific combatant that was acted on
+              if (isHpActionProtected && local && sc.id === lastHpActionCombatantRef.current) {
                 return { ...sc, current_hp: local.current_hp, temp_hp: local.temp_hp };
               }
               return sc;
@@ -963,6 +971,7 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "session:combat_stats" }, ({ payload }) => {
           // C.15: DM ended combat — show leaderboard + poll before session:ended
           if (payload.stats && payload.encounter_name) {
+            combatStatsActiveRef.current = true; // P1.02: mark poll flow as active
             setCombatStatsData({
               stats: payload.stats as CombatantStats[],
               encounterName: payload.encounter_name as string,
@@ -971,6 +980,12 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "session:ended" }, () => {
+          // P1.02: Defer if leaderboard/poll is showing — player must finish flow first
+          // Ensures difficulty_rating gets recorded and player sees the full post-combat UX
+          if (combatStatsActiveRef.current) {
+            pendingSessionEndRef.current = true;
+            return;
+          }
           // A.3: DM ended the session — show overlay, cleanup everything
           setSessionEnded(true);
           setActive(false);
@@ -1413,12 +1428,25 @@ export function PlayerJoinClient({
           handlePollVote(vote);
           setCombatStatsData(null);
           setShowPoll(false);
-          setAwaitingSessionEnd(true);
+          combatStatsActiveRef.current = false; // P1.02: poll flow done
+          if (pendingSessionEndRef.current) {
+            // session:ended was deferred — process it now
+            pendingSessionEndRef.current = false;
+            setSessionEnded(true);
+          } else {
+            setAwaitingSessionEnd(true);
+          }
         }}
         onSkip={() => {
           setCombatStatsData(null);
           setShowPoll(false);
-          setAwaitingSessionEnd(true);
+          combatStatsActiveRef.current = false; // P1.02: poll flow done
+          if (pendingSessionEndRef.current) {
+            pendingSessionEndRef.current = false;
+            setSessionEnded(true);
+          } else {
+            setAwaitingSessionEnd(true);
+          }
         }}
       />
     );

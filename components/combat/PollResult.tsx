@@ -86,7 +86,8 @@ export function PollResult({ votes, onClose, totalPlayers }: PollResultProps) {
                 <Icon className={`w-4 h-4 flex-shrink-0 ${opt.color}`} />
                 <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
                   <div
-                    className={`h-full ${opt.bgActive.split(" ")[0]} rounded-full transition-all`}
+                    // P2.03: use dedicated bgBar field — not fragile split of bgActive
+                    className={`h-full ${opt.bgBar} rounded-full transition-all`}
                     style={{ width: `${pct}%` }}
                   />
                 </div>

@@ -181,23 +181,36 @@ export function CombatSessionClient({
     proceedAfterNaming(finalName);
   }, [pendingEncounterName, proceedAfterNaming]);
 
+  // P1.05: Ref mirror for postCombatPhase — usable inside broadcast handlers without stale closure
+  const postCombatPhaseRef = useRef<PostCombatPhase>(null);
+  postCombatPhaseRef.current = postCombatPhase;
+
   // C.15: Dismiss all post-combat screens — persist poll result + end encounter
   const handleDismissAll = useCallback(async () => {
-    if (pollVotes.size > 0) {
-      const avg = calculateAverage(pollVotes);
-      const encounterId = useCombatStore.getState().encounter_id;
-      if (encounterId) {
-        const supabase = createClient();
-        await supabase
-          .from("encounters")
-          .update({ difficulty_rating: avg, difficulty_votes: pollVotes.size })
-          .eq("id", encounterId);
-      }
-    }
+    // P2.01: Clear UI immediately before async — prevents stale screen on network error
     setPostCombatPhase(null);
     setPollVotes(new Map());
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
+
+    // P1.06: Snapshot Map before await — prevents race condition with late-arriving votes
+    const snapshotVotes = new Map(pollVotes);
+    if (snapshotVotes.size > 0) {
+      // P2.02: Clamp avg to valid range before persisting
+      const avg = Math.min(5.0, Math.max(1.0, calculateAverage(snapshotVotes)));
+      const encounterId = useCombatStore.getState().encounter_id;
+      if (encounterId) {
+        const supabase = createClient();
+        try {
+          await supabase
+            .from("encounters")
+            .update({ difficulty_rating: avg, difficulty_votes: snapshotVotes.size })
+            .eq("id", encounterId);
+        } catch {
+          // Non-fatal — poll data loss acceptable, encounter still ends
+        }
+      }
+    }
     doEndEncounter();
   }, [doEndEncounter, pollVotes]);
 
@@ -776,6 +789,9 @@ export function CombatSessionClient({
     // C.13: Listen for player:hp_action — player self-reported damage/heal/temp
     const handlePlayerHpAction = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
+      // P1.05: Ignore HP actions during post-combat phase — encounter is already ending
+      if (postCombatPhaseRef.current !== null) return;
+
       const { combatant_id, action, amount, player_name } = payload as {
         combatant_id: string;
         action: "damage" | "heal" | "temp_hp";
@@ -791,6 +807,10 @@ export function CombatSessionClient({
       // Security: only allow self-modification of player combatants
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
       if (!combatant || !combatant.is_player) return;
+      // B1: Verify player_name matches the combatant (prevents Player A acting on Player B's HP)
+      if (combatant.name.toLowerCase() !== String(player_name).toLowerCase()) return;
+      // P1.04: Ignore damage on already-dead player — prevents spurious death save toasts
+      if (action === "damage" && (combatant.current_hp ?? 0) <= 0) return;
 
       const source = `${player_name} (self-report)`;
 

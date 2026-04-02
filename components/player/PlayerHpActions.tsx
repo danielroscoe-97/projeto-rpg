@@ -71,7 +71,8 @@ export function PlayerHpActions({
 
   const handleSubmit = useCallback(() => {
     const amount = parseInt(value, 10);
-    if (!activeAction || !amount || amount <= 0 || amount > 9999 || !Number.isInteger(amount)) return;
+    // parseInt always returns integer or NaN — !Number.isInteger check would be dead code
+    if (!activeAction || !amount || amount <= 0 || amount > 9999) return;
     onHpAction(characterId, activeAction, amount);
 
     // UX.12 — toast confirmation after submit

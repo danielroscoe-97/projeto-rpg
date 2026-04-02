@@ -1180,8 +1180,8 @@ export function GuestCombatClient() {
     }
   }, [resetCombat]);
 
-  // UX.04 — Guest skips poll: no players to collect votes from, no DB persistence
-  // Going straight to dismiss avoids showing a voting UI whose data is silently discarded
+  // UX.04/P3.04 — Guest skips poll: no players to collect votes from, no DB persistence.
+  // Vote would be discarded intentionally — showing poll UI would be misleading.
   const handleLeaderboardClose = useCallback(() => {
     handleGuestDismissAll();
   }, [handleGuestDismissAll]);

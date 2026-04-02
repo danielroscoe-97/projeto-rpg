@@ -558,4 +558,16 @@ describe("Broadcast Sanitization — Edge Cases", () => {
     expect(payload.type).toBe("combat:combatant_remove");
     expect(payload.combatant_id).toBe("monster-1");
   });
+
+  // P3.02: player:hp_action must never re-broadcast to other players (player→DM only)
+  it("player:hp_action events are never broadcast to player channel", () => {
+    broadcastEvent("session-1", {
+      type: "player:hp_action",
+      player_name: "Aragorn",
+      combatant_id: "player-abc",
+      action: "damage",
+      amount: 5,
+    });
+    expect(mockSend).not.toHaveBeenCalled();
+  });
 });

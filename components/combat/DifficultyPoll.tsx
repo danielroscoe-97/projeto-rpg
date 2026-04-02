@@ -7,11 +7,11 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const DIFFICULTY_OPTIONS = [
-  { value: 1 as const, icon: Coffee, labelKey: "poll_very_easy", color: "text-green-400", bgActive: "bg-green-500/20 border-green-500/50" },
-  { value: 2 as const, icon: Smile, labelKey: "poll_easy", color: "text-blue-400", bgActive: "bg-blue-500/20 border-blue-500/50" },
-  { value: 3 as const, icon: Swords, labelKey: "poll_balanced", color: "text-gold", bgActive: "bg-gold/20 border-gold/50" },
-  { value: 4 as const, icon: Flame, labelKey: "poll_hard", color: "text-orange-400", bgActive: "bg-orange-500/20 border-orange-500/50" },
-  { value: 5 as const, icon: Skull, labelKey: "poll_very_hard", color: "text-red-400", bgActive: "bg-red-500/20 border-red-500/50" },
+  { value: 1 as const, icon: Coffee, labelKey: "poll_very_easy", color: "text-green-400", bgActive: "bg-green-500/20 border-green-500/50", bgBar: "bg-green-500/20" },
+  { value: 2 as const, icon: Smile, labelKey: "poll_easy", color: "text-blue-400", bgActive: "bg-blue-500/20 border-blue-500/50", bgBar: "bg-blue-500/20" },
+  { value: 3 as const, icon: Swords, labelKey: "poll_balanced", color: "text-gold", bgActive: "bg-gold/20 border-gold/50", bgBar: "bg-gold/20" },
+  { value: 4 as const, icon: Flame, labelKey: "poll_hard", color: "text-orange-400", bgActive: "bg-orange-500/20 border-orange-500/50", bgBar: "bg-orange-500/20" },
+  { value: 5 as const, icon: Skull, labelKey: "poll_very_hard", color: "text-red-400", bgActive: "bg-red-500/20 border-red-500/50", bgBar: "bg-red-500/20" },
 ] as const;
 
 export { DIFFICULTY_OPTIONS };
