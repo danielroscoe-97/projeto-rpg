@@ -681,6 +681,13 @@ export function CombatSessionClient({
   // Use ref to avoid re-subscribing on every handleAdvanceTurn identity change
   const handleAdvanceTurnRef = useRef(handleAdvanceTurn);
   handleAdvanceTurnRef.current = handleAdvanceTurn;
+  // C.13: Refs for HP action handler — avoids re-subscribing on every callback identity change
+  const handleApplyDamageRef = useRef(handleApplyDamage);
+  handleApplyDamageRef.current = handleApplyDamage;
+  const handleApplyHealingRef = useRef(handleApplyHealing);
+  handleApplyHealingRef.current = handleApplyHealing;
+  const handleSetTempHpRef = useRef(handleSetTempHp);
+  handleSetTempHpRef.current = handleSetTempHp;
 
   useEffect(() => {
     const sid = getSessionId();
@@ -729,8 +736,55 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "player:death_save" }, handlePlayerDeathSave);
 
+    // C.13: Listen for player:hp_action — player self-reported damage/heal/temp
+    const handlePlayerHpAction = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { combatant_id, action, amount, player_name } = payload as {
+        combatant_id: string;
+        action: "damage" | "heal" | "temp_hp";
+        amount: number;
+        player_name: string;
+      };
+
+      // Validate payload
+      if (!combatant_id || !action || !amount) return;
+      if (typeof amount !== "number" || !Number.isInteger(amount) || amount <= 0 || amount > 9999) return;
+      if (!["damage", "heal", "temp_hp"].includes(action)) return;
+
+      // Security: only allow self-modification of player combatants
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (!combatant || !combatant.is_player) return;
+
+      const source = `${player_name} (self-report)`;
+
+      switch (action) {
+        case "damage":
+          handleApplyDamageRef.current(combatant_id, amount, { source });
+          toast(`${player_name}: \u2212${amount} HP`, { duration: 3000 });
+          break;
+        case "heal":
+          handleApplyHealingRef.current(combatant_id, amount, source);
+          toast(`${player_name}: +${amount} HP`, { duration: 3000 });
+          break;
+        case "temp_hp":
+          handleSetTempHpRef.current(combatant_id, amount);
+          // Log temp HP (not logged by handleSetTempHp natively)
+          useCombatLogStore.getState().addEntry({
+            round: useCombatStore.getState().round_number,
+            type: "system",
+            actorName: source,
+            targetName: combatant.name,
+            description: `${combatant.name} gained ${amount} temp HP`,
+          });
+          toast(`${player_name}: +${amount} temp HP`, { duration: 3000 });
+          break;
+      }
+    };
+
+    ch.on("broadcast", { event: "player:hp_action" }, handlePlayerHpAction);
+
     return () => { active = false; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef
   }, [is_active, getSessionId]);
 
   // Show unified setup if not yet active

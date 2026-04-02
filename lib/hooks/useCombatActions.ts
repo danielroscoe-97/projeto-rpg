@@ -259,7 +259,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [setError, getSessionId]);
 
-  const handleApplyHealing = useCallback((id: string, amount: number) => {
+  const handleApplyHealing = useCallback((id: string, amount: number, source?: string) => {
     const snap = useCombatStore.getState();
     const before = snap.combatants.find((x) => x.id === id);
     if (!before) return;
@@ -276,7 +276,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     useCombatLogStore.getState().addEntry({
       round: useCombatStore.getState().round_number,
       type: "heal",
-      actorName: getCurrentActorName(),
+      actorName: source ?? getCurrentActorName(),
       targetName: before.name,
       description: `${before.name} healed for ${amount} HP`,
     });
