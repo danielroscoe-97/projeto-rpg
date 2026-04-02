@@ -14,9 +14,12 @@ export function useSrdContentFilter<T extends SrdMonster | SrdSpell>(
   const { allowed: showNonSrd, loading } = useFeatureGate("show_non_srd_content");
 
   const filtered = useMemo(() => {
-    if (loading) return items.filter((item) => item.is_srd !== false);
+    const isMad = (item: T) =>
+      "monster_a_day_url" in item && !!(item as SrdMonster).monster_a_day_url;
+    if (loading) return items.filter((item) => item.is_srd !== false || isMad(item));
     if (showNonSrd) return items;
-    return items.filter((item) => item.is_srd !== false);
+    // Always show MAD monsters — community content with independent approval
+    return items.filter((item) => item.is_srd !== false || isMad(item));
   }, [items, showNonSrd, loading]);
 
   return { filtered, showNonSrd, loading };
