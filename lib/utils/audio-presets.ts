@@ -22,6 +22,44 @@ const PRESETS: AudioPreset[] = [
   { id: "monster-snarl", name_key: "audio.preset_monster_snarl", file: "/sounds/sfx/monster-snarl.mp3", icon: "\uD83D\uDC7E", category: "monster" },
   { id: "ogre-growl", name_key: "audio.preset_ogre_growl", file: "/sounds/sfx/ogre-growl.mp3", icon: "\uD83D\uDC79", category: "monster" },
 
+  // ── SFX — RO-inspired spell effects (prototype reference) ──
+  // Fire
+  { id: "fire-bolt", name_key: "audio.preset_fire_bolt", file: "/sounds/sfx/fire-bolt.mp3", icon: "\uD83D\uDD25", category: "magic" },
+  { id: "fire-wall", name_key: "audio.preset_fire_wall", file: "/sounds/sfx/fire-wall.mp3", icon: "\uD83E\uDDE8", category: "magic" },
+  { id: "meteor-storm", name_key: "audio.preset_meteor_storm", file: "/sounds/sfx/meteor-storm.mp3", icon: "\u2604\uFE0F", category: "magic" },
+  { id: "explosion", name_key: "audio.preset_explosion", file: "/sounds/sfx/explosion.mp3", icon: "\uD83D\uDCA5", category: "magic" },
+  // Ice
+  { id: "cold-bolt", name_key: "audio.preset_cold_bolt", file: "/sounds/sfx/cold-bolt.mp3", icon: "\u2744\uFE0F", category: "magic" },
+  { id: "frost-diver", name_key: "audio.preset_frost_diver", file: "/sounds/sfx/frost-diver.mp3", icon: "\uD83E\uDDCA", category: "magic" },
+  { id: "storm-gust", name_key: "audio.preset_storm_gust", file: "/sounds/sfx/storm-gust.mp3", icon: "\uD83C\uDF2C\uFE0F", category: "magic" },
+  { id: "ice-wall", name_key: "audio.preset_ice_wall", file: "/sounds/sfx/ice-wall.mp3", icon: "\uD83E\uDDF1", category: "magic" },
+  // Lightning
+  { id: "lightning-bolt", name_key: "audio.preset_lightning_bolt", file: "/sounds/sfx/lightning-bolt.mp3", icon: "\u26A1", category: "magic" },
+  { id: "jupitel-thunder", name_key: "audio.preset_jupitel_thunder", file: "/sounds/sfx/jupitel-thunder.mp3", icon: "\uD83C\uDF29\uFE0F", category: "magic" },
+  { id: "shock", name_key: "audio.preset_shock", file: "/sounds/sfx/shock.mp3", icon: "\uD83D\uDCA2", category: "magic" },
+  // Earth
+  { id: "earth-spike", name_key: "audio.preset_earth_spike", file: "/sounds/sfx/earth-spike.mp3", icon: "\uD83C\uDF0D", category: "magic" },
+  { id: "water-spell", name_key: "audio.preset_water_spell", file: "/sounds/sfx/water-spell.mp3", icon: "\uD83D\uDCA7", category: "magic" },
+  // Holy / Dark
+  { id: "holy-smite", name_key: "audio.preset_holy_smite", file: "/sounds/sfx/holy-smite.mp3", icon: "\uD83D\uDD31", category: "magic" },
+  { id: "soul-strike", name_key: "audio.preset_soul_strike", file: "/sounds/sfx/soul-strike.mp3", icon: "\uD83D\uDC7B", category: "magic" },
+  { id: "darkness", name_key: "audio.preset_darkness", file: "/sounds/sfx/darkness.mp3", icon: "\uD83C\uDF11", category: "magic" },
+  // Support / Buffs
+  { id: "heal-full", name_key: "audio.preset_heal_full", file: "/sounds/sfx/heal-full.mp3", icon: "\uD83D\uDC9A", category: "magic" },
+  { id: "blessing", name_key: "audio.preset_blessing", file: "/sounds/sfx/blessing.mp3", icon: "\uD83D\uDE4F", category: "magic" },
+  { id: "speed-buff", name_key: "audio.preset_speed_buff", file: "/sounds/sfx/speed-buff.mp3", icon: "\uD83C\uDFC3", category: "magic" },
+  { id: "magic-shield", name_key: "audio.preset_magic_shield", file: "/sounds/sfx/magic-shield.mp3", icon: "\uD83D\uDEE1\uFE0F", category: "defense" },
+  { id: "enchant", name_key: "audio.preset_enchant", file: "/sounds/sfx/enchant.mp3", icon: "\uD83D\uDD2E", category: "magic" },
+  { id: "revive", name_key: "audio.preset_revive", file: "/sounds/sfx/revive.mp3", icon: "\uD83C\uDF1F", category: "magic" },
+  { id: "atk-buff", name_key: "audio.preset_atk_buff", file: "/sounds/sfx/atk-buff.mp3", icon: "\u2B06\uFE0F", category: "magic" },
+  { id: "def-buff", name_key: "audio.preset_def_buff", file: "/sounds/sfx/def-buff.mp3", icon: "\uD83D\uDEE1\uFE0F", category: "defense" },
+  // Debuffs
+  { id: "curse", name_key: "audio.preset_curse", file: "/sounds/sfx/curse.mp3", icon: "\uD83D\uDC00", category: "magic" },
+  { id: "debuff", name_key: "audio.preset_debuff", file: "/sounds/sfx/debuff.mp3", icon: "\u2B07\uFE0F", category: "magic" },
+  // Combat specials
+  { id: "asura-strike", name_key: "audio.preset_asura_strike", file: "/sounds/sfx/asura-strike.mp3", icon: "\uD83D\uDCA3", category: "dramatic" },
+  { id: "level-up", name_key: "audio.preset_level_up", file: "/sounds/sfx/level-up.mp3", icon: "\uD83C\uDF1F", category: "dramatic" },
+
   // ── Ambient — loopable atmosphere (auto-loop) ───────────────
   { id: "ambient-bonfire", name_key: "audio.preset_ambient_bonfire", file: "/sounds/ambient/bonfire.mp3", icon: "\uD83D\uDD25", category: "ambient" },
   { id: "ambient-thunder-storm", name_key: "audio.preset_ambient_thunder_storm", file: "/sounds/ambient/thunder-storm.mp3", icon: "\u26C8\uFE0F", category: "ambient" },

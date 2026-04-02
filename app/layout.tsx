@@ -7,8 +7,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
-import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
-import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import "./globals.css";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -115,9 +113,7 @@ export default async function RootLayout({
         </Suspense>
         <Analytics />
         <Toaster richColors position="top-right" />
-        <ServiceWorkerRegistration />
-        <InstallPrompt />
-        <div id="floating-cards-root" />
+<div id="floating-cards-root" />
       </body>
     </html>
   );

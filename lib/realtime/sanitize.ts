@@ -16,12 +16,12 @@ import type {
   SanitizedMonsterHpUpdate,
   SanitizedStatsUpdate,
 } from "@/lib/types/realtime";
-import { getHpStatus } from "@/lib/utils/hp-status";
+import { getHpStatus, getHpPercentage } from "@/lib/utils/hp-status";
 
 /** Sanitize a combatant for player-visible broadcast. */
 export function sanitizeCombatant(c: Combatant): SanitizedCombatant {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { dm_notes, display_name, ...base } = c;
+  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, ...base } = c;
 
   if (c.is_player) {
     return {
@@ -41,6 +41,7 @@ export function sanitizeCombatant(c: Combatant): SanitizedCombatant {
     ...safe,
     name: display_name || base.name,
     hp_status: getHpStatus(c.current_hp, c.max_hp),
+    hp_percentage: getHpPercentage(c.current_hp, c.max_hp),
   };
 }
 
@@ -125,6 +126,10 @@ export function sanitizePayloadServer(
   // HP update: full data for players, status-only for monsters
   if (event.type === "combat:hp_update") {
     if (event.is_player) {
+      // Suppress HP updates for hidden player-characters
+      const hiddenCheck = allCombatants?.find((c) => c.id === event.combatant_id);
+      if (hiddenCheck?.is_hidden) return null;
+
       const result: SanitizedPlayerHpUpdate = {
         type: event.type,
         combatant_id: event.combatant_id,
@@ -138,10 +143,12 @@ export function sanitizePayloadServer(
       };
       return result;
     }
+    const maxHp = event.max_hp ?? event.current_hp;
     const result: SanitizedMonsterHpUpdate = {
       type: event.type,
       combatant_id: event.combatant_id,
-      hp_status: getHpStatus(event.current_hp, event.max_hp ?? event.current_hp),
+      hp_status: getHpStatus(event.current_hp, maxHp),
+      hp_percentage: getHpPercentage(event.current_hp, maxHp),
     };
     return result;
   }

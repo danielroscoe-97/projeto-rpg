@@ -49,6 +49,10 @@ export interface Combatant {
   death_saves?: { successes: number; failures: number };
   /** Tracks how many turns each condition has been active. Key = condition name, value = turn count. */
   condition_durations?: Record<string, number>;
+  /** Total legendary actions available per round. Null = no legendary actions. */
+  legendary_actions_total: number | null;
+  /** Legendary actions used this round. Resets to 0 at start of each round. */
+  legendary_actions_used: number;
 }
 
 export type UndoEntry =
@@ -145,6 +149,10 @@ export interface CombatActions {
   unlinkCharacter: (combatantId: string) => void;
   /** Undo the last mid-combat combatant addition (removes combatant). Returns removed ID or null. */
   undoLastAdd: () => string | null;
+  /** Increment legendary actions used by 1, up to total. */
+  incrementLegendaryAction: (id: string) => void;
+  /** Set legendary actions used to an exact count (0 to total). */
+  setLegendaryActionsUsed: (id: string, count: number) => void;
 }
 
 // --- CP.1.1: Parsed Monster Action Types ---

@@ -9,6 +9,7 @@ export interface CombatLogEntry {
   targetName?: string;
   description: string;
   details?: {
+    targetId?: string;
     damageAmount?: number;
     damageType?: string;
     damageModifier?: string;

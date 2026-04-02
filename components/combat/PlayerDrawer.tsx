@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { X, Shield, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getHpBarColor, getHpTextColor } from "@/lib/utils/hp-status";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface PlayerDrawerProps {
@@ -12,24 +13,6 @@ interface PlayerDrawerProps {
   onClose: () => void;
 }
 
-/** Returns the HP tier color class based on percentage thresholds (LIGHT/MODERATE/HEAVY/CRITICAL). */
-function hpTierColor(current: number, max: number): string {
-  if (max <= 0) return "bg-muted";
-  const pct = (current / max) * 100;
-  if (pct > 70) return "bg-emerald-500";
-  if (pct > 40) return "bg-amber-400";
-  if (pct > 10) return "bg-orange-500";
-  return "bg-red-500";
-}
-
-function hpTierTextColor(current: number, max: number): string {
-  if (max <= 0) return "text-muted-foreground";
-  const pct = (current / max) * 100;
-  if (pct > 70) return "text-emerald-400";
-  if (pct > 40) return "text-amber-400";
-  if (pct > 10) return "text-orange-400";
-  return "text-red-500";
-}
 
 type SaveStatus = "idle" | "saving" | "saved";
 
@@ -234,11 +217,11 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
                 {/* HP bar */}
                 <div className="mt-2">
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className={hpTierTextColor(pc.current_hp, pc.max_hp)}>
+                    <span className={getHpTextColor(pc.current_hp, pc.max_hp)}>
                       HP
                     </span>
                     <span
-                      className={`font-mono ${hpTierTextColor(
+                      className={`font-mono ${getHpTextColor(
                         pc.current_hp,
                         pc.max_hp
                       )}`}
@@ -248,7 +231,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
                   </div>
                   <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-300 ${hpTierColor(
+                      className={`h-full rounded-full transition-all duration-300 ${getHpBarColor(
                         pc.current_hp,
                         pc.max_hp
                       )}`}

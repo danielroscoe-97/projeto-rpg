@@ -87,10 +87,10 @@ export function resetDmChannel(): void {
 }
 
 /** Sanitize a full combatant for player broadcast.
- *  Strips DM notes, monster stats, and applies display_name anti-metagaming. */
+ *  Strips DM notes, monster stats, LA counts, and applies display_name anti-metagaming. */
 function sanitizeCombatant(c: Combatant): SanitizedCombatant {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only field
-  const { dm_notes, display_name, ...base } = c;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only fields + LA counts
+  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, ...base } = c;
 
   if (c.is_player) {
     // Players: keep all stats, just strip dm_notes and display_name

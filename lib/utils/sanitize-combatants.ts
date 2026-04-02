@@ -1,4 +1,4 @@
-import { getHpStatus } from "@/lib/utils/hp-status";
+import { getHpStatus, getHpPercentage } from "@/lib/utils/hp-status";
 
 /** Raw combatant row as returned from the DB select. */
 export interface RawCombatantRow {
@@ -9,6 +9,7 @@ export interface RawCombatantRow {
   max_hp: number;
   temp_hp: number;
   ac: number;
+  spell_save_dc: number | null;
   initiative_order: number | null;
   conditions: string[];
   is_defeated: boolean;
@@ -16,6 +17,8 @@ export interface RawCombatantRow {
   is_hidden: boolean;
   monster_id: string | null;
   ruleset_version: string | null;
+  monster_group_id: string | null;
+  group_order: number | null;
 }
 
 /**
@@ -34,12 +37,13 @@ export function sanitizeCombatantsForPlayer(combatants: RawCombatantRow[]) {
         const { display_name: _dn, is_hidden: _h, ...rest } = c;
         return rest;
       }
-      const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, display_name, is_hidden: _h, ...rest } = c;
+      const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, ...rest } = c;
       return {
         ...rest,
         // Anti-metagaming: replace real name with display_name if set
         name: display_name || rest.name,
         hp_status: getHpStatus(current_hp, max_hp),
+        hp_percentage: getHpPercentage(current_hp, max_hp),
       };
     });
 }

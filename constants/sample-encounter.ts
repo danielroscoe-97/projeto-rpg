@@ -25,6 +25,8 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     player_notes: "Exemplo — edite ou remova à vontade",
     player_character_id: null,
     combatant_role: null,
+    legendary_actions_total: null,
+    legendary_actions_used: 0,
   },
   {
     name: "Goblin 2",
@@ -50,6 +52,8 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     player_notes: "Exemplo — edite ou remova à vontade",
     player_character_id: null,
     combatant_role: null,
+    legendary_actions_total: null,
+    legendary_actions_used: 0,
   },
   {
     name: "Goblin 3",
@@ -75,6 +79,8 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     player_notes: "Exemplo — edite ou remova à vontade",
     player_character_id: null,
     combatant_role: null,
+    legendary_actions_total: null,
+    legendary_actions_used: 0,
   },
   {
     name: "Herói 1",
@@ -100,6 +106,8 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     player_notes: "",
     player_character_id: null,
     combatant_role: null,
+    legendary_actions_total: null,
+    legendary_actions_used: 0,
   },
   {
     name: "Herói 2",
@@ -125,5 +133,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     player_notes: "",
     player_character_id: null,
     combatant_role: null,
+    legendary_actions_total: null,
+    legendary_actions_used: 0,
   },
 ];

@@ -131,3 +131,38 @@ rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
 
 Overall average: **60-90% token reduction** on common development operations.
 <!-- /rtk-instructions -->
+
+# Combat Parity Rule — Guest vs Auth
+
+**REGRA IMUTÁVEL**: Toda alteração em experiência de combate ou arquitetura de combate DEVE incluir verificação de parity entre os 3 modos de acesso:
+
+## Checklist Obrigatório
+
+Antes de considerar qualquer combat feature ou fix completo, responder:
+
+1. **Guest (`/try`)** — Funciona no guest combat (GuestCombatClient, Zustand store, localStorage)? Se sim, implementar lá também.
+2. **Anônimo (`/join`)** — Funciona pro player anônimo via link do DM (PlayerJoinClient, session_tokens, anon auth)? Se sim, implementar lá também.
+3. **Autenticado (`/invite`)** — Requer dados persistentes do user (campanha, personagem, histórico)? Marcar como Auth-only.
+
+## Arquivos de Referência
+
+| Modo | Client Principal | Store/Auth | Entry Point |
+|------|-----------------|------------|-------------|
+| Guest | `components/guest/GuestCombatClient.tsx` | Zustand + localStorage | `/app/try/page.tsx` |
+| Anônimo | `components/player/PlayerJoinClient.tsx` | Supabase anon auth + session_tokens | `/app/join/[token]/page.tsx` |
+| Autenticado | `components/player/PlayerJoinClient.tsx` | Supabase auth + campaign_members | `/app/invite/[token]/page.tsx` |
+
+## Regra de Aplicação
+
+- **UI-only changes** (display, layout, styling) → SEMPRE aplicar nos 3 modos
+- **Realtime/broadcast features** → Aplicar em Anônimo + Autenticado (Guest não tem realtime)
+- **Data persistence features** (ratings, notas, spell slots) → Auth-only, documentar no bucket
+- **DM features** (legendary actions, monster stats) → Aplicar no Guest + Autenticado (DM sempre é autenticado)
+
+## Anti-Pattern
+
+```
+// ❌ ERRADO: Implementar feature só no PlayerJoinClient
+// ❌ ERRADO: Implementar fix só no GuestCombatClient
+// ✅ CERTO: Verificar os 3 modos e implementar onde aplicável
+```

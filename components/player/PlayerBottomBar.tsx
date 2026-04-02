@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Shield } from "lucide-react";
+import { Shield, Zap } from "lucide-react";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 
 interface PlayerBottomBarProps {
@@ -16,6 +16,7 @@ interface PlayerBottomBarProps {
     max_hp: number;
     temp_hp?: number;
     ac?: number;
+    spell_save_dc?: number | null;
     conditions: string[];
     is_defeated: boolean;
     ruleset_version: string | null;
@@ -138,6 +139,14 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                   <Shield className="w-3.5 h-3.5" aria-hidden="true" />
                   <span className="text-foreground text-sm font-mono font-semibold">
                     {character.ac}
+                  </span>
+                </div>
+              )}
+              {character.spell_save_dc != null && (
+                <div className="flex items-center gap-0.5 shrink-0 text-muted-foreground">
+                  <Zap className="w-3.5 h-3.5 text-purple-400" aria-hidden="true" />
+                  <span className="text-foreground text-sm font-mono font-semibold">
+                    {character.spell_save_dc}
                   </span>
                 </div>
               )}

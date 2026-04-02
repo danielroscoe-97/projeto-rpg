@@ -157,8 +157,12 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         }
         sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
       }
+      // Reset legendary actions when a new round starts
+      const finalCombatants = roundBumped
+        ? sorted.map((c) => c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c)
+        : sorted;
       return {
-        combatants: sorted,
+        combatants: finalCombatants,
         undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
@@ -464,6 +468,24 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     }));
     return id;
   },
+
+  incrementLegendaryAction: (id) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id && c.legendary_actions_total != null && c.legendary_actions_used < c.legendary_actions_total
+          ? { ...c, legendary_actions_used: c.legendary_actions_used + 1 }
+          : c
+      ),
+    })),
+
+  setLegendaryActionsUsed: (id, count) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id && c.legendary_actions_total != null
+          ? { ...c, legendary_actions_used: Math.max(0, Math.min(count, c.legendary_actions_total)) }
+          : c
+      ),
+    })),
 })));
 
 // Auto-persist combat state to localStorage on changes.

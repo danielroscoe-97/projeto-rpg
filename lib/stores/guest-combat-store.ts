@@ -121,6 +121,8 @@ interface GuestCombatActions {
   addDeathSaveSuccess: (id: string) => void;
   addDeathSaveFailure: (id: string) => void;
   resetDeathSaves: (id: string) => void;
+  incrementLegendaryAction: (id: string) => void;
+  setLegendaryActionsUsed: (id: string, count: number) => void;
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
   resetCombat: () => void;
   resetForNewSession: () => void;
@@ -300,8 +302,12 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             }
             sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
           }
+          // Reset legendary actions when a new round starts
+          const finalCombatants = roundBumped
+            ? sorted.map((c) => c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c)
+            : sorted;
           return {
-            combatants: sorted,
+            combatants: finalCombatants,
             currentTurnIndex: next,
             roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
           };
@@ -417,6 +423,28 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
         set((state) => ({
           combatants: state.combatants.map((c) =>
             c.id === id ? { ...c, death_saves: undefined } : c
+          ),
+        }));
+      },
+
+      incrementLegendaryAction: (id) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id && c.legendary_actions_total != null && c.legendary_actions_used < c.legendary_actions_total
+              ? { ...c, legendary_actions_used: c.legendary_actions_used + 1 }
+              : c
+          ),
+        }));
+      },
+
+      setLegendaryActionsUsed: (id, count) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id && c.legendary_actions_total != null
+              ? { ...c, legendary_actions_used: Math.max(0, Math.min(count, c.legendary_actions_total)) }
+              : c
           ),
         }));
       },

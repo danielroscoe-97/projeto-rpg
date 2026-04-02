@@ -106,6 +106,8 @@ export async function POST(req: NextRequest) {
         player_notes: r.player_notes ?? "",
         player_character_id: r.player_character_id ?? null,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       }));
     }
 

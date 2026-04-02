@@ -7,16 +7,17 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { PlayerBottomBar } from "@/components/player/PlayerBottomBar";
 import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
 import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOverlay";
-import { getHpBarColor, getHpThresholdKey, getHpStatus } from "@/lib/utils/hp-status";
+import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherOverlay";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { TurnPushNotification } from "@/components/player/TurnPushNotification";
+import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 
 export interface CombatLogEntry {
   text: string;
@@ -38,31 +39,45 @@ interface PlayerCombatant {
   is_player: boolean;
   monster_id: string | null;
   ruleset_version: string | null;
-  /** HP status label for monsters (LIGHT/MODERATE/HEAVY/CRITICAL) */
+  spell_save_dc?: number | null;
+  /** Player character class (e.g. "Wizard") — used for spell browser pre-filter */
+  class?: string;
+  /** HP status label for monsters (FULL/LIGHT/MODERATE/HEAVY/CRITICAL) */
   hp_status?: string;
+  /** HP percentage (0-100) for monsters */
+  hp_percentage?: number;
+  /** Group ID for monster grouping */
+  monster_group_id?: string | null;
+  /** Order within a monster group */
+  group_order?: number | null;
   /** Death saves state for players at 0 HP */
   death_saves?: { successes: number; failures: number };
 }
 
-/** Visual config for monster HP status labels */
-const HP_STATUS_STYLES: Record<string, { colorClass: string; bgClass: string; icon: "heart" | "warning" | "danger" | "skull" }> = {
-  LIGHT: { colorClass: "text-green-400", bgClass: "bg-green-400/10", icon: "heart" },
-  MODERATE: { colorClass: "text-amber-400", bgClass: "bg-amber-400/10", icon: "warning" },
-  HEAVY: { colorClass: "text-red-500", bgClass: "bg-red-500/10", icon: "danger" },
-  CRITICAL: { colorClass: "text-gray-300", bgClass: "bg-gray-900/40", icon: "skull" },
+
+/** Abbreviated tier labels for mobile */
+const TIER_SHORT: Record<string, string> = {
+  FULL: "FUL",
+  LIGHT: "LGT",
+  MODERATE: "MOD",
+  HEAVY: "HVY",
+  CRITICAL: "CRT",
 };
 
-function HpStatusBadge({ status }: { status: string }) {
+function HpStatusBadge({ status, percentage }: { status: string; percentage?: number }) {
   const t = useTranslations("player");
-  const style = HP_STATUS_STYLES[status] ?? HP_STATUS_STYLES.LIGHT;
+  const style = (HP_STATUS_STYLES as Record<string, (typeof HP_STATUS_STYLES)[keyof typeof HP_STATUS_STYLES]>)[status] ?? HP_STATUS_STYLES.LIGHT;
   const label = t(`hp_status_${status.toLowerCase()}` as Parameters<typeof t>[0]);
+  const shortLabel = TIER_SHORT[status] ?? status.slice(0, 3);
 
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm lg:text-xs font-medium ${style.colorClass} ${style.bgClass}`}
-      aria-label={label}
+      aria-label={`${label}${percentage != null ? ` ${percentage}%` : ""}`}
     >
-      {style.icon === "skull" ? (
+      {style.icon === "heartpulse" ? (
+        <HeartPulse className="w-4 h-4 lg:w-3.5 lg:h-3.5" aria-hidden="true" />
+      ) : style.icon === "skull" ? (
         <Skull className="w-4 h-4 lg:w-3.5 lg:h-3.5" aria-hidden="true" />
       ) : style.icon === "warning" ? (
         <span aria-hidden="true">⚠</span>
@@ -71,7 +86,11 @@ function HpStatusBadge({ status }: { status: string }) {
       ) : (
         <span aria-hidden="true">♥</span>
       )}
-      {label}
+      <span className="sm:hidden">{shortLabel}</span>
+      <span className="hidden sm:inline">{label}</span>
+      {percentage != null && (
+        <span className="font-normal opacity-70">· {percentage}%</span>
+      )}
     </span>
   );
 }
@@ -180,6 +199,7 @@ export function PlayerInitiativeBoard({
   deathSaveResolution,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
+  const tc = useTranslations("combat");
   const turnRef = useRef<HTMLLIElement | null>(null);
   // End Turn delivery confirmation states: idle → pending → confirmed/retry/error
   const [endTurnState, setEndTurnState] = useState<"idle" | "pending" | "confirmed" | "retry" | "error">("idle");
@@ -234,6 +254,9 @@ export function PlayerInitiativeBoard({
     onDeathSave(ownCharRef.current.id, result);
     deathSaveCooldownRef.current = setTimeout(() => setDeathSavePending(false), 2000);
   }, [deathSavePending, onDeathSave]);
+  // Spell browser state
+  const [spellsOpen, setSpellsOpen] = useState(false);
+
   // Track highest revealed index during round 1 (persists across re-renders)
   const [maxRevealedIndex, setMaxRevealedIndex] = useState(currentTurnIndex);
 
@@ -325,6 +348,12 @@ export function PlayerInitiativeBoard({
     }
   }, [currentTurnIndex]);
 
+  // Monster group expand/collapse state
+  const [expandedPlayerGroups, setExpandedPlayerGroups] = useState<Record<string, boolean>>({});
+  const togglePlayerGroup = useCallback((groupId: string) => {
+    setExpandedPlayerGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
+  }, []);
+
   // "Você é o próximo!" — show when next_combatant_id matches THIS player
   const isPlayerUpcoming = !!(
     nextCombatantId &&
@@ -351,71 +380,72 @@ export function PlayerInitiativeBoard({
       {/* Story 3.1: "Você é o próximo!" — shown when player is next (not current) */}
       <TurnUpcomingBanner visible={isPlayerUpcoming} />
 
-      {/* ── TURN INDICATOR BANNER ── */}
-      {/* Clear, prominent banner: whose turn NOW + who's next */}
-      {currentCombatant && (
-        <div className="bg-card border border-border rounded-lg px-4 py-3" data-testid="turn-indicator-banner">
-          <div className="flex items-center gap-2">
-            <span className="text-gold text-lg leading-none select-none" aria-hidden="true">▶</span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-foreground font-semibold text-lg lg:text-base truncate">
-                  {isPlayerTurn ? t("your_turn_banner") : t("turn_of", { name: currentCombatant.name })}
-                </span>
-                {/* Tag: player or monster */}
-                {currentCombatant.is_player ? (
-                  <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
-                    <User className="w-3 h-3" aria-hidden="true" />
-                    {t("player_tag")}
-                  </span>
-                ) : (
-                  <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20">
-                    <Bug className="w-3 h-3" aria-hidden="true" />
-                    {t("monster_tag")}
-                  </span>
-                )}
-              </div>
-              {nextCombatant && (
-                <span className="text-muted-foreground text-sm lg:text-xs">
-                  {t("next_up", { name: nextCombatant.name })}
-                </span>
-              )}
-            </div>
-            {/* Pass turn button — only when it's this player's turn */}
-            {isPlayerTurn && onEndTurn && (
-              <button
-                type="button"
-                onClick={handleEndTurn}
-                disabled={endTurnState !== "idle"}
-                className={`shrink-0 px-4 py-2 font-medium text-sm rounded-lg transition-colors min-h-[44px] disabled:cursor-not-allowed ${
-                  endTurnState === "confirmed" ? "bg-green-500/20 text-green-400" :
-                  endTurnState === "retry" ? "bg-amber-500/20 text-amber-400" :
-                  endTurnState === "error" ? "bg-red-500/20 text-red-400" :
-                  "bg-gold/20 text-gold active:bg-gold/40 lg:hover:bg-gold/30 disabled:opacity-50"
-                }`}
-                data-testid="player-end-turn-btn"
-              >
-                {endTurnState === "idle" ? t("end_turn") :
-                 endTurnState === "pending" ? "..." :
-                 endTurnState === "confirmed" ? "✓" :
-                 endTurnState === "retry" ? t("end_turn_retry") :
-                 t("end_turn_error")}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* DM's turn indicator — shown when a hidden NPC has the current turn */}
-      {currentTurnIndex === -1 && (
+      {/* ── STICKY TURN INDICATOR ── */}
+      {/* Always visible at the top when scrolling — h-14 fixed height */}
+      {(currentCombatant || currentTurnIndex === -1) && (
         <div
-          className="bg-card border border-amber-400/50 rounded-lg px-4 py-3 text-center"
-          data-testid="dm-turn-indicator"
+          className="sticky top-0 z-30 -mx-2 px-2 bg-background/95 border-b border-border"
+          data-testid="sticky-turn-header"
         >
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-gold text-lg lg:text-sm leading-none select-none">▶</span>
-            <span className="text-foreground font-medium text-lg lg:text-sm">{t("dm_turn")}</span>
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentTurnIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="h-14 flex items-center gap-2 max-w-2xl mx-auto px-2"
+            >
+              <span className="text-gold text-lg leading-none select-none" aria-hidden="true">▶</span>
+              {currentTurnIndex === -1 ? (
+                <span className="text-foreground font-medium text-base">{t("dm_turn")}</span>
+              ) : currentCombatant && (
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-foreground font-semibold text-base truncate max-w-[200px]">
+                      {isPlayerTurn ? t("your_turn_banner") : t("turn_of", { name: currentCombatant.name })}
+                    </span>
+                    {currentCombatant.is_player ? (
+                      <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                        <User className="w-3 h-3" aria-hidden="true" />
+                        {t("player_tag")}
+                      </span>
+                    ) : (
+                      <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20">
+                        <Bug className="w-3 h-3" aria-hidden="true" />
+                        {t("monster_tag")}
+                      </span>
+                    )}
+                  </div>
+                  {nextCombatant && (
+                    <span className="text-muted-foreground text-xs">
+                      {t("next_up", { name: nextCombatant.name })}
+                    </span>
+                  )}
+                </div>
+              )}
+              {isPlayerTurn && onEndTurn && (
+                <button
+                  type="button"
+                  onClick={handleEndTurn}
+                  disabled={endTurnState !== "idle"}
+                  className={`shrink-0 ml-auto px-4 py-2 font-medium text-sm rounded-lg transition-colors min-h-[44px] disabled:cursor-not-allowed ${
+                    endTurnState === "confirmed" ? "bg-green-500/20 text-green-400" :
+                    endTurnState === "retry" ? "bg-amber-500/20 text-amber-400" :
+                    endTurnState === "error" ? "bg-red-500/20 text-red-400" :
+                    "bg-gold/20 text-gold active:bg-gold/40 lg:hover:bg-gold/30 disabled:opacity-50"
+                  }`}
+                  data-testid="player-end-turn-btn"
+                >
+                  {endTurnState === "idle" ? t("end_turn") :
+                   endTurnState === "pending" ? "..." :
+                   endTurnState === "confirmed" ? "✓" :
+                   endTurnState === "retry" ? t("end_turn_retry") :
+                   t("end_turn_error")}
+                </button>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       )}
 
@@ -469,6 +499,21 @@ export function PlayerInitiativeBoard({
                     <span className="text-xs text-muted-foreground/60">{t("turn_not_reached")}</span>
                   )}
                 </div>
+                {/* AC + Save DC — own character only */}
+                <div className="flex items-center gap-3 text-muted-foreground text-sm mb-2">
+                  {pc.ac != null && (
+                    <div className="flex items-center gap-1">
+                      <Shield className="w-3.5 h-3.5" />
+                      <span className="text-foreground font-mono font-semibold">{pc.ac}</span>
+                    </div>
+                  )}
+                  {pc.spell_save_dc != null && (
+                    <div className="flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-purple-400" />
+                      <span className="text-foreground font-mono font-semibold">DC {pc.spell_save_dc}</span>
+                    </div>
+                  )}
+                </div>
                 <div className="mb-2">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
@@ -476,7 +521,7 @@ export function PlayerInitiativeBoard({
                       {currentHp}<span className="text-muted-foreground text-base font-normal"> / {maxHp}</span>
                       {hpThresholdKey && (
                         <span className="text-xs font-mono ml-2 text-muted-foreground">
-                          {t(hpThresholdKey)}
+                          {t(hpThresholdKey)} · {getHpPercentage(currentHp, maxHp)}%
                         </span>
                       )}
                       {/* Floating HP delta */}
@@ -527,6 +572,16 @@ export function PlayerInitiativeBoard({
                     ))}
                   </div>
                 )}
+                {/* Spell browser — desktop own-char card */}
+                <button
+                  type="button"
+                  onClick={() => setSpellsOpen(true)}
+                  className="flex items-center gap-1.5 text-xs text-gold hover:text-gold/80 mt-2 transition-colors"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  {tc("spell_open")}
+                </button>
+
                 {/* Death saves — desktop own-char card */}
                 {currentHp === 0 && maxHp > 0 && !pc.is_defeated && (
                   <div className="mt-3">
@@ -571,9 +626,78 @@ export function PlayerInitiativeBoard({
         data-testid="player-initiative-board"
       >
         <AnimatePresence mode="popLayout">
-        {combatants.map((combatant, index) => {
+        {(() => {
+          // Pre-compute monster groups for group headers
+          const groupMap = new Map<string, { members: PlayerCombatant[]; indices: number[] }>();
+          combatants.forEach((c, idx) => {
+            if (c.monster_group_id) {
+              if (!groupMap.has(c.monster_group_id)) {
+                groupMap.set(c.monster_group_id, { members: [], indices: [] });
+              }
+              const g = groupMap.get(c.monster_group_id)!;
+              g.members.push(c);
+              g.indices.push(idx);
+            }
+          });
+          const renderedGroups = new Set<string>();
+
+          return combatants.map((combatant, index) => {
           // Progressive reveal: hide unrevealed combatants in round 1
           if (!isRevealed(index)) return null;
+
+          // Monster group handling
+          if (combatant.monster_group_id && groupMap.has(combatant.monster_group_id)) {
+            const gid = combatant.monster_group_id;
+            if (renderedGroups.has(gid)) {
+              // Already rendered this group's header — skip if collapsed
+              if (!expandedPlayerGroups[gid]) return null;
+            } else {
+              // First member of the group — render group header
+              renderedGroups.add(gid);
+              const group = groupMap.get(gid)!;
+              const activeMembers = group.members.filter((m) => !m.is_defeated);
+              const isGroupExpanded = expandedPlayerGroups[gid] ?? false;
+              const hasGroupTurn = group.indices.includes(currentTurnIndex);
+
+              // Aggregate HP status from worst tier
+              const tierSeverity: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
+              const avgSeverity = activeMembers.length > 0
+                ? activeMembers.reduce((sum, m) => sum + (tierSeverity[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
+                : 4;
+              const aggStatus = avgSeverity >= 3.5 ? "CRITICAL" : avgSeverity >= 2.5 ? "HEAVY" : avgSeverity >= 1.5 ? "MODERATE" : avgSeverity >= 0.5 ? "LIGHT" : "FULL";
+
+              // Extract group name (remove trailing number/letter suffix)
+              const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
+
+              return (
+                <motion.li key={`group-${gid}`} layout>
+                  {/* Group header */}
+                  <div
+                    className={`flex items-center gap-2 px-4 py-2.5 bg-card border rounded-lg cursor-pointer transition-all duration-300 ${
+                      hasGroupTurn ? "border-gold ring-1 ring-gold/30 bg-amber-400/5" : "border-border"
+                    } border-l-4 border-l-red-500/40`}
+                    onClick={() => togglePlayerGroup(gid)}
+                    role="button"
+                    aria-expanded={isGroupExpanded}
+                    data-testid={`player-group-header-${gid}`}
+                  >
+                    {isGroupExpanded
+                      ? <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                      : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                    }
+                    <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
+                    <span className="text-muted-foreground text-xs shrink-0">
+                      ({activeMembers.length}/{group.members.length})
+                    </span>
+                    <div className="ml-auto">
+                      <HpStatusBadge status={aggStatus} />
+                    </div>
+                  </div>
+                  {/* Expanded members rendered below via the normal loop */}
+                </motion.li>
+              );
+            }
+          }
           const isCurrentTurn = index === currentTurnIndex;
           const isPlayer = combatant.is_player;
           const isOwnChar = ownChar !== null && combatant.id === ownChar.id;
@@ -591,6 +715,14 @@ export function PlayerInitiativeBoard({
           const otherPlayerHpStatus = isPlayer && !isOwnChar && combatant.current_hp != null && combatant.max_hp != null
             ? getHpStatus(combatant.current_hp, combatant.max_hp)
             : null;
+          const otherPlayerHpPct = isPlayer && !isOwnChar && combatant.current_hp != null && combatant.max_hp != null
+            ? getHpPercentage(combatant.current_hp, combatant.max_hp)
+            : undefined;
+
+          // CRITICAL visual — player view gets full treatment (opacity + grayscale + pulsing border)
+          const isCritical = isPlayer
+            ? (combatant.max_hp != null && combatant.max_hp > 0 && (combatant.current_hp ?? 0) / combatant.max_hp <= 0.1)
+            : combatant.hp_status === "CRITICAL";
 
           // Visual differentiation: players = blue left border, monsters = red left border
           const typeBorderClass = isPlayer
@@ -612,7 +744,7 @@ export function PlayerInitiativeBoard({
                   : isOwnChar
                     ? "border-t border-r border-b border-border bg-card px-4 py-3"
                     : "border-t border-r border-b border-border px-4 py-3"
-              } ${combatant.is_defeated ? "opacity-50" : ""} ${
+              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-70 grayscale-[30%] border-2 border-red-500 animate-pulse" : ""} ${
                 roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""
               } ${
                 isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
@@ -631,7 +763,7 @@ export function PlayerInitiativeBoard({
                     ▶
                   </span>
                 )}
-                <span className={`text-foreground font-medium flex-1 truncate text-base lg:text-sm`}>
+                <span className={`text-foreground font-medium flex-1 truncate text-base lg:text-sm${combatant.is_defeated ? " line-through" : ""}`}>
                   {combatant.name}
                 </span>
                 {/* Type indicator: player or monster */}
@@ -665,7 +797,7 @@ export function PlayerInitiativeBoard({
                       {combatant.current_hp} / {combatant.max_hp}
                       {hpThresholdKey && (
                         <span className="text-sm lg:text-xs font-mono ml-1 text-muted-foreground">
-                          {t(hpThresholdKey)}
+                          {t(hpThresholdKey)} · {getHpPercentage(combatant.current_hp ?? 0, combatant.max_hp ?? 0)}%
                         </span>
                       )}
                       {hasTempHp && (
@@ -691,7 +823,7 @@ export function PlayerInitiativeBoard({
                 </div>
               ) : (combatant.hp_status || otherPlayerHpStatus) ? (
                 <div className="mt-1.5">
-                  <HpStatusBadge status={combatant.hp_status || otherPlayerHpStatus!} />
+                  <HpStatusBadge status={combatant.hp_status || otherPlayerHpStatus!} percentage={combatant.hp_percentage ?? otherPlayerHpPct} />
                 </div>
               ) : null}
 
@@ -731,7 +863,8 @@ export function PlayerInitiativeBoard({
               })()}
             </motion.li>
           );
-        })}
+        });
+        })()}
         </AnimatePresence>
       </ul>
 
@@ -766,6 +899,7 @@ export function PlayerInitiativeBoard({
             max_hp: primaryPlayerChar.max_hp,
             temp_hp: primaryPlayerChar.temp_hp,
             ac: primaryPlayerChar.ac,
+            spell_save_dc: primaryPlayerChar.spell_save_dc,
             conditions: primaryPlayerChar.conditions,
             is_defeated: primaryPlayerChar.is_defeated,
             ruleset_version: primaryPlayerChar.ruleset_version,
@@ -791,6 +925,31 @@ export function PlayerInitiativeBoard({
           isLoadingAudio={isLoadingAudioUrls}
         />
       )}
+
+      {/* Spell browser FAB — mobile only, hidden during turn notification */}
+      <div
+        className={`fixed left-4 z-30 lg:hidden transition-opacity duration-200 ${
+          isPlayerTurn && !overlayDismissed && notificationsEnabled ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+        style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
+      >
+        <button
+          type="button"
+          onClick={() => setSpellsOpen(true)}
+          className="w-11 h-11 rounded-full bg-[#1a1a2e] border border-gold/30 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+          aria-label={tc("spell_open")}
+        >
+          <BookOpen className="w-5 h-5 text-gold" />
+        </button>
+      </div>
+
+      {/* Spell browser dialog */}
+      <PlayerSpellBrowser
+        open={spellsOpen}
+        onOpenChange={setSpellsOpen}
+        playerClass={primaryPlayerChar?.class}
+        rulesetVersion={rulesetVersion}
+      />
     </div>
   );
 }

@@ -4,15 +4,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
+import { HP_STATUS_STYLES, type HpStatus } from "@/lib/utils/hp-status";
 
 const STORAGE_KEY = "hp_legend_dismissed";
 
-const TIERS = [
-  { key: "light", color: "bg-green-500", pct: ">70%" },
-  { key: "moderate", color: "bg-amber-400", pct: ">40%" },
-  { key: "heavy", color: "bg-red-500", pct: ">10%" },
-  { key: "critical", color: "bg-red-900", pct: "≤10%" },
-] as const;
+const TIERS = (Object.entries(HP_STATUS_STYLES) as [HpStatus, (typeof HP_STATUS_STYLES)[HpStatus]][]).map(
+  ([key, style]) => ({ key: key.toLowerCase(), color: style.barClass, pct: style.pct })
+);
 
 interface HPLegendOverlayProps {
   /** If true, show DM-specific info (exact HP). If false, player-safe. */

@@ -87,6 +87,16 @@
 | F-35 | Gerador de encontro aleatório por ambiente + espólio automático | Feedback André 2026-03-30 | Configurar ecossistema (floresta, dungeon, planície) + nível do grupo → gera encontro balanceado. Bônus: espólio automático ao encerrar combate com base nos participantes |
 | F-36 | Gerar PCs prontos por classe e nível | Feedback André 2026-03-30 | Buscar/gerar PCs pré-prontos por classe+nível (ex: "Barbarian lv 3"). Requer banco de PCs pré-gerados ou integração com gerador. Classes já existem em lib/data/classes.ts |
 
+## Social & Player Features (Beta Test #1 — 2026-04-02)
+
+| # | Item | Origem | Notas |
+|---|------|--------|-------|
+| F-38 | Chat privado dos players no combate (DM não vê) + post-its DM | Beta Test #1, 2026-04-02 | Requer auth. Players se comunicam sem DM ver; DM tem note-taking tipo post-its |
+| F-39 | Quest/objectives board compartilhado | Beta Test #1, 2026-04-02 | Visão customizável de quests, DM ou players anotam, grupo todo vê |
+| F-40 | Notas dos players durante combate | Beta Test #1, 2026-04-02 | Requer auth. Notas visíveis tanto pro DM quanto pro player. Anotações da sessão |
+| F-41 | Spell slots tracker (bolinhas marcáveis) | Beta Test #1, 2026-04-02 | Requer auth. Marcar spell slots gastos por nível durante combate |
+| F-42 | Spell rating — tier list de magias (1-5 estrelas) | Beta Test #1, 2026-04-02 | Requer auth. Players votam magias pra montar rankings/tier list |
+
 ## Tech Debt (Baixa prioridade)
 
 | # | Item | Origem | Notas |
@@ -96,5 +106,5 @@
 
 ---
 
-> **Última atualização:** 2026-03-30 (F-37 adicionado — Dice Roller confirmado como bucket pela gap analysis)
+> **Última atualização:** 2026-04-02 (F-38 a F-42 adicionados — Social & Player features do Beta Test #1)
 > **Revisado por:** Dani_ + BMAD Party Mode

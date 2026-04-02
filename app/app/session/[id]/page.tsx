@@ -77,6 +77,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
     player_notes: row.player_notes ?? '',
     player_character_id: (row as Record<string, unknown>).player_character_id as string | null ?? null,
     combatant_role: null,
+    legendary_actions_total: null,
+    legendary_actions_used: 0,
   }));
 
   const t = await getTranslations("dashboard");

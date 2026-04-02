@@ -334,6 +334,8 @@ export function CombatSessionClient({
       player_notes: "",
       player_character_id: null,
       combatant_role: null,
+      legendary_actions_total: null,
+      legendary_actions_used: 0,
     });
   }, [addCombatantAction]);
 
@@ -372,6 +374,8 @@ export function CombatSessionClient({
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       });
     }
     for (const c of newCombatants) {
@@ -560,6 +564,8 @@ export function CombatSessionClient({
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
       } as Omit<Combatant, "id">);
       broadcastEvent(sid, {
         type: "combat:late_join_response",
@@ -874,6 +880,8 @@ export function CombatSessionClient({
                 player_notes: "",
                 player_character_id: null,
                 combatant_role: null,
+                legendary_actions_total: null,
+                legendary_actions_used: 0,
               });
             }}
           />
@@ -901,6 +909,7 @@ export function CombatSessionClient({
         onApplyToMultiple={handleApplyToMultiple}
         onToggleHidden={handleToggleHidden}
         onAdvanceTurn={handleAdvanceTurn}
+        onSetLegendaryActionsUsed={(id, count) => useCombatStore.getState().setLegendaryActionsUsed(id, count)}
         onAddDeathSaveSuccess={(id) => {
           useCombatStore.getState().addDeathSaveSuccess(id);
           const sid = getSessionId();
@@ -992,6 +1001,7 @@ interface CombatListProps {
   onApplyToMultiple: (targetIds: string[], amount: number, mode: HpMode) => void;
   onToggleHidden: (id: string) => void;
   onAdvanceTurn: () => void;
+  onSetLegendaryActionsUsed: (id: string, count: number) => void;
   onAddDeathSaveSuccess?: (id: string) => void;
   onAddDeathSaveFailure?: (id: string) => void;
   expandedGroups: Record<string, boolean>;
@@ -1019,6 +1029,7 @@ function CombatList({
   onApplyToMultiple,
   onToggleHidden,
   onAdvanceTurn,
+  onSetLegendaryActionsUsed,
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
   expandedGroups,
@@ -1074,6 +1085,7 @@ function CombatList({
                 onApplyToMultiple={onApplyToMultiple}
                 onToggleHidden={onToggleHidden}
                 onAdvanceTurn={onAdvanceTurn}
+                onSetLegendaryActionsUsed={onSetLegendaryActionsUsed}
                 onAddDeathSaveSuccess={onAddDeathSaveSuccess}
                 onAddDeathSaveFailure={onAddDeathSaveFailure}
               />
@@ -1120,6 +1132,7 @@ function CombatList({
                       onApplyToMultiple={onApplyToMultiple}
                       onToggleHidden={onToggleHidden}
                       onAdvanceTurn={onAdvanceTurn}
+                      onSetLegendaryActionsUsed={onSetLegendaryActionsUsed}
                       onAddDeathSaveSuccess={onAddDeathSaveSuccess}
                       onAddDeathSaveFailure={onAddDeathSaveFailure}
                     />
