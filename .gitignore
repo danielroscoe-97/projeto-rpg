@@ -73,3 +73,7 @@ C\:\\Users\\*/
 
 # Large sound effect source files
 efeitos sonoros/
+scripts/.mad-cache/
+__pycache__/
+*.pyc
+scripts/monsters-mad-reddit.json

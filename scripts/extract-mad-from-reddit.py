@@ -707,7 +707,7 @@ def _parse_action_items(section_text: str) -> list:
 
 def build_monster_id(name: str, day_id: Optional[str]) -> str:
     slug   = re.sub(r'[^a-z0-9]+', '-', name.lower().strip()).strip('-')
-    prefix = re.sub(r'[^0-9]', '', day_id) if day_id else '0'
+    prefix = re.sub(r'[^0-9]', '', day_id) or '0' if day_id else '0'
     return f"mad-{prefix}-{slug}"
 
 def build_monster(excel_data: dict, hb_stats: dict) -> dict:
