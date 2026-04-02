@@ -1180,12 +1180,6 @@ export function GuestCombatClient() {
     }
   }, [resetCombat]);
 
-  // UX.04/P3.04 — Guest skips poll: no players to collect votes from, no DB persistence.
-  // Vote would be discarded intentionally — showing poll UI would be misleading.
-  const handleLeaderboardClose = useCallback(() => {
-    handleGuestDismissAll();
-  }, [handleGuestDismissAll]);
-
   // C.15: Dismiss all post-combat screens — guest has no DB persistence
   const handleGuestDismissAll = useCallback(() => {
     setGuestPostCombatPhase(null);
@@ -1193,6 +1187,12 @@ export function GuestCombatClient() {
     useGuestCombatStats.getState().reset();
     resetCombat();
   }, [resetCombat]);
+
+  // UX.04/P3.04 — Guest skips poll: no players to collect votes from, no DB persistence.
+  // Vote would be discarded intentionally — showing poll UI would be misleading.
+  const handleLeaderboardClose = useCallback(() => {
+    handleGuestDismissAll();
+  }, [handleGuestDismissAll]);
 
   if (phase === "setup" || phase === "ended") {
     return (
