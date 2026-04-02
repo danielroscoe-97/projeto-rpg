@@ -8,6 +8,7 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { MonsterToken } from "@/components/srd/MonsterToken";
+import { MonsterADayBadge } from "@/components/compendium/MonsterADayBadge";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -81,6 +82,7 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
         creatureType={m.type}
         name={m.name}
         size={36}
+        isMonsterADay={!!m.monster_a_day_url}
       />
       <span className="font-medium text-sm flex-1 min-w-0 truncate">
         {m.name}
@@ -91,11 +93,15 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
       <span className="text-[11px] text-muted-foreground whitespace-nowrap tabular-nums w-8 text-right">
         {formatCR(m.cr)}
       </span>
-      <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${
-        m.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-      }`}>
-        {m.ruleset_version}
-      </span>
+      {m.monster_a_day_url ? (
+        <MonsterADayBadge url={m.monster_a_day_url} />
+      ) : (
+        <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${
+          m.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
+        }`}>
+          {m.ruleset_version}
+        </span>
+      )}
     </button>
   );
 }
@@ -367,8 +373,8 @@ export function MonsterBrowser() {
       {/* Desktop: split panel (always visible on md+, mobileDetail state is irrelevant here) */}
       <div className="hidden md:grid md:grid-cols-[minmax(320px,2fr)_3fr] gap-0 h-[calc(100vh-180px)] border border-white/[0.06] rounded-xl overflow-hidden">
         {/* LEFT: List panel */}
-        <div className="flex flex-col border-r border-white/[0.06] bg-[#13131e]/60">
-          <div className="p-3 border-b border-white/[0.06] bg-[#13131e]/95 backdrop-blur-sm">
+        <div className="flex flex-col border-r border-white/[0.06] bg-surface-primary/60">
+          <div className="p-3 border-b border-white/[0.06] bg-surface-primary/95 backdrop-blur-sm">
             {filterBar}
           </div>
 
@@ -395,7 +401,7 @@ export function MonsterBrowser() {
         </div>
 
         {/* RIGHT: Detail panel */}
-        <div className="overflow-y-auto bg-[#0e0e18]/80">
+        <div className="overflow-y-auto bg-surface-deep/80">
           {selectedMonster ? (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">

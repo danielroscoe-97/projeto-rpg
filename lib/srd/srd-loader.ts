@@ -6,7 +6,7 @@ export interface MonsterAction {
   attack_bonus?: number;
 }
 
-export interface SrdMonster {
+export interface SrdMonster extends SrdMonsterADayFields {
   // --- Search fields ---
   id: string;
   name: string;
@@ -148,6 +148,13 @@ export interface SrdItem {
   basicRules?: boolean;
 }
 
+export interface SrdMonsterADayFields {
+  monster_a_day_url?: string | null;
+  monster_a_day_author?: string | null;
+  monster_a_day_day_id?: string | null;
+  monster_a_day_notes?: string | null;
+}
+
 export interface SrdCondition {
   id: string;
   name: string;
@@ -164,6 +171,7 @@ const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();
 /** @internal — exposed only for test isolation */
 export function _clearMonsterCache() {
   monsterCache.clear();
+  madMonsterCache = null;
 }
 
 /** Fetches the SRD monster bundle for a given ruleset version.
@@ -182,6 +190,27 @@ export function loadMonsters(
   });
   monsterCache.set(version, promise);
   return promise;
+}
+
+let madMonsterCache: Promise<SrdMonster[]> | null = null;
+
+/** Fetches the Monster-a-Day community monsters bundle.
+ *  Returns empty array if file is missing (non-critical). */
+export function loadMadMonsters(): Promise<SrdMonster[]> {
+  if (madMonsterCache) return madMonsterCache;
+  madMonsterCache = fetch("/srd/monsters-mad.json")
+    .then((res) => {
+      if (!res.ok) {
+        madMonsterCache = null;
+        return [] as SrdMonster[];
+      }
+      return res.json() as Promise<SrdMonster[]>;
+    })
+    .catch(() => {
+      madMonsterCache = null;
+      return [] as SrdMonster[];
+    });
+  return madMonsterCache;
 }
 
 /** Fetches the SRD spell bundle for a given ruleset version.

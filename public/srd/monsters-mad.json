@@ -1,0 +1,4243 @@
+[
+  {
+    "id": "mad-45-brood-butcher",
+    "name": "Brood Butcher",
+    "cr": "9",
+    "type": "aberration",
+    "hit_points": 184,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "chaotic evil",
+    "hp_formula": "16d12 + 80",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 23,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "wis": 6
+    },
+    "skills": {
+      "perception": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 16",
+    "languages": "-",
+    "xp": 5000,
+    "special_abilities": [
+      {
+        "name": "Alien Mind",
+        "desc": "The butcher has advantage on Wisdom saving throws."
+      },
+      {
+        "name": "Ingest Scion",
+        "desc": "As a bonus action, the butcher can ingest an eldrazi scion within 10 feet of it, destroying the scion. The butcher then regains use of Consume."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The butcher makes two daw attacks."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +10 to hit, reach 10 ft., one target. Hit: 22 (3d10 + 6) slashing damage."
+      },
+      {
+        "name": "Constrict",
+        "desc": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 19 (3d8 + 6) bludgeoning damage, and the target is grappled (escape DC 16). Until this grapple ends, the creature is restrained, and the butcher can't constrict another target."
+      },
+      {
+        "name": "Consume (1/Day)",
+        "desc": "The butcher targets one creature that it can see within 60 feet of it. The target must make a DC 16 Constitution saving throw, taking 28 (8d6) necrotic damage on a failed save, or half as much damage on a successful one.If this damage reduces the creature to 0 hit points, its body becomes a pile of white dust. Created by StoneStrix - /r/monster, Art Credit: Daarken K ■"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3mza7d/day_45_brood_butcher/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S45",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-44-brood-monitor",
+    "name": "Brood Monitor",
+    "cr": "7",
+    "type": "aberration",
+    "hit_points": 126,
+    "armor_class": 12,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "chaotic evil",
+    "hp_formula": "12d12 + 48}\nSpeed 40 ft., climb 40 ft.\nSTR\nCON\nWIS\nDEX\nINT\nCHA\n21 (+5",
+    "speed": {
+      "walk": "40 ft.",
+      "climb": "40 ft."
+    },
+    "str": 21,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": {
+      "wis": 5
+    },
+    "skills": {
+      "perception": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "-",
+    "xp": 2900,
+    "special_abilities": [
+      {
+        "name": "Alien Mind",
+        "desc": "The monitor has advantage on Wisdom saving throws."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The monitor makes two fist attacks."
+      },
+      {
+        "name": "Fist",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 10 ft., one target. Hit 21 (3d10 + 5) bludgeoning damage."
+      },
+      {
+        "name": "Constrict",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 18 {3d8 + 5) bludgeoning damage, and the target is grappled (escape DC 16). Until this grapple ends, the creature is restrained, and the monitor can't constrict another target."
+      },
+      {
+        "name": "Spawn Scion (3/Day)",
+        "desc": "The monitor spawns an eldrazi scion that appears in an unoccupied space within 5 feet of it. Created by StoneStrix - /r/monsteraday Art Credit: Izzy"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3mutdt/day_44_brood_monitor/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S44",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-40-dream-eater",
+    "name": "Dream Eater",
+    "cr": "10",
+    "type": "aberration",
+    "hit_points": 133,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "14d10 + 56",
+    "speed": {
+      "walk": "0 ft.",
+      "fly": "40 ft."
+    },
+    "str": 21,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 20,
+    "saving_throws": {
+      "dex": 9,
+      "wis": 7,
+      "cha": 8
+    },
+    "skills": {
+      "perception": 7
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison, psychic",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "truesight 120 ft., passive Perception 17",
+    "languages": "all, telepathy 120 ft.",
+    "xp": 5900,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (2/day)",
+        "desc": "If the dream eater fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dream eater makes two claw attacks."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit 13 (3d8) psychic damage, and the target must succeed on a DC 14 Constitution saving throw or gain one level of exhaustion."
+      },
+      {
+        "name": "Terrorize (Recharge 5-6)",
+        "desc": "The dream eater emits nightmarish visions. Each creature within 10 feet of the dream eater must succeed on a DC 14 Wisdom saving throw or become paralyzed until the end of the dream eater's next turn."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [
+      {
+        "name": "Dream Walk",
+        "desc": "The dream eater magically teleports up to 40 feet to an unoccupied space it can see."
+      },
+      {
+        "name": "Deep Slumber (Costs 2 Actions)",
+        "desc": "The dream eater targets one creature that it can see within 60 feet of it. The target must succeed on a DC 14 Wisdom saving throw or fall unconscious for 8 hours. The target wakes up if it takes damage or if another creature takes an action to shake it awake. D DREAM EATER 24"
+      }
+    ],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3mctof/day_40_dream_eater/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S40",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-43-eldrazi-scion",
+    "name": "Eldrazi Scion",
+    "cr": "1",
+    "type": "aberration",
+    "hit_points": 45,
+    "armor_class": 12,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "6d10 + 12",
+    "speed": {
+      "walk": "40 ft.",
+      "burrow": "10 ft."
+    },
+    "str": 17,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": {
+      "wis": 3
+    },
+    "skills": {
+      "perception": 5,
+      "stealth": 4
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "-",
+    "xp": 200,
+    "special_abilities": [
+      {
+        "name": "Alien Mind",
+        "desc": "The scion has advantage on Wisdom saving throws."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Tentacles",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 10 ft., one target."
+      },
+      {
+        "name": "Hit: 10 (2d6 + 3) bludgeoning damage",
+        "desc": "If the target is a creature, it is grappled (escape DC 16). Until the grapple ends, the target is restrained, and the scion can't use its tentacles on another target. Created by StoneStrix -/r/monsteraday Art Credit: Izzy ["
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3mpzye/day_43_eldrazi_scion/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S43",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-3-morphlit",
+    "name": "Morphlit",
+    "cr": "2",
+    "type": "aberration",
+    "hit_points": 18,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Small",
+    "alignment": "chaotic evil",
+    "hp_formula": "4d6 + 4",
+    "speed": {
+      "walk": "40 ft.",
+      "climb": "40 ft."
+    },
+    "str": 7,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "bludgeoning, piercing, and",
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 10",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Shapechanger",
+        "desc": "The morphlit can use its bonus action to polymorph into a form with wings (speed 10 ft., fly 30 ft.) a form with fins (speed 10 ft., swim 30 ft.) or a form with digging claws (speed 30 ft., burrow 30 ft.), or back to its natural form. Its statistics are the same in each form, except for the speed changes noted."
+      },
+      {
+        "name": "Defensive Adaptation",
+        "desc": "The morphlit can use its bonus action to polymorph gain immunity to any single damage type. The damage immunity remains until the morphlit uses this ability again. The morphlit also deals an extra 4 (1d8) damage of the chosen type when it hits with its bite attack."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The morphlit makes two bite attacks."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit 6 (1d4 + 4) piercing damage plus 4 (1d8) damage of the chosen type by its defensive adaptation ability. M MORPHLIT Mulaz Mulaz are spider-like mindless constructs to act out a single role. Created with wood and metal, allowing its creators to get a big army of these cheap and expendable constructs. Though they are small, they can assemble and create a huge battlespider of metal and wood."
+      },
+      {
+        "name": "Constructed Nature",
+        "desc": "A mulaz doesn't require air, food, drink, or sleep. 59"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3hlub7/day_3_morphlit/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S3",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-46-sire-of-stagnation",
+    "name": "Sire of Stagnation",
+    "cr": "17",
+    "type": "aberration",
+    "hit_points": 310,
+    "armor_class": 18,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Gargantuan",
+    "alignment": "chaotic evil",
+    "hp_formula": "20d20 + 100",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 25,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "str": 13,
+      "con": 11,
+      "wis": 8
+    },
+    "skills": {
+      "perception": 8
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "psychic; bludgeoning, piercing, and",
+    "condition_immunities": "charmed, frightened",
+    "senses": "darkvision 120 ft., passive Perception 18",
+    "languages": "Eldrazi, telepathy 120 ft.",
+    "xp": 18000,
+    "special_abilities": [
+      {
+        "name": "Alien Mind",
+        "desc": "The sire has advantage on Wisdom saving throws."
+      },
+      {
+        "name": "Blighted Trail",
+        "desc": "Terrain that the sire passes over turns to white ash. Plants are destroyed in that area and cannot regrow for 1d10 days."
+      },
+      {
+        "name": "Ingest Scion",
+        "desc": "As a bonus action, the sire can ingest an eldrazi scion within 15 feet of it, destroying the scion. The sire then regains 16 (3d10) hit points."
+      },
+      {
+        "name": "Scourfrom Existence",
+        "desc": "When the sire reduces a creature to 0 hit points, that creature's body becomes a pile of white dust."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The sire makes four fist attacks."
+      },
+      {
+        "name": "Fist",
+        "desc": "Melee Weapon Attack: +13 to hit, reach 15 ft., one target. Hit: 20 {2d12 + 7} bludgeoning damage."
+      },
+      {
+        "name": "Maddening Roar (Recharge 6)",
+        "desc": "The sire emits a mind-shattering roar. Each creature of the sire's choice within 100 feet of it and able to hear the roar must make a DC 18 Wisdom saving throw. On a failed save, a creature takes 44 (8d10) psychic damage and is afflicted with short-term madness (Dungeon Master's Guide pg. 259). On a successful save, the creature takes half as much damage and isn't afflicted with madness. ■V. Created by StoneStrix - /r/monsteraday Art Credit: TylerJacobson Silverpaw Paladins The Silverpaw guild works to maintain order and justice. Their initiates and veterans are well armed. Their dangerous animal companions trained to undertake any situation. The Silverpaw guild works as the symbol of loyalty and stoicism. Guild paladins show themselves as implacable stewards but rumor has told of wild and dangerous emotions stirring beneath a Silverpaw’s stare. Eventually, the initiate and their companion will take on a final challenge, being offered a chance to enter the Feywild for three days. If both the initiate and their companion emerge from the experience alive, they are promoted to champions of the"
+      },
+      {
+        "name": "The Legend of the Fey",
+        "desc": "The founders of the Silverpaw were halflings who, alongside their riding dog companions, stumbled into the Feywild. Suffering the harsh lessons of natural law, the paladins returned, vowing to never allow the world to transform into the dangerous Feywild. Their dog companions also took fey influences, becoming stronger and larger than normal canines. Every Silverpaw dog’s linage can be traced to those original companions and carry the legacy of the fey in their blood."
+      },
+      {
+        "name": "Organization",
+        "desc": "The Silverpaw guild believes the world is teetering on the brink of chaos. Having seen first hand the influences of the Feywild,"
+      },
+      {
+        "name": "Silverpaw champions work to maintain order",
+        "desc": "Some Silverpaw members return from the Feywild influenced by the chaos of the plane. These members are employed as subtle shock troopers, working to enact Silverpaw desires without drawing attention to the Silverpaw themselves."
+      },
+      {
+        "name": "Initiation",
+        "desc": "New recruits to the Silverpaw guild are given a dog.While the dogs may vary in size and breed, most are riding dogs or large mastiffs. Expected to raise and protect their animal companion, Silverpawinitiates are then sent to fulfill the requests of the guild. If, at any time, an initiate’s dog is lost during combat the new recruit is expelled. Lore Credit:Jhuebsch Inspired by: u/Stonestrix Art Credit: CraigJ Spearing & Fujin"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3n4hkn/day_46_sire_of_stagnation/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S46",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-92-dire-anglerfish",
+    "name": "Dire Anglerfish",
+    "cr": "5",
+    "type": "beast",
+    "hit_points": 105,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "unaligned",
+    "hp_formula": "10d12 + 40",
+    "speed": {
+      "walk": "0 ft.",
+      "swim": "50 ft."
+    },
+    "str": 20,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": {
+      "perception": 4,
+      "stealth": 8
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "blindsight 60 ft., darkvision 120 ft., passive",
+    "languages": "-",
+    "xp": 1800,
+    "special_abilities": [
+      {
+        "name": "False Appearance",
+        "desc": "While the anglerfish remains motionless in dim light or darkness, it appears as dancing lights that resemble floating lanterns."
+      },
+      {
+        "name": "Water Breathing",
+        "desc": "The anglerfish can breathe only underwater."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit 21 (3d10 + 5) piercing damage. If the target is a Huge or smaller creature, that creature is swallowed. While swallowed, the creature is blinded and restrained, it has total cover against attacks and other effects outside the anglerfish, and it takes 17 (5d6) acid damage at the start of each of the anglerfish's turns. The anglerfish can hold only one Huge creature or up to four Large or smaller creatures inside it at a time. If the anglerfish takes 20 damage or more on a single turn from a creature inside it, the anglerfish regurgitates all swallowed creatures, which fall prone in a space within 5 feet of the anglerfish. If the anglerfish dies, a swallowed creature is no longer restrained by it and can escape from the corpse using 10 feet of movement, exiting prone. D DIRE ANGLERFISH 23"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3t1u2d/day_92_dire_anglerfish/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S92",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-20-fern-lizard",
+    "name": "Fern Lizard",
+    "cr": "1/2",
+    "type": "beast",
+    "hit_points": 14,
+    "armor_class": 12,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Small",
+    "alignment": "unaligned",
+    "hp_formula": "4d6",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 7,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 3,
+      "stealth": 4
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 30 ft., passive Perception 13",
+    "languages": "none",
+    "xp": 100,
+    "special_abilities": [
+      {
+        "name": "False Appearance",
+        "desc": "While the lizard remains motionless, it is indistinguishable from a normal plant, such as a colorful fern."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Tail",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit 4 (1d4 + 2) piercing damage."
+      },
+      {
+        "name": "Venomous Spittle (Recharge 5-6)",
+        "desc": "The lizard spits a glob of venom at a creature it can see within 15 feet of it. The target must succeed on a DC 12 Dexterity saving throw or be blinded until the end of the lizard's next turn. F FERN LIZARD 27"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3jr66s/day_20_fern_lizard/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S20",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-57-snow-spider",
+    "name": "Snow Spider",
+    "cr": "3",
+    "type": "beast",
+    "hit_points": 65,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "10d10 + 10",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 5,
+      "stealth": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "cold",
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "-",
+    "xp": 700,
+    "special_abilities": [
+      {
+        "name": "Snow Camouflage",
+        "desc": "The spider has advantage on Dexterity (Stealth) checks made to hide in snowy terrain."
+      },
+      {
+        "name": "Spider Climb",
+        "desc": "The spider can climb difficult surfaces, including upside down ceilings, without needing to make an ability check."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 8 (1d10 + 3) piercing damage, and the creature must make a DC 11 Constitution saving throw, taking 18 (4d8) cold damage on a failed save, or half as much damage on a successful one. If the cold damage reduces the target to 0 hit points, the target becomes frozen. A frozen creature is paralyzed, and can thaw by spending 1 hour in warm temperature or taking 15 fire damage. S SNOW SPIDER 74"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3ogkel/day_57_snow_spider/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S57",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-32-tuskaloth",
+    "name": "Tuskaloth",
+    "cr": "10",
+    "type": "beast",
+    "hit_points": 198,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Gargantuan",
+    "alignment": "unaligned",
+    "hp_formula": "12d20 + 72",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 28,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 8,
+    "saving_throws": {
+      "con": 10
+    },
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 10",
+    "languages": "-",
+    "xp": 5900,
+    "special_abilities": [
+      {
+        "name": "Siege Beast",
+        "desc": "The tuskaloth deals double damage to objects and structures."
+      },
+      {
+        "name": "Trampling Charge",
+        "desc": "If the tuskaloth moves at least 20 feet straight toward a target and then hits with a gore attack on the same turn, that target must succeed on a DC 18 Strength saving throw or be knocked prone. If the target is prone, the tuskaloth can make one stomp attack against it as a bonus action."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Gore",
+        "desc": "Melee Weapon Attack: +13 to hit, reach 10 ft., one target. Hit 22 (3d8 + 9) piercing damage."
+      },
+      {
+        "name": "Stomp",
+        "desc": "Melee Weapon Attack: +13 to hit, reach 10 ft., one target. Hit 31 (4d10 + 9) piercing damage."
+      },
+      {
+        "name": "Earthshake (Recharge 5-6)",
+        "desc": "The tuskaloth pounds the ground with incredible force, causing a tremor. Each creature on the ground within 30 feet of the tuskaloth must succeed on a DC 18 Dexterity saving throw or be knocked prone. The tremor also deals 50 bludgeoning damage to any structure in contact with the ground in that area. A structure that drops to 0 hit points collapses. T TUSKALOTH 82"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3lboj2/day_32_tuskaloth/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S32",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-53-swarm-of-squirrels",
+    "name": "Swarm of Squirrels",
+    "cr": "2",
+    "type": "beast (swarm)",
+    "hit_points": 36,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium (tiny)",
+    "alignment": "unaligned",
+    "hp_formula": "8d8",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 9,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "bludgeoning, piercing, and",
+    "damage_immunities": null,
+    "condition_immunities": "charmed, frightened, paralyzed,",
+    "senses": "darkvision 30 ft., passive Perception 10",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Keen Smell",
+        "desc": "The swarm has advantage on Wisdom (Perception) checks that rely on smell."
+      },
+      {
+        "name": "Swarm",
+        "desc": "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a Tiny squirrel. The swarm can't regain hit points or gain temporary hit points."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bites",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 0 ft., one creature in the swarm's space. Hit 14 (4d6) piercing damage, or 7 (2d6) piercing damage if the swarm has half of its hit points or fewer. The target must succeed on a DC 10 Constitution saving throw or fall prone, becoming incapacitated with laughter and unable to stand up until the end of the swarm's next turn. S SWARM OF SQUIRRELS 79"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3nzdh1/day_53_swarm_of_squirrels/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S53",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-13-fallen-angel",
+    "name": "Fallen Angel",
+    "cr": "10",
+    "type": "celestial",
+    "hit_points": 136,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "lawful evil",
+    "hp_formula": "16d8 + 64",
+    "speed": {
+      "walk": "30 ft.",
+      "fly": "90 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": {
+      "wis": 9,
+      "cha": 8
+    },
+    "skills": {
+      "deception": 8,
+      "perception": 9
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "necrotic; bludgeoning, piercing",
+    "damage_immunities": null,
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 120 ft., passive Perception 19",
+    "languages": "all, telepathy 120 ft.",
+    "xp": 5900,
+    "special_abilities": [
+      {
+        "name": "Corrupted Weapons",
+        "desc": "The angel's weapons attacks are magical. When the angel hits with any weapon, the weapon deals an extra 4d8 necrotic damage (included in the attack)."
+      },
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The angel's spellcasting ability is"
+      },
+      {
+        "name": "Charisma (spell save DC 16)",
+        "desc": "The angel can innately cast the following spells, requiring only verbal components: At will: detect evil and good 1/day each: death ward, harm"
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The angel has advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Shapechanger",
+        "desc": "The angel can use its action to polymorph into a Small or Medium humanoid, or back into its true form. Its statistics, other than its size, are the same in each form. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The angel makes two attacks."
+      },
+      {
+        "name": "Scimitar",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit 7 (1d6 + 4) slashing damage plus 18 (4d8) necrotic damage."
+      },
+      {
+        "name": "Vampiric Touch (3/Day)",
+        "desc": "Melee Spell Attack: +8 to hit, reach 5 ft., one target. Hit 18 (4d8) necrotic damage, and the angel regains hit points equal to half the amount of necrotic damage dealt. F FALLEN ANGEL Fern Lizard Fern lizards are quick land omnivores with the body of a lizard and the upper torso comprised of two small talons, a small fanged mouth and beady eyes. The entirety of a fern lizard's body appears as though it is made of foliage. Capable of easily blending into its surroundings, fern lizards wait patiently for prey to come to them."
+      },
+      {
+        "name": "Patient Hunter",
+        "desc": "Capable of standing immobile for hours, fern lizards wait for meals to stumble before them rather than waste energy hunting them down. Insects and plant life inspire them to voracious appetites. Fern lizards are often seen slowly burrowing into tree trunks, using their acidic spittle to bore small holes to devour insects."
+      },
+      {
+        "name": "Prized Pet",
+        "desc": "Whether caught young or raised from an egg, a fern lizard can be trained to serve as a companion. Considered good luck and useful spies for druids, fern lizards are often in their company. Nobility view these creatures as exotic additions to their home, investing large sums of money to acquire them."
+      },
+      {
+        "name": "Once trained, a fern lizard is loyal and useful companion",
+        "desc": "It bonds with one master for life and serves that master to the best of its abilities. A fern lizard requires satiation of its omnivorous appetite. Prone to capture or kidnapping, master must be careful when bringing fern lizards in public as they immediately draw attention to both themselves and their much desired pets."
+      },
+      {
+        "name": "Small Stewards",
+        "desc": "Fern lizards make their nests in heavy growths of foliage, well away from the eyes of predators. Establishing their territory as a colony, fern lizards work as guardians of their surrounding area. Removing the region of pestilence and danger, these lizards become a druid's ally. Fern lizards have been known to help those who support and care for their environment, acting as guides for lost travelers and providing sources of food to those in need. Alternatively, fern lizards are extremely aggressive and territorial to those who bring trouble to their home. Fern lizards harry travelers, steal food and lead wanderers astray until the traveler flees or dies. 26"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3iv4zk/day_13_fallen_angel/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S13",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-79-ancient-chronomancer",
+    "name": "Ancient Chronomancer",
+    "cr": "7",
+    "type": "construct",
+    "hit_points": 67,
+    "armor_class": 16,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "9d8 + 27",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": {
+      "int": 6,
+      "wis": 5
+    },
+    "skills": {
+      "arcana": 6,
+      "history": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison",
+    "condition_immunities": "exhaustion, paralyzed, petrified,",
+    "senses": "darkvision 60 ft., passive Perception 12",
+    "languages": "any four languages",
+    "xp": 2900,
+    "special_abilities": [
+      {
+        "name": "Spellcasting",
+        "desc": "The chronomancer is a 9th-level spellcaster. Its spellcasting ability is Intelligence (save DC 14, +6 to hit with spell attacks). The chronomancer has the following wizard spells prepared: Cantrips (at will): blade ward, light, mage hand, ray of frost, prestidigitation 1st level (4 slots): detect magic, expeditious retreat, magic missile, shield 2nd level (3 slots): hold person, misty step 3rd level (3 slots): blink, haste, slow 4th level (3 slots): banishment, dimension door 5th level (1 slot): cone of cold"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Unmake",
+        "desc": "The chronomancer choses one creature it can see within 60 feet of it, causing the target's flesh to rapidly age and decompose. The target must make a DC 14 Constitution saving throw, taking 16 (3d10) necrotic damage on a failed save, or half as much damage on a successful one."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Slow Projectile",
+        "desc": "If the chronomancer is targeted by a ranged attack, it can alter the flow of time nearby, causing incoming projectiles to slow down. Until the start of its next turn, the chronomancer has a +10 bonus to AC against ranged attacks."
+      }
+    ],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3rdrry/day_79_chronomancers/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S79",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-14-bone-golem",
+    "name": "Bone Golem",
+    "cr": "9",
+    "type": "construct",
+    "hit_points": 133,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "14d10 + 56",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 20,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 9,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison, psychic; bludgeoning,",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "understands the languages of its creator",
+    "xp": 5000,
+    "special_abilities": [
+      {
+        "name": "Immutable Form",
+        "desc": "The golem is immune to any spell or effect that would alter its form."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The golem has advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Magic Weapons",
+        "desc": "The golem's weapon attacks are magical."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The golem makes two slam attacks."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5ft., one target. Hit 18 (3d8 + 5) bludgeoning damage."
+      },
+      {
+        "name": "Bone Prison",
+        "desc": "The golem targets one creature it can see within 60 feet of it. A prison of magical bones surrounds the creature. The target must make a DC 15 Dexterity saving throw or become restrained. The restrained creature can break free by succeeding on a DC 20 escape check, or by destroying the bone prison (AC 20; 50 hit points; immunity to poison and psychic damage). The golem can only have one bone prison active at a time. It may dismiss the bone prison as a bonus action. G GOLEMS Ice Golem"
+      },
+      {
+        "name": "Ice golems are humanoid automatons formed of carved ice",
+        "desc": "Their appearance can range from roughly chiseled figures of ice and snow to elaborately detailed ice sculptures and beautiful crystalline statues. Ice golems cannot speak, and move with the sound of cracking and popping ice. Ice golems are large constructs made of ice, given life with arcane magic. They are often used by clerics or druids serving winter deities, and most often used in lands that never truly melt─the cost and difficulty involved in crafting them would go to waste if the creature just turned to slush in the morning. 38"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3iz4a1/day_14_bone_golem/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S14",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-33-clockwork-dragon",
+    "name": "Clockwork Dragon",
+    "cr": "14",
+    "type": "construct",
+    "hit_points": 184,
+    "armor_class": 18,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "unaligned",
+    "hp_formula": "16d12 + 80",
+    "speed": {
+      "walk": "40 ft.",
+      "fly": "80 ft."
+    },
+    "str": 23,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "dex": 5,
+      "con": 10
+    },
+    "skills": {
+      "perception": 10
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison, psychic; bludgeoning,",
+    "condition_immunities": "charmed, exhaustion, frightened,",
+    "senses": "truesight 60 ft., darkvision 60 ft., passive",
+    "languages": "understands the languages of its creator but",
+    "xp": 11500,
+    "special_abilities": [
+      {
+        "name": "Immutable Form",
+        "desc": "The dragon is immune to any spell or effect that would alter its form."
+      },
+      {
+        "name": "Legendary Resistance (3/day)",
+        "desc": "If the dragon fails a saving throw, it can choose to succeed instead."
+      },
+      {
+        "name": "Self Destruct",
+        "desc": "When the dragon is reduced to 0 hit points, it explodes, and each creature within 30 feet of it must make a DC 18 Dexterity saving throw, taking 21 (6d6) fire damage and 21 (6d6) piercing damage on a failed save, or half as much damage on a successful one."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three attacks: one with its bite and two with its claws."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit 17 (2d10 + 6) piercing damage."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit 13 (2d6 + 6) slashing damage."
+      },
+      {
+        "name": "Tail",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit 15 (2d8 + 6) bludgeoning damage."
+      },
+      {
+        "name": "Breath Weapons (Recharge 5-6)",
+        "desc": "The dragon uses one of the following breath weapons."
+      },
+      {
+        "name": "Fire Tar Breath",
+        "desc": "The dragon sprays flaming tar in a 30- foot cone. Each creature in that area must make a DC 18 Dexterity saving throw, taking 35 (10d6) fire damage on a failed save, or half as much on a successful one. On a failed save, a creature is restrained (escape"
+      },
+      {
+        "name": "DC 18)",
+        "desc": "While restrained in this way, a creature takes 10 (3d6) fire damage at the start of each of its turns."
+      },
+      {
+        "name": "Knockout Gas Breath",
+        "desc": "The dragon exhales knockout gas in a 60-foot cone. Each creature in that area must succeed on a DC 18 Constitution saving throw or fall unconscious for 10 minutes. This effect ends for a creature if the creature takes damage or someone uses an action to wake it."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3lga4m/day_33_clockwork_dragon/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S33",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-63-clockwork-pest",
+    "name": "Clockwork Pest",
+    "cr": "1/4",
+    "type": "construct",
+    "hit_points": 7,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Tiny",
+    "alignment": "unaligned",
+    "hp_formula": "2d4 + 2",
+    "speed": {
+      "walk": "0 ft.",
+      "fly": "40 ft."
+    },
+    "str": 4,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 60 ft., passive Perception 10",
+    "languages": "understands the languages of its creator",
+    "xp": 50,
+    "special_abilities": [
+      {
+        "name": "Potent Injection (1/day)",
+        "desc": "If the pest hits a creature with its stinger, it can inject a larger dose of poison. The target must succeed on a DC 12 Constitution saving throw or become poisoned for 1 hour."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Stinger",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 1 piercing damage, and the target must make a DC 10 Constitution saving throw, taking 5 (2d4) poison damage on a failed save, or half as much damage on a successful one. C CLOCKWORK PEST Coven Horror"
+      },
+      {
+        "name": "Hags represent all that is evil and cruel",
+        "desc": "A coven horror is evil and cruelty magnified. A wandering, agonized wretch, the coven horror seeks to ruin everything around it, believing that it may free itself from the horrid body it has been bound in."
+      },
+      {
+        "name": "Vile Origins",
+        "desc": "The coven horror is the result of multiple witches who had made pacts with a demon and failed to live up to their end of the agreement. The witches were fused along with the wailing bodies of children that they had sacrificed in the name of that demon in order to constantly remind them of their failure. Each head of the horror is in control of the main trunk, but they will frequently snap at either of the two heads if they feel that the other is too close to their own head. The horror is left to wander the Abyssal realm, spreading agony and despair throughout. They will take any chance to escape to the prime material plane so that they can to spread terror and death, believing that fulfilling their original pact by killing anyone they come across will release them from their torment."
+      },
+      {
+        "name": "Foe of Demons",
+        "desc": "The witches that make up this monstrosity will always remember the demon that bound them together. While prone to quickly attacking the first thing they see in hopes that it will release their bond, the three witches will occasionally listen and help those who promise to show them to their demonic lord. Coven horrors are fickle, each of the heads continually coming up with a way to free themselves, the most common choice being to kill those nearest to them in order to gain favor with their demonic binding. Demons fear these abominations, tending to steer clear of them throughout the Abyssal Plane. \"I shuddered at their wailing and cackling. This was true evil, all three heads bickering on the best way to kill my friends as I cried behind the rock\" - Camus, Former Caravan Guard 13"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3p8foi/day_63_clockwork_pest/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S63",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-71-evil-doll",
+    "name": "Evil Doll",
+    "cr": "2",
+    "type": "construct",
+    "hit_points": 21,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Tiny",
+    "alignment": "lawful evil",
+    "hp_formula": "6d4 + 6",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 3,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": {
+      "deception": 6,
+      "perception": 4,
+      "persuasion": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "bludgeoning, piercing, and",
+    "damage_immunities": "fire, poison",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 120 ft., passive Perception 14",
+    "languages": "Infernal, Common, telepathy 60 ft.",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Devil's Sight",
+        "desc": "Magical darkness doesn't impede the doll's darkvision."
+      },
+      {
+        "name": "Inanimate",
+        "desc": "While the doll remains motionless, it is indistinguishable from any ordinary doll."
+      },
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The doll's spellcasting ability is"
+      },
+      {
+        "name": "Charisma (spell save DC 14)",
+        "desc": "The doll can innately cast the following spells, requiring only verbal components: At will: suggestion 1/day each: dominate person, modify memory"
+      },
+      {
+        "name": "Undying Evil",
+        "desc": "If the doll is destroyed, it regains all its hit points and reappears at a nearby location in 24 hours unless a remove curse spell is cast on its remains."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Giggle",
+        "desc": "One creature of the doll's choice within 30 feet of it must succeed on a DC 14 Wisdom saving throw or take 7 (2d6) psychic damage and become frightened for 1 minute. The target can repeat the saving throw at the end of each of its turns, with disadvantage if the doll is within line of sight, ending the effect on itself on a success. E EVIL DOLL 25"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3qaafe/day_71_evil_doll/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S71",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-60-ice-golem",
+    "name": "Ice Golem",
+    "cr": "8",
+    "type": "construct",
+    "hit_points": 152,
+    "armor_class": 16,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "16d10 + 64",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 30,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": "fire",
+    "damage_resistances": null,
+    "damage_immunities": "cold, poison, psychic;",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "understands the languages of its creator",
+    "xp": 3900,
+    "special_abilities": [
+      {
+        "name": "Frozen Aura",
+        "desc": "Intense cold radiates from the golem in an aura with a 20-foot radius. A creature that starts its turn in that area takes 3 (1d6) cold damage. Additionally, the ground in the area is covered with slick ice, making it difficult terrain. When a creature enters the area for the first time on a turn or starts its turn there, it must succeed on a DC 12 Dexterity saving throw or fall prone."
+      },
+      {
+        "name": "Ice Walk",
+        "desc": "The golem ignores difficult terrain caused by ice."
+      },
+      {
+        "name": "Ice Death",
+        "desc": "When the golem is reduced to 0 hit points, it shatters in an explosion of jagged ice. Each creature within 10 feet of it must make a DC 15 Dexterity saving throw, taking 10 (3d6) piercing damage and 10 (3d6) cold damage on a failed save, or half as much damage on a successful one."
+      },
+      {
+        "name": "Immutable Form",
+        "desc": "The golem is immune to any spell or effect that would alter its form."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The golem has advantage on saving throws against spells and other magical effect."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The golem makes two slam attacks."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit 18 (3d8 + 5) bludgeoning damage plus 4 (1d8) cold damage. G GOLEMS Grave Titan A true success in the minds of necromancers across the world, grave titans are walking monoliths of the undead. Lumbering forward on its master's command, the grave titan leaves a trail of death and lurching zombies. The grave titan views the world as a wheat field, reaping and sowing death as it walks."
+      },
+      {
+        "name": "Master's Servant",
+        "desc": "The necromancer who summon the grave titan hold complete control over the being. Grave titans follow their master or masters without question, moving with menacing grace. If left with no command, grave titans will wander towards the next living thing they see, desiring to bring death to the world. Grave titans are often employed as walking siege engines or guards to dark secrets. The grave titan's ability to continually spawn zombies, making them highly desired to those not opposed to bolstering their army's ranks."
+      },
+      {
+        "name": "Abominable Creation",
+        "desc": "Grave titans form when powerful necromancers collect the bodies of numerous humanoids and freshly slain giant. Amassing the corpses into a great mound atop the giant, the necromancers bind their energies to the mound, enriching it with a mass of negative energy. Rising from the mound, a grave titan begins to devour the corpses. Once the final body is consumed, the grave titan completes its metamorphosis. The bodies that reside in the titan reanimate, seeking to escape their prison. The torn hole in the titan's stomach quietly resonates with screams and cries as the restless zombies pull themselves free. Yet, any zombie that emerges from the grave titan is subjected to the commands of the titan's master. Following their reanimation, grave titans have little memory of their former lives. Thy understand the language of their master, but beyond that they do not think or act directly for themselves. 39"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3ovbhb/day_60_ice_golem/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S60",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-67-living-spellbook",
+    "name": "Living Spellbook",
+    "cr": "10",
+    "type": "construct",
+    "hit_points": 90,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "12d10 + 24",
+    "speed": {
+      "walk": "30 ft.",
+      "fly": "30 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": "fire",
+    "damage_resistances": null,
+    "damage_immunities": "poison; bludgeoning, piercing,",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "blindsight 120 ft., passive Perception 12",
+    "languages": "telepathy 120 ft.",
+    "xp": 5900,
+    "special_abilities": [
+      {
+        "name": "Immutable Form",
+        "desc": "The spellbook is immune to any spell or spell effect that would alter its form."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The spellbook has advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "The spellbook is a 12th-level spellcaster. Its spellcasting ability is Intelligence (save DC 16, +8 to hit with spell attacks). The spellbook has the following wizard spells prepared: Cantrips (at will): blade ward, light, mage hand, message, prestidigitation 1st level (4 slots): mage armor, magic missile, shield 2nd level (3 slots): invisibility, mirror image 3rd level (3 slots): glyph of warding, dispel magic 4th level (3 slots): Otiluke's resilient sphere, polymorph 5th level (2 slots): animate objects, Bigby's hand 6th level (1 slot): globe of invulnerability"
+      },
+      {
+        "name": "Transpose Arcana",
+        "desc": "As a bonus action, the spellbook can expend one spell slot, causing an allied spellcaster to regain a spell slot of that level or lower."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Paper Cut",
+        "desc": "Ranged Weapon Attack: +8 to hit, range 30/60 ft., one creature. Hit: 13 (3d8) slashing damage."
+      },
+      {
+        "name": "Mana Burn (Recharge 5-6)",
+        "desc": "The spellbook can expend one spell slot to deal force damage to a target within 60 feet of it. The damage is 18 (4d8) for a 1st-level spell slot, plus 9 (2d8) for each spell level higher than 1st. The target must make a DC 16 Dexterity saving throw, taking full damage on a failed save, or half as much damage on a successful one. L LIVING SPELLBOOK 55"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3psbbl/day_67_living_spellbook/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S67",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-36-spellskite",
+    "name": "Spellskite",
+    "cr": "5",
+    "type": "construct",
+    "hit_points": 102,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "12d1Q + 36",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 10,
+    "dex": 10,
+    "con": 12,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison, psychic",
+    "condition_immunities": "charmed, exhaustion, frightened,",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "understands the languages of its creator but can't",
+    "xp": 1800,
+    "special_abilities": [
+      {
+        "name": "Immutable Form",
+        "desc": "The spellskite is immune to any spell or effect that would alter its form."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The spellskite has advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Magic Ward",
+        "desc": "The spellskite has resistance to damage from spells."
+      },
+      {
+        "name": "Redirect Spells",
+        "desc": "Whenever a spell is cast within 120 feet of the spellskite that targets only one creature and doesn’t have a range of self or touch, the spellskite magically redirects the spell and becomes the target.If the spell could not normally affect the spellskite, the spell fails. The creator of the spellskite can designate creatures that won’t be affected by this trait."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 10 (2d8 + 1) piercing damage. Created by StoneStrix - /r/monsteraday Art Credit: Chippy ]"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3ltrtn/day_36_spellskite/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S36",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-79-timeless-chronomancer",
+    "name": "Timeless Chronomancer",
+    "cr": "14",
+    "type": "construct",
+    "hit_points": 150,
+    "armor_class": 18,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "20d8 + 60",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": {
+      "int": 10,
+      "wis": 7
+    },
+    "skills": {
+      "arcana": 15,
+      "history": 15
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "damage from spells",
+    "damage_immunities": "poison",
+    "condition_immunities": "exhaustion, paralyzed, petrified,",
+    "senses": "darkvision 60 ft., passive Perception 12",
+    "languages": "all",
+    "xp": 11500,
+    "special_abilities": [
+      {
+        "name": "Magic Resistance",
+        "desc": "The chronomancer has advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "The chronomancer is a 20th-level spellcaster. Its spellcasting ability is Intelligence (save DC 18, +10 to hit with spell attacks). The chronomancer has the following wizard spells prepared: Cantrips (at will): blade ward, light, mage hand, ray of frost, prestidigitation 1st level (4 slots): detect magic, expeditious retreat, magic missile, shield 2nd level (3 slots): hold person, misty step 3rd level (3 slots): blink, haste, slow 4th level (3 slots): banishment, dimension door 5th level (3 slot): cone of cold, wall of force 6th level (1 slot): globe of invulnerability 7th level (1 slot): teleport 8th level (1 slot): maze 9th level (1 slot): time stop"
+      },
+      {
+        "name": "Stretch Time (Recharge 5-6)",
+        "desc": "The chronomancer can take on additional action on its turn."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Expose Paradox (Recharge 5-6)",
+        "desc": "The chronomancer choses one creature it can see within 60 feet of it, revealing to it a paradox in the space-time continuum. The target must make a DC 18 Wisdom saving throw, taking 42 (12d6) psychic damage on a failed save, or half as much damage on a successful one."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Rewind",
+        "desc": "When the chronomancer or another creature makes an attack roll, saving throw, or ability check, it must remake the roll and use the new result. C CHRONOMANCER 11"
+      }
+    ],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3rdrry/day_79_chronomancers/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S79",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-96-crystalline-dragon",
+    "name": "Crystalline Dragon",
+    "cr": "18",
+    "type": "dragon",
+    "hit_points": 270,
+    "armor_class": 20,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "any chaotic",
+    "hp_formula": "20d12 + 140",
+    "speed": {
+      "walk": "40 ft.",
+      "fly": "80 ft."
+    },
+    "str": 28,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": {
+      "dex": 8,
+      "con": 13,
+      "wis": 9,
+      "cha": 14
+    },
+    "skills": {
+      "insight": 9,
+      "intimidation": 14,
+      "perception": 15
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "bludgeoning, piercing, and slashing",
+    "condition_immunities": null,
+    "senses": "blindsight 60 ft., darkvision 120 ft., passive",
+    "languages": "Common, Draconic",
+    "xp": 20000,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/day)",
+        "desc": "If the dragon fails a saving throw, it can choose to succeed instead."
+      },
+      {
+        "name": "Prismatic Immunity",
+        "desc": "The dragon can use its bonus action to gain immunity to one of the following damage types: acid, cold, fire, or lightning. The immunity lasts until the dragon uses its ability again."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +15 to hit, reach 10 ft., one target. Hit 20 (2d10 + 9) piercing damage."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +15 to hit, reach 5 ft., one target. Hit 16 (2d6 + 9) slashing damage."
+      },
+      {
+        "name": "Tail",
+        "desc": "Melee Weapon Attack: +15 to hit, reach 15 ft., one target. Hit 18 (2d8 + 9) bludgeoning damage."
+      },
+      {
+        "name": "Frightful Presence",
+        "desc": "Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 22 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours."
+      },
+      {
+        "name": "Prismatic Breath (Recharge 5-6)",
+        "desc": "The dragon exhales multicolored rays of light. Each creature in a 60-foot cone must make a DC 21 Dexterity saving throw. For each target, roll a d8 to determine which color ray affects it. 1 Red. The target takes 55 (10d10) fire damage on a failed save, or half as much damage on a successful one. 2 Orange. The target takes 55 (10d10) acid damage on a failed save, or half as much damage on a successful one. 3 Yellow. The target takes 55 (10d10) lightning damage on a failed save, or half as much damage on a successful one. 4 Green. The target takes 55 (10d10) poison damage on a failed save, or half as much damage on a successful one. 5 Blue. The target takes 55 (10d10) cold damage on a failed save, or half as much damage on a successful one. 6 Indigo. On a failed save, the target is restrained. It must then make a DC 21 Constitution saving throw at the end of each of its turns. If it successfully saves three times, the effect ends. If it fails its save three times, it permanently turns to stone and is subjected to the petrified condition. 7 Violet. On a failed save, the target is blinded for 1 minute. 8 Special. The target is struck by two rays. Roll twice more, rerolling any 8."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3tlb1z/day_96_crystalline_dragon/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S96",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-21-luck-dragon",
+    "name": "Luck Dragon",
+    "cr": "1/4",
+    "type": "dragon",
+    "hit_points": 7,
+    "armor_class": 12,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Tiny",
+    "alignment": "unaligned",
+    "hp_formula": "2d4 + 2",
+    "speed": {
+      "walk": "15 ft.",
+      "fly": "60 ft."
+    },
+    "str": 6,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 3,
+      "persuasion": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "bludgeoning, piercing, and",
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 13",
+    "languages": "understands Common and Draconic but",
+    "xp": 50,
+    "special_abilities": [
+      {
+        "name": "Dragon Luck (1/Day)",
+        "desc": "When the luck dragon makes an attack roll, an ability check, or a saving throw, it can gain advantage on the roll."
+      },
+      {
+        "name": "Limited Telepathy",
+        "desc": "The luck dragon can magically communicate simple ideas, emotions, and images telepathically with any creature within 100 feet of it that can understand a language."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit 4 (1d4 + 2) piercing damage. L LUCK DRAGON 57"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3jv169/day_21_luck_dragon/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S21",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-90-crystal-elemental",
+    "name": "Crystal Elemental",
+    "cr": "3",
+    "type": "elemental",
+    "hit_points": 57,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "6d8 + 30",
+    "speed": {
+      "walk": "30 ft.",
+      "burrow": "50 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 12,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": "thunder",
+    "damage_resistances": "piercing and slashing from",
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., tremorsense 60 ft., passive",
+    "languages": "Terran",
+    "xp": 700,
+    "special_abilities": [
+      {
+        "name": "Harden",
+        "desc": "At the start of its turn, the elemental can choose to have disadvantage on all melee weapon attack rolls during that turn, but attack rolls against it have disadvantage until the start of its next turn."
+      },
+      {
+        "name": "Regeneration",
+        "desc": "The elemental regains 10 hit points at the start of its turn if it has at least 1 hit point. If the elemental takes thunder damage, this trait doesn't function at the start of the elemental's next turn."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The elemental makes two attacks with its crystal spear."
+      },
+      {
+        "name": "Crystal Spear",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 12 (2d8 + 3) piercing damage. C CRYSTAL ELEMENTAL 16"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3ssksc/day_90_crystal_elemental/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S90",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-12-fusion-elemental",
+    "name": "Fusion Elemental",
+    "cr": "15",
+    "type": "elemental",
+    "hit_points": 250,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "neutral evil",
+    "hp_formula": "20d12 + 120",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 29,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 11,
+    "saving_throws": {
+      "str": 14,
+      "wis": 5
+    },
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "acid, cold, fire lightning, poison;",
+    "condition_immunities": "exhaustion, grappled, paralyzed,",
+    "senses": "darkvision 120 ft., passive Perception 10",
+    "languages": "Auran, Terran, Ignan, Aquan, Primordial",
+    "xp": 13000,
+    "special_abilities": [
+      {
+        "name": "Volatile Form",
+        "desc": "When the elemental dies, it explodes, and each creature within 30 feet of it must make a DC 18 Dexterity saving throw, taking 10 (3d6) acid damage, 10 (3d6) lightning damage, 10 (3d6) fire damage, and 10 (3d6) cold damage on a failed save, or half as much damage on a successful one."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The elemental makes two slam attacks."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +14 to hit, reach 10 ft., one target. Hit 20 (2d10 + 9) bludgeoning damage plus 9 (2d8) damage of a type chosen randomly from the following: acid, lightning, fire, or cold."
+      },
+      {
+        "name": "Hurl Energy",
+        "desc": "Ranged Weapon Attack: +14 to hit, range 60/240 ft., one target. Hit 18 (2d8 + 9) damage of a type chosen randomly from the following: acid, lightning, fire, or cold."
+      },
+      {
+        "name": "Elemental Chaos (Recharge 5-6)",
+        "desc": "The elemental makes one elemental chaos attack at random. 1 Earthquake. A seismic disturbance radiates from the elemental in a 100-foot radius circle. Each creature on the ground in that area must succeed on a DC 18"
+      },
+      {
+        "name": "Dexterity saving throw or be knocked prone",
+        "desc": "Each creature on the ground that is concentrating must also succeed on a DC 18 Constitution saving throw or break concentration. The area becomes difficult terrain after the earthquake. 2 Fire Breath. The elemental exhales fire in a 60-foot cone. Each creature in that area must make a DC 18 Dexterity saving throw, taking 54 (12d8) fire damage on a failed save, or half as much damage on a successful one. 3 Tidal Wave. A massive wave emanates from the elemental. Each creature within 60 feet of the elemental must succeed on a DC 18 Strength saving throw or be pushed up to 60 feet away from the elemental. On a success, the creature is pushed 10 feet away from the elemental. 4 Whirlwind. The elemental summons a 10-foot-radius, 60-foot high whirlwind centered on a point within 120 feet of it. Each creature in that area must make a DC 18"
+      },
+      {
+        "name": "Strength saving throw",
+        "desc": "On a failure, a target takes 27 (6d8) bludgeoning damage and is flung up to 40 feet away in a random direction and knocked prone. If a thrown target strikes an object, such a wall or floor, the target takes 3 (1d6) bludgeoning damage for every 10 feet it was thrown. If the target is thrown to another creature, that creature must succeed on a DC 18 Dexterity saving throw or take the same damage and be knocked prone. If the saving throw is successful, the target takes half the bludgeoning damage and isn't flung away or knocked prone."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3iqsbv/day_12_fusion_elemental/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S12",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-69-magma-bear",
+    "name": "Magma Bear",
+    "cr": "3",
+    "type": "elemental",
+    "hit_points": 75,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "neutral",
+    "hp_formula": "10d10 + 20",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 20,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": "cold",
+    "damage_resistances": null,
+    "damage_immunities": "fire, poison",
+    "condition_immunities": "exhaustion, poisoned",
+    "senses": "darkvision 60 ft., passive Perception 11",
+    "languages": "Ignan",
+    "xp": 700,
+    "special_abilities": [
+      {
+        "name": "Water Susceptibility",
+        "desc": "For every 5 feet the bear moves in water, or for every gallon of water splashed on it, it takes 1 cold damage."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The bear makes two attacks: one with its bite and one with its claws."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit 9 (1d8 + 5) piercing damage plus 3 (1d6) fire damage."
+      },
+      {
+        "name": "Claws",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit 12 (2d6 + 5) slashing damage."
+      },
+      {
+        "name": "Fire Breath (Recharge 5-6)",
+        "desc": "The bear exhales a blast of flames in a 15-foot cone. Each creature in that area must make a DC 12 Dexterity saving throw, taking 17 (5d6) fire damage on a failed save, or half as much damage on a successful one. M MAGMA BEAR Morphlit"
+      },
+      {
+        "name": "A morphlit is small, weak and above all resilient",
+        "desc": "Creations of forgotten experiments, morphlits adapt perfectly with their environment. They are wild, cunning creatures notorious for never failing to reach their victim. They embody a sense of brilliance long forgotten."
+      },
+      {
+        "name": "Ever-changing Packs",
+        "desc": "Smarter than their small size indicates, morphlits often join together to hunt larger prey. An instinctual understanding allows morphlits to switch into the form most needed for their environment as well as vary their forms while in a pack to gain the most success during a hunt. Large foreclaws or bat-like wings grow along morphlits as they travel, granting them easy access to even the most difficult of terrain. Morphlits share a complex hivemind, which was given to them at their creation. Small hierarchies concerning shape and personality emerge from each form a morphlit takes."
+      },
+      {
+        "name": "Winged morphlits take on an observer role in their society",
+        "desc": "Burrowing morphlits are more aggressive, prone to competing against one another over a kill. Aquatic morphlits tend to be more passive unless provoked or agitated."
+      },
+      {
+        "name": "Spawn of Ancients",
+        "desc": "Long before the rise and fall of great empires, the upheaval of the earth and even before the pantheon of gods, morphlits emerged as creations of great and mighty magic, formed to be durable test subjects to darker experiments. Seen as failures by their great masters, morphlits were cast away, marked as inadequate. Throughout the dynamic changes of the world, morphlits thrived; the great magic that formed them acting as a shield against change. Still products of a deep desire, morphlits continue to act in accordance to long imbued commands from their former creators. 58"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3q1gtw/day_69_magma_bear/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S69",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-77-feyote",
+    "name": "Feyote",
+    "cr": "1/4",
+    "type": "fey",
+    "hit_points": 11,
+    "armor_class": 12,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "2d8 + 2",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 13,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 4,
+      "stealth": 4
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 30 ft., passive Perception 14",
+    "languages": "understands Sylvan but can't speak",
+    "xp": 50,
+    "special_abilities": [
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The feyote's innate spellcasting ability is Wisdom. The feyote can cast the following spells, requiring no components: At will: druidcraft 1/day: enhance ability 1/week: divination"
+      },
+      {
+        "name": "Keen Hearing and Smell",
+        "desc": "The feyote has advantage on Wisdom (Perception) checks that rely on hearing or smell."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The feyote has advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit 4 (1d6 + 1) piercing damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or be knocked prone. F FEYOTE 28"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3r3co3/day_77_feyote/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S77",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-38-grove-guardian",
+    "name": "Grove Guardian",
+    "cr": "5",
+    "type": "fey",
+    "hit_points": 71,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "neutral",
+    "hp_formula": "11d10 + 11",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 17,
+    "saving_throws": {
+      "dex": 6,
+      "wis": 7
+    },
+    "skills": {
+      "perception": 10,
+      "stealth": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 20",
+    "languages": "Sylvan",
+    "xp": 1800,
+    "special_abilities": [
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The guardian's innate spellcasting ability is Wisdom (save DC 15, +7 to hit with spell attacks). The guardian can innately cast the following spells, requiring no material components: At will: druidcraft, thorn whip (11th level) 3/day each: spike growth, silence 1/day each: conjure animals, plant growth"
+      },
+      {
+        "name": "Keen Hearing and Smell",
+        "desc": "The guardian has advantage on Wisdom (Perception) checks that rely on hearing or smell."
+      },
+      {
+        "name": "Speak with Beasts and Plants",
+        "desc": "The guardian can communicate with beasts and plants as if they shared a language."
+      },
+      {
+        "name": "Tree Stride",
+        "desc": "Once on its turn, the guardian can use 10 feet of its movement to step magically into one living tree within its reach and emerge from a second living three within 60 feet of the first tree, appearing in an unoccupied space within 5 feet of the second tree. Both trees must be Large or bigger."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The guardian makes two bite attacks."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one creature. Hit 10 (2d6 + 3) piercing damage. If the target is a creature, it must succeed on a DC 13"
+      },
+      {
+        "name": "Strength saving throw or be knocked prone",
+        "desc": "G GROVE GUARDIAN 41"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3m33t3/day_38_grove_guardian/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S38",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-62-rusalka",
+    "name": "Rusalka",
+    "cr": "4",
+    "type": "fey",
+    "hit_points": 97,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral evil",
+    "hp_formula": "13d8 + 39",
+    "speed": {
+      "walk": "30 ft.",
+      "swim": "50 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": null,
+    "skills": {
+      "deception": 7,
+      "perception": 4,
+      "stealth": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 14",
+    "languages": "Common, Sylvan",
+    "xp": 1100,
+    "special_abilities": [
+      {
+        "name": "Slippery",
+        "desc": "The rusalka has advantage on ability checks and saving throws made to escape a grapple."
+      },
+      {
+        "name": "Universal Beauty",
+        "desc": "The rusalka appears different and uniquely beautiful to match the tastes of each humanoid that perceives it. Truesight reveals the rusalka's true undead form."
+      },
+      {
+        "name": "Water Bound",
+        "desc": "The rusalka cannot willingly leave the body of water to which it is bound. If forcibly removed, the rusalka takes 11 (2d10) necrotic damage every minute until it returns."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Charm",
+        "desc": "One humanoid the rusalka can see within 100 feet of it must succeed on a DC 15 Wisdom saving throw or be magically charmed for 1 hour. The charmed target must spend its turns trying to move as close to the rusalka as it can. The target can't take reactions, and for its action, it can use only the Dash action. If the target suffers any harm, it can repeat the saving throw, ending the effect on a success. If the target successfully saves against the effect, or if the effect ends, the target is immune to the rusalka's Charm for the next 24 hours."
+      },
+      {
+        "name": "Tresses",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 10 ft., one target. Hit 14 (3d6 + 4) bludgeoning damage and the target is grappled (escape DC 16) and pulled 5 feet toward the rusalka. Until this grapple ends, the target is restrained, the rusalka tries to drown it, and the rusalka can't use its tresses on another target."
+      },
+      {
+        "name": "Tickle",
+        "desc": "One creature grappled by the rusalka must succeed on a DC 14 Constitution saving throw or be incapacitated with laughter for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. R RUSALKA 64"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3p4fvb/day_62_rusalka/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S62",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-39-silverpaw-dog",
+    "name": "Silverpaw Dog",
+    "cr": "1",
+    "type": "fey",
+    "hit_points": 32,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "5d8 + 10",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 17,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": {
+      "dex": 5
+    },
+    "skills": {
+      "acrobatics": 5,
+      "athletics": 5,
+      "perception": 3
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 13",
+    "languages": "understands Sylvan but can't speak",
+    "xp": 200,
+    "special_abilities": [
+      {
+        "name": "Keen Hearing and Smell",
+        "desc": "The dog has advantage on Wisdom (Perception) checks that rely on hearing or smell."
+      },
+      {
+        "name": "Evasion",
+        "desc": "When the dog is subjected to an effect that allows it to make a Dexterity saving throw to take only half damage, it instead takes no damage if it succeeds on the saving throw, and only half damage if it fails."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit 8 (2d4 + 3) piercing damage. If the target is a creature, it must succeed on a DC 13"
+      },
+      {
+        "name": "Strength saving throw or be knocked prone",
+        "desc": "APPENDIX A: NONPLAYER CHARACTERS 100"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3m7l6o/day_39_silverpaw_paladin_and_dog/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S39",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-55-verdalin",
+    "name": "Verdalin",
+    "cr": "1/2",
+    "type": "fey",
+    "hit_points": 18,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Small",
+    "alignment": "neutral",
+    "hp_formula": "4d6 + 4",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 6,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 17,
+    "saving_throws": null,
+    "skills": {
+      "perception": 6,
+      "stealth": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 16",
+    "languages": "-",
+    "xp": 100,
+    "special_abilities": [
+      {
+        "name": "Camouflage",
+        "desc": "The verdalin has advantage on Dexterity (Stealth) checks made to hide in forest terrain."
+      },
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The ferdalin's innate spellcasting ability is Charisma (spell save DC 12). The verdalin can innately cast the following spells, requiring no material components: At will: minor illusion, silent image 1/day each: mirror image, phantasmal force"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit 5 (1d4 + 3) piercing damage. V VERDALIN 83"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3o8i97/day_55_verdalin/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S55",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-58-winter-sprite",
+    "name": "Winter Sprite",
+    "cr": "1",
+    "type": "fey",
+    "hit_points": 7,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Tiny",
+    "alignment": "chaotic neutral",
+    "hp_formula": "2d4 + 2",
+    "speed": {
+      "walk": "10 ft.",
+      "fly": "30 ft."
+    },
+    "str": 2,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 20,
+    "saving_throws": null,
+    "skills": {
+      "perception": 4,
+      "stealth": 7
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "cold",
+    "condition_immunities": null,
+    "senses": "passive Perception 14",
+    "languages": "Sylvan",
+    "xp": 200,
+    "special_abilities": [
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The sprite's innate spellcasting ability is Charisma (spell save DC 12, +4 to hit with spell attacks). It can innately cast the following spells, requiring no material components: At will: druidcraft, frostbite 1/day each: blur, counterspell, fog cloud, ice knife, sleet storm, Snilloc's snowball swarm"
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The Sprite has advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Icesickle",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one creature. Hit 1 slashing damage, and the target must succeed on a DC 10 Constitution saving throw or take 3 (1d6) cold damage and then be paralyzed until the end of the sprite's next turn. W WINTER SPRITE Appendix A: Nonplayer Characters Azure Sorcerers Masters of manipulation, azure sorcerers are found in every corner of the world. Working their power, plans come to fruition, kings dance like puppets and heroes unwittingly follow azure machinations. Zealous and callous, azure sorcerers guide the world, aiding or destroying anything that struggles to fit their design."
+      },
+      {
+        "name": "Azure Palace",
+        "desc": "Located on a narrow coast, the city of Nesas lies hidden from prying eyes. Protected by powerful illusory magic, Nesas is the seat of the azure palace. Here, azure sorcerers meet and scheme, plotting as much against each other as with the world around them. Governed by an absolute rule, Nesas is a place of political games and complex conspiracies."
+      },
+      {
+        "name": "Divided Beliefs",
+        "desc": "All azure sorcerers enjoy manipulating the world around them. Their motivations, however, often contradict. Divided into six orders, azure sorcerers work in the best interests of their order, squabbling with the other five groups. Miniature wars have been known to break out between the various orders. When working outside of Nesas, azure sorcerers rarely interact with one another, choosing instead to propel their own complex schemes. On the rare occasion that they do unite, azure sorcerers have been known to build entire empires or crush mighty forces."
+      },
+      {
+        "name": "Initiation",
+        "desc": "Becoming an azure sorcerer is not a choice. Agents of the azure palace roam the land, collecting individuals who show arcane promise in manipulation and illusion. Taken to Nesas, initiates then work as laborers and servants as they learn to channel their magical energies. Many initiates are caught up into political schemes, acting as spies and gears in greater plots. Those who fail to show promise in their studies are kept as veritable slaves, the lowest class in Nesas. 89 APPENDIX A: NONPLAYER CHARACTERS 90"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3olui8/day_58_winter_sprite/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S58",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-23-fiendish-hyena",
+    "name": "Fiendish Hyena",
+    "cr": "2",
+    "type": "fiend",
+    "hit_points": 45,
+    "armor_class": 12,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "6d10 + 12",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 3
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "cold, fire, lightning",
+    "damage_immunities": "poison",
+    "condition_immunities": "poisoned",
+    "senses": "darkvision 60 ft., passive Perception 13",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Rampage",
+        "desc": "When the hyena reduces a creature to 0 hit points with a melee attack on its turn, the hyena can take a bonus action to move up to half its speed and make a bite attack."
+      },
+      {
+        "name": "Aura of Malice",
+        "desc": "All enemies within 10 feet of the gnoll have disadvantage on saving throws."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one creature. Hit 13 (2d8 + 4) piercing damage. G GNOLLS Goblins Goblins are small, black-hearted, selfish humanoids that lair in caves, abandoned mines, despoiled dungeons, and other dismal settings. Individually weak, goblins gather in large─sometimes overwhelming─numbers. They crave power and regularly abuse whatever authority they obtain. 36"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3k44u9/day_23_gnoll_deathmage_and_fiendish_hyena/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S23",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-74-headless-horseman",
+    "name": "Headless Horseman",
+    "cr": "8",
+    "type": "fiend",
+    "hit_points": 153,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "lawful evil",
+    "hp_formula": "18d8 + 72",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": {
+      "con": 7,
+      "cha": 6
+    },
+    "skills": {
+      "animal handling": 5,
+      "perception": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 120 ft., passive Perception 15",
+    "languages": "understands Common, Abyssal, and",
+    "xp": 3900,
+    "special_abilities": [
+      {
+        "name": "Mounted Combatant",
+        "desc": "The horseman can force an attack targeted at its mount to target itself instead."
+      },
+      {
+        "name": "Ride-By",
+        "desc": "While mounted, the horseman and its mount don't provoke opportunity attacks when they move out of an enemy's reach."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The horseman makes two melee attacks."
+      },
+      {
+        "name": "Vorpal Longsword",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit 17 (3d8 + 4) slashing damage. When the horseman rolls a 20 on the attack roll, if the damage would reduce the creature to 0 hit points, the horseman cuts off the creature's head."
+      },
+      {
+        "name": "Jack-o'-lantern (Recharge 6)",
+        "desc": "Ranged Weapon Attack: +7 to hit, range 30/60 ft., one target. Hit 13 (2d8 + 4) bludgeoning damage plus 14 (4d6) fire damage. If the target is a creature, it must succeed on a DC 15 Constitution saving throw or become stunned until the end of the horseman's next turn. H HEADLESS HORSEMAN Illets Illets were originally from the Far Realm, travelling between planes for devouring the energy of any living being they encounter and draining the magic to satiate its hunger, leaving only a desert of white dust and rocks behind, which are the remains of everything once lived there. 43"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3qq341/day_74_headless_horseman/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S74",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-61-frost-giant-jarl",
+    "name": "Frost Giant Jarl",
+    "cr": "11",
+    "type": "giant",
+    "hit_points": 187,
+    "armor_class": 16,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "neutral evil",
+    "hp_formula": "15d12 + 90",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 25,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "con": 10,
+      "wis": 6,
+      "cha": 7
+    },
+    "skills": {
+      "athletics": 11,
+      "perception": 6
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "cold",
+    "condition_immunities": null,
+    "senses": "passive Perception 16",
+    "languages": "Giant",
+    "xp": 7200,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/day)",
+        "desc": "If the jarl fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The jarl makes two greataxe attacks."
+      },
+      {
+        "name": "Greataxe",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit 26 (3d12 + 7) slashing damage plus 4 (1d8) cold damage."
+      },
+      {
+        "name": "Rock",
+        "desc": "Ranged Weapon Attack: +11 to hit, range 60/240 ft., one target. Hit 29 (4d10 + 7) bludgeoning damage."
+      },
+      {
+        "name": "Flash Freeze (Recharge 5-6)",
+        "desc": "The jarl stomps the ground, creating a wave of intense cold in a line that is 60 feet long and 5 feet wide. Each creature in that line must make a DC 15 Dexterity saving throw, taking 45 (10d8) cold damage on a failed save, or half as much damage on a successful one. If a target fails the saving throw, it becomes restrained by ice. As an action, the restrained target can make a DC 15 Strength check, breaking free of the ice on a success. The ice can also be attacked and destroyed (AC 10; hp 15; vulnerability to fire damage; immunity to poison and psychic damage)."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [
+      {
+        "name": "Shove",
+        "desc": "The jarl makes a shove attack."
+      },
+      {
+        "name": "Charge",
+        "desc": "The jarl moves up to its speed."
+      },
+      {
+        "name": "Battle Order",
+        "desc": "The jarl directs an allied creature to strike, so long as the creature can see or hear the jarl. That creature can immediately use its reaction to make one weapon attack. F FROST GIANT JARL 29"
+      }
+    ],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3p02np/day_61_frost_giant_jarl/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S61",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-34-arcanamite",
+    "name": "Arcanamite",
+    "cr": "1",
+    "type": "monstrosity",
+    "hit_points": 27,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Small",
+    "alignment": "unaligned",
+    "hp_formula": "5d6 + 10",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 7,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 3,
+      "stealth": 4
+    },
+    "damage_vulnerabilities": "bludgeoning",
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 13",
+    "languages": "-",
+    "xp": 200,
+    "special_abilities": [
+      {
+        "name": "Magic Scent",
+        "desc": "The arcanamite can pinpoint, by scent, the location of a creature that can cast spells within 60 feet of it."
+      },
+      {
+        "name": "Reflective Carapace",
+        "desc": "Any time the arcanamite is targeted by a magic missile spell, a line spell, or a spell that requires a ranged attack roll, roll a d6. On a 1 to 5, the arcanamite is unaffected. On a 6, the arcanamite is unaffected, and the effect is reflected back at the caster as though it originated from the arcanamite, turning the caster into the target."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5ft., one target. Hit 4 (1d4 + 2) piercing damage, and the arcanamite can attach itself to the target. The arcanamite can be removed if a creature takes an action and succeeds on a DC 15 Strength check against it. The arcanamite detaches if it takes fire damage. Until the arcanamite detaches, it can't bite another target."
+      },
+      {
+        "name": "Leech Magic",
+        "desc": "If the arcanamite is attached to a creature with spell slots, roll a d4. The target loses a spell slot of that level, or the next highest level if it has no spell slots of that level. If the arcanamite has leeched a number of spell slots with a combined level of 8 or more, it detaches from the creature. A ARCANAMITE Beast of Ill Omen A wolf-like creature with black fur, a long tail and big thin ears, flowing fur in its paws, and huge black feathers on top of his tail. These beasts are chaotic beings, with the power to bring misfortune to anyone who gets near them. These creatures are known for its power to leave a path of accidents, bad luck, misfortune and random mischief, and they are always hunted from a distance to avoid step on its bad luck aura for getting too close to the beast. 5"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3lkpfr/day_34_arcanamite/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S34",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-97-beast-of-ill-omen",
+    "name": "Beast of Ill Omen",
+    "cr": "2",
+    "type": "monstrosity",
+    "hit_points": 45,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "6d10 + 12",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 3,
+      "stealth": 4
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 13",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Aura of Misfortune",
+        "desc": "Bad luck radiates from the beast in an aura with a 60-foot radius. Hostile creatures in that area have disadvantage on attack rolls, ability checks and saving throws."
+      },
+      {
+        "name": "Unfavorable Target",
+        "desc": "The beast is unaffected by critical hits."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5ft., one target. Hit 11 (2d6 + 4) piercing damage. B BEAST OF ILL OMEN Bullywug Bullywugs live in primitive groups, hunting and fishing together. The hierarchy is based on strength, with the strongest being the leaders. Bullywugs are very territorial, and mostly will attack anyone who trespasses. Oddly enough, they tend not to fight within the tribe, but rival bullywug tribes will fight with each other. Bullywugs rarely work alongside other creatures since they would rather use them for food or sacrifice. However, occasionally during hard times small groups of bullywugs will latch onto a powerful ally that can help them bring down tougher game. Bullywugs live in semi-organized communities that are often slightly mobile. They respect no one but those stronger than they are. Bullywug colonies disrupt the natural environment of any land. They will eat off the land until their immense gullets are filled and then they move on. 6"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3tplf0/day_97_beast_of_ill_omen/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S97",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-70-caustic-crawler",
+    "name": "Caustic Crawler",
+    "cr": "4",
+    "type": "monstrosity",
+    "hit_points": 102,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "unaligned",
+    "hp_formula": "12d8 + 48",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 12,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "acid, poison",
+    "condition_immunities": "poisoned",
+    "senses": "darkvision 60 ft., passive Perception 11",
+    "languages": "-",
+    "xp": 1100,
+    "special_abilities": [
+      {
+        "name": "Acid Blood",
+        "desc": "A creature that hits the crawler with a melee attack while within 5 feet of it takes 7 (2d6) acid damage."
+      },
+      {
+        "name": "Caustic Fumes",
+        "desc": "Any creature that starts its turn within 10 feet of the crawler must succeed on a DC 12 Constitution saving throw or be poisoned until the start of its next turn. On a successful saving throw, the creature is immune to the crawler's fumes for 24 hours."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Claws",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 12 (2d8 + 3) slashing damage plus 7 (2d6) acid damage."
+      },
+      {
+        "name": "Acid Spray (Recharge 6)",
+        "desc": "The crawler spits acid in a line that is 30 feet long and 5 feet wide. Each creature in that line must make a DC 14 Dexterity saving throw, taking 28 (8d6) acid damage on a failed save, or half as much damage on a successful one C CAUSTIC CRAWLER Chainer Geist The chainer Geist is the spirit of an evil humanoid who died on a prison, and now is forced to watch over the jail and the land the prison was built, scouting and patrolling the building with the skulls of the ones he killed, hunting and attacking anyone who enter the prison. 8"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3q5njk/day_70_caustic_crawler/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S70",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-41-coven-horror",
+    "name": "Coven Horror",
+    "cr": "9",
+    "type": "monstrosity",
+    "hit_points": 123,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "13d10 + 52",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 20,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "con": 8,
+      "cha": 9
+    },
+    "skills": {
+      "deception": 9,
+      "insight": 6,
+      "perception": 10
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "cold, fire; bludgeoning, piercing,",
+    "damage_immunities": null,
+    "condition_immunities": "charmed, frightened",
+    "senses": "darkvision 120 ft., passive Perception 20",
+    "languages": "Abyssal, Common, Infernal, Primordial",
+    "xp": 5000,
+    "special_abilities": [
+      {
+        "name": "Wails of the Unborn",
+        "desc": "Humanoids within 60 feet of the horror that can hear it have disadvantage on Constitution saving throws to maintain concentration."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The horror has advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The horror can use its Gaze. It then makes two claw attacks."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit 14 (2d8 + 5) slashing damage."
+      },
+      {
+        "name": "Gaze",
+        "desc": "The horror makes one gaze at random, choosing one target it can see within 60 feet of it. 1. Gaze of Agony. The target creature must make a DC 15 Charisma saving throw, taking 36 (8d8) psychic damage on a failed save, or half as much damage on a successful one. 2. Gaze of Lethargy. The target creature must succeed on a DC 15 Charisma saving throw. On a failed save, the target can't use reactions, its speed is halved, and it can't make more than one attack on its turn. In addition, the target can take either an action or a bonus action on its turn, not both. These effects last for 1 minute. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. 3. Gaze of Despair. The target creature must succeed on a"
+      },
+      {
+        "name": "DC 15 Charisma saving throw",
+        "desc": "On a failed save, the target becomes overwhelmed with despair for 1 minute, and has disadvantage on attack rolls, saving throws, and ability checks. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. C COVEN HORROR 14"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3mh4se/day_41_coven_horror/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S41",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-94-crowlock",
+    "name": "Crowlock",
+    "cr": "1/2",
+    "type": "monstrosity",
+    "hit_points": 10,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Tiny",
+    "alignment": "chaotic neutral",
+    "hp_formula": "4d4",
+    "speed": {
+      "walk": "30 ft.",
+      "fly": "50 ft."
+    },
+    "str": 4,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": {
+      "deception": 6,
+      "perception": 4,
+      "stealth": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "truesight 30 ft., passive Perception 14",
+    "languages": "Common, Deep Speech",
+    "xp": 100,
+    "special_abilities": [
+      {
+        "name": "Perfect Mimicry",
+        "desc": "The crowlock can mimic any sounds it has heard, including a person's voice. A creature that hears the sounds can tell they are imitations with a successful DC 14 Wisdom (Insight) check."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Mind Pierce",
+        "desc": "Ranged Spell Attack: +4 to hit, range 60/120 ft., one creature. Hit 7 (1d10 + 2) psychic damage. C CROWLOCK 15"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3tbisl/day_94_crowlock/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S94",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-49-death-widow",
+    "name": "Death Widow",
+    "cr": "3",
+    "type": "monstrosity",
+    "hit_points": 60,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "8d10 + 16",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 15,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": {
+      "stealth": 7
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "blindsight 10 ft., darkvision 60 ft., passive",
+    "languages": "-",
+    "xp": 700,
+    "special_abilities": [
+      {
+        "name": "Spider Climb",
+        "desc": "The widow can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+      },
+      {
+        "name": "Web Sense",
+        "desc": "While in contact with a web, the widow knows the exact location of any other creature in contact with the same web."
+      },
+      {
+        "name": "Web Walker",
+        "desc": "The widow ignores movement restrictions caused by webbing."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 8 (1d10 + 3) piercing damage, and the target must succeed on a DC 13 Constitution saving throw or become poisoned. While poisoned in this way, the target is incapacitated and takes 13 (3d8) poison damage at the start of each of its turns. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. D DEATH WIDOW Demons Spawned in the Infinite Layers of the Abyss, demons are the embodiment of chaos and evil─engines of destruction barely contained in monstrous form. Possessing no compassion, empathy, or mercy, they exist only to destroy. Baneling Banelings are fiends filled with acid sacks covering almost all of its body, ready to explode when the baneling dies, spraying corrosive acid to everyone nearby at the moment of the explosion. Herald of Rot The living embodiment of disease and decay, a herald of rot looks like the abomination of humanoid, vulture and goat. Eyeless sockets stare at prey as a constant cloud of putrid offal hangs about the demon. If summoned, a herald of rot will fixate on a given or freely chosen target. Once fixated, the herald will speak to its prey telepathically, detailing how it will bring decay and desolation to everything around the victim. Vanguard of demon armies, a herald of rot is a living chemical arsenal. Serving more powerful demon lords, they are often seen guarding important structures or enhancing torture by their mere presence. Heralds of rot are most commonly found in the service of Demon Lord Juiblex, but their services expand far from the noxious lord's control. Pustuloid These small, mischievous demons are among the weakest of demons. They are repugnant, worm-like creatures that carry diseases. Individually, a pustuloid is not a dangerous opponent. That's why they gather in swarms of disease and pestilent bodies. 18"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3ngo6q/day_49_death_widow/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S49",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-72-gill-man",
+    "name": "Gill-man",
+    "cr": "6",
+    "type": "monstrosity",
+    "hit_points": 102,
+    "armor_class": 16,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "12d8 + 48",
+    "speed": {
+      "walk": "30 ft.",
+      "swim": "50 ft."
+    },
+    "str": 20,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": {
+      "perception": 5,
+      "stealth": 6
+    },
+    "damage_vulnerabilities": "poison",
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 120 ft., passive Perception 15",
+    "languages": "Gill-man",
+    "xp": 2300,
+    "special_abilities": [
+      {
+        "name": "Amphibious",
+        "desc": "The gill-man can breathe air and water."
+      },
+      {
+        "name": "Regeneration",
+        "desc": "The gill-man regains 10 hit points at the start of its turn. If the gill-man is poisoned, this trait doesn't function. If the gill-man takes poison damage, this trait doesn't function at the start of the gill-man's next turn. The gill-man dies only if it starts its turn with 0 hit points and doesn't regenerate."
+      },
+      {
+        "name": "Swimby",
+        "desc": "The gill-man doesn't provoke opportunity attacks when it swims out of an enemy's reach."
+      },
+      {
+        "name": "Torpedo Attack",
+        "desc": "If the gill-man swims at least 30 feet straight toward a target and then hits it with a melee weapon attack, the attack deals an extra 9 (2d8) damage to the target."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The gill-man makes two attacks with its claws."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit 14 (2d8 + 5) slashing damage. G GILL-MAN 33"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3qf9kq/day_72_gillman/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S72",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-80-hawkfox",
+    "name": "Hawkfox",
+    "cr": "2",
+    "type": "monstrosity",
+    "hit_points": 38,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "unaligned",
+    "hp_formula": "7d8 + 7",
+    "speed": {
+      "walk": "30 ft.",
+      "fly": "60 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": {
+      "perception": 6,
+      "stealth": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 16",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Dive Attack",
+        "desc": "If the hawkfox is flying and dives at least 30 feet straight toward a target and then hits it with a melee weapon attack, the attack deals an extra 9 (2d8) damage to the target."
+      },
+      {
+        "name": "Keen Sight and Smell",
+        "desc": "The hawkfox has advantage on Wisdom (Perception) checks that rely on sight or smell."
+      },
+      {
+        "name": "Nimble Action",
+        "desc": "On each of its turns, the hawkfox can use a bonus action to take the Dash or Disengage action."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The hawkfox makes one bite attack and one talon attack."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit 7 (1d8 + 3) piercing damage."
+      },
+      {
+        "name": "Talons",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit 8 (2d4 + 3) piercing damage. H HAWKFOX Headless Horseman Also known as \"Dullahan\", these fiends wanders the world in search of the dead and dying. They fancy themselves as controllers of population, and the eradicators of pestilence. A headless horseman uses its death watch ability to discern those near it who are near death or dying. Then, they seek out those people and terminate them. Some more righteous Dullahan take it upon them to massacre those afflicted by plagues, in order to stop the spread of the disease. It is said that if a headless horseman calls your name, you are sure to die. Dread Steed A headless horseman always hunts for heads while riding its mount. Some may be found riding a living or skeletal warhorse. Particularly powerful horsemen ride dread steeds, hellish mounts that invoke as much fear as their riders. A dread steed uses the statics of a nightmare, except that it has no fly speed. 42"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3rin2p/day_80_hawkfox/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S80",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-56-owlbear-matron",
+    "name": "Owlbear Matron",
+    "cr": "5",
+    "type": "monstrosity",
+    "hit_points": 114,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "unaligned",
+    "hp_formula": "12d10 + 48",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 20,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": {
+      "perception": 7
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 17",
+    "languages": "-",
+    "xp": 1800,
+    "special_abilities": [
+      {
+        "name": "Keen Sight and Smell",
+        "desc": "The owlbear has advantage on wisdom (Perception) checks that rely on sight or smell."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The olwbear makes three attacks: one with its beak and two with its claws."
+      },
+      {
+        "name": "Beak",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit 10 (1d10 + 5) piercing damage."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit 14 (2d8 + 5) slashing damage."
+      },
+      {
+        "name": "Piercing Screech (1/Day)",
+        "desc": "Each creature within 60 feet of the owlbear that can hear it must succeed on a DC 12 Constitution saving throw or become incapacitated for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. O OWLBEAR MATRON 62"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3oc713/day_56_owlbear_matron/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S56",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-50-screecher",
+    "name": "Screecher",
+    "cr": "2",
+    "type": "monstrosity",
+    "hit_points": 45,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "neutral",
+    "hp_formula": "6d10 + 12",
+    "speed": {
+      "walk": "50 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": {
+      "perception": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "blindsight 60 ft., passive Perception 15",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Echolocation",
+        "desc": "The screecher can't use its blindsight while deafened."
+      },
+      {
+        "name": "Keen Hearing",
+        "desc": "The screecher has advantage on"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit 13 (2d8 + 4) piercing damage."
+      },
+      {
+        "name": "Screech (Recharge 5-6)",
+        "desc": "Each creature within 60 feet of the screecher that can hear it must succeed on a DC 12 Constitution saving throw or become stunned until the end of the screecher's next turn. S SCREECHER Selachian With the upper body of a shark and humanoid arms and legs, Selachians mark their bodies with scars, showing familial houses, honorable hunts or simply to make them more menacing. Selachian ruthlessness is well known among coastal and aquatic communities. Raiding parties wash like waves over sand castles, leaving destruction in their wake, before disappearing back into the sea."
+      },
+      {
+        "name": "Selachian Settlements",
+        "desc": "Most commonly found in the cold northern regions of the world, selachian settlements are built in coral reefs, rocky coasts or underwater cliffs bordering a deep abyss. Unlike the rival merfolk, selachians care little for the passage of time, often living for years without interaction with the outside world. Selachians tend to delve into the darkest parts of the ocean, hunting in packs to track down and kill larger prey. They come to the surface to raid ships and nearby settlements to collect more materials for their homes. Selachians defend themselves with weapons taken from pirating or crafted from whatever materials were salvaged from shipwrecks, beaches and dead undersea creatures."
+      },
+      {
+        "name": "Hired Muscle",
+        "desc": "Often, pirating crews or desperate merchants will hire a pair of selachians to work for them. Money does little to inspire a selachian, but promise of fresh blood or an epic prize will keep a selachian in check for a time. Bought more for their brawn than brain, selachians find their place as bodyguards or thugs, their bulky form not well suited for nimble work. Pirates who convince these beasts to ship with them employ their strength as living grappling lines and frontline warriors. Sent to board the enemy ship first, selachians fall into bloody frenzies, leaving behind a wake of destruction until either alone or killed."
+      },
+      {
+        "name": "Biggest Prize",
+        "desc": "Selachian communities believe in constantly outdoing one another. At birth, two selachians are paired. For the rest of their lives, these selachians wage a constant battle, heavily prompted by the community to bring back the greatest prize. Often this prize is a kill or trophy but also can be feasts of unlikely success. If a selachian dies from this competition, their partner attempts to fulfill the pact of the other, marking it as the greatest prize they could achieve."
+      },
+      {
+        "name": "Mortal Enemies",
+        "desc": "Selachians and merfolk are mortal enemies. Years of raiding, destruction and war have carved a rift between the two species. Selachians also cannot abide merrow, who remind them too much of their less abyssal kin. 66"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3nl5wp/day_50_screecher/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S50",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-100-stone-strix",
+    "name": "Stone Strix",
+    "cr": "8",
+    "type": "monstrosity",
+    "hit_points": 147,
+    "armor_class": 16,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "unaligned",
+    "hp_formula": "14d12 + 56",
+    "speed": {
+      "walk": "20 ft.",
+      "fly": "60 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": {
+      "dex": 6,
+      "con": 7
+    },
+    "skills": {
+      "perception": 8
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 120 ft., passive Perception 18",
+    "languages": "-",
+    "xp": 3900,
+    "special_abilities": [
+      {
+        "name": "Flyby",
+        "desc": "The strix doesn't provoke opportunity attacks when it flies out of an enemy's reach."
+      },
+      {
+        "name": "Keen Hearing and Sight",
+        "desc": "The strix has advantage on Wisdom (Perception) checks that rely on hearing or sight."
+      },
+      {
+        "name": "Petrifying Gaze",
+        "desc": "When a creature that can see the strix's eyes starts its turn within 30 feet of the strix, the strix can force it to make a DC 15 Constitution saving throw if the strix isn't incapacitated and can see the creature. A creature that fails the save begins to turn to stone and is restrained. The restrained creature must repeat the saving throw at the end of its next turn, becoming petrified on a failure or ending the effect on a success. The petrification lasts until the creature is freed by the greater restoration spell or other magic. Unless surprised, a creature can avert its eyes to avoid the saving throw at the start of its turn. If the creature does so, it can't see the strix until the start of its next turn, when it can avert its eyes again. If the creature looks at the strix in the meantime, it must immediately make the save. If the strix sees itself reflected on a polished surface within 30 feet of it and in an area of bright light, the strix is affected by its own gaze."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The strix makes two attacks: one with its beak and one with its talons."
+      },
+      {
+        "name": "Beak",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit 22 (4d8 + 4) piercing damage."
+      },
+      {
+        "name": "Talons",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit 18 (4d6 + 4) slashing damage. S STONE STRIX 78"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3u3mkx/day_100_stone_strix/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S100",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-37-troll-boar",
+    "name": "Troll Boar",
+    "cr": "3",
+    "type": "monstrosity",
+    "hit_points": 57,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "6d10 + 24",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": null,
+    "skills": {
+      "perception": 2
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 12",
+    "languages": "-",
+    "xp": 700,
+    "special_abilities": [
+      {
+        "name": "Keen Smell",
+        "desc": "The boar has advantage on Wisdom (Perception) checks that rely on smell."
+      },
+      {
+        "name": "Charge",
+        "desc": "If the boar moves at least 20 feet straight toward a target and then hits with a tusk attack on the same turn, the target takes an extra 9 (2d8) slashing damage. If the target is a creature, it must succeed on a DC 14 Strength saving throw or be knocked prone."
+      },
+      {
+        "name": "Regeneration",
+        "desc": "The boar regains 10 hit points at the start of its turn. If the boar takes acid or fire damage, this trait doesn't function at the start of the boar's next turn. The boar dies only if it starts its turn with 0 hit points and doesn't regenerate."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Tusk",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit 13 (2d8 + 4) slashing damage. T TROLL BOAR Tuskaloth A hulking mass of muscle and bone, tuskaloths migrate across icy tundra, fearless of its environment. Appearing to lumber slowly in search of food, many of the tundra's communities recount stories of a rampaging tuskaloth, its multitude of horns becoming a battering ram against the strongest walls."
+      },
+      {
+        "name": "Territorial Herds",
+        "desc": "Tuskaloths travel in large herds. Tuskaloth have a few natural predators and are extremely territorial. A solitaire male will stand watch over the entire herd, and challenge anything approaching. Cities and villages that are created on tuskaloth migration routes are at the whim of tuskaloth temperaments."
+      },
+      {
+        "name": "Rampaging Fury",
+        "desc": "Tuskaloth ram into their target, using their numerous tusks to rend and crush anything in their path. Few predators can provoke a tuskaloth stampede, but travelers know to be wary when discovering tramped ground. Throughout their migration, civilizations foolishly built on their land become the stomping grounds of tuskaloth tantrums."
+      },
+      {
+        "name": "Derived of Magic",
+        "desc": "Legend tells of two sorcerers that were set upon by a mammoth during the night. Panicked the two cast their spells at the great beast, but their control of magic was loose and wild. The mammoth grew innumerable tusks and became even more ferocious. A product of wild magic, tuskaloths roam across the land with temperaments to match their creator's magic. 81"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3lyhsw/day_37_troll_boar/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S37",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-95-vodyanoy",
+    "name": "Vodyanoy",
+    "cr": "5",
+    "type": "monstrosity",
+    "hit_points": 119,
+    "armor_class": 16,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "chaotic neutral",
+    "hp_formula": "14d8 + 56",
+    "speed": {
+      "walk": "30 ft.",
+      "swim": "50 ft."
+    },
+    "str": 18,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": {
+      "athletics": 7,
+      "insight": 8,
+      "perception": 8
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 18",
+    "languages": "Aquan, Common, Sylvan",
+    "xp": 1800,
+    "special_abilities": [
+      {
+        "name": "Amphibious",
+        "desc": "The vodyanoy can breathe air and water."
+      },
+      {
+        "name": "Innate Spellcasting",
+        "desc": "The vodyanoy's innate spellcasting ability is Wisdom (spell save DC 16). The vodyanoy can innately cast the following spells, requiring only verbal components: At will: druidcraft, shape water 3/day each: fog cloud, tidal wave 1/day each: divination, watery sphere"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The vodyanoy makes two slam attacks. If both attacks hit a Medium or smaller target, the target is grappled (escape DC 15). Until the grapple ends, the target is restrained and has disadvantage on Strength checks and Strength saving throws, the vodyanoy tries to drown it, and the vodyanoy can't slam another target."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit 13 (2d8 + 4) bludgeoning damage. V VOYDANOY 84"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3tgj7n/day_95_vodyanoy/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S95",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-76-winged-ape",
+    "name": "Winged Ape",
+    "cr": "2",
+    "type": "monstrosity",
+    "hit_points": 39,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "6d8 + 12",
+    "speed": {
+      "walk": "30 ft.",
+      "fly": "50 ft.",
+      "climb": "30 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": {
+      "athletics": 5,
+      "perception": 3
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 13",
+    "languages": "Common",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Dive Attack",
+        "desc": "If the ape is flying and dives at least 30 feet straight toward a target and then hits it with a melee weapon attack, the attack deals an extra 7 (2d6) damage to the target."
+      },
+      {
+        "name": "Monkey Grip",
+        "desc": "The ape can wield a two-handed weapon in one hand."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The ape makes two attacks: one with its fist and one with its greatsword."
+      },
+      {
+        "name": "Fist",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 6 (1d6 + 3) bludgeoning damage."
+      },
+      {
+        "name": "Greatsword",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 10 (2d6 + 3) slashing damage."
+      },
+      {
+        "name": "Rock",
+        "desc": "Ranged Weapon Attack: +5 to hit, range 25/50 ft., one target. Hit 6 (1d6 + 3) bludgeoning damage. W WINGED APE 88"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3qzcso/day_76_winged_ape/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S76",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-66-infestation-swarm",
+    "name": "Infestation Swarm",
+    "cr": "4",
+    "type": "monstrosity (swarm)",
+    "hit_points": 44,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium (tiny)",
+    "alignment": "unaligned",
+    "hp_formula": "8d8 + 8",
+    "speed": {
+      "walk": "0 ft.",
+      "fly": "30 ft."
+    },
+    "str": 9,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": {
+      "con": 7,
+      "wis": 5
+    },
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "bludgeoning, piercing, slashing",
+    "damage_immunities": null,
+    "condition_immunities": "charmed, frightened, paralyzed,",
+    "senses": "passive Perception 11",
+    "languages": "-",
+    "xp": 1100,
+    "special_abilities": [
+      {
+        "name": "Swarm",
+        "desc": "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a tiny insect. The swarm can't regain hit points or gain temporary hit points."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bites",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 0 ft., one creature in the swarm's space. Hit 21 (6d6) piercing damage, or 10 (3d6) piercing damage if the swarm has half of its hit points or fewer."
+      },
+      {
+        "name": "Infest (Recharge 6)",
+        "desc": "One creature in the swarm's space must succeed on a DC 14 Constitution saving throw or become infested by the swarm; the swarm then disappears inside the host, and the target is incapacitated and loses control of its body. The swarm now controls the body but doesn't deprive the target of awareness. The swarm can't be targeted by any attack, spell, or other effect, and it retains its"
+      },
+      {
+        "name": "Intelligence, Wisdom, and Charisma",
+        "desc": "It otherwise uses the infested target's statics, but doesn't gain access to the target's knowledge, class features or proficiencies. The infestation lasts until the body drops to 0 hit points, the swarm ends it as a bonus action, or the swarm is forced out by an effect that removes disease like the lesser restoration spell. When the infestation ends, the swarm reappears in an unoccupied space within 5 feet of the body. The target is immune to this swarm's Infest for 24 hours after succeeding on the saving throw or after the infestation ends. I INFESTATION SWARM 47 Kirin, Lesser Large celestial, neutral good Armor Class 14 (natural armor) Hit Points 83 (10d10 + 30)"
+      },
+      {
+        "name": "Speed 40 ft",
+        "desc": ", fly 40 ft. STR DEX CON INT WIS CHA 20 (+5) 14 (+2) 16 (+3) 10 (+0) 14 (+2) 18 (+4) Saving Throws Con +7, Wis +5 Senses passive Perception 12 Languages Celestial, Common, Sylvan, telepathy 120 ft. Challenge 5 (1,800 XP)"
+      },
+      {
+        "name": "Charge",
+        "desc": "If the Kirin moves at least 20 feet straight toward a creature and then hits it with a horn attack on the same turn, the target must succeed on a DC 12 Strength saving throw or be knocked prone. If the target is prone, the Kirin can make one hooves attack against it as a bonus action."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3pn9gi/day_66_infestation_swarm/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S66",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-75-pumpkin-king",
+    "name": "Pumpkin King",
+    "cr": "13",
+    "type": "plant",
+    "hit_points": 225,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "unaligned",
+    "hp_formula": "18d12 + 108",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 23,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "str": 11,
+      "con": 11,
+      "wis": 7
+    },
+    "skills": null,
+    "damage_vulnerabilities": "Slashing",
+    "damage_resistances": "cold, fire, lightning",
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 120 ft., passive Perception 17",
+    "languages": "Common, Sylvan",
+    "xp": 10000,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If the king fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The king makes two slam attacks."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit 17 (2d10 + 6) bludgeoning damage."
+      },
+      {
+        "name": "Squash",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit 15 (2d8 + 6) bludgeoning damage. The target must succeed on a DC 19 Strength saving throw or be knocked prone"
+      },
+      {
+        "name": "Gourd",
+        "desc": "Ranged Weapon Attack: +11 to hit, range 60/240 ft., one target. Hit 28 (4d10 + 6) bludgeoning damage."
+      },
+      {
+        "name": "Seed Spit (Recharge 5-6)",
+        "desc": "The king spits pumpkin seeds in a 60-foot cone. Each creature in that area must make a DC 19 Dexterity saving throw, taking 45 (10d8) piercing damage on a failed save, or half as much damage on a successful one."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [
+      {
+        "name": "Squash",
+        "desc": "The king makes a squash attack."
+      },
+      {
+        "name": "Vine Lash (Costs 2 Actions)",
+        "desc": "The king lashes out with entangling vines. Each enemy creature within 20 feet of the king must succeed on a DC 19 Dexterity saving throw or become restrained. A creature restrained by the vines can use its action to make a DC 19 Strength check, freeing itself on a success. The vines can also be attacked and destroyed (AC 12; hp 20; vulnerability to slashing damage)."
+      },
+      {
+        "name": "Trick or Treat (Costs 3 Actions)",
+        "desc": "The king scatters up to three pumpkins, which fall in unoccupied spaces within 20 feet of the king. Each pumpkin then polymorphs into any kind of creature whose challenge rating is 4 or less, and acts as an ally of its king. The creatures revert to ordinary pumpkins when destroyed. The king can't control more than three polymorphed pumpkins at a time. P PUMPKIN KING 63"
+      }
+    ],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3quzlc/day_75_pumpkin_king/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S75",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-81-sylvan-stalker",
+    "name": "Sylvan Stalker",
+    "cr": "8",
+    "type": "plant",
+    "hit_points": 78,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral",
+    "hp_formula": "12d8 + 24",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 18,
+    "saving_throws": {
+      "dex": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 7,
+      "perception": 8,
+      "stealth": 10
+    },
+    "damage_vulnerabilities": "fire",
+    "damage_resistances": "bludgeoning, piercing",
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 18",
+    "languages": "Common, Druidic, Elvish, Sylvan",
+    "xp": 3900,
+    "special_abilities": [
+      {
+        "name": "Cunning Action",
+        "desc": "On each of its turns, the stalker can use its bonus action to take the Dash, Disengage, or"
+      },
+      {
+        "name": "Deadly Aim",
+        "desc": "The stalker deals an extra 9 (2d8) damage when it hits with a ranged weapon attack (included in the attack). Additionally its ranged attacks ignore half cover and three-quarters cover."
+      },
+      {
+        "name": "Silent Sniper",
+        "desc": "When the stalker is hidden from a creature, making a ranged weapon attack doesn't reveal its position."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The stalker makes three ranged attacks."
+      },
+      {
+        "name": "Longbow",
+        "desc": "Ranged Weapon Attack: +7 to hit, range 150/600 ft., one target. Hit 17 (3d8 + 4) piercing damage. S SYLVAN STALKER 80"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3rnhq1/day_81_sylvan_stalker/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S81",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-91-armed-skeleton",
+    "name": "Armed Skeleton",
+    "cr": "1",
+    "type": "undead",
+    "hit_points": 26,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "lawful evil",
+    "hp_formula": "4d8 + 8",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 12,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": {
+      "athletics": 3
+    },
+    "damage_vulnerabilities": "bludgeoning",
+    "damage_resistances": null,
+    "damage_immunities": "poison",
+    "condition_immunities": "exhaustion, poisoned",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "understands all languages it knew in life",
+    "xp": 200,
+    "special_abilities": [
+      {
+        "name": "Armed Advantage",
+        "desc": "The skeleton has advantage on"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The skeleton makes four melee attacks."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +3 to hit, reach 5ft., one target. Hit 3 (1d4 + 1) slashing damage."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3swk7b/day_91_armed_skeleton/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S91",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-42-burning-skeleton",
+    "name": "Burning Skeleton",
+    "cr": "1",
+    "type": "undead",
+    "hit_points": 26,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "lawful evil",
+    "hp_formula": "4d8 + 8",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 10,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 14,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": "bludgeoning, cold",
+    "damage_resistances": null,
+    "damage_immunities": "fire, poison",
+    "condition_immunities": "exhaustion, poisoned",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "understands all languages it knew in life",
+    "xp": 200,
+    "special_abilities": [
+      {
+        "name": "Heated Body",
+        "desc": "A creature that touches the skeleton or hits it with a melee attack while within 5 feet of it takes 3 (1d6) fire damage."
+      },
+      {
+        "name": "Heated Weapons",
+        "desc": "Any weapon the skeleton wields deals an extra 3 (1d6) fire damage on a hit (included in the attack)."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The skeleton makes two melee attacks."
+      },
+      {
+        "name": "Shortsword",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit 5 (1d6 + 2) piercing damage plus 3 (1d6) fire damage."
+      },
+      {
+        "name": "Shortbow",
+        "desc": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit 5 (1d6 + 2) piercing damage plus 3 (1d6) fire damage. S SKELETONS 73"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3ml17i/day_42_burning_skeleton/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S42",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-84-chainer-geist",
+    "name": "Chainer Geist",
+    "cr": "4",
+    "type": "undead",
+    "hit_points": 45,
+    "armor_class": 11,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "chaotic evil",
+    "hp_formula": "10d8",
+    "speed": {
+      "walk": "0 ft.",
+      "fly": "40 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 13,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "acid, fire, lightning, thunder;",
+    "damage_immunities": "cold, necrotic, poison",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 60 ft., passive Perception 11",
+    "languages": "any languages it knew in life",
+    "xp": 1100,
+    "special_abilities": [
+      {
+        "name": "Ethereal Sight",
+        "desc": "The Geist can see 60 feet into the Ethereal Plane when it is on the Material Plane, and vice versa."
+      },
+      {
+        "name": "Incorporeal Movement",
+        "desc": "The Geist can move through other creatures and objects as if they were difficult terrain. It takes 5 (1d10) force damage if it ends its turn inside an object."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The Geist makes two attacks with its chains."
+      },
+      {
+        "name": "Chain",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 10 ft., one target. Hit 10 (2d6 + 3) bludgeoning damage. The target is grappled (escape DC 13) if the Geist isn't already grappling a creature. Until this grapple ends, the target is restrained and takes 3 (1d6) necrotic damage at the start of each of its turns."
+      },
+      {
+        "name": "Etherealness",
+        "desc": "The Geist enters the Ethereal Plane from the Material Plane, or vice versa. It is visible on the Material Plane while it is in the Border Ethereal, and vice versa, yet it can't affect or be affected by anything on the other plane. C CHAINER GEIST Chamaelean Similar to lizardfolks, but smaller in size and with chameleonic traits rather than lizards, chamaeleans live and lurk in forests, hunting creatures while hiding changing their skin coloration to adapt to the environment. The chamaelean are able to vary their coloration and pattern through combinations of pink, blue, red, orange, green, black, brown, light blue, yellow, turquoise, and purple. They also change their skin coloration depending on the temperature and intentions. For example, chamaeleans tend to show brighter colors when fighting. 9"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3s0lep/day_84_chainer_geist/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S84",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-64-froghoul",
+    "name": "Froghoul",
+    "cr": "2",
+    "type": "undead",
+    "hit_points": 27,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "chaotic evil",
+    "hp_formula": "5d8 + 5",
+    "speed": {
+      "walk": "30 ft.",
+      "swim": "30 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "necrotic",
+    "damage_immunities": "poison",
+    "condition_immunities": "charmed, exhaustion, poisoned",
+    "senses": "darkvision 60 ft., passive Perception 10",
+    "languages": "-",
+    "xp": 450,
+    "special_abilities": [
+      {
+        "name": "Leap Attack",
+        "desc": "The froghoul doesn't provoke opportunity attacks when it moves out of an enemy's reach."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +3 to hit, reach 5 ft., one creature. Hit 4 (2d8 + 3) piercing damage. The froghoul has advantage on this attack if the target is grappled by it."
+      },
+      {
+        "name": "Tounge",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 15 ft., one creature. Hit 7 (1d8 + 3) bludgeoning damage and the target is grappled (escape DC 13) and pulled 10 feet toward the froghoul. If the target is a creature other than an undead, it must succeed on a DC 10 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3pd73a/day_64_froghoul/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S64",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-1-grave-titan",
+    "name": "Grave Titan",
+    "cr": "10",
+    "type": "undead",
+    "hit_points": 200,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "neutral evil",
+    "hp_formula": "16d12 + 96",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 27,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": {
+      "con": 10,
+      "wis": 3
+    },
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": "poison",
+    "condition_immunities": "poisoned",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "understands Common but can't speak",
+    "xp": 5900,
+    "special_abilities": [
+      {
+        "name": "Undead Fortitude",
+        "desc": "If damage reduces the grave titan to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or from a critical hit. On a success, the grave titan drops to 1 hit point instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The titan makes two greatsword attacks."
+      },
+      {
+        "name": "Greatsword",
+        "desc": "Melee Weapon Attack: +12 to hit, reach 10 ft., one target. Hit 29 (6d6 + 8) slashing damage."
+      },
+      {
+        "name": "Hurl Zombies",
+        "desc": "Ranged Weapon Attack: +12 to hit, range 60/240 ft., one target. Hit 30 (4d10 + 8) bludgeoning damage. After the attack hits or misses, 1d4 + 1 zombies arise adjacent to the target. G GRAVE TITAN Grove Guardian A manifestation of nature's own self-defense, the grove guardian travels through the wilderness, protecting the land and its inhabitants. Taking the shape of a wolf, the grove guardian uses its fangs and powerful magic to drive away anything that threatens its land."
+      },
+      {
+        "name": "Neutral Guardians",
+        "desc": "Grove guardians do not think of things in terms of wrong or right, nor do they care for law. Emerging to protect the land it has been bound to, a grove guardian attacks all with zealous animosity. Only those who can convince it of their desire to protect the land are left alone. Druids are recognized by grove guardians but not exempt from their judgment, having to prove their loyalty to nature before a guardian will ignore them."
+      },
+      {
+        "name": "Silent Sentinels",
+        "desc": "Prior to attacking, grove guardians will make their presence known to outsiders. Observing from a distance and gradually drawing closer. If outsiders do not demonstrate proper respect or fail to acknowledge grove guardians in communication, the guardians will attack."
+      },
+      {
+        "name": "Force of Nature",
+        "desc": "The lands calls grove guardians to its aid. Their number increase in accordance to the danger of the situation. Often only one guardian will be called in defense against wandering outsiders, but a whole pack may appear in the wake of cataclysmic events. 40"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3hhz6e/day_1_grave_titan/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S1",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-52-spider-skull",
+    "name": "Spider Skull",
+    "cr": "1/2",
+    "type": "undead",
+    "hit_points": 13,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Tiny",
+    "alignment": "neutral evil",
+    "hp_formula": "3d4 + 6",
+    "speed": {
+      "walk": "30 ft.",
+      "climb": "30 ft."
+    },
+    "str": 14,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 16,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": "bludgeoning",
+    "damage_resistances": null,
+    "damage_immunities": "poison",
+    "condition_immunities": "exhaustion, poisoned",
+    "senses": "blindsight 30 ft., darkvision 60 ft., passive",
+    "languages": "understands Common but can't speak",
+    "xp": 100,
+    "special_abilities": [
+      {
+        "name": "Pack Tactics",
+        "desc": "The skull has advantage on attack rolls against a creature if at least one of the skull's allies is within 5 feet of the creature and the ally isn't incapacitated."
+      },
+      {
+        "name": "Turn Immunity",
+        "desc": "The skull is immune to effects that turn undead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit 5 (1d4 + 3) piercing damage, and the skull attaches to the target. If the target is Medium or smaller and the skull has advantage on the attack roll, it attaches on the target's face, and the target is also blinded while the skull is attached in this way. While attached to the target, the skull can attack no other creature except the target but has advantage on its attack rolls. The skull's speed also becomes 0, and it moves with the target. A creature can detach the skull by making a successful DC 12 Strength check as an action. On its turn, the skull can detach itself from the target by using 5 feet of movement."
+      },
+      {
+        "name": "Kiss of Undeath (1/Day)",
+        "desc": "If the skull is attached to a creature's face, it inserts its proboscis into the target mouth. The target must succeed on a DC 12 Constitution saving throw or take 10 (3d6) poison damage and become poisoned for one hour. S SPIDER SKULL Spirit A spirit is the torn remnants of a once-living creature, bound to a specific location, creature or object. Like their close counter-parts, Ghosts, spirits haunt their location however they have been forced into manifesting their essence split between the Ethereal and Material Plane."
+      },
+      {
+        "name": "Tasked to Remember",
+        "desc": "A spirit serves as a living reminder of the past. Created from horrific circumstances, a spirit often acts as though they still lived, going about their daily lives and interacting with living beings by questioning or ignoring them. If the spirit was created by a horrific event like desolation of a city or horrific act done upon them, the spirit harbors the ill will or fear of that moment, reacting violently or fearfully to those it comes in contact with."
+      },
+      {
+        "name": "Ghostly Manifestations",
+        "desc": "Sensations of profound sadness, loneliness, and unfulfilled yearning emanate from places where spirits can be found. Quite whispers, odd sounds or unnatural silences create an ominous atmosphere."
+      },
+      {
+        "name": "Undead Nature",
+        "desc": "A spirit doesn't require air, food, drink or sleep. 76"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3nur5w/day_52_spider_skull/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S52",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-27-spirit",
+    "name": "Spirit",
+    "cr": "1/2",
+    "type": "undead",
+    "hit_points": 16,
+    "armor_class": 11,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "any alignment",
+    "hp_formula": "3d8 + 3",
+    "speed": {
+      "walk": "0 ft.",
+      "fly": "30 ft."
+    },
+    "str": 7,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 13,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "acid, fire, lightning, thunder;",
+    "damage_immunities": "cold, necrotic, poison",
+    "condition_immunities": "charmed, exhaustion,",
+    "senses": "darkvision 60 ft., passive Perception 11",
+    "languages": "any languages it knew in life",
+    "xp": 100,
+    "special_abilities": [
+      {
+        "name": "Ethereal Sight",
+        "desc": "The spirit can see 60 feet into the Ethereal Plane when it is on the Material plane, and vice versa."
+      },
+      {
+        "name": "Incorporeal Movement",
+        "desc": "The spirit can move through other creatures and objects as if they were difficult terrain. It takes 5 (1d10) force damage if it ends its turn inside an object."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Withering Touch",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit 9 (2d6 + 2) necrotic damage."
+      },
+      {
+        "name": "Etherealness",
+        "desc": "The spirit enters the Ethereal Plane from the Material Plane, or vice versa. It is visible on the Material Plane while it is in the Border Ethereal, and vice versa, yet it can't affect or be affected by anything on the other plane."
+      },
+      {
+        "name": "Scare (1/Day)",
+        "desc": "One creature of the spirit's choice within 20 feet of it must succeed on a DC 10"
+      },
+      {
+        "name": "Wisdom saving throw or be frightened for 1 minute",
+        "desc": "The target can repeat the saving throw at the end of each of its turns, with disadvantage if the spirit is within line of sight, ending the effect on itself on a success. S SPIRIT 77"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3koi6v/day_27_spirit/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S27",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-48-tentaghoul",
+    "name": "Tentaghoul",
+    "cr": "3",
+    "type": "undead",
+    "hit_points": 76,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "9d10 + 27",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 19,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 9,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "necrotic, bludgeoning",
+    "damage_immunities": "poison",
+    "condition_immunities": "charmed, exhaustion, poisoned",
+    "senses": "darkvision 60 ft., passive Perception 9",
+    "languages": "Common, Giant",
+    "xp": 700,
+    "special_abilities": [
+      {
+        "name": "Stench",
+        "desc": "Any creature that starts its turn within 10 feet of the tentaghoul must succeed on a DC 12 Constitution saving throw or be poisoned until the start of its next turn. On a successful saving throw, the creature is immune to the tentaghoul's Stench for 24 hours."
+      },
+      {
+        "name": "Turning Defiance",
+        "desc": "The tentaghoul and any ghouls within 30 feet of it have advantage on saving throws against effects that turn undead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Tentacle",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 10 ft., one target. Hit 13 (2d8 + 4) bludgeoning damage. If the target is a creature other than an undead, it must succeed on a DC 12 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. G GHOULS 32"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3nctcd/day_48_tentaghoul/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S48",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-59-wight-walker",
+    "name": "Wight Walker",
+    "cr": "6",
+    "type": "undead",
+    "hit_points": 112,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral evil",
+    "hp_formula": "15d8 + 45",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 16,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 15,
+    "saving_throws": null,
+    "skills": {
+      "perception": 5,
+      "stealth": 5
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "cold, necrotic; bludgeoning,",
+    "damage_immunities": "poison",
+    "condition_immunities": "exhaustion, poisoned",
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "the languages it knew in life",
+    "xp": 2300,
+    "special_abilities": [
+      {
+        "name": "Chilled Body",
+        "desc": "A creature that touches the wight or hits it with a melee attack while within 5 feet of it takes 7 (2d6) cold damage."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The wight makes two battleaxe attacks. It can use its Life Drain in place of one battleaxe attack."
+      },
+      {
+        "name": "Battleaxe",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit 7 (1d8 + 3) slashing damage plus 7 (2d6) cold damage, or 8 (1d10 + 3) slashing damage plus 7 (2d6) cold damage if used with two hands."
+      },
+      {
+        "name": "Life Drain",
+        "desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit 10 (2d6 + 3) necrotic damage. The target must succeed on a DC 15 Constitution saving throw or its hit point maximum is reduced by an amount equal to the damage taken. This reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0. A humanoid slain by this attack rises 24 hours later as a zombie under the wight's control, unless the humanoid is restored to life or its body is destroyed. The wight can have no more than twelve zombies under its control at one time."
+      },
+      {
+        "name": "Frost Breath (Recharge 5-6)",
+        "desc": "The wight exhales a blast of frosty wind in a 15-foot cone. Each creature in that area must make a DC 15 Dexterity saving throw, taking 27 (6d8) cold damage on a failed save, or half as much damage on a successful one. W WIGHT WALKER 87"
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/3oqgxh/day_59_wight_walker/",
+    "monster_a_day_author": "StoneStrix",
+    "monster_a_day_day_id": "S59",
+    "monster_a_day_notes": null
+  }
+]

@@ -195,6 +195,7 @@ export function MonsterStatBlock({
   onClose,
   renderDesc: renderDescProp,
 }: MonsterStatBlockProps) {
+  const isMonsterADay = !!monster.monster_a_day_url;
   const pb = calculateProficiencyBonus(monster.cr);
   const dexMod = monster.dex !== undefined ? abilityModNum(monster.dex) : null;
 
@@ -271,9 +272,23 @@ export function MonsterStatBlock({
           creatureType={monster.type}
           name={monster.name}
           size={64}
+          isMonsterADay={isMonsterADay}
         />
         <div className="flex-1 min-w-0">
-          <div className="card-name">{monster.name}</div>
+          <div className="card-name flex items-center gap-2 flex-wrap">
+            <span>{monster.name}</span>
+            {isMonsterADay && (
+              <a
+                href={monster.monster_a_day_url ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-900/40 text-orange-400 border border-orange-500/30 whitespace-nowrap hover:bg-orange-900/60 transition-colors"
+                title="Ver no Reddit — r/monsteraday"
+              >
+                Monster a Day
+              </a>
+            )}
+          </div>
           <div className="card-subtitle">
             {monster.size} {monster.type}
             {monster.alignment ? `, ${monster.alignment}` : ""}
@@ -394,6 +409,25 @@ export function MonsterStatBlock({
               </p>
             ))}
           </div>
+        </>
+      )}
+
+      {isMonsterADay && (
+        <>
+          <CardDivider />
+          <p className="prop-line" style={{ fontSize: "0.75rem" }}>
+            <span className="prop-label">Fonte </span>
+            <a
+              href={monster.monster_a_day_url ?? undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-400 hover:text-orange-300 underline"
+            >
+              r/monsteraday
+              {monster.monster_a_day_day_id ? ` — ${monster.monster_a_day_day_id}` : ""}
+              {monster.monster_a_day_author ? ` (${monster.monster_a_day_author})` : ""}
+            </a>
+          </p>
         </>
       )}
     </section>

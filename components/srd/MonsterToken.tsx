@@ -54,6 +54,8 @@ interface MonsterTokenProps {
   name: string;
   /** px size — defaults to 64 */
   size?: number;
+  /** When true: skip image loading, show emoji with MAD orange border + r/ badge */
+  isMonsterADay?: boolean;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -64,11 +66,12 @@ export function MonsterToken({
   creatureType,
   name,
   size = 64,
+  isMonsterADay = false,
 }: MonsterTokenProps) {
-  const tokenUrl = proxyUrl(rawTokenUrl);
-  const fallbackTokenUrl = proxyUrl(rawFallbackTokenUrl);
+  const tokenUrl = isMonsterADay ? undefined : proxyUrl(rawTokenUrl);
+  const fallbackTokenUrl = isMonsterADay ? undefined : proxyUrl(rawFallbackTokenUrl);
   const [currentSrc, setCurrentSrc] = useState<string | null>(tokenUrl ?? null);
-  const [showEmoji, setShowEmoji] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(isMonsterADay);
   const retriesRef = useRef(0);
   const triedFallbackRef = useRef(false);
   const triedGithubDirectRef = useRef(false);
@@ -138,18 +141,29 @@ export function MonsterToken({
         alt={`${name} token`}
         loading="lazy"
         onError={handleError}
-        className={`${sizeClass} rounded-full object-cover border-2 border-[#c9a959]/40 bg-[#1a1a1e] flex-shrink-0`}
+        className={`${sizeClass} rounded-full object-cover border-2 border-oracle/40 bg-surface-secondary flex-shrink-0`}
       />
     );
   }
 
-  // Fallback: emoji in styled circle
+  // Fallback: emoji in styled circle (orange for MAD, gold for standard)
+  const borderClass = isMonsterADay
+    ? "border-orange-500/50 bg-orange-950/30"
+    : "border-oracle/30 bg-surface-tertiary";
   return (
     <div
-      className={`${sizeClass} rounded-full border-2 border-[#c9a959]/30 bg-[#22222a] flex items-center justify-center flex-shrink-0`}
+      className={`${sizeClass} rounded-full border-2 ${borderClass} flex items-center justify-center flex-shrink-0 relative`}
       aria-hidden
     >
       {getCreatureEmoji(creatureType)}
+      {isMonsterADay && size >= 36 && (
+        <span
+          className="absolute -bottom-0.5 -right-0.5 text-[8px] leading-none bg-orange-600 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold"
+          title="Monster a Day"
+        >
+          r/
+        </span>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   loadSpells,
   loadConditions,
   loadItems,
+  loadMadMonsters,
 } from "@/lib/srd/srd-loader";
 import {
   getCachedMonsters,
@@ -133,6 +134,19 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
 
       scheduleDeferred(() => {
         get().loadVersionOnDemand(DEFERRED_VERSION);
+      });
+
+      // Phase 3: Load Monster-a-Day community monsters (non-critical)
+      scheduleDeferred(async () => {
+        try {
+          const madMonsters = await loadMadMonsters();
+          if (madMonsters.length > 0) {
+            srdSearchProvider.mergeImportedMonsters(madMonsters);
+            set((state) => ({ monsters: [...state.monsters, ...madMonsters] }));
+          }
+        } catch {
+          // MAD load failure is non-critical
+        }
       });
     } catch (err) {
       const message =

@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Monster a Day source files — keep locally, never delete
+/monster a day - nao apagar/
+
 # dependencies
 /node_modules
 /.pnp

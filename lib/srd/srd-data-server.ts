@@ -18,7 +18,13 @@ export function getSrdMonsters(): SrdMonster[] {
     const m2024: SrdMonster[] = JSON.parse(
       readFileSync(join(SRD_DIR, "monsters-2024.json"), "utf-8")
     );
-    monsterCache = [...m2014, ...m2024].filter((m) => m.is_srd === true);
+    let mad: SrdMonster[] = [];
+    try {
+      mad = JSON.parse(readFileSync(join(SRD_DIR, "monsters-mad.json"), "utf-8"));
+    } catch {
+      // MAD file is optional
+    }
+    monsterCache = [...m2014, ...m2024].filter((m) => m.is_srd === true).concat(mad);
   } catch {
     monsterCache = [];
   }
