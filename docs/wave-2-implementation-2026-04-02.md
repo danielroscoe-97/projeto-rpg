@@ -80,7 +80,7 @@ DM inflige dano em monstro
 
 ---
 
-## W2.2 — Notas com Pastas 🟡 PARCIALMENTE IMPLEMENTADO
+## W2.2 — Notas com Pastas ✅ CONCLUÍDO
 
 ### Status atual
 
@@ -97,13 +97,22 @@ O componente DM (`CampaignNotes.tsx`) está **completo**. O trabalho restante é
 | Filtro por pasta no sidebar | `filteredNotes` useMemo | ✅ Completo |
 | Contador de notas por pasta | `noteCounts` useMemo | ✅ Completo |
 
-### Player side — PENDENTE (próxima wave)
+### Player side — COMPLETO ✅
 
-| Feature | Status | Decisão necessária |
-|---------|--------|-------------------|
-| Aba "Notas" na player view | 🔲 Não implementado | Onde fica na UI do player? |
-| Query `is_shared = true` | 🔲 Não implementado | Via polling ou trigger realtime? |
-| RLS policy `is_shared` | ⚠️ A verificar no Supabase | — |
+| Feature | Arquivo | Status |
+|---------|---------|--------|
+| `PlayerSharedNotes` component | `components/player/PlayerSharedNotes.tsx` | ✅ Criado |
+| Toggle "Notas" no header | `PlayerJoinClient.tsx` — header buttons | ✅ Implementado |
+| `showNotes` state + painel colapsável | `PlayerJoinClient.tsx` | ✅ Mesmo padrão do SpellOracle |
+| `campaignId` prop | `PlayerJoinClient.tsx` + `join/[token]/page.tsx` | ✅ Auth-only |
+| i18n keys (pt-BR + en) | `messages/pt-BR.json` + `messages/en.json` | ✅ 5 keys adicionadas |
+| RLS policy `campaign_notes_shared_read` | Migration `052` — aplicada em produção | ✅ Feito |
+
+### UX Decision (Sally)
+
+Padrão: **mesmo painel colapsável do SpellOracle** — botão "Notas" no header, abre panel acima do combat board, fecha com ✕. Consistente, não disploca a initiative board.
+
+Botão "Notas" só aparece para **authenticated campaign members** (`campaignId` truthy). Anon players não veem o botão.
 
 ### Arquitetura recomendada (Winston)
 
@@ -138,6 +147,4 @@ CREATE POLICY "players_can_read_shared_notes"
 | ✅ Fix `PlayerJoinClient.tsx:737` | Implementado | — |
 | ✅ Guard tier FULL no `HpStatusBadge` | Implementado | — |
 | ✅ Backlog atualizado (BT-08 → DONE) | Feito | — |
-| 🔲 W2.2 Player side — RLS check | **Você** | Verificar no Supabase Dashboard |
-| 🔲 W2.2 Player side — decisão UX | **Você** | Onde fica a aba no player? |
-| 🔲 W2.2 Player side — implementação | Próxima wave | Depende das 2 linhas acima |
+| ✅ W2.2 RLS — migration `052` aplicada | Implementado | — |

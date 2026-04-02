@@ -166,3 +166,54 @@ Antes de considerar qualquer combat feature ou fix completo, responder:
 // ❌ ERRADO: Implementar fix só no GuestCombatClient
 // ✅ CERTO: Verificar os 3 modos e implementar onde aplicável
 ```
+
+# Resilient Player Reconnection Rule — Zero-Drop Guarantee
+
+**REGRA IMUTÁVEL**: A conexão do jogador NUNCA pode ser perdida de forma perceptível. Reconexão DEVE ser automática e invisível. Spec completo: `docs/spec-resilient-reconnection.md`
+
+## Princípios Absolutos
+
+1. **Zero friction para reconexão**: DM NUNCA precisa aprovar reconexão se o token do jogador ainda existe e está ativo no DB
+2. **Defense in depth**: Toda detecção de saída e reconexão usa múltiplas camadas de fallback — NUNCA depender de um único mecanismo
+3. **Best-effort cleanup**: `pagehide`, `sendBeacon`, `broadcast`, `untrack` são TODOS best-effort — o sistema DEVE funcionar se TODOS falharem
+4. **Heartbeat miss é o fallback absoluto**: DM timer de stale detection (15s polling) é a última linha de defesa
+
+## Checklist Obrigatório — Qualquer Mudança em Realtime/Conexão
+
+1. **pagehide handler existe?** — Broadcast `player:disconnecting` + sendBeacon no unload
+2. **visibilitychange bidirecional?** — Age tanto no "hidden" (idle broadcast, pause heartbeat) quanto no "visible" (reconnect, validate token ownership)
+3. **Heartbeat pausa em hidden?** — `document.visibilityState === "hidden"` check antes de enviar
+4. **Storage persist?** — sessionStorage + localStorage salvos após register/rejoin
+5. **Reconnect-from-storage no mount?** — Checa storage ANTES de signInAnonymously
+6. **Split-brain protection?** — Valida token_owner no visibilitychange visible
+7. **DM stale detection timer?** — Timer de 15s no DM que checa last_seen_at independente de broadcast
+
+## Anti-Patterns — PROIBIDO
+
+```
+// ❌ NUNCA depender APENAS de visibilitychange em mobile
+// ❌ NUNCA exigir aprovação do DM para reconexão (exceto token revogado)
+// ❌ NUNCA mostrar banner de "desconectado" nos primeiros 3s
+// ❌ NUNCA rodar heartbeat quando tab está hidden
+// ❌ NUNCA depender APENAS de broadcasts para detectar offline
+// ❌ NUNCA depender APENAS de cookies/localStorage (ambos podem sumir)
+// ❌ NUNCA fazer operação assíncrona blocking no pagehide
+// ❌ NUNCA mostrar tela branca ou formulário durante reconexão (use skeleton)
+```
+
+## Cadeia de Fallbacks
+
+```
+DETECÇÃO DE SAÍDA (DM sabe que jogador saiu):
+  L1: broadcast player:disconnecting     (< 2s, best-effort)
+  L2: sendBeacon → last_seen_at = null   (< 2s, best-effort)
+  L3: Presence untrack timeout            (~ 30s, Supabase interno)
+  L4: DM timer stale detection            (< 45s, confiável)
+
+RECONEXÃO DO JOGADOR (jogador volta):
+  L1: sessionStorage (mesmo browser, tab restore)
+  L2: localStorage (browser fechou e abriu, 24h TTL)
+  L3: Cookie auth (anon session viva, same-device)
+  L4: Lista de nomes (server-side, 1 clique)
+  L5: Formulário completo (último recurso)
+```

@@ -5,12 +5,12 @@ import { useTranslations } from "next-intl";
 import { List as VirtualList, type RowComponentProps } from "react-window";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
-import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { MonsterADayBadge } from "@/components/compendium/MonsterADayBadge";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import type { RulesetVersion } from "@/lib/types/database";
+
+type SourceFilter = "all" | "srd" | "complete" | "mad";
 
 const ROW_HEIGHT = 48;
 
@@ -111,7 +111,6 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
 export function MonsterBrowser() {
   const t = useTranslations("compendium");
   const allMonsters = useSrdStore((s) => s.monsters);
-  const { filtered: monsters } = useSrdContentFilter(allMonsters);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
   // Filters
@@ -119,7 +118,7 @@ export function MonsterBrowser() {
   const [crRanges, setCrRanges] = useState<Set<string>>(new Set());
   const [types, setTypes] = useState<Set<string>>(new Set());
   const [sizes, setSizes] = useState<Set<string>>(new Set());
-  const [versionFilter, setVersionFilter] = useState<RulesetVersion | "all">("all");
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Selection (split-panel)
@@ -155,16 +154,22 @@ export function MonsterBrowser() {
     setter(next);
   }, []);
 
+  const isMad = (m: SrdMonster) => !!m.monster_a_day_url;
+
+  const sourceFiltered = useMemo(() => {
+    if (sourceFilter === "srd") return allMonsters.filter((m) => m.is_srd === true && !isMad(m));
+    if (sourceFilter === "complete") return allMonsters.filter((m) => !isMad(m));
+    if (sourceFilter === "mad") return allMonsters.filter((m) => isMad(m));
+    // "all" = SRD + MAD (hides non-SRD 5e.tools content by default)
+    return allMonsters.filter((m) => m.is_srd !== false || isMad(m));
+  }, [allMonsters, sourceFilter]);
+
   const filtered = useMemo(() => {
-    let result = monsters;
+    let result = sourceFiltered;
 
     if (nameFilter) {
       const q = nameFilter.toLowerCase();
       result = result.filter((m) => m.name.toLowerCase().includes(q));
-    }
-
-    if (versionFilter !== "all") {
-      result = result.filter((m) => m.ruleset_version === versionFilter);
     }
 
     if (crRanges.size > 0) {
@@ -188,7 +193,7 @@ export function MonsterBrowser() {
     }
 
     return [...result].sort((a, b) => a.name.localeCompare(b.name));
-  }, [monsters, nameFilter, versionFilter, crRanges, types, sizes]);
+  }, [sourceFiltered, nameFilter, crRanges, types, sizes]);
 
   // Derive selected monster; clear selectedKey if filtered out
   const selectedMonster = useMemo(() => {
@@ -270,17 +275,17 @@ export function MonsterBrowser() {
           <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
         </svg>
         {t("filters")}
-        {(crRanges.size > 0 || types.size > 0 || sizes.size > 0 || versionFilter !== "all") && (
+        {(crRanges.size > 0 || types.size > 0 || sizes.size > 0 || sourceFilter !== "all") && (
           <span className="w-1.5 h-1.5 rounded-full bg-gold" />
         )}
       </button>
 
       {filtersOpen && (
         <div className="space-y-2 pl-1">
-          <FilterGroup label={t("filter_version")}>
-            {(["all", "2014", "2024"] as const).map((v) => (
-              <Chip key={v} active={versionFilter === v} onClick={() => setVersionFilter(v)}>
-                {v === "all" ? t("filter_version_all") : v}
+          <FilterGroup label={t("filter_source")}>
+            {(["all", "srd", "complete", "mad"] as const).map((s) => (
+              <Chip key={s} active={sourceFilter === s} onClick={() => setSourceFilter(s)}>
+                {t(`filter_source_${s}`)}
               </Chip>
             ))}
           </FilterGroup>
@@ -312,7 +317,7 @@ export function MonsterBrowser() {
       )}
 
       <div className="text-[11px] text-muted-foreground">
-        {t("showing_results", { count: filtered.length, total: monsters.length })}
+        {t("showing_results", { count: filtered.length, total: sourceFiltered.length })}
       </div>
       <div className="sr-only" role="status" aria-live="polite">
         {t("monsters_found_aria", { count: filtered.length })}
