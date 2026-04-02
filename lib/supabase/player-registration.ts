@@ -314,7 +314,7 @@ export async function rejoinAsPlayer(
   // Find the token for this player in this session
   const { data: token, error: tokenError } = await supabase
     .from("session_tokens")
-    .select("id, player_name, anon_user_id")
+    .select("id, player_name, anon_user_id, last_seen_at")
     .eq("session_id", sessionId)
     .eq("player_name", name)
     .eq("is_active", true)

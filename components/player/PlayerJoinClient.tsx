@@ -15,13 +15,14 @@ import type { RulesetVersion } from "@/lib/types/database";
 import type { Plan } from "@/lib/types/subscription";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
+import { persistPlayerIdentity, loadPlayerIdentity, clearPlayerIdentity } from "@/lib/player-identity-storage";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
-
+import { PlayerSharedNotes } from "@/components/player/PlayerSharedNotes";
 
 const SpellSearch = lazy(() =>
   import("@/components/oracle/SpellSearch").then((mod) => ({
@@ -74,8 +75,10 @@ interface PlayerJoinClientProps {
   dmPlan?: Plan;
   /** Player names already registered in this session (enables cookie-less rejoin) */
   registeredPlayerNames?: string[];
-  /** Player names with active/inactive status (for DM-approval reconnection) */
-  registeredPlayersWithStatus?: Array<{ name: string; isActive: boolean }>;
+  /** Player names with active/inactive status and raw timestamp for reconnection */
+  registeredPlayersWithStatus?: Array<{ name: string; isActive: boolean; lastSeenAt?: string | null }>;
+  /** Campaign ID — present only for authenticated campaign members. Enables shared notes panel. */
+  campaignId?: string | null;
 }
 
 export function PlayerJoinClient({
@@ -92,6 +95,7 @@ export function PlayerJoinClient({
   dmPlan = "free",
   registeredPlayerNames = [],
   registeredPlayersWithStatus = [],
+  campaignId,
 }: PlayerJoinClientProps) {
   const router = useRouter();
   const t = useTranslations("player");
@@ -126,6 +130,7 @@ export function PlayerJoinClient({
     }
   }, []);
   const [showOracle, setShowOracle] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredName, setRegisteredName] = useState<string | undefined>();
@@ -202,6 +207,14 @@ export function PlayerJoinClient({
   const autoJoinInProgressRef = useRef(false);
   // Keep ref in sync
   useEffect(() => { isRegisteredRef.current = isRegistered; }, [isRegistered]);
+  // Resilient reconnection state
+  const [reconnectingAs, setReconnectingAs] = useState<string | null>(null);
+  const [sessionRevoked, setSessionRevoked] = useState(false);
+  const hiddenAtRef = useRef<number | null>(null);
+  const effectiveTokenIdRef = useRef(tokenId);
+  const registeredNameRef = useRef<string | undefined>(undefined);
+  useEffect(() => { effectiveTokenIdRef.current = effectiveTokenId; }, [effectiveTokenId]);
+  useEffect(() => { registeredNameRef.current = registeredName; }, [registeredName]);
 
   // Generate signed URLs for a list of audio files (shared by initial fetch + refresh)
   const generateSignedUrls = useCallback(async (files: PlayerAudioFile[]): Promise<Record<string, string>> => {
@@ -288,9 +301,17 @@ export function PlayerJoinClient({
   }, [dmPlan]);
 
   // Anonymous auth + claim token via server action (bypasses RLS)
+  // ORDER (Winston): auth first -> storage reconnect -> claim fallback
   useEffect(() => {
     let cancelled = false;
     const initAuth = async () => {
+      const saved = loadPlayerIdentity(sessionId);
+
+      // Show skeleton immediately if we have stored identity (Sally: no blank screen)
+      if (saved?.playerName) {
+        setReconnectingAs(saved.playerName);
+      }
+
       try {
         const supabase = createClient();
 
@@ -303,6 +324,7 @@ export function PlayerJoinClient({
             ),
           ]);
 
+        // STEP 1: Resolve auth (getSession or signInAnonymously)
         const {
           data: { session },
         } = await withTimeout(supabase.auth.getSession(), 8000);
@@ -320,7 +342,31 @@ export function PlayerJoinClient({
           userId = session.user.id;
         }
 
-        // Server action — creates per-player token if shared one is taken
+        // STEP 2: If we have stored identity, try fast reconnect (8s timeout — Amelia)
+        if (saved?.tokenId && saved?.playerName) {
+          try {
+            const { tokenId: rejoinedId } = await withTimeout(
+              rejoinAsPlayer(sessionId, saved.playerName, userId),
+              8000
+            );
+
+            if (!cancelled) {
+              setEffectiveTokenId(rejoinedId);
+              setIsRegistered(true);
+              setRegisteredName(saved.playerName);
+              setReconnectingAs(null);
+              persistPlayerIdentity(sessionId, rejoinedId, saved.playerName);
+              setAuthReady(true);
+            }
+            return; // Reconnect successful — skip claimPlayerToken
+          } catch {
+            // Reconnect failed (token revoked, session expired, timeout)
+            clearPlayerIdentity(sessionId);
+            if (!cancelled) setReconnectingAs(null);
+          }
+        }
+
+        // STEP 3: Normal flow — claimPlayerToken
         const { tokenId: claimedTokenId, playerName } = await withTimeout(claimPlayerToken(tokenId, userId), 10000);
         if (!cancelled) {
           setEffectiveTokenId(claimedTokenId);
@@ -328,7 +374,9 @@ export function PlayerJoinClient({
           if (playerName) {
             setIsRegistered(true);
             setRegisteredName(playerName);
+            persistPlayerIdentity(sessionId, claimedTokenId, playerName);
           }
+          setReconnectingAs(null);
           setAuthReady(true);
         }
       } catch (err) {
@@ -339,13 +387,14 @@ export function PlayerJoinClient({
           extra: { tokenId },
         });
         if (!cancelled) {
+          setReconnectingAs(null);
           setError(tRef.current("connection_error_detail"));
         }
       }
     };
     initAuth();
     return () => { cancelled = true; };
-  }, [tokenId]);
+  }, [tokenId, sessionId]);
 
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
@@ -794,6 +843,7 @@ export function PlayerJoinClient({
               setLateJoinStatus("accepted");
               setIsRegistered(true);
               setRegisteredName(payload.combatant.name);
+              persistPlayerIdentity(sessionId, effectiveTokenId, payload.combatant.name);
               // Mark token with player_name only (combatant already created by DM)
               if (lateJoinDataRef.current) {
                 markPlayerToken(effectiveTokenId, sessionId, lateJoinDataRef.current.name)
@@ -987,6 +1037,7 @@ export function PlayerJoinClient({
             return;
           }
           // A.3: DM ended the session — show overlay, cleanup everything
+          clearPlayerIdentity(sessionId);
           setSessionEnded(true);
           setActive(false);
           // If player was in late-join waiting, mark it
@@ -1121,11 +1172,13 @@ export function PlayerJoinClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- effectiveTokenId is stable after auth init
   }, [lateJoinStatus, sessionId, effectiveTokenId]);
 
-  // A.5: Heartbeat — update last_seen_at every 30s to keep player presence accurate
+  // A.5: Heartbeat — update last_seen_at every 30s, PAUSES when tab is hidden (saves battery)
   useEffect(() => {
     if (!isRegistered || !active || !effectiveTokenId) return;
     const supabase = createClient();
     const heartbeat = async () => {
+      // Don't send heartbeat if tab is hidden (browser throttles anyway, confuses presence)
+      if (document.visibilityState === "hidden") return;
       try {
         const { data: { session: authSession } } = await supabase.auth.getSession();
         if (!authSession?.user?.id) return;
@@ -1141,16 +1194,69 @@ export function PlayerJoinClient({
     return () => clearInterval(id);
   }, [isRegistered, active, effectiveTokenId]);
 
-  // Visibility change handler — reconnect when phone unlocks / tab regains focus
+  // Bidirectional visibility handler — hidden: broadcast idle, visible: reconnect + validate
   useEffect(() => {
     if (!authReady || !sessionId) return;
 
     const handleVisibilityChange = async () => {
-      if (document.visibilityState !== "visible") return;
+      if (document.visibilityState === "hidden") {
+        // === HIDDEN: pause activity, notify DM ===
+        hiddenAtRef.current = Date.now();
+
+        // Best-effort: broadcast player:idle
+        if (channelRef.current && isRegisteredRef.current) {
+          channelRef.current.send({
+            type: "broadcast",
+            event: "player:idle",
+            payload: {
+              token_id: effectiveTokenIdRef.current,
+              player_name: registeredNameRef.current,
+            },
+          });
+        }
+        return;
+      }
+
+      // === VISIBLE: reconnect and sync ===
+      hiddenAtRef.current = null;
+
+      // Broadcast player:active so DM knows we're back
+      if (channelRef.current && isRegisteredRef.current) {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "player:active",
+          payload: {
+            token_id: effectiveTokenIdRef.current,
+            player_name: registeredNameRef.current,
+          },
+        });
+      }
+
+      // Validate token ownership (anti-split-brain for bfcache)
+      if (isRegisteredRef.current && supabaseRef.current) {
+        try {
+          const { data: { session: authSession } } =
+            await supabaseRef.current.auth.getSession();
+          if (authSession?.user?.id && effectiveTokenIdRef.current) {
+            const res = await fetch(
+              `/api/session/${sessionId}/state?token_id=${effectiveTokenIdRef.current}`
+            );
+            if (res.ok) {
+              const { data } = await res.json();
+              if (data?.token_owner && data.token_owner !== authSession.user.id) {
+                setSessionRevoked(true);
+                return;
+              }
+            }
+          }
+        } catch { /* best-effort — continue normal reconnection */ }
+      }
+
       // A.1: AWAIT fetch BEFORE reconnecting channel — prevents stale delta calculations
       if (encounterIdRef.current) {
         await fetchFullState(encounterIdRef.current);
       }
+
       // If realtime is disconnected, force reconnect via the same createChannel function
       if (disconnectedAtRef.current && supabaseRef.current) {
         if (channelRef.current) {
@@ -1179,6 +1285,47 @@ export function PlayerJoinClient({
       window.removeEventListener("online", handleOnline);
     };
   }, [authReady, sessionId, fetchFullState]);
+
+  // pagehide handler — best-effort cleanup when page is being unloaded
+  // More reliable than beforeunload on mobile (iOS Safari ignores beforeunload)
+  useEffect(() => {
+    if (!isRegistered || !effectiveTokenId) return;
+
+    const handlePageHide = (e: PageTransitionEvent) => {
+      // 1. Best-effort: broadcast player:disconnecting via channel
+      if (channelRef.current) {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "player:disconnecting",
+          payload: {
+            token_id: effectiveTokenId,
+            player_name: registeredName,
+            reason: e.persisted ? "bfcache" : "unload",
+          },
+        });
+      }
+
+      // 2. Best-effort: untrack presence (async — may not complete)
+      if (presenceChannelRef.current) {
+        presenceChannelRef.current.untrack();
+      }
+
+      // 3. Best-effort: notify server via sendBeacon (survives page unload)
+      if (navigator.sendBeacon) {
+        const payload = new Blob(
+          [JSON.stringify({ token_id: effectiveTokenId })],
+          { type: "application/json" }
+        );
+        navigator.sendBeacon(
+          `/api/session/${sessionId}/player-disconnect`,
+          payload
+        );
+      }
+    };
+
+    window.addEventListener("pagehide", handlePageHide);
+    return () => window.removeEventListener("pagehide", handlePageHide);
+  }, [isRegistered, effectiveTokenId, registeredName, sessionId]);
 
   // A.1: Turn-sync safety net — runs at 15s interval when CONNECTED (reduced from 3s),
   // or 3s when POLLING_FALLBACK. Suppressed during late-join "waiting".
@@ -1222,6 +1369,7 @@ export function PlayerJoinClient({
     await registerPlayerCombatant(effectiveTokenId, sessionId, data);
     setIsRegistered(true);
     setRegisteredName(data.name);
+    persistPlayerIdentity(sessionId, effectiveTokenId, data.name);
 
     // Track presence for DM's "Players Online" panel (B3-2)
     try {
@@ -1259,87 +1407,43 @@ export function PlayerJoinClient({
     }
   }, [effectiveTokenId, sessionId]);
 
-  // Rejoin handler — for returning players who lost their anonymous session (cookies cleared)
-  // During active combat: sends a request to DM for approval instead of direct transfer
-  // During lobby (no combat): transfers directly (DM can see and remove manually)
+  // Rejoin handler — ALWAYS direct transfer, no DM approval needed (John's simplification)
+  // DM approval only required for late-join (new player during active combat)
   const handleRejoin = useCallback(async (playerName: string) => {
-    // If combat is NOT active, do direct rejoin (lobby mode — no approval needed)
-    if (!active || !currentEncounterId) {
-      try {
-        const supabase = createClient();
-        const { data: { session: authSession } } = await supabase.auth.getSession();
-        const userId = authSession?.user?.id;
-        if (!userId) throw new Error("No auth session");
+    try {
+      const supabase = createClient();
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      const userId = authSession?.user?.id;
+      if (!userId) throw new Error("No auth session");
 
-        const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, playerName, userId);
-        setEffectiveTokenId(rejoinedTokenId);
-        setIsRegistered(true);
-        setRegisteredName(playerName);
-      } catch (err) {
-        captureError(err instanceof Error ? err : new Error(String(err)), {
-          component: "PlayerJoinClient",
-          action: "rejoin",
-          category: "auth",
-          extra: { sessionId, playerName },
+      const { tokenId: rejoinedTokenId } = await rejoinAsPlayer(sessionId, playerName, userId);
+      setEffectiveTokenId(rejoinedTokenId);
+      setIsRegistered(true);
+      setRegisteredName(playerName);
+      persistPlayerIdentity(sessionId, rejoinedTokenId, playerName);
+
+      // Broadcast for DM that player is back
+      if (channelRef.current) {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "player:joined",
+          payload: {
+            id: rejoinedTokenId,
+            name: playerName,
+            rejoin: true,
+          },
         });
-        toast.error(tRef.current("rejoin_error"));
       }
-      return;
-    }
-
-    // Combat is active — send rejoin request to DM for approval
-    const requestId = typeof crypto.randomUUID === "function"
-      ? crypto.randomUUID()
-      : Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
-    rejoinRequestIdRef.current = requestId;
-    rejoinCharacterRef.current = playerName;
-    rejoinStatusRef.current = "waiting";
-    setRejoinStatus("waiting");
-
-    // Determine if this character has an active session
-    const playerStatus = registeredPlayersWithStatus.find((p) => p.name === playerName);
-    const isActiveSession = playerStatus?.isActive ?? false;
-
-    const sendRejoinReq = () => {
-      if (!channelRef.current) return;
-      channelRef.current.send({
-        type: "broadcast",
-        event: "combat:rejoin_request",
-        payload: {
-          character_name: playerName,
-          request_id: requestId,
-          is_active_session: isActiveSession,
-          sender_token_id: effectiveTokenId,
-        },
-      });
-    };
-
-    if (channelRef.current) {
-      sendRejoinReq();
-      // A.5: Schedule retries — 3 attempts × 15s
-      rejoinRetryCountRef.current = 0;
-      const scheduleRetry = () => {
-        rejoinRetryTimerRef.current = setTimeout(() => {
-          if (rejoinStatusRef.current !== "waiting") return;
-          rejoinRetryCountRef.current += 1;
-          if (rejoinRetryCountRef.current >= 3) {
-            rejoinStatusRef.current = "timeout";
-            setRejoinStatus("timeout");
-            return;
-          }
-          sendRejoinReq();
-          scheduleRetry();
-        }, 15_000);
-      };
-      scheduleRetry();
-    } else {
-      captureError(new Error("Cannot send rejoin request — channel not available"), {
+    } catch (err) {
+      captureError(err instanceof Error ? err : new Error(String(err)), {
         component: "PlayerJoinClient",
-        action: "rejoin-request",
-        category: "realtime",
+        action: "rejoin",
+        category: "auth",
+        extra: { sessionId, playerName },
       });
+      toast.error(tRef.current("rejoin_error"));
     }
-  }, [sessionId, active, currentEncounterId, registeredPlayersWithStatus, effectiveTokenId]);
+  }, [sessionId]);
 
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1493,6 +1597,39 @@ export function PlayerJoinClient({
     );
   }
 
+  // Split-brain: token was transferred to another device (bfcache stale)
+  if (sessionRevoked) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <h1 className="text-foreground text-xl font-semibold">
+            {t("session_transferred")}
+          </h1>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-6 py-2 bg-gold text-black rounded-md font-medium hover:bg-gold/90 transition-colors"
+          >
+            {t("back_to_home")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Reconnecting skeleton — show player name while reconnect-from-storage runs (Sally)
+  if (reconnectingAs) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-muted-foreground text-sm" data-testid="reconnecting-skeleton">
+            {t("reconnecting_as", { name: reconnectingAs })}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!authReady) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -1580,6 +1717,17 @@ export function PlayerJoinClient({
           </div>
           <div className="flex items-center gap-2">
             <SyncIndicator status={connectionStatus} />
+            {campaignId && (
+              <button
+                type="button"
+                onClick={() => setShowNotes((p) => !p)}
+                className="px-3 py-2 bg-surface-tertiary text-foreground text-xs font-medium rounded-full border border-border transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] min-w-[44px]"
+                aria-label={t("notes_open")}
+                data-testid="player-notes-btn"
+              >
+                {t("notes_button")}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setShowOracle((p) => !p)}
@@ -1594,6 +1742,24 @@ export function PlayerJoinClient({
 
         {/* Audio Autoplay Unlock Banner (Story 4) */}
         <AudioUnlockBanner />
+
+        {/* Shared Notes (W2.2 — authenticated campaign members only) */}
+        {showNotes && campaignId && (
+          <div className="bg-card border border-border rounded-md p-4" data-testid="player-notes">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-foreground text-sm font-medium">{t("notes_title")}</h3>
+              <button
+                type="button"
+                onClick={() => setShowNotes(false)}
+                className="text-muted-foreground hover:text-foreground/80 text-sm min-h-[44px] min-w-[44px] flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                aria-label={t("notes_close")}
+              >
+                ✕
+              </button>
+            </div>
+            <PlayerSharedNotes campaignId={campaignId} />
+          </div>
+        )}
 
         {/* Spell Oracle (Story 5-4) */}
         {showOracle && (

@@ -4,10 +4,11 @@ import { sanitizeCombatantsForPlayer } from "@/lib/utils/sanitize-combatants";
 import { withRateLimit } from "@/lib/rate-limit";
 
 const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<Record<string, string>> }
 ) {
   const { id: sessionId } = await params;
+  const tokenIdParam = request.nextUrl.searchParams.get("token_id");
   const supabase = await createClient();
 
   // Verify auth — player must have an active token for this session
@@ -54,8 +55,21 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
     .limit(1)
     .single();
 
+  // Resolve token_owner for split-brain detection (bfcache)
+  let tokenOwner: string | null = null;
+  if (tokenIdParam) {
+    const { data: ownerRow } = await serviceClient
+      .from("session_tokens")
+      .select("anon_user_id")
+      .eq("id", tokenIdParam)
+      .eq("session_id", sessionId)
+      .eq("is_active", true)
+      .single();
+    tokenOwner = ownerRow?.anon_user_id ?? null;
+  }
+
   if (!encounter) {
-    return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null } });
+    return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null, token_owner: tokenOwner } });
   }
 
   const { data: combatants } = await serviceClient
@@ -75,6 +89,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
       encounter,
       combatants: playerCombatants,
       dm_plan: sessionRow?.dm_plan ?? null,
+      token_owner: tokenOwner,
     },
   });
 };

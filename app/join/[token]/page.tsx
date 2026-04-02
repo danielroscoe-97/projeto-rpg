@@ -41,7 +41,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
   // Verify session is active
   const { data: session } = await supabase
     .from("sessions")
-    .select("id, name, is_active, ruleset_version, dm_plan")
+    .select("id, name, is_active, ruleset_version, dm_plan, campaign_id")
     .eq("id", tokenRow.session_id)
     .eq("is_active", true)
     .single();
@@ -116,6 +116,9 @@ export default async function JoinPage({ params }: JoinPageProps) {
     ac: number;
     spell_save_dc: number | null;
   }> = [];
+  // campaignId is passed to PlayerJoinClient to enable the shared notes panel
+  // Only set for authenticated campaign members — anonymous players get undefined
+  let campaignId: string | undefined;
 
   try {
     // Check if user is authenticated (may not be — anonymous players skip this)
@@ -123,19 +126,16 @@ export default async function JoinPage({ params }: JoinPageProps) {
     const { data: { user } } = await authClient.auth.getUser();
 
     if (user) {
-      // Fetch session's campaign_id
-      const { data: sessionWithCampaign } = await supabase
-        .from("sessions")
-        .select("campaign_id")
-        .eq("id", session.id)
-        .single();
+      const sessionCampaignId = session.campaign_id as string | null;
 
-      if (sessionWithCampaign?.campaign_id) {
+      if (sessionCampaignId) {
+        campaignId = sessionCampaignId;
+
         // Find player's characters in this campaign
         const { data: characters } = await supabase
           .from("player_characters")
           .select("id, name, max_hp, current_hp, ac, spell_save_dc")
-          .eq("campaign_id", sessionWithCampaign.campaign_id)
+          .eq("campaign_id", sessionCampaignId)
           .eq("user_id", user.id);
 
         prefilledCharacters = characters ?? [];
@@ -156,7 +156,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
     .eq("is_active", true)
     .not("player_name", "is", null);
 
-  const ACTIVE_THRESHOLD_MS = 60_000; // 60s — consider player "active" if seen within this window
+  const ACTIVE_THRESHOLD_MS = 45_000; // 45s — more responsive presence detection
   const now = Date.now();
 
   const registeredPlayerNames = (registeredTokens ?? [])
@@ -170,6 +170,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       isActive: t.last_seen_at
         ? now - new Date(t.last_seen_at).getTime() < ACTIVE_THRESHOLD_MS
         : false,
+      lastSeenAt: t.last_seen_at ?? null,
     }));
 
   return (
@@ -187,6 +188,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       dmPlan={dmPlan}
       registeredPlayerNames={registeredPlayerNames}
       registeredPlayersWithStatus={registeredPlayersWithStatus}
+      campaignId={campaignId}
     />
   );
 }

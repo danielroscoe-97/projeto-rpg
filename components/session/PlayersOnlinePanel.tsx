@@ -5,26 +5,35 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Users } from "lucide-react";
 
+type PlayerStatus = "online" | "idle" | "offline";
+
 interface PresencePlayer {
   id: string;
   name: string;
   joined_at: number;
   is_online: boolean;
+  status: PlayerStatus;
 }
 
 interface PlayersOnlinePanelProps {
   sessionId: string;
   /** Callback when player count changes — used for soft gate */
   onPlayerCountChange?: (count: number) => void;
+  /** Broadcast-driven status overrides from DM channel (player:disconnecting/idle/active) */
+  broadcastStatuses?: Record<string, PlayerStatus>;
 }
 
 const OFFLINE_DELAY_MS = 5000;
+const STALE_CHECK_INTERVAL_MS = 15_000; // Quinn: DM polls last_seen_at every 15s
+const ACTIVE_THRESHOLD_MS = 45_000;
+const IDLE_THRESHOLD_MS = 300_000; // 5min
 
-export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOnlinePanelProps) {
+export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastStatuses }: PlayersOnlinePanelProps) {
   const t = useTranslations("combat");
   const [players, setPlayers] = useState<PresencePlayer[]>([]);
   const offlineTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
+  // Presence channel — Supabase Presence for real-time tracking
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase.channel(`presence:${sessionId}`, {
@@ -58,7 +67,7 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
               clearTimeout(timer);
               offlineTimersRef.current.delete(p.id);
             }
-            updated.push({ id: p.id, name: p.name, joined_at: p.joined_at, is_online: true });
+            updated.push({ id: p.id, name: p.name, joined_at: p.joined_at, is_online: true, status: "online" });
           }
 
           // Keep previously known players that just went offline (grace period)
@@ -69,7 +78,7 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
                 const timer = setTimeout(() => {
                   offlineTimersRef.current.delete(existing.id);
                   setPlayers((curr) =>
-                    curr.map((p) => p.id === existing.id ? { ...p, is_online: false } : p)
+                    curr.map((p) => p.id === existing.id ? { ...p, is_online: false, status: "offline" } : p)
                   );
                 }, OFFLINE_DELAY_MS);
                 offlineTimersRef.current.set(existing.id, timer);
@@ -95,6 +104,79 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
     };
   }, [sessionId]);
 
+  // Apply broadcast-based status overrides from parent (e.g. CombatSessionClient)
+  useEffect(() => {
+    if (!broadcastStatuses || Object.keys(broadcastStatuses).length === 0) return;
+    setPlayers((prev) => {
+      let changed = false;
+      const updated = prev.map((p) => {
+        const override = broadcastStatuses[p.name];
+        if (override && override !== p.status) {
+          changed = true;
+          return { ...p, status: override, is_online: override !== "offline" };
+        }
+        return p;
+      });
+      return changed ? updated : prev;
+    });
+  }, [broadcastStatuses]);
+
+  // Quinn: DM stale detection timer — polls last_seen_at every 15s as absolute fallback
+  // Works even if ALL broadcasts failed (network died, adblockers, etc.)
+  useEffect(() => {
+    const supabase = createClient();
+
+    const checkPresence = async () => {
+      try {
+        const { data: tokens } = await supabase
+          .from("session_tokens")
+          .select("id, player_name, last_seen_at")
+          .eq("session_id", sessionId)
+          .eq("is_active", true)
+          .not("player_name", "is", null);
+
+        if (!tokens) return;
+
+        const now = Date.now();
+        const dbStatuses = new Map<string, PlayerStatus>();
+        for (const t of tokens) {
+          if (!t.player_name) continue;
+          if (!t.last_seen_at) {
+            dbStatuses.set(t.player_name, "offline");
+          } else {
+            const elapsed = now - new Date(t.last_seen_at).getTime();
+            if (elapsed < ACTIVE_THRESHOLD_MS) {
+              dbStatuses.set(t.player_name, "online");
+            } else if (elapsed < IDLE_THRESHOLD_MS) {
+              dbStatuses.set(t.player_name, "idle");
+            } else {
+              dbStatuses.set(t.player_name, "offline");
+            }
+          }
+        }
+
+        setPlayers((prev) => {
+          let changed = false;
+          const updated = prev.map((p) => {
+            const dbStatus = dbStatuses.get(p.name);
+            if (dbStatus && dbStatus !== p.status) {
+              changed = true;
+              return { ...p, status: dbStatus, is_online: dbStatus !== "offline" };
+            }
+            return p;
+          });
+          return changed ? updated : prev;
+        });
+      } catch {
+        /* stale check is best-effort */
+      }
+    };
+
+    checkPresence();
+    const id = setInterval(checkPresence, STALE_CHECK_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [sessionId]);
+
   // Notify parent of online count changes
   useEffect(() => {
     const onlineCount = players.filter((p) => p.is_online).length;
@@ -118,11 +200,17 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
           <li key={player.id} className="flex items-center gap-2 text-sm" data-testid={`player-presence-${player.id}`}>
             <span
               className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${
-                player.is_online ? "bg-green-500" : "bg-zinc-500"
+                player.status === "online" ? "bg-green-500"
+                : player.status === "idle" ? "bg-yellow-500"
+                : "bg-zinc-500"
               }`}
-              aria-label={player.is_online ? t("player_online") : t("player_offline")}
+              aria-label={
+                player.status === "online" ? t("player_online")
+                : player.status === "idle" ? t("player_idle")
+                : t("player_offline")
+              }
             />
-            <span className={`text-foreground truncate ${!player.is_online ? "opacity-50" : ""}`}>
+            <span className={`text-foreground truncate ${player.status === "offline" ? "opacity-50" : ""}`}>
               {player.name}
             </span>
           </li>
