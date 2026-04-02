@@ -61,6 +61,7 @@ export function sanitizePayloadServer(
 
   // Player death saves are DM-only, never broadcast
   if (event.type === "player:death_save") return null;
+  if (event.type === "player:poll_vote") return null;
 
   // Turn advance: adjust index for visible combatants
   if (event.type === "combat:turn_advance") {

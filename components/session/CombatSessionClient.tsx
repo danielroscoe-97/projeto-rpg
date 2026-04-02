@@ -38,6 +38,9 @@ import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
+import { PollResult, calculateAverage } from "@/components/combat/PollResult";
+import { createClient } from "@/lib/supabase/client";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
@@ -96,6 +99,10 @@ export function CombatSessionClient({
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
   const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number } | null>(null);
+  // C.15: Post-combat state machine (leaderboard → poll → result)
+  type PostCombatPhase = "leaderboard" | "poll" | "result" | null;
+  const [postCombatPhase, setPostCombatPhase] = useState<PostCombatPhase>(null);
+  const [pollVotes, setPollVotes] = useState<Map<string, number>>(new Map());
 
   const { combatants, is_active, setError, expandedGroups, toggleGroupExpanded, setGroupInitiative } =
     useCombatStore();
@@ -132,6 +139,8 @@ export function CombatSessionClient({
     if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
       setLeaderboardData(pending.stats);
       setLeaderboardMeta({ name: finalName, rounds: pending.rounds });
+      setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
+      setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
       if (sid) {
         broadcastEvent(sid, {
@@ -172,11 +181,25 @@ export function CombatSessionClient({
     proceedAfterNaming(finalName);
   }, [pendingEncounterName, proceedAfterNaming]);
 
-  const handleDismissLeaderboard = useCallback(() => {
+  // C.15: Dismiss all post-combat screens — persist poll result + end encounter
+  const handleDismissAll = useCallback(async () => {
+    if (pollVotes.size > 0) {
+      const avg = calculateAverage(pollVotes);
+      const encounterId = useCombatStore.getState().encounter_id;
+      if (encounterId) {
+        const supabase = createClient();
+        await supabase
+          .from("encounters")
+          .update({ difficulty_rating: avg, difficulty_votes: pollVotes.size })
+          .eq("id", encounterId);
+      }
+    }
+    setPostCombatPhase(null);
+    setPollVotes(new Map());
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
     doEndEncounter();
-  }, [doEndEncounter]);
+  }, [doEndEncounter, pollVotes]);
 
   // Register hidden lookup so broadcast.ts can filter events for hidden combatants
   useEffect(() => {
@@ -729,6 +752,20 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "player:death_save" }, handlePlayerDeathSave);
 
+    // C.15: Listen for player:poll_vote — player voted on difficulty
+    const handlePlayerPollVote = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { player_name, vote } = payload as { player_name: string; vote: number };
+      if (!player_name || !vote || vote < 1 || vote > 5) return;
+      setPollVotes((prev) => {
+        const next = new Map(prev);
+        next.set(player_name, vote);
+        return next;
+      });
+    };
+
+    ch.on("broadcast", { event: "player:poll_vote" }, handlePlayerPollVote);
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef
   }, [is_active, getSessionId]);
@@ -961,15 +998,37 @@ export function CombatSessionClient({
       </AlertDialog>
 
       <AnimatePresence>
-        {leaderboardData && (
+        {postCombatPhase === "leaderboard" && leaderboardData && (
           <CombatLeaderboard
             stats={leaderboardData}
             encounterName={leaderboardMeta.name}
             rounds={leaderboardMeta.rounds}
-            onClose={handleDismissLeaderboard}
+            onClose={() => setPostCombatPhase("poll")}
           />
         )}
       </AnimatePresence>
+
+      {postCombatPhase === "poll" && (
+        <div className="fixed inset-0 z-50">
+          <DifficultyPoll
+            onVote={(vote) => {
+              setPollVotes((prev) => {
+                const n = new Map(prev);
+                n.set("DM", vote);
+                return n;
+              });
+              setPostCombatPhase("result");
+            }}
+            onSkip={() => setPostCombatPhase("result")}
+          />
+        </div>
+      )}
+
+      {postCombatPhase === "result" && (
+        <div className="fixed inset-0 z-50">
+          <PollResult votes={pollVotes} onClose={handleDismissAll} />
+        </div>
+      )}
 
       <PlayerDrawer
         campaignId={campaignId}

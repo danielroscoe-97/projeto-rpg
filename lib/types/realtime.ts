@@ -29,7 +29,8 @@ export type RealtimeEventType =
   | "audio:ambient_start"
   | "audio:ambient_stop"
   | "audio:loop_stop"
-  | "player:death_save";
+  | "player:death_save"
+  | "player:poll_vote";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -208,6 +209,12 @@ export interface RealtimePlayerDeathSave {
   result: "success" | "failure";
 }
 
+export interface RealtimePlayerPollVote {
+  type: "player:poll_vote";
+  player_name: string;
+  vote: 1 | 2 | 3 | 4 | 5;
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -233,7 +240,8 @@ export type RealtimeEvent =
   | RealtimeAmbientStart
   | RealtimeAmbientStop
   | RealtimeLoopStop
-  | RealtimePlayerDeathSave;
+  | RealtimePlayerDeathSave
+  | RealtimePlayerPollVote;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 

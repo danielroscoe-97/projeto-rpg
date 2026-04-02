@@ -511,6 +511,16 @@ describe("Broadcast Sanitization — Edge Cases", () => {
     expect(mockSend).not.toHaveBeenCalled();
   });
 
+  it("player:poll_vote events are never broadcast to player channel", () => {
+    broadcastEvent("session-1", {
+      type: "player:poll_vote",
+      player_name: "Thorin",
+      vote: 3,
+    });
+
+    expect(mockSend).not.toHaveBeenCalled();
+  });
+
   it("audio:play_sound passes through unchanged", () => {
     broadcastEvent("session-1", {
       type: "audio:play_sound",

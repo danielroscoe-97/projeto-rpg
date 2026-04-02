@@ -255,6 +255,9 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   // player:death_save is player→DM only, never broadcast to other players
   if (event.type === "player:death_save") return null;
 
+  // player:poll_vote is player→DM only, never broadcast to other players
+  if (event.type === "player:poll_vote") return null;
+
   // Events that pass through unchanged (no sensitive data)
   return event;
 }

@@ -14,6 +14,7 @@ import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/comp
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
@@ -673,6 +674,9 @@ export function GuestCombatClient() {
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
   const [spellsOpen, setSpellsOpen] = useState(false);
+  // C.15: Post-combat state machine (leaderboard → poll → done)
+  type GuestPostCombatPhase = "leaderboard" | "poll" | null;
+  const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
 
   // Redirect URL for Google OAuth: returns to the confirm route with from=guest-combat
   // so the callback can track onboarding source and preserve combat data
@@ -1169,13 +1173,21 @@ export function GuestCombatClient() {
     const stats = useGuestCombatStats.getState().getStats();
     if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
       setLeaderboardStats(stats);
+      setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
     } else {
       useGuestCombatStats.getState().reset();
       resetCombat();
     }
   }, [resetCombat]);
 
+  // C.15: Leaderboard close → show poll
   const handleLeaderboardClose = useCallback(() => {
+    setGuestPostCombatPhase("poll");
+  }, []);
+
+  // C.15: Dismiss all post-combat screens — guest has no DB persistence
+  const handleGuestDismissAll = useCallback(() => {
+    setGuestPostCombatPhase(null);
     setLeaderboardStats(null);
     useGuestCombatStats.getState().reset();
     resetCombat();
@@ -1462,13 +1474,22 @@ export function GuestCombatClient() {
 
       {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
 
-      {leaderboardStats && (
+      {guestPostCombatPhase === "leaderboard" && leaderboardStats && (
         <CombatLeaderboard
           stats={leaderboardStats}
           encounterName={tg("try_encounter_name")}
           rounds={roundNumber}
           onClose={handleLeaderboardClose}
         />
+      )}
+
+      {guestPostCombatPhase === "poll" && (
+        <div className="fixed inset-0 z-50">
+          <DifficultyPoll
+            onVote={() => handleGuestDismissAll()}
+            onSkip={() => handleGuestDismissAll()}
+          />
+        </div>
       )}
 
       <KeyboardCheatsheet

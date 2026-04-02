@@ -18,6 +18,9 @@ import { captureError } from "@/lib/errors/capture";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
+import type { CombatantStats } from "@/lib/utils/combat-stats";
+import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 
 
 const SpellSearch = lazy(() =>
@@ -177,6 +180,13 @@ export function PlayerJoinClient({
   // A.3: Session ended state
   const [sessionEnded, setSessionEnded] = useState(false);
   const [sessionEndedDuringLateJoin, setSessionEndedDuringLateJoin] = useState(false);
+  // C.15: Post-combat leaderboard + difficulty poll state
+  const [combatStatsData, setCombatStatsData] = useState<{
+    stats: CombatantStats[];
+    encounterName: string;
+    rounds: number;
+  } | null>(null);
+  const [showPoll, setShowPoll] = useState(false);
   // A.6: Stores registration data for auto-join when DM starts combat
   const pendingRegistrationRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const isRegisteredRef = useRef(isRegistered);
@@ -350,6 +360,17 @@ export function PlayerJoinClient({
     if (rejoinRetryTimerRef.current) { clearTimeout(rejoinRetryTimerRef.current); rejoinRetryTimerRef.current = null; }
     if (sessionEndedUnsubTimerRef.current) { clearTimeout(sessionEndedUnsubTimerRef.current); sessionEndedUnsubTimerRef.current = null; }
   }, []);
+
+  // C.15: Send poll vote to DM via broadcast
+  const handlePollVote = useCallback((vote: 1 | 2 | 3 | 4 | 5) => {
+    const ch = channelRef.current;
+    if (!ch || connectionStatus !== "connected") return;
+    ch.send({
+      type: "broadcast",
+      event: "player:poll_vote",
+      payload: { player_name: registeredName, vote },
+    });
+  }, [connectionStatus, registeredName]);
 
   // A.4: Reset late-join state for retry without page reload
   const resetLateJoinState = useCallback(() => {
@@ -883,6 +904,16 @@ export function PlayerJoinClient({
             fetchFullState(payload.encounter_id);
           }
         })
+        .on("broadcast", { event: "session:combat_stats" }, ({ payload }) => {
+          // C.15: DM ended combat — show leaderboard + poll before session:ended
+          if (payload.stats && payload.encounter_name) {
+            setCombatStatsData({
+              stats: payload.stats as CombatantStats[],
+              encounterName: payload.encounter_name as string,
+              rounds: (payload.rounds as number) ?? 0,
+            });
+          }
+        })
         .on("broadcast", { event: "session:ended" }, () => {
           // A.3: DM ended the session — show overlay, cleanup everything
           setSessionEnded(true);
@@ -1303,6 +1334,35 @@ export function PlayerJoinClient({
           <p className="text-muted-foreground text-sm">{error}</p>
         </div>
       </div>
+    );
+  }
+
+  // C.15: Post-combat leaderboard — player sees stats before poll
+  if (combatStatsData && !showPoll) {
+    return (
+      <CombatLeaderboard
+        stats={combatStatsData.stats}
+        encounterName={combatStatsData.encounterName}
+        rounds={combatStatsData.rounds}
+        onClose={() => setShowPoll(true)}
+      />
+    );
+  }
+
+  // C.15: Difficulty poll — shown after player closes leaderboard
+  if (showPoll) {
+    return (
+      <DifficultyPoll
+        onVote={(vote) => {
+          handlePollVote(vote);
+          setCombatStatsData(null);
+          setShowPoll(false);
+        }}
+        onSkip={() => {
+          setCombatStatsData(null);
+          setShowPoll(false);
+        }}
+      />
     );
   }
 
