@@ -732,9 +732,9 @@ export function PlayerJoinClient({
             updateCombatants((prev) =>
               prev.map((c) => {
                 if (c.id !== payload.combatant_id) return c;
-                // Monster/NPC: only hp_status is sent (no exact numbers)
+                // Monster/NPC: only hp_status + hp_percentage are sent (no exact numbers)
                 if (payload.hp_status && payload.current_hp === undefined) {
-                  return { ...c, hp_status: payload.hp_status };
+                  return { ...c, hp_status: payload.hp_status, hp_percentage: payload.hp_percentage };
                 }
                 // Player character: full HP data (including max_hp if changed)
                 const updated = { ...c, current_hp: payload.current_hp, temp_hp: payload.temp_hp };

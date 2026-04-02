@@ -191,7 +191,7 @@ export const CombatantRow = memo(function CombatantRow({
     <li
       className={`bg-card border rounded-md overflow-hidden transition-all duration-500 ${
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
-      } ${combatant.is_defeated ? "opacity-50 grayscale-[50%]" : isCritical ? "opacity-50 grayscale-[50%] border-2 border-red-500 animate-pulse" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
+      } ${combatant.is_defeated ? "opacity-50 grayscale-[50%]" : isCritical ? "border-2 border-red-500/80 shadow-[inset_0_0_0_2000px_rgba(127,29,29,0.15),0_0_8px_rgba(239,68,68,0.15)] animate-pulse" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
         isCritical ? "" : (combatant.is_player ? "border-l-4 border-l-cool" : isMonster ? "border-l-4 border-l-red-500/60" : "")
       } ${combatant.is_hidden ? "border-dashed opacity-70" : ""}`}
       role="listitem"

@@ -89,7 +89,7 @@ function HpStatusBadge({ status, percentage }: { status: string; percentage?: nu
       )}
       <span className="sm:hidden">{shortLabel}</span>
       <span className="hidden sm:inline">{label}</span>
-      {percentage != null && (
+      {percentage != null && status !== "FULL" && (
         <span className="font-normal opacity-70">· {percentage}%</span>
       )}
     </span>
@@ -487,6 +487,11 @@ export function PlayerInitiativeBoard({
                     </span>
                   )}
                 </div>
+              )}
+              {currentCombatant && (
+                <span className="shrink-0 text-xs font-mono text-muted-foreground/70 tabular-nums" aria-label={`Rodada ${roundNumber}`}>
+                  R{roundNumber}
+                </span>
               )}
               {isPlayerTurn && onEndTurn && (
                 <button

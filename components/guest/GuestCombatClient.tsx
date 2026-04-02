@@ -1325,11 +1325,22 @@ export function GuestCombatClient() {
         </div>
         {/* Sticky turn indicator row */}
         {phase === "combat" && (
-          <div className="flex items-center gap-2 py-1.5 border-t border-border/30">
+          <div className="flex items-center gap-2 py-1.5 border-t border-border/30" data-testid="dm-sticky-turn-indicator">
             <span className="text-gold text-sm leading-none select-none" aria-hidden="true">▶</span>
             <span className="text-foreground text-sm font-medium truncate max-w-[200px]">
               {combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
             </span>
+            {combatants[currentTurnIndex] && (
+              combatants[currentTurnIndex].is_player ? (
+                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                  {t("player_tag")}
+                </span>
+              ) : (
+                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20">
+                  {t("monster_tag")}
+                </span>
+              )
+            )}
             {combatants[currentTurnIndex + 1] && (
               <span className="text-muted-foreground text-xs ml-auto truncate max-w-[160px]">
                 {t("next_label")}: {combatants[currentTurnIndex + 1].name}

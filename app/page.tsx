@@ -1,8 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Swords, Smartphone, Sparkles, BookOpen, Save, Moon } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Smartphone, Moon } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
@@ -263,9 +262,9 @@ function SectionDivider() {
 
 // ── Features ─────────────────────────────────────────────────────────────────
 function FeaturesSection() {
-  const features: { icon: LucideIcon; tag: string | null; title: string; description: string }[] = [
+  const features: { icon: React.ComponentType<{ className?: string }>; tag: string | null; title: string; description: string }[] = [
     {
-      icon: Swords,
+      icon: D20Icon,
       tag: null,
       title: "Combat Tracker Completo",
       description:
@@ -279,21 +278,21 @@ function FeaturesSection() {
         "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem fricção. Tudo atualiza ao vivo.",
     },
     {
-      icon: Sparkles,
+      icon: SparkleIcon,
       tag: null,
       title: "Oráculo de Magias & Monstros",
       description:
         "Busca instantânea em 3000+ monstros e 900+ magias. Stat blocks inline, descrições de magia em modal. Funciona offline.",
     },
     {
-      icon: BookOpen,
+      icon: D8Icon,
       tag: "Único",
       title: "Regras 2014 & 2024",
       description:
         "Alterne entre as versões de regras por monstro instantaneamente, no meio do combate, sem reiniciar o encontro.",
     },
     {
-      icon: Save,
+      icon: D6Icon,
       tag: null,
       title: "Salvar & Retomar",
       description:
