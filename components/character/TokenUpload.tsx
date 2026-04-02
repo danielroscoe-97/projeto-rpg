@@ -50,10 +50,6 @@ export function TokenUpload({
         return;
       }
 
-      // Create preview
-      const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
-
       // Upload to Supabase Storage
       setUploading(true);
       try {
@@ -87,6 +83,7 @@ export function TokenUpload({
 
         if (updateError) throw updateError;
 
+        setPreview(urlWithBuster);
         onTokenUpdated(urlWithBuster);
         toast.success(t("token_updated"));
         onOpenChange(false);
@@ -177,7 +174,7 @@ export function TokenUpload({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/*"
             onChange={handleInputChange}
             className="hidden"
             data-testid="token-file-input"

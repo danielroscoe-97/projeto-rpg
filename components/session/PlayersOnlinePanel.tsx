@@ -36,12 +36,22 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
         const state = channel.presenceState<{ id: string; name: string; joined_at: number }>();
         const allPresent = Object.values(state).flat();
 
+        // Deduplicate by player ID (handles multi-device connections)
+        const deduped = new Map<string, { id: string; name: string; joined_at: number }>();
+        for (const p of allPresent) {
+          const existing = deduped.get(p.id);
+          if (!existing || p.joined_at > existing.joined_at) {
+            deduped.set(p.id, p);
+          }
+        }
+        const uniquePresent = Array.from(deduped.values());
+
         setPlayers((prev) => {
-          const presentIds = new Set(allPresent.map((p) => p.id));
+          const presentIds = new Set(uniquePresent.map((p) => p.id));
           const updated: PresencePlayer[] = [];
 
           // Add/update present players
-          for (const p of allPresent) {
+          for (const p of uniquePresent) {
             // Clear any pending offline timer
             const timer = offlineTimersRef.current.get(p.id);
             if (timer) {
@@ -103,7 +113,7 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange }: PlayersOn
           {t("players_online", { count: onlineCount })}
         </span>
       </div>
-      <ul className="space-y-1">
+      <ul className="space-y-1 max-h-56 overflow-y-auto">
         {players.map((player) => (
           <li key={player.id} className="flex items-center gap-2 text-sm" data-testid={`player-presence-${player.id}`}>
             <span

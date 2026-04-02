@@ -276,6 +276,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
             id={`${idPrefix}-name`}
             placeholder={t("pc_name_placeholder")}
             value={form.name}
+            maxLength={100}
             onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setFieldErrors((prev) => { const n = new Set(prev); n.delete(`${idPrefix}-name`); return n; }); }}
             className={`bg-background border-border text-foreground placeholder:text-muted-foreground/40${fieldErrors.has(`${idPrefix}-name`) ? " field-error" : ""}`}
             aria-invalid={fieldErrors.has(`${idPrefix}-name`) || undefined}

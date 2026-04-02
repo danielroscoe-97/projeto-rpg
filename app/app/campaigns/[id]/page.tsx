@@ -111,6 +111,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
 
     return (
       <PlayerCampaignView
+        campaignId={id}
         campaignName={campaign.name}
         dmName={dmUser?.display_name ?? null}
         myCharacter={myCharacter ? {
@@ -155,6 +156,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           levelLabel: t("level_label"),
           dmLabel: t("dm_label"),
           acLabel: t("ac_label"),
+          loadMore: t("encounter_history_load_more"),
         }}
       />
     )

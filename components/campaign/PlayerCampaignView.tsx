@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Shield,
   Users,
   ScrollText,
   ChevronDown,
   Zap,
+  Loader2,
 } from "lucide-react";
 import { getHpBarColor } from "@/lib/utils/hp-status";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
 interface CharacterInfo {
   id: string;
@@ -44,6 +46,7 @@ interface CombatHistoryEntry {
 }
 
 interface PlayerCampaignViewProps {
+  campaignId: string;
   campaignName: string;
   dmName: string | null;
   myCharacter: CharacterInfo | null;
@@ -69,6 +72,7 @@ interface PlayerCampaignViewProps {
     levelLabel: string;
     dmLabel: string;
     acLabel: string;
+    loadMore: string;
   };
 }
 
@@ -131,15 +135,89 @@ function CollapsibleSection({
   );
 }
 
+const PAGE_SIZE = 10;
+
 export function PlayerCampaignView({
+  campaignId,
   campaignName,
   dmName,
   myCharacter,
-  companions,
+  companions: initialCompanions,
   activeSession,
-  combatHistory,
+  combatHistory: initialHistory,
   translations: t,
 }: PlayerCampaignViewProps) {
+  // ── Realtime companion HP ─────────────────────────────────────────────────
+  const [companions, setCompanions] = useState<CompanionInfo[]>(initialCompanions);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`campaign-companions:${campaignId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "player_characters",
+          filter: `campaign_id=eq.${campaignId}`,
+        },
+        (payload) => {
+          const updated = payload.new as { id: string; name: string; current_hp: number; max_hp: number };
+          setCompanions((prev) =>
+            prev.map((c) =>
+              c.id === updated.id
+                ? { ...c, current_hp: updated.current_hp, max_hp: updated.max_hp, name: updated.name }
+                : c
+            )
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [campaignId]);
+
+  // ── Combat history pagination ─────────────────────────────────────────────
+  const [combatHistory, setCombatHistory] = useState<CombatHistoryEntry[]>(initialHistory);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialHistory.length >= PAGE_SIZE);
+
+  const loadMore = useCallback(async () => {
+    setLoadingMore(true);
+    try {
+      const supabase = createClient();
+      const { data: sessions } = await supabase
+        .from("sessions")
+        .select("id")
+        .eq("campaign_id", campaignId);
+      if (!sessions || sessions.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      const sessionIds = sessions.map((s) => s.id);
+      const { data: encounters } = await supabase
+        .from("encounters")
+        .select("id, name, round_number")
+        .in("session_id", sessionIds)
+        .eq("is_active", false)
+        .order("updated_at", { ascending: false })
+        .range(combatHistory.length, combatHistory.length + PAGE_SIZE - 1);
+
+      const newEntries = (encounters ?? []).map((e) => ({
+        id: e.id,
+        name: e.name ?? "Encounter",
+        round_number: e.round_number ?? 0,
+      }));
+      setCombatHistory((prev) => [...prev, ...newEntries]);
+      setHasMore(newEntries.length >= PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [campaignId, combatHistory.length]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -301,6 +379,20 @@ export function PlayerCampaignView({
                 </span>
               </div>
             ))}
+            {hasMore && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-muted-foreground hover:text-foreground"
+                disabled={loadingMore}
+                onClick={loadMore}
+              >
+                {loadingMore ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                {loadingMore ? "..." : t.loadMore}
+              </Button>
+            )}
           </div>
         ) : (
           <p className="text-muted-foreground text-sm text-center py-4">
