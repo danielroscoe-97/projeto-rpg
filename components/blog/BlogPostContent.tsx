@@ -1,6 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
 
 /* ─── Shared styling helpers ───────────────────────────────────── */
+function Img({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="my-8 rounded-xl overflow-hidden border border-white/[0.08] shadow-lg">
+      <Image
+        src={src}
+        alt={alt}
+        width={1280}
+        height={800}
+        className="w-full h-auto"
+        unoptimized
+      />
+      <figcaption className="text-xs text-muted-foreground text-center py-2 bg-white/[0.02]">
+        {alt}
+      </figcaption>
+    </figure>
+  );
+}
 function H2({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="font-display text-xl text-gold/90 mt-10 mb-4">{children}</h2>
@@ -78,6 +96,8 @@ export function BlogPost1() {
         criem conta.
       </P>
 
+      <Img src="/art/blog/combat-active.png" alt="Pocket DM — Combate ativo com iniciativa, HP e condições em tempo real" />
+
       <H2>5 Coisas que Todo Combat Tracker Deve Rastrear</H2>
       <P>
         Segundo o guia do{" "}
@@ -116,6 +136,7 @@ export function BlogPost1() {
         um clique. No Pocket DM, por exemplo, são mais de 3.000 monstros SRD
         disponíveis.
       </P>
+      <Img src="/art/blog/monster-search.png" alt="Busca de monstros SRD no Pocket DM — pesquise e adicione com um clique" />
 
       <H3>2. Na hora do combate: role iniciativa</H3>
       <P>
@@ -130,6 +151,7 @@ export function BlogPost1() {
         o HP do monstro direto na ferramenta. Quando um monstro aplica uma
         condição, você marca na criatura afetada. Tudo visual, tudo rápido.
       </P>
+      <Img src="/art/blog/combat-hp-panel.png" alt="Painel de HP no Pocket DM — aplique dano, cure ou adicione HP temporário" />
 
       <H3>4. Jogadores acompanham no celular</H3>
       <P>
@@ -206,6 +228,7 @@ export function BlogPost2() {
         digital com busca por nome, CR (Challenge Rating) ou tipo de criatura
         resolve isso. Os stat blocks ficam a um clique de distância.
       </P>
+      <Img src="/art/blog/bestiary-index.png" alt="Bestiário SRD do Pocket DM — 1247+ monstros organizados por letra e CR" />
       <P>
         O conteúdo SRD (System Reference Document) do D&D 5e inclui centenas de
         monstros gratuitos. Ferramentas como o Pocket DM disponibilizam mais de
@@ -218,6 +241,7 @@ export function BlogPost2() {
         Ter um catálogo de magias com busca por nome, escola, nível e classe
         evita pausas desnecessárias.
       </P>
+      <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 752+ spells organizadas por nível e escola" />
       <P>
         O Pocket DM inclui o que chamamos de &ldquo;oráculo de magias&rdquo; — uma busca
         inteligente em mais de 900 magias SRD, acessível durante o combate sem
@@ -312,6 +336,8 @@ export function BlogPost3() {
         <Li>Marketplace de conteúdo (mapas, aventuras, tokens)</Li>
       </Ul>
 
+      <Img src="/art/blog/landing-hero.png" alt="Mesa presencial de D&D com dados, miniaturas e livros — o cenário ideal para um combat tracker" />
+
       <H2>O que é um Combat Tracker?</H2>
       <P>
         Um combat tracker é uma ferramenta focada exclusivamente em gerenciar o
@@ -385,6 +411,8 @@ export function BlogPost3() {
         <Li>Todos têm computador (não funciona bem no celular)</Li>
       </Ul>
 
+      <Img src="/art/blog/combat-with-monsters.png" alt="Pocket DM — setup de encontro com 4 monstros prontos para o combate" />
+
       <H3>Use um Combat Tracker se:</H3>
       <Ul>
         <Li>Você joga presencialmente</Li>
@@ -431,6 +459,8 @@ export function BlogPost4() {
         efeitos do ambiente. Uma condição dura até ser removida (como
         ficar <em>prone</em> e se levantar) ou até o tempo do efeito expirar.
       </P>
+
+      <Img src="/art/blog/combat-conditions.png" alt="Painel de condições do Pocket DM — todas as 15 condições D&D 5e disponíveis com um clique" />
 
       <H2>Todas as 15 Condições</H2>
 
@@ -581,6 +611,7 @@ export function BlogPost5() {
         adiciona monstros do bestiário, rola iniciativa e começa — em menos de
         2 minutos.
       </P>
+      <Img src="/art/blog/combat-active.png" alt="Combate ativo no Pocket DM — barras de HP, turnos e condições gerenciados visualmente" />
 
       <H2>4. Role Iniciativa em Grupo</H2>
       <P>
