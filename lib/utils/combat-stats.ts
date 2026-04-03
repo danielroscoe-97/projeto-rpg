@@ -31,8 +31,6 @@ export function computeCombatStats(
   entries: CombatLogEntry[],
   turnTimeAccumulated?: Record<string, number>,
   idToName?: Record<string, string>,
-  /** Name of the combatant whose turn was active when combat ended (needs +1 turnCount). */
-  activeCombatantName?: string,
 ): CombatantStats[] {
   const statsMap = new Map<string, CombatantStats>();
 
@@ -103,13 +101,8 @@ export function computeCombatStats(
     }
   }
 
-  // Fix turnCount: the active combatant at end-combat and the first combatant at round 1
-  // don't receive "turn" log entries, so their count may be off by 1.
-  // Ensure any combatant with time has turnCount >= 1, and +1 for the active combatant.
-  if (activeCombatantName) {
-    const active = statsMap.get(activeCombatantName);
-    if (active) active.turnCount += 1;
-  }
+  // Safety net: if a combatant has accumulated time but 0 "turn" log entries
+  // (e.g. added mid-combat, or legacy data before first-turn logging), ensure count >= 1.
   for (const s of statsMap.values()) {
     if (s.totalTurnTime > 0 && s.turnCount === 0) s.turnCount = 1;
   }

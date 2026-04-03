@@ -786,7 +786,7 @@ export function GuestCombatClient() {
   // Wrap advanceTurn to push undo entry first (Story 1.1)
   const handleAdvanceTurn = useCallback(() => {
     const store = useGuestCombatStore.getState();
-    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber, store.turnTimeAccumulated, store.turnStartedAt);
+    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber, store.turnTimeAccumulated, store.turnStartedAt, store.turnCountById);
     advanceTurn();
     playTurnSfx();
   }, [advanceTurn, pushTurnUndo]);

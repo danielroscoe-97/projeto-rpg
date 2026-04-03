@@ -25,6 +25,8 @@ export interface CombatLogEntry {
 interface CombatLogState {
   entries: CombatLogEntry[];
   addEntry: (entry: Omit<CombatLogEntry, "id" | "timestamp">) => void;
+  /** Remove the most recent "turn" log entry (used by undo to clean up phantom entries). */
+  removeLastTurnEntry: () => void;
   clear: () => void;
 }
 
@@ -41,6 +43,15 @@ export const useCombatLogStore = create<CombatLogState>((set) => ({
       };
       const next = [...state.entries, newEntry];
       return { entries: next.length > MAX_ENTRIES ? next.slice(next.length - MAX_ENTRIES) : next };
+    }),
+  removeLastTurnEntry: () =>
+    set((state) => {
+      for (let i = state.entries.length - 1; i >= 0; i--) {
+        if (state.entries[i].type === "turn") {
+          return { entries: [...state.entries.slice(0, i), ...state.entries.slice(i + 1)] };
+        }
+      }
+      return state;
     }),
   clear: () => set({ entries: [] }),
 }));

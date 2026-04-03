@@ -7,6 +7,7 @@ import {
   assignInitiativeOrder,
 } from "@/lib/utils/initiative";
 import { saveCombatBackup } from "@/lib/stores/combat-persist";
+import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 
 type CombatStore = EncounterState & CombatActions;
 
@@ -33,6 +34,7 @@ const initialState: EncounterState = {
   combatStartedAt: null,
   turnStartedAt: null,
   turnTimeAccumulated: {},
+  removedCombatantNames: {},
 };
 
 export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, get) => ({
@@ -51,9 +53,15 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     }),
 
   removeCombatant: (id) =>
-    set((state) => ({
-      combatants: state.combatants.filter((c) => c.id !== id),
-    })),
+    set((state) => {
+      const removed = state.combatants.find((c) => c.id === id);
+      return {
+        combatants: state.combatants.filter((c) => c.id !== id),
+        removedCombatantNames: removed
+          ? { ...state.removedCombatantNames, [id]: removed.name }
+          : state.removedCombatantNames,
+      };
+    }),
 
   clearEncounter: () => {
     try { localStorage.removeItem("combat-timers"); } catch { /* ignore */ }
@@ -397,19 +405,21 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         break;
       case "turn": {
         const restoredTime = entry.previousTurnTimeAccumulated;
-        const restoredTurnStart = entry.previousTurnStartedAt;
+        const freshTurnStart = Date.now(); // S2-A: fresh timer instead of stale old timestamp
         set({
           undoStack: stack,
           combatants: entry.previousCombatants,
           current_turn_index: Math.min(entry.previousTurnIndex, entry.previousCombatants.length - 1),
           round_number: entry.previousRound,
           turnTimeAccumulated: restoredTime,
-          turnStartedAt: restoredTurnStart,
+          turnStartedAt: freshTurnStart,
         });
+        // P2-B: Remove the phantom "turn" log entry added by handleAdvanceTurn
+        useCombatLogStore.getState().removeLastTurnEntry();
         // Sync localStorage so page refresh loads correct undo'd state
         try {
           const saved = JSON.parse(localStorage.getItem("combat-timers") ?? "{}");
-          localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: restoredTurnStart, turnTimeAccumulated: restoredTime }));
+          localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: freshTurnStart, turnTimeAccumulated: restoredTime }));
         } catch { /* ignore */ }
         break;
       }

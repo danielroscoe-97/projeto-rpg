@@ -1121,6 +1121,7 @@
     "leaderboard_healer": "Curandeiro",
     "leaderboard_speedster": "Speedster",
     "leaderboard_slowpoke": "Slowpoke",
+    "leaderboard_avg_per_turn": "média {time}/turno",
     "leaderboard_copied": "Resultados copiados para a área de transferência",
     "poll_title": "Como foi a dificuldade?",
     "poll_very_easy": "Muito Fácil",

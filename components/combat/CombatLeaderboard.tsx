@@ -218,7 +218,7 @@ export function CombatLeaderboard({ stats, encounterName, rounds, combatDuration
                     icon={<Zap className="size-4 text-cyan-400" />}
                     label={t("leaderboard_speedster")}
                     name={speedster.name}
-                    valueText={`avg ${formatDuration(speedster.totalTurnTime / speedster.turnCount)}/turn`}
+                    valueText={t("leaderboard_avg_per_turn", { time: formatDuration(speedster.totalTurnTime / speedster.turnCount) })}
                   />
                 )}
                 {slowpoke && (
@@ -226,7 +226,7 @@ export function CombatLeaderboard({ stats, encounterName, rounds, combatDuration
                     icon={<Timer className="size-4 text-orange-400" />}
                     label={t("leaderboard_slowpoke")}
                     name={slowpoke.name}
-                    valueText={`avg ${formatDuration(slowpoke.totalTurnTime / slowpoke.turnCount)}/turn`}
+                    valueText={t("leaderboard_avg_per_turn", { time: formatDuration(slowpoke.totalTurnTime / slowpoke.turnCount) })}
                   />
                 )}
               </motion.div>

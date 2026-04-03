@@ -151,9 +151,15 @@ export function CombatSessionClient({
       setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
       if (sid) {
+        // P3-A: Map real names to display_name for player privacy (anti-metagaming)
+        const combatants = useCombatStore.getState().combatants;
+        const playerSafeStats = pending.stats.map((s) => {
+          const c = combatants.find((x) => x.name === s.name);
+          return c?.display_name ? { ...s, name: c.display_name } : s;
+        });
         broadcastEvent(sid, {
           type: "session:combat_stats",
-          stats: pending.stats,
+          stats: playerSafeStats,
           encounter_name: finalName,
           rounds: pending.rounds,
           combatDuration: pending.combatDuration,
@@ -183,9 +189,12 @@ export function CombatSessionClient({
     for (const c of state.combatants) {
       idToName[c.id] = c.name;
     }
+    // P2-C: Include names of combatants removed mid-combat so their turn time isn't lost
+    for (const [id, name] of Object.entries(state.removedCombatantNames)) {
+      if (!idToName[id]) idToName[id] = name;
+    }
 
-    const activeName = state.combatants[state.current_turn_index]?.name;
-    const stats = computeCombatStats(logEntries, finalAccumulated, idToName, activeName);
+    const stats = computeCombatStats(logEntries, finalAccumulated, idToName);
     const rounds = getMaxRound(logEntries);
     const combatDuration = state.combatStartedAt ? Date.now() - state.combatStartedAt : 0;
     const existingName = state.encounter_name.trim();
@@ -269,6 +278,11 @@ export function CombatSessionClient({
   useEffect(() => {
     const store = useCombatStore.getState();
     if (encounterId && sessionId) {
+      // P1-A: Save timer data before clearEncounter wipes localStorage
+      let timerBackup: string | null = null;
+      if (isActive) {
+        try { timerBackup = localStorage.getItem("combat-timers"); } catch { /* ignore */ }
+      }
       store.clearEncounter();
       store.setEncounterId(encounterId, sessionId);
       store.hydrateCombatants(initialCombatants);
@@ -278,6 +292,18 @@ export function CombatSessionClient({
             ? Math.max(0, Math.min(currentTurnIndex, initialCombatants.length - 1))
             : 0;
         store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
+        // P1-A: Restore timer data after hydration (clearEncounter wiped it)
+        if (timerBackup) {
+          try {
+            const parsed = JSON.parse(timerBackup);
+            useCombatStore.setState({
+              combatStartedAt: parsed.combatStartedAt ?? null,
+              turnStartedAt: parsed.turnStartedAt ?? null,
+              turnTimeAccumulated: parsed.turnTimeAccumulated ?? {},
+            });
+            localStorage.setItem("combat-timers", timerBackup);
+          } catch { /* ignore */ }
+        }
       }
       // Fallback: if server returned no combatants, try localStorage backup
       if (initialCombatants.length === 0) {
@@ -320,8 +346,12 @@ export function CombatSessionClient({
         }
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
-        // Auto-expand group if first combatant belongs to one
+        // P2-A: Log first combatant's turn so all combatants have matching turn entries
         const firstCombatant = sorted[0];
+        if (firstCombatant) {
+          useCombatLogStore.getState().addEntry({ round: 1, type: "turn", actorName: firstCombatant.name, description: `Turn: ${firstCombatant.name}` });
+        }
+        // Auto-expand group if first combatant belongs to one
         if (firstCombatant?.monster_group_id) {
           store.toggleGroupExpanded(firstCombatant.monster_group_id);
         }
@@ -350,8 +380,12 @@ export function CombatSessionClient({
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
       store.startCombat();
-      // Auto-expand group if first combatant belongs to one
+      // P2-A: Log first combatant's turn so all combatants have matching turn entries
       const firstNew = sorted[0];
+      if (firstNew) {
+        useCombatLogStore.getState().addEntry({ round: 1, type: "turn", actorName: firstNew.name, description: `Turn: ${firstNew.name}` });
+      }
+      // Auto-expand group if first combatant belongs to one
       if (firstNew?.monster_group_id) {
         store.toggleGroupExpanded(firstNew.monster_group_id);
       }

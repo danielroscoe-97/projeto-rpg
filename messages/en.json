@@ -1121,6 +1121,7 @@
     "leaderboard_healer": "Healer",
     "leaderboard_speedster": "Speedster",
     "leaderboard_slowpoke": "Slowpoke",
+    "leaderboard_avg_per_turn": "avg {time}/turn",
     "leaderboard_copied": "Results copied to clipboard",
     "poll_title": "How was the difficulty?",
     "poll_very_easy": "Very Easy",
