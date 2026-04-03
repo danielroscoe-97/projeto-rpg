@@ -46,6 +46,7 @@
     "footer_pricing": "Preços",
     "footer_about": "Sobre",
     "footer_faq": "FAQ",
+    "footer_blog": "Blog",
     "footer_srd_notice": "Utiliza o System Reference Document 5.1 e 5.2 sob a",
     "footer_srd_license": "Licença CC-BY-4.0"
   },
@@ -1462,7 +1463,8 @@
     "whitelist_already_exists": "Usuário já está na whitelist",
     "whitelist_already_badge": "Já adicionado",
     "whitelist_no_users_found": "Nenhum usuário encontrado",
-    "whitelist_revoked_section": "Revogados ({count})"
+    "whitelist_revoked_section": "Revogados ({count})",
+    "whitelist_active_count": "{count} testers ativos"
   },
   "compendium": {
     "title": "Compêndio",
@@ -1501,6 +1503,7 @@
     "filters": "Filtros",
     "select_monster": "Selecione um monstro da lista para ver sua ficha",
     "login_required_complete": "Faça login para acessar o compêndio completo",
+    "spells_unlock_more": "Desbloqueie {count} magias adicionais do compêndio completo",
     "select_spell": "Selecione uma magia da lista para ver seus detalhes",
     "back_to_list": "Voltar para lista",
     "hp_label": "Vida (PV)",

@@ -46,6 +46,7 @@
     "footer_pricing": "Pricing",
     "footer_about": "About",
     "footer_faq": "FAQ",
+    "footer_blog": "Blog",
     "footer_srd_notice": "Uses the System Reference Document 5.1 and 5.2 under the",
     "footer_srd_license": "CC-BY-4.0 License"
   },
@@ -1462,7 +1463,8 @@
     "whitelist_already_exists": "User is already whitelisted",
     "whitelist_already_badge": "Already added",
     "whitelist_no_users_found": "No users found",
-    "whitelist_revoked_section": "Revoked ({count})"
+    "whitelist_revoked_section": "Revoked ({count})",
+    "whitelist_active_count": "{count} active testers"
   },
   "compendium": {
     "title": "Compendium",
@@ -1501,6 +1503,7 @@
     "filters": "Filters",
     "select_monster": "Select a monster from the list to view its stat block",
     "login_required_complete": "Log in to access the full compendium",
+    "spells_unlock_more": "Unlock {count} more spells from the full compendium",
     "select_spell": "Select a spell from the list to view its details",
     "back_to_list": "Back to list",
     "hp_label": "HP",
