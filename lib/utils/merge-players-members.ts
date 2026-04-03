@@ -68,7 +68,13 @@ export function mergePlayersAndMembers(
     return byName(a, b);
   });
 
-  characterOnly.sort(byName);
+  characterOnly.sort((a, b) => {
+    // Primary: created_at ascending (per D6)
+    const ta = a.character?.created_at ?? "";
+    const tb = b.character?.created_at ?? "";
+    if (ta !== tb) return ta < tb ? -1 : 1;
+    return byName(a, b);
+  });
 
   return [...linked, ...characterOnly];
 }

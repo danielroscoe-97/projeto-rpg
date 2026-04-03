@@ -46,10 +46,10 @@ ac                              display_name (via join)
 |------|------------------|-----------------|-------------|
 | A | Existe (`user_id` = null) | Não existe | Personagem manual (sem conta) |
 | B | Existe (`user_id` preenchido) | Existe (mesmo `user_id`) | Jogador com conta vinculada |
-| C | Não existe | Existe (`role = player`) | Membro sem personagem criado |
-| D | Não existe | Existe (`role = dm`) | DM (exibir somente na seção de membros/info) |
+| ~~C~~ | ~~Não existe~~ | ~~Existe (`role = player`)~~ | ~~Membro sem personagem criado~~ — **Impossível por design: jogadores são obrigados a criar personagem ao entrar na campanha.** |
+| D | Não existe | Existe (`role = dm`) | DM — omitido da lista de jogadores |
 
-O caso D (DM como membro) não deve aparecer como personagem jogável. Pode aparecer como nota informacional "DM da campanha" no final da lista, ou ser omitido da lista de personagens.
+O caso D (DM como membro) é omitido da lista de jogadores. O caso C é impossível por regra de domínio: todo jogador que aceita convite deve informar ao menos o nome do personagem para entrar na campanha.
 
 ---
 
@@ -186,13 +186,13 @@ export async function removeMemberAndCharacterAction(
 - [ ] A seção "Jogadores" exibe todos os personagens (com e sem conta vinculada)
 - [ ] Jogadores que aceitaram convite aparecem com badge "Conta vinculada" e nome/e-mail abaixo do card de personagem
 - [ ] Personagens adicionados manualmente pelo DM (sem conta) não exibem badge de conta
-- [ ] Membros autenticados sem personagem aparecem como card simplificado com label "Sem personagem"
+- [ ] ~~Membros autenticados sem personagem aparecem como card simplificado com label "Sem personagem"~~ — **Removido: Caso C impossível por design (jogadores obrigatoriamente criam personagem ao entrar)**
 - [ ] Botão "Convidar Jogador" e botão "Adicionar manualmente" coexistem no header da seção
 - [ ] Remover um membro que tem personagem exibe dialog com as opções "Remover apenas acesso" e "Remover acesso e personagem"
-- [ ] Remover um membro sem personagem funciona igual ao comportamento atual de `MemberCard` (confirmação + toast)
+- [ ] Remover personagem manual (sem conta) exibe confirmação inline + toast de sucesso
 - [ ] O DM (como `campaign_member` com `role = "dm"`) não aparece na lista de jogadores
-- [ ] A lista segue a ordem: vinculados → manuais → sem personagem
-- [ ] `mergePlayersAndMembers` tem cobertura de unit test para os 4 casos (A, B, C, D)
+- [ ] A lista segue a ordem: vinculados (por `joined_at`) → manuais (por `created_at`)
+- [ ] `mergePlayersAndMembers` tem cobertura de unit test para os casos A, B e D
 
 ---
 

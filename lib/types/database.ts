@@ -91,6 +91,7 @@ export interface Database {
         Row: {
           id: string;
           campaign_id: string;
+          user_id: string | null;
           name: string;
           max_hp: number;
           current_hp: number;

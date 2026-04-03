@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Users, UserPlus, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText } from "lucide-react";
+import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
-import { MembersList } from "@/components/campaign/MembersList";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
@@ -72,6 +71,8 @@ export function CampaignSections({
             initialCharacters={initialCharacters}
             campaignId={campaignId}
             campaignName={campaignName}
+            initialMembers={initialMembers}
+            isOwner={isOwner}
           />
         </Section>
 
@@ -86,14 +87,6 @@ export function CampaignSections({
 
       {/* Sidebar — lighter sections */}
       <div className="space-y-4">
-        <Section icon={UserPlus} title={t("section_members")} defaultOpen={false}>
-          <MembersList
-            campaignId={campaignId}
-            isOwner={isOwner}
-            initialMembers={initialMembers}
-          />
-        </Section>
-
         <Section icon={Swords} title={t("section_encounters")} defaultOpen={false}>
           <EncounterHistory campaignId={campaignId} />
         </Section>

@@ -130,10 +130,23 @@ describe("ordering", () => {
     expect(result[1].entryType).toBe("character_only");
   });
 
-  it("sorts character_only entries alphabetically by name", () => {
+  it("sorts character_only entries by created_at ascending, then name", () => {
     const characters = [
-      makeCharacter({ id: "c2", user_id: null, name: "Zara" }),
-      makeCharacter({ id: "c1", user_id: null, name: "Aela" }),
+      makeCharacter({ id: "c2", user_id: null, name: "Zara", created_at: "2026-01-01T00:00:00Z" }),
+      makeCharacter({ id: "c1", user_id: null, name: "Aela", created_at: "2026-01-02T00:00:00Z" }),
+    ];
+
+    const result = mergePlayersAndMembers(characters, []);
+
+    // Zara created first → appears first despite alphabetical name order
+    expect(result[0].character?.name).toBe("Zara");
+    expect(result[1].character?.name).toBe("Aela");
+  });
+
+  it("uses name as tiebreaker when character_only entries share created_at", () => {
+    const characters = [
+      makeCharacter({ id: "c2", user_id: null, name: "Zara", created_at: "2026-01-01T00:00:00Z" }),
+      makeCharacter({ id: "c1", user_id: null, name: "Aela", created_at: "2026-01-01T00:00:00Z" }),
     ];
 
     const result = mergePlayersAndMembers(characters, []);

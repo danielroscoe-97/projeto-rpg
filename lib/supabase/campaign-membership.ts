@@ -659,21 +659,26 @@ export async function removeMemberAndCharacter(
     throw new Error("Cannot remove yourself as DM");
   }
 
-  if (alsoRemoveCharacter) {
-    const { error: charError } = await supabase
+  // Order: less-destructive first to minimize blast radius of partial failure.
+  // If member delete succeeds but character op fails, the character remains
+  // as an orphan the DM can manage — better than the reverse.
+
+  if (!alsoRemoveCharacter) {
+    // Unlink characters so they don't carry a stale user_id after member removal
+    const { error: unlinkError } = await supabase
       .from("player_characters")
-      .delete()
+      .update({ user_id: null })
       .eq("campaign_id", campaignId)
       .eq("user_id", targetUserId);
 
-    if (charError) {
-      captureError(new Error(`Failed to remove character: ${charError.message}`), {
+    if (unlinkError) {
+      captureError(new Error(`Failed to unlink character: ${unlinkError.message}`), {
         component: "removeMemberAndCharacter",
-        action: "deleteCharacter",
+        action: "unlinkCharacter",
         category: "database",
-        extra: { campaignId, targetUserId, code: charError.code },
+        extra: { campaignId, targetUserId, code: unlinkError.code },
       });
-      throw new Error(`Failed to remove character: ${charError.message}`);
+      throw new Error(`Failed to unlink character: ${unlinkError.message}`);
     }
   }
 
@@ -691,6 +696,26 @@ export async function removeMemberAndCharacter(
       extra: { campaignId, targetUserId, code: memberError.code },
     });
     throw new Error(`Failed to remove member: ${memberError.message}`);
+  }
+
+  if (alsoRemoveCharacter) {
+    const { error: charError } = await supabase
+      .from("player_characters")
+      .delete()
+      .eq("campaign_id", campaignId)
+      .eq("user_id", targetUserId);
+
+    if (charError) {
+      captureError(new Error(`Failed to remove character: ${charError.message}`), {
+        component: "removeMemberAndCharacter",
+        action: "deleteCharacter",
+        category: "database",
+        extra: { campaignId, targetUserId, code: charError.code },
+      });
+      // Member already removed — character is orphaned but DM can clean up.
+      // Don't throw here to avoid leaving the UI in a confusing state.
+      // The member removal was the primary goal.
+    }
   }
 
   trackServerEvent("campaign:member_removed", {

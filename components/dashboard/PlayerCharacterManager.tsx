@@ -1,15 +1,30 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { CharacterForm } from "@/components/character/CharacterForm";
 import { CharacterCard } from "@/components/character/CharacterCard";
 import { TokenUpload } from "@/components/character/TokenUpload";
+import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
+import { removeMemberAndCharacterAction } from "@/lib/actions/invite-actions";
+import { mergePlayersAndMembers } from "@/lib/utils/merge-players-members";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { Database } from "@/lib/types/database";
+import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 
 type PlayerCharacterUpdate = Database["public"]["Tables"]["player_characters"]["Update"];
 
@@ -17,12 +32,21 @@ interface Props {
   initialCharacters: PlayerCharacter[];
   campaignId: string;
   campaignName: string;
+  initialMembers?: CampaignMemberWithUser[];
+  isOwner?: boolean;
 }
 
-export function PlayerCharacterManager({ initialCharacters, campaignId }: Props) {
+export function PlayerCharacterManager({
+  initialCharacters,
+  campaignId,
+  campaignName,
+  initialMembers = [],
+  isOwner = false,
+}: Props) {
   const t = useTranslations("dashboard");
   const tc = useTranslations("common");
   const [characters, setCharacters] = useState<PlayerCharacter[]>(initialCharacters);
+  const [members, setMembers] = useState<CampaignMemberWithUser[]>(initialMembers);
   const [showAdd, setShowAdd] = useState(false);
   const [editingCharacter, setEditingCharacter] = useState<PlayerCharacter | null>(null);
   const [removeTargetId, setRemoveTargetId] = useState<string | null>(null);
@@ -30,7 +54,21 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
   const [isRemoving, setIsRemoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // D7: linked-entry removal dialog state
+  const [linkedRemoveTarget, setLinkedRemoveTarget] = useState<{
+    userId: string;
+    memberName: string;
+  } | null>(null);
+  const [isRemovingLinked, setIsRemovingLinked] = useState(false);
+  const linkedRemoveInflight = useRef(false);
+
   const supabase = createClient();
+
+  // ── Unified list (derived) ──────────────────────────────────────────────
+  const entries = useMemo(
+    () => mergePlayersAndMembers(characters, members),
+    [characters, members]
+  );
 
   // ── DM Notes (debounced auto-save) ──────────────────────────────────────
   const [notesValues, setNotesValues] = useState<Record<string, string>>(() => {
@@ -100,11 +138,11 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       spellSlots: Record<string, { max: number; used: number }>;
     }) => {
       if (editingCharacter) {
-        // Edit existing
         const newMaxHp = data.max_hp;
-        const spellSlotsPayload = data.spellSlots && Object.values(data.spellSlots).some((v) => v.max > 0)
-          ? Object.fromEntries(Object.entries(data.spellSlots).filter(([, v]) => v.max > 0))
-          : null;
+        const spellSlotsPayload =
+          data.spellSlots && Object.values(data.spellSlots).some((v) => v.max > 0)
+            ? Object.fromEntries(Object.entries(data.spellSlots).filter(([, v]) => v.max > 0))
+            : null;
         const updatePayload: PlayerCharacterUpdate = {
           name: data.name,
           race: data.race,
@@ -158,10 +196,10 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
         );
         setEditingCharacter(null);
       } else {
-        // Add new
-        const spellSlotsInsert = data.spellSlots && Object.values(data.spellSlots).some((v) => v.max > 0)
-          ? Object.fromEntries(Object.entries(data.spellSlots).filter(([, v]) => v.max > 0))
-          : null;
+        const spellSlotsInsert =
+          data.spellSlots && Object.values(data.spellSlots).some((v) => v.max > 0)
+            ? Object.fromEntries(Object.entries(data.spellSlots).filter(([, v]) => v.max > 0))
+            : null;
         const { data: newChar, error: dbError } = await supabase
           .from("player_characters")
           .insert({
@@ -191,9 +229,9 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
     [editingCharacter, campaignId]
   );
 
-  // ── Remove ─────────────────────────────────────────────────────────────────
+  // ── Remove character only (character_only entries) ──────────────────────
 
-  const handleRemove = async () => {
+  const handleRemoveCharacter = async () => {
     if (!removeTargetId) return;
     setIsRemoving(true);
     setError(null);
@@ -208,6 +246,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
 
       setCharacters((prev) => prev.filter((c) => c.id !== removeTargetId));
       setRemoveTargetId(null);
+      toast.success("Personagem removido.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to remove character.");
       setRemoveTargetId(null);
@@ -216,23 +255,62 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
     }
   };
 
+  // ── Remove linked entry (D7) ────────────────────────────────────────────
+
+  const handleRemoveLinked = async (alsoRemoveCharacter: boolean) => {
+    const target = linkedRemoveTarget;
+    if (!target || linkedRemoveInflight.current) return;
+    linkedRemoveInflight.current = true;
+    setIsRemovingLinked(true);
+    try {
+      await removeMemberAndCharacterAction(
+        campaignId,
+        target.userId,
+        alsoRemoveCharacter
+      );
+      setMembers((prev) => prev.filter((m) => m.user_id !== target.userId));
+      if (alsoRemoveCharacter) {
+        setCharacters((prev) =>
+          prev.filter((c) => c.user_id !== target.userId)
+        );
+      } else {
+        // Keep character but unlink it locally so it renders as character_only
+        setCharacters((prev) =>
+          prev.map((c) =>
+            c.user_id === target.userId ? { ...c, user_id: null } : c
+          )
+        );
+      }
+      toast.success("Acesso removido com sucesso.");
+      setLinkedRemoveTarget(null);
+    } catch {
+      toast.error("Erro ao remover. Tente novamente.");
+    } finally {
+      linkedRemoveInflight.current = false;
+      setIsRemovingLinked(false);
+    }
+  };
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <h2 className="text-lg font-semibold text-foreground">{t("pc_title")}</h2>
-        <Button
-          size="sm"
-          className="bg-gold hover:bg-gold/80 text-foreground min-h-[44px]"
-          onClick={() => {
-            setShowAdd(true);
-            setError(null);
-          }}
-        >
-          {t("pc_add")}
-        </Button>
+        <div className="flex items-center gap-2">
+          {isOwner && <InvitePlayerDialog campaignId={campaignId} />}
+          <Button
+            size="sm"
+            className="bg-gold hover:bg-gold/80 text-foreground min-h-[44px]"
+            onClick={() => {
+              setShowAdd(true);
+              setError(null);
+            }}
+          >
+            {t("pc_add")}
+          </Button>
+        </div>
       </div>
 
       {/* Error */}
@@ -243,20 +321,23 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       )}
 
       {/* Empty state */}
-      {characters.length === 0 && (
+      {entries.length === 0 && (
         <div className="text-center py-12 border border-dashed border-border rounded-lg">
           <p className="text-muted-foreground text-sm">{t("pc_empty")}</p>
         </div>
       )}
 
-      {/* Character list */}
+      {/* Unified character list */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {characters.map((character) => {
-          // Remove confirmation
+        {entries.map((entry) => {
+          if (!entry.character) return null;
+          const character = entry.character;
+
+          // Inline remove confirmation (character_only)
           if (removeTargetId === character.id) {
             return (
               <div
-                key={character.id}
+                key={entry.key}
                 className="flex items-center gap-3 p-4 bg-card rounded-lg border border-red-500/30 sm:col-span-2"
               >
                 <p className="text-muted-foreground text-sm flex-1">
@@ -269,7 +350,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                   variant="destructive"
                   className="min-h-[44px]"
                   disabled={isRemoving}
-                  onClick={handleRemove}
+                  onClick={handleRemoveCharacter}
                 >
                   {isRemoving ? (
                     <>
@@ -293,20 +374,44 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
           }
 
           return (
-            <div key={character.id} className="space-y-2">
-              {/* CharacterCard + remove action */}
+            <div key={entry.key} className="space-y-2">
+              {/* CharacterCard */}
               <CharacterCard
                 character={character}
                 onClick={() => setEditingCharacter(character)}
                 onUploadToken={() => setTokenUploadChar(character)}
               />
+
+              {/* Account badge (linked only) */}
+              {entry.member && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-md text-xs">
+                  <User className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground truncate">
+                    {entry.member.display_name ?? entry.member.email?.split("@")[0] ?? "Jogador"}
+                  </span>
+                  <span className="text-[10px] text-emerald-400 ml-auto whitespace-nowrap">
+                    Conta vinculada
+                  </span>
+                </div>
+              )}
+
+              {/* Remove action */}
               <div className="flex justify-end px-1">
                 <button
                   type="button"
                   className="text-red-400 hover:text-red-300 text-xs transition-colors"
                   onClick={() => {
-                    setRemoveTargetId(character.id);
-                    setError(null);
+                    if (entry.entryType === "linked" && entry.member) {
+                      const memberName =
+                        entry.member.display_name ?? entry.member.email?.split("@")[0] ?? "Jogador";
+                      setLinkedRemoveTarget({
+                        userId: entry.member.user_id,
+                        memberName,
+                      });
+                    } else {
+                      setRemoveTargetId(character.id);
+                      setError(null);
+                    }
                   }}
                 >
                   {tc("remove")}
@@ -382,6 +487,54 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
           }}
         />
       )}
+
+      {/* D7: AlertDialog for linked entry removal */}
+      <AlertDialog
+        open={!!linkedRemoveTarget}
+        onOpenChange={(open) => {
+          if (!open && !isRemovingLinked) setLinkedRemoveTarget(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover jogador</AlertDialogTitle>
+            <AlertDialogDescription>
+              O que deseja fazer com o acesso de{" "}
+              <span className="font-medium text-foreground">
+                {linkedRemoveTarget?.memberName}
+              </span>
+              ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel disabled={isRemovingLinked}>
+              {tc("cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleRemoveLinked(false)}
+              disabled={isRemovingLinked}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              {isRemovingLinked ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Remover apenas o acesso"
+              )}
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => handleRemoveLinked(true)}
+              disabled={isRemovingLinked}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isRemovingLinked ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Remover acesso e personagem"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
