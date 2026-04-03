@@ -14,6 +14,7 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
 import monsterLore from "@/public/srd/monster-lore.json";
 import monsterLorePt from "@/public/srd/monster-lore-pt.json";
+import monsterNamesPt from "@/public/srd/monster-descriptions-pt.json";
 import Link from "next/link";
 
 // ── Static generation ──────────────────────────────────────────────
@@ -90,6 +91,7 @@ export default async function MonstroPage({
   if (!monster) notFound();
 
   const enSlug = toSlug(monster.name);
+  const ptName = (monsterNamesPt as Record<string, { name?: string }>)[enSlug]?.name ?? monster.name;
 
   const allMonsters = getSrdMonsters().map((m) => {
     const es = toSlug(m.name);
@@ -115,7 +117,7 @@ export default async function MonstroPage({
           locale="pt-BR"
           breadcrumbs={[
             { label: "Monstros", href: "/monstros" },
-            { label: monster.name },
+            { label: ptName },
           ]}
         />
 
@@ -148,7 +150,7 @@ export default async function MonstroPage({
           <PublicMonsterStatBlock monster={monster} locale="pt-BR" slug={enSlug} />
 
           {/* Two-box CTA */}
-          <PublicCTA entityName={monster.name} lore={lore ?? undefined} locale="pt-BR" />
+          <PublicCTA entityName={ptName} lore={lore ?? undefined} locale="pt-BR" />
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
