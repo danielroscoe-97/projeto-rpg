@@ -69,6 +69,30 @@ export function CombatantSetupRow({
 
   const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select();
 
+  // --- Lair Action: special minimal setup row ---
+  if (combatant.is_lair_action) {
+    return (
+      <div
+        className="flex items-center gap-3 bg-amber-900/20 border border-amber-500/30 rounded-md px-3 py-2"
+        data-testid={`setup-row-${combatant.id}`}
+      >
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-900/60 border border-amber-500/40 flex items-center justify-center text-sm font-bold text-amber-300">
+          20
+        </div>
+        <span className="text-lg" aria-hidden>🏰</span>
+        <span className="font-semibold text-amber-200 text-sm flex-1">Lair Actions</span>
+        <span className="text-xs text-zinc-400">Init 20 (fixed)</span>
+        <button
+          onClick={() => onRemove(combatant.id)}
+          className="text-zinc-500 hover:text-red-400 transition-colors text-xs px-1"
+          title="Remove"
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 md:grid md:gap-x-1.5 md:items-center bg-card border rounded-md px-2 py-1.5 hover:bg-white/[0.02] group${combatant.is_hidden ? " border-dashed border-purple-500/40 opacity-80" : " border-white/[0.04]"}`}

@@ -22,6 +22,7 @@ import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import { applyGroupRename } from "@/lib/utils/group-rename";
+import { hasLairActions, hasLairActionEntry, createLairActionCombatant } from "@/lib/utils/lair-action";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
 import { getMonsterById } from "@/lib/srd/srd-search";
@@ -260,6 +261,11 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         legendary_actions_used: 0,
       });
 
+      // Auto-add Lair Action entry at initiative 20 if this monster has lair actions
+      if (hasLairActions(monster) && !hasLairActionEntry(useCombatStore.getState().combatants)) {
+        addCombatant(createLairActionCombatant());
+      }
+
       lastSelectedMonster.current = null;
       setAddRow(EMPTY_ADD_ROW);
     },
@@ -310,9 +316,15 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         });
       }
       useCombatStore.getState().addMonsterGroup(newCombatants);
+
+      // Auto-add Lair Action entry at initiative 20 if this monster has lair actions
+      if (hasLairActions(monster) && !hasLairActionEntry(useCombatStore.getState().combatants)) {
+        addCombatant(createLairActionCombatant());
+      }
+
       setAddRow(EMPTY_ADD_ROW);
     },
-    []
+    [addCombatant]
   );
 
   // Add all monsters from encounter generator

@@ -53,6 +53,8 @@ export interface Combatant {
   legendary_actions_total: number | null;
   /** Legendary actions used this round. Resets to 0 at start of each round. */
   legendary_actions_used: number;
+  /** True for the synthetic "Lair Actions" entry at initiative 20. Not a real creature. */
+  is_lair_action?: boolean;
 }
 
 export type UndoEntry =

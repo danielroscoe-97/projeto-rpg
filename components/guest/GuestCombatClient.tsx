@@ -28,6 +28,7 @@ import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant, CombatantRole } from "@/lib/types/combat";
+import { hasLairActions, hasLairActionEntry, createLairActionCombatant } from "@/lib/utils/lair-action";
 import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
@@ -167,6 +168,11 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         legendary_actions_used: 0,
       });
 
+      // Auto-add Lair Action entry at initiative 20 if this monster has lair actions
+      if (hasLairActions(monster) && !hasLairActionEntry(useGuestCombatStore.getState().combatants)) {
+        addCombatant(createLairActionCombatant());
+      }
+
       setAddRow(EMPTY_ADD_ROW);
       setAddRowRole(DEFAULT_ADD_ROW_ROLE);
       lastSelectedMonster.current = null;
@@ -222,9 +228,15 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         });
       }
       addMonsterGroup(newCombatants);
+
+      // Auto-add Lair Action entry at initiative 20 if this monster has lair actions
+      if (hasLairActions(monster) && !hasLairActionEntry(useGuestCombatStore.getState().combatants)) {
+        addCombatant(createLairActionCombatant());
+      }
+
       setAddRow(EMPTY_ADD_ROW);
     },
-    [addMonsterGroup]
+    [addMonsterGroup, addCombatant]
   );
 
   // Add all monsters from encounter generator

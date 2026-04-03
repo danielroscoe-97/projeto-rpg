@@ -24,6 +24,7 @@ import {
 import type { Combatant } from "@/lib/types/combat";
 import type { RollMode } from "@/lib/dice/roll";
 import type { RulesetVersion } from "@/lib/types/database";
+import type { SrdMonster } from "@/lib/srd/srd-loader";
 
 export interface CombatantRowProps {
   combatant: Combatant;
@@ -89,6 +90,33 @@ export const CombatantRow = memo(function CombatantRow({
 }: CombatantRowProps) {
   const t = useTranslations("combat");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+
+  // --- Lair Action: special minimal row with expandable lair actions list ---
+  if (combatant.is_lair_action) {
+    // Find all lair-capable monsters in combat to show their lair actions
+    const lairMonsters: SrdMonster[] = [];
+    if (allCombatants) {
+      const seen = new Set<string>();
+      for (const c of allCombatants) {
+        if (c.monster_id && !c.is_lair_action && !c.is_defeated && !seen.has(c.monster_id)) {
+          seen.add(c.monster_id);
+          const m = getMonsterById(c.monster_id);
+          if (m?.lair_actions?.length) lairMonsters.push(m);
+        }
+      }
+    }
+
+    return (
+      <LairActionRow
+        combatant={combatant}
+        isCurrentTurn={isCurrentTurn}
+        lairMonsters={lairMonsters}
+        onAdvanceTurn={onAdvanceTurn}
+        onRemoveCombatant={onRemoveCombatant}
+      />
+    );
+  }
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
   const [editingPlayerNotes, setEditingPlayerNotes] = useState(false);
@@ -885,3 +913,108 @@ export const CombatantRow = memo(function CombatantRow({
     </li>
   );
 });
+
+// ---------------------------------------------------------------------------
+// Lair Action Row — expandable row showing lair actions from lair-capable monsters
+// ---------------------------------------------------------------------------
+
+function LairActionRow({
+  combatant,
+  isCurrentTurn,
+  lairMonsters,
+  onAdvanceTurn,
+  onRemoveCombatant,
+}: {
+  combatant: Combatant;
+  isCurrentTurn: boolean;
+  lairMonsters: SrdMonster[];
+  onAdvanceTurn?: () => void;
+  onRemoveCombatant?: (id: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      className={`rounded-lg transition-all border ${
+        isCurrentTurn
+          ? "bg-amber-900/40 border-amber-500/60 ring-1 ring-amber-500/40"
+          : "bg-zinc-800/40 border-zinc-700/40"
+      }`}
+    >
+      {/* Header row */}
+      <div
+        className="flex items-center gap-3 px-3 py-2 cursor-pointer select-none"
+        onClick={() => setExpanded(!expanded)}
+      >
+        {/* Initiative badge */}
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-900/60 border border-amber-500/40 flex items-center justify-center text-sm font-bold text-amber-300">
+          20
+        </div>
+
+        {/* Castle icon + label */}
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-lg" aria-hidden>🏰</span>
+          <span className="font-semibold text-amber-200 text-sm">Lair Actions</span>
+          <span className="text-xs text-zinc-400 hidden sm:inline">— Initiative Count 20</span>
+          <span className="text-xs text-zinc-500 ml-1">{expanded ? "▾" : "▸"}</span>
+        </div>
+
+        {/* Advance turn button when it's lair action's turn */}
+        {isCurrentTurn && onAdvanceTurn && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onAdvanceTurn(); }}
+            className="px-2 py-1 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded transition-colors"
+            title="Advance to next turn"
+          >
+            ▶
+          </button>
+        )}
+
+        {/* Remove button */}
+        {onRemoveCombatant && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onRemoveCombatant(combatant.id); }}
+            className="text-zinc-500 hover:text-red-400 transition-colors text-xs px-1"
+            title="Remove Lair Actions"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {/* Expanded: show lair actions from all lair-capable monsters */}
+      <AnimatePresence>
+        {expanded && lairMonsters.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-3 space-y-3 border-t border-amber-500/20 pt-2">
+              {lairMonsters.map((monster) => (
+                <div key={monster.id}>
+                  {lairMonsters.length > 1 && (
+                    <h5 className="text-xs font-bold text-amber-300 mb-1">{monster.name}</h5>
+                  )}
+                  {monster.lair_actions_intro && (
+                    <p className="text-xs text-zinc-400 italic mb-1.5">{monster.lair_actions_intro}</p>
+                  )}
+                  <ul className="space-y-1.5">
+                    {monster.lair_actions?.map((la, i) => (
+                      <li key={i} className="text-xs text-zinc-300">
+                        {la.name && <strong className="text-amber-200">{la.name}. </strong>}
+                        <span>{la.desc}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
