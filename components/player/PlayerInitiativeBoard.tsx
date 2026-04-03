@@ -59,7 +59,7 @@ interface PlayerCombatant {
 
 /** Abbreviated tier labels for mobile */
 const TIER_SHORT: Record<string, string> = {
-  FULL: "FUL",
+  FULL: "FULL",
   LIGHT: "LGT",
   MODERATE: "MOD",
   HEAVY: "HVY",

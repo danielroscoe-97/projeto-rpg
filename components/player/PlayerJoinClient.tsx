@@ -1699,9 +1699,15 @@ export function PlayerJoinClient({
 
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center space-y-3">
-          <div className="w-6 h-6 rounded-full border-2 border-gold border-t-transparent animate-spin mx-auto" />
-          <p className="text-muted-foreground text-sm">{t("poll_awaiting_end")}</p>
+        <div className="text-center space-y-5">
+          <div className="text-5xl select-none" aria-hidden="true">⏳</div>
+          <div className="space-y-1.5">
+            <p className="text-foreground font-semibold text-base">{t("poll_results_title")}</p>
+            <p className="text-muted-foreground text-sm">{t("poll_awaiting_end")}</p>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full border-2 border-gold border-t-transparent animate-spin" />
+          </div>
         </div>
       </div>
     );

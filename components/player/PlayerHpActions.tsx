@@ -31,7 +31,7 @@ export function PlayerHpActions({
   connectionStatus,
   onHpAction,
 }: PlayerHpActionsProps) {
-  const t = useTranslations("player");
+  const t = useTranslations("combat");
   const [activeAction, setActiveAction] = useState<HpActionType | null>(null);
   const [value, setValue] = useState("");
   // UX.11 — track popover placement direction
