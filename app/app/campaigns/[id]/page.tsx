@@ -111,11 +111,11 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       }))
     }
 
-    // F-42: Fetch player's existing votes for these encounters
+    // F-42: Fetch player's existing votes for these encounters (server-side with auth context)
     let myVotes: Record<string, number> = {}
     if (combatHistory.length > 0) {
       const { getMyEncounterVotes } = await import("@/lib/supabase/encounter")
-      const votesMap = await getMyEncounterVotes(combatHistory.map(e => e.id))
+      const votesMap = await getMyEncounterVotes(supabase, combatHistory.map(e => e.id))
       myVotes = Object.fromEntries(votesMap)
     }
 

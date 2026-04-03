@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Heart, Sparkles, Package, ScrollText, ChevronLeft } from "lucide-react";
+import { Heart, Sparkles, Package, ScrollText, Map, ChevronLeft } from "lucide-react";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
 import { ResourceTrackerList } from "./ResourceTrackerList";
@@ -12,10 +12,11 @@ import { RestResetPanel } from "./RestResetPanel";
 import { SpellListSection } from "./SpellListSection";
 import { BagOfHolding } from "./BagOfHolding";
 import { PlayerNotesSection } from "./PlayerNotesSection";
+import { PlayerQuestBoard } from "./PlayerQuestBoard";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 
-type Tab = "sheet" | "resources" | "inventory" | "notes";
+type Tab = "sheet" | "resources" | "inventory" | "notes" | "quests";
 
 interface PlayerHqShellProps {
   characterId: string;
@@ -139,6 +140,18 @@ export function PlayerHqShell({
           <ScrollText className="w-4 h-4" />
           {t("tabs.notes")}
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("quests")}
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "quests"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Map className="w-4 h-4" />
+          {t("tabs.quests")}
+        </button>
       </div>
 
       {/* Tab content */}
@@ -207,6 +220,13 @@ export function PlayerHqShell({
         <PlayerNotesSection
           characterId={characterId}
           campaignId={campaignId}
+        />
+      )}
+
+      {activeTab === "quests" && (
+        <PlayerQuestBoard
+          campaignId={campaignId}
+          userId={userId}
         />
       )}
     </div>
