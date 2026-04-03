@@ -81,8 +81,10 @@ interface PublicMonsterStatBlockProps {
 
 export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: PublicMonsterStatBlockProps) {
   const L = STAT_LABELS[locale];
-  const { translated, globalPtBR, toggle, setGlobalPtBR, getDesc } = useMonsterTranslation(slug);
-  const isPtBr = locale === "pt-BR";
+  const { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc } = useMonsterTranslation(slug);
+  // `locale` controls UI labels (always PT-BR on .com.br pages)
+  // `translated` (from hook) controls DATA translations — only when user toggles "Traduzir ficha"
+  const t = translated;
 
   const abilities = [
     { label: "STR", value: monster.str ?? 10 },
@@ -93,7 +95,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
     { label: "CHA", value: monster.cha ?? 10 },
   ];
 
-  const savingThrows = isPtBr
+  const savingThrows = t
     ? translateSavingThrows(monster.saving_throws)
     : monster.saving_throws
       ? Object.entries(monster.saving_throws)
@@ -101,7 +103,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           .join(", ")
       : null;
 
-  const skills = isPtBr
+  const skills = t
     ? translateSkills(monster.skills)
     : monster.skills
       ? Object.entries(monster.skills)
@@ -109,15 +111,15 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           .join(", ")
       : null;
 
-  const speedStr = isPtBr ? translateSpeed(monster.speed) : formatSpeed(monster.speed);
-  const damageVuln = isPtBr ? translateDamageString(monster.damage_vulnerabilities) : monster.damage_vulnerabilities;
-  const damageRes = isPtBr ? translateDamageString(monster.damage_resistances) : monster.damage_resistances;
-  const damageImm = isPtBr ? translateDamageString(monster.damage_immunities) : monster.damage_immunities;
-  const conditionImm = isPtBr ? translateConditionString(monster.condition_immunities) : monster.condition_immunities;
-  const sensesStr = isPtBr ? translateSenses(monster.senses) : monster.senses;
-  const sizeStr = isPtBr ? translateSize(monster.size) : monster.size;
-  const typeStr = isPtBr ? translateType(monster.type) : monster.type;
-  const alignmentStr = isPtBr ? translateAlignment(monster.alignment) : monster.alignment;
+  const speedStr = t ? translateSpeed(monster.speed) : formatSpeed(monster.speed);
+  const damageVuln = t ? translateDamageString(monster.damage_vulnerabilities) : monster.damage_vulnerabilities;
+  const damageRes = t ? translateDamageString(monster.damage_resistances) : monster.damage_resistances;
+  const damageImm = t ? translateDamageString(monster.damage_immunities) : monster.damage_immunities;
+  const conditionImm = t ? translateConditionString(monster.condition_immunities) : monster.condition_immunities;
+  const sensesStr = t ? translateSenses(monster.senses) : monster.senses;
+  const sizeStr = t ? translateSize(monster.size) : monster.size;
+  const typeStr = t ? translateType(monster.type) : monster.type;
+  const alignmentStr = t ? translateAlignment(monster.alignment) : monster.alignment;
 
   const dexMod = abilityModNum(monster.dex ?? 10);
   const initNotation = `1d20${dexMod >= 0 ? `+${dexMod}` : `${dexMod}`}`;
@@ -175,7 +177,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
         />
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold text-[var(--5e-text)] font-[family-name:var(--font-cinzel)] leading-tight">
-            {monster.name}
+            {getName(monster.name)}
           </h1>
           <p className="text-[var(--5e-text-muted)] text-sm italic">
             {sizeStr} {typeStr}

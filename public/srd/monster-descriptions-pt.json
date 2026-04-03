@@ -1,5 +1,6 @@
 {
   "adult-blue-dragon": {
+    "name": "Dragão Azul Adulto",
     "special_abilities": {
       "Legendary Resistance (3/Day)": "Se o dragão falhar em um teste de resistência, ele pode optar por ter êxito."
     },
@@ -19,6 +20,7 @@
     }
   },
   "adult-red-dragon": {
+    "name": "Dragão Vermelho Adulto",
     "special_abilities": {
       "Legendary Resistance (3/Day)": "Se o dragão falhar em um teste de resistência, ele pode optar por ter êxito."
     },
@@ -38,6 +40,7 @@
     }
   },
   "goblin": {
+    "name": "Goblin",
     "special_abilities": {
       "Nimble Escape": "O goblin pode realizar a ação Desengajar ou Esconder como uma ação bônus em cada um de seus turnos."
     },
@@ -49,6 +52,7 @@
     "legendary_actions": {}
   },
   "zombie": {
+    "name": "Zumbi",
     "special_abilities": {
       "Undead Fortitude": "Se o dano reduzir o zumbi a 0 pontos de vida, ele deve realizar um teste de resistência de Constituição com CD igual a 5 + o dano sofrido, a menos que o dano seja radiante ou proveniente de um acerto crítico. Em um êxito, o zumbi cai a 1 ponto de vida."
     },
@@ -59,6 +63,7 @@
     "legendary_actions": {}
   },
   "skeleton": {
+    "name": "Esqueleto",
     "special_abilities": {},
     "actions": {
       "Shortsword": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5 m, um alvo. 5 (1d6 + 2) de dano perfurante.",
@@ -68,6 +73,7 @@
     "legendary_actions": {}
   },
   "vampire": {
+    "name": "Vampiro",
     "special_abilities": {
       "Shapechanger": "Se o vampiro não estiver na luz solar ou em água corrente, ele pode usar sua ação para se transformar em um morcego Minúsculo ou em uma nuvem de névoa Média, ou voltar à sua forma verdadeira.\nNa forma de morcego, o vampiro não pode falar, sua velocidade de caminhada é 1,5 m, e possui uma velocidade de voo de 9 m. Suas estatísticas, exceto seu tamanho e velocidade, permanecem inalteradas. Qualquer coisa que ele estiver vestindo se transforma com ele, mas nada que ele estiver carregando. Ele reverte para sua forma verdadeira se morrer.\nNa forma de névoa, o vampiro não pode realizar ações, falar ou manipular objetos. Ele não tem peso, possui uma velocidade de voo de 6 m, pode planar, e pode entrar no espaço de uma criatura hostil e parar lá. Além disso, se o ar puder passar por um espaço, a névoa pode fazê-lo sem precisar se espremer, mas não pode passar pela água. Ele tem vantagem em testes de resistência de Força, Destreza e Constituição, e é imune a todos os danos não mágicos, exceto o dano que sofre com a luz solar.",
       "Legendary Resistance (3/Day)": "Se o vampiro falhar em um teste de resistência, ele pode optar por ter êxito.",
@@ -91,6 +97,7 @@
     }
   },
   "lich": {
+    "name": "Lich",
     "special_abilities": {
       "Legendary Resistance (3/Day)": "Se o lich falhar em um teste de resistência, ele pode optar por ter êxito.",
       "Rejuvenation": "Se possuir um phylactery, um lich destruído ganha um novo corpo em 1d10 dias, recuperando todos os seus pontos de vida e voltando a ficar ativo. O novo corpo aparece a até 1,5 m do phylactery.",
@@ -109,6 +116,7 @@
     }
   },
   "troll": {
+    "name": "Troll",
     "special_abilities": {
       "Keen Smell": "O troll tem vantagem em testes de Sabedoria (Percepção) que dependem do olfato.",
       "Regeneration": "O troll recupera 10 pontos de vida no início de seu turno. Se o troll sofrer dano ácido ou de fogo, esta habilidade não funciona no início do próximo turno do troll. O troll morre somente se iniciar seu turno com 0 pontos de vida e não se regenerar."
@@ -122,6 +130,7 @@
     "legendary_actions": {}
   },
   "orc": {
+    "name": "Orc",
     "special_abilities": {
       "Aggressive": "Como uma ação bônus, o orc pode se mover até sua velocidade em direção a uma criatura hostil que ele possa ver."
     },
@@ -133,6 +142,7 @@
     "legendary_actions": {}
   },
   "werewolf": {
+    "name": "Lobisomem",
     "special_abilities": {
       "Shapechanger": "O lobisomem pode usar sua ação para se transformar em um híbrido lobo-humanoide ou em um lobo, ou reverter para sua forma verdadeira, que é humanoide. Suas estatísticas, exceto sua CA, são as mesmas em cada forma. Qualquer equipamento que ele estiver vestindo ou carregando não se transforma. Ele reverte para sua forma verdadeira se morrer.",
       "Keen Hearing and Smell": "O lobisomem tem vantagem em testes de Sabedoria (Percepção) que dependem da audição ou do olfato."

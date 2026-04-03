@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 type SectionMap = Record<string, string>;
 
 interface MonsterTranslations {
+  name?: string;
   special_abilities: SectionMap;
   actions: SectionMap;
   reactions: SectionMap;
@@ -47,6 +48,7 @@ export interface UseMonsterTranslationReturn {
   globalPtBR: boolean;
   toggle: () => void;
   setGlobalPtBR: () => void;
+  getName: (fallback: string) => string;
   getDesc: (section: keyof MonsterTranslations, name: string, fallback: string) => string;
 }
 
@@ -83,6 +85,11 @@ export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn
     setTranslated(true);
   }
 
+  function getName(fallback: string): string {
+    if (!translated || !monsterData?.name) return fallback;
+    return monsterData.name;
+  }
+
   function getDesc(
     section: keyof MonsterTranslations,
     name: string,
@@ -92,5 +99,5 @@ export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn
     return monsterData[section][name] ?? fallback;
   }
 
-  return { translated, globalPtBR, toggle, setGlobalPtBR, getDesc };
+  return { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc };
 }
