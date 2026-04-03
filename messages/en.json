@@ -192,7 +192,11 @@
       "delete_button": "Remove",
       "cancel": "Cancel",
       "description_placeholder": "Add description..."
-    }
+    },
+    "rate_this_encounter": "Rate",
+    "your_vote": "Your vote",
+    "vote_avg": "avg",
+    "vote_error": "Failed to vote"
   },
   "campaign_combat": {
     "title": "Start Combat",
@@ -439,11 +443,7 @@
     "dm_empty_cta": "Create Campaign",
     "combats_empty_title": "No combats yet",
     "combats_empty_cta": "New Combat",
-    "player_hq_button": "Player HQ",
-    "rate_this_encounter": "Rate",
-    "your_vote": "Your vote",
-    "vote_avg": "avg",
-    "vote_error": "Failed to vote"
+    "player_hq_button": "Player HQ"
   },
   "player_hq": {
     "tabs": {
