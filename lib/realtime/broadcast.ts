@@ -146,6 +146,9 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   // session:ended passes through — no sensitive data (A.3)
   if (event.type === "session:ended") return event;
 
+  // session:poll_results passes through — aggregate data only, no player names (C.15-B)
+  if (event.type === "session:poll_results") return event;
+
   // Turn advance: adjust the turn index for the player-visible combatant list
   if (event.type === "combat:turn_advance") {
     return {

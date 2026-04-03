@@ -49,6 +49,7 @@ import { Users } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
+import { DmPostitSender } from "@/components/combat/DmPostitSender";
 import { rejoinAsPlayer } from "@/lib/supabase/player-registration";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
 import {
@@ -61,6 +62,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { DiceRoller } from "@/components/dice/DiceRoller";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -213,9 +215,22 @@ export function CombatSessionClient({
           // Non-fatal — poll data loss acceptable, encounter still ends
         }
       }
+
+      // C.15-B: Broadcast aggregate results to players so they can see how the group voted
+      const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      for (const [name, v] of snapshotVotes) {
+        if (name !== "DM" && v >= 1 && v <= 5) distribution[v] = (distribution[v] ?? 0) + 1;
+      }
+      const playerVotes = snapshotVotes.size - (snapshotVotes.has("DM") ? 1 : 0);
+      broadcastEvent(getSessionId() ?? "", {
+        type: "session:poll_results",
+        avg,
+        distribution,
+        total_votes: playerVotes,
+      });
     }
     doEndEncounter();
-  }, [doEndEncounter, pollVotes]);
+  }, [doEndEncounter, getSessionId, pollVotes]);
 
   // Register hidden lookup so broadcast.ts can filter events for hidden combatants
   useEffect(() => {
@@ -873,6 +888,9 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "player:hp_action" }, handlePlayerHpAction);
 
+    // F-38: DM explicitly ignores player chat messages (AC: DM does not see player chat)
+    ch.on("broadcast", { event: "chat:player_message" }, () => { /* ignored by DM */ });
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef
   }, [is_active, getSessionId]);
@@ -956,6 +974,9 @@ export function CombatSessionClient({
               <span className="hidden sm:inline text-xs">Players</span>
             </button>
           )}
+          {/* Dice Roller — F-37 */}
+          <DiceRoller />
+
           <button
             type="button"
             onClick={() => setCheatsheetOpen((v) => !v)}
@@ -977,10 +998,32 @@ export function CombatSessionClient({
       />
 
       {sessionId && (
-        <PlayersOnlinePanel
-          sessionId={sessionId}
-          broadcastStatuses={playerBroadcastStatuses}
-        />
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <PlayersOnlinePanel
+              sessionId={sessionId}
+              broadcastStatuses={playerBroadcastStatuses}
+            />
+          </div>
+          {/* F-38: Per-player postit buttons + send to all */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {combatants
+              .filter((c) => c.is_player && !c.is_defeated)
+              .map((c) => (
+                <DmPostitSender
+                  key={c.id}
+                  channel={getDmChannel(sessionId)}
+                  targetTokenId={c.name}
+                  targetLabel={c.name}
+                />
+              ))}
+            <DmPostitSender
+              channel={getDmChannel(sessionId)}
+              targetTokenId="all"
+              targetLabel="Todos"
+            />
+          </div>
+        </div>
       )}
 
       {addMode && (

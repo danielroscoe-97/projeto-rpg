@@ -53,15 +53,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-      - name: Run E2E journey tests
+      - name: Run E2E CI tests (scoped to critical path)
         if: steps.check.outputs.skip != 'true'
-        run: >
-          npx playwright test
-          e2e/journeys/dm-happy-path.spec.ts
-          e2e/journeys/dm-reconnect.spec.ts
-          e2e/journeys/guest-try-mode.spec.ts
-          e2e/journeys/player-mobile.spec.ts
-          --project=desktop-chrome
+        run: npm run e2e:ci
         env:
           CI: true
           E2E_DM_EMAIL: ${{ secrets.E2E_DM_EMAIL }}

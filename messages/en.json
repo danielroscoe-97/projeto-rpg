@@ -175,7 +175,21 @@
     "section_members": "Members",
     "section_mindmap": "Mind Map",
     "create_character_and_join": "Create Character & Join",
-    "new_combat_button": "New Combat"
+    "new_combat_button": "New Combat",
+    "section_quests": "Quests",
+    "quests": {
+      "title": "Quests",
+      "quick_create_placeholder": "New quest...",
+      "available": "Available",
+      "active": "Active",
+      "completed": "Completed",
+      "completed_section": "Completed",
+      "empty": "No quests yet.",
+      "delete_confirm": "Remove this quest?",
+      "delete_button": "Remove",
+      "cancel": "Cancel",
+      "description_placeholder": "Add description..."
+    }
   },
   "campaign_combat": {
     "title": "Start Combat",
@@ -912,7 +926,6 @@
     "poll_closing": "Closing...",
     "poll_waiting_dm": "Waiting for the DM to continue...",
     "poll_votes_received": "vote(s) received",
-    "poll_awaiting_end": "Waiting for session to end...",
     "spell_browser_title": "Spell Lookup",
     "spell_open": "Spells",
     "spell_search_placeholder": "Search spell...",
@@ -1234,7 +1247,10 @@
     "spell_slots_available": "available",
     "spell_slots_used": "used",
     "spell_slots_config_title": "Spell Slots (per level)",
-    "spell_slots_config_hint": "Leave 0 for levels you don't use"
+    "spell_slots_config_hint": "Leave 0 for levels you don't use",
+    "poll_awaiting_end": "Waiting for session to end...",
+    "poll_results_title": "Poll Results",
+    "poll_results_subtitle": "Here's how your group rated the combat:"
   },
   "oracle": {
     "monster_search_placeholder": "Search monsters by name, CR, or type…",
@@ -1573,7 +1589,9 @@
     "clear_tooltip": "Clear history",
     "clear_button": "Clear",
     "close_tooltip": "Close history",
-    "empty_message": "No rolls yet."
+    "empty_message": "No rolls yet.",
+    "roller_roll": "Roll",
+    "roller_title": "Dice Tray"
   },
   "landing": {
     "social_proof_heading": "Used by DMs across Brazil",
@@ -2024,5 +2042,20 @@
     "zoom_out": "Zoom Out",
     "fit_view": "Fit View",
     "loading": "Loading map..."
+  },
+  "chat": {
+    "title": "Party Chat",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "empty": "No messages yet. Say hi!",
+    "unread": "{count} unread",
+    "close": "Close",
+    "postit_header": "Message from the DM",
+    "postit_send": "Send Post-it",
+    "postit_placeholder": "Write a note to the player...",
+    "postit_sent": "Post-it sent!",
+    "postit_all": "All Players",
+    "postit_history": "Received Post-its",
+    "postit_empty": "No post-its received."
   }
 }

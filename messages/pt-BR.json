@@ -175,7 +175,21 @@
     "section_members": "Membros",
     "section_mindmap": "Mapa Mental",
     "create_character_and_join": "Criar Personagem e Entrar",
-    "new_combat_button": "Novo Combate"
+    "new_combat_button": "Novo Combate",
+    "section_quests": "Quests",
+    "quests": {
+      "title": "Quests",
+      "quick_create_placeholder": "Nova quest...",
+      "available": "Disponível",
+      "active": "Ativa",
+      "completed": "Concluída",
+      "completed_section": "Concluídas",
+      "empty": "Nenhuma quest ainda.",
+      "delete_confirm": "Remover esta quest?",
+      "delete_button": "Remover",
+      "cancel": "Cancelar",
+      "description_placeholder": "Adicionar descrição..."
+    }
   },
   "campaign_combat": {
     "title": "Iniciar Combate",
@@ -912,7 +926,6 @@
     "poll_closing": "Encerrando...",
     "poll_waiting_dm": "Aguardando o mestre finalizar...",
     "poll_votes_received": "voto(s) recebido(s)",
-    "poll_awaiting_end": "Aguardando encerramento da sessão...",
     "spell_browser_title": "Consultar Magias",
     "spell_open": "Magias",
     "spell_search_placeholder": "Buscar magia...",
@@ -1234,7 +1247,10 @@
     "spell_slots_available": "disponível",
     "spell_slots_used": "usado",
     "spell_slots_config_title": "Spell Slots (por nível)",
-    "spell_slots_config_hint": "Deixe 0 para níveis que não usa"
+    "spell_slots_config_hint": "Deixe 0 para níveis que não usa",
+    "poll_awaiting_end": "Aguardando encerramento da sessão...",
+    "poll_results_title": "Resultado da Enquete",
+    "poll_results_subtitle": "Aqui está como o grupo avaliou o combate:"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",
@@ -1573,7 +1589,9 @@
     "clear_tooltip": "Limpar histórico",
     "clear_button": "Limpar",
     "close_tooltip": "Fechar histórico",
-    "empty_message": "Nenhum roll ainda."
+    "empty_message": "Nenhum roll ainda.",
+    "roller_roll": "Rolar",
+    "roller_title": "Bandeja de Dados"
   },
   "landing": {
     "social_proof_heading": "Usado por DMs em todo o Brasil",
@@ -2024,5 +2042,20 @@
     "zoom_out": "Reduzir",
     "fit_view": "Ajustar Vista",
     "loading": "Carregando mapa..."
+  },
+  "chat": {
+    "title": "Chat do Grupo",
+    "placeholder": "Digite uma mensagem...",
+    "send": "Enviar",
+    "empty": "Nenhuma mensagem ainda. Diga oi!",
+    "unread": "{count} não lidas",
+    "close": "Fechar",
+    "postit_header": "Mensagem do Mestre",
+    "postit_send": "Enviar Post-it",
+    "postit_placeholder": "Escreva uma nota para o jogador...",
+    "postit_sent": "Post-it enviado!",
+    "postit_all": "Todos os Players",
+    "postit_history": "Post-its Recebidos",
+    "postit_empty": "Nenhum post-it recebido."
   }
 }

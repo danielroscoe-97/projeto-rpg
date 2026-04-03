@@ -21,8 +21,10 @@ import { useAudioStore } from "@/lib/stores/audio-store";
 import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
-import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
+import { DifficultyPoll, DIFFICULTY_OPTIONS } from "@/components/combat/DifficultyPoll";
 import { PlayerSharedNotes } from "@/components/player/PlayerSharedNotes";
+import { PlayerChat } from "@/components/player/PlayerChat";
+import { DmPostit } from "@/components/player/DmPostit";
 
 const SpellSearch = lazy(() =>
   import("@/components/oracle/SpellSearch").then((mod) => ({
@@ -197,6 +199,12 @@ export function PlayerJoinClient({
   const [showPoll, setShowPoll] = useState(false);
   // UX.18: transition screen after poll dismiss, before session:ended arrives
   const [awaitingSessionEnd, setAwaitingSessionEnd] = useState(false);
+  // C.15-B: Poll aggregate results received from DM before session:ended
+  const [pollResultsData, setPollResultsData] = useState<{
+    avg: number;
+    distribution: Record<number, number>;
+    total_votes: number;
+  } | null>(null);
   // A.6: Stores registration data for auto-join when DM starts combat
   const pendingRegistrationRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const isRegisteredRef = useRef(isRegistered);
@@ -1054,6 +1062,16 @@ export function PlayerJoinClient({
             useAudioStore.getState().stopLoop(payload.sound_id);
           }
         })
+        // F-38: chat:player_message — PlayerChat component handles this directly via channelRef
+        // We add a no-op handler here only to prevent Supabase from filtering the event.
+        // PlayerChat subscribes to the same channel ref independently via useEffect.
+        .on("broadcast", { event: "chat:player_message" }, () => {
+          // Delegated to PlayerChat component — no action here
+        })
+        // F-38: chat:dm_postit — DmPostit component handles this directly via channelRef
+        .on("broadcast", { event: "chat:dm_postit" }, () => {
+          // Delegated to DmPostit component — no action here
+        })
         .on("broadcast", { event: "combat:started" }, ({ payload }) => {
           setActive(true);
           if (payload?.encounter_id) {
@@ -1069,6 +1087,16 @@ export function PlayerJoinClient({
               stats: payload.stats as CombatantStats[],
               encounterName: payload.encounter_name as string,
               rounds: (payload.rounds as number) ?? 0,
+            });
+          }
+        })
+        .on("broadcast", { event: "session:poll_results" }, ({ payload }) => {
+          // C.15-B: DM broadcast aggregate poll results — show to player in awaiting screen
+          if (payload?.avg != null) {
+            setPollResultsData({
+              avg: payload.avg as number,
+              distribution: (payload.distribution as Record<number, number>) ?? {},
+              total_votes: (payload.total_votes as number) ?? 0,
             });
           }
         })
@@ -1600,7 +1628,75 @@ export function PlayerJoinClient({
   }
 
   // UX.18: limbo guard — waiting for session:ended after poll dismiss
+  // C.15-B: Once DM broadcasts results, show them instead of a blank spinner
   if (awaitingSessionEnd && !sessionEnded) {
+    if (pollResultsData) {
+      const { avg, distribution, total_votes } = pollResultsData;
+      const closestOpt = avg > 0
+        ? DIFFICULTY_OPTIONS.reduce((prev, curr) =>
+            Math.abs(curr.value - avg) < Math.abs(prev.value - avg) ? curr : prev
+          )
+        : null;
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="bg-surface-overlay border border-white/10 rounded-xl p-6 max-w-sm w-full space-y-4">
+            <h2 className="text-center text-lg font-semibold text-foreground">
+              {t("poll_results_title")}
+            </h2>
+            <p className="text-center text-xs text-muted-foreground">
+              {t("poll_results_subtitle")}
+            </p>
+
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-2xl font-bold text-gold">
+                {avg > 0 ? avg.toFixed(1) : "—"}
+              </span>
+              <span className="text-sm text-muted-foreground">/ 5</span>
+              {closestOpt && (() => {
+                const Icon = closestOpt.icon;
+                return (
+                  <span className={`flex items-center gap-1 text-sm ${closestOpt.color} ml-1`}>
+                    <Icon className="w-4 h-4" />
+                  </span>
+                );
+              })()}
+            </div>
+
+            <p className="text-center text-sm text-muted-foreground">
+              {total_votes} {t("poll_votes_received", { count: total_votes })}
+            </p>
+
+            <div className="space-y-2">
+              {DIFFICULTY_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                const count = distribution[opt.value] ?? 0;
+                const pct = total_votes > 0 ? Math.round((count / total_votes) * 100) : 0;
+                return (
+                  <div key={opt.value} className="flex items-center gap-2">
+                    <Icon className={`w-4 h-4 flex-shrink-0 ${opt.color}`} />
+                    <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${opt.bgBar} rounded-full transition-all`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground w-16 text-right tabular-nums">
+                      {count > 0 ? `${count} (${pct}%)` : "—"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <div className="w-4 h-4 rounded-full border-2 border-gold border-t-transparent animate-spin" />
+              <p className="text-muted-foreground text-xs">{t("poll_awaiting_end")}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-3">
@@ -1898,6 +1994,25 @@ export function PlayerJoinClient({
           onLongRest={handleLongRest}
         />
       </div>
+
+      {/* F-38: Player-to-player chat (only when registered and combat active) */}
+      {isRegistered && registeredName && (
+        <PlayerChat
+          channelRef={channelRef}
+          senderName={registeredName}
+          isActive={active}
+        />
+      )}
+
+      {/* F-38: DM post-its receiver */}
+      {isRegistered && (
+        <DmPostit
+          channelRef={channelRef}
+          tokenId={effectiveTokenId}
+          playerName={registeredName}
+          isActive={active}
+        />
+      )}
     </div>
   );
 }

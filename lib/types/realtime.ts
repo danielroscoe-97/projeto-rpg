@@ -24,6 +24,7 @@ export type RealtimeEventType =
   | "session:player_linked"
   | "session:combat_stats"
   | "session:ended"
+  | "session:poll_results"
   | "session:weather_change"
   | "audio:play_sound"
   | "audio:ambient_start"
@@ -31,7 +32,9 @@ export type RealtimeEventType =
   | "audio:loop_stop"
   | "player:death_save"
   | "player:poll_vote"
-  | "player:hp_action";
+  | "player:hp_action"
+  | "chat:player_message"
+  | "chat:dm_postit";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -175,6 +178,15 @@ export interface RealtimeSessionEnded {
   reason?: "dm_ended" | "session_expired";
 }
 
+/** C.15-B: Broadcast from DM right before session:ended so players see aggregate poll results */
+export interface RealtimeSessionPollResults {
+  type: "session:poll_results";
+  avg: number;
+  /** votes per difficulty level: { 1: N, 2: N, 3: N, 4: N, 5: N } */
+  distribution: Record<number, number>;
+  total_votes: number;
+}
+
 export interface RealtimeWeatherChange {
   type: "session:weather_change";
   effect: string;
@@ -224,6 +236,30 @@ export interface RealtimePlayerHpAction {
   amount: number;
 }
 
+export interface RealtimeChatPlayerMessage {
+  type: "chat:player_message";
+  /** Name of the sending player's character */
+  sender_name: string;
+  /** Client-generated unique message id */
+  message_id: string;
+  /** Plain text content */
+  content: string;
+  /** ISO timestamp */
+  sent_at: string;
+}
+
+export interface RealtimeChatDmPostit {
+  type: "chat:dm_postit";
+  /** Client-generated unique postit id */
+  postit_id: string;
+  /** Plain text content (max 280 chars) */
+  content: string;
+  /** token_id of the target player, or "all" */
+  target: string;
+  /** ISO timestamp */
+  sent_at: string;
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -242,6 +278,7 @@ export type RealtimeEvent =
   | RealtimeRejoinResponse
   | RealtimeSessionRevoked
   | RealtimeSessionEnded
+  | RealtimeSessionPollResults
   | RealtimeStateSync
   | RealtimeCombatStats
   | RealtimeWeatherChange
@@ -251,7 +288,9 @@ export type RealtimeEvent =
   | RealtimeLoopStop
   | RealtimePlayerDeathSave
   | RealtimePlayerPollVote
-  | RealtimePlayerHpAction;
+  | RealtimePlayerHpAction
+  | RealtimeChatPlayerMessage
+  | RealtimeChatDmPostit;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -346,10 +385,13 @@ export type SanitizedEvent =
   | RealtimeRejoinRequest
   | RealtimeRejoinResponse
   | RealtimeSessionEnded
+  | RealtimeSessionPollResults
   | RealtimeSessionRevoked
   | RealtimeCombatStats
   | RealtimeWeatherChange
   | RealtimeAudioPlay
   | RealtimeAmbientStart
   | RealtimeAmbientStop
-  | RealtimeLoopStop;
+  | RealtimeLoopStop
+  | RealtimeChatPlayerMessage
+  | RealtimeChatDmPostit;

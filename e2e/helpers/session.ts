@@ -5,30 +5,44 @@ import type { TestAccount } from "../fixtures/test-accounts";
 /**
  * Navigate to /app/session/new, handle campaign picker if shown.
  * Waits for either the campaign picker or the setup form, then proceeds.
+ * Also opens the manual-add form so data-testid="add-row" is visible.
  */
 export async function goToNewSession(page: Page) {
   await page.goto("/app/session/new");
   await page.waitForLoadState("domcontentloaded");
 
-  // Wait for either the add-row (already past picker) or Quick Combat button
-  const addRow = page.locator('[data-testid="add-row"]');
+  // Wait for either the setup area or Quick Combat button
   const quickBtn = page.locator(
     'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
   );
+  const setupArea = page.locator('[data-testid="setup-combatant-list"], [data-testid="encounter-name-input"]');
 
   // Race: whichever appears first
-  await expect(addRow.or(quickBtn)).toBeVisible({ timeout: 15_000 });
+  await expect(setupArea.or(quickBtn)).toBeVisible({ timeout: 15_000 });
 
   // If Quick Combat button is visible, click it to get to setup
   if (await quickBtn.isVisible({ timeout: 1_000 }).catch(() => false)) {
     await quickBtn.click();
-    await expect(addRow).toBeVisible({ timeout: 10_000 });
+    await expect(setupArea).toBeVisible({ timeout: 10_000 });
   }
 
   // Wait for React hydration to complete — SSR hydration mismatch re-renders
   // the entire tree and can wipe values filled too early
   await page.waitForLoadState("networkidle");
   await page.waitForTimeout(1_000);
+
+  // Open the manual-add form (MonsterSearchPanel toggle) so add-row-* testids are reachable.
+  // The button contains text matching the translation key "omnibar_manual_add"
+  // (pt-BR: "Monstro/Jogador Manual", en: the equivalent).
+  const addRowInput = page.locator('[data-testid="add-row-name"]');
+  if (!(await addRowInput.isVisible({ timeout: 1_000 }).catch(() => false))) {
+    // Try to find and click the manual-add toggle button by partial text
+    const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();
+    if (await manualToggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await manualToggle.click();
+      await page.waitForTimeout(300);
+    }
+  }
 }
 
 /**

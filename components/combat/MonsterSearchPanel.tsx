@@ -686,7 +686,7 @@ export function MonsterSearchPanel({
 
       {/* Manual add form */}
       {manualOpen && onManualAdd && (
-        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border">
+        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row">
           <p className="text-xs font-medium text-foreground/80">{t("omnibar_manual_title")}</p>
           <div className="grid grid-cols-4 gap-2">
             <input
@@ -697,6 +697,7 @@ export function MonsterSearchPanel({
               className="col-span-4 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
               autoFocus
               onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
+              data-testid="add-row-name"
             />
             <input
               type="number"
@@ -704,6 +705,7 @@ export function MonsterSearchPanel({
               onChange={(e) => setManualInit(e.target.value)}
               placeholder={t("setup_col_init")}
               className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              data-testid="add-row-init"
             />
             <input
               type="number"
@@ -712,6 +714,7 @@ export function MonsterSearchPanel({
               placeholder="HP"
               min={1}
               className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              data-testid="add-row-hp"
             />
             <input
               type="number"
@@ -720,12 +723,14 @@ export function MonsterSearchPanel({
               placeholder="AC"
               min={0}
               className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              data-testid="add-row-ac"
             />
             <button
               type="button"
               onClick={handleManualSubmit}
               disabled={!manualName.trim()}
               className="px-3 py-1.5 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed min-h-[32px]"
+              data-testid="add-row-btn"
             >
               {t("setup_add")}
             </button>

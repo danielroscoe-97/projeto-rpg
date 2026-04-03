@@ -54,10 +54,11 @@ export function sanitizePayloadServer(
   event: RealtimeEvent,
   allCombatants?: Combatant[]
 ): SanitizedEvent | null {
-  // Audio / weather / stats pass through unchanged
+  // Audio / weather / stats / poll results pass through unchanged
   if (event.type === "audio:play_sound") return event;
   if (event.type === "session:weather_change") return event;
   if (event.type === "session:combat_stats") return event;
+  if (event.type === "session:poll_results") return event;
 
   // Player death saves are DM-only, never broadcast
   if (event.type === "player:death_save") return null;

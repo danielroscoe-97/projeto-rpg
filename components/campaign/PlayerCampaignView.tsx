@@ -9,7 +9,9 @@ import {
   ChevronDown,
   Zap,
   Loader2,
+  MapPin,
 } from "lucide-react";
+import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { getHpBarColor } from "@/lib/utils/hp-status";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -73,6 +75,7 @@ interface PlayerCampaignViewProps {
     dmLabel: string;
     acLabel: string;
     loadMore: string;
+    quests: string;
   };
 }
 
@@ -399,6 +402,15 @@ export function PlayerCampaignView({
             {t.noCombatHistory}
           </p>
         )}
+      </CollapsibleSection>
+
+      {/* Quests — F-39 */}
+      <CollapsibleSection
+        icon={MapPin}
+        title={t.quests}
+        defaultOpen={true}
+      >
+        <QuestBoard campaignId={campaignId} isEditable={false} />
       </CollapsibleSection>
     </div>
   );

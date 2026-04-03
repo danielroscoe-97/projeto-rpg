@@ -35,6 +35,7 @@ import { setLastHpMode } from "@/components/combat/HpAdjuster";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { applyGroupRename } from "@/lib/utils/group-rename";
 import { playTurnSfx } from "@/lib/utils/turn-sfx";
+import { DiceRoller } from "@/components/dice/DiceRoller";
 
 interface AddRowForm {
   initiative: string;
@@ -1299,6 +1300,9 @@ export function GuestCombatClient() {
             >
               <BookOpen className="w-4 h-4" aria-hidden="true" />
             </button>
+
+            {/* Dice Roller — F-37 */}
+            <DiceRoller />
 
             {/* Undo last action (Story 1.1) */}
             <button

@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Users, UserPlus, FileText, Swords, UserCircle, ChevronDown, Network } from "lucide-react";
+import { Users, UserPlus, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
 import { MembersList } from "@/components/campaign/MembersList";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
 import { CampaignMindMap } from "@/components/campaign/CampaignMindMap";
+import { QuestBoard } from "@/components/campaign/QuestBoard";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 
@@ -95,6 +96,10 @@ export function CampaignSections({
 
         <Section icon={Swords} title={t("section_encounters")} defaultOpen={false}>
           <EncounterHistory campaignId={campaignId} />
+        </Section>
+
+        <Section icon={ScrollText} title={t("section_quests")} defaultOpen={true}>
+          <QuestBoard campaignId={campaignId} isEditable={true} />
         </Section>
 
         <Section icon={Network} title={t("section_mindmap")} defaultOpen={false}>
