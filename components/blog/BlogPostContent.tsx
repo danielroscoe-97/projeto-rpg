@@ -4,7 +4,7 @@ import Image from "next/image";
 /* ─── Shared styling helpers ───────────────────────────────────── */
 function Img({ src, alt }: { src: string; alt: string }) {
   return (
-    <figure className="my-8 rounded-xl overflow-hidden border border-white/[0.08] shadow-lg">
+    <figure className="my-10 -mx-2 sm:mx-0 rounded-xl overflow-hidden border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
       <Image
         src={src}
         alt={alt}
@@ -13,7 +13,7 @@ function Img({ src, alt }: { src: string; alt: string }) {
         className="w-full h-auto"
         unoptimized
       />
-      <figcaption className="text-xs text-muted-foreground text-center py-2 bg-white/[0.02]">
+      <figcaption className="text-[11px] text-muted-foreground/70 text-center py-2.5 px-4 bg-white/[0.02] border-t border-white/[0.04] italic">
         {alt}
       </figcaption>
     </figure>
@@ -25,7 +25,7 @@ function ExtLink({ href, children }: { href: string; children: React.ReactNode }
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-gold/80 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
+      className="text-gold/90 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
     >
       {children}
     </a>
@@ -35,7 +35,7 @@ function IntLink({ slug, children }: { slug: string; children: React.ReactNode }
   return (
     <Link
       href={`/blog/${slug}`}
-      className="text-gold/80 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
+      className="text-gold/90 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
     >
       {children}
     </Link>
@@ -43,33 +43,42 @@ function IntLink({ slug, children }: { slug: string; children: React.ReactNode }
 }
 function H2({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-display text-xl text-gold/90 mt-10 mb-4">{children}</h2>
+    <div className="mt-12 mb-5">
+      <div className="flex items-center gap-3 mb-1">
+        <div className="w-1 h-6 rounded-full bg-gold/60" />
+        <h2 className="font-display text-xl text-gold">{children}</h2>
+      </div>
+      <div className="ml-4 h-px bg-gradient-to-r from-gold/15 to-transparent" />
+    </div>
   );
 }
 function H3({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="font-display text-lg text-foreground/90 mt-8 mb-3">{children}</h3>
+    <h3 className="font-display text-lg text-foreground mt-9 mb-3">{children}</h3>
   );
 }
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-foreground/75 leading-relaxed mb-4">{children}</p>;
+  return <p className="text-foreground/80 leading-[1.8] mb-5 text-[15px]">{children}</p>;
 }
 function Li({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex items-start gap-2 text-foreground/75 leading-relaxed">
-      <span className="text-gold mt-1 shrink-0">&#9670;</span>
+    <li className="flex items-start gap-3 text-foreground/80 leading-[1.8] text-[15px]">
+      <span className="text-gold/70 mt-[2px] shrink-0 text-xs">&#9670;</span>
       <span>{children}</span>
     </li>
   );
 }
 function Ul({ children }: { children: React.ReactNode }) {
-  return <ul className="space-y-2 mb-4 ml-1">{children}</ul>;
+  return <ul className="space-y-3 mb-5 ml-1 pl-1">{children}</ul>;
 }
 function Tip({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-gold/20 bg-gold/[0.04] p-4 mb-6">
-      <p className="text-sm text-foreground/80 leading-relaxed">
-        <strong className="text-gold">Dica:</strong> {children}
+    <div className="rounded-xl border border-gold/25 bg-gold/[0.05] p-5 my-8 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
+      <p className="text-sm text-foreground/85 leading-relaxed pl-3">
+        <strong className="text-gold font-display text-xs uppercase tracking-wider">Dica do Mestre</strong>
+        <br />
+        <span className="mt-1 block">{children}</span>
       </p>
     </div>
   );
