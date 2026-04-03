@@ -76,7 +76,7 @@ export function getSrdMonsters(): SrdMonster[] {
     } catch {
       // MAD file is optional
     }
-    monsterCache = [...m2014, ...m2024].filter((m) => m.is_srd === true).concat(mad);
+    monsterCache = [...m2014, ...m2024, ...mad];
   } catch {
     monsterCache = [];
   }
@@ -94,7 +94,7 @@ export function getSrdSpells(): SrdSpell[] {
     const s2024: SrdSpell[] = JSON.parse(
       readFileSync(join(SRD_DIR, "spells-2024.json"), "utf-8")
     );
-    spellCache = [...s2014, ...s2024].filter((s) => s.is_srd === true);
+    spellCache = [...s2014, ...s2024];
   } catch {
     spellCache = [];
   }
