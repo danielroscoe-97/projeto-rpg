@@ -9,6 +9,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { Shield, Zap } from "lucide-react";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
+import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 
 interface PlayerBottomBarProps {
   character: {
@@ -42,9 +43,15 @@ interface PlayerBottomBarProps {
   onHpAction?: (combatantId: string, action: "damage" | "heal" | "temp_hp", amount: number) => void;
   /** Realtime connection status — used to disable HP action buttons when offline */
   connectionStatus?: string;
+  /** Spell slots state for the player's character */
+  spellSlots?: Record<string, { max: number; used: number }> | null;
+  /** Callback when player toggles a spell slot dot */
+  onToggleSlot?: (level: string, slotIndex: number) => void;
+  /** Callback when player triggers Long Rest (restores all spell slots) */
+  onLongRest?: () => void;
 }
 
-export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, hpDelta, onEndTurn, endTurnPending, onHpAction, connectionStatus }: PlayerBottomBarProps) {
+export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlayerTurn, onDeathSave, hpDelta, onEndTurn, endTurnPending, onHpAction, connectionStatus, spellSlots, onToggleSlot, onLongRest }: PlayerBottomBarProps) {
   const t = useTranslations("player");
 
   // B.07: AC/DC mid-combat flash — detect changes and flash amber for 1.5s
@@ -206,6 +213,15 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                 tempHp={tempHp}
                 connectionStatus={connectionStatus ?? "disconnected"}
                 onHpAction={onHpAction}
+              />
+            )}
+            {/* Spell Slot Tracker — mobile bottom bar (F-41) */}
+            {spellSlots && Object.keys(spellSlots).length > 0 && onToggleSlot && onLongRest && (
+              <SpellSlotTracker
+                spellSlots={spellSlots}
+                onToggleSlot={onToggleSlot}
+                onLongRest={onLongRest}
+                collapsible
               />
             )}
           </>

@@ -102,6 +102,7 @@ export interface Database {
           level: number | null;
           notes: string | null;
           token_url: string | null;
+          spell_slots: Record<string, { max: number; used: number }> | null;
           created_at: string;
           updated_at: string;
         };
@@ -119,6 +120,7 @@ export interface Database {
           level?: number | null;
           notes?: string | null;
           token_url?: string | null;
+          spell_slots?: Record<string, { max: number; used: number }> | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -135,6 +137,7 @@ export interface Database {
           level?: number | null;
           notes?: string | null;
           token_url?: string | null;
+          spell_slots?: Record<string, { max: number; used: number }> | null;
           updated_at?: string;
         };
       };

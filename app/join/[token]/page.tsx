@@ -115,6 +115,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
     current_hp: number;
     ac: number;
     spell_save_dc: number | null;
+    spell_slots?: Record<string, { max: number; used: number }> | null;
   }> = [];
   // campaignId is passed to PlayerJoinClient to enable the shared notes panel
   // Only set for authenticated campaign members — anonymous players get undefined
@@ -134,7 +135,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
         // Find player's characters in this campaign
         const { data: characters } = await supabase
           .from("player_characters")
-          .select("id, name, max_hp, current_hp, ac, spell_save_dc")
+          .select("id, name, max_hp, current_hp, ac, spell_save_dc, spell_slots")
           .eq("campaign_id", sessionCampaignId)
           .eq("user_id", user.id);
 

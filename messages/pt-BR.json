@@ -1224,7 +1224,16 @@
     "push_notifications_disable_aria": "Desativar notificações push",
     "push_notifications_denied": "Notificações bloqueadas pelo navegador",
     "push_notifications_requesting": "Solicitando permissão...",
-    "push_notifications_retry": "🔔 Tentar ativar notificações novamente"
+    "push_notifications_retry": "🔔 Tentar ativar notificações novamente",
+    "spell_slots_title": "Spell Slots",
+    "spell_slots_long_rest": "Descanso Longo",
+    "spell_slots_restored": "Todos os slots restaurados!",
+    "spell_slots_undo": "Desfazer",
+    "spell_slots_level": "Nível {level}",
+    "spell_slots_available": "disponível",
+    "spell_slots_used": "usado",
+    "spell_slots_config_title": "Spell Slots (por nível)",
+    "spell_slots_config_hint": "Deixe 0 para níveis que não usa"
   },
   "oracle": {
     "monster_search_placeholder": "Pesquisar monstros por nome, CR ou tipo…",

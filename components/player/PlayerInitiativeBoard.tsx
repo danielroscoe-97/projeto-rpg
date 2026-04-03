@@ -19,6 +19,7 @@ import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
+import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 
 export interface CombatLogEntry {
   text: string;
@@ -181,6 +182,12 @@ interface PlayerInitiativeBoardProps {
   onHpAction?: (combatantId: string, action: "damage" | "heal" | "temp_hp", amount: number) => void;
   /** Realtime connection status — used to disable HP action buttons when offline */
   connectionStatus?: string;
+  /** Spell slots state for the player's character (F-41) */
+  spellSlots?: Record<string, { max: number; used: number }> | null;
+  /** Callback when player toggles a spell slot dot */
+  onToggleSlot?: (level: string, slotIndex: number) => void;
+  /** Callback when player triggers Long Rest */
+  onLongRest?: () => void;
 }
 
 export function PlayerInitiativeBoard({
@@ -204,6 +211,9 @@ export function PlayerInitiativeBoard({
   deathSaveResolution,
   onHpAction,
   connectionStatus,
+  spellSlots,
+  onToggleSlot,
+  onLongRest,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
@@ -643,6 +653,17 @@ export function PlayerInitiativeBoard({
                     />
                   </div>
                 )}
+                {/* Spell Slot Tracker — desktop own-char card (F-41) */}
+                {spellSlots && Object.keys(spellSlots).length > 0 && onToggleSlot && onLongRest && (
+                  <div className="mt-3">
+                    <SpellSlotTracker
+                      spellSlots={spellSlots}
+                      onToggleSlot={onToggleSlot}
+                      onLongRest={onLongRest}
+                      collapsible={false}
+                    />
+                  </div>
+                )}
                 {pc.conditions.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2" role="list" aria-label={`${pc.name} conditions`}>
                     {pc.conditions.map((condition) => (
@@ -989,6 +1010,9 @@ export function PlayerInitiativeBoard({
           endTurnPending={endTurnPending}
           onHpAction={onHpAction}
           connectionStatus={connectionStatus}
+          spellSlots={spellSlots}
+          onToggleSlot={onToggleSlot}
+          onLongRest={onLongRest}
         />
       )}
 

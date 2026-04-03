@@ -97,10 +97,14 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
       ac: number;
       spell_save_dc: number | null;
       notes: string | null;
+      spellSlots: Record<string, { max: number; used: number }>;
     }) => {
       if (editingCharacter) {
         // Edit existing
         const newMaxHp = data.max_hp;
+        const spellSlotsPayload = data.spellSlots && Object.values(data.spellSlots).some((v) => v.max > 0)
+          ? Object.fromEntries(Object.entries(data.spellSlots).filter(([, v]) => v.max > 0))
+          : null;
         const updatePayload: PlayerCharacterUpdate = {
           name: data.name,
           race: data.race,
@@ -110,6 +114,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
           ac: data.ac,
           spell_save_dc: data.spell_save_dc,
           notes: data.notes,
+          spell_slots: spellSlotsPayload,
         };
         if (
           editingCharacter.current_hp === editingCharacter.max_hp ||
@@ -143,6 +148,10 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
                       ? updatePayload.spell_save_dc
                       : c.spell_save_dc,
                   notes: updatePayload.notes !== undefined ? updatePayload.notes : c.notes,
+                  spell_slots:
+                    updatePayload.spell_slots !== undefined
+                      ? updatePayload.spell_slots
+                      : c.spell_slots,
                 }
               : c
           )
@@ -150,6 +159,9 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
         setEditingCharacter(null);
       } else {
         // Add new
+        const spellSlotsInsert = data.spellSlots && Object.values(data.spellSlots).some((v) => v.max > 0)
+          ? Object.fromEntries(Object.entries(data.spellSlots).filter(([, v]) => v.max > 0))
+          : null;
         const { data: newChar, error: dbError } = await supabase
           .from("player_characters")
           .insert({
@@ -163,6 +175,7 @@ export function PlayerCharacterManager({ initialCharacters, campaignId }: Props)
             ac: data.ac,
             spell_save_dc: data.spell_save_dc,
             notes: data.notes,
+            spell_slots: spellSlotsInsert,
           })
           .select("*")
           .single();

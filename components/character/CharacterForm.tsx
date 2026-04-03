@@ -25,6 +25,7 @@ interface CharacterFormData {
   ac: string;
   spell_save_dc: string;
   notes: string;
+  spellSlots: Record<string, { max: number; used: number }>;
 }
 
 const EMPTY_FORM: CharacterFormData = {
@@ -36,6 +37,7 @@ const EMPTY_FORM: CharacterFormData = {
   ac: "",
   spell_save_dc: "",
   notes: "",
+  spellSlots: {},
 };
 
 function formFromCharacter(character: PlayerCharacter): CharacterFormData {
@@ -48,6 +50,11 @@ function formFromCharacter(character: PlayerCharacter): CharacterFormData {
     ac: String(character.ac),
     spell_save_dc: character.spell_save_dc ? String(character.spell_save_dc) : "",
     notes: character.notes ?? "",
+    spellSlots: character.spell_slots
+      ? Object.fromEntries(
+          Object.entries(character.spell_slots).filter(([, v]) => v.max > 0)
+        )
+      : {},
   };
 }
 
@@ -64,6 +71,7 @@ interface CharacterFormProps {
     ac: number;
     spell_save_dc: number | null;
     notes: string | null;
+    spellSlots: Record<string, { max: number; used: number }>;
   }) => Promise<void>;
 }
 
@@ -94,6 +102,7 @@ export function CharacterForm({
 }: CharacterFormProps) {
   const t = useTranslations("character");
   const tc = useTranslations("common");
+  const tp = useTranslations("player");
   const isEdit = !!character;
 
   const [form, setForm] = useState<CharacterFormData>(
@@ -152,6 +161,7 @@ export function CharacterForm({
         ac: ac || 10,
         spell_save_dc: spellDc,
         notes: form.notes.trim() || null,
+        spellSlots: form.spellSlots,
       });
       handleOpenChange(false);
     } catch (err) {
@@ -337,6 +347,36 @@ export function CharacterForm({
               className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/40 resize-y focus:outline-none focus:ring-1 focus:ring-ring"
               style={{ fontSize: 16, minHeight: "4rem", maxHeight: "10rem" }}
             />
+          </div>
+
+          {/* Spell Slots */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{tp("spell_slots_config_title")}</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => (
+                <div key={level} className="flex items-center gap-1.5">
+                  <span className="text-xs text-muted-foreground w-5 shrink-0">{level}°</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={30}
+                    value={form.spellSlots[String(level)]?.max ?? 0}
+                    onChange={(e) => {
+                      const val = Math.min(30, Math.max(0, parseInt(e.target.value) || 0));
+                      setForm((prev) => ({
+                        ...prev,
+                        spellSlots: {
+                          ...prev.spellSlots,
+                          [String(level)]: { max: val, used: prev.spellSlots[String(level)]?.used ?? 0 },
+                        },
+                      }));
+                    }}
+                    className="w-full h-7 text-center text-sm bg-white/[0.06] border border-white/[0.08] rounded px-1"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground">{tp("spell_slots_config_hint")}</p>
           </div>
 
           {/* Actions */}
