@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye, Users } from "lucide-react";
 import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
@@ -57,6 +57,9 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   const [campaignNpcs, setCampaignNpcs] = useState<CampaignNpc[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [dmUserId, setDmUserId] = useState<string | null>(null);
+  const [playerNames, setPlayerNames] = useState<Record<string, string>>({});
+  const [playerNotesExpanded, setPlayerNotesExpanded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<Record<string, SaveStatus>>({});
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -66,7 +69,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [notesRes, foldersData, linksData, npcsData] = await Promise.all([
+        const [notesRes, foldersData, linksData, npcsData, authRes] = await Promise.all([
           supabase
             .from("campaign_notes")
             .select("*")
@@ -75,6 +78,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
           getFolders(campaignId),
           getCampaignNoteNpcLinks(campaignId),
           getNpcs(campaignId),
+          supabase.auth.getUser(),
         ]);
 
         if (notesRes.error) throw notesRes.error;
@@ -82,6 +86,30 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         setFolders(foldersData);
         setNpcLinks(linksData);
         setCampaignNpcs(npcsData);
+
+        const currentUserId = authRes.data.user?.id ?? null;
+        setDmUserId(currentUserId);
+
+        // Fetch display names for player notes (notes from non-DM users)
+        if (currentUserId && notesRes.data) {
+          const playerUserIds = [...new Set(
+            notesRes.data
+              .filter((n) => n.user_id !== currentUserId)
+              .map((n) => n.user_id)
+              .filter(Boolean)
+          )];
+          if (playerUserIds.length > 0) {
+            const { data: usersData } = await supabase
+              .from("users")
+              .select("id, display_name")
+              .in("id", playerUserIds);
+            if (usersData) {
+              const nameMap: Record<string, string> = {};
+              for (const u of usersData) nameMap[u.id] = u.display_name ?? u.id;
+              setPlayerNames(nameMap);
+            }
+          }
+        }
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
@@ -125,6 +153,12 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     }
     return notes.filter((n) => n.folder_id === selectedFolderId);
   }, [notes, selectedFolderId]);
+
+  // Player notes (notes from non-DM campaign members) — read-only for DM
+  const playerNotes = useMemo(() => {
+    if (!dmUserId) return [];
+    return notes.filter((n) => n.user_id !== dmUserId && !n.is_shared);
+  }, [notes, dmUserId]);
 
   // Links per note for quick lookup
   const linksByNote = useMemo(() => {
@@ -693,6 +727,53 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
               </div>
             );
           })}
+
+        {/* Player Notes section (DM read-only view) — only shown in "All notes" context, not inside a folder */}
+        {isOwner && playerNotes.length > 0 && selectedFolderId === null && (
+          <div className="mt-4 border-t border-border pt-4">
+            <button
+              type="button"
+              onClick={() => setPlayerNotesExpanded((v) => !v)}
+              className="flex w-full items-center gap-2 text-left mb-2"
+            >
+              {playerNotesExpanded ? (
+                <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+              )}
+              <Users className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                {t("player_notes_section")}
+              </span>
+              <span className="ml-1 text-xs text-muted-foreground/60">({playerNotes.length})</span>
+            </button>
+
+            {playerNotesExpanded && (
+              <div className="space-y-2 pl-6">
+                {playerNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="rounded-lg border border-border bg-surface-tertiary px-3 py-2.5 space-y-1"
+                  >
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="inline-flex items-center rounded-full bg-amber-400/10 px-2 py-0.5 text-xs text-amber-400">
+                        {t("player_notes_by", { name: playerNames[note.user_id ?? ""] ?? "Player" })}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground/50">
+                        {new Date(note.updated_at).toLocaleDateString(undefined, { day: "2-digit", month: "short" })}
+                      </span>
+                    </div>
+                    {note.content && (
+                      <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                        {note.content}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         </div>
       </div>
 

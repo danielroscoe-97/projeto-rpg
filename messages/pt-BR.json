@@ -439,8 +439,7 @@
   "characters_page": {
     "title": "Meus Personagens",
     "empty": "Você ainda não tem personagens",
-    "view_campaigns": "Ver Campanhas",
-    "loading": "Carregando personagens..."
+    "view_campaigns": "Ver Campanhas"
   },
   "onboarding": {
     "choose_title": "Como você quer começar?",

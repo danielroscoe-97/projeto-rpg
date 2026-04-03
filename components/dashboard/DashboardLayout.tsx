@@ -9,6 +9,7 @@ interface DashboardLayoutProps {
     overview: string;
     campaigns: string;
     combats: string;
+    characters: string;
     soundboard: string;
     settings: string;
     profile: string;

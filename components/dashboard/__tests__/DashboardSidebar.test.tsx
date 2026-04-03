@@ -33,8 +33,11 @@ const translations = {
   overview: "Overview",
   campaigns: "Campaigns",
   combats: "Combats",
+  characters: "Characters",
   soundboard: "Soundboard",
   settings: "Settings",
+  profile: "Profile",
+  nav_label: "Dashboard navigation",
 };
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -44,15 +47,16 @@ describe("DashboardSidebar", () => {
     mockPathname = "/app/dashboard";
   });
 
-  it("renders all 5 navigation items", () => {
+  it("renders all navigation items", () => {
     render(<DashboardSidebar translations={translations} />);
 
     // Both desktop and mobile navs exist — check all labels are present
     expect(screen.getAllByText("Overview").length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText("Campaigns").length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText("Combats").length).toBeGreaterThanOrEqual(2);
-    expect(screen.getAllByText("Soundboard").length).toBeGreaterThanOrEqual(2);
-    expect(screen.getAllByText("Settings").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText("Characters").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText("Soundboard").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Settings").length).toBeGreaterThanOrEqual(1);
   });
 
   it("highlights the active route (Overview)", () => {

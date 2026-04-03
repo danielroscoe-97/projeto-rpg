@@ -439,8 +439,7 @@
   "characters_page": {
     "title": "My Characters",
     "empty": "You don't have any characters yet",
-    "view_campaigns": "View Campaigns",
-    "loading": "Loading characters..."
+    "view_campaigns": "View Campaigns"
   },
   "onboarding": {
     "choose_title": "How do you want to start?",

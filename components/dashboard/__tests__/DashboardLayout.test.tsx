@@ -30,8 +30,11 @@ const translations = {
   overview: "Overview",
   campaigns: "Campaigns",
   combats: "Combats",
+  characters: "Characters",
   soundboard: "Soundboard",
   settings: "Settings",
+  profile: "Profile",
+  nav_label: "Dashboard navigation",
 };
 
 // ── Tests ─────────────────────────────────────────────────────────────────────

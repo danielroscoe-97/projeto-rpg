@@ -10,6 +10,7 @@ import {
   Music,
   Settings,
   User,
+  Users,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
@@ -20,6 +21,7 @@ interface SidebarTranslations {
   overview: string;
   campaigns: string;
   combats: string;
+  characters: string;
   soundboard: string;
   settings: string;
   profile: string;
@@ -34,6 +36,7 @@ const NAV_ITEMS_DESKTOP = [
   { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
+  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
   { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music },
   { key: "settings" as const, href: "/app/settings", icon: Settings },
 ] as const;
@@ -42,7 +45,7 @@ const NAV_ITEMS_MOBILE = [
   { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
-  { key: "profile" as const, href: "/app/settings", icon: User },
+  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
 ] as const;
 
 export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {

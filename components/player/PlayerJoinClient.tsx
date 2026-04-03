@@ -110,6 +110,7 @@ export function PlayerJoinClient({
   // Keep ref in sync with state
   useEffect(() => { encounterIdRef.current = currentEncounterId; }, [currentEncounterId]);
   const [authReady, setAuthReady] = useState(false);
+  const [authUserId, setAuthUserId] = useState<string | undefined>();
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
   const connectionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -348,6 +349,7 @@ export function PlayerJoinClient({
         } else {
           userId = session.user.id;
         }
+        if (!cancelled) setAuthUserId(userId);
 
         // STEP 2: If we have stored identity, try fast reconnect (8s timeout — Amelia)
         if (saved?.tokenId && saved?.playerName && !skeletonTimedOut) {
@@ -1730,7 +1732,7 @@ export function PlayerJoinClient({
                 ✕
               </button>
             </div>
-            <PlayerSharedNotes campaignId={campaignId} />
+            <PlayerSharedNotes campaignId={campaignId} userId={authUserId} />
           </div>
         )}
 
