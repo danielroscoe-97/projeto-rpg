@@ -65,7 +65,7 @@ export default async function DashboardPage() {
   // Fetch campaigns owned by user
   const { data: rawCampaigns } = await supabase
     .from("campaigns")
-    .select("id, name, created_at, player_characters(count)")
+    .select("id, name, created_at, cover_image_url, player_characters(count)")
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -73,6 +73,7 @@ export default async function DashboardPage() {
     id: c.id as string,
     name: c.name as string,
     created_at: c.created_at as string,
+    cover_image_url: (c.cover_image_url as string | null) ?? null,
     player_count:
       (c.player_characters as { count: number }[])[0]?.count ?? 0,
   }));

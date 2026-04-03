@@ -18,6 +18,7 @@ interface Campaign {
   id: string;
   name: string;
   player_count: number;
+  cover_image_url?: string | null;
 }
 
 interface QuickActionsTranslations {
@@ -61,9 +62,19 @@ function getCampaignColor(name: string): string {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-function CampaignAvatar({ name, size = "md" }: { name: string; size?: "sm" | "md" }) {
+function CampaignAvatar({ name, imageUrl, size = "md" }: { name: string; imageUrl?: string | null; size?: "sm" | "md" }) {
   const colorClass = getCampaignColor(name);
   const dim = size === "sm" ? "h-8 w-8 text-xs" : "h-9 w-9 text-sm";
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt=""
+        aria-hidden="true"
+        className={`rounded-full object-cover shrink-0 ${dim}`}
+      />
+    );
+  }
   return (
     <div
       className={`flex items-center justify-center rounded-full font-bold shrink-0 ${dim} ${colorClass}`}
@@ -185,18 +196,18 @@ export function QuickActions({ translations: t, campaigns }: QuickActionsProps) 
             <button
               type="button"
               onClick={handleNpcGlobal}
-              className="flex items-center gap-3 w-full rounded-lg border border-blue-400/20 bg-blue-400/5 px-4 py-3.5 text-left transition-all duration-150 hover:border-blue-400/50 hover:bg-blue-400/10 hover:shadow-sm group"
+              className="flex items-center gap-3 w-full rounded-lg border border-amber-400/20 bg-amber-400/5 px-4 py-3.5 text-left transition-all duration-150 hover:border-amber-400/50 hover:bg-amber-400/10 hover:shadow-sm group"
               data-testid="npc-scope-global"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-400/15 shrink-0">
-                <Globe className="w-4 h-4 text-blue-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-400/15 shrink-0">
+                <Globe className="w-4 h-4 text-amber-400" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold text-foreground">
                     {t.npc_global_title}
                   </p>
-                  <span className="inline-flex items-center rounded-full bg-blue-400/15 px-2 py-0.5 text-[10px] font-medium text-blue-400 ring-1 ring-blue-400/20">
+                  <span className="inline-flex items-center rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-medium text-amber-400 ring-1 ring-amber-400/20">
                     {t.npc_global_badge}
                   </span>
                 </div>
@@ -204,7 +215,7 @@ export function QuickActions({ translations: t, campaigns }: QuickActionsProps) 
                   {t.npc_global_desc}
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-blue-400/60 transition-colors shrink-0" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-amber-400/60 transition-colors shrink-0" />
             </button>
 
             {/* Separador */}
@@ -227,7 +238,7 @@ export function QuickActions({ translations: t, campaigns }: QuickActionsProps) 
                       className={`${campaignCardClass} py-2.5 hover:border-amber-400/30 group`}
                       data-testid={`npc-scope-campaign-${c.id}`}
                     >
-                      <CampaignAvatar name={c.name} size="sm" />
+                      <CampaignAvatar name={c.name} imageUrl={c.cover_image_url} size="sm" />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                         <p className="text-xs text-muted-foreground">{playerLabel(c.player_count)}</p>
@@ -275,7 +286,7 @@ export function QuickActions({ translations: t, campaigns }: QuickActionsProps) 
                     className={`${campaignCardClass} py-3 hover:border-emerald-400/30 group`}
                     data-testid={`invite-campaign-${c.id}`}
                   >
-                    <CampaignAvatar name={c.name} />
+                    <CampaignAvatar name={c.name} imageUrl={c.cover_image_url} />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                       <p className="text-xs text-muted-foreground">{playerLabel(c.player_count)}</p>

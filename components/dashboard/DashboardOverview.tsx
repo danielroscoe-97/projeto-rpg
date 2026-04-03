@@ -25,6 +25,7 @@ interface DashboardOverviewProps {
     name: string;
     created_at: string;
     player_count: number;
+    cover_image_url?: string | null;
   }[];
   savedEncounters: SavedEncounterRow[];
   userId: string;
