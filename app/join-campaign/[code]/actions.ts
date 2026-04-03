@@ -1,0 +1,109 @@
+"use server";
+
+import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { sendCampaignJoinedEmail } from "@/lib/notifications/campaign-joined";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
+
+interface JoinCampaignData {
+  code: string;
+  name: string;
+  maxHp: number | null;
+  currentHp: number | null;
+  ac: number | null;
+  spellSaveDc: number | null;
+}
+
+const JOIN_CODE_RE = /^[A-Z2-9]{8}$/;
+
+export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void> {
+  // P11: validate join_code format before any DB call
+  if (!JOIN_CODE_RE.test(data.code)) throw new Error("Código inválido");
+
+  const supabase = await createClient();
+
+  // Require authenticated user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  // Use service client to bypass RLS for join_code lookup
+  const service = createServiceClient();
+
+  // Validate join code
+  const { data: campaign } = await service
+    .from("campaigns")
+    .select("id, name, owner_id, join_code_active, max_players")
+    .eq("join_code", data.code)
+    .eq("join_code_active", true)
+    .maybeSingle();
+
+  if (!campaign) throw new Error("Código inválido ou link desativado");
+
+  // Check max_players limit (null = unlimited)
+  if (campaign.max_players !== null) {
+    const { count } = await service
+      .from("campaign_members")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaign.id)
+      .eq("status", "active");
+
+    if ((count ?? 0) >= campaign.max_players) {
+      throw new Error("Campanha cheia");
+    }
+  }
+
+  // Add to campaign_members (idempotent)
+  const { error: memberError } = await service
+    .from("campaign_members")
+    .insert({ campaign_id: campaign.id, user_id: user.id, role: "player" })
+    .select()
+    .maybeSingle();
+
+  // P4: already a member → stop here (don't create a duplicate character)
+  if (memberError?.code === "23505") return;
+  if (memberError) throw new Error("Erro ao ingressar na campanha");
+
+  // Create player character
+  const { error: charError } = await service
+    .from("player_characters")
+    .insert({
+      campaign_id: campaign.id,
+      user_id: user.id,
+      name: data.name,
+      max_hp: data.maxHp ?? 10,
+      current_hp: data.currentHp ?? 10,
+      ac: data.ac ?? 10,
+      spell_save_dc: data.spellSaveDc,
+    });
+
+  // P8: sanitize Supabase error before surfacing to client
+  if (charError) throw new Error("Erro ao criar personagem");
+
+  // Notify DM via email (fail-open)
+  try {
+    const { data: dmUser } = await service
+      .from("users")
+      .select("display_name, email")
+      .eq("id", campaign.owner_id)
+      .single();
+
+    const { data: playerUser } = await service
+      .from("users")
+      .select("display_name, email")
+      .eq("id", user.id)
+      .single();
+
+    if (dmUser && playerUser) {
+      await sendCampaignJoinedEmail({
+        dmEmail: dmUser.email,
+        dmName: dmUser.display_name ?? dmUser.email,
+        playerName: data.name,
+        playerEmail: playerUser.email,
+        campaignName: campaign.name,
+        campaignUrl: `${APP_URL}/app/campaigns/${campaign.id}`,
+      });
+    }
+  } catch {
+    // Notification failure must not block the join
+  }
+}

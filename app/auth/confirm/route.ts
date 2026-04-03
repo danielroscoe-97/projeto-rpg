@@ -59,6 +59,11 @@ export async function GET(request: NextRequest) {
 
   // Determine redirect: new signups go to onboarding, otherwise to specified next
   async function getRedirectTarget(): Promise<string> {
+    // If join_code param present, redirect back to join flow
+    const joinCode = searchParams.get("join_code");
+    if (joinCode && /^[A-Z2-9]{8}$/.test(joinCode)) {
+      return `/join-campaign/${joinCode}`;
+    }
     // If invite params present, preserve them
     const invite = searchParams.get("invite");
     const campaign = searchParams.get("campaign");

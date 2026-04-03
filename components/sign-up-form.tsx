@@ -36,10 +36,11 @@ export function SignUpForm({
     { value: "both" as const, icon: <Users className="w-5 h-5" />, label: ts("role_both") },
   ];
 
-  // Capture invite params from URL (Story 4.4)
+  // Capture invite/join params from URL
   const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
   const inviteToken = searchParams?.get("invite") ?? null;
   const inviteCampaignId = searchParams?.get("campaign") ?? null;
+  const joinCode = searchParams?.get("join_code") ?? null;
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,9 +59,11 @@ export function SignUpForm({
     trackEvent("auth:signup_start");
 
     try {
-      // Preserve invite params through email confirmation redirect (Story 4.4)
+      // Preserve invite/join params through email confirmation redirect
       let redirectUrl = `${window.location.origin}/auth/confirm?role=${encodeURIComponent(selectedRole)}`;
-      if (inviteToken && inviteCampaignId) {
+      if (joinCode) {
+        redirectUrl += `&join_code=${encodeURIComponent(joinCode)}`;
+      } else if (inviteToken && inviteCampaignId) {
         redirectUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
 
@@ -79,7 +82,9 @@ export function SignUpForm({
         return;
       }
       let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole)}`;
-      if (inviteToken && inviteCampaignId) {
+      if (joinCode) {
+        successUrl += `&join_code=${encodeURIComponent(joinCode)}`;
+      } else if (inviteToken && inviteCampaignId) {
         successUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
       }
       router.push(successUrl);
@@ -245,7 +250,10 @@ export function SignUpForm({
       </div>
 
       {/* Google OAuth */}
-      <GoogleOAuthButton namespace="auth" />
+      <GoogleOAuthButton
+        namespace="auth"
+        redirectTo={joinCode ? `${typeof window !== "undefined" ? window.location.origin : ""}/join-campaign/${joinCode}` : undefined}
+      />
 
       {/* Footer link */}
       <p className="mt-5 text-center text-sm text-muted-foreground/60">
