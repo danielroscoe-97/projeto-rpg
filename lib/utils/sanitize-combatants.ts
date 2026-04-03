@@ -19,6 +19,8 @@ export interface RawCombatantRow {
   ruleset_version: string | null;
   monster_group_id: string | null;
   group_order: number | null;
+  /** Turn count per condition. Exposed to players for their own characters and other players. */
+  condition_durations?: Record<string, number> | null;
 }
 
 /**
@@ -37,13 +39,14 @@ export function sanitizeCombatantsForPlayer(combatants: RawCombatantRow[]) {
         const { display_name: _dn, is_hidden: _h, ...rest } = c;
         return rest;
       }
-      const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, ...rest } = c;
+      const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, condition_durations: _cd, ...rest } = c;
       return {
         ...rest,
         // Anti-metagaming: replace real name with display_name if set
         name: display_name || rest.name,
         hp_status: getHpStatus(current_hp, max_hp),
         hp_percentage: getHpPercentage(current_hp, max_hp),
+        // condition_durations intentionally omitted for monsters (DM-only)
       };
     });
 }

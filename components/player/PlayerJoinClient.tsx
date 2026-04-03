@@ -50,6 +50,8 @@ interface PlayerCombatant {
   hp_status?: string;
   /** Death saves state for players at 0 HP */
   death_saves?: { successes: number; failures: number };
+  /** Turn count per condition — used for duration badges. Players only. */
+  condition_durations?: Record<string, number>;
 }
 
 interface PrefilledCharacter {
@@ -926,7 +928,11 @@ export function PlayerJoinClient({
             updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
-                  ? { ...c, conditions: payload.conditions }
+                  ? {
+                      ...c,
+                      conditions: payload.conditions,
+                      ...(payload.condition_durations !== undefined && { condition_durations: payload.condition_durations }),
+                    }
                   : c
               )
             );
@@ -2140,6 +2146,22 @@ export function PlayerJoinClient({
           spellSlots={characterSpellSlots}
           onToggleSlot={handleToggleSlot}
           onLongRest={handleLongRest}
+          onSelfConditionToggle={(combatantId, condition) => {
+            const ch = channelRef.current;
+            if (!ch || connectionStatus !== "connected") {
+              toast.error(tRef.current("sync_offline"));
+              return;
+            }
+            ch.send({
+              type: "broadcast",
+              event: "player:self_condition_toggle",
+              payload: {
+                player_name: registeredName,
+                combatant_id: combatantId,
+                condition,
+              },
+            });
+          }}
         />
       </div>
 

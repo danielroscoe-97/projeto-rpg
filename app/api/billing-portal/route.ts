@@ -30,7 +30,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function POST(_reques
       );
     }
 
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
     const session = await getStripe().billingPortal.sessions.create({
       customer: sub.stripe_customer_id,

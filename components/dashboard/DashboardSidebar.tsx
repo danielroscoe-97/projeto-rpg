@@ -48,6 +48,8 @@ const NAV_ITEMS_MOBILE = [
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
   { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
+  { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music },
+  { key: "settings" as const, href: "/app/settings", icon: Settings },
 ] as const;
 
 export function DashboardSidebar({ translations: t, hasDmAccess = false }: DashboardSidebarProps) {

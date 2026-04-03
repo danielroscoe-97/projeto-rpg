@@ -22,6 +22,15 @@ const ALL_CONDITIONS = [
   "Unconscious",
 ] as const;
 
+export const BENEFICIAL_CONDITIONS = [
+  "Blessed",
+  "Flying",
+  "Haste",
+  "Heroism",
+  "Inspired",
+  "Raging",
+] as const;
+
 interface ConditionSelectorProps {
   activeConditions: string[];
   onToggle: (condition: string) => void;
@@ -146,6 +155,34 @@ export function ConditionSelector({
           );
         })}
       </div>
+
+      {/* Beneficial conditions */}
+      <div className="mt-2 pt-2 border-t border-white/[0.06]">
+        <p className="text-[10px] text-emerald-400/70 font-medium uppercase tracking-wider mb-1">{tcombat("beneficial_conditions_label")}</p>
+        <div className="flex flex-wrap gap-1">
+          {BENEFICIAL_CONDITIONS.map((condition) => {
+            const isActive = activeConditions.includes(condition);
+            return (
+              <button
+                key={condition}
+                type="button"
+                onClick={() => onToggle(condition)}
+                className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full font-medium min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                  isActive
+                    ? "bg-emerald-600 text-white"
+                    : "bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50"
+                }`}
+                aria-pressed={isActive}
+                aria-label={isActive ? tcombat("condition_remove_aria", { name: condition }) : tcombat("condition_add_aria", { name: condition })}
+                data-testid={`condition-toggle-${condition.toLowerCase()}`}
+              >
+                {condition}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <button
         type="button"
         onClick={onClose}

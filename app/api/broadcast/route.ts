@@ -5,6 +5,7 @@ import type { RealtimeEvent } from "@/lib/types/realtime";
 import type { Combatant } from "@/lib/types/combat";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { captureError } from "@/lib/errors/capture";
 
 /**
  * Server-side broadcast endpoint.
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
     // Check session ownership
     const { data: session, error: sessionError } = await supabaseAuth
       .from("sessions")
-      .select("user_id")
+      .select("owner_id")
       .eq("id", sessionId)
       .single();
 
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
-    if (session.user_id !== user.id) {
+    if (session.owner_id !== user.id) {
       return NextResponse.json({ error: "Not the session owner" }, { status: 403 });
     }
 
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
     if (encounter) {
       const { data: rawCombatants } = await supabaseAuth
         .from("combatants")
-        .select("id, name, is_hidden, is_player, current_hp, max_hp, temp_hp, ac, spell_save_dc, conditions, initiative, initiative_order, is_defeated, monster_id, ruleset_version, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id")
+        .select("id, name, is_hidden, is_player, current_hp, max_hp, temp_hp, ac, spell_save_dc, conditions, initiative, initiative_order, is_defeated, monster_id, ruleset_version, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id, condition_durations, death_saves, legendary_actions_total, legendary_actions_used")
         .eq("encounter_id", encounter.id)
         .order("initiative_order", { ascending: true });
 
@@ -106,8 +107,10 @@ export async function POST(req: NextRequest) {
         player_notes: r.player_notes ?? "",
         player_character_id: r.player_character_id ?? null,
         combatant_role: null,
-        legendary_actions_total: null,
-        legendary_actions_used: 0,
+        condition_durations: (r.condition_durations as Record<string, number> | null) ?? {},
+        death_saves: (r.death_saves as { successes: number; failures: number } | null) ?? undefined,
+        legendary_actions_total: r.legendary_actions_total ?? null,
+        legendary_actions_used: r.legendary_actions_used ?? 0,
       }));
     }
 
@@ -147,7 +150,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("[broadcast API] Error:", err);
+    captureError(err, { component: "BroadcastAPI", action: "broadcast", category: "network" });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

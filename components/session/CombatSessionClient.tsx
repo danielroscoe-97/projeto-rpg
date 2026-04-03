@@ -47,6 +47,7 @@ import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users, ScrollText } from "lucide-react";
+import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
@@ -910,6 +911,34 @@ export function CombatSessionClient({
 
     // F-38: DM explicitly ignores player chat messages (AC: DM does not see player chat)
     ch.on("broadcast", { event: "chat:player_message" }, () => { /* ignored by DM */ });
+
+    // Listen for player:self_condition_toggle — player self-applied a beneficial condition
+    const handleSelfConditionToggle = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { combatant_id, condition, player_name } = payload as { combatant_id: string; condition: string; player_name: string };
+      if (!combatant_id || !condition || typeof condition !== "string") return;
+      // Security: only allow beneficial conditions
+      if (!(BENEFICIAL_CONDITIONS as readonly string[]).includes(condition)) return;
+      // Security: combatant must exist and be a player — use ID as primary key, name as confirmation
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (!combatant || !combatant.is_player) return;
+      // Name confirmation prevents another client from sending another player's combatant_id
+      if (combatant.name.toLowerCase() !== String(player_name ?? "").toLowerCase()) return;
+      // Apply the toggle via the store
+      useCombatStore.getState().toggleCondition(combatant_id, condition);
+      // Broadcast updated conditions to all players
+      const updated = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (updated) {
+        broadcastEvent(getSessionId()!, {
+          type: "combat:condition_change",
+          combatant_id,
+          conditions: updated.conditions,
+          condition_durations: updated.condition_durations,
+        });
+      }
+    };
+
+    ch.on("broadcast", { event: "player:self_condition_toggle" }, handleSelfConditionToggle);
 
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef

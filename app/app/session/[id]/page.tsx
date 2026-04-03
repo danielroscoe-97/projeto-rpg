@@ -44,7 +44,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     ? await supabase
         .from("combatants")
         .select(
-          "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id"
+          "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_hidden, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id, condition_durations, death_saves, legendary_actions_total, legendary_actions_used"
         )
         .eq("encounter_id", encounter.id)
         .order("initiative_order", { ascending: true })
@@ -65,20 +65,22 @@ export default async function SessionPage({ params }: SessionPageProps) {
     conditions: row.conditions ?? [],
     ruleset_version: row.ruleset_version ?? null,
     is_defeated: row.is_defeated ?? false,
-    is_hidden: (row as Record<string, unknown>).is_hidden as boolean ?? false,
+    is_hidden: row.is_hidden ?? false,
     is_player: row.is_player ?? false,
     monster_id: row.monster_id ?? null,
     token_url: null,
     creature_type: null,
-    display_name: (row as Record<string, unknown>).display_name as string | null ?? null,
-    monster_group_id: (row as Record<string, unknown>).monster_group_id as string | null ?? null,
-    group_order: (row as Record<string, unknown>).group_order as number | null ?? null,
+    display_name: row.display_name ?? null,
+    monster_group_id: row.monster_group_id ?? null,
+    group_order: row.group_order ?? null,
     dm_notes: row.dm_notes ?? '',
     player_notes: row.player_notes ?? '',
-    player_character_id: (row as Record<string, unknown>).player_character_id as string | null ?? null,
+    player_character_id: row.player_character_id ?? null,
     combatant_role: null,
-    legendary_actions_total: null,
-    legendary_actions_used: 0,
+    condition_durations: (row.condition_durations as Record<string, number> | null) ?? {},
+    death_saves: (row.death_saves as { successes: number; failures: number } | null) ?? undefined,
+    legendary_actions_total: row.legendary_actions_total ?? null,
+    legendary_actions_used: row.legendary_actions_used ?? 0,
   }));
 
   const t = await getTranslations("dashboard");

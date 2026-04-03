@@ -74,7 +74,7 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
 
     // TODO: Trigger Novu campaign-invite workflow here
     // For now, return the invite link for the DM to share manually
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
     const inviteLink = `${baseUrl}/auth/sign-up?invite=${token}&campaign=${campaignId}`;
 
     return NextResponse.json({

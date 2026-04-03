@@ -269,6 +269,9 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   // player:hp_action is player→DM only, effect reaches others via combat:hp_update
   if (event.type === "player:hp_action") return null;
 
+  // player:self_condition_toggle is player→DM only — DM re-broadcasts as combat:condition_change
+  if (event.type === "player:self_condition_toggle") return null;
+
   // Events that pass through unchanged (no sensitive data)
   return event;
 }

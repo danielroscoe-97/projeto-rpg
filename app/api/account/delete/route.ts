@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { withRateLimit } from "@/lib/rate-limit";
+import { captureError } from "@/lib/errors/capture";
 
 const handler: Parameters<typeof withRateLimit>[0] = async function POST() {
   // 1. Verify the caller is authenticated
@@ -27,6 +28,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function POST() {
   );
 
   if (deleteError) {
+    captureError(deleteError, { component: "AccountDeleteAPI", action: "deleteUser", category: "database" });
     return NextResponse.json(
       { error: "Failed to delete account" },
       { status: 500 }

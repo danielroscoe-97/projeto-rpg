@@ -61,7 +61,8 @@ BEGIN
           id, encounter_id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc,
           initiative, initiative_order, conditions, is_defeated, is_player, is_hidden,
           monster_id, display_name, monster_group_id, group_order, dm_notes,
-          player_notes, player_character_id, ruleset_version
+          player_notes, player_character_id, ruleset_version,
+          condition_durations, death_saves, legendary_actions_total, legendary_actions_used
         ) VALUES (
           (rec->>'id')::UUID,
           p_encounter_id,
@@ -87,7 +88,11 @@ BEGIN
           COALESCE(rec->>'dm_notes', ''),
           COALESCE(rec->>'player_notes', db_combatant.player_notes, ''),
           (rec->>'player_character_id')::UUID,
-          rec->>'ruleset_version'
+          rec->>'ruleset_version',
+          COALESCE(rec->'condition_durations', db_combatant.condition_durations, '{}'),
+          CASE WHEN rec->'death_saves' IS NOT NULL THEN rec->'death_saves' ELSE db_combatant.death_saves END,
+          COALESCE((rec->>'legendary_actions_total')::INT, db_combatant.legendary_actions_total),
+          COALESCE((rec->>'legendary_actions_used')::INT, db_combatant.legendary_actions_used, 0)
         )
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
@@ -109,14 +114,19 @@ BEGIN
           dm_notes = EXCLUDED.dm_notes,
           player_notes = combatants.player_notes,
           player_character_id = EXCLUDED.player_character_id,
-          ruleset_version = EXCLUDED.ruleset_version;
+          ruleset_version = EXCLUDED.ruleset_version,
+          condition_durations = EXCLUDED.condition_durations,
+          death_saves = EXCLUDED.death_saves,
+          legendary_actions_total = EXCLUDED.legendary_actions_total,
+          legendary_actions_used = EXCLUDED.legendary_actions_used;
       ELSE
         -- Monster/NPC or new combatant: full overwrite from DM state
         INSERT INTO combatants (
           id, encounter_id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc,
           initiative, initiative_order, conditions, is_defeated, is_player, is_hidden,
           monster_id, display_name, monster_group_id, group_order, dm_notes,
-          player_notes, player_character_id, ruleset_version
+          player_notes, player_character_id, ruleset_version,
+          condition_durations, death_saves, legendary_actions_total, legendary_actions_used
         ) VALUES (
           (rec->>'id')::UUID,
           p_encounter_id,
@@ -142,7 +152,11 @@ BEGIN
           COALESCE(rec->>'dm_notes', ''),
           COALESCE(rec->>'player_notes', ''),
           (rec->>'player_character_id')::UUID,
-          rec->>'ruleset_version'
+          rec->>'ruleset_version',
+          COALESCE(rec->'condition_durations', '{}'),
+          rec->'death_saves',
+          (rec->>'legendary_actions_total')::INT,
+          COALESCE((rec->>'legendary_actions_used')::INT, 0)
         )
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
@@ -163,7 +177,11 @@ BEGIN
           dm_notes = EXCLUDED.dm_notes,
           player_notes = EXCLUDED.player_notes,
           player_character_id = EXCLUDED.player_character_id,
-          ruleset_version = EXCLUDED.ruleset_version;
+          ruleset_version = EXCLUDED.ruleset_version,
+          condition_durations = EXCLUDED.condition_durations,
+          death_saves = EXCLUDED.death_saves,
+          legendary_actions_total = EXCLUDED.legendary_actions_total,
+          legendary_actions_used = EXCLUDED.legendary_actions_used;
       END IF;
       v_count := v_count + 1;
     ELSE
@@ -172,7 +190,8 @@ BEGIN
         id, encounter_id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc,
         initiative, initiative_order, conditions, is_defeated, is_player, is_hidden,
         monster_id, display_name, monster_group_id, group_order, dm_notes,
-        player_notes, player_character_id, ruleset_version
+        player_notes, player_character_id, ruleset_version,
+        condition_durations, death_saves, legendary_actions_total, legendary_actions_used
       ) VALUES (
         (rec->>'id')::UUID,
         p_encounter_id,
@@ -198,7 +217,11 @@ BEGIN
         COALESCE(rec->>'dm_notes', ''),
         COALESCE(rec->>'player_notes', ''),
         (rec->>'player_character_id')::UUID,
-        rec->>'ruleset_version'
+        rec->>'ruleset_version',
+        COALESCE(rec->'condition_durations', '{}'),
+        rec->'death_saves',
+        (rec->>'legendary_actions_total')::INT,
+        COALESCE((rec->>'legendary_actions_used')::INT, 0)
       )
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
@@ -219,7 +242,11 @@ BEGIN
         dm_notes = EXCLUDED.dm_notes,
         player_notes = EXCLUDED.player_notes,
         player_character_id = EXCLUDED.player_character_id,
-        ruleset_version = EXCLUDED.ruleset_version;
+        ruleset_version = EXCLUDED.ruleset_version,
+        condition_durations = EXCLUDED.condition_durations,
+        death_saves = EXCLUDED.death_saves,
+        legendary_actions_total = EXCLUDED.legendary_actions_total,
+        legendary_actions_used = EXCLUDED.legendary_actions_used;
       v_count := v_count + 1;
     END IF;
   END LOOP;
