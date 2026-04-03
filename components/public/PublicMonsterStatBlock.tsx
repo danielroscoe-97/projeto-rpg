@@ -80,10 +80,9 @@ interface PublicMonsterStatBlockProps {
 }
 
 export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: PublicMonsterStatBlockProps) {
-  const L = STAT_LABELS[locale];
   const { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc } = useMonsterTranslation(slug);
-  // `locale` controls UI labels (always PT-BR on .com.br pages)
-  // `translated` (from hook) controls DATA translations — only when user toggles "Traduzir ficha"
+  // Everything is English RAW by default; PT-BR only when user clicks "Traduzir ficha"
+  const L = STAT_LABELS[translated ? "pt-BR" : "en"];
   const t = translated;
 
   const abilities = [
