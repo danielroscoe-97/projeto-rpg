@@ -303,6 +303,7 @@ export function NpcList({ campaignId }: NpcListProps) {
 
       {/* Create/Edit form dialog */}
       <NpcForm
+        key={editingNpc?.id ?? "new"}
         open={formOpen}
         onOpenChange={(open) => {
           setFormOpen(open);
