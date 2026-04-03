@@ -10,6 +10,8 @@ interface MonsterTranslations {
   actions: SectionMap;
   reactions: SectionMap;
   legendary_actions: SectionMap;
+  lair_actions: SectionMap;
+  regional_effects: SectionMap;
 }
 
 type TranslationData = Record<string, MonsterTranslations>;
@@ -49,7 +51,7 @@ export interface UseMonsterTranslationReturn {
   toggle: () => void;
   setGlobalPtBR: () => void;
   getName: (fallback: string) => string;
-  getDesc: (section: "special_abilities" | "actions" | "reactions" | "legendary_actions", name: string, fallback: string) => string;
+  getDesc: (section: "special_abilities" | "actions" | "reactions" | "legendary_actions" | "lair_actions" | "regional_effects", name: string, fallback: string) => string;
 }
 
 export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn {
@@ -91,7 +93,7 @@ export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn
   }
 
   function getDesc(
-    section: "special_abilities" | "actions" | "reactions" | "legendary_actions",
+    section: "special_abilities" | "actions" | "reactions" | "legendary_actions" | "lair_actions" | "regional_effects",
     name: string,
     fallback: string,
   ): string {
