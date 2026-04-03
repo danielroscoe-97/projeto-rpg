@@ -91,12 +91,12 @@ export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn
   }
 
   function getDesc(
-    section: keyof MonsterTranslations,
+    section: "special_abilities" | "actions" | "reactions" | "legendary_actions",
     name: string,
     fallback: string,
   ): string {
     if (!translated || !monsterData) return fallback;
-    return monsterData[section][name] ?? fallback;
+    return monsterData[section]?.[name] ?? fallback;
   }
 
   return { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc };
