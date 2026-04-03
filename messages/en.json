@@ -964,6 +964,8 @@
     "encounter_name_modal_suggestion": "You can rename or keep the suggested name.",
     "encounter_name_modal_skip": "Skip",
     "encounter_name_modal_save": "Save",
+    "player_tag": "Player",
+    "monster_tag": "Monster",
     "hp_damage": "\u2212Damage",
     "hp_heal": "+Heal",
     "hp_temp": "Temp",
@@ -1248,6 +1250,7 @@
     "spell_slots_used": "used",
     "spell_slots_config_title": "Spell Slots (per level)",
     "spell_slots_config_hint": "Leave 0 for levels you don't use",
+    "poll_votes_received": "vote(s) received",
     "poll_awaiting_end": "Waiting for session to end...",
     "poll_results_title": "Poll Results",
     "poll_results_subtitle": "Here's how your group rated the combat:"

@@ -35,7 +35,7 @@ function JoinRequestCard({
   onAccept: () => void;
   onReject: () => void;
 }) {
-  const t = useTranslations("common");
+  const t = useTranslations("combat");
   const isRejoin = request.isRejoin;
   const isActiveSession = request.isActiveSession;
 
@@ -120,7 +120,7 @@ export function JoinRequestBanner({
   onAcceptAll,
   onRejectAll,
 }: JoinRequestBannerProps) {
-  const t = useTranslations("common");
+  const t = useTranslations("combat");
   const count = requests.length;
   const hasActiveSessionRequest = requests.some((r) => r.isActiveSession);
   const allRejoin = requests.every((r) => r.isRejoin);

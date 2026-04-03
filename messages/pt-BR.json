@@ -964,6 +964,8 @@
     "encounter_name_modal_suggestion": "Renomeie ou mantenha o nome sugerido.",
     "encounter_name_modal_skip": "Pular",
     "encounter_name_modal_save": "Salvar",
+    "player_tag": "Jogador",
+    "monster_tag": "Monstro",
     "hp_damage": "\u2212Dano",
     "hp_heal": "+Cura",
     "hp_temp": "Temp",
@@ -1248,6 +1250,7 @@
     "spell_slots_used": "usado",
     "spell_slots_config_title": "Spell Slots (por nível)",
     "spell_slots_config_hint": "Deixe 0 para níveis que não usa",
+    "poll_votes_received": "voto(s) recebido(s)",
     "poll_awaiting_end": "Aguardando encerramento da sessão...",
     "poll_results_title": "Resultado da Enquete",
     "poll_results_subtitle": "Aqui está como o grupo avaliou o combate:"
