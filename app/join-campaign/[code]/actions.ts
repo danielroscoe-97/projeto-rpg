@@ -3,15 +3,18 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendCampaignJoinedEmail } from "@/lib/notifications/campaign-joined";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
+const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
 
 interface JoinCampaignData {
   code: string;
-  name: string;
-  maxHp: number | null;
-  currentHp: number | null;
-  ac: number | null;
-  spellSaveDc: number | null;
+  // New character path
+  name?: string;
+  maxHp?: number | null;
+  currentHp?: number | null;
+  ac?: number | null;
+  spellSaveDc?: number | null;
+  // Existing character path
+  existingCharacterId?: string;
 }
 
 const JOIN_CODE_RE = /^[A-Z2-9]{8}$/;
@@ -63,21 +66,33 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
   if (memberError?.code === "23505") return;
   if (memberError) throw new Error("Erro ao ingressar na campanha");
 
-  // Create player character
-  const { error: charError } = await service
-    .from("player_characters")
-    .insert({
-      campaign_id: campaign.id,
-      user_id: user.id,
-      name: data.name,
-      max_hp: data.maxHp ?? 10,
-      current_hp: data.currentHp ?? 10,
-      ac: data.ac ?? 10,
-      spell_save_dc: data.spellSaveDc,
-    });
+  if (data.existingCharacterId) {
+    // Link existing standalone character to this campaign
+    const { error } = await service
+      .from("player_characters")
+      .update({ campaign_id: campaign.id })
+      .eq("id", data.existingCharacterId)
+      .eq("user_id", user.id)
+      .is("campaign_id", null);
 
-  // P8: sanitize Supabase error before surfacing to client
-  if (charError) throw new Error("Erro ao criar personagem");
+    if (error) throw new Error("Erro ao vincular personagem");
+  } else {
+    // Create new character for this campaign
+    const { error: charError } = await service
+      .from("player_characters")
+      .insert({
+        campaign_id: campaign.id,
+        user_id: user.id,
+        name: data.name!.trim(),
+        max_hp: data.maxHp ?? 10,
+        current_hp: data.currentHp ?? 10,
+        ac: data.ac ?? 10,
+        spell_save_dc: data.spellSaveDc,
+      });
+
+    // P8: sanitize Supabase error before surfacing to client
+    if (charError) throw new Error("Erro ao criar personagem");
+  }
 
   // Notify DM via email (fail-open)
   try {
@@ -93,11 +108,15 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
       .eq("id", user.id)
       .single();
 
+    const playerDisplayName = data.existingCharacterId
+      ? (playerUser?.display_name ?? playerUser?.email ?? "Jogador")
+      : data.name!;
+
     if (dmUser && playerUser) {
       await sendCampaignJoinedEmail({
         dmEmail: dmUser.email,
         dmName: dmUser.display_name ?? dmUser.email,
-        playerName: data.name,
+        playerName: playerDisplayName,
         playerEmail: playerUser.email,
         campaignName: campaign.name,
         campaignUrl: `${APP_URL}/app/campaigns/${campaign.id}`,

@@ -49,6 +49,14 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
     redirect("/app/dashboard");
   }
 
+  // Fetch user's standalone characters (available to bring into this campaign)
+  const { data: existingCharacters } = await supabase
+    .from("player_characters")
+    .select("id, name, race, class, level, max_hp, ac, token_url")
+    .eq("user_id", user.id)
+    .is("campaign_id", null)
+    .order("updated_at", { ascending: false });
+
   const ownerData = campaign.users as unknown as { display_name: string | null; email: string } | null;
   const dmName = ownerData?.display_name ?? ownerData?.email ?? "DM";
 
@@ -59,6 +67,7 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
           code={code}
           campaignName={campaign.name}
           dmName={dmName}
+          existingCharacters={existingCharacters ?? []}
         />
       </div>
     </div>
