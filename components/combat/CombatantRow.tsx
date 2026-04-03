@@ -100,7 +100,7 @@ export const CombatantRow = memo(function CombatantRow({
       for (const c of allCombatants) {
         if (c.monster_id && !c.is_lair_action && !c.is_defeated && !seen.has(c.monster_id)) {
           seen.add(c.monster_id);
-          const m = getMonsterById(c.monster_id);
+          const m = c.ruleset_version ? getMonsterById(c.monster_id, c.ruleset_version) : null;
           if (m?.lair_actions?.length) lairMonsters.push(m);
         }
       }
