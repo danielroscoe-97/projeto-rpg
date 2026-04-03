@@ -509,6 +509,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           onSelectMonsterGroup={handleSelectMonsterGroup}
           onMonsterAdded={handleMonsterAdded}
           showManualAdd
+          defaultManualOpen
           onManualAdd={(data) => {
             const currentCombatants = useGuestCombatStore.getState().combatants;
             const numberedName = getGuestNumberedName(data.name, currentCombatants);

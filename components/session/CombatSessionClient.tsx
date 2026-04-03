@@ -1136,6 +1136,7 @@ export function CombatSessionClient({
             onSelectMonster={handleSelectMonster}
             onSelectMonsterGroup={handleSelectMonsterGroup}
             showManualAdd
+            defaultManualOpen
             onManualAdd={(data) => {
               const currentCombatants = useCombatStore.getState().combatants;
               const numberedName = getNumberedName(data.name, currentCombatants);

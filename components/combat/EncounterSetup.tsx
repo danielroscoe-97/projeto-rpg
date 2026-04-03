@@ -747,6 +747,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           });
         }}
         showManualAdd
+        defaultManualOpen
         onManualAdd={(data) => {
           const numberedName = getNumberedName(data.name, useCombatStore.getState().combatants);
           const displayName = getDefaultDisplayName(null, useCombatStore.getState().combatants);
