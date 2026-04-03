@@ -55,14 +55,54 @@ const getHandler: Parameters<typeof withRateLimit>[0] = async function (
     (users ?? []).map((u) => [u.id, u])
   );
 
-  const result = (entries ?? []).map((e) => ({
+  const whitelistResult = (entries ?? []).map((e) => ({
     ...e,
     user_email: userMap.get(e.user_id)?.email ?? "unknown",
     user_display_name: userMap.get(e.user_id)?.display_name ?? null,
     granted_by_email: userMap.get(e.granted_by)?.email ?? "unknown",
   }));
 
-  return NextResponse.json({ data: result });
+  // Also fetch all content agreements with user info
+  const { data: agreements } = await adminClient
+    .from("content_agreements")
+    .select("*")
+    .order("agreed_at", { ascending: false });
+
+  const agreementUserIds = [
+    ...new Set((agreements ?? []).map((a) => a.user_id)),
+  ];
+
+  // Fetch user info for agreement holders (skip already-fetched)
+  const missingUserIds = agreementUserIds.filter((id) => !userMap.has(id));
+  if (missingUserIds.length > 0) {
+    const { data: moreUsers } = await adminClient
+      .from("users")
+      .select("id, email, display_name, created_at, role")
+      .in("id", missingUserIds);
+    (moreUsers ?? []).forEach((u) => userMap.set(u.id, u));
+  }
+
+  // Also enrich existing users with extra fields for display
+  if (agreementUserIds.length > 0) {
+    const { data: fullUsers } = await adminClient
+      .from("users")
+      .select("id, email, display_name, created_at, role")
+      .in("id", agreementUserIds);
+    (fullUsers ?? []).forEach((u) => userMap.set(u.id, u));
+  }
+
+  const agreementsResult = (agreements ?? []).map((a) => ({
+    ...a,
+    user_email: userMap.get(a.user_id)?.email ?? "unknown",
+    user_display_name: userMap.get(a.user_id)?.display_name ?? null,
+    user_created_at: (userMap.get(a.user_id) as Record<string, unknown>)?.created_at ?? null,
+    user_role: (userMap.get(a.user_id) as Record<string, unknown>)?.role ?? null,
+  }));
+
+  return NextResponse.json({
+    data: whitelistResult,
+    agreements: agreementsResult,
+  });
 };
 
 // POST — add user to whitelist

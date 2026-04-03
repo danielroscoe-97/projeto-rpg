@@ -1464,7 +1464,11 @@
     "whitelist_already_badge": "Já adicionado",
     "whitelist_no_users_found": "Nenhum usuário encontrado",
     "whitelist_revoked_section": "Revogados ({count})",
-    "whitelist_active_count": "{count} testers ativos"
+    "whitelist_active_count": "{count} testers ativos",
+    "agreements_title": "Usuários com Acesso Completo via Aceite ({count})",
+    "agreements_col_role": "Papel",
+    "agreements_col_accepted": "Aceito em",
+    "agreements_col_registered": "Cadastro"
   },
   "compendium": {
     "title": "Compêndio",

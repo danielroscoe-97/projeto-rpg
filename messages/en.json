@@ -1464,7 +1464,11 @@
     "whitelist_already_badge": "Already added",
     "whitelist_no_users_found": "No users found",
     "whitelist_revoked_section": "Revoked ({count})",
-    "whitelist_active_count": "{count} active testers"
+    "whitelist_active_count": "{count} active testers",
+    "agreements_title": "Users with Full Access via Agreement ({count})",
+    "agreements_col_role": "Role",
+    "agreements_col_accepted": "Accepted",
+    "agreements_col_registered": "Registered"
   },
   "compendium": {
     "title": "Compendium",

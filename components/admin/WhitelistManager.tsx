@@ -21,6 +21,18 @@ interface WhitelistEntry {
   notes: string | null;
 }
 
+interface AgreementEntry {
+  id: string;
+  user_id: string;
+  user_email: string;
+  user_display_name: string | null;
+  user_created_at: string | null;
+  user_role: string | null;
+  agreed_at: string;
+  agreement_version: number;
+  ip_address: string | null;
+}
+
 interface UserResult {
   id: string;
   email: string;
@@ -30,6 +42,7 @@ interface UserResult {
 export function WhitelistManager() {
   const t = useTranslations("admin");
   const [entries, setEntries] = useState<WhitelistEntry[]>([]);
+  const [agreements, setAgreements] = useState<AgreementEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +65,10 @@ export function WhitelistManager() {
       const res = await fetch("/api/admin/whitelist");
       const json = await res.json();
       if (json.error) setError(json.error);
-      else setEntries(json.data ?? []);
+      else {
+        setEntries(json.data ?? []);
+        setAgreements(json.agreements ?? []);
+      }
     } catch {
       setError("Failed to load whitelist");
     } finally {
@@ -300,6 +316,58 @@ export function WhitelistManager() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Users with agreement (accepted terms) */}
+          {agreements.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-sm font-medium text-foreground mb-3">
+                {t("agreements_title", { count: agreements.length })}
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm" data-testid="agreements-table">
+                  <thead>
+                    <tr className="text-left text-muted-foreground border-b border-border">
+                      <th className="pb-2 pr-4">Email</th>
+                      <th className="pb-2 pr-4">{t("whitelist_col_name")}</th>
+                      <th className="pb-2 pr-4">{t("agreements_col_role")}</th>
+                      <th className="pb-2 pr-4">{t("agreements_col_accepted")}</th>
+                      <th className="pb-2 pr-4">{t("agreements_col_registered")}</th>
+                      <th className="pb-2">v</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {agreements.map((a) => (
+                      <tr
+                        key={a.id}
+                        className="border-b border-white/[0.04] text-foreground/80"
+                      >
+                        <td className="py-2 pr-4 font-mono text-xs">
+                          {a.user_email}
+                        </td>
+                        <td className="py-2 pr-4 text-xs">
+                          {a.user_display_name || "—"}
+                        </td>
+                        <td className="py-2 pr-4 text-xs text-muted-foreground capitalize">
+                          {a.user_role || "—"}
+                        </td>
+                        <td className="py-2 pr-4 text-xs text-muted-foreground">
+                          {new Date(a.agreed_at).toLocaleDateString()}
+                        </td>
+                        <td className="py-2 pr-4 text-xs text-muted-foreground">
+                          {a.user_created_at
+                            ? new Date(a.user_created_at).toLocaleDateString()
+                            : "—"}
+                        </td>
+                        <td className="py-2 text-xs text-muted-foreground font-mono">
+                          {a.agreement_version}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
