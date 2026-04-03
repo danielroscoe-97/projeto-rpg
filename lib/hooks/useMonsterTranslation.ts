@@ -49,7 +49,7 @@ export interface UseMonsterTranslationReturn {
   toggle: () => void;
   setGlobalPtBR: () => void;
   getName: (fallback: string) => string;
-  getDesc: (section: keyof MonsterTranslations, name: string, fallback: string) => string;
+  getDesc: (section: "special_abilities" | "actions" | "reactions" | "legendary_actions", name: string, fallback: string) => string;
 }
 
 export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn {
