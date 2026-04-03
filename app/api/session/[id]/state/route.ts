@@ -38,10 +38,10 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
     return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
-  // Fetch dm_plan from sessions table (Mesa model)
+  // Fetch dm_plan + dm_last_seen_at from sessions table
   const { data: sessionRow } = await serviceClient
     .from("sessions")
-    .select("dm_plan")
+    .select("dm_plan, dm_last_seen_at")
     .eq("id", sessionId)
     .single();
 
@@ -69,7 +69,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
   }
 
   if (!encounter) {
-    return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null, token_owner: tokenOwner } });
+    return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null, dm_last_seen_at: sessionRow?.dm_last_seen_at ?? null, token_owner: tokenOwner } });
   }
 
   const { data: combatants } = await serviceClient
@@ -89,6 +89,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
       encounter,
       combatants: playerCombatants,
       dm_plan: sessionRow?.dm_plan ?? null,
+      dm_last_seen_at: sessionRow?.dm_last_seen_at ?? null,
       token_owner: tokenOwner,
     },
   });

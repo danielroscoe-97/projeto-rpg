@@ -8,9 +8,15 @@ export interface QueuedAction {
   sessionId: string;
   event: RealtimeEvent;
   timestamp: number;
+  /** Idempotency key — prevents duplicate replay of the same logical action */
+  idempotencyKey?: string;
 }
 
 export type SyncStatus = "online" | "offline" | "syncing" | "error";
+
+// ── Constants ──────────────────────────────────────────────────────────────────
+/** Max queued actions before oldest are evicted (prevents unbounded storage growth) */
+const MAX_QUEUE_SIZE = 500;
 
 // ── IndexedDB for queue persistence ──────────────────────────────────────────
 
@@ -38,18 +44,63 @@ function getDb(): Promise<IDBPDatabase> {
 let _memoryQueue: QueuedAction[] = [];
 let _idCounter = 0;
 
+/** Generate an idempotency key for an event — same logical action produces same key.
+ *  Uses event type + target ID + relevant value to identify duplicates. */
+function generateIdempotencyKey(event: RealtimeEvent): string {
+  const base = event.type;
+  if ("combatant_id" in event) {
+    const cid = (event as { combatant_id: string }).combatant_id;
+    // For HP updates, include the HP value so sequential HP changes are distinct
+    if (event.type === "combat:hp_update") {
+      return `${base}:${cid}:${(event as { current_hp: number }).current_hp}`;
+    }
+    // For condition changes, include the conditions array to distinguish toggles
+    if (event.type === "combat:condition_change" && "conditions" in event) {
+      const conditions = (event as { conditions: string[] }).conditions;
+      return `${base}:${cid}:${JSON.stringify(conditions)}`;
+    }
+    return `${base}:${cid}`;
+  }
+  if (event.type === "combat:turn_advance") {
+    return `${base}:${(event as { current_turn_index: number }).current_turn_index}:${(event as { round_number: number }).round_number}`;
+  }
+  if (event.type === "session:state_sync") {
+    return `${base}:${(event as { round_number: number }).round_number}:${(event as { current_turn_index: number }).current_turn_index}`;
+  }
+  return `${base}:${Date.now()}`;
+}
+
 export async function enqueueAction(
   sessionId: string,
   event: RealtimeEvent
 ): Promise<void> {
+  const idempotencyKey = generateIdempotencyKey(event);
+
+  // Dedup: skip if an action with the same idempotency key already exists
+  const existing = _memoryQueue.find(
+    (a) => a.sessionId === sessionId && a.idempotencyKey === idempotencyKey
+  );
+  if (existing) return;
+
   const action: QueuedAction = {
     id: `${Date.now()}-${++_idCounter}`,
     sessionId,
     event,
     timestamp: Date.now(),
+    idempotencyKey,
   };
 
   _memoryQueue.push(action);
+
+  // Cap: evict oldest actions if queue exceeds max size
+  if (_memoryQueue.length > MAX_QUEUE_SIZE) {
+    const evicted = _memoryQueue.splice(0, _memoryQueue.length - MAX_QUEUE_SIZE);
+    // Best-effort: also remove evicted from IndexedDB
+    try {
+      const db = await getDb();
+      await Promise.all(evicted.map((a) => db.delete(STORE_NAME, a.id)));
+    } catch { /* best-effort */ }
+  }
 
   // Persist to IndexedDB (survives refresh)
   try {
@@ -136,7 +187,19 @@ export async function replayQueue(
   // Replay in chronological order
   const sorted = actions.sort((a, b) => a.timestamp - b.timestamp);
 
+  // Dedup during replay: track seen idempotency keys to skip duplicates
+  // (can happen if IndexedDB and memory queue had overlapping entries)
+  const seenKeys = new Set<string>();
+
   for (const action of sorted) {
+    // Skip duplicates by idempotency key
+    if (action.idempotencyKey && seenKeys.has(action.idempotencyKey)) {
+      await removeAction(action.id);
+      result.succeeded++;
+      continue;
+    }
+    if (action.idempotencyKey) seenKeys.add(action.idempotencyKey);
+
     try {
       await broadcastFn(action.sessionId, action.event);
       await removeAction(action.id);

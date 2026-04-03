@@ -2,91 +2,66 @@ import { createClient } from "./client";
 import type { Combatant } from "@/lib/types/combat";
 
 /**
- * Full state reconciliation — pushes the entire DM Zustand state to Supabase.
- * Used when reconnecting after an offline period to ensure DB matches DM's UI.
+ * Full state reconciliation — pushes the entire DM Zustand state to Supabase
+ * via an atomic RPC (single transaction).
  *
- * Strategy:
- * 1. Upsert all combatants from Zustand (covers HP/condition/defeated changes)
- * 2. Delete combatants removed during offline (present in DB but not in Zustand)
+ * Merge modes:
+ * - "overwrite": DM state wins entirely (used for normal reconnect)
+ * - "merge_newer": Smart merge — keeps player HP from DB for is_player combatants
+ *   (used when DM was offline and players may have self-healed via C.13)
+ *
+ * The RPC handles all 3 steps atomically:
+ * 1. Upsert all combatants from Zustand
+ * 2. Delete combatants removed during offline
  * 3. Update encounter turn/round state
- *
- * Note: Steps 1-3 are not atomic (Supabase doesn't support client-side multi-table
- * transactions). Upsert is idempotent, so retries are safe.
  */
 export async function reconcileFullState(
   encounterId: string,
   combatants: Combatant[],
   roundNumber: number,
   currentTurnIndex: number,
-  isActive: boolean
+  isActive: boolean,
+  mergeMode: "overwrite" | "merge_newer" = "merge_newer"
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
 
   try {
-    // 1. Bulk upsert all combatants — covers every possible field change
-    if (combatants.length > 0) {
-      const rows = combatants.map((c) => ({
-        id: c.id,
-        encounter_id: encounterId,
-        name: c.name,
-        current_hp: c.current_hp,
-        max_hp: c.max_hp,
-        temp_hp: c.temp_hp,
-        ac: c.ac,
-        spell_save_dc: c.spell_save_dc,
-        initiative: c.initiative,
-        initiative_order: c.initiative_order,
-        conditions: c.conditions,
-        is_defeated: c.is_defeated,
-        is_player: c.is_player,
-        is_hidden: c.is_hidden,
-        monster_id: c.monster_id,
-        display_name: c.display_name ?? null,
-        monster_group_id: c.monster_group_id ?? null,
-        group_order: c.group_order ?? null,
-        dm_notes: c.dm_notes ?? "",
-        player_notes: c.player_notes ?? "",
-        player_character_id: c.player_character_id ?? null,
-        ruleset_version: c.ruleset_version,
-      }));
+    const rows = combatants.map((c) => ({
+      id: c.id,
+      encounter_id: encounterId,
+      name: c.name,
+      current_hp: c.current_hp,
+      max_hp: c.max_hp,
+      temp_hp: c.temp_hp,
+      ac: c.ac,
+      spell_save_dc: c.spell_save_dc,
+      initiative: c.initiative,
+      initiative_order: c.initiative_order,
+      conditions: c.conditions,
+      is_defeated: c.is_defeated,
+      is_player: c.is_player,
+      is_hidden: c.is_hidden,
+      monster_id: c.monster_id,
+      display_name: c.display_name ?? null,
+      monster_group_id: c.monster_group_id ?? null,
+      group_order: c.group_order ?? null,
+      dm_notes: c.dm_notes ?? "",
+      player_notes: c.player_notes ?? "",
+      player_character_id: c.player_character_id ?? null,
+      ruleset_version: c.ruleset_version,
+    }));
 
-      const { error: upsertError } = await supabase
-        .from("combatants")
-        .upsert(rows, { onConflict: "id" });
+    const { error } = await supabase.rpc("reconcile_combat_state", {
+      p_encounter_id: encounterId,
+      p_combatants: rows,
+      p_round_number: roundNumber,
+      p_current_turn_index: currentTurnIndex,
+      p_is_active: isActive,
+      p_merge_mode: mergeMode,
+    });
 
-      if (upsertError) {
-        return { success: false, error: upsertError.message };
-      }
-    }
-
-    // 2. Delete combatants removed during offline (in DB but not in Zustand)
-    const localIds = combatants.map((c) => c.id);
-    if (localIds.length > 0) {
-      // Delete any DB combatants for this encounter that aren't in the local state
-      const { error: deleteError } = await supabase
-        .from("combatants")
-        .delete()
-        .eq("encounter_id", encounterId)
-        .not("id", "in", `(${localIds.join(",")})`);
-
-      if (deleteError) {
-        // Non-fatal: upsert succeeded, deletions failed. Log but don't fail overall.
-        console.warn("[combat-sync] Failed to clean up removed combatants:", deleteError.message);
-      }
-    }
-
-    // 3. Update encounter state (turn, round, active)
-    const { error: encounterError } = await supabase
-      .from("encounters")
-      .update({
-        current_turn_index: currentTurnIndex,
-        round_number: roundNumber,
-        is_active: isActive,
-      })
-      .eq("id", encounterId);
-
-    if (encounterError) {
-      return { success: false, error: encounterError.message };
+    if (error) {
+      return { success: false, error: error.message };
     }
 
     return { success: true };

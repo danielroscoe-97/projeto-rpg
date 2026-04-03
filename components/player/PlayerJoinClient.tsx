@@ -173,6 +173,8 @@ export function PlayerJoinClient({
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTurnBroadcastRef = useRef<number>(0);
+  // Broadcast sequence tracking — discard out-of-order events for critical state (turn advance)
+  const lastSeqRef = useRef<number>(0);
   // HP delta visual feedback state
   const [hpDelta, setHpDelta] = useState<{ combatantId: string; delta: number; type: "damage" | "heal" | "temp"; timestamp: number } | null>(null);
   const hpDeltaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -214,6 +216,9 @@ export function PlayerJoinClient({
   // Resilient reconnection state
   const [reconnectingAs, setReconnectingAs] = useState<string | null>(null);
   const [sessionRevoked, setSessionRevoked] = useState(false);
+  // DM presence — tracks whether the DM has heartbeated recently (< 45s)
+  const [dmOffline, setDmOffline] = useState(false);
+  const dmLastSeenRef = useRef<number>(Date.now());
   const hiddenAtRef = useRef<number | null>(null);
   const heartbeatRef = useRef<(() => Promise<void>) | null>(null);
   // F-41: Spell slots state — local tracking with debounced save to player_characters
@@ -793,10 +798,18 @@ export function PlayerJoinClient({
 
       channel
         .on("broadcast", { event: "session:state_sync" }, ({ payload }) => {
+          // state_sync is a full snapshot — reset sequence counter to handle DM page refresh
+          // (DM's _broadcastSeq resets to 0 on refresh; this prevents stale high-water mark)
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0) lastSeqRef.current = seq;
+
           if (payload.combatants) updateCombatants(payload.combatants);
           if (payload.round_number !== undefined) setRound(payload.round_number);
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
           setNextCombatantId(null);
+          // DM sent a broadcast — they're clearly alive
+          dmLastSeenRef.current = Date.now();
+          setDmOffline(false);
           // state_sync means combat is active — update state to exit lobby
           setActive(true);
           if (payload.encounter_id) setCurrentEncounterId(payload.encounter_id);
@@ -822,7 +835,14 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
+          // Discard out-of-order turn advances using broadcast sequence number
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
+
           lastTurnBroadcastRef.current = Date.now();
+          dmLastSeenRef.current = Date.now();
+          setDmOffline(false);
           if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
           if (payload.round_number !== undefined) setRound(payload.round_number);
           setNextCombatantId(payload.next_combatant_id ?? null);
@@ -1006,9 +1026,14 @@ export function PlayerJoinClient({
             // Register the player in DB now that DM accepted
             if (lateJoinDataRef.current) {
               registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current)
-                .then(() => {
+                .then(async () => {
                   setIsRegistered(true);
                   setRegisteredName(lateJoinDataRef.current?.name);
+                  // Fetch full state to catch any events (turn_advance, hp_update) that arrived
+                  // during the registration DB write — reconciles any missed state
+                  if (encounterIdRef.current) {
+                    try { await fetchFullState(encounterIdRef.current); } catch { /* best-effort */ }
+                  }
                 })
                 .catch((err) => {
                   // A.4 fix: reset guards so player can retry — DB failure should not lock them out permanently
@@ -1287,6 +1312,38 @@ export function PlayerJoinClient({
       heartbeatRef.current = null;
     };
   }, [isRegistered, active, effectiveTokenId]);
+
+  // DM stale detection — checks dm_last_seen_at via polling every 15s.
+  // If DM hasn't heartbeated for >45s, shows "DM offline" indicator.
+  useEffect(() => {
+    if (!active || !sessionId) return;
+
+    const checkDmPresence = async () => {
+      if (document.visibilityState === "hidden") return;
+      try {
+        const res = await fetch(`/api/session/${sessionId}/state`);
+        if (!res.ok) return;
+        const { data } = await res.json();
+        if (data?.dm_last_seen_at) {
+          const lastSeen = new Date(data.dm_last_seen_at).getTime();
+          dmLastSeenRef.current = lastSeen;
+          // DM is considered offline if no heartbeat for 45s (3 missed beats)
+          setDmOffline(Date.now() - lastSeen > 45_000);
+        } else {
+          // dm_last_seen_at is null — DM explicitly went offline (pagehide)
+          setDmOffline(true);
+        }
+      } catch {
+        // Can't check — don't change state
+      }
+    };
+
+    const id = setInterval(checkDmPresence, 15_000);
+    return () => clearInterval(id);
+  }, [active, sessionId]);
+
+  // Reset DM offline indicator when we receive any state_sync (DM is clearly broadcasting)
+  // This is handled inside the fetchFullState callback — any successful response means DM is alive
 
   // Bidirectional visibility handler — hidden: broadcast idle, visible: reconnect + validate
   useEffect(() => {
@@ -1933,6 +1990,14 @@ export function PlayerJoinClient({
           </div>
           <div className="flex items-center gap-2">
             <SyncIndicator status={connectionStatus} />
+            {dmOffline && active && (
+              <span
+                className="px-2 py-1 bg-red-900/60 text-red-300 text-[10px] font-semibold rounded-full border border-red-700/50 animate-pulse"
+                title="DM hasn't responded for over 45 seconds"
+              >
+                DM Offline
+              </span>
+            )}
             {campaignId && (
               <button
                 type="button"

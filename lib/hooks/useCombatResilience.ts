@@ -4,11 +4,13 @@ import { useEffect, useRef, useCallback } from "react";
 import { useCombatStore } from "@/lib/stores/combat-store";
 import { saveCombatBackup } from "@/lib/stores/combat-persist";
 import { reconcileFullState } from "@/lib/supabase/combat-sync";
-import { replayOfflineQueue } from "@/lib/realtime/broadcast";
+import { replayOfflineQueue, broadcastEvent } from "@/lib/realtime/broadcast";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 3000, 8000]; // exponential-ish backoff
+const DM_HEARTBEAT_INTERVAL = 15_000; // 15s — players detect stale after 2 missed beats (~45s)
 
 /**
  * Combat resilience hook — handles:
@@ -16,6 +18,7 @@ const RETRY_DELAYS = [1000, 3000, 8000]; // exponential-ish backoff
  * 2. Online/offline detection: track connection status
  * 3. Reconnection sync: when going offline→online, push full Zustand state to DB
  * 4. Retry with backoff: if reconciliation fails, retry up to 3 times
+ * 5. DM heartbeat: updates dm_last_seen_at every 15s + broadcasts dm:heartbeat
  *
  * Race condition mitigation: reads Zustand state at the moment of the DB write
  * (not when the sync was scheduled), so the latest DM state is always pushed.
@@ -25,7 +28,9 @@ export function useCombatResilience() {
   const isSyncingRef = useRef(false);
   const retryCountRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const heartbeatRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const mountedRef = useRef(true);
+  const dmUserIdRef = useRef<string | null>(null);
 
   // Force-save current state to localStorage (called on unload + offline)
   const flushToLocalStorage = useCallback(() => {
@@ -115,10 +120,34 @@ export function useCombatResilience() {
     }
   }, []);
 
+  // DM heartbeat — updates dm_last_seen_at in DB (lightweight, no full state broadcast)
+  const dmHeartbeat = useCallback(async () => {
+    if (document.visibilityState === "hidden") return; // Don't heartbeat when hidden
+    const state = useCombatStore.getState();
+    if (!state.session_id || !state.is_active) return;
+
+    try {
+      const supabase = createClient();
+
+      // Cache DM user ID for sendBeacon on pagehide
+      if (!dmUserIdRef.current) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.id) dmUserIdRef.current = user.id;
+      }
+
+      await supabase
+        .from("sessions")
+        .update({ dm_last_seen_at: new Date().toISOString() })
+        .eq("id", state.session_id);
+    } catch {
+      // Heartbeat is best-effort — next one will update
+    }
+  }, []);
+
   useEffect(() => {
     mountedRef.current = true;
 
-    // --- 1. beforeunload / pagehide: flush to localStorage ---
+    // --- 1. beforeunload / pagehide: flush to localStorage + DM disconnect ---
     const handleBeforeUnload = () => {
       flushToLocalStorage();
     };
@@ -126,6 +155,14 @@ export function useCombatResilience() {
     // pagehide is more reliable on mobile (Safari doesn't always fire beforeunload)
     const handlePageHide = () => {
       flushToLocalStorage();
+      // Best-effort: clear dm_last_seen_at so players know DM is gone
+      const state = useCombatStore.getState();
+      if (state.session_id && navigator.sendBeacon && dmUserIdRef.current) {
+        navigator.sendBeacon(
+          `/api/session/${state.session_id}/dm-heartbeat`,
+          new Blob([JSON.stringify({ offline: true, dm_user_id: dmUserIdRef.current })], { type: "application/json" })
+        );
+      }
     };
 
     // --- 2. Online/offline detection ---
@@ -177,14 +214,19 @@ export function useCombatResilience() {
       wasOfflineRef.current = true;
     }
 
+    // --- 5. DM heartbeat: update dm_last_seen_at every 15s ---
+    dmHeartbeat(); // Immediate on mount
+    heartbeatRef.current = setInterval(dmHeartbeat, DM_HEARTBEAT_INTERVAL);
+
     return () => {
       mountedRef.current = false;
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (heartbeatRef.current) clearInterval(heartbeatRef.current);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("online", handleOnline);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [flushToLocalStorage, syncToDatabase]);
+  }, [flushToLocalStorage, syncToDatabase, dmHeartbeat]);
 }

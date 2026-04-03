@@ -25,6 +25,11 @@ import { broadcastViaServer } from "@/lib/realtime/broadcast-server";
 let channel: RealtimeChannel | null = null;
 let currentSessionId: string | null = null;
 
+/** Monotonically increasing sequence number for broadcast ordering.
+ *  Players can use this to detect and discard stale/out-of-order events. */
+let _broadcastSeq = 0;
+export function getBroadcastSeq(): number { return _broadcastSeq; }
+
 /** Get or create the DM broadcast channel for a session.
  *  Recreates the channel when the session ID changes (guards stale singleton).
  *  Also recreates when the existing channel was externally removed/closed
@@ -346,12 +351,16 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   const safeEvent = sanitizePayload(event);
   if (!safeEvent || !validateEvent(safeEvent)) return;
 
+  // Inject sequence number for ordering — players can discard stale events
+  const seq = ++_broadcastSeq;
+  const payloadWithSeq = { ...safeEvent, _seq: seq };
+
   const doSend = () => {
     try {
       ch.send({
         type: "broadcast",
         event: safeEvent.type,
-        payload: safeEvent,
+        payload: payloadWithSeq,
       });
     } catch {
       setSyncStatus("offline");
