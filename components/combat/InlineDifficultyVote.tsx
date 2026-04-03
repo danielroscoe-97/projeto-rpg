@@ -12,6 +12,8 @@ interface InlineDifficultyVoteProps {
   existingVote?: number | null;
   /** Existing aggregate avg for the encounter */
   currentAvg?: number | null;
+  /** Callback after successful vote — parent updates its state */
+  onVoted?: (vote: number, newAvg: number) => void;
   translations: {
     rateThis: string;
     yourVote: string;
@@ -20,10 +22,18 @@ interface InlineDifficultyVoteProps {
   };
 }
 
+/** Find the DIFFICULTY_OPTIONS entry closest to the given avg */
+function closestOption(avg: number) {
+  return DIFFICULTY_OPTIONS.reduce((prev, curr) =>
+    Math.abs(curr.value - avg) < Math.abs(prev.value - avg) ? curr : prev
+  );
+}
+
 export function InlineDifficultyVote({
   encounterId,
   existingVote,
   currentAvg,
+  onVoted,
   translations: t,
 }: InlineDifficultyVoteProps) {
   const [expanded, setExpanded] = useState(false);
@@ -34,22 +44,21 @@ export function InlineDifficultyVote({
 
   const hasVoted = myVote !== null;
 
-  // Show compact result if already voted
+  // Show compact result if already voted — icon closest to GROUP avg (H2/D4)
   if (hasVoted && !expanded) {
-    const opt = DIFFICULTY_OPTIONS.find((o) => o.value === myVote);
-    if (opt) {
-      const Icon = opt.icon;
-      return (
-        <div className="flex items-center gap-1.5">
-          <Icon className={`w-3.5 h-3.5 ${opt.color}`} />
-          {avg != null && (
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {avg.toFixed(1)}
-            </span>
-          )}
-        </div>
-      );
-    }
+    const displayAvg = avg ?? myVote;
+    const opt = closestOption(displayAvg);
+    const Icon = opt.icon;
+    return (
+      <div className="flex items-center gap-1.5">
+        <Icon className={`w-3.5 h-3.5 ${opt.color}`} />
+        {avg != null && (
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {avg.toFixed(1)}
+          </span>
+        )}
+      </div>
+    );
   }
 
   // Compact CTA button
@@ -81,6 +90,7 @@ export function InlineDifficultyVote({
                 setMyVote(opt.value);
                 setAvg(result.avg);
                 setExpanded(false);
+                onVoted?.(opt.value, result.avg);
               } catch {
                 setError(true);
               } finally {

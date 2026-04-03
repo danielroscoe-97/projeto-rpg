@@ -199,6 +199,7 @@ export function PlayerCampaignView({
 
   // ── Combat history pagination ─────────────────────────────────────────────
   const [combatHistory, setCombatHistory] = useState<CombatHistoryEntry[]>(initialHistory);
+  const [votes, setVotes] = useState<Record<string, number>>(myVotes);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(initialHistory.length >= PAGE_SIZE);
 
@@ -217,7 +218,7 @@ export function PlayerCampaignView({
       const sessionIds = sessions.map((s) => s.id);
       const { data: encounters } = await supabase
         .from("encounters")
-        .select("id, name, round_number")
+        .select("id, name, round_number, difficulty_rating, updated_at")
         .in("session_id", sessionIds)
         .eq("is_active", false)
         .order("updated_at", { ascending: false })
@@ -227,7 +228,27 @@ export function PlayerCampaignView({
         id: e.id,
         name: e.name ?? "Encounter",
         round_number: e.round_number ?? 0,
+        difficulty_rating: e.difficulty_rating ?? null,
+        updated_at: e.updated_at,
       }));
+
+      // F-42: Fetch player's votes for the new encounters
+      if (newEntries.length > 0) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: voteRows } = await supabase
+            .from("encounter_votes")
+            .select("encounter_id, vote")
+            .in("encounter_id", newEntries.map((e) => e.id))
+            .eq("user_id", user.id);
+          if (voteRows) {
+            const newVotes: Record<string, number> = {};
+            for (const row of voteRows) newVotes[row.encounter_id] = row.vote;
+            setVotes((prev) => ({ ...prev, ...newVotes }));
+          }
+        }
+      }
+
       setCombatHistory((prev) => [...prev, ...newEntries]);
       setHasMore(newEntries.length >= PAGE_SIZE);
     } finally {
@@ -393,7 +414,7 @@ export function PlayerCampaignView({
         {combatHistory.length > 0 ? (
           <div className="space-y-2">
             {combatHistory.map((enc) => {
-              const existingVote = myVotes[enc.id] ?? null;
+              const existingVote = votes[enc.id] ?? null;
               const withinTtl = enc.updated_at
                 ? Date.now() - new Date(enc.updated_at).getTime() < VOTE_TTL_MS
                 : false;
@@ -411,6 +432,12 @@ export function PlayerCampaignView({
                         encounterId={enc.id}
                         existingVote={existingVote}
                         currentAvg={enc.difficulty_rating}
+                        onVoted={(vote, newAvg) => {
+                          setVotes((prev) => ({ ...prev, [enc.id]: vote }));
+                          setCombatHistory((prev) =>
+                            prev.map((e) => e.id === enc.id ? { ...e, difficulty_rating: newAvg } : e)
+                          );
+                        }}
                         translations={{
                           rateThis: t.rateThis!,
                           yourVote: t.yourVote ?? "",

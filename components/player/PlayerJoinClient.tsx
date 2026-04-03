@@ -446,7 +446,7 @@ export function PlayerJoinClient({
     if (spellSlotSaveTimerRef.current) { clearTimeout(spellSlotSaveTimerRef.current); spellSlotSaveTimerRef.current = null; }
   }, []);
 
-  // C.15: Send poll vote to DM via broadcast
+  // C.15: Send poll vote to DM via broadcast + persist to encounter_votes for auth players (F-42)
   const handlePollVote = useCallback((vote: 1 | 2 | 3 | 4 | 5) => {
     const ch = channelRef.current;
     if (!ch || connectionStatus !== "connected") return;
@@ -455,7 +455,25 @@ export function PlayerJoinClient({
       event: "player:poll_vote",
       payload: { player_name: registeredName, vote },
     });
-  }, [connectionStatus, registeredName]);
+    // F-42: Auth players persist their vote individually so late-vote RPC has correct data
+    const eid = encounterIdRef.current;
+    if (campaignId && eid) {
+      const supabase = createClient();
+      supabase.rpc("cast_late_vote", { p_encounter_id: eid, p_vote: vote }).then(() => {
+        // Non-fatal — realtime aggregate is the primary path, this is best-effort
+      });
+    }
+  }, [connectionStatus, registeredName, campaignId]);
+
+  // M3: Safety timeout — if session:ended never arrives after 30s, force session ended state
+  useEffect(() => {
+    if (!awaitingSessionEnd || sessionEnded) return;
+    const timer = setTimeout(() => {
+      clearPlayerIdentity(sessionId);
+      setSessionEnded(true);
+    }, 30_000);
+    return () => clearTimeout(timer);
+  }, [awaitingSessionEnd, sessionEnded, sessionId]);
 
   // A.4: Reset late-join state for retry without page reload
   const resetLateJoinState = useCallback(() => {
@@ -1092,12 +1110,12 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "session:poll_results" }, ({ payload }) => {
           // C.15-B: DM broadcast aggregate poll results — show to player in awaiting screen
-          if (payload?.avg != null) {
-            setPollResultsData({
-              avg: payload.avg as number,
-              distribution: (payload.distribution as Record<number, number>) ?? {},
-              total_votes: (payload.total_votes as number) ?? 0,
-            });
+          // Validate payload shape at runtime — broadcast payloads are untyped
+          const avg = typeof payload?.avg === "number" ? payload.avg : null;
+          const dist = payload?.distribution && typeof payload.distribution === "object" ? payload.distribution as Record<number, number> : {};
+          const total = typeof payload?.total_votes === "number" ? payload.total_votes : 0;
+          if (avg != null && avg > 0) {
+            setPollResultsData({ avg, distribution: dist, total_votes: total });
           }
         })
         .on("broadcast", { event: "session:ended" }, () => {
@@ -1663,7 +1681,7 @@ export function PlayerJoinClient({
             </div>
 
             <p className="text-center text-sm text-muted-foreground">
-              {total_votes} {t("poll_votes_received", { count: total_votes })}
+              {total_votes} {t("poll_votes_received")}
             </p>
 
             <div className="space-y-2">

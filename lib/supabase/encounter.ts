@@ -204,14 +204,15 @@ export async function castLateVote(
 }
 
 /** Fetch the current user's votes for a list of encounter IDs (server-side).
- *  Requires a server supabase client (with auth context from cookies).
- *  Returns a Map<encounter_id, vote> — filtered by auth.uid() via RLS + explicit filter. */
+ *  Requires a supabase client with auth context (server client with cookies).
+ *  Returns a Map<encounter_id, vote> — filtered by user_id explicitly. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getMyEncounterVotes(
-  supabase: { from: (table: string) => ReturnType<ReturnType<typeof createClient>["from"]> },
+  supabase: any,
   encounterIds: string[]
 ): Promise<Map<string, number>> {
   if (encounterIds.length === 0) return new Map();
-  const { data: { user } } = await (supabase as ReturnType<typeof createClient>).auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Map();
   const { data } = await supabase
     .from("encounter_votes")
