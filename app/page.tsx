@@ -8,6 +8,8 @@ import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { LandingPageTracker } from "@/components/analytics/LandingPageTracker";
 import { LpPricingSection } from "@/components/marketing/LpPricingSection";
+import { LandingLoggedInNav } from "@/components/marketing/LandingLoggedInNav";
+import { createClient } from "@/lib/supabase/server";
 
 import { Button } from "@/components/ui/button";
 import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
@@ -125,7 +127,7 @@ export const metadata = {
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
-function HeroSection() {
+function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <section data-section="hero" className="relative min-h-dvh flex items-center justify-center px-6 pt-[72px] overflow-hidden">
       {/* Background photo */}
@@ -197,22 +199,33 @@ function HeroSection() {
           </Link>
 
           {/* Secondary row */}
-          <div className="flex items-center gap-3 w-full">
+          {isLoggedIn ? (
             <Link
-              href="/auth/sign-up"
-              className="group relative overflow-hidden flex-1 px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5 btn-shimmer"
+              href="/app/dashboard"
+              className="group relative overflow-hidden w-full px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5 btn-shimmer"
             >
               <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-              Salvar minhas campanhas
+              Ir para o Dashboard
+              <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
             </Link>
-            <Link
-              href="/auth/login"
-              className="group px-6 py-3 bg-white/[0.04] text-muted-foreground font-medium text-sm rounded-lg border border-white/[0.07] hover:bg-white/[0.08] hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5"
-            >
-              <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
-              Já tenho conta
-            </Link>
-          </div>
+          ) : (
+            <div className="flex items-center gap-3 w-full">
+              <Link
+                href="/auth/sign-up"
+                className="group relative overflow-hidden flex-1 px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5 btn-shimmer"
+              >
+                <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
+                Salvar minhas campanhas
+              </Link>
+              <Link
+                href="/auth/login"
+                className="group px-6 py-3 bg-white/[0.04] text-muted-foreground font-medium text-sm rounded-lg border border-white/[0.07] hover:bg-white/[0.08] hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5"
+              >
+                <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
+                Já tenho conta
+              </Link>
+            </div>
+          )}
 
         </div>
 
@@ -923,7 +936,26 @@ function FinalCtaSection() {
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+
+  let displayName = "";
+  if (claims?.sub) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("display_name")
+      .eq("id", claims.sub)
+      .maybeSingle();
+    displayName =
+      (userData?.display_name as string | null) ??
+      claims.email?.split("@")[0] ??
+      "Usuário";
+  }
+
+  const isLoggedIn = !!claims;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar
@@ -936,26 +968,30 @@ export default function LandingPage() {
           { href: "#precos", label: "Preços" },
         ]}
         rightSlot={
-          <>
-            <Link
-              href="/auth/login"
-              className="group text-muted-foreground hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5 text-sm"
-            >
-              <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
-              Login
-            </Link>
-            <Link
-              href="/auth/sign-up"
-              className="group bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center gap-1.5 text-sm hover:shadow-gold-glow hover:-translate-y-[1px] active:translate-y-0 transition-all duration-[200ms]"
-            >
-              <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-              Começar Grátis
-            </Link>
-          </>
+          isLoggedIn ? (
+            <LandingLoggedInNav displayName={displayName} />
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="group text-muted-foreground hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5 text-sm"
+              >
+                <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
+                Login
+              </Link>
+              <Link
+                href="/auth/sign-up"
+                className="group bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center gap-1.5 text-sm hover:shadow-gold-glow hover:-translate-y-[1px] active:translate-y-0 transition-all duration-[200ms]"
+              >
+                <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
+                Começar Grátis
+              </Link>
+            </>
+          )
         }
       />
 
-      <HeroSection />
+      <HeroSection isLoggedIn={isLoggedIn} />
       <SectionDivider />
       <FeaturesSection />
       <SectionDivider />
