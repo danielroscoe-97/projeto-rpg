@@ -1,8 +1,41 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Dice5 } from "lucide-react";
 import { roll } from "@/lib/dice/roll";
+
+/** Minimal d20 icon — pentagon gem shape with "20" face */
+function D20Icon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* outer d20 silhouette */}
+      <path d="M12 2 L20 7 L20 17 L12 22 L4 17 L4 7 Z" />
+      {/* top triangular face */}
+      <path d="M4 7 L12 11 L20 7" strokeWidth="1" strokeOpacity="0.5" />
+      {/* "20" label centred in bottom face */}
+      <text
+        x="12"
+        y="18.5"
+        textAnchor="middle"
+        fontSize="5.5"
+        fontWeight="700"
+        fill="currentColor"
+        stroke="none"
+        fontFamily="monospace"
+      >
+        20
+      </text>
+    </svg>
+  );
+}
 import {
   Popover,
   PopoverTrigger,
@@ -93,7 +126,7 @@ export function DiceRoller() {
           title={t("roller_title")}
           data-testid="dice-roller-btn"
         >
-          <Dice5 className="w-4 h-4" aria-hidden="true" />
+          <D20Icon className="w-5 h-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-3" align="end">
@@ -121,17 +154,20 @@ export function DiceRoller() {
                     </span>
                   )}
                 </button>
-                {/* Decrement button — only visible when count > 0 */}
-                {count > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => decrement(sides)}
-                    className="text-muted-foreground hover:text-foreground text-xs leading-none"
-                    aria-label={`Remove d${sides}`}
-                  >
-                    −
-                  </button>
-                )}
+                {/* Decrement button — always visible; disabled + faded when count=0 */}
+                <button
+                  type="button"
+                  onClick={() => decrement(sides)}
+                  disabled={count === 0}
+                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-sm leading-none transition-all select-none
+                    ${count > 0
+                      ? "border-muted-foreground/50 text-muted-foreground hover:border-foreground hover:text-foreground active:scale-90"
+                      : "border-muted-foreground/20 text-muted-foreground/25 cursor-not-allowed"
+                    }`}
+                  aria-label={`Remove d${sides}`}
+                >
+                  −
+                </button>
               </div>
             );
           })}

@@ -20,6 +20,7 @@ import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
+import { DiceRoller } from "@/components/dice/DiceRoller";
 
 export interface CombatLogEntry {
   text: string;
@@ -498,6 +499,8 @@ export function PlayerInitiativeBoard({
                   )}
                 </div>
               )}
+              {/* Dice roller — accessible during the whole combat */}
+              <DiceRoller />
               {currentCombatant && (
                 <span className="shrink-0 text-xs font-mono text-muted-foreground/70 tabular-nums" aria-label={`Rodada ${roundNumber}`}>
                   R{roundNumber}
