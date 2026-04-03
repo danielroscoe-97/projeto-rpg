@@ -51,6 +51,10 @@ export interface SrdMonster extends SrdMonsterADayFields {
   actions?: MonsterAction[] | null;
   legendary_actions?: MonsterAction[] | null;
   reactions?: MonsterAction[] | null;
+  lair_actions?: MonsterAction[] | null;
+  lair_actions_intro?: string | null;
+  regional_effects?: MonsterAction[] | null;
+  regional_effects_intro?: string | null;
 }
 
 export interface SrdSpell {

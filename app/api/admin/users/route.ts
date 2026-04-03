@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { withRateLimit } from "@/lib/rate-limit";
+import { captureError } from "@/lib/errors/capture";
 
 async function verifyAdmin() {
   const supabase = await createClient();
@@ -34,7 +35,10 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(r
   }
 
   const { data: users, error } = await query;
-  if (error) return NextResponse.json({ error: "Query failed" }, { status: 500 });
+  if (error) {
+    captureError(error, { component: "AdminUsersAPI", action: "listUsers", category: "database" });
+    return NextResponse.json({ error: "Query failed" }, { status: 500 });
+  }
 
   const result = (users ?? []).map((u) => ({
     id: u.id,

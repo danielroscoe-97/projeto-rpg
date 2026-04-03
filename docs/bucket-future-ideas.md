@@ -2,8 +2,19 @@
 
 > Repositório centralizado de features adiadas. Tudo aqui foi avaliado e decidido como "não agora".
 > Consulte este arquivo antes de planejar sprints para evitar retrabalho.
-> Sprint plan ativo: [sprint-plan-2026-03-30.md](sprint-plan-2026-03-30.md)
+> Sprint plan ativo: [sprint-plan-player-hq-2026-04-03.md](sprint-plan-player-hq-2026-04-03.md)
 > PRD master: [prd-v2.md](prd-v2.md) | Epics master: [epics-and-sprints-spec.md](epics-and-sprints-spec.md)
+> Decisões sem PRD formal: [decisoes-implementadas-2026-04-03.md](decisoes-implementadas-2026-04-03.md)
+>
+> **Party Mode 2026-04-03 — Decisões:**
+> - F-05/F-06/F-07 → Absorvidos pelo PHQ Epic (Sprint 1-4)
+> - F-29 → JÁ IMPLEMENTADO (TurnNotificationOverlay + Web Push)
+> - B.21 → JÁ IMPLEMENTADO (PlayerInitiativeBoard grouping)
+> - B.11, B.12 → COMPLETADOS (CombatActionLog wired + StatsEditor LA override)
+> - F-35 → PROMOVIDO pra implementação pré-demo maio
+> - F-25, F-27 → PROMOVIDOS pra implementação pré-demo maio
+> - F-36 → MANTIDO no bucket (complexidade de character builder, fora de escopo)
+> - F-43 → NOVO EPIC: Combat Time Analytics — tracking de tempo por combatente + leaderboard temporal. Epic completo: `docs/epic-combat-time-analytics.md`
 
 ---
 
@@ -15,9 +26,9 @@
 | F-02 | XP tracking por combate | Party Mode 2026-03-30 | Registrar XP ganho em cada encontro |
 | F-03 | Distribuição automática de XP | Party Mode 2026-03-30 | Dividir entre jogadores participantes |
 | F-04 | Level up automático | Party Mode 2026-03-30 | Progressão de nível quando atinge threshold |
-| F-05 | Página "Meus Personagens" (F.1) | epic-campaign-dual-role.md Sprint 5 | Player vê todos seus PCs cross-campaign |
-| F-06 | Editar personagem (nome, classe, nível) (F.2) | epic-campaign-dual-role.md Sprint 5 | Edição pelo jogador |
-| F-07 | Avatar/token do personagem (F.3) | epic-campaign-dual-role.md Sprint 5 | Upload de avatar pelo jogador |
+| F-05 | ~~Página "Meus Personagens" (F.1)~~ | epic-campaign-dual-role.md Sprint 5 | ➡️ Absorvido pelo PHQ Epic (Sprint 1) |
+| F-06 | ~~Editar personagem (nome, classe, nível) (F.2)~~ | epic-campaign-dual-role.md Sprint 5 | ➡️ Absorvido pelo PHQ Epic (Sprint 1, PHQ-E2-F4) |
+| F-07 | ~~Avatar/token do personagem (F.3)~~ | epic-campaign-dual-role.md Sprint 5 | ➡️ Absorvido pelo PHQ Epic (futuro) |
 
 ## Combate & Visual
 
@@ -28,7 +39,8 @@
 | F-10 | Geração aleatória de cenários (Epic 7.2) | prd-v2.md V3+ Backlog | 20h estimado, AI + Visual |
 | F-11 | Efeitos cinematográficos visuais (Epic 7.3) | prd-v2.md V3+ Backlog | 15h estimado |
 | F-12 | Presets de cenário com música (Epic 7.4) | prd-v2.md V3+ Backlog | 10h estimado |
-| F-37 | Dice roller basico (inline, com historico) | Gap Analysis G-07, 2026-03-30 | Mesa presencial usa dados fisicos. Reavaliar se analytics mostrarem demanda. 5/9 concorrentes tem |
+| F-37 | ~~Dice roller basico (inline, com historico)~~ | Gap Analysis G-07, 2026-03-30 | ✅ DONE (dcb57d8) — Implementado Wave 3 — 2026-04-02 |
+| F-43 | Combat Time Analytics (tempo por combatente + Speedster/Slowpoke awards) | Party Mode 2026-04-03 | 🔧 EPIC CRIADO — `docs/epic-combat-time-analytics.md`. Feature diferenciadora, nenhum concorrente tem |
 
 ## Áudio Avançado
 
@@ -56,7 +68,7 @@
 | F-22 | Parcerias com influencers/lojas BR | Party Mode 2026-03-30 | Programa de afiliados, descontos, comunidade |
 | F-23 | Multi-system support — Pathfinder 2e (F8) | prd-v2.md Ideias Futuras | Suporte a outros sistemas além de D&D 5e |
 | F-24 | Public API para integrações (F9) | prd-v2.md Ideias Futuras | API aberta |
-| F-25 | Sistema de reportar bug (in-app) | Party Mode 2026-03-30 / MasterApp análise | MasterApp tem, bom pra feedback |
+| F-25 | ~~Sistema de reportar bug (in-app)~~ | Party Mode 2026-03-30 / MasterApp análise | ✅ DONE — BugReportDialog + migration 073 + Settings integration |
 
 ## Hardware
 
@@ -68,9 +80,9 @@
 
 | # | Item | Origem | Notas |
 |---|------|--------|-------|
-| F-27 | Companheiros — ver outros PCs da campanha (C.5) | epic-campaign-dual-role.md | 2h estimado |
+| F-27 | ~~Companheiros — ver outros PCs da campanha (C.5)~~ | epic-campaign-dual-role.md | ✅ DONE — PlayerCampaignView com avatares, badges "Você", HP bars |
 | F-28 | Histórico de combates visão jogador (C.6) | epic-campaign-dual-role.md | 3h estimado |
-| F-29 | Notificação "é sua vez" para player logado (E.3) | epic-campaign-dual-role.md | 3h estimado |
+| F-29 | ~~Notificação "é sua vez" para player logado (E.3)~~ | epic-campaign-dual-role.md | ✅ DONE — TurnNotificationOverlay + TurnPushNotification + haptic + Web Push |
 | F-30 | Presence de membros online na campanha (E.4) | epic-campaign-dual-role.md | 3h estimado |
 
 ## Compendium & Referência
@@ -84,18 +96,19 @@
 
 | # | Item | Origem | Notas |
 |---|------|--------|-------|
-| F-35 | Gerador de encontro aleatório por ambiente + espólio automático | Feedback André 2026-03-30 | Configurar ecossistema (floresta, dungeon, planície) + nível do grupo → gera encontro balanceado. Bônus: espólio automático ao encerrar combate com base nos participantes |
-| F-36 | Gerar PCs prontos por classe e nível | Feedback André 2026-03-30 | Buscar/gerar PCs pré-prontos por classe+nível (ex: "Barbarian lv 3"). Requer banco de PCs pré-gerados ou integração com gerador. Classes já existem em lib/data/classes.ts |
+| F-35 | ~~Gerador de encontro aleatório por ambiente~~ | Feedback André 2026-03-30 | ✅ DONE — EncounterGeneratorDialog + 13 ambientes + CR balancing + Guest parity. Espólio automático adiado (V3+) |
+| F-36 | Gerar PCs prontos por classe e nível | Feedback André 2026-03-30 | ❌ MANTIDO — complexidade de character builder (stats, features, spells por nível). Esforço real ~2-3 semanas, não 2-3 dias. Reavaliar V3+ |
 
 ## Social & Player Features (Beta Test #1 — 2026-04-02)
 
-| # | Item | Origem | Notas |
-|---|------|--------|-------|
-| F-38 | Chat privado dos players no combate (DM não vê) + post-its DM | Beta Test #1, 2026-04-02 | Requer auth. Players se comunicam sem DM ver; DM tem note-taking tipo post-its |
-| F-39 | Quest/objectives board compartilhado | Beta Test #1, 2026-04-02 | Visão customizável de quests, DM ou players anotam, grupo todo vê |
-| F-40 | Notas dos players durante combate | Beta Test #1, 2026-04-02 | Requer auth. Notas visíveis tanto pro DM quanto pro player. Anotações da sessão |
-| F-41 | Spell slots tracker (bolinhas marcáveis) | Beta Test #1, 2026-04-02 | Requer auth. Marcar spell slots gastos por nível durante combate |
-| F-42 | Spell rating — tier list de magias (1-5 estrelas) | Beta Test #1, 2026-04-02 | Requer auth. Players votam magias pra montar rankings/tier list |
+| # | Item | Origem | Status | Notas |
+|---|------|--------|--------|-------|
+| F-38 | Chat privado dos players no combate (DM não vê) + post-its DM | Beta Test #1, 2026-04-02 | ✅ DONE (dcb57d8) | Implementado Wave 3 — 2026-04-02 |
+| F-39 | Quest/objectives board compartilhado | Beta Test #1, 2026-04-02 | ✅ DONE (dcb57d8) | Implementado Wave 3 — 2026-04-02 |
+| F-40 | Notas dos players durante combate | Beta Test #1, 2026-04-02 | ✅ DONE (fbddc9d) | Implementado Wave 1 — 2026-04-02 |
+| F-41 | Spell slots tracker (bolinhas marcáveis) | Beta Test #1, 2026-04-02 | ✅ DONE (fd564b9) | Implementado Wave 3 — 2026-04-02 |
+| F-42 | Difficulty vote (enquete pós-combate) | Beta Test #1, 2026-04-02 | ✅ DONE (d15ed6e) | Implementado Wave 3 — fix de broadcast 2026-04-03 |
+| F-44 | Email invite via Novu (workflow campaign-invite) | Party Mode Audit 2026-04-03 | PENDENTE | TODO em `app/api/campaign/[id]/invites/route.ts:75`. Atualmente DM recebe link pra compartilhar manualmente |
 
 ## Tech Debt (Baixa prioridade)
 
@@ -106,5 +119,15 @@
 
 ---
 
-> **Última atualização:** 2026-04-02 (F-38 a F-42 adicionados — Social & Player features do Beta Test #1)
-> **Revisado por:** Dani_ + BMAD Party Mode
+## Combate — Parcialmente Implementados (Beta Backlog Trilha B)
+
+| # | Item | Origem | Status | Notas |
+|---|------|--------|--------|-------|
+| B.11 | ~~Log de danos separado~~ | Beta Test #1, Trilha B | ✅ DONE | CombatActionLog no DM + Player view + Guest. Tabs all/damage, filtro por playerId |
+| B.12 | ~~Legendary Actions counter~~ | Beta Test #1, Trilha B | ✅ DONE | Dots UI + auto-detect SRD + manual override StatsEditor + reset por rodada + Guest parity |
+| B.21 | Monster groups na player view | Beta Test #1, Trilha B | ✅ DONE | Grouping + expand/collapse + anti-metagaming no PlayerInitiativeBoard |
+
+---
+
+> **Última atualização:** 2026-04-03 (F-25/F-27/F-35 implementados, B.11/B.12/B.21/F-29 confirmados DONE, F-05/06/07 absorvidos PHQ, F-36 mantido, F-44 Novu invite adicionado)
+> **Revisado por:** Dani_ + BMAD Party Mode (John, Winston, Mary, Bob, Quinn, Sally, Amelia)

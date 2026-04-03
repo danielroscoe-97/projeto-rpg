@@ -35,6 +35,13 @@ interface CompanionInfo {
   max_hp: number;
 }
 
+interface CampaignMemberInfo {
+  user_id: string;
+  display_name: string | null;
+  character_name: string | null;
+  role: "dm" | "player";
+}
+
 interface ActiveSessionInfo {
   id: string;
   name: string;
@@ -59,6 +66,10 @@ interface PlayerCampaignViewProps {
   dmName: string | null;
   myCharacter: CharacterInfo | null;
   companions: CompanionInfo[];
+  /** Campaign members for the "See Other PCs" feature (F-27) */
+  campaignMembers?: CampaignMemberInfo[];
+  /** Current user ID to mark "You" badge */
+  currentUserId?: string;
   activeSession: ActiveSessionInfo | null;
   combatHistory: CombatHistoryEntry[];
   /** Map of encounter_id → player's vote (1-5), for encounters already voted */
@@ -76,6 +87,8 @@ interface PlayerCampaignViewProps {
     sessionCurrentTurn: string;
     combatRounds: string;
     noCompanions: string;
+    companionsEmpty: string;
+    youBadge: string;
     noCombatHistory: string;
     activeSession: string;
     noActiveSession: string;
@@ -159,6 +172,8 @@ export function PlayerCampaignView({
   dmName,
   myCharacter,
   companions: initialCompanions,
+  campaignMembers = [],
+  currentUserId,
   activeSession,
   combatHistory: initialHistory,
   myVotes = {},
@@ -365,20 +380,72 @@ export function PlayerCampaignView({
         )}
       </CollapsibleSection>
 
-      {/* Companions */}
+      {/* Companions — F-27: See Other PCs */}
       <CollapsibleSection
         icon={Users}
         title={t.companions}
-        defaultOpen={companions.length > 0}
+        defaultOpen={companions.length > 0 || campaignMembers.length > 0}
         badge={
-          companions.length > 0 ? (
+          (companions.length > 0 || campaignMembers.length > 0) ? (
             <span className="text-xs text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded">
-              {companions.length}
+              {Math.max(companions.length, campaignMembers.filter((m) => m.role === "player").length)}
             </span>
           ) : undefined
         }
       >
-        {companions.length > 0 ? (
+        {campaignMembers.length > 0 ? (
+          <div className="space-y-3">
+            {campaignMembers
+              .filter((m) => m.role !== "dm")
+              .map((member) => {
+                const isMe = member.user_id === currentUserId;
+                const companionHp = companions.find(
+                  (c) => c.name === member.character_name
+                );
+                const displayName =
+                  member.display_name ?? member.character_name ?? "???";
+
+                return (
+                  <div
+                    key={member.user_id}
+                    className="bg-white/[0.03] rounded-lg p-3 space-y-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      {/* Avatar circle */}
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/10 text-foreground text-xs font-medium">
+                        {(displayName[0] ?? "?").toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-foreground truncate">
+                            {displayName}
+                          </span>
+                          {isMe && (
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-400/10 text-amber-400">
+                              {t.youBadge}
+                            </span>
+                          )}
+                        </div>
+                        {member.character_name &&
+                          member.character_name !== displayName && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {member.character_name}
+                            </p>
+                          )}
+                      </div>
+                    </div>
+                    {companionHp && !isMe && (
+                      <HpBar
+                        current={companionHp.current_hp}
+                        max={companionHp.max_hp}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        ) : companions.length > 0 ? (
+          /* Fallback to legacy companions display if no member data */
           <div className="space-y-3">
             {companions.map((c) => (
               <div key={c.id} className="flex items-center gap-3">
@@ -393,7 +460,7 @@ export function PlayerCampaignView({
           </div>
         ) : (
           <p className="text-muted-foreground text-sm text-center py-4">
-            {t.noCompanions}
+            {t.companionsEmpty}
           </p>
         )}
       </CollapsibleSection>

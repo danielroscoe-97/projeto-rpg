@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
+import { getTranslations } from "next-intl/server";
 
-export default function LegalLayout({
+export default async function LegalLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("nav");
+
   return (
     <div className="min-h-screen flex flex-col">
       <a
@@ -24,13 +27,13 @@ export default function LegalLayout({
               href="/auth/login"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center text-sm"
             >
-              Login
+              {t("footer_login")}
             </Link>
             <Link
               href="/auth/sign-up"
               className="bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms]"
             >
-              Sign Up
+              {t("footer_signup")}
             </Link>
           </>
         }

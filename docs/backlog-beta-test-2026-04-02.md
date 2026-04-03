@@ -4,6 +4,16 @@
 > 20+ itens identificados, categorizados em 4 trilhas independentes.
 > **Stress-tested** com análise arquitetural profunda — root causes confirmados.
 > Referência: [sprint-plan-2026-03-31.md](sprint-plan-2026-03-31.md) | [epics-and-sprints-spec.md](epics-and-sprints-spec.md) | [bucket-future-ideas.md](bucket-future-ideas.md)
+>
+> ---
+> ## Status Geral — Atualizado 2026-04-03
+>
+> | Trilha | Status | Pendencias |
+> |--------|--------|------------|
+> | **A — Combat Core** | ✅ A.1-A.6 DONE, A.7 DONE, A.8 DONE | Nenhuma |
+> | **B — Combat Display** | ⚠️ Parcial | B.11 parcial, B.12 parcial, B.21 DONE |
+> | **C — Player Agency** | ✅ C.13-C.15 DONE | Nenhuma |
+> | **D — Social/Login** | ✅ BT-16 a BT-20 DONE | Nenhuma (F-37 a F-42 implementados) |
 
 ---
 
@@ -34,9 +44,11 @@ O app opera com **dual auth model**:
 
 #### A.1 — Coordenação Polling/Realtime (State Machine)
 
-**Status:** ROOT CAUSE CONFIRMADO — race condition entre polling e realtime
-**Impacto:** BLOCKER — causa duplicação, flickering, estados revertidos
-**Arquivos:** `components/player/PlayerJoinClient.tsx` (linhas 728-932)
+**Status:** ✅ DONE — State machine implementada (CONNECTED/RECONNECTING/POLLING_FALLBACK)
+**Verificado em:** 2026-04-03 — Auditoria completa dos 7 criterios de DoD
+**Commits:** `a63dd7c` (Trilha A core), `51c67ae` (resilient reconnection)
+**Impacto original:** BLOCKER — causa duplicação, flickering, estados revertidos
+**Arquivos:** `components/player/PlayerJoinClient.tsx` (linhas 500-542)
 
 **Problemas encontrados no stress test:**
 1. Quando WebSocket desconecta e reconecta, polling E realtime ficam ativos simultaneamente
@@ -232,9 +244,9 @@ const canExpand = fullMonster !== undefined;
 | BT-08 | ✅ DONE | % exato de HP | HP % é calculado mas só usado pra largura da barra. Adicionar label texto "45%" ao lado do tier badge. **Fix (2026-04-02):** `PlayerJoinClient.tsx:737` não propagava `hp_percentage` no store update de `combat:hp_update` para monstros. `HpStatusBadge` já renderizava `· {pct}%` quando disponível. Corrigido + guard: tier FULL não exibe %. Guest parity: N/A (DM vê HP exato, sem badge). | MÉDIO | ✅ Auth/Anon (realtime) |
 | BT-09 | 🟡 FEAT | Header sticky turno atual/próximo | Nenhuma view tem sticky no turn indicator durante combate ativo. Adicionar `sticky top-0 z-30` no turn display. | ALTO | ✅ Guest + Auth |
 | BT-10 | 🟡 FEAT | Visual "crítico" sombreado | Participantes em CRITICAL ficam opacity-50 + desaturate. Feedback visual de urgência. | BAIXO | ✅ Guest + Auth |
-| BT-11 | 🟢 FEAT | Log de danos separado | Log dedicado: quem sofreu, quanto, de quem, qual turno. Separado do dice roll history. **Acesso:** player vê apenas os danos que ele próprio tomou; DM vê log de todos os players. Acessível durante o combate ativo. Guest já tem tracking via stats. Player precisa de novo. | MÉDIO | ✅ Guest + Auth |
-| BT-12 | 🟢 FEAT | Legendary Actions counter | Contador por rodada. DM marca uso (ex: 3/3), reseta automático na rodada seguinte. | MÉDIO | ✅ Guest (DM feature) |
-| BT-21 | 🟢 FEAT | Monster groups na player view | Players veem lista flat. Precisam ver agrupamento visual como o DM vê (collapsed groups com expand). Respeitar anti-metagaming (HP status, não HP exato). | ALTO | ✅ Guest + Auth |
+| BT-11 | ✅ DONE | Log de danos separado | **Completado 2026-04-03:** CombatActionLog wired em CombatSessionClient (DM auth), GuestCombatClient (DM guest), PlayerInitiativeBoard (player com filtro por `playerId`). ScrollText button no sticky header. Tabs all/damage. Parity verificada. | MÉDIO | ✅ Guest + Auth |
+| BT-12 | ✅ DONE | Legendary Actions counter | **Completado 2026-04-03:** UI dots em CombatantRow + auto-detect SRD (`getLegendaryActionCount`) + manual override no StatsEditor + reset automático por rodada + Guest parity (handleUpdateStats atualizado). Anti-metagaming: stripped em `sanitizeCombatant`. | MÉDIO | ✅ Guest (DM feature) |
+| BT-21 | ✅ DONE | Monster groups na player view | Players veem agrupamento visual como o DM (collapsed groups com expand). Anti-metagaming respeitado. | ALTO | ✅ Guest + Auth |
 
 ---
 
@@ -358,5 +370,14 @@ C.15 Enquete pós-combate ─────────┘  (depende de A.3 sessio
 
 > **Criado:** 2026-04-02 — Beta Test Sessão #1
 > **Stress-tested:** 2026-04-02 — Review arquitetural com root cause analysis
+> **Auditoria completa:** 2026-04-03 — Verificacao de TODOS os items, build, parity, reconnection
 > **Revisado por:** Dani_ + BMAD Party Mode (John, Bob, Mary, Winston, Quinn)
-> **Próxima revisão:** Pré-beta test sessão #2
+> **Proxima revisao:** Pre-beta test sessao #2
+>
+> ### Resultado da Auditoria 2026-04-03
+>
+> - **Build:** `next build` passa com 0 erros, 0 warnings
+> - **Parity Guest/Anon/Auth:** ✅ PHQ e 100% aditivo (novos componentes em `/components/player-hq/`). Zero alteracoes em combat files compartilhados.
+> - **Reconnection Spec:** ✅ 7/7 items obrigatorios presentes e funcionais apos todos os PHQ commits.
+> - **Migrations:** 16 migrations no repo (056-071). Verificar aplicacao em producao via Supabase Dashboard.
+> - **Pendencias:** B.11 (damage log — parcial), B.12 (legendary actions — parcial). Documentados no bucket.

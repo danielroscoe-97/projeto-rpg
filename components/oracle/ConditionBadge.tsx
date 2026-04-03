@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { LucideIcon } from "lucide-react";
+import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import {
   EyeOff, Heart, AlertTriangle, Grip, CircleX, Eye,
   Zap, Mountain, Droplet, ArrowDown, Link, Star, Moon,
@@ -67,8 +68,11 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove, t
     ? condition.split(":")[1]
     : null;
 
+  const isBeneficial = (BENEFICIAL_CONDITIONS as readonly string[]).includes(condition);
   const colorClass = isConcentration
     ? "bg-purple-600"
+    : isBeneficial
+    ? "bg-emerald-600"
     : (CONDITION_COLORS[condition.toLowerCase()] ?? "bg-white/[0.1]");
   const displayName = isConcentration
     ? (concentrationSpell ? t("concentration_with_spell", { spell: concentrationSpell }) : t("concentration_label"))

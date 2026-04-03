@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 type CharacterStatus = Pick<
@@ -53,8 +54,9 @@ export function useCharacterStatus(characterId: string | null) {
       return;
     }
 
+    let cancelled = false;
     const fetchCharacter = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("player_characters")
         .select(
           "id, current_hp, max_hp, hp_temp, ac, conditions, inspiration, speed, initiative_bonus, spell_slots, spell_save_dc, name, race, class, level, subclass, subrace, background, alignment, str, dex, con, int_score, wis, cha_score, notes, token_url"
@@ -62,11 +64,18 @@ export function useCharacterStatus(characterId: string | null) {
         .eq("id", characterId)
         .single();
 
+      if (cancelled) return;
+      if (error) {
+        toast.error("Failed to load character");
+        setLoading(false);
+        return;
+      }
       if (data) setCharacter(data as CharacterStatus);
       setLoading(false);
     };
 
     fetchCharacter();
+    return () => { cancelled = true; };
   }, [characterId, supabase]);
 
   // Realtime subscription
@@ -112,10 +121,11 @@ export function useCharacterStatus(characterId: string | null) {
       debounceRef.current = setTimeout(async () => {
         const toSave = { ...pendingRef.current };
         pendingRef.current = {};
-        await supabase
+        const { error } = await supabase
           .from("player_characters")
           .update(toSave)
           .eq("id", characterId);
+        if (error) toast.error("Failed to save changes");
       }, 400);
     },
     [characterId, supabase]

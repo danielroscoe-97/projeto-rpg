@@ -26,6 +26,7 @@ import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { resetDmChannel } from "@/lib/realtime/broadcast";
+import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
 
 interface EncounterSetupProps {
   onStartCombat: (encounterName?: string) => Promise<void>;
@@ -312,6 +313,20 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       setAddRow(EMPTY_ADD_ROW);
     },
     []
+  );
+
+  // Add all monsters from encounter generator
+  const handleGeneratedEncounter = useCallback(
+    (generatedMonsters: Array<{ monster: SrdMonster; count: number }>) => {
+      for (const group of generatedMonsters) {
+        if (group.count === 1) {
+          handleSelectMonster(group.monster);
+        } else {
+          handleSelectMonsterGroup(group.monster, group.count);
+        }
+      }
+    },
+    [handleSelectMonster, handleSelectMonsterGroup]
   );
 
   // Trigger golden glow on the add row after monster selection
@@ -689,6 +704,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         <CRCalculator rulesetVersion={rulesetVersion} />
         <CampaignLoader onLoad={handleLoadCampaign} />
         <PresetLoader onLoad={handleLoadPreset} />
+        <EncounterGeneratorDialog rulesetVersion={rulesetVersion} onUseEncounter={handleGeneratedEncounter} />
       </div>
 
       {/* OmniBar: SRD Monster Search + Campaign Players + Manual Add */}
@@ -731,6 +747,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           });
         }}
         showManualAdd
+        defaultManualOpen
         onManualAdd={(data) => {
           const numberedName = getNumberedName(data.name, useCombatStore.getState().combatants);
           const displayName = getDefaultDisplayName(null, useCombatStore.getState().combatants);

@@ -1,0 +1,222 @@
+{
+  "_comment": "Lair Actions and Regional Effects for SRD 5.1 monsters. Keyed by monster slug (matches 5e-database index). Adult and Ancient dragons of the same color share lair/regional data per SRD.",
+
+  "aboleth": {
+    "lair_actions_intro": "When fighting inside its lair, an aboleth can invoke the ambient magic to take lair actions. On initiative count 20 (losing initiative ties), the aboleth takes a lair action to cause one of the following effects; the aboleth can't use the same effect two rounds in a row.",
+    "lair_actions": [
+      { "name": "Phantasmal Force", "desc": "The aboleth casts phantasmal force (no components required) on any number of creatures it can see within 60 feet of it. While maintaining concentration on this effect, the aboleth can't take other lair actions. If a target succeeds on the saving throw or if the effect ends for it, the target is immune to the aboleth's phantasmal force lair action for the next 24 hours, although such a creature can choose to be affected." },
+      { "name": "Grasping Pool", "desc": "Pools of water within 90 feet of the aboleth surge outward in a grasping tide. Any creature on the ground within 20 feet of such a pool must succeed on a DC 14 Strength saving throw or be pulled up to 20 feet into the water and knocked prone. The aboleth can't use this lair action again until it has used a different one." },
+      { "name": "Slime Curse", "desc": "Water in the aboleth's lair magically becomes a conduit for the creature's rage. The aboleth can target any number of creatures it can see in such water within 90 feet of it. A target must succeed on a DC 14 Wisdom saving throw or take 7 (2d6) psychic damage. The aboleth can't use this lair action again until it has used a different one." }
+    ],
+    "regional_effects_intro": "The region containing an aboleth's lair is warped by the creature's presence, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Water Transmutation", "desc": "Underground surfaces within 1 mile of the aboleth's lair are slimy and wet and are difficult terrain." },
+      { "name": "Psychic Disturbance", "desc": "Water sources within 1 mile of the lair are supernaturally fouled. Enemies of the aboleth that drink such water vomit it within minutes." },
+      { "name": "Psychic Projection", "desc": "As an action, the aboleth can create an illusory image of itself within 1 mile of the lair. The copy can appear at any location the aboleth has seen before or in any location a creature charmed by the aboleth can currently see. Once created, the image persists for as long as the aboleth maintains concentration, as if concentrating on a spell. Although the image is intangible, it looks, sounds, and can move like the aboleth. The aboleth can sense, speak, and use telepathy from the image's position as if present at that position. If the image takes any damage, it disappears." }
+    ],
+    "regional_effects_closing": "If the aboleth dies, the first two effects fade over the course of 3d10 days."
+  },
+
+  "black-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Murky Pools", "desc": "Pools of water that the dragon can see within 120 feet of it surge outward in a grasping tide. Any creature on the ground within 20 feet of such a pool must succeed on a DC 15 Strength saving throw or be pulled up to 20 feet into the water and knocked prone." },
+      { "name": "Swarm of Insects", "desc": "A cloud of swarming insects fills a 20-foot-radius sphere centered on a point the dragon chooses within 120 feet of it. The cloud spreads around corners and remains until the dragon dismisses it as an action, uses this lair action again, or dies. The cloud is lightly obscured. Any creature in the cloud when it appears must make on a DC 15 Constitution saving throw, taking 10 (3d6) piercing damage on a failed save, or half as much damage on a successful one. A creature that ends its turn in the cloud takes 10 (3d6) piercing damage." },
+      { "name": "Magical Darkness", "desc": "Magical darkness spreads from a point the dragon chooses within 60 feet of it, filling a 15-foot-radius sphere until the dragon dismisses it as an action, uses this lair action again, or dies. The darkness spreads around corners. A creature with darkvision can't see through this darkness, and nonmagical light can't illuminate it. If any of the effect's area overlaps with an area of light created by a spell of 2nd level or lower, the spell that created the light is dispelled." }
+    ],
+    "regional_effects_intro": "The region containing a legendary black dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Foul Water", "desc": "Water sources within 1 mile of the lair are supernaturally fouled. Enemies of the dragon that drink such water regurgitate it within minutes." },
+      { "name": "Obscuring Fog", "desc": "Fog lightly obscures the land within 6 miles of the lair." },
+      { "name": "Reptilian Spies", "desc": "Reptiles within 6 miles of the lair serve as combative combatants for the dragon. The dragon is aware of these creatures as if it could telepathically communicate with them." }
+    ],
+    "regional_effects_closing": "If the dragon dies, the fog fades within 2d10 days. The other effects fade over the course of 1d10 days."
+  },
+
+  "blue-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Ceiling Collapse", "desc": "Part of the ceiling collapses above one creature that the dragon can see within 120 feet of it. The creature must succeed on a DC 15 Dexterity saving throw or take 10 (3d6) bludgeoning damage and be knocked prone and buried. The buried target is restrained and unable to breathe or stand up. A creature can take an action to make a DC 10 Strength check, ending the buried state on a success." },
+      { "name": "Sand Cloud", "desc": "A cloud of sand swirls about in a 20-foot-radius sphere centered on a point the dragon can see within 120 feet of it. The cloud spreads around corners. Each creature in the cloud must succeed on a DC 15 Constitution saving throw or be blinded for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success." },
+      { "name": "Lightning Arc", "desc": "Lightning arcs, forming a 5-foot-wide line between two of the lair's solid surfaces that the dragon can see. They must be within 120 feet of the dragon and 120 feet of each other. Each creature in that line must succeed on a DC 15 Dexterity saving throw or take 10 (3d6) lightning damage." }
+    ],
+    "regional_effects_intro": "The region containing a legendary blue dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Thunderstorms", "desc": "Thunderstorms rage within 6 miles of the lair." },
+      { "name": "Dust Devils", "desc": "Dust devils scour the land within 6 miles of the lair. A dust devil has the statistics of an air elemental, but it can't fly, has a speed of 50 feet, and has an Intelligence and Charisma of 1 (-5)." },
+      { "name": "Hidden Sinkholes", "desc": "Hidden sinkholes form in and around the dragon's lair. A sinkhole can be detected from a safe distance with a successful DC 20 Wisdom (Perception) check. Otherwise, the first creature to step on the thin covering over the sinkhole must succeed on a DC 15 Dexterity saving throw or fall 1d6 x 10 feet into the sinkhole." }
+    ],
+    "regional_effects_closing": "If the dragon dies, the thunderstorms abate within 1d10 days, but the other effects persist."
+  },
+
+  "green-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Grasping Roots", "desc": "Grasping roots and vines erupt in a 20-foot radius centered on a point on the ground that the dragon can see within 120 feet of it. That area becomes difficult terrain, and each creature there must succeed on a DC 15 Strength saving throw or be restrained by the roots and vines. A creature can be freed if it or another creature takes an action to make a DC 15 Strength check and succeeds. The roots and vines wilt away when the dragon uses this lair action again or when the dragon dies." },
+      { "name": "Thorny Wall", "desc": "A wall of tangled brush bristling with thorns springs into existence on a solid surface within 120 feet of the dragon. The wall is up to 60 feet long, 10 feet high, and 5 feet thick, and it blocks line of sight. When the wall appears, each creature in its area must make a DC 15 Dexterity saving throw. A creature that fails the save takes 18 (4d8) piercing damage and is pushed 5 feet out of the wall's space, appearing on whichever side of the wall it wants. A creature can move through the wall, albeit slowly and painfully. For every 1 foot a creature travels through the wall, it must spend 4 feet of movement. Furthermore, a creature in the wall's space must make a DC 15 Dexterity saving throw once each round it's in contact with the wall, taking 18 (4d8) piercing damage on a failed save, or half as much damage on a successful one. Each 10-foot section of wall has AC 5, 15 hit points, vulnerability to fire damage, resistance to bludgeoning and piercing damage, and immunity to psychic damage. The wall sinks back into the ground when the dragon uses this lair action again or when the dragon dies." },
+      { "name": "Charming Mist", "desc": "Magical fog rolls in around one creature the dragon can see within 120 feet of it. The creature must make a DC 15 Wisdom saving throw or be charmed by the dragon until initiative count 20 on the next round." }
+    ],
+    "regional_effects_intro": "The region containing a legendary green dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Deceptive Mist", "desc": "Thickets form labyrinthine passages within 1 mile of the dragon's lair. The thickets act as 10-foot-high, 10-foot-thick walls that block line of sight. Creatures can move through the thickets, with every 1 foot of movement through the thickets costing 4 feet of movement. A creature in the thickets must make a DC 15 Dexterity saving throw once each round it's in contact with the thickets or take 3 (1d6) piercing damage from thorns." },
+      { "name": "Beast Spies", "desc": "Within 1 mile of its lair, the dragon leaves no physical evidence of its passage unless it wishes to. Tracking it there is impossible except by magical means. In addition, it ignores movement restrictions caused by undergrowth." },
+      { "name": "Luring Paths", "desc": "Rodents and birds within 1 mile of the dragon's lair serve as the dragon's eyes and ears. Deer and other large game are strangely absent, hinting at the predator's bytes." }
+    ],
+    "regional_effects_closing": "If the dragon dies, the thickets remain but become ordinary plants. Other effects fade over 1d10 days."
+  },
+
+  "red-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Magma Eruption", "desc": "Magma erupts from a point on the ground the dragon can see within 120 feet of it, creating a 20-foot-high, 5-foot-radius geyser. Each creature in the geyser's area must make a DC 15 Dexterity saving throw, taking 21 (6d6) fire damage on a failed save, or half as much damage on a successful one." },
+      { "name": "Tremor", "desc": "A tremor shakes the lair in a 60-foot radius around the dragon. Each creature other than the dragon on the ground in that area must succeed on a DC 15 Dexterity saving throw or be knocked prone." },
+      { "name": "Volcanic Gas", "desc": "Volcanic gases form a cloud in a 20-foot-radius sphere centered on a point the dragon can see within 120 feet of it. The sphere spreads around corners, and its area is lightly obscured. It lasts until initiative count 20 on the next round. Each creature that starts its turn in the cloud must succeed on a DC 13 Constitution saving throw or be poisoned until the end of its turn. While poisoned in this way, a creature is incapacitated." }
+    ],
+    "regional_effects_intro": "The region containing a legendary red dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Minor Earthquakes", "desc": "Small earthquakes are common within 6 miles of the dragon's lair." },
+      { "name": "Sulfurous Fumes", "desc": "Water sources within 1 mile of the lair are supernaturally warm and tainted by sulfur." },
+      { "name": "Rocky Fissures", "desc": "Rocky fissures within 1 mile of the dragon's lair form portals to the Elemental Plane of Fire, allowing creatures of elemental fire into the world to dwell nearby." }
+    ],
+    "regional_effects_closing": "If the dragon dies, these effects fade over the course of 1d10 days."
+  },
+
+  "white-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Freezing Fog", "desc": "Freezing fog fills a 20-foot-radius sphere centered on a point the dragon can see within 120 feet of it. The fog spreads around corners, and its area is heavily obscured. Each creature in the fog when it appears must make a DC 10 Constitution saving throw, taking 10 (3d6) cold damage on a failed save, or half as much damage on a successful one. A creature that ends its turn in the fog takes 10 (3d6) cold damage. A wind of at least 20 miles per hour disperses the fog. The fog otherwise lasts until the dragon uses this lair action again or until the dragon dies." },
+      { "name": "Ice Shards", "desc": "Jagged ice shards fall from the ceiling, striking up to three creatures underneath that the dragon can see within 120 feet of it. The dragon makes one ranged attack roll (+7 to hit) against each target. On a hit, the target takes 10 (3d6) piercing damage." },
+      { "name": "Icy Ground", "desc": "The dragon creates an opaque wall of ice on a solid surface it can see within 120 feet of it. The wall can be up to 30 feet long, 30 feet high, and 1 foot thick. When the wall appears, each creature within its area is pushed 5 feet out of the wall's space; appearing on whichever side of the wall it wants. Each 10-foot section of the wall has AC 5, 30 hit points, vulnerability to fire damage, and immunity to acid, cold, necrotic, poison, and psychic damage. The wall disappears when the dragon uses this lair action again or when the dragon dies." }
+    ],
+    "regional_effects_intro": "The region containing a legendary white dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Cold Fog", "desc": "Chilly fog lightly obscures the land within 6 miles of the dragon's lair." },
+      { "name": "Freezing Precipitation", "desc": "Freezing precipitation falls within 6 miles of the dragon's lair, sometimes forming blizzard conditions when the dragon is at rest." },
+      { "name": "Ice Walls", "desc": "Icy walls block off areas in the dragon's lair. Each wall is 6 inches thick, and a 10-foot section has AC 5, 15 hit points, vulnerability to fire damage, and immunity to acid, cold, necrotic, poison, and psychic damage." }
+    ],
+    "regional_effects_closing": "If the dragon dies, the fog and precipitation fade within 1 day. The ice walls melt over the course of 1d10 days."
+  },
+
+  "brass-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Sand Geyser", "desc": "A strong wind blows around the dragon. Each creature within 60 feet of the dragon must succeed on a DC 15 Strength saving throw or be pushed 15 feet away from the dragon and knocked prone. Gases and vapors are dispersed by the wind, and unprotected flames are extinguished. Protected flames, such as lanterns, have a 50 percent chance of being extinguished." },
+      { "name": "Sinkhole", "desc": "A cloud of sand swirls about in a 20-foot-radius sphere centered on a point the dragon can see within 120 feet of it. The cloud spreads around corners. Each creature in the cloud must succeed on a DC 15 Constitution saving throw or be blinded for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success." }
+    ],
+    "regional_effects_intro": "The region containing a legendary brass dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Dust Devils", "desc": "Dust devils scour the land within 6 miles of the lair. A dust devil has the statistics of an air elemental, but it can't fly, has a speed of 50 feet, and has an Intelligence and Charisma of 1 (-5)." },
+      { "name": "Food Spoilage", "desc": "Food and water within 1 mile of the dragon's lair magically spoil within 1 hour of being prepared unless the dragon or its allies wish otherwise." },
+      { "name": "Mirages", "desc": "Images of Large or larger creatures haunt the desert sands within 6 miles of the dragon's lair. These illusions move and appear real, although they can do no harm. A creature that examines an image from a distance can tell it's an illusion with a successful DC 20 Intelligence (Investigation) check. Any physical interaction with an image reveals it to be an illusion, because objects pass through it." }
+    ],
+    "regional_effects_closing": "If the dragon dies, the dust devils disappear immediately, and the illusions fade over 1d10 days. Other effects fade over 1d4 months."
+  },
+
+  "bronze-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects:",
+    "lair_actions": [
+      { "name": "Fog Cloud", "desc": "The dragon creates fog as though it had cast the fog cloud spell. The fog lasts until initiative count 20 on the next round." },
+      { "name": "Thunderclap", "desc": "A thunderclap originates at a point the dragon can see within 120 feet of it. Each creature within a 20-foot radius centered on that point must make a DC 15 Constitution saving throw or take 5 (1d10) thunder damage and be deafened until the end of its next turn." }
+    ],
+    "regional_effects_intro": "The region containing a legendary bronze dragon's lair is warped by the dragon's magic.",
+    "regional_effects": [
+      { "name": "Dense Fog", "desc": "Once per day, the dragon can alter the weather in a 6-mile radius centered on its lair. The dragon doesn't need to be outdoors; otherwise the effect is identical to the control weather spell." },
+      { "name": "Rough Seas", "desc": "Underwater plants within 6 miles of the dragon's lair take on dazzlingly brilliant hues." },
+      { "name": "Watery Shapes", "desc": "Within its lair, the dragon can set illusory sounds, such as soft music and strange echoes, so that they can be heard in various parts of the lair." }
+    ],
+    "regional_effects_closing": "If the dragon dies, changed weather reverts to normal, as described in the spell, and the other effects fade in 1d10 days."
+  },
+
+  "copper-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Mud Spike", "desc": "The dragon chooses a point on the ground that it can see within 120 feet of it. Stone spikes erupt from the ground in a 20-foot radius centered on that point. The effect is otherwise identical to the spike growth spell and lasts until the dragon uses this lair action again or until the dragon dies." },
+      { "name": "Stone Wall Shift", "desc": "The dragon chooses a 10-foot-square area on the ground that it can see within 120 feet of it. The ground in that area turns into 3-foot-deep mud. Each creature on the ground in that area when the mud appears must succeed on a DC 15 Dexterity saving throw or sink into the mud and become restrained. A creature can take an action to attempt a DC 15 Strength check, freeing itself or another creature within its reach from the mud on a success. The mud dries over the course of 10 minutes, after which a creature restrained by the mud is no longer restrained." }
+    ],
+    "regional_effects_intro": "The region containing a legendary copper dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Dead Ends", "desc": "Magic carvings of the dragon's smiling face can be googled the walls at dead ends and intersections, flickering to life with a warm glow, allowing the dragon to observe interlopers." },
+      { "name": "Hallucinations", "desc": "Small earthquakes are common within 6 miles of the dragon's lair." },
+      { "name": "Tricky Walls", "desc": "Whenever a creature with an Intelligence of 3 or higher comes within 30 feet of a water source within 1 mile of the dragon's lair, the dragon becomes aware of the creature's presence and location." }
+    ],
+    "regional_effects_closing": "If the dragon dies, the magic carvings fade over the course of 1d10 days."
+  },
+
+  "gold-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Foretelling", "desc": "The dragon glimpses the future, so it has advantage on attack rolls, ability checks, and saving throws until initiative count 20 on the next round." },
+      { "name": "Banishment", "desc": "One creature the dragon can see within 120 feet of it must succeed on a DC 15 Charisma saving throw or be banished to a dream plane, a different plane of existence the dragon has imagined into being. To escape, the creature must use its action to make a DC 15 Charisma check. If the creature succeeds, it escapes the dream plane. Otherwise, the effect ends on initiative count 20 on the next round. When the effect ends, the creature reappears in the space it left or in the nearest unoccupied space if that one is occupied." }
+    ],
+    "regional_effects_intro": "The region containing a legendary gold dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Gentle Warmth", "desc": "Whenever a creature that can understand a language sleeps or enters a state of trance or reverie within 6 miles of the dragon's lair, the dragon can establish telepathic contact with that creature and converse with it in its dreams. The creature remembers its conversation with the dragon upon waking." },
+      { "name": "Gem Deposits", "desc": "Banks of beautiful mist pervade the lair within 6 miles of it. The mist doesn't obscure anything. It assumes haunting forms when evil creatures are within 1 mile of the dragon's lair, warning good creatures of the evil's presence." },
+      { "name": "Blessed Water", "desc": "Gems and pearls within 1 mile of the dragon's lair sparkle and gleam, shedding dim light in a 5-foot radius and a faint, otherworldly music drifts through the air." }
+    ],
+    "regional_effects_closing": "If the dragon dies, these effects end immediately."
+  },
+
+  "silver-dragon": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the dragon takes a lair action to cause one of the following effects; the dragon can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Freezing Fog", "desc": "The dragon creates fog as if it had cast the fog cloud spell. The fog lasts until initiative count 20 on the next round." },
+      { "name": "Icy Wall", "desc": "The dragon creates an opaque wall of ice on a solid surface it can see within 120 feet of it. The wall can be up to 30 feet long, 30 feet high, and 1 foot thick. When the wall appears, each creature within its area is pushed 5 feet out of the wall's space, appearing on whichever side of the wall it wants. Each 10-foot section of the wall has AC 5, 30 hit points, vulnerability to fire damage, and immunity to acid, cold, necrotic, poison, and psychic damage. The wall disappears when the dragon uses this lair action again or when the dragon dies." }
+    ],
+    "regional_effects_intro": "The region containing a legendary silver dragon's lair is warped by the dragon's magic, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Chilling Fog", "desc": "The land within 6 miles of the lair experiences harsh weather: blinding blizzards, bitter cold snaps, or sparkling snowfalls." },
+      { "name": "Magic Wards", "desc": "Within its lair, the dragon can set illusory sounds, such as soft music and strange echoes, so that they can be heard in various parts of the lair." },
+      { "name": "Enchanted Snow", "desc": "Within 1 mile of the lair, winter chill is oddly comfortable rather than numbing, and the snow is pristine and beautiful." }
+    ],
+    "regional_effects_closing": "If the dragon dies, changed weather reverts to normal over the course of 1d10 days, and the other effects fade over 1d10 days."
+  },
+
+  "kraken": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the kraken takes a lair action to cause one of the following effects; the kraken can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Strong Current", "desc": "A strong current moves through the kraken's lair. Each creature within 60 feet of the kraken must succeed on a DC 23 Strength saving throw or be pushed up to 60 feet away from the kraken. On a success, the creature is pushed 10 feet away from the kraken." },
+      { "name": "Lightning Storm", "desc": "Creatures in the water within 60 feet of the kraken have vulnerability to lightning damage until initiative count 20 on the next round." },
+      { "name": "Water Arm", "desc": "The water in the kraken's lair becomes electrically charged. All creatures within 120 feet of the kraken must succeed on a DC 23 Constitution saving throw, taking 10 (3d6) lightning damage on a failed save, or half as much damage on a successful one." }
+    ],
+    "regional_effects_intro": "The region containing a kraken's lair is warped by the creature's blasphemous presence, creating the following magical effects:",
+    "regional_effects": [
+      { "name": "Weather Control", "desc": "The kraken can alter the weather at will in a 6-mile radius centered on its lair. The effect is otherwise identical to the control weather spell." },
+      { "name": "Aquatic Creatures", "desc": "Water elementals coalesce within 6 miles of the lair. These elementals can't leave the water and have Intelligence and Charisma scores of 1 (-5)." },
+      { "name": "Underwater Visibility", "desc": "The kraken can sense the thoughts of any creature that is in water within 6 miles of the kraken's lair. It can also affect such creatures with its Telepathy trait." }
+    ],
+    "regional_effects_closing": "When the kraken dies, all these regional effects fade immediately."
+  },
+
+  "lich": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the lich can take a lair action to cause one of the following effects; the lich can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Death Emanation", "desc": "The lich rolls a d8 and regains a spell slot of that level or lower. If it has no spent spell slots of that level or lower, nothing happens." },
+      { "name": "Spirit Drain", "desc": "The lich targets one creature it can see within 30 feet of it. A crackling cord of negative energy tethers the lich to the target. Whenever the lich takes damage, the target must make a DC 18 Constitution saving throw. On a failed save, the lich takes half the damage (rounded down), and the target takes the remaining damage. This tether lasts until initiative count 20 on the next round or until the lich or the target is no longer in the lich's lair." },
+      { "name": "Undead Summon", "desc": "The lich calls forth the spirits of creatures that died in its lair. These apparitions materialize and attack one creature that the lich can see within 60 feet of it. The target must succeed on a DC 18 Constitution saving throw, taking 52 (15d6) necrotic damage on a failed save, or half as much damage on a success. The apparitions then disappear." }
+    ],
+    "regional_effects_intro": "A lich's lair might have any or all of the following magical effects in place:",
+    "regional_effects": [
+      { "name": "Undead Corruption", "desc": "Creatures within 1 mile of the lich's lair that die become undead skeletons or zombies (the lich's choice) under the lich's control after 1d10 days." },
+      { "name": "Intelligence Network", "desc": "The lich can take actions to project its awareness to a 5-mile radius around its lair. The lich can't be surprised while it has this awareness." },
+      { "name": "Planar Shift", "desc": "If a creature friendly to the lich is reduced to 0 hit points within the lair, that creature automatically stabilizes and gains 1 hit point in 1d4 hours." }
+    ],
+    "regional_effects_closing": "If the lich is destroyed but its phylactery remains, these effects persist until the phylactery is also destroyed."
+  },
+
+  "unicorn": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the unicorn can take a lair action to cause one of the following effects; the unicorn can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Shimmer of Protection", "desc": "The unicorn causes shimmering lights to appear in a 30-foot radius centered on a point it can see within 120 feet of it. Each creature of the unicorn's choice in that area gains 10 temporary hit points." },
+      { "name": "Healing Spring", "desc": "The unicorn targets one creature it can see within 60 feet of it. A shimmering spring of healing energy wells up beneath the target, restoring 10 (3d6) hit points to the target and ending one disease or one of the following conditions: blinded, deafened, paralyzed, or poisoned." },
+      { "name": "Calm Emotions", "desc": "The unicorn casts calm emotions with a DC 15 saving throw. The spell doesn't require concentration when cast this way." }
+    ],
+    "regional_effects_intro": "A unicorn's presence sanctifies its forest home. The following magical effects are linked to the unicorn's lair:",
+    "regional_effects": [
+      { "name": "Memory Loss", "desc": "Open flames of a nonmagical nature are extinguished within the unicorn's domain. Torches and campfires refuse to burn, but closed lanterns are unaffected." },
+      { "name": "No Tracking", "desc": "Creatures native to the unicorn's domain have an easier time hiding; they have advantage on all Dexterity (Stealth) checks made to hide." },
+      { "name": "Endless Sustenance", "desc": "When a good-aligned creature casts a spell or uses a magical effect that causes another good-aligned creature to regain hit points, the target regains the maximum number of hit points possible for the spell or effect." }
+    ],
+    "regional_effects_closing": "If the unicorn dies, these effects fade over the course of 1d10 days."
+  }
+}

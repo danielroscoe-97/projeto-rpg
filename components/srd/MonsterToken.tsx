@@ -155,7 +155,11 @@ export function MonsterToken({
       className={`${sizeClass} rounded-full border-2 ${borderClass} flex items-center justify-center flex-shrink-0 relative`}
       aria-hidden
     >
-      {getCreatureEmoji(creatureType)}
+      {isMonsterADay ? (
+        <span className="text-orange-400 font-bold">{name.charAt(0).toUpperCase()}</span>
+      ) : (
+        getCreatureEmoji(creatureType)
+      )}
       {isMonsterADay && size >= 36 && (
         <span
           className="absolute -bottom-0.5 -right-0.5 text-[8px] leading-none bg-orange-600 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold"

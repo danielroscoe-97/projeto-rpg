@@ -20,12 +20,14 @@ export function useNotifications(userId: string | null) {
     }
 
     const fetchData = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("player_notifications")
         .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(50);
+
+      if (error) toast.error("Failed to load notifications");
 
       const items = data ?? [];
       setNotifications(items);

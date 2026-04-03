@@ -9,10 +9,9 @@ import {
   ScrollText,
   Music,
   Settings,
-  User,
   Users,
+  Package,
   PanelLeftClose,
-  PanelLeft,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -23,6 +22,7 @@ interface SidebarTranslations {
   combats: string;
   characters: string;
   soundboard: string;
+  presets: string;
   settings: string;
   profile: string;
   nav_label: string;
@@ -30,9 +30,20 @@ interface SidebarTranslations {
 
 interface DashboardSidebarProps {
   translations: SidebarTranslations;
+  hasDmAccess?: boolean;
 }
 
-const NAV_ITEMS_DESKTOP = [
+const NAV_ITEMS_DESKTOP_BASE = [
+  { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard, dmOnly: false },
+  { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords, dmOnly: false },
+  { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText, dmOnly: false },
+  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users, dmOnly: false },
+  { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music, dmOnly: false },
+  { key: "presets" as const, href: "/app/presets", icon: Package, dmOnly: true },
+  { key: "settings" as const, href: "/app/settings", icon: Settings, dmOnly: false },
+];
+
+const NAV_ITEMS_MOBILE = [
   { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
@@ -41,16 +52,13 @@ const NAV_ITEMS_DESKTOP = [
   { key: "settings" as const, href: "/app/settings", icon: Settings },
 ] as const;
 
-const NAV_ITEMS_MOBILE = [
-  { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
-  { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
-  { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
-  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
-] as const;
-
-export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
+export function DashboardSidebar({ translations: t, hasDmAccess = false }: DashboardSidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+
+  const navItemsDesktop = NAV_ITEMS_DESKTOP_BASE.filter(
+    (item) => !item.dmOnly || hasDmAccess
+  );
 
   const isActive = (href: string) => {
     if (href === "/app/dashboard") {
@@ -58,6 +66,9 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
     }
     if (href === "/app/settings") {
       return pathname === "/app/settings" || pathname.startsWith("/app/dashboard/settings");
+    }
+    if (href === "/app/presets") {
+      return pathname.startsWith("/app/presets");
     }
     return pathname.startsWith(href);
   };
@@ -74,37 +85,44 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
         data-tour-id="dash-sidebar"
       >
         {/* Brand */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.08]">
-          <AnimatePresence mode="wait">
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="text-sm font-bold text-amber-400 tracking-wide whitespace-nowrap"
-              >
-                Pocket DM
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <div className={cn("flex items-center justify-between px-4 py-4 border-b border-white/[0.08]", collapsed && "justify-center px-2")}>
           <button
             type="button"
             onClick={() => setCollapsed((prev) => !prev)}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-white/[0.05]"
+            className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? (
-              <PanelLeft className="w-4 h-4" />
-            ) : (
-              <PanelLeftClose className="w-4 h-4" />
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/art/brand/logo-icon.svg" alt="" width={20} height={20} className="pointer-events-none shrink-0 drop-shadow-[0_0_6px_rgba(212,168,83,0.3)]" aria-hidden="true" />
+            <AnimatePresence mode="wait">
+              {!collapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="text-sm font-bold text-amber-400 tracking-wide whitespace-nowrap"
+                >
+                  Pocket DM
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
+          {!collapsed && (
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-white/[0.05]"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Nav Items */}
         <nav className="flex-1 py-3 px-2 space-y-1" aria-label={t.nav_label}>
-          {NAV_ITEMS_DESKTOP.map((item) => {
+          {navItemsDesktop.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
             return (

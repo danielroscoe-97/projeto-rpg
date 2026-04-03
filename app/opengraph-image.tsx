@@ -159,7 +159,7 @@ export default async function OgImage() {
             marginBottom: 24,
           }}
         >
-          {["Iniciativa", "HP & Condições", "3000+ Monstros", "900+ Magias"].map(
+          {["Iniciativa", "HP & Condições", "1200+ Monstros", "750+ Magias"].map(
             (label) => (
               <div
                 key={label}

@@ -67,6 +67,9 @@ export function useGuestUndoStack() {
           combatants: entry.previousCombatants,
           currentTurnIndex: entry.previousTurnIndex,
           roundNumber: entry.previousRound,
+          turnTimeAccumulated: entry.previousTurnTimeAccumulated,
+          turnStartedAt: Date.now(), // S2-A: fresh timer instead of stale old timestamp
+          ...(entry.previousTurnCountById != null ? { turnCountById: entry.previousTurnCountById } : {}),
         });
         break;
 
@@ -123,12 +126,15 @@ export function useGuestUndoStack() {
   );
 
   const pushTurnUndo = useCallback(
-    (combatants: Combatant[], turnIndex: number, round: number) => {
+    (combatants: Combatant[], turnIndex: number, round: number, turnTimeAccumulated?: Record<string, number>, turnStartedAt?: number | null, turnCountById?: Record<string, number>) => {
       pushUndo({
         type: "turn",
         previousTurnIndex: turnIndex,
         previousRound: round,
         previousCombatants: combatants.map((c) => ({ ...c })),
+        previousTurnTimeAccumulated: turnTimeAccumulated ? { ...turnTimeAccumulated } : {},
+        previousTurnStartedAt: turnStartedAt ?? null,
+        previousTurnCountById: turnCountById ? { ...turnCountById } : undefined,
       });
     },
     [pushUndo]

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText } from "lucide-react";
 import { toast } from "sonner";
 import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
 import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
@@ -13,6 +13,7 @@ import { CombatantRow } from "@/components/combat/CombatantRow";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
+import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
@@ -27,6 +28,7 @@ import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant, CombatantRole } from "@/lib/types/combat";
+import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
@@ -53,7 +55,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
   notes: "",
 };
 
-const DEFAULT_ADD_ROW_ROLE: CombatantRole = "monster";
+const DEFAULT_ADD_ROW_ROLE: CombatantRole = "player";
 
 const ADD_ROW_ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string; label: string }> = {
   player: { icon: User, color: "text-blue-400 border-blue-400/30", label: "setup_role_player" },
@@ -223,6 +225,20 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       setAddRow(EMPTY_ADD_ROW);
     },
     [addMonsterGroup]
+  );
+
+  // Add all monsters from encounter generator
+  const handleGeneratedEncounter = useCallback(
+    (generatedMonsters: Array<{ monster: SrdMonster; count: number }>) => {
+      for (const group of generatedMonsters) {
+        if (group.count === 1) {
+          handleSelectMonster(group.monster);
+        } else {
+          handleSelectMonsterGroup(group.monster, group.count);
+        }
+      }
+    },
+    [handleSelectMonster, handleSelectMonsterGroup]
   );
 
   const handleMonsterAdded = useCallback(() => {
@@ -482,6 +498,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
       <div className="flex items-end gap-3 flex-wrap">
         <RulesetSelector value={rulesetVersion} onChange={setRulesetVersion} />
+        <EncounterGeneratorDialog rulesetVersion={rulesetVersion} onUseEncounter={handleGeneratedEncounter} />
       </div>
 
       {/* SRD Monster Search */}
@@ -492,6 +509,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           onSelectMonsterGroup={handleSelectMonsterGroup}
           onMonsterAdded={handleMonsterAdded}
           showManualAdd
+          defaultManualOpen
           onManualAdd={(data) => {
             const currentCombatants = useGuestCombatStore.getState().combatants;
             const numberedName = getGuestNumberedName(data.name, currentCombatants);
@@ -675,7 +693,9 @@ export function GuestCombatClient() {
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
+  const [guestCombatDuration, setGuestCombatDuration] = useState(0);
   const [spellsOpen, setSpellsOpen] = useState(false);
+  const [showActionLog, setShowActionLog] = useState(false);
   // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
   type GuestPostCombatPhase = "leaderboard" | null;
   const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
@@ -761,16 +781,13 @@ export function GuestCombatClient() {
     return map;
   }, [combatants]);
 
-  // Turn timer — resets each time currentTurnIndex changes
-  const [turnStartedAt, setTurnStartedAt] = useState<number | null>(null);
-  useEffect(() => {
-    if (phase === "combat") setTurnStartedAt(Date.now());
-  }, [currentTurnIndex, phase]);
+  // Turn timer — now sourced from the store (accumulates on advanceTurn)
+  const turnStartedAt = useGuestCombatStore((s) => s.turnStartedAt);
 
   // Wrap advanceTurn to push undo entry first (Story 1.1)
   const handleAdvanceTurn = useCallback(() => {
     const store = useGuestCombatStore.getState();
-    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber);
+    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber, store.turnTimeAccumulated, store.turnStartedAt, store.turnCountById);
     advanceTurn();
     playTurnSfx();
   }, [advanceTurn, pushTurnUndo]);
@@ -1074,7 +1091,14 @@ export function GuestCombatClient() {
     [pushHiddenUndo]
   );
   const handleUpdateStats = useCallback(
-    (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
+    (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null; legendary_actions_total?: number | null }) => {
+      // Handle legendary_actions_total with used reset
+      if (stats.legendary_actions_total !== undefined) {
+        const before = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+        if (before && (stats.legendary_actions_total === null || (before.legendary_actions_total !== null && stats.legendary_actions_total < before.legendary_actions_total))) {
+          updateCombatantStats(id, { legendary_actions_used: 0 } as Parameters<typeof updateCombatantStats>[1]);
+        }
+      }
       // A.7: Handle display_name with group rename propagation
       if (stats.display_name !== undefined) {
         const result = applyGroupRename(
@@ -1172,10 +1196,34 @@ export function GuestCombatClient() {
   );
 
   const handleEndEncounter = useCallback(() => {
+    const guestStore = useGuestCombatStore.getState();
+    // Accumulate the final (active) turn's elapsed time
+    const finalAccumulated = { ...guestStore.turnTimeAccumulated };
+    const currentId = guestStore.combatants[guestStore.currentTurnIndex]?.id;
+    const elapsed = guestStore.turnStartedAt ? Date.now() - guestStore.turnStartedAt : 0;
+    if (currentId && elapsed > 0) {
+      finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
+    }
+
+    // Convert ID-keyed maps to name-keyed for guest stats (use display_name ?? name for parity with damage tracking)
+    const turnTimeByName: Record<string, number> = {};
+    const turnCountByName: Record<string, number> = {};
+    for (const c of guestStore.combatants) {
+      const key = c.display_name ?? c.name;
+      if (finalAccumulated[c.id]) {
+        turnTimeByName[key] = (turnTimeByName[key] ?? 0) + finalAccumulated[c.id];
+      }
+      if (guestStore.turnCountById[c.id]) {
+        turnCountByName[key] = (turnCountByName[key] ?? 0) + guestStore.turnCountById[c.id];
+      }
+    }
+
     // Show leaderboard with accumulated stats before resetting
-    const stats = useGuestCombatStats.getState().getStats();
+    const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
+    const duration = guestStore.combatStartTime ? Date.now() - guestStore.combatStartTime : 0;
     if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
       setLeaderboardStats(stats);
+      setGuestCombatDuration(duration);
       setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
     } else {
       useGuestCombatStats.getState().reset();
@@ -1229,6 +1277,17 @@ export function GuestCombatClient() {
             {turnStartedAt && <TurnTimer startTime={turnStartedAt} />}
           </div>
           <div className="flex items-center gap-3 flex-wrap" data-tour-id="combat-controls">
+            {/* Action log toggle */}
+            <button
+              type="button"
+              onClick={() => setShowActionLog(v => !v)}
+              className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+              aria-label={t("combat_log_title")}
+              title={t("combat_log_title")}
+              data-testid="action-log-btn"
+            >
+              <ScrollText className="w-4 h-4" />
+            </button>
             {/* Encerrar combate */}
             <button
               type="button"
@@ -1497,6 +1556,7 @@ export function GuestCombatClient() {
           stats={leaderboardStats}
           encounterName={tg("try_encounter_name")}
           rounds={roundNumber}
+          combatDuration={guestCombatDuration}
           onClose={handleLeaderboardClose}
         />
       )}
@@ -1514,6 +1574,8 @@ export function GuestCombatClient() {
         onOpenChange={setSpellsOpen}
         rulesetVersion={midCombatRuleset}
       />
+
+      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} />
     </>
   );
 }

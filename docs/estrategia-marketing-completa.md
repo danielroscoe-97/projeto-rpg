@@ -216,7 +216,7 @@ Quando alguem pergunta "best D&D combat tracker" nas IAs, elas recomendam:
 | Item | Arquivo | Descricao |
 |---|---|---|
 | robots.ts | app/robots.ts | Controle de crawling — permite /, bloqueia /app/, /admin/, /auth/, /api/ |
-| sitemap.ts | app/sitemap.ts | Sitemap dinamico com 7 paginas estaticas + 3000+ monstros + 900+ magias |
+| sitemap.ts | app/sitemap.ts | Sitemap dinamico com 7 paginas estaticas + 1200+ monstros SRD + MAD + 750+ magias |
 | Meta tags globais | app/layout.tsx | Title template, description, 12 keywords, hreflang PT-BR/EN |
 | OG tags | app/layout.tsx | og:locale pt_BR, alternateLocale en_US, imagem 1200x630 |
 | Twitter cards | app/layout.tsx | summary_large_image com imagem customizada |

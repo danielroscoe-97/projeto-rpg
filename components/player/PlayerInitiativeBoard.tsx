@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -21,6 +21,8 @@ import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 import { DiceRoller } from "@/components/dice/DiceRoller";
+import { CombatActionLog } from "@/components/combat/CombatActionLog";
+import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 
 export interface CombatLogEntry {
   text: string;
@@ -55,6 +57,8 @@ interface PlayerCombatant {
   group_order?: number | null;
   /** Death saves state for players at 0 HP */
   death_saves?: { successes: number; failures: number };
+  /** Turn count per condition — shown for other players only (anti-metagaming: hidden for monsters) */
+  condition_durations?: Record<string, number>;
 }
 
 
@@ -189,6 +193,8 @@ interface PlayerInitiativeBoardProps {
   onToggleSlot?: (level: string, slotIndex: number) => void;
   /** Callback when player triggers Long Rest */
   onLongRest?: () => void;
+  /** Callback when player self-toggles a beneficial condition on their own character */
+  onSelfConditionToggle?: (combatantId: string, condition: string) => void;
 }
 
 export function PlayerInitiativeBoard({
@@ -215,12 +221,14 @@ export function PlayerInitiativeBoard({
   spellSlots,
   onToggleSlot,
   onLongRest,
+  onSelfConditionToggle,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
   const turnRef = useRef<HTMLLIElement | null>(null);
   // End Turn delivery confirmation states: idle → pending → confirmed/retry/error
   const [endTurnState, setEndTurnState] = useState<"idle" | "pending" | "confirmed" | "retry" | "error">("idle");
+  const [showActionLog, setShowActionLog] = useState(false);
   const endTurnTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const endTurnPending = endTurnState !== "idle";
   const clearEndTurnTimers = useCallback(() => {
@@ -501,6 +509,15 @@ export function PlayerInitiativeBoard({
               )}
               {/* Dice roller — accessible during the whole combat */}
               <DiceRoller />
+              <button
+                type="button"
+                onClick={() => setShowActionLog(v => !v)}
+                className="shrink-0 p-1.5 text-muted-foreground hover:text-gold transition-colors rounded"
+                aria-label={tc("combat_log_title")}
+                data-testid="player-action-log-btn"
+              >
+                <ScrollText className="w-4 h-4" />
+              </button>
               {currentCombatant && (
                 <span className="shrink-0 text-xs font-mono text-muted-foreground/70 tabular-nums" aria-label={`Rodada ${roundNumber}`}>
                   R{roundNumber}
@@ -676,6 +693,30 @@ export function PlayerInitiativeBoard({
                         rulesetVersion={(pc.ruleset_version as RulesetVersion) ?? rulesetVersion}
                       />
                     ))}
+                  </div>
+                )}
+                {/* Beneficial conditions self-picker — desktop own-char card */}
+                {onSelfConditionToggle && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {BENEFICIAL_CONDITIONS.map((condition) => {
+                      const isActive = pc.conditions.includes(condition);
+                      return (
+                        <button
+                          key={condition}
+                          type="button"
+                          onClick={() => onSelfConditionToggle(pc.id, condition)}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
+                            isActive
+                              ? "bg-emerald-600 text-white"
+                              : "bg-emerald-900/20 text-emerald-400/70 hover:bg-emerald-900/40 hover:text-emerald-300"
+                          }`}
+                          aria-pressed={isActive}
+                          title={isActive ? `Remove ${condition}` : `Apply ${condition}`}
+                        >
+                          {condition}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
                 {/* Spell browser — desktop own-char card */}
@@ -936,8 +977,34 @@ export function PlayerInitiativeBoard({
                       key={condition}
                       condition={condition}
                       rulesetVersion={(combatant.ruleset_version as RulesetVersion) ?? rulesetVersion}
+                      turnCount={isPlayer && !isOwnChar ? combatant.condition_durations?.[condition] : undefined}
                     />
                   ))}
+                </div>
+              )}
+
+              {/* Beneficial conditions self-picker — own character in list (mobile + desktop) */}
+              {isOwnChar && onSelfConditionToggle && (
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {BENEFICIAL_CONDITIONS.map((condition) => {
+                    const isActive = combatant.conditions.includes(condition);
+                    return (
+                      <button
+                        key={condition}
+                        type="button"
+                        onClick={() => onSelfConditionToggle(combatant.id, condition)}
+                        className={`inline-flex items-center px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
+                          isActive
+                            ? "bg-emerald-600 text-white"
+                            : "bg-emerald-900/20 text-emerald-400/70 hover:bg-emerald-900/40 hover:text-emerald-300"
+                        }`}
+                        aria-pressed={isActive}
+                        title={isActive ? `Remove ${condition}` : `Apply ${condition}`}
+                      >
+                        {condition}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 
@@ -1055,6 +1122,8 @@ export function PlayerInitiativeBoard({
         playerClass={primaryPlayerChar?.class}
         rulesetVersion={rulesetVersion}
       />
+
+      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} playerId={ownChar?.id} />
     </div>
   );
 }

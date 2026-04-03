@@ -23,7 +23,9 @@ export function LanguageSwitcher() {
       // Ignore — cookie fallback is sufficient for anonymous users
     }
 
-    startTransition(() => router.refresh());
+    // Full navigation to force middleware to pick up the updated cookie.
+    // router.refresh() alone does not re-run middleware with the new cookie value.
+    startTransition(() => router.push(window.location.pathname));
   }
 
   return (

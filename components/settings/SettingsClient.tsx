@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { AccountDeletion } from "@/components/settings/AccountDeletion";
@@ -14,6 +15,7 @@ const SubscriptionPanel = dynamic(() => import("@/components/billing/Subscriptio
   loading: () => <div className="animate-pulse h-32 bg-surface-secondary rounded-lg" />,
 });
 import { ImportManagement } from "@/components/import/ImportManagement";
+import { BugReportDialog } from "@/components/feedback/BugReportDialog";
 import { RoleSelector } from "@/components/settings/RoleSelector";
 import { UserProfile } from "@/components/settings/UserProfile";
 import { SettingsForm } from "@/components/settings/SettingsForm";
@@ -36,14 +38,9 @@ export function SettingsClient({ email, displayName = "", avatarUrl = null }: Se
   }, [loadSubscription]);
 
   // Support ?tab=billing query param for deep linking from billing CTAs
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get("tab");
-      if (tab === "billing") return "billing";
-    }
-    return "preferences";
-  });
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") === "billing" ? "billing" : "preferences";
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [wikiTab, setWikiTab] = useState<WikiTab>("spells");
 
   const tabs: { id: Tab; label: string; icon: string }[] = [
@@ -94,6 +91,7 @@ export function SettingsClient({ email, displayName = "", avatarUrl = null }: Se
 }
 
 function PreferencesTab({ email, displayName, avatarUrl }: { email: string; displayName: string; avatarUrl: string | null }) {
+  const t = useTranslations("settings");
   return (
     <div className="space-y-6 animate-[fade-in_0.3s_ease-out]">
       {/* User profile with avatar, name, email, plan */}
@@ -109,6 +107,13 @@ function PreferencesTab({ email, displayName, avatarUrl }: { email: string; disp
 
       {/* External content management */}
       <ImportManagement />
+
+      {/* Bug report / feedback */}
+      <section className="bg-card rounded-lg border border-border p-5">
+        <h2 className="text-foreground font-semibold mb-1">{t("feedback_title")}</h2>
+        <p className="text-muted-foreground text-sm mb-3">{t("feedback_description")}</p>
+        <BugReportDialog />
+      </section>
     </div>
   );
 }

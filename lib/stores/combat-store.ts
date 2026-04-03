@@ -7,6 +7,7 @@ import {
   assignInitiativeOrder,
 } from "@/lib/utils/initiative";
 import { saveCombatBackup } from "@/lib/stores/combat-persist";
+import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 
 type CombatStore = EncounterState & CombatActions;
 
@@ -32,6 +33,8 @@ const initialState: EncounterState = {
   expandedGroups: {},
   combatStartedAt: null,
   turnStartedAt: null,
+  turnTimeAccumulated: {},
+  removedCombatantNames: {},
 };
 
 export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, get) => ({
@@ -50,9 +53,15 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     }),
 
   removeCombatant: (id) =>
-    set((state) => ({
-      combatants: state.combatants.filter((c) => c.id !== id),
-    })),
+    set((state) => {
+      const removed = state.combatants.find((c) => c.id === id);
+      return {
+        combatants: state.combatants.filter((c) => c.id !== id),
+        removedCombatantNames: removed
+          ? { ...state.removedCombatantNames, [id]: removed.name }
+          : state.removedCombatantNames,
+      };
+    }),
 
   clearEncounter: () => {
     try { localStorage.removeItem("combat-timers"); } catch { /* ignore */ }
@@ -104,8 +113,8 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
   startCombat: () => {
     const now = Date.now();
-    try { localStorage.setItem("combat-timers", JSON.stringify({ combatStartedAt: now, turnStartedAt: now })); } catch { /* storage unavailable */ }
-    set({ is_active: true, current_turn_index: 0, combatStartedAt: now, turnStartedAt: now });
+    try { localStorage.setItem("combat-timers", JSON.stringify({ combatStartedAt: now, turnStartedAt: now, turnTimeAccumulated: {} })); } catch { /* storage unavailable */ }
+    set({ is_active: true, current_turn_index: 0, combatStartedAt: now, turnStartedAt: now, turnTimeAccumulated: {} });
   },
 
   hydrateCombatants: (combatants) => {
@@ -113,6 +122,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
     const { is_active } = get();
     let combatStartedAt: number | null = null;
     let turnStartedAt: number | null = null;
+    let turnTimeAccumulated: Record<string, number> = {};
     if (is_active) {
       try {
         const saved = localStorage.getItem("combat-timers");
@@ -120,16 +130,25 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           const parsed = JSON.parse(saved);
           combatStartedAt = parsed.combatStartedAt ?? null;
           turnStartedAt = parsed.turnStartedAt ?? null;
+          turnTimeAccumulated = parsed.turnTimeAccumulated ?? {};
         }
       } catch { /* ignore */ }
     }
-    set({ combatants, combatStartedAt, turnStartedAt });
+    set({ combatants, combatStartedAt, turnStartedAt, turnTimeAccumulated });
   },
 
   advanceTurn: () =>
     set((state) => {
       const { combatants, current_turn_index, round_number } = state;
       if (combatants.length === 0) return state;
+
+      // Accumulate elapsed turn time for the current combatant
+      const currentId = combatants[current_turn_index]?.id;
+      const elapsed = state.turnStartedAt ? Date.now() - state.turnStartedAt : 0;
+      const accumulated = { ...state.turnTimeAccumulated };
+      if (currentId && elapsed > 0) {
+        accumulated[currentId] = (accumulated[currentId] ?? 0) + elapsed;
+      }
 
       // Re-sort by initiative before advancing — this applies any mid-combat
       // initiative changes without disrupting the current combatant's turn.
@@ -163,10 +182,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         : sorted;
       return {
         combatants: finalCombatants,
-        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants }),
+        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants, previousTurnTimeAccumulated: state.turnTimeAccumulated, previousTurnStartedAt: state.turnStartedAt }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
-        turnStartedAt: (() => { const now = Date.now(); try { const saved = JSON.parse(localStorage.getItem("combat-timers") ?? "{}"); localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: now })); } catch { /* ignore */ } return now; })(),
+        turnTimeAccumulated: accumulated,
+        turnStartedAt: (() => { const now = Date.now(); try { const saved = JSON.parse(localStorage.getItem("combat-timers") ?? "{}"); localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: now, turnTimeAccumulated: accumulated })); } catch { /* ignore */ } return now; })(),
       };
     }),
 
@@ -383,14 +403,26 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           ),
         });
         break;
-      case "turn":
+      case "turn": {
+        const restoredTime = entry.previousTurnTimeAccumulated;
+        const freshTurnStart = Date.now(); // S2-A: fresh timer instead of stale old timestamp
         set({
           undoStack: stack,
           combatants: entry.previousCombatants,
           current_turn_index: Math.min(entry.previousTurnIndex, entry.previousCombatants.length - 1),
           round_number: entry.previousRound,
+          turnTimeAccumulated: restoredTime,
+          turnStartedAt: freshTurnStart,
         });
+        // P2-B: Remove the phantom "turn" log entry added by handleAdvanceTurn
+        useCombatLogStore.getState().removeLastTurnEntry();
+        // Sync localStorage so page refresh loads correct undo'd state
+        try {
+          const saved = JSON.parse(localStorage.getItem("combat-timers") ?? "{}");
+          localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: freshTurnStart, turnTimeAccumulated: restoredTime }));
+        } catch { /* ignore */ }
         break;
+      }
       case "hidden":
         set({
           undoStack: stack,

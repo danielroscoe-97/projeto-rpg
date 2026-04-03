@@ -25,6 +25,7 @@ interface DashboardOverviewProps {
     name: string;
     created_at: string;
     player_count: number;
+    cover_image_url?: string | null;
   }[];
   savedEncounters: SavedEncounterRow[];
   userId: string;
@@ -60,6 +61,18 @@ interface DashboardOverviewProps {
     new_combat: string;
     create_npc: string;
     invite_player: string;
+    ongoing_combats: string;
+    npc_dialog_title: string;
+    npc_global_title: string;
+    npc_global_desc: string;
+    npc_for_campaign: string;
+    npc_created_success: string;
+    invite_dialog_title: string;
+    no_campaigns_yet: string;
+    no_campaigns_create: string;
+    no_campaigns_cta: string;
+    npc_global_badge: string;
+    campaigns_players_singular: string;
     view_all: string;
     dm_empty_title: string;
     dm_empty_desc: string;
@@ -146,8 +159,20 @@ export function DashboardOverview({
             new_combat: t.new_combat,
             create_npc: t.create_npc,
             invite_player: t.invite_player,
+            npc_dialog_title: t.npc_dialog_title,
+            npc_global_title: t.npc_global_title,
+            npc_global_desc: t.npc_global_desc,
+            npc_for_campaign: t.npc_for_campaign,
+            npc_created_success: t.npc_created_success,
+            invite_dialog_title: t.invite_dialog_title,
+            no_campaigns_yet: t.no_campaigns_yet,
+            no_campaigns_create: t.no_campaigns_create,
+            no_campaigns_cta: t.no_campaigns_cta,
+            npc_global_badge: t.npc_global_badge,
+            campaigns_players_plural: t.campaigns_players_plural,
+            campaigns_players_singular: t.campaigns_players_singular,
           }}
-          campaignId={campaigns[0]?.id}
+          campaigns={campaigns}
         />
       </div>
 
@@ -221,7 +246,7 @@ export function DashboardOverview({
           <>
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                {t.quick_combat}
+                {t.ongoing_combats}
               </h2>
               <Link
                 href="/app/dashboard/combats"

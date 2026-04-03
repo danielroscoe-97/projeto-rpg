@@ -65,7 +65,7 @@ export default async function DashboardPage() {
   // Fetch campaigns owned by user
   const { data: rawCampaigns } = await supabase
     .from("campaigns")
-    .select("id, name, created_at, player_characters(count)")
+    .select("id, name, created_at, cover_image_url, player_characters(count)")
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -73,6 +73,7 @@ export default async function DashboardPage() {
     id: c.id as string,
     name: c.name as string,
     created_at: c.created_at as string,
+    cover_image_url: (c.cover_image_url as string | null) ?? null,
     player_count:
       (c.player_characters as { count: number }[])[0]?.count ?? 0,
   }));
@@ -126,6 +127,18 @@ export default async function DashboardPage() {
     new_combat: ts("new_combat"),
     create_npc: ts("create_npc"),
     invite_player: ts("invite_player"),
+    ongoing_combats: t("ongoing_combats"),
+    npc_dialog_title: t("npc_dialog_title"),
+    npc_global_title: t("npc_global_title"),
+    npc_global_desc: t("npc_global_desc"),
+    npc_for_campaign: t("npc_for_campaign"),
+    npc_created_success: t("npc_created_success"),
+    invite_dialog_title: t("invite_dialog_title"),
+    no_campaigns_yet: t("no_campaigns_yet"),
+    no_campaigns_create: t("no_campaigns_create"),
+    no_campaigns_cta: t("no_campaigns_cta"),
+    npc_global_badge: t("npc_global_badge"),
+    campaigns_players_singular: t("campaigns_players_singular"),
     // Story 11.0 additions
     view_all: t("view_all"),
     dm_empty_title: t("dm_empty_title"),

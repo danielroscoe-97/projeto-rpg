@@ -37,6 +37,7 @@ import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
+import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
@@ -45,7 +46,8 @@ import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
-import { Users } from "lucide-react";
+import { Users, ScrollText } from "lucide-react";
+import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
@@ -95,15 +97,16 @@ export function CombatSessionClient({
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
-  const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
+  const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   // Broadcast-driven player status — fed to PlayersOnlinePanel for < 2s latency (spec 4.3.6)
   const [playerBroadcastStatuses, setPlayerBroadcastStatuses] = useState<Record<string, "online" | "idle" | "offline">>({});
   const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [showActionLog, setShowActionLog] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
-  const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number } | null>(null);
+  const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number; combatDuration: number } | null>(null);
   // C.15: Post-combat state machine (leaderboard → poll → result)
   type PostCombatPhase = "leaderboard" | "poll" | "result" | null;
   const [postCombatPhase, setPostCombatPhase] = useState<PostCombatPhase>(null);
@@ -143,16 +146,23 @@ export function CombatSessionClient({
     const pending = pendingStats;
     if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
       setLeaderboardData(pending.stats);
-      setLeaderboardMeta({ name: finalName, rounds: pending.rounds });
+      setLeaderboardMeta({ name: finalName, rounds: pending.rounds, combatDuration: pending.combatDuration });
       setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
       setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
       if (sid) {
+        // P3-A: Map real names to display_name for player privacy (anti-metagaming)
+        const combatants = useCombatStore.getState().combatants;
+        const playerSafeStats = pending.stats.map((s) => {
+          const c = combatants.find((x) => x.name === s.name);
+          return c?.display_name ? { ...s, name: c.display_name } : s;
+        });
         broadcastEvent(sid, {
           type: "session:combat_stats",
-          stats: pending.stats,
+          stats: playerSafeStats,
           encounter_name: finalName,
           rounds: pending.rounds,
+          combatDuration: pending.combatDuration,
         });
       }
     } else {
@@ -164,14 +174,34 @@ export function CombatSessionClient({
   // Intercept end encounter: show name modal, then compute stats and show leaderboard
   const handleEndEncounter = useCallback(() => {
     const logEntries = useCombatLogStore.getState().entries;
-    const stats = computeCombatStats(logEntries);
-    const rounds = getMaxRound(logEntries);
     const state = useCombatStore.getState();
+
+    // Accumulate the final (active) turn's elapsed time before computing stats
+    const finalAccumulated = { ...state.turnTimeAccumulated };
+    const currentId = state.combatants[state.current_turn_index]?.id;
+    const elapsed = state.turnStartedAt ? Date.now() - state.turnStartedAt : 0;
+    if (currentId && elapsed > 0) {
+      finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
+    }
+
+    // Build ID → name map for time injection
+    const idToName: Record<string, string> = {};
+    for (const c of state.combatants) {
+      idToName[c.id] = c.name;
+    }
+    // P2-C: Include names of combatants removed mid-combat so their turn time isn't lost
+    for (const [id, name] of Object.entries(state.removedCombatantNames)) {
+      if (!idToName[id]) idToName[id] = name;
+    }
+
+    const stats = computeCombatStats(logEntries, finalAccumulated, idToName);
+    const rounds = getMaxRound(logEntries);
+    const combatDuration = state.combatStartedAt ? Date.now() - state.combatStartedAt : 0;
     const existingName = state.encounter_name.trim();
     const suggestedName = existingName || generateEncounterName(state.combatants);
 
     setPendingEncounterName(suggestedName);
-    setPendingStats({ stats, rounds });
+    setPendingStats({ stats, rounds, combatDuration });
     setNameModalOpen(true);
   }, []);
 
@@ -248,6 +278,11 @@ export function CombatSessionClient({
   useEffect(() => {
     const store = useCombatStore.getState();
     if (encounterId && sessionId) {
+      // P1-A: Save timer data before clearEncounter wipes localStorage
+      let timerBackup: string | null = null;
+      if (isActive) {
+        try { timerBackup = localStorage.getItem("combat-timers"); } catch { /* ignore */ }
+      }
       store.clearEncounter();
       store.setEncounterId(encounterId, sessionId);
       store.hydrateCombatants(initialCombatants);
@@ -257,6 +292,18 @@ export function CombatSessionClient({
             ? Math.max(0, Math.min(currentTurnIndex, initialCombatants.length - 1))
             : 0;
         store.hydrateActiveState(clampedIndex, Math.max(1, roundNumber));
+        // P1-A: Restore timer data after hydration (clearEncounter wiped it)
+        if (timerBackup) {
+          try {
+            const parsed = JSON.parse(timerBackup);
+            useCombatStore.setState({
+              combatStartedAt: parsed.combatStartedAt ?? null,
+              turnStartedAt: parsed.turnStartedAt ?? null,
+              turnTimeAccumulated: parsed.turnTimeAccumulated ?? {},
+            });
+            localStorage.setItem("combat-timers", timerBackup);
+          } catch { /* ignore */ }
+        }
       }
       // Fallback: if server returned no combatants, try localStorage backup
       if (initialCombatants.length === 0) {
@@ -299,8 +346,12 @@ export function CombatSessionClient({
         }
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
-        // Auto-expand group if first combatant belongs to one
+        // P2-A: Log first combatant's turn so all combatants have matching turn entries
         const firstCombatant = sorted[0];
+        if (firstCombatant) {
+          useCombatLogStore.getState().addEntry({ round: 1, type: "turn", actorName: firstCombatant.name, description: `Turn: ${firstCombatant.name}` });
+        }
+        // Auto-expand group if first combatant belongs to one
         if (firstCombatant?.monster_group_id) {
           store.toggleGroupExpanded(firstCombatant.monster_group_id);
         }
@@ -329,8 +380,12 @@ export function CombatSessionClient({
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
       store.startCombat();
-      // Auto-expand group if first combatant belongs to one
+      // P2-A: Log first combatant's turn so all combatants have matching turn entries
       const firstNew = sorted[0];
+      if (firstNew) {
+        useCombatLogStore.getState().addEntry({ round: 1, type: "turn", actorName: firstNew.name, description: `Turn: ${firstNew.name}` });
+      }
+      // Auto-expand group if first combatant belongs to one
       if (firstNew?.monster_group_id) {
         store.toggleGroupExpanded(firstNew.monster_group_id);
       }
@@ -891,6 +946,34 @@ export function CombatSessionClient({
     // F-38: DM explicitly ignores player chat messages (AC: DM does not see player chat)
     ch.on("broadcast", { event: "chat:player_message" }, () => { /* ignored by DM */ });
 
+    // Listen for player:self_condition_toggle — player self-applied a beneficial condition
+    const handleSelfConditionToggle = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { combatant_id, condition, player_name } = payload as { combatant_id: string; condition: string; player_name: string };
+      if (!combatant_id || !condition || typeof condition !== "string") return;
+      // Security: only allow beneficial conditions
+      if (!(BENEFICIAL_CONDITIONS as readonly string[]).includes(condition)) return;
+      // Security: combatant must exist and be a player — use ID as primary key, name as confirmation
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (!combatant || !combatant.is_player) return;
+      // Name confirmation prevents another client from sending another player's combatant_id
+      if (combatant.name.toLowerCase() !== String(player_name ?? "").toLowerCase()) return;
+      // Apply the toggle via the store
+      useCombatStore.getState().toggleCondition(combatant_id, condition);
+      // Broadcast updated conditions to all players
+      const updated = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (updated) {
+        broadcastEvent(getSessionId()!, {
+          type: "combat:condition_change",
+          combatant_id,
+          conditions: updated.conditions,
+          condition_durations: updated.condition_durations,
+        });
+      }
+    };
+
+    ch.on("broadcast", { event: "player:self_condition_toggle" }, handleSelfConditionToggle);
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef
   }, [is_active, getSessionId]);
@@ -917,6 +1000,16 @@ export function CombatSessionClient({
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
           </span>
+          <button
+            type="button"
+            onClick={() => setShowActionLog(v => !v)}
+            className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+            aria-label={t("combat_log_title")}
+            title={t("combat_log_title")}
+            data-testid="action-log-btn"
+          >
+            <ScrollText className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={handleEndEncounter}
@@ -1043,6 +1136,7 @@ export function CombatSessionClient({
             onSelectMonster={handleSelectMonster}
             onSelectMonsterGroup={handleSelectMonsterGroup}
             showManualAdd
+            defaultManualOpen
             onManualAdd={(data) => {
               const currentCombatants = useCombatStore.getState().combatants;
               const numberedName = getNumberedName(data.name, currentCombatants);
@@ -1160,6 +1254,7 @@ export function CombatSessionClient({
             stats={leaderboardData}
             encounterName={leaderboardMeta.name}
             rounds={leaderboardMeta.rounds}
+            combatDuration={leaderboardMeta.combatDuration}
             // UX.08 — DM skips poll (biased as encounter creator), goes straight to result
             onClose={() => setPostCombatPhase("result")}
           />
@@ -1182,6 +1277,8 @@ export function CombatSessionClient({
         open={playerDrawerOpen}
         onClose={() => setPlayerDrawerOpen(false)}
       />
+
+      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} />
     </div>
   );
 }

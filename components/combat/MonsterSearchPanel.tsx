@@ -105,6 +105,8 @@ interface MonsterSearchPanelProps {
   onSelectPlayer?: (player: CampaignPlayer) => void;
   /** Show manual add button and form */
   showManualAdd?: boolean;
+  /** Start with manual add form expanded (default: false) */
+  defaultManualOpen?: boolean;
   /** Called for manual add */
   onManualAdd?: (data: { name: string; hp?: number; ac?: number; initiative?: number }) => void;
   /** Placeholder override */
@@ -123,6 +125,7 @@ export function MonsterSearchPanel({
   campaignPlayers,
   onSelectPlayer,
   showManualAdd,
+  defaultManualOpen = false,
   onManualAdd,
   placeholder,
 }: MonsterSearchPanelProps) {
@@ -146,7 +149,7 @@ export function MonsterSearchPanel({
   const [madMonsters, setMadMonsters] = useState<SrdMonster[]>([]);
   const [isHidden, setIsHidden] = useState(false);
   const [rowQuantities, setRowQuantities] = useState<Record<string, number>>({});
-  const [manualOpen, setManualOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(defaultManualOpen);
   const [manualName, setManualName] = useState("");
   const [manualHp, setManualHp] = useState("");
   const [manualAc, setManualAc] = useState("");
@@ -686,7 +689,7 @@ export function MonsterSearchPanel({
 
       {/* Manual add form */}
       {manualOpen && onManualAdd && (
-        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row">
+        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row" data-tour-id="add-row">
           <p className="text-xs font-medium text-foreground/80">{t("omnibar_manual_title")}</p>
           <div className="grid grid-cols-4 gap-2">
             <input

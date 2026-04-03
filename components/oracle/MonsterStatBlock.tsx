@@ -412,6 +412,48 @@ export function MonsterStatBlock({
         </>
       )}
 
+      {/* Lair Actions */}
+      {monster.lair_actions && monster.lair_actions.length > 0 && (
+        <>
+          <CardDivider />
+          <h4 className="section-header">Lair Actions</h4>
+          {monster.lair_actions_intro && (
+            <p className="trait-desc" style={{ marginBottom: "0.5em", fontStyle: "italic" }}>
+              {renderDesc(monster.lair_actions_intro, "Lair Actions")}
+            </p>
+          )}
+          <div>
+            {monster.lair_actions.map((item, i) => (
+              <p key={item.name || i} className="trait-block">
+                {item.name && <span className="trait-name">{item.name}. </span>}
+                <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
+              </p>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Regional Effects */}
+      {monster.regional_effects && monster.regional_effects.length > 0 && (
+        <>
+          <CardDivider />
+          <h4 className="section-header">Regional Effects</h4>
+          {monster.regional_effects_intro && (
+            <p className="trait-desc" style={{ marginBottom: "0.5em", fontStyle: "italic" }}>
+              {renderDesc(monster.regional_effects_intro, "Regional Effects")}
+            </p>
+          )}
+          <div>
+            {monster.regional_effects.map((item, i) => (
+              <p key={item.name || i} className="trait-block">
+                {item.name && <span className="trait-name">{item.name}. </span>}
+                <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
+              </p>
+            ))}
+          </div>
+        </>
+      )}
+
       {isMonsterADay && (
         <>
           <CardDivider />

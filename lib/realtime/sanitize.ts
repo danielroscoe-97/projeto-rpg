@@ -65,6 +65,8 @@ export function sanitizePayloadServer(
   if (event.type === "player:poll_vote") return null;
   // P1.01: player:hp_action is player→DM only, must not re-broadcast to other players
   if (event.type === "player:hp_action") return null;
+  // player:self_condition_toggle is player→DM only — DM re-broadcasts the result as combat:condition_change
+  if (event.type === "player:self_condition_toggle") return null;
 
   // Turn advance: adjust index for visible combatants
   if (event.type === "combat:turn_advance") {

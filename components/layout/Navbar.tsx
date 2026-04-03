@@ -57,7 +57,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
             className="relative z-50 font-display text-lg text-gold tracking-[0.15em] uppercase font-bold min-h-[44px] inline-flex items-center gap-2 hover:drop-shadow-[0_0_8px_rgba(212,168,83,0.4)] transition-all duration-[250ms]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/art/brand/logo-icon.svg" alt="" width={28} height={28} className="pointer-events-none drop-shadow-[0_0_8px_rgba(212,168,83,0.3)]" aria-hidden="true" />
+            <img src="/art/brand/logo-icon.svg" alt="" width={36} height={36} className="pointer-events-none drop-shadow-[0_0_8px_rgba(212,168,83,0.3)]" aria-hidden="true" />
             {brand}
             {syncSlot}
           </Link>

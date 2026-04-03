@@ -33,6 +33,7 @@ export type RealtimeEventType =
   | "player:death_save"
   | "player:poll_vote"
   | "player:hp_action"
+  | "player:self_condition_toggle"
   | "chat:player_message"
   | "chat:dm_postit";
 
@@ -171,6 +172,7 @@ export interface RealtimeCombatStats {
   stats: CombatantStats[];
   encounter_name: string;
   rounds: number;
+  combatDuration?: number;
 }
 
 export interface RealtimeSessionEnded {
@@ -248,6 +250,16 @@ export interface RealtimeChatPlayerMessage {
   sent_at: string;
 }
 
+export interface RealtimePlayerSelfConditionToggle {
+  type: "player:self_condition_toggle";
+  /** Name of the player initiating the toggle */
+  player_name: string;
+  /** Combatant ID the player is toggling a condition on (must be their own character) */
+  combatant_id: string;
+  /** The condition being toggled (must be in BENEFICIAL_CONDITIONS) */
+  condition: string;
+}
+
 export interface RealtimeChatDmPostit {
   type: "chat:dm_postit";
   /** Client-generated unique postit id */
@@ -290,7 +302,8 @@ export type RealtimeEvent =
   | RealtimePlayerPollVote
   | RealtimePlayerHpAction
   | RealtimeChatPlayerMessage
-  | RealtimeChatDmPostit;
+  | RealtimeChatDmPostit
+  | RealtimePlayerSelfConditionToggle;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 

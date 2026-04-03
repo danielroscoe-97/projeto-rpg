@@ -90,6 +90,24 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Agilizar o Combate no D&D 5e | Pocket DM",
   },
+  {
+    slug: "como-usar-pocket-dm-tutorial",
+    title: "Como Usar o Pocket DM — Tutorial Completo para Mestres de D&D 5e",
+    description:
+      "Tutorial passo a passo do Pocket DM: como montar encontros, adicionar monstros, gerenciar combate, convidar jogadores e usar o bestiário e oráculo de magias. Guia completo com screenshots.",
+    date: "2026-04-03",
+    readingTime: "12 min",
+    keywords: [
+      "Pocket DM",
+      "como usar Pocket DM",
+      "Pocket DM tutorial",
+      "combat tracker tutorial",
+      "rastreador de combate D&D tutorial",
+      "pocketdm",
+      "pocket dm app",
+    ],
+    ogTitle: "Como Usar o Pocket DM — Tutorial Completo | Pocket DM",
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {

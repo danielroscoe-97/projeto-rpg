@@ -89,6 +89,7 @@ export function useCharacterSpells(characterId: string) {
   // Toggle status
   const toggleStatus = useCallback(
     async (spellId: string, newStatus: SpellStatus) => {
+      const backup = spells.find((s) => s.id === spellId);
       setSpells((prev) =>
         prev.map((s) => (s.id === spellId ? { ...s, status: newStatus } : s))
       );
@@ -96,9 +97,14 @@ export function useCharacterSpells(characterId: string) {
         .from("character_spells")
         .update({ status: newStatus })
         .eq("id", spellId);
-      if (error) toast.error("Failed to update spell");
+      if (error && backup) {
+        setSpells((prev) =>
+          prev.map((s) => (s.id === spellId ? backup : s))
+        );
+        toast.error("Failed to update spell");
+      }
     },
-    [supabase]
+    [supabase, spells]
   );
 
   // Remove spell

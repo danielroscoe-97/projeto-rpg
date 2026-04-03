@@ -19,7 +19,7 @@ interface GuestCombatStatsActions {
   trackKill: (actorName: string) => void;
   reset: () => void;
   /** Build CombatantStats[] compatible with the existing CombatLeaderboard. */
-  getStats: () => CombatantStats[];
+  getStats: (turnTimeByName?: Record<string, number>, turnCountByName?: Record<string, number>) => CombatantStats[];
 }
 
 type GuestCombatStatsStore = GuestCombatStatsState & GuestCombatStatsActions;
@@ -52,13 +52,18 @@ export const useGuestCombatStats = create<GuestCombatStatsStore>((set, get) => (
 
   reset: () => set(emptyState),
 
-  getStats: () => {
+  /**
+   * Build CombatantStats[] compatible with the existing CombatLeaderboard.
+   * Optionally accepts turn time data to inject into stats.
+   */
+  getStats: (turnTimeByName?: Record<string, number>, turnCountByName?: Record<string, number>) => {
     const { damageDealt, damageReceived, healingDone, kills } = get();
     const names = new Set([
       ...Object.keys(damageDealt),
       ...Object.keys(damageReceived),
       ...Object.keys(healingDone),
       ...Object.keys(kills),
+      ...(turnTimeByName ? Object.keys(turnTimeByName) : []),
     ]);
 
     const stats: CombatantStats[] = Array.from(names).map((name) => ({
@@ -69,6 +74,8 @@ export const useGuestCombatStats = create<GuestCombatStatsStore>((set, get) => (
       knockouts: kills[name] ?? 0,
       criticalHits: 0,
       criticalFails: 0,
+      totalTurnTime: turnTimeByName?.[name] ?? 0,
+      turnCount: turnCountByName?.[name] ?? 0,
     }));
 
     return stats.sort((a, b) => b.totalDamageDealt - a.totalDamageDealt);

@@ -78,7 +78,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
     redirect(`/auth/sign-up?invite=${token}&campaign=${invite.campaign_id}`);
   }
 
-  // User is authenticated — show character creation / link flow
+  // Fetch user's standalone characters (available to bring into this campaign)
+  const { data: existingCharacters } = await supabase
+    .from("player_characters")
+    .select("id, name, race, class, level, max_hp, ac, token_url")
+    .eq("user_id", user.id)
+    .is("campaign_id", null)
+    .order("updated_at", { ascending: false });
+
+  // User is authenticated — show character selection / creation flow
   return (
     <div className="flex min-h-svh items-center justify-center p-6">
       <div className="w-full max-w-md">
@@ -89,6 +97,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
           dmName={campaignData.users?.display_name ?? campaignData.users?.email ?? "DM"}
           userId={user.id}
           token={token}
+          existingCharacters={existingCharacters ?? []}
         />
       </div>
     </div>
