@@ -74,8 +74,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     reorderCombatants,
   } = useCombatStore();
 
-  const [encounterName, setEncounterName] = useState("");
-  const [nameError, setNameError] = useState(false);
   const [rulesetVersion, setRulesetVersion] = useState<RulesetVersion>("2014");
   const [addRow, setAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -622,8 +620,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   // Start combat
   const handleStartCombat = async () => {
-    const trimmedName = encounterName.trim();
-    setNameError(false);
     if (combatants.length === 0) {
       setSubmitError(t("error_no_combatants"));
       return;
@@ -637,7 +633,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
     setSubmitError(null);
     setIsPending(true);
     try {
-      const finalName = trimmedName || generateEncounterName(combatants);
+      const finalName = generateEncounterName(combatants);
       await onStartCombat(finalName);
     } catch (err) {
       setSubmitError(
@@ -687,39 +683,10 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         )}
       </div>
 
-      {/* Encounter name + difficulty badge (inline) */}
-      <div>
-        <label htmlFor="encounter-name" className="text-sm font-medium text-foreground">
-          {t("encounter_name_label")}
-        </label>
-        <div className="mt-1 flex items-center gap-3 flex-wrap">
-          <input
-            id="encounter-name"
-            type="text"
-            value={encounterName}
-            onChange={(e) => {
-              setEncounterName(e.target.value);
-              if (nameError) setNameError(false);
-            }}
-            placeholder={t("encounter_name_placeholder")}
-            maxLength={60}
-            className={`w-full max-w-md ${inputClass}${nameError ? " field-error" : ""}`}
-            aria-invalid={nameError || undefined}
-            aria-describedby={nameError ? "encounter-name-error" : undefined}
-            data-testid="encounter-name-input"
-          />
-          <CRCalculator rulesetVersion={rulesetVersion} />
-        </div>
-        {nameError && (
-          <p id="encounter-name-error" className="text-red-400 text-xs mt-1">
-            {t("error_encounter_name_required")}
-          </p>
-        )}
-      </div>
-
-      {/* Toolbar: Ruleset + SRD Search + Campaign Loader + Preset Loader */}
+      {/* Toolbar: Ruleset + CR Calculator + Campaign Loader + Preset Loader */}
       <div className="flex items-end gap-3 flex-wrap">
         <RulesetSelector value={rulesetVersion} onChange={setRulesetVersion} />
+        <CRCalculator rulesetVersion={rulesetVersion} />
         <CampaignLoader onLoad={handleLoadCampaign} />
         <PresetLoader onLoad={handleLoadPreset} />
       </div>

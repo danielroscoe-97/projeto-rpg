@@ -132,7 +132,7 @@ export function CombatLaunchSheet({
               </div>
             </button>
 
-            {/* Carregar Preset — placeholder */}
+            {/* Carregar Preset de Combate — placeholder */}
             <div className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.06] opacity-50 cursor-not-allowed min-h-[56px]">
               <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-400/10">
                 <Package className="w-5 h-5 text-purple-400" />

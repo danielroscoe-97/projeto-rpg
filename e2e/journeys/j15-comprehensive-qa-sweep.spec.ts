@@ -296,7 +296,7 @@ test.describe("J15-E — Presets", () => {
   test("J15.E2 — Load preset button visible in encounter setup", async ({ page }) => {
     await goToNewSession(page);
 
-    const loadPresetBtn = page.locator('button:has-text("Carregar Preset"), button:has-text("Load Preset")');
+    const loadPresetBtn = page.locator('button:has-text("Carregar Preset de Combate"), button:has-text("Load Combat Preset")');
     await expect(loadPresetBtn).toBeVisible({ timeout: 10_000 });
   });
 });
