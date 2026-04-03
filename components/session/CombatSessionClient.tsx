@@ -37,6 +37,7 @@ import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
+import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
@@ -45,7 +46,7 @@ import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
-import { Users } from "lucide-react";
+import { Users, ScrollText } from "lucide-react";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
@@ -102,6 +103,7 @@ export function CombatSessionClient({
   // Broadcast-driven player status — fed to PlayersOnlinePanel for < 2s latency (spec 4.3.6)
   const [playerBroadcastStatuses, setPlayerBroadcastStatuses] = useState<Record<string, "online" | "idle" | "offline">>({});
   const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [showActionLog, setShowActionLog] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
   const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number } | null>(null);
   // C.15: Post-combat state machine (leaderboard → poll → result)
@@ -919,6 +921,16 @@ export function CombatSessionClient({
           </span>
           <button
             type="button"
+            onClick={() => setShowActionLog(v => !v)}
+            className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+            aria-label={t("combat_log_title")}
+            title={t("combat_log_title")}
+            data-testid="action-log-btn"
+          >
+            <ScrollText className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
             onClick={handleEndEncounter}
             className="px-3 py-2 bg-red-900/20 text-red-400 font-medium rounded-md hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
             aria-label="End encounter"
@@ -1182,6 +1194,8 @@ export function CombatSessionClient({
         open={playerDrawerOpen}
         onClose={() => setPlayerDrawerOpen(false)}
       />
+
+      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} />
     </div>
   );
 }

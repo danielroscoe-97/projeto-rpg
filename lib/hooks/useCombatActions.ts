@@ -401,7 +401,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [setError, getSessionId]);
 
-  const handleUpdateStats = useCallback((id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => {
+  const handleUpdateStats = useCallback((id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null; legendary_actions_total?: number | null }) => {
     const snap = useCombatStore.getState();
     const before = snap.combatants.find((x) => x.id === id);
     if (!before) return;
@@ -427,6 +427,13 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
           if (restStats.max_hp !== undefined) { dbStats.max_hp = restStats.max_hp; dbStats.current_hp = postCurrentHp; }
           if (restStats.ac !== undefined) dbStats.ac = restStats.ac;
           if (restStats.spell_save_dc !== undefined) dbStats.spell_save_dc = restStats.spell_save_dc;
+          if (restStats.legendary_actions_total !== undefined) {
+            dbStats.legendary_actions_total = restStats.legendary_actions_total;
+            if (restStats.legendary_actions_total === null || (before.legendary_actions_total !== null && restStats.legendary_actions_total < before.legendary_actions_total)) {
+              dbStats.legendary_actions_used = 0;
+              snap.updateCombatantStats(id, { legendary_actions_used: 0 } as Parameters<typeof snap.updateCombatantStats>[1]);
+            }
+          }
           broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...restStats });
           persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
         }
@@ -451,6 +458,13 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
     if (stats.ac !== undefined) dbStats.ac = stats.ac;
     if (stats.spell_save_dc !== undefined) dbStats.spell_save_dc = stats.spell_save_dc;
+    if (stats.legendary_actions_total !== undefined) {
+      dbStats.legendary_actions_total = stats.legendary_actions_total;
+      if (stats.legendary_actions_total === null || (before.legendary_actions_total !== null && stats.legendary_actions_total < before.legendary_actions_total)) {
+        dbStats.legendary_actions_used = 0;
+        snap.updateCombatantStats(id, { legendary_actions_used: 0 } as Parameters<typeof snap.updateCombatantStats>[1]);
+      }
+    }
     broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
     persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError, getSessionId]);

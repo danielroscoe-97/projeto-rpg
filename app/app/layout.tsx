@@ -13,8 +13,7 @@ import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { unstable_cache } from "next/cache";
-import { LayoutDashboard, BookOpen, Skull, Sparkles, HeartPulse, Backpack, Package, Settings, Music } from "lucide-react";
+import { BookOpen, Skull, Sparkles, HeartPulse, Backpack } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -31,57 +30,9 @@ export default async function AppLayout({
     redirect("/auth/login");
   }
 
-  // B.6: Check if user has DM access to decide whether to show Presets
-  // Cached for 60s to avoid 3 extra queries on every /app/* navigation
-  const getHasDmAccess = unstable_cache(
-    async (userId: string) => {
-      const [
-        { count: dmMembershipCount },
-        { count: ownedCampaignCount },
-        { data: userData },
-      ] = await Promise.all([
-        supabase
-          .from("campaign_members")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", userId)
-          .eq("role", "dm")
-          .eq("status", "active"),
-        supabase
-          .from("campaigns")
-          .select("id", { count: "exact", head: true })
-          .eq("owner_id", userId),
-        supabase
-          .from("users")
-          .select("role")
-          .eq("id", userId)
-          .maybeSingle(),
-      ]);
-
-      const userDbRole = userData?.role ?? "both";
-      return (
-        (dmMembershipCount ?? 0) > 0 ||
-        (ownedCampaignCount ?? 0) > 0 ||
-        userDbRole === "dm" ||
-        userDbRole === "both"
-      );
-    },
-    [`dm-access-${user.id}`],
-    { revalidate: 60 }
-  );
-
-  const hasDmAccess = await getHasDmAccess(user.id);
-
-  // Build nav links — conditionally include Presets
+  // Header = action bar only. Navigation lives in the sidebar.
+  // Only Compendium stays here (not duplicated in sidebar).
   const navLinks = [
-    {
-      href: "/app/dashboard",
-      label: (
-        <span className="inline-flex items-center gap-1.5">
-          <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
-          {t("dashboard")}
-        </span>
-      ),
-    },
     {
       label: (
         <span className="inline-flex items-center gap-1.5">
@@ -127,38 +78,6 @@ export default async function AppLayout({
           ),
         },
       ],
-    },
-    // Only show Soundboard and Presets if user has DM access
-    ...(hasDmAccess
-      ? [
-          {
-            href: "/app/dashboard/soundboard",
-            label: (
-              <span className="inline-flex items-center gap-1.5">
-                <Music className="w-4 h-4" aria-hidden="true" />
-                {t("soundboard")}
-              </span>
-            ),
-          },
-          {
-            href: "/app/presets",
-            label: (
-              <span className="inline-flex items-center gap-1.5">
-                <Package className="w-4 h-4" aria-hidden="true" />
-                {t("presets")}
-              </span>
-            ),
-          },
-        ]
-      : []),
-    {
-      href: "/app/settings",
-      label: (
-        <span className="inline-flex items-center gap-1.5">
-          <Settings className="w-4 h-4" aria-hidden="true" />
-          {t("settings")}
-        </span>
-      ),
     },
   ];
 

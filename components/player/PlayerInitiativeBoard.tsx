@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -21,6 +21,7 @@ import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 import { DiceRoller } from "@/components/dice/DiceRoller";
+import { CombatActionLog } from "@/components/combat/CombatActionLog";
 
 export interface CombatLogEntry {
   text: string;
@@ -221,6 +222,7 @@ export function PlayerInitiativeBoard({
   const turnRef = useRef<HTMLLIElement | null>(null);
   // End Turn delivery confirmation states: idle → pending → confirmed/retry/error
   const [endTurnState, setEndTurnState] = useState<"idle" | "pending" | "confirmed" | "retry" | "error">("idle");
+  const [showActionLog, setShowActionLog] = useState(false);
   const endTurnTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const endTurnPending = endTurnState !== "idle";
   const clearEndTurnTimers = useCallback(() => {
@@ -501,6 +503,15 @@ export function PlayerInitiativeBoard({
               )}
               {/* Dice roller — accessible during the whole combat */}
               <DiceRoller />
+              <button
+                type="button"
+                onClick={() => setShowActionLog(v => !v)}
+                className="shrink-0 p-1.5 text-muted-foreground hover:text-gold transition-colors rounded"
+                aria-label={tc("combat_log_title")}
+                data-testid="player-action-log-btn"
+              >
+                <ScrollText className="w-4 h-4" />
+              </button>
               {currentCombatant && (
                 <span className="shrink-0 text-xs font-mono text-muted-foreground/70 tabular-nums" aria-label={`Rodada ${roundNumber}`}>
                   R{roundNumber}
@@ -1055,6 +1066,8 @@ export function PlayerInitiativeBoard({
         playerClass={primaryPlayerChar?.class}
         rulesetVersion={rulesetVersion}
       />
+
+      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} playerId={ownChar?.id} />
     </div>
   );
 }

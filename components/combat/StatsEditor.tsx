@@ -8,7 +8,7 @@ import { useCombatStore } from "@/lib/stores/combat-store";
 
 interface StatsEditorProps {
   combatant: Combatant;
-  onSave: (stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
+  onSave: (stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null; legendary_actions_total?: number | null }) => void;
   onClose: () => void;
 }
 
@@ -28,11 +28,13 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
   const [maxHp, setMaxHp] = useState(String(combatant.max_hp));
   const [ac, setAc] = useState(String(combatant.ac));
   const [dc, setDc] = useState(combatant.spell_save_dc !== null ? String(combatant.spell_save_dc) : "");
+  const [legendaryActions, setLegendaryActions] = useState(combatant.legendary_actions_total !== null ? String(combatant.legendary_actions_total) : "");
 
   const showDisplayName = !combatant.is_player;
+  const showLegendaryActions = !combatant.is_player;
 
   const handleSave = () => {
-    const stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null } = {};
+    const stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null; legendary_actions_total?: number | null } = {};
     if (name !== combatant.name) stats.name = name;
     if (showDisplayName) {
       const trimmed = displayName.trim() || null;
@@ -44,6 +46,12 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
     if (!isNaN(parsedAc) && parsedAc !== combatant.ac) stats.ac = parsedAc;
     const parsedDc = dc === "" ? null : parseInt(dc, 10);
     if (parsedDc !== combatant.spell_save_dc) stats.spell_save_dc = parsedDc;
+    const parsedLa = legendaryActions === "" ? null : parseInt(legendaryActions, 10);
+    if (parsedLa !== combatant.legendary_actions_total) {
+      if (parsedLa === null || (!isNaN(parsedLa) && parsedLa >= 0 && parsedLa <= 10)) {
+        stats.legendary_actions_total = parsedLa;
+      }
+    }
     if (Object.keys(stats).length > 0) onSave(stats);
     onClose();
   };
@@ -121,6 +129,22 @@ export function StatsEditor({ combatant, onSave, onClose }: StatsEditorProps) {
             data-testid="stats-dc-input"
           />
         </div>
+        {showLegendaryActions && (
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">{t("stats_legendary_actions_label")}</label>
+            <input
+              type="number"
+              min="0"
+              max="10"
+              value={legendaryActions}
+              onChange={(e) => setLegendaryActions(e.target.value)}
+              onFocus={(e) => e.target.select()}
+              placeholder={tc("dash")}
+              className="w-full px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              data-testid="stats-la-input"
+            />
+          </div>
+        )}
       </div>
       <div className="flex gap-2 justify-end">
         <button

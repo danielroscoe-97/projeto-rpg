@@ -153,6 +153,8 @@
     "encounters_rounds": "{count} rounds",
     "my_character": "My Character",
     "companions": "Companions",
+    "companions_empty": "No other players in this campaign yet.",
+    "you_badge": "You",
     "combat_history": "Combat History",
     "enter_session": "Enter Session",
     "no_character": "No character linked",
@@ -641,6 +643,7 @@
     "new_combat": "New Combat",
     "create_npc": "Create NPC",
     "invite_player": "Invite Player",
+    "presets": "Presets",
     "nav_label": "Dashboard navigation"
   },
   "characters_page": {
@@ -879,6 +882,7 @@
     "stats_max_hp_label": "Max HP",
     "stats_ac_label": "AC",
     "stats_spell_dc_label": "Spell DC",
+    "stats_legendary_actions_label": "Legendary",
     "round": "Round",
     "end_session": "End combat",
     "add_mid_combat": "Add creature",
@@ -1515,7 +1519,9 @@
     "role_updated": "Role updated successfully!",
     "role_player_desc": "Join sessions as a player",
     "role_dm_desc": "Create and run encounters",
-    "role_both_desc": "Play and run sessions"
+    "role_both_desc": "Play and run sessions",
+    "feedback_title": "Bug Report / Feedback",
+    "feedback_description": "Found a problem or have a suggestion? Let us know."
   },
   "profile": {
     "title": "Profile",
@@ -2282,5 +2288,51 @@
     "postit_all": "All Players",
     "postit_history": "Received Post-its",
     "postit_empty": "No post-its received."
+  },
+  "feedback": {
+    "title": "Report Bug / Feedback",
+    "type_label": "Type",
+    "type_bug": "Bug",
+    "type_suggestion": "Suggestion",
+    "type_other": "Other",
+    "message_label": "Message",
+    "message_placeholder": "Describe the issue or suggestion...",
+    "email_label": "Email (optional)",
+    "email_placeholder": "To receive a reply",
+    "submit": "Submit",
+    "success": "Feedback sent! Thank you.",
+    "error": "Error sending feedback. Please try again.",
+    "btn_label": "Report Bug"
+  },
+  "encounter_generator": {
+    "title": "Encounter Generator",
+    "environment_label": "Environment",
+    "party_level_label": "Party Level",
+    "party_size_label": "Party Size",
+    "difficulty_label": "Difficulty",
+    "generate_btn": "Generate Encounter",
+    "regenerate_btn": "Regenerate",
+    "use_encounter_btn": "Use This Encounter",
+    "no_monsters_found": "No monsters found for these criteria. Try a different environment or difficulty.",
+    "total_xp": "Total XP",
+    "result_title": "Generated Encounter",
+    "env_forest": "Forest",
+    "env_dungeon": "Dungeon",
+    "env_cave": "Cave",
+    "env_swamp": "Swamp",
+    "env_mountain": "Mountain",
+    "env_desert": "Desert",
+    "env_arctic": "Arctic",
+    "env_coastal": "Coastal",
+    "env_urban": "Urban",
+    "env_underdark": "Underdark",
+    "env_plane_fire": "Plane of Fire",
+    "env_plane_abyss": "Abyss",
+    "env_any": "Any",
+    "diff_easy": "Easy",
+    "diff_medium": "Medium",
+    "diff_hard": "Hard",
+    "diff_deadly": "Deadly",
+    "monsters_count": "{count}x {name}"
   }
 }

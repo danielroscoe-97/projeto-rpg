@@ -153,6 +153,8 @@
     "encounters_rounds": "{count} rodadas",
     "my_character": "Meu Personagem",
     "companions": "Companheiros",
+    "companions_empty": "Nenhum outro jogador na campanha ainda.",
+    "you_badge": "Você",
     "combat_history": "Histórico de Combates",
     "enter_session": "Entrar na Sessão",
     "no_character": "Sem personagem vinculado",
@@ -641,6 +643,7 @@
     "new_combat": "Novo Combate",
     "create_npc": "Criar NPC",
     "invite_player": "Convidar Jogador",
+    "presets": "Presets",
     "nav_label": "Navegação do dashboard"
   },
   "characters_page": {
@@ -881,6 +884,7 @@
     "stats_max_hp_label": "HP Máximo",
     "stats_ac_label": "CA",
     "stats_spell_dc_label": "CD Magia",
+    "stats_legendary_actions_label": "Lendárias",
     "round": "Rodada",
     "end_session": "Encerrar combate",
     "add_mid_combat": "Adicionar criatura",
@@ -1515,7 +1519,9 @@
     "role_updated": "Papel atualizado com sucesso!",
     "role_player_desc": "Participe de sessões como jogador",
     "role_dm_desc": "Crie e conduza encontros",
-    "role_both_desc": "Jogue e mestre sessões"
+    "role_both_desc": "Jogue e mestre sessões",
+    "feedback_title": "Bug Report / Feedback",
+    "feedback_description": "Encontrou um problema ou tem uma sugestão? Nos avise."
   },
   "profile": {
     "title": "Perfil",
@@ -2282,5 +2288,51 @@
     "postit_all": "Todos os Players",
     "postit_history": "Post-its Recebidos",
     "postit_empty": "Nenhum post-it recebido."
+  },
+  "feedback": {
+    "title": "Reportar Bug / Feedback",
+    "type_label": "Tipo",
+    "type_bug": "Bug",
+    "type_suggestion": "Sugestão",
+    "type_other": "Outro",
+    "message_label": "Mensagem",
+    "message_placeholder": "Descreva o problema ou sugestão...",
+    "email_label": "Email (opcional)",
+    "email_placeholder": "Para receber resposta",
+    "submit": "Enviar",
+    "success": "Feedback enviado! Obrigado.",
+    "error": "Erro ao enviar. Tente novamente.",
+    "btn_label": "Reportar Bug"
+  },
+  "encounter_generator": {
+    "title": "Gerador de Encontro",
+    "environment_label": "Ambiente",
+    "party_level_label": "Nível do Grupo",
+    "party_size_label": "Tamanho do Grupo",
+    "difficulty_label": "Dificuldade",
+    "generate_btn": "Gerar Encontro",
+    "regenerate_btn": "Gerar Outro",
+    "use_encounter_btn": "Usar Este Encontro",
+    "no_monsters_found": "Nenhum monstro encontrado para esses critérios. Tente outro ambiente ou dificuldade.",
+    "total_xp": "XP Total",
+    "result_title": "Encontro Gerado",
+    "env_forest": "Floresta",
+    "env_dungeon": "Dungeon",
+    "env_cave": "Caverna",
+    "env_swamp": "Pântano",
+    "env_mountain": "Montanha",
+    "env_desert": "Deserto",
+    "env_arctic": "Ártico",
+    "env_coastal": "Costa",
+    "env_urban": "Cidade",
+    "env_underdark": "Underdark",
+    "env_plane_fire": "Plano de Fogo",
+    "env_plane_abyss": "Abismo",
+    "env_any": "Qualquer",
+    "diff_easy": "Fácil",
+    "diff_medium": "Médio",
+    "diff_hard": "Difícil",
+    "diff_deadly": "Mortal",
+    "monsters_count": "{count}x {name}"
   }
 }

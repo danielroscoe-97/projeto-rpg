@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { unstable_cache } from "next/cache";
 
 export default async function DashboardRouteLayout({
   children,
@@ -16,30 +17,70 @@ export default async function DashboardRouteLayout({
     combats: t("combats"),
     characters: t("characters"),
     soundboard: t("soundboard"),
+    presets: t("presets"),
     settings: t("settings"),
     profile: t("profile"),
     nav_label: t("nav_label"),
   };
 
-  // Check if dashboard tour should be shown
+  // Check if dashboard tour should be shown + DM access for sidebar presets
   const { data: { user } } = await supabase.auth.getUser();
   let showDashboardTour = false;
   let tourSource: string | undefined;
+  let hasDmAccess = false;
 
   if (user) {
-    const { data: onboarding } = await supabase
-      .from("user_onboarding")
-      .select("dashboard_tour_completed, source")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    const [{ data: onboarding }, dmAccess] = await Promise.all([
+      supabase
+        .from("user_onboarding")
+        .select("dashboard_tour_completed, source")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      unstable_cache(
+        async (userId: string) => {
+          const [
+            { count: dmMembershipCount },
+            { count: ownedCampaignCount },
+            { data: userData },
+          ] = await Promise.all([
+            supabase
+              .from("campaign_members")
+              .select("id", { count: "exact", head: true })
+              .eq("user_id", userId)
+              .eq("role", "dm")
+              .eq("status", "active"),
+            supabase
+              .from("campaigns")
+              .select("id", { count: "exact", head: true })
+              .eq("owner_id", userId),
+            supabase
+              .from("users")
+              .select("role")
+              .eq("id", userId)
+              .maybeSingle(),
+          ]);
+          const userDbRole = userData?.role ?? "both";
+          return (
+            (dmMembershipCount ?? 0) > 0 ||
+            (ownedCampaignCount ?? 0) > 0 ||
+            userDbRole === "dm" ||
+            userDbRole === "both"
+          );
+        },
+        [`dm-access-sidebar-${user.id}`],
+        { revalidate: 60 }
+      )(user.id),
+    ]);
 
     showDashboardTour = onboarding ? !onboarding.dashboard_tour_completed : false;
     tourSource = onboarding?.source;
+    hasDmAccess = dmAccess;
   }
 
   return (
     <DashboardLayout
       translations={translations}
+      hasDmAccess={hasDmAccess}
       showDashboardTour={showDashboardTour}
       tourSource={tourSource}
     >

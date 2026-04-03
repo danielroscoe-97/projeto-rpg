@@ -11,6 +11,7 @@ import {
   Settings,
   User,
   Users,
+  Package,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
@@ -23,6 +24,7 @@ interface SidebarTranslations {
   combats: string;
   characters: string;
   soundboard: string;
+  presets: string;
   settings: string;
   profile: string;
   nav_label: string;
@@ -30,16 +32,18 @@ interface SidebarTranslations {
 
 interface DashboardSidebarProps {
   translations: SidebarTranslations;
+  hasDmAccess?: boolean;
 }
 
-const NAV_ITEMS_DESKTOP = [
-  { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
-  { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
-  { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
-  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
-  { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music },
-  { key: "settings" as const, href: "/app/settings", icon: Settings },
-] as const;
+const NAV_ITEMS_DESKTOP_BASE = [
+  { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard, dmOnly: false },
+  { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords, dmOnly: false },
+  { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText, dmOnly: false },
+  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users, dmOnly: false },
+  { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music, dmOnly: false },
+  { key: "presets" as const, href: "/app/presets", icon: Package, dmOnly: true },
+  { key: "settings" as const, href: "/app/settings", icon: Settings, dmOnly: false },
+];
 
 const NAV_ITEMS_MOBILE = [
   { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
@@ -48,9 +52,13 @@ const NAV_ITEMS_MOBILE = [
   { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
 ] as const;
 
-export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
+export function DashboardSidebar({ translations: t, hasDmAccess = false }: DashboardSidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+
+  const navItemsDesktop = NAV_ITEMS_DESKTOP_BASE.filter(
+    (item) => !item.dmOnly || hasDmAccess
+  );
 
   const isActive = (href: string) => {
     if (href === "/app/dashboard") {
@@ -58,6 +66,9 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
     }
     if (href === "/app/settings") {
       return pathname === "/app/settings" || pathname.startsWith("/app/dashboard/settings");
+    }
+    if (href === "/app/presets") {
+      return pathname.startsWith("/app/presets");
     }
     return pathname.startsWith(href);
   };
@@ -104,7 +115,7 @@ export function DashboardSidebar({ translations: t }: DashboardSidebarProps) {
 
         {/* Nav Items */}
         <nav className="flex-1 py-3 px-2 space-y-1" aria-label={t.nav_label}>
-          {NAV_ITEMS_DESKTOP.map((item) => {
+          {navItemsDesktop.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
             return (
