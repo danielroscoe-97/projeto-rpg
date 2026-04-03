@@ -9,11 +9,9 @@ import {
   ScrollText,
   Music,
   Settings,
-  User,
   Users,
   Package,
   PanelLeftClose,
-  PanelLeft,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -85,32 +83,39 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false }: Dashb
         data-tour-id="dash-sidebar"
       >
         {/* Brand */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.08]">
-          <AnimatePresence mode="wait">
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="text-sm font-bold text-amber-400 tracking-wide whitespace-nowrap"
-              >
-                Pocket DM
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <div className={cn("flex items-center justify-between px-4 py-4 border-b border-white/[0.08]", collapsed && "justify-center px-2")}>
           <button
             type="button"
             onClick={() => setCollapsed((prev) => !prev)}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-white/[0.05]"
+            className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? (
-              <PanelLeft className="w-4 h-4" />
-            ) : (
-              <PanelLeftClose className="w-4 h-4" />
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/art/brand/logo-icon.svg" alt="" width={20} height={20} className="pointer-events-none shrink-0 drop-shadow-[0_0_6px_rgba(212,168,83,0.3)]" aria-hidden="true" />
+            <AnimatePresence mode="wait">
+              {!collapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="text-sm font-bold text-amber-400 tracking-wide whitespace-nowrap"
+                >
+                  Pocket DM
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
+          {!collapsed && (
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-white/[0.05]"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Nav Items */}
