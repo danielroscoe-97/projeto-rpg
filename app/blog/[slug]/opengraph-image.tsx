@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { BLOG_POSTS, getPostBySlug } from "@/lib/blog/posts";
 
-export const runtime = "edge";
+// Note: no "edge" runtime — incompatible with generateStaticParams in Next.js 16
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
