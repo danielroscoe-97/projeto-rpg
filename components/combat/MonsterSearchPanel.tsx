@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import { useTourStore } from "@/lib/stores/tour-store";
 import { buildMonsterIndex, searchMonsters, mergeImportedMonsters } from "@/lib/srd/srd-search";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
@@ -360,6 +361,7 @@ export function MonsterSearchPanel({
               className={`text-xs font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-md border transition-colors ${
                 manualOpen ? "text-gold border-gold/50 bg-gold/10" : "text-foreground/70 border-border hover:text-gold hover:border-gold/40 hover:bg-gold/5"
               }`}
+              data-tour-id="add-row"
             >
               <span className="text-sm">+</span>
               {t("omnibar_manual_add")}
@@ -594,7 +596,7 @@ export function MonsterSearchPanel({
                   </div>
                   <button
                     type="button"
-                    onClick={() => pinCard("monster", monster.id, monster.ruleset_version)}
+                    onClick={() => { if (useTourStore.getState().isActive) return; pinCard("monster", monster.id, monster.ruleset_version); }}
                     className="flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-gold hover:bg-gold/10 rounded transition-all shrink-0 border border-transparent hover:border-gold/30"
                     aria-label={t("setup_view_card_aria", { name: monster.name })}
                     title={t("setup_view_card_aria", { name: monster.name })}
@@ -611,6 +613,7 @@ export function MonsterSearchPanel({
                     onClick={() => handleSelect(monster)}
                     className="px-3 py-1 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
                     data-testid={`add-one-${monster.id}`}
+                    {...(idx === 0 ? { "data-tour-id": "add-monster-btn" } : {})}
                   >
                     {t("setup_add")}
                   </button>
@@ -689,7 +692,7 @@ export function MonsterSearchPanel({
 
       {/* Manual add form */}
       {manualOpen && onManualAdd && (
-        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row" data-tour-id="add-row">
+        <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row" data-tour-id="add-row" onKeyDown={(e) => { if (e.key === "Enter" && manualName.trim()) handleManualSubmit(); }}>
           <p className="text-xs font-medium text-foreground/80">{t("omnibar_manual_title")}</p>
           <div className="grid grid-cols-4 gap-2">
             <input

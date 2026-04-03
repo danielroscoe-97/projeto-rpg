@@ -16,6 +16,8 @@ interface TourTooltipProps {
   onBack: () => void;
   onSkip: () => void;
   onComplete: () => void;
+  /** Brief shake animation when an action is blocked */
+  shake?: boolean;
 }
 
 type Position = "top" | "bottom" | "left" | "right";
@@ -158,6 +160,7 @@ export function TourTooltip({
   onBack,
   onSkip,
   onComplete,
+  shake,
 }: TourTooltipProps) {
   const t = useTranslations("tour");
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -370,9 +373,9 @@ export function TourTooltip({
         className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
         style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
+        animate={shake ? { opacity: 1, x: [0, -6, 6, -4, 4, 0], y: 0 } : { opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        transition={{ duration: shake ? 0.5 : 0.2, ease: "easeOut" }}
       >
         {/* Arrow */}
         <div className={`absolute w-0 h-0 ${arrowClass[position]}`} />

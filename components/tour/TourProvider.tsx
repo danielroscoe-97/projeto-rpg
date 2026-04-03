@@ -33,6 +33,8 @@ export function TourProvider() {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
   const [pulseTarget, setPulseTarget] = useState(false);
+  const [shakeTooltip, setShakeTooltip] = useState(false);
+  const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const advancingRef = useRef(false);
 
   // Track whether the SRD loading screen has fully dismissed (including its fade-out animation).
@@ -50,6 +52,7 @@ export function TourProvider() {
   // Set mounted immediately (needed for portal/SSR guard)
   useEffect(() => {
     setMounted(true);
+    return () => { if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current); };
   }, []);
 
   // Poll the DOM sentinel that SrdLoadingScreen exposes once its fade-out animation is done.
@@ -121,7 +124,10 @@ export function TourProvider() {
     if (currentStepConfig?.phase === "setup" && nextStepConfig?.phase === "combat") {
       const { startCombat, combatants } = useGuestCombatStore.getState();
       if (combatants.length === 0) {
-        // Can't enter combat with no combatants — stay on current step
+        // Can't enter combat with no combatants — shake tooltip as feedback
+        if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
+        setShakeTooltip(true);
+        shakeTimerRef.current = setTimeout(() => setShakeTooltip(false), 500);
         advancingRef.current = false;
         return;
       }
@@ -272,7 +278,7 @@ export function TourProvider() {
       const timer = setTimeout(() => {
         const countBefore = useGuestCombatStore.getState().combatants.length;
         const firstResult = document.querySelector<HTMLButtonElement>(
-          '[data-tour-id="monster-result"] button'
+          '[data-tour-id="add-monster-btn"]'
         );
         if (firstResult) {
           firstResult.click();
@@ -380,6 +386,7 @@ export function TourProvider() {
         onBack={handleBack}
         onSkip={handleSkip}
         onComplete={handleComplete}
+        shake={shakeTooltip}
       />
     </>
   );
