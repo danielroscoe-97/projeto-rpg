@@ -11,6 +11,7 @@ import { PublicMonsterStatBlock } from "@/components/public/PublicMonsterStatBlo
 import { PublicMonsterSearch } from "@/components/public/PublicMonsterSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
+import monsterLore from "@/public/srd/monster-lore.json";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -94,6 +95,7 @@ export default async function MonsterPage({
   }));
 
   const isMAD = !!monster.monster_a_day_url;
+  const lore = (monsterLore as Record<string, { overview: string; combat: string[]; world: string[]; dmTips: string[] }>)[slug] ?? null;
 
   return (
     <>
@@ -124,7 +126,7 @@ export default async function MonsterPage({
           <PublicMonsterStatBlock monster={monster} />
 
           {/* Two-box CTA section */}
-          <PublicCTA entityName={monster.name} />
+          <PublicCTA entityName={monster.name} lore={lore ?? undefined} />
         </main>
 
         {/* Footer */}
