@@ -16,12 +16,13 @@ export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
-}): Metadata {
-  const post = getPostBySlug(params.slug);
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
   if (!post) return {};
 
   return {
@@ -52,15 +53,16 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
 
 export const revalidate = 86400;
 
-export default function BlogPostPage({
+export default async function BlogPostPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const post = getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  const Content = CONTENT_MAP[params.slug];
+  const Content = CONTENT_MAP[slug];
   if (!Content) notFound();
 
   const jsonLdArticle = {
