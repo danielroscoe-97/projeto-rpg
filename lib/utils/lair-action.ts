@@ -1,8 +1,15 @@
 import type { Combatant } from "@/lib/types/combat";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import type { RulesetVersion } from "@/lib/types/database";
 
 /** The fixed initiative count for lair actions per D&D 5e rules. */
 export const LAIR_ACTION_INITIATIVE = 20;
+
+/**
+ * Initiative order value for lair actions — placed after real combatants at init 20.
+ * D&D 5e: lair actions lose initiative ties.
+ */
+export const LAIR_ACTION_ORDER_TIEBREAK = 999;
 
 /** Display name for the lair action combatant. */
 export const LAIR_ACTION_NAME = "Lair Actions";
@@ -17,13 +24,30 @@ export function hasLairActionEntry(combatants: Combatant[]): boolean {
   return combatants.some((c) => c.is_lair_action);
 }
 
+/** Lookup function type for resolving monster data from a combatant's monster_id + ruleset_version. */
+type MonsterLookup = (id: string, version: RulesetVersion) => SrdMonster | undefined | null;
+
 /** Check if any non-defeated combatant in the list is a lair-capable monster. */
-export function hasAnyLairMonster(combatants: Combatant[], getMonster: (id: string) => SrdMonster | null): boolean {
+export function hasAnyLairMonster(combatants: Combatant[], getMonster: MonsterLookup): boolean {
   return combatants.some((c) => {
-    if (c.is_lair_action || c.is_defeated || !c.monster_id) return false;
-    const monster = getMonster(c.monster_id);
+    if (c.is_lair_action || c.is_defeated || !c.monster_id || !c.ruleset_version) return false;
+    const monster = getMonster(c.monster_id, c.ruleset_version);
     return monster ? hasLairActions(monster) : false;
   });
+}
+
+/**
+ * Given a list of combatants (after a removal or defeat), returns the list with
+ * the lair action entry removed if no remaining non-defeated monster has lair actions.
+ * Requires a getMonster lookup to check each monster's lair_actions.
+ */
+export function cleanupOrphanedLairEntry(
+  combatants: Combatant[],
+  getMonster: MonsterLookup,
+): Combatant[] {
+  if (!hasLairActionEntry(combatants)) return combatants;
+  if (hasAnyLairMonster(combatants, getMonster)) return combatants;
+  return combatants.filter((c) => !c.is_lair_action);
 }
 
 /** Create the synthetic lair action combatant (without id — store will assign). */
@@ -37,7 +61,7 @@ export function createLairActionCombatant(): Omit<Combatant, "id"> {
     spell_save_dc: null,
     initiative: LAIR_ACTION_INITIATIVE,
     initiative_breakdown: null,
-    initiative_order: null,
+    initiative_order: LAIR_ACTION_ORDER_TIEBREAK,
     conditions: [],
     ruleset_version: null,
     is_defeated: false,
