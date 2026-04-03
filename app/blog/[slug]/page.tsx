@@ -13,6 +13,8 @@ import {
   BlogPost6,
 } from "@/components/blog/BlogPostContent";
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
 }
@@ -78,19 +80,19 @@ export default async function BlogPostPage({
         "@type": "ListItem",
         position: 1,
         name: "Pocket DM",
-        item: "https://pocketdm.com.br",
+        item: BASE_URL,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Blog",
-        item: "https://pocketdm.com.br/blog",
+        item: `${BASE_URL}/blog`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: post.title,
-        item: `https://pocketdm.com.br/blog/${post.slug}`,
+        item: `${BASE_URL}/blog/${post.slug}`,
       },
     ],
   };
@@ -107,10 +109,10 @@ export default async function BlogPostPage({
       name: "Pocket DM",
       logo: {
         "@type": "ImageObject",
-        url: "https://pocketdm.com.br/icons/icon-512x512.png",
+        url: `${BASE_URL}/icons/icon-512x512.png`,
       },
     },
-    mainEntityOfPage: `https://pocketdm.com.br/blog/${post.slug}`,
+    mainEntityOfPage: `${BASE_URL}/blog/${post.slug}`,
     inLanguage: "pt-BR",
   };
 
@@ -124,7 +126,32 @@ export default async function BlogPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
       />
-      <Navbar brand="Pocket DM" brandHref="/" />
+      <Navbar
+        brand="Pocket DM"
+        brandHref="/"
+        links={[
+          { href: "/blog", label: "Blog" },
+          { href: "/monsters", label: "Monstros" },
+          { href: "/spells", label: "Magias" },
+          { href: "/pricing", label: "Preços" },
+        ]}
+        rightSlot={
+          <>
+            <Link
+              href="/auth/login"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center text-sm"
+            >
+              Login
+            </Link>
+            <Link
+              href="/try"
+              className="bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms]"
+            >
+              Testar Grátis
+            </Link>
+          </>
+        }
+      />
 
       <main className="flex-1 pt-[72px]">
         {/* Hero header with glow */}
