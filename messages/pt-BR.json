@@ -450,7 +450,8 @@
       "sheet": "Ficha",
       "resources": "Recursos",
       "inventory": "Inventário",
-      "notes": "Notas"
+      "notes": "Notas",
+      "quests": "Quests"
     },
     "sheet": {
       "hp_label": "HP",
@@ -610,6 +611,21 @@
       "relationship_enemy": "Inimigo",
       "relationship_neutral": "Neutro",
       "relationship_unknown": "Desconhecido"
+    },
+    "quests": {
+      "empty": "Nenhuma quest ainda. O mestre criará as quests da campanha.",
+      "section_active": "Em Andamento",
+      "section_available": "Disponíveis",
+      "section_completed": "Completadas",
+      "status_active": "Ativa",
+      "status_available": "Disponível",
+      "status_completed": "Completada",
+      "new_badge": "Nova",
+      "my_notes": "Minhas Notas",
+      "notes_placeholder": "Suas anotações sobre esta quest...",
+      "saved": "Salvo",
+      "favorite": "Favoritar",
+      "unfavorite": "Desfavoritar"
     }
   },
   "sidebar": {

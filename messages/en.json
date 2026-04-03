@@ -450,7 +450,8 @@
       "sheet": "Sheet",
       "resources": "Resources",
       "inventory": "Inventory",
-      "notes": "Notes"
+      "notes": "Notes",
+      "quests": "Quests"
     },
     "sheet": {
       "hp_label": "HP",
@@ -610,6 +611,21 @@
       "relationship_enemy": "Enemy",
       "relationship_neutral": "Neutral",
       "relationship_unknown": "Unknown"
+    },
+    "quests": {
+      "empty": "No quests yet. The DM will create campaign quests.",
+      "section_active": "Active",
+      "section_available": "Available",
+      "section_completed": "Completed",
+      "status_active": "Active",
+      "status_available": "Available",
+      "status_completed": "Completed",
+      "new_badge": "New",
+      "my_notes": "My Notes",
+      "notes_placeholder": "Your notes about this quest...",
+      "saved": "Saved",
+      "favorite": "Favorite",
+      "unfavorite": "Unfavorite"
     }
   },
   "sidebar": {
