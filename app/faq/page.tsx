@@ -33,7 +33,7 @@ const FAQ_CATEGORIES = [
       },
       {
         q: "O Pocket DM é gratuito?",
-        a: "Sim. O Pocket DM tem um plano gratuito completo que inclui gerenciamento de combate, bestiário SRD completo, catálogo completo de magias SRD, dados virtuais e música ambiente. Não precisa de cartão de crédito para começar. O plano Pro adiciona campanhas ilimitadas e features exclusivas.",
+        a: "Sim. O Pocket DM tem um plano gratuito completo que inclui gerenciamento de combate, bestiário SRD completo (incluindo monstros do compêndio Monster a Day), catálogo completo de magias SRD, dados virtuais e música ambiente. Não precisa de cartão de crédito para começar. O plano Pro adiciona campanhas ilimitadas e features exclusivas.",
       },
       {
         q: "Preciso criar conta para usar?",
@@ -51,11 +51,11 @@ const FAQ_CATEGORIES = [
       },
       {
         q: "Quais funcionalidades o Pocket DM oferece?",
-        a: "Rastreador de iniciativa em tempo real, gerenciamento de HP com barras visuais por tier (leve/moderado/pesado/crítico), condições D&D 5e com regras integradas, bestiário SRD completo com stat blocks, catálogo completo de magias SRD com busca inteligente (oráculo de magias), dados virtuais (d4, d6, d8, d10, d12, d20), música ambiente com 12+ presets temáticos, e convite de jogadores por link.",
+        a: "Rastreador de iniciativa em tempo real, gerenciamento de HP com barras visuais por tier (leve/moderado/pesado/crítico), condições D&D 5e com regras integradas, bestiário SRD completo + monstros do compêndio Monster a Day com stat blocks, catálogo completo de magias SRD com busca inteligente (oráculo de magias), dados virtuais (d4, d6, d8, d10, d12, d20), música ambiente com 12+ presets temáticos, e convite de jogadores por link.",
       },
       {
         q: "O Pocket DM tem bestiário de monstros?",
-        a: "Sim. O Pocket DM inclui o bestiário SRD completo do D&D 5e (System Reference Document). Cada monstro tem stat block completo com HP, AC, ataques, habilidades e Challenge Rating. Você pode adicionar qualquer monstro ao combate com um clique.",
+        a: "Sim. O Pocket DM inclui o bestiário SRD completo do D&D 5e (System Reference Document), além de monstros do compêndio Monster a Day (r/monsteraday) com fichas já implementadas. Cada monstro tem stat block completo com HP, AC, ataques, habilidades e Challenge Rating. Você pode adicionar qualquer monstro ao combate com um clique.",
       },
       {
         q: "O Pocket DM tem lista de magias?",

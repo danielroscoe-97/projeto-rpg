@@ -9,41 +9,49 @@ export function PipersSignature() {
         <span className="font-display text-[13px] tracking-[0.08em] text-muted-foreground/70">
           Pipers
         </span>
-        {/* Inline pipe icon */}
+        {/* Inline pipe icon — classic curved pipe with smoke */}
         <svg
-          viewBox="0 0 20 16"
+          viewBox="0 0 22 20"
           fill="none"
-          className="w-4 h-3.5 text-muted-foreground/40"
+          className="w-[18px] h-[16px] text-muted-foreground/50"
           aria-hidden="true"
         >
+          {/* Smoke */}
+          <path
+            d="M6 5C6 3.5 7 2.5 7 1.5S6.5 0 6.5 0"
+            stroke="currentColor"
+            strokeWidth="0.8"
+            strokeLinecap="round"
+            opacity="0.35"
+          />
+          <path
+            d="M8.5 4C8.5 2.5 9.5 1.8 9.5 0.8"
+            stroke="currentColor"
+            strokeWidth="0.8"
+            strokeLinecap="round"
+            opacity="0.25"
+          />
           {/* Bowl */}
           <path
-            d="M4 3.5C4 1.8 5.5.5 7.5.5S11 1.8 11 3.5V8H4V3.5Z"
+            d="M3 11C3 8 5 6 8 6s5 2 5 5c0 2-1 3-3 3H6C4 14 3 13 3 11Z"
             stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinejoin="round"
+            strokeWidth="1.3"
+            fill="currentColor"
+            fillOpacity="0.08"
           />
-          {/* Rim */}
+          {/* Stem curve */}
           <path
-            d="M3 8h9"
+            d="M12 9C14 8 16 7.5 18 8C20 8.5 21 10 21 11.5"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+          {/* Mouthpiece */}
+          <path
+            d="M21 11.5L21 13"
             stroke="currentColor"
             strokeWidth="1.8"
             strokeLinecap="round"
-          />
-          {/* Stem */}
-          <path
-            d="M11 7.5c1 1.5 2.5 2.2 4.5 2.8s3.5.7 4.5.7"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-          {/* Smoke wisps */}
-          <path
-            d="M6.5.5c0-1 .8-1.8 1.5-1.8M8.5.2c0-.8.6-1.5 1.2-1.5"
-            stroke="currentColor"
-            strokeWidth="0.6"
-            strokeLinecap="round"
-            opacity="0.35"
           />
         </svg>
       </span>

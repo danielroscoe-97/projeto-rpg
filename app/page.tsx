@@ -296,7 +296,7 @@ function FeaturesSection() {
       tag: null,
       title: "Oráculo de Magias & Monstros",
       description:
-        "Busca instantânea em 3000+ monstros e 900+ magias. Stat blocks inline, descrições de magia em modal. Funciona offline.",
+        "Bestiário SRD completo + monstros do compêndio Monster a Day. Stat blocks inline, descrições de magia em modal. Funciona offline.",
     },
     {
       icon: D8Icon,
@@ -867,7 +867,7 @@ function ComparisonSection() {
             {
               icon: "📚",
               title: "Regras 2014 + 2024 grátis",
-              description: "3000+ monstros e 900+ magias. Nos concorrentes, é módulo pago.",
+              description: "Bestiário SRD + Monster a Day e todas as magias SRD. Nos concorrentes, é módulo pago.",
             },
           ].map((item) => (
             <div
@@ -990,7 +990,7 @@ export default async function LandingPage() {
       "Rastreador de iniciativa em tempo real",
       "Gerenciamento de HP e condições",
       "Oráculo de magias D&D 5e",
-      "Bestiário com 3000+ monstros",
+      "Bestiário SRD completo + Monster a Day",
       "Música ambiente integrada",
       "Sem cadastro para começar",
     ],
@@ -1013,7 +1013,7 @@ export default async function LandingPage() {
         name: "O Pocket DM é gratuito?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sim! O Pocket DM tem um modo gratuito completo que permite gerenciar combates, usar o bestiário com 3000+ monstros e o catálogo de 900+ magias. Sem necessidade de cadastro para começar.",
+          text: "Sim! O Pocket DM tem um modo gratuito completo que permite gerenciar combates, usar o bestiário SRD completo (incluindo monstros do compêndio Monster a Day) e o catálogo completo de magias SRD. Sem necessidade de cadastro para começar.",
         },
       },
       {
@@ -1037,7 +1037,7 @@ export default async function LandingPage() {
         name: "Quais sistemas de RPG são suportados?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Atualmente o Pocket DM é otimizado para D&D 5e (Dungeons & Dragons 5ª Edição), incluindo bestiário SRD completo, magias e regras de condições.",
+          text: "Atualmente o Pocket DM é otimizado para D&D 5e (Dungeons & Dragons 5ª Edição), incluindo bestiário SRD completo, monstros do compêndio Monster a Day, magias e regras de condições.",
         },
       },
     ],

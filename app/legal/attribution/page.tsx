@@ -113,6 +113,49 @@ export default function AttributionPage() {
           </div>
         </section>
 
+        {/* Monster a Day */}
+        <section className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 md:p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-7 h-7 rounded-md bg-gold/10 flex items-center justify-center text-sm shrink-0">
+              &#128009;
+            </span>
+            <h2 className="font-display text-lg text-foreground/90">
+              Monster a Day
+            </h2>
+          </div>
+          <p className="text-gold/50 text-[11px] uppercase tracking-wider font-medium mb-3">
+            Compêndio comunitário / Community compendium
+          </p>
+          <div className="text-foreground/65 text-sm leading-relaxed space-y-3">
+            <p>
+              O Pocket DM inclui monstros do compêndio{" "}
+              <a
+                href="https://www.reddit.com/r/monsteraday"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline underline-offset-4 hover:text-gold/80 transition-colors"
+              >
+                Monster a Day (r/monsteraday)
+              </a>
+              , uma coleção comunitária de criaturas homebrew para D&D 5e com fichas
+              já implementadas e prontas para uso no combat tracker.
+            </p>
+            <p className="text-foreground/45 text-xs">
+              Pocket DM includes monsters from the{" "}
+              <a
+                href="https://www.reddit.com/r/monsteraday"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline underline-offset-4 hover:text-gold/80 transition-colors"
+              >
+                Monster a Day (r/monsteraday)
+              </a>{" "}
+              community compendium — a collection of homebrew D&D 5e creatures with
+              stat blocks ready to use in the combat tracker.
+            </p>
+          </div>
+        </section>
+
         {/* O que é coberto / What is covered */}
         <section className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 md:p-6">
           <h2 className="font-display text-lg text-foreground/90 mb-4 flex items-center gap-2">
@@ -124,6 +167,7 @@ export default function AttributionPage() {
           <div className="grid gap-2 sm:grid-cols-2">
             {[
               { pt: "Stat blocks de monstros (SRD 5.1 e 5.2)", en: "Monster stat blocks (SRD 5.1 & 5.2)" },
+              { pt: "Monstros do compêndio Monster a Day", en: "Monster a Day compendium creatures" },
               { pt: "Descrições de magias (SRD 5.1 e 5.2)", en: "Spell descriptions (SRD 5.1 & 5.2)" },
               { pt: "Texto de regras de condições", en: "Condition rules text" },
               { pt: "Regras básicas de combate", en: "Core combat rules" },

@@ -58,7 +58,7 @@ export default function AboutPage() {
         "Rastreador de iniciativa em tempo real",
         "Gerenciamento de HP com barras visuais",
         "Condições D&D 5e com regras integradas",
-        "Bestiário SRD completo",
+        "Bestiário SRD completo + monstros do compêndio Monster a Day",
         "Catálogo completo de magias SRD",
         "Oráculo de magias com busca inteligente",
         "Música ambiente integrada com 12+ presets",
@@ -145,7 +145,8 @@ export default function AboutPage() {
                 oferece uma interface simples e rápida que funciona direto no navegador.
               </p>
               <p className="mt-3 text-foreground/75 leading-relaxed">
-                Com o <strong className="text-foreground/90">bestiário SRD completo</strong>, catálogo completo de{" "}
+                Com o <strong className="text-foreground/90">bestiário SRD completo</strong> e monstros do{" "}
+                <strong className="text-foreground/90">compêndio Monster a Day</strong>, catálogo completo de{" "}
                 <strong className="text-foreground/90">magias SRD</strong>, música ambiente integrada e dados
                 virtuais (d4 ao d20), o Pocket DM tem tudo que um mestre precisa na
                 mesa — sem a complexidade de um VTT (Virtual Tabletop).
