@@ -45,6 +45,12 @@ export async function Footer() {
             >
               {t("privacy")}
             </Link>
+            <Link
+              href="/legal/terms"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              {t("terms")}
+            </Link>
           </nav>
         </div>
 
