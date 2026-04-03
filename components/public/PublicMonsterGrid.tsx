@@ -56,13 +56,33 @@ interface MonsterEntry {
   cr: string;
   type: string;
   isMAD?: boolean;
+  slug?: string;
 }
 
 interface PublicMonsterGridProps {
   monsters: MonsterEntry[];
+  basePath?: string;
+  labels?: {
+    searchPlaceholder?: string;
+    crLabel?: string;
+    typeLabel?: string;
+    noResults?: string;
+    clearAll?: string;
+    of?: string;
+    monsters?: string;
+  };
 }
 
-export function PublicMonsterGrid({ monsters }: PublicMonsterGridProps) {
+export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {} }: PublicMonsterGridProps) {
+  const {
+    searchPlaceholder = "Search monsters by name...",
+    crLabel = "CR:",
+    typeLabel = "Type:",
+    noResults = "No monsters match your filters.",
+    clearAll = "Clear all filters",
+    of = "of",
+    monsters: monstersLabel = "monsters",
+  } = labels;
   const [query, setQuery] = useState("");
   const [crFilter, setCrFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
@@ -131,14 +151,14 @@ export function PublicMonsterGrid({ monsters }: PublicMonsterGridProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search monsters by name..."
+            placeholder={searchPlaceholder}
             className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-orange-500/40 transition-colors"
           />
         </div>
 
         {/* CR chips */}
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">CR:</span>
+          <span className="text-xs text-gray-500 font-medium mr-1">{crLabel}</span>
           {CR_RANGES.map((r) => (
             <button
               key={r.label}
@@ -157,7 +177,7 @@ export function PublicMonsterGrid({ monsters }: PublicMonsterGridProps) {
 
         {/* Type chips */}
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">Type:</span>
+          <span className="text-xs text-gray-500 font-medium mr-1">{typeLabel}</span>
           {CREATURE_TYPES.map((t) => (
             <button
               key={t}
@@ -178,8 +198,8 @@ export function PublicMonsterGrid({ monsters }: PublicMonsterGridProps) {
         {/* Result count */}
         <div className="text-xs text-gray-500">
           {hasFilters
-            ? `${filtered.length} of ${monsters.length} monsters`
-            : `${monsters.length} monsters`}
+            ? `${filtered.length} ${of} ${monsters.length} ${monstersLabel}`
+            : `${monsters.length} ${monstersLabel}`}
         </div>
       </div>
 
@@ -211,7 +231,7 @@ export function PublicMonsterGrid({ monsters }: PublicMonsterGridProps) {
               return (
                 <Link
                   key={m.name}
-                  href={`/monsters/${toSlug(m.name)}`}
+                  href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
                   className="flex items-center gap-2.5 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-orange-500/20 transition-all group"
                 >
                   <span className="w-7 h-7 rounded-full bg-gray-700/50 flex items-center justify-center text-xs flex-shrink-0">
@@ -239,13 +259,13 @@ export function PublicMonsterGrid({ monsters }: PublicMonsterGridProps) {
 
       {filtered.length === 0 && hasFilters && (
         <div className="text-center py-12">
-          <p className="text-gray-400 text-lg">No monsters match your filters.</p>
+          <p className="text-gray-400 text-lg">{noResults}</p>
           <button
             type="button"
             onClick={() => { setQuery(""); setCrFilter(null); setTypeFilter(null); }}
             className="mt-3 text-orange-400 text-sm hover:underline"
           >
-            Clear all filters
+            {clearAll}
           </button>
         </div>
       )}

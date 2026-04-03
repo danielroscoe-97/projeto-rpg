@@ -35,12 +35,17 @@ function toSlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-interface PublicMonsterSearchProps {
-  /** Minimal monster data for search (name, cr, type) */
-  monsters: Pick<SrdMonster, "name" | "cr" | "type">[];
+interface MonsterSearchEntry extends Pick<SrdMonster, "name" | "cr" | "type"> {
+  slug?: string;
 }
 
-export function PublicMonsterSearch({ monsters }: PublicMonsterSearchProps) {
+interface PublicMonsterSearchProps {
+  monsters: MonsterSearchEntry[];
+  basePath?: string;
+  buttonLabel?: string;
+}
+
+export function PublicMonsterSearch({ monsters, basePath = "/monsters", buttonLabel = "Search more monsters" }: PublicMonsterSearchProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -78,12 +83,12 @@ export function PublicMonsterSearch({ monsters }: PublicMonsterSearchProps) {
   const hasFilters = query || crFilter || typeFilter;
 
   const handleSelect = useCallback(
-    (name: string) => {
-      router.push(`/monsters/${toSlug(name)}`);
+    (m: MonsterSearchEntry) => {
+      router.push(`${basePath}/${m.slug ?? toSlug(m.name)}`);
       setIsOpen(false);
       setQuery("");
     },
-    [router],
+    [router, basePath],
   );
 
   return (
@@ -102,7 +107,7 @@ export function PublicMonsterSearch({ monsters }: PublicMonsterSearchProps) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
         </svg>
-        Search more monsters
+        {buttonLabel}
       </button>
 
       {isOpen && (
@@ -179,7 +184,7 @@ export function PublicMonsterSearch({ monsters }: PublicMonsterSearchProps) {
                   <button
                     key={m.name}
                     type="button"
-                    onClick={() => handleSelect(m.name)}
+                    onClick={() => handleSelect(m)}
                     className="flex items-center justify-between rounded-lg px-3 py-2 text-left hover:bg-white/[0.06] transition-colors"
                   >
                     <span className="text-gray-200 text-sm">{m.name}</span>

@@ -48,13 +48,39 @@ interface SpellEntry {
   classes: string[];
   concentration: boolean;
   ritual: boolean;
+  slug?: string;
 }
 
 interface PublicSpellGridProps {
   spells: SpellEntry[];
+  basePath?: string;
+  labels?: {
+    searchPlaceholder?: string;
+    levelLabel?: string;
+    schoolLabel?: string;
+    classLabel?: string;
+    concentrationLabel?: string;
+    ritualLabel?: string;
+    of?: string;
+    spells?: string;
+    clearAll?: string;
+    noResults?: string;
+  };
 }
 
-export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
+export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: PublicSpellGridProps) {
+  const {
+    searchPlaceholder = "Search spells by name...",
+    levelLabel = "Level:",
+    schoolLabel = "School:",
+    classLabel = "Class:",
+    concentrationLabel = "© Concentration",
+    ritualLabel = "® Ritual",
+    of = "of",
+    spells: spellsLabel = "spells",
+    clearAll = "Clear all",
+    noResults = "No spells match your filters.",
+  } = labels;
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<number | null>(null);
   const [schoolFilter, setSchoolFilter] = useState<string | null>(null);
@@ -89,7 +115,7 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
   const levelKeys = Array.from(byLevel.keys()).sort((a, b) => a - b);
   const hasFilters = !!(query || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
 
-  function clearAll() {
+  function clearAllFilters() {
     setQuery(""); setLevelFilter(null); setSchoolFilter(null);
     setClassFilter(null); setConcFilter(false); setRitualFilter(false);
   }
@@ -107,14 +133,14 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search spells by name..."
+            placeholder={searchPlaceholder}
             className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-orange-500/40 transition-colors"
           />
         </div>
 
         {/* Level chips */}
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">Level:</span>
+          <span className="text-xs text-gray-500 font-medium mr-1">{levelLabel}</span>
           {SPELL_LEVELS.map((l) => (
             <button key={l.value} type="button"
               onClick={() => setLevelFilter(levelFilter === l.value ? null : l.value)}
@@ -127,7 +153,7 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
 
         {/* School chips */}
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">School:</span>
+          <span className="text-xs text-gray-500 font-medium mr-1">{schoolLabel}</span>
           {SPELL_SCHOOLS.map((s) => (
             <button key={s} type="button"
               onClick={() => setSchoolFilter(schoolFilter === s ? null : s)}
@@ -140,7 +166,7 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
 
         {/* Class chips */}
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">Class:</span>
+          <span className="text-xs text-gray-500 font-medium mr-1">{classLabel}</span>
           {SPELL_CLASSES.map((c) => (
             <button key={c} type="button"
               onClick={() => setClassFilter(classFilter === c ? null : c)}
@@ -156,23 +182,23 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
           <button type="button" onClick={() => setConcFilter((v) => !v)}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${concFilter ? "bg-amber-600/20 text-amber-300 border-amber-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
           >
-            © Concentration
+            {concentrationLabel}
           </button>
           <button type="button" onClick={() => setRitualFilter((v) => !v)}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${ritualFilter ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
           >
-            ® Ritual
+            {ritualLabel}
           </button>
         </div>
 
         {/* Count + clear */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">
-            {hasFilters ? `${filtered.length} of ${spells.length} spells` : `${spells.length} spells`}
+            {hasFilters ? `${filtered.length} ${of} ${spells.length} ${spellsLabel}` : `${spells.length} ${spellsLabel}`}
           </span>
           {hasFilters && (
-            <button type="button" onClick={clearAll} className="text-xs text-orange-400 hover:underline">
-              Clear all
+            <button type="button" onClick={clearAllFilters} className="text-xs text-orange-400 hover:underline">
+              {clearAll}
             </button>
           )}
         </div>
@@ -199,7 +225,7 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {byLevel.get(level)!.map((s) => (
-              <Link key={s.name} href={`/spells/${toSlug(s.name)}`}
+              <Link key={s.name} href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
                 className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-orange-500/20 transition-all group"
               >
                 <span className="flex-1 min-w-0">
@@ -222,9 +248,9 @@ export function PublicSpellGrid({ spells }: PublicSpellGridProps) {
 
       {filtered.length === 0 && hasFilters && (
         <div className="text-center py-12">
-          <p className="text-gray-400 text-lg">No spells match your filters.</p>
-          <button type="button" onClick={clearAll} className="mt-3 text-orange-400 text-sm hover:underline">
-            Clear all filters
+          <p className="text-gray-400 text-lg">{noResults}</p>
+          <button type="button" onClick={clearAllFilters} className="mt-3 text-orange-400 text-sm hover:underline">
+            {clearAll}
           </button>
         </div>
       )}

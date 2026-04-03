@@ -1,0 +1,142 @@
+import type { Metadata } from "next";
+import {
+  getSrdMonsters,
+  getSrdMonstersDeduped,
+  toSlug,
+  toMonsterSlugPt,
+} from "@/lib/srd/srd-data-server";
+import { PublicNav } from "@/components/public/PublicNav";
+import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Bestiário D&D 5e — Lista de Monstros SRD | Pocket DM",
+  description:
+    "Bestiário completo do D&D 5e com blocos de estatísticas interativos, roladores de dados e descrições táticas. Filtre por CR, tipo e muito mais. Gratuito.",
+  keywords: [
+    "monstros D&D 5e",
+    "bestiário D&D",
+    "monstros SRD 5e",
+    "ficha de monstro D&D",
+    "D&D 5e bestiary",
+    "monstros dungeons and dragons",
+  ],
+  alternates: {
+    canonical: "https://www.pocketdm.com.br/monstros",
+    languages: {
+      "en": "https://www.pocketdm.com.br/monsters",
+      "pt-BR": "https://www.pocketdm.com.br/monstros",
+    },
+  },
+};
+
+export const revalidate = 86400;
+
+export default function MonstrosIndexPage() {
+  const deduped = getSrdMonstersDeduped();
+  const monsters = deduped.map((m) => {
+    const enSlug = toSlug(m.name);
+    return {
+      name: m.name,
+      cr: m.cr,
+      type: m.type,
+      isMAD: !!m.monster_a_day_url,
+      slug: toMonsterSlugPt(enSlug),
+    };
+  });
+
+  const total = getSrdMonsters().length;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <PublicNav breadcrumbs={[{ label: "Monstros" }]} />
+
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        {/* Hero */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-2">
+            Bestiário D&amp;D 5e
+          </h1>
+          <p className="text-gray-400 text-lg">
+            {total} monstros com roladores de dados interativos e fichas táticas. Todo conteúdo SRD é gratuito sob{" "}
+            <a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              className="underline hover:text-gray-200"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              CC-BY-4.0
+            </a>
+            .
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            Página disponível em{" "}
+            <Link href="/monsters" className="text-orange-400 hover:underline">
+              English
+            </Link>
+          </p>
+        </div>
+
+        <PublicMonsterGrid
+          monsters={monsters}
+          basePath="/monstros"
+          labels={{
+            searchPlaceholder: "Buscar monstros pelo nome...",
+            crLabel: "CR:",
+            typeLabel: "Tipo:",
+            noResults: "Nenhum monstro encontrado com esses filtros.",
+            clearAll: "Limpar filtros",
+            of: "de",
+            monsters: "monstros",
+          }}
+        />
+
+        {/* CTA */}
+        <div className="mt-12 rounded-xl bg-gradient-to-br from-orange-950/30 to-gray-800/50 border border-orange-500/10 p-8 text-center">
+          <h2 className="text-xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-2">
+            Gerencie monstros em combate
+          </h2>
+          <p className="text-gray-400 mb-5 max-w-lg mx-auto">
+            O Pocket DM é o rastreador de combate gratuito para D&D 5e. Controle iniciativa,
+            HP, condições e magias em tempo real — para todos os jogadores.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/try"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-6 py-3 text-white font-semibold hover:bg-orange-500 transition-colors"
+            >
+              Testar Gratuitamente
+            </Link>
+            <Link
+              href="/auth/sign-up"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-orange-500/30 px-6 py-3 text-orange-400 font-semibold hover:bg-orange-500/10 transition-colors"
+            >
+              Criar Conta Gratuita
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
+        <p>
+          Conteúdo SRD utilizado sob{" "}
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            className="underline hover:text-gray-300"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CC-BY-4.0
+          </a>
+          . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
+        </p>
+        <p className="mt-1">
+          <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            Pocket DM
+          </a>
+          {" "}— O rastreador de combate para D&amp;D 5e
+        </p>
+      </footer>
+    </div>
+  );
+}

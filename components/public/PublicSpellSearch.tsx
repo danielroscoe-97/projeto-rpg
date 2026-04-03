@@ -19,13 +19,16 @@ interface SpellEntry {
   classes: string[];
   concentration: boolean;
   ritual: boolean;
+  slug?: string;
 }
 
 interface PublicSpellSearchProps {
   spells: SpellEntry[];
+  basePath?: string;
+  buttonLabel?: string;
 }
 
-export function PublicSpellSearch({ spells }: PublicSpellSearchProps) {
+export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = "Search more spells" }: PublicSpellSearchProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -44,12 +47,12 @@ export function PublicSpellSearch({ spells }: PublicSpellSearchProps) {
   const hasFilters = !!(query || schoolFilter);
 
   const handleSelect = useCallback(
-    (name: string) => {
-      router.push(`/spells/${toSlug(name)}`);
+    (s: SpellEntry) => {
+      router.push(`${basePath}/${s.slug ?? toSlug(s.name)}`);
       setIsOpen(false);
       setQuery("");
     },
-    [router],
+    [router, basePath],
   );
 
   return (
@@ -68,7 +71,7 @@ export function PublicSpellSearch({ spells }: PublicSpellSearchProps) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
         </svg>
-        Search more spells
+        {buttonLabel}
       </button>
 
       {isOpen && (
@@ -105,7 +108,7 @@ export function PublicSpellSearch({ spells }: PublicSpellSearchProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                 {filtered.map((s) => (
                   <button key={s.name} type="button"
-                    onClick={() => handleSelect(s.name)}
+                    onClick={() => handleSelect(s)}
                     className="flex items-center justify-between rounded-lg px-3 py-2 text-left hover:bg-white/[0.06] transition-colors"
                   >
                     <span className="text-gray-200 text-sm">{s.name}</span>
