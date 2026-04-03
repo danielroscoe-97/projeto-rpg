@@ -5,7 +5,7 @@ import { getSrdMonsters, toSlug } from "@/lib/srd/srd-data-server";
 export const metadata: Metadata = {
   title: "Monstros D&D 5e — Bestiário SRD Completo | Pocket DM",
   description:
-    "Bestiário completo de D&D 5e com 3000+ monstros SRD — stat blocks, CR, HP e habilidades. Pesquise e use direto no combat tracker. Free D&D 5e monster compendium with full stat blocks.",
+    "Bestiário SRD completo de D&D 5e — stat blocks, CR, HP e habilidades. Pesquise e use direto no combat tracker. Free D&D 5e monster compendium with full stat blocks.",
   keywords: [
     "monstros D&D 5e",
     "bestiário D&D",

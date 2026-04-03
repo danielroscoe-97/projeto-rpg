@@ -35,7 +35,15 @@ export default function LegalLayout({
           </>
         }
       />
-      <main id="main-content" className="flex-1 pt-[72px]">{children}</main>
+      <main id="main-content" className="flex-1 pt-[72px]">
+        {/* Consistent hero glow */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold/[0.04] rounded-full blur-[100px]" />
+          </div>
+          <div className="relative">{children}</div>
+        </div>
+      </main>
       <Footer />
     </div>
   );

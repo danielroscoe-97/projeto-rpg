@@ -5,7 +5,7 @@ import { getSrdSpells, toSlug } from "@/lib/srd/srd-data-server";
 export const metadata: Metadata = {
   title: "Magias D&D 5e — Lista de Spells SRD Completa | Pocket DM",
   description:
-    "Catálogo completo de magias D&D 5e com 900+ spells SRD — descrição, alcance, componentes e dano. Pesquise por escola, nível ou classe. Free D&D 5e spell list with full descriptions.",
+    "Catálogo completo de magias SRD de D&D 5e — descrição, alcance, componentes e dano. Pesquise por escola, nível ou classe. Free D&D 5e spell list with full descriptions.",
   keywords: [
     "magias D&D 5e",
     "spells D&D 5e",

@@ -35,6 +35,12 @@ export async function Footer() {
               {t("footer_faq")}
             </Link>
             <Link
+              href="/blog"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              {t("footer_blog")}
+            </Link>
+            <Link
               href="/auth/sign-up"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
             >
@@ -67,9 +73,13 @@ export async function Footer() {
           </nav>
         </div>
 
-        {/* Attribution + copyright */}
+        {/* Attribution + copyright + Pipers */}
         <div className="mt-8 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground/60">
-          <p>&copy; {new Date().getFullYear()} {t("footer_brand")}</p>
+          <p className="flex items-center gap-1.5 flex-wrap">
+            <span>&copy; {new Date().getFullYear()} {t("footer_brand")}</span>
+            <span className="text-white/10">|</span>
+            <PipersSignature />
+          </p>
           <p>
             {t("footer_srd_notice")}{" "}
             <a
@@ -81,11 +91,6 @@ export async function Footer() {
               {t("footer_srd_license")}
             </a>
           </p>
-        </div>
-
-        {/* Studio signature */}
-        <div className="mt-6">
-          <PipersSignature />
         </div>
       </div>
     </footer>
