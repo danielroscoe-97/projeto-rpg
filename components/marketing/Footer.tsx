@@ -22,6 +22,18 @@ export async function Footer() {
           {/* Links */}
           <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <Link
+              href="/about"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              {t("footer_about")}
+            </Link>
+            <Link
+              href="/faq"
+              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+            >
+              {t("footer_faq")}
+            </Link>
+            <Link
               href="/auth/sign-up"
               className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
             >

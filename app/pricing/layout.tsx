@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
+
+export const metadata: Metadata = {
+  title: "Preços — Pocket DM | Combat Tracker D&D 5e Grátis e Pro",
+  description:
+    "Comece grátis com o Pocket DM — combat tracker completo para D&D 5e. Plano Pro para campanhas ilimitadas, áudio ambiente e features exclusivas. Pricing for D&D 5e combat tracker.",
+  alternates: {
+    canonical: "/pricing",
+    languages: { "pt-BR": "/pricing", en: "/pricing" },
+  },
+};
 
 export default function PricingLayout({
   children,

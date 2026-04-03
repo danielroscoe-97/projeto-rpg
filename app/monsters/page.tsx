@@ -3,10 +3,23 @@ import type { Metadata } from "next";
 import { getSrdMonsters, toSlug } from "@/lib/srd/srd-data-server";
 
 export const metadata: Metadata = {
-  title: "D&D 5e Monsters — SRD Bestiary | Pocket DM",
+  title: "Monstros D&D 5e — Bestiário SRD Completo | Pocket DM",
   description:
-    "Browse all D&D 5e SRD monsters with full stat blocks. Free bestiary for dungeon masters — use any monster in our combat tracker.",
-  alternates: { canonical: "/monsters" },
+    "Bestiário completo de D&D 5e com 3000+ monstros SRD — stat blocks, CR, HP e habilidades. Pesquise e use direto no combat tracker. Free D&D 5e monster compendium with full stat blocks.",
+  keywords: [
+    "monstros D&D 5e",
+    "bestiário D&D",
+    "dnd 5e monsters",
+    "stat block D&D",
+    "compêndio de monstros",
+    "monster manual 5e",
+    "D&D bestiary",
+    "SRD monsters",
+  ],
+  alternates: {
+    canonical: "/monsters",
+    languages: { "pt-BR": "/monsters", en: "/monsters" },
+  },
 };
 
 export const revalidate = 86400;

@@ -121,9 +121,10 @@ function D20Icon({ className, style }: { className?: string; style?: React.CSSPr
 
 
 export const metadata = {
-  title: "Pocket DM — D&D 5e Combat Tracker",
+  title: "Pocket DM — Rastreador de Combate D&D 5e Grátis | Combat Tracker",
   description:
-    "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias — tudo em tempo real para você e seus jogadores. Grátis.",
+    "Rastreador de combate e iniciativa para D&D 5e — grátis e sem cadastro. Gerencie HP, condições, turnos e magias em tempo real no celular dos seus jogadores. O melhor app para mestre de RPG presencial. Free D&D 5e combat tracker for in-person play.",
+  alternates: { canonical: "/" },
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
@@ -960,8 +961,102 @@ export default async function LandingPage() {
 
   const isLoggedIn = !!claims;
 
+  const jsonLdOrganization = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Pocket DM",
+    url: "https://pocketdm.com.br",
+    logo: "https://pocketdm.com.br/icons/icon-512x512.png",
+    sameAs: [],
+    description:
+      "Rastreador de combate e ferramentas para mestres de D&D 5e. Combat tracker gratuito para RPG presencial.",
+  };
+
+  const jsonLdWebApplication = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Pocket DM",
+    url: "https://pocketdm.com.br",
+    applicationCategory: "GameApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "BRL",
+    },
+    description:
+      "Combat tracker gratuito para D&D 5e. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores.",
+    featureList: [
+      "Rastreador de iniciativa em tempo real",
+      "Gerenciamento de HP e condições",
+      "Oráculo de magias D&D 5e",
+      "Bestiário com 3000+ monstros",
+      "Música ambiente integrada",
+      "Sem cadastro para começar",
+    ],
+  };
+
+  const jsonLdFaq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "O que é um combat tracker para D&D 5e?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Um combat tracker é uma ferramenta digital que ajuda o mestre de RPG a gerenciar combates — rastreando iniciativa, HP, condições e turnos de cada personagem e monstro. O Pocket DM faz tudo isso em tempo real no celular dos jogadores.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "O Pocket DM é gratuito?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sim! O Pocket DM tem um modo gratuito completo que permite gerenciar combates, usar o bestiário com 3000+ monstros e o catálogo de 900+ magias. Sem necessidade de cadastro para começar.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Preciso instalar alguma coisa?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Não. O Pocket DM funciona direto no navegador do celular ou computador. O mestre compartilha um link e os jogadores acessam instantaneamente — sem app, sem download, sem cadastro.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "O Pocket DM funciona para mesa presencial?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sim! O Pocket DM foi projetado especificamente para mesas presenciais. O mestre gerencia o combate na tela enquanto cada jogador acompanha no próprio celular em tempo real.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Quais sistemas de RPG são suportados?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Atualmente o Pocket DM é otimizado para D&D 5e (Dungeons & Dragons 5ª Edição), incluindo bestiário SRD completo, magias e regras de condições.",
+        },
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebApplication) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
+      />
       <Navbar
         brand="Pocket DM"
         brandHref="/"

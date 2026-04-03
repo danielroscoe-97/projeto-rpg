@@ -12,13 +12,31 @@ import "./globals.css";
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-const siteTitle = "Pocket DM — Combat Tracker D&D 5e";
-const siteDescription = "O combat tracker definitivo para mestres de D&D 5e. Iniciativa, HP e condições em tempo real.";
+const siteTitle = "Pocket DM — Rastreador de Combate D&D 5e | Combat Tracker";
+const siteDescription =
+  "O rastreador de combate definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias em tempo real — grátis, no celular dos seus jogadores. Free D&D 5e combat tracker.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: siteTitle,
+  title: {
+    default: siteTitle,
+    template: "%s | Pocket DM",
+  },
   description: siteDescription,
+  keywords: [
+    "combat tracker",
+    "D&D 5e",
+    "rastreador de combate",
+    "iniciativa D&D",
+    "gerenciador de combate RPG",
+    "ferramentas para mestre de RPG",
+    "app para mestre de RPG",
+    "dnd combat tracker",
+    "initiative tracker",
+    "encounter tracker",
+    "combat tracker presencial",
+    "Pocket DM",
+  ],
   manifest: "/manifest.json",
   icons: {
     apple: "/icons/apple-touch-icon.png",
@@ -28,8 +46,23 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Pocket DM",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: {
+      "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+        ? [process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION]
+        : [],
+    },
+  },
   other: {
     "mobile-web-app-capable": "yes",
+  },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "pt-BR": "/",
+      en: "/",
+    },
   },
   openGraph: {
     title: siteTitle,
@@ -37,12 +70,14 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "Pocket DM",
     type: "website",
+    locale: "pt_BR",
+    alternateLocale: "en_US",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: siteTitle,
+        alt: "Pocket DM — Rastreador de Combate D&D 5e",
       },
     ],
   },
