@@ -10,6 +10,7 @@ import {
   BlogPost3,
   BlogPost4,
   BlogPost5,
+  BlogPost6,
 } from "@/components/blog/BlogPostContent";
 
 export function generateStaticParams() {
@@ -49,6 +50,7 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
   "combat-tracker-vs-vtt-diferenca": BlogPost3,
   "guia-condicoes-dnd-5e": BlogPost4,
   "como-agilizar-combate-dnd-5e": BlogPost5,
+  "como-usar-pocket-dm-tutorial": BlogPost6,
 };
 
 export const revalidate = 86400;

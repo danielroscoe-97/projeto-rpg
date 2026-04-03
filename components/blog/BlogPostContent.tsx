@@ -19,6 +19,28 @@ function Img({ src, alt }: { src: string; alt: string }) {
     </figure>
   );
 }
+function ExtLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-gold/80 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
+    >
+      {children}
+    </a>
+  );
+}
+function IntLink({ slug, children }: { slug: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={`/blog/${slug}`}
+      className="text-gold/80 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
+    >
+      {children}
+    </Link>
+  );
+}
 function H2({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="font-display text-xl text-gold/90 mt-10 mb-4">{children}</h2>
@@ -90,7 +112,9 @@ export function BlogPost1() {
       </P>
       <P>
         Existem diversas opções no mercado — desde planilhas simples até
-        plataformas complexas como Roll20 e Foundry VTT. Mas para mesas
+        plataformas complexas como{" "}
+        <ExtLink href="https://roll20.net">Roll20</ExtLink> e{" "}
+        <ExtLink href="https://foundryvtt.com">Foundry VTT</ExtLink>. Mas para mesas
         presenciais, a maioria dessas ferramentas é complexa demais. O ideal é
         algo rápido, que funcione no celular e não exija que seus jogadores
         criem conta.
@@ -101,7 +125,7 @@ export function BlogPost1() {
       <H2>5 Coisas que Todo Combat Tracker Deve Rastrear</H2>
       <P>
         Segundo o guia do{" "}
-        <strong>Sly Flourish</strong>, um dos maiores blogs de D&D do mundo,
+        <ExtLink href="https://slyflourish.com/tracking_combat.html">Sly Flourish</ExtLink>, um dos maiores blogs de D&D do mundo,
         existem cinco elementos essenciais para rastrear durante o combate:
       </P>
       <Ul>
@@ -116,7 +140,8 @@ export function BlogPost1() {
         <Li>
           <strong>Condições</strong> — efeitos como <em>blinded</em>,{" "}
           <em>stunned</em>, <em>prone</em>. Esquecer uma condição ativa pode
-          mudar completamente o rumo do combate.
+          mudar completamente o rumo do combate. Veja nosso{" "}
+          <IntLink slug="guia-condicoes-dnd-5e">guia completo de condições D&D 5e</IntLink>.
         </Li>
         <Li>
           <strong>Posicionamento</strong> — onde cada criatura está em relação
@@ -189,7 +214,10 @@ export function BlogPost1() {
         ficam mais rápidos, organizados e imersivos. Se você mestra D&D 5e
         presencialmente, experimentar um tracker é o upgrade mais impactante
         que você pode fazer na sua sessão — especialmente se for gratuito e
-        sem barreiras de entrada.
+        sem barreiras de entrada. Confira também nossas{" "}
+        <IntLink slug="como-agilizar-combate-dnd-5e">10 dicas para agilizar o combate</IntLink>{" "}
+        e as{" "}
+        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais para mestres</IntLink>.
       </P>
     </>
   );
@@ -278,7 +306,7 @@ export function BlogPost2() {
       <H2>Ferramentas que NÃO São Essenciais (Mas São Legais)</H2>
       <Ul>
         <Li>
-          <strong>VTT completo (Roll20, Foundry)</strong> — ótimo para mesas
+          <strong>VTT completo (<ExtLink href="https://roll20.net">Roll20</ExtLink>, <ExtLink href="https://foundryvtt.com">Foundry</ExtLink>)</strong> — ótimo para mesas
           online, mas overkill para presencial
         </Li>
         <Li>
@@ -287,7 +315,7 @@ export function BlogPost2() {
         </Li>
         <Li>
           <strong>Ficha de personagem digital</strong> — legal, mas os jogadores
-          geralmente preferem a própria ficha (física ou D&D Beyond)
+          geralmente preferem a própria ficha (física ou <ExtLink href="https://www.dndbeyond.com">D&D Beyond</ExtLink>)
         </Li>
         <Li>
           <strong>Gerador de NPCs/encontros com IA</strong> — promissor, mas
@@ -324,8 +352,10 @@ export function BlogPost3() {
       <H2>O que é um VTT?</H2>
       <P>
         Virtual Tabletop (VTT) é uma plataforma que simula a mesa de RPG no
-        computador. Exemplos populares incluem Roll20, Foundry VTT e Fantasy
-        Grounds. Eles oferecem:
+        computador. Exemplos populares incluem{" "}
+        <ExtLink href="https://roll20.net">Roll20</ExtLink>,{" "}
+        <ExtLink href="https://foundryvtt.com">Foundry VTT</ExtLink> e{" "}
+        <ExtLink href="https://www.fantasygrounds.com">Fantasy Grounds</ExtLink>. Eles oferecem:
       </P>
       <Ul>
         <Li>Mapas interativos com grid e fog of war</Li>
@@ -434,6 +464,8 @@ export function BlogPost3() {
         VTTs são poderosos, mas são feitos para jogar online. Se sua mesa é
         presencial, um combat tracker leve e gratuito como o Pocket DM é a
         escolha certa — menos setup, menos complexidade, mais foco no jogo.
+        Para uma comparação detalhada de VTTs, veja o{" "}
+        <ExtLink href="https://www.hipstersanddragons.com/best-virtual-tabletops/">guia do Hipsters &amp; Dragons</ExtLink>.
       </P>
     </>
   );
@@ -458,6 +490,9 @@ export function BlogPost4() {
         ser causadas por magias, habilidades de classe, ataques de monstros ou
         efeitos do ambiente. Uma condição dura até ser removida (como
         ficar <em>prone</em> e se levantar) ou até o tempo do efeito expirar.
+        Para a referência oficial em inglês, veja o{" "}
+        <ExtLink href="https://5e.d20srd.org/srd/conditionSummary.htm">SRD Condition Summary</ExtLink> ou o guia do{" "}
+        <ExtLink href="https://arcaneeye.com/mechanic-overview/5e-conditions/">Arcane Eye sobre condições</ExtLink>.
       </P>
 
       <Img src="/art/blog/combat-conditions.png" alt="Painel de condições do Pocket DM — todas as 15 condições D&D 5e disponíveis com um clique" />
@@ -591,7 +626,8 @@ export function BlogPost5() {
       <P>
         O Monster Manual lista dano médio para todo monstro — é o número antes
         dos parênteses. Em vez de rolar 2d6+3 pra cada ataque do ogre, use 10.
-        Isso elimina dezenas de rolagens por combate. Segundo o Sly Flourish,
+        Isso elimina dezenas de rolagens por combate. Segundo o{" "}
+        <ExtLink href="https://slyflourish.com/tips_to_speed_up_combat.html">Sly Flourish</ExtLink>,
         menos de 10% dos mestres usam dano fixo, mas é a forma mais fácil de
         acelerar combates.
       </P>
@@ -679,7 +715,208 @@ export function BlogPost5() {
       <P>
         Combate rápido não é combate superficial — é combate bem gerenciado.
         Com as técnicas certas e um bom combat tracker, você mantém a tensão
-        sem o tédio. Seus jogadores vão agradecer.
+        sem o tédio. Seus jogadores vão agradecer. Para mais dicas, confira o{" "}
+        <ExtLink href="https://www.hipstersanddragons.com/fixing-slow-combat-5e/">guia do Hipsters &amp; Dragons</ExtLink>{" "}
+        e o artigo do{" "}
+        <ExtLink href="https://rpgbot.net/dnd5/dungeonmasters/faster-combat/">RPGBot sobre combate mais rápido</ExtLink>.
+        Veja também nosso{" "}
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>.
+      </P>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BLOG POST 6 — Como Usar o Pocket DM — Tutorial Completo
+   ═══════════════════════════════════════════════════════════════════ */
+export function BlogPost6() {
+  return (
+    <>
+      <P>
+        O Pocket DM é um combat tracker gratuito para D&D 5e que funciona direto
+        no navegador. Em menos de 2 minutos você monta um encontro, adiciona
+        monstros do bestiário SRD e inicia o combate — com seus jogadores
+        acompanhando em tempo real no celular. Este tutorial mostra cada passo.
+      </P>
+
+      <H2>Passo 1: Acessar o Pocket DM</H2>
+      <P>
+        Acesse{" "}
+        <ExtLink href="https://pocketdm.com.br/try">pocketdm.com.br/try</ExtLink>{" "}
+        para entrar no modo visitante. Não precisa criar conta — você pode
+        experimentar tudo gratuitamente. Se quiser salvar campanhas e convidar
+        jogadores por link, crie uma conta depois.
+      </P>
+
+      <Img src="/art/blog/combat-setup.png" alt="Tela inicial do Pocket DM — Novo Encontro com busca de monstros SRD" />
+
+      <H2>Passo 2: Adicionar Monstros</H2>
+      <P>
+        Na barra de busca &ldquo;Pesquisar Monstros SRD&rdquo;, digite o nome do monstro
+        que quer adicionar. O Pocket DM tem mais de 3.000 monstros do{" "}
+        <ExtLink href="https://5e.d20srd.org/">SRD (System Reference Document)</ExtLink>{" "}
+        com stat blocks completos — HP, CA, ataques, habilidades e Challenge
+        Rating.
+      </P>
+      <P>
+        Clique em <strong>&ldquo;Adicionar&rdquo;</strong> para colocar o monstro no
+        encontro. Você pode adicionar vários do mesmo tipo usando o botão
+        <strong> &ldquo;+2 grupo&rdquo;</strong> para combates com múltiplos inimigos.
+      </P>
+
+      <Img src="/art/blog/monster-search.png" alt="Busca de monstros no Pocket DM — resultados para 'Dragon' com CR, HP e AC" />
+
+      <Tip>
+        Você também pode adicionar jogadores e NPCs manualmente clicando em
+        &ldquo;+ Monstro/Jogador Manual&rdquo;. Só o nome é obrigatório — HP, CA e
+        iniciativa são opcionais.
+      </Tip>
+
+      <H2>Passo 3: Configurar Iniciativa</H2>
+      <P>
+        Cada combatente precisa de um valor de iniciativa para definir a ordem
+        dos turnos. Você tem três opções:
+      </P>
+      <Ul>
+        <Li>
+          <strong>Rolar Todos</strong> — o Pocket DM rola d20 + modificador de
+          DEX para todos os combatentes de uma vez
+        </Li>
+        <Li>
+          <strong>Rolar NPCs</strong> — rola só para os monstros (útil quando
+          os jogadores já rolaram seus próprios dados)
+        </Li>
+        <Li>
+          <strong>Manual</strong> — clique no número de iniciativa de cada
+          combatente e digite o valor
+        </Li>
+      </Ul>
+
+      <Img src="/art/blog/combat-with-monsters.png" alt="Encontro montado com 4 monstros — Red Dragon Wyrmling, Goblin, Orc e Skeleton com iniciativa e stats" />
+
+      <H2>Passo 4: Iniciar o Combate</H2>
+      <P>
+        Clique em <strong>&ldquo;Iniciar Combate&rdquo;</strong>. O Pocket DM ordena
+        todos os combatentes por iniciativa e marca quem age primeiro. A partir
+        daqui, o combate roda turno a turno:
+      </P>
+      <Ul>
+        <Li>O combatente ativo fica destacado com borda dourada</Li>
+        <Li>Clique <strong>&ldquo;Próximo Turno&rdquo;</strong> para avançar para o próximo combatente</Li>
+        <Li>O contador de rodadas avança automaticamente</Li>
+        <Li>O timer mostra quanto tempo a rodada está levando</Li>
+      </Ul>
+
+      <Img src="/art/blog/combat-active.png" alt="Combate ativo no Pocket DM — Rodada 1 com Goblin agindo, barras de HP e botões de ação" />
+
+      <H2>Passo 5: Gerenciar HP</H2>
+      <P>
+        Clique no botão <strong>&ldquo;HP&rdquo;</strong> de qualquer combatente para
+        abrir o painel de vida. Você pode:
+      </P>
+      <Ul>
+        <Li><strong>Dano</strong> — aplicar dano (a barra de HP muda de cor conforme o nível de ferimento)</Li>
+        <Li><strong>Curar</strong> — restaurar pontos de vida</Li>
+        <Li><strong>Temp PV</strong> — adicionar pontos de vida temporários</Li>
+      </Ul>
+      <P>
+        As barras de HP usam cores por tier:{" "}
+        <span className="text-green-400">verde (100-70%)</span>,{" "}
+        <span className="text-yellow-400">amarelo (70-40%)</span>,{" "}
+        <span className="text-orange-400">laranja (40-10%)</span> e{" "}
+        <span className="text-red-400">vermelho (&lt;10%)</span>.
+        Os jogadores veem apenas o tier, não o valor exato — mantendo a tensão.
+      </P>
+
+      <Img src="/art/blog/combat-hp-panel.png" alt="Painel de HP no Pocket DM — opções de Dano, Curar e Temp PV com campo de valor" />
+
+      <H2>Passo 6: Aplicar Condições</H2>
+      <P>
+        Clique no botão <strong>&ldquo;Cond&rdquo;</strong> para ver todas as 15{" "}
+        <IntLink slug="guia-condicoes-dnd-5e">condições do D&D 5e</IntLink>.
+        Clique em qualquer condição para aplicar — ela fica visível para o
+        mestre e para os jogadores. Cada condição vem com a descrição das
+        regras integrada, para consulta rápida durante o combate.
+      </P>
+
+      <Img src="/art/blog/combat-conditions.png" alt="Painel de condições — Cego, Encantado, Assustado, Agarrado e todas as 15 condições D&D 5e" />
+
+      <H2>Passo 7: Convidar Jogadores</H2>
+      <P>
+        Clique em <strong>&ldquo;Compartilhar com jogadores&rdquo;</strong> no topo da
+        página. O Pocket DM gera um link único que seus jogadores abrem no
+        celular. Eles entram instantaneamente e veem:
+      </P>
+      <Ul>
+        <Li>De quem é o turno atual</Li>
+        <Li>A ordem de iniciativa completa</Li>
+        <Li>O nível de HP de cada combatente (por tier, sem valor exato)</Li>
+        <Li>Condições ativas</Li>
+        <Li>Dados virtuais para rolar no celular</Li>
+      </Ul>
+      <P>
+        Nenhum jogador precisa criar conta, baixar app ou instalar nada.
+        Funciona em qualquer navegador moderno — Chrome, Safari, Firefox.
+      </P>
+
+      <H2>Passo 8: Usar o Bestiário e Oráculo de Magias</H2>
+      <P>
+        Durante o combate, você pode consultar o bestiário completo clicando em
+        <strong> &ldquo;Ver Ficha&rdquo;</strong> em qualquer monstro — o stat block completo
+        aparece sem sair da tela de combate.
+      </P>
+      <P>
+        O oráculo de magias permite buscar qualquer uma das 900+ magias SRD
+        por nome, escola ou nível. Útil quando um jogador pergunta &ldquo;o que essa
+        magia faz?&rdquo; e você precisa da resposta em 2 segundos.
+      </P>
+
+      <Img src="/art/blog/bestiary-index.png" alt="Bestiário SRD do Pocket DM — monstros organizados por letra com CR e tipo" />
+
+      <H2>Passo 9: Música Ambiente</H2>
+      <P>
+        O Pocket DM tem mais de 12 presets de música ambiente integrados —
+        taverna, dungeon, floresta, batalha épica, calmaria e mais. O ícone de
+        música no topo do combate permite trocar a trilha a qualquer momento.
+        Os jogadores ouvem no próprio celular.
+      </P>
+
+      <H2>Dicas para Aproveitar ao Máximo</H2>
+      <Ul>
+        <Li>
+          <strong>Monte o encontro antes da sessão</strong> — adicione monstros
+          e deixe tudo pronto. Na hora H, é só rolar iniciativa e começar.
+        </Li>
+        <Li>
+          <strong>Use dano fixo dos monstros</strong> — o stat block já mostra
+          o dano médio. Isso{" "}
+          <IntLink slug="como-agilizar-combate-dnd-5e">agiliza muito o combate</IntLink>.
+        </Li>
+        <Li>
+          <strong>Crie uma conta gratuita</strong> — para salvar campanhas,
+          reencontrar jogadores e manter histórico entre sessões.
+        </Li>
+        <Li>
+          <strong>Explore o bestiário fora do combate</strong> — em{" "}
+          <Link href="/monsters" className="text-gold/80 underline underline-offset-2 decoration-gold/30 hover:text-gold transition-colors">
+            pocketdm.com.br/monsters
+          </Link>{" "}
+          você pode navegar todos os monstros SRD com stat blocks completos.
+        </Li>
+      </Ul>
+
+      <CTA />
+
+      <H2>Conclusão</H2>
+      <P>
+        O Pocket DM foi projetado para ser a ferramenta mais simples e rápida
+        para gerenciar combate de D&D 5e na mesa presencial. Sem curva de
+        aprendizado, sem instalação, sem cadastro obrigatório. Monte um
+        encontro, role iniciativa e jogue. Para mais contexto sobre combat
+        trackers em geral, leia nosso{" "}
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia completo de combat trackers</IntLink>{" "}
+        e as{" "}
+        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais para mestres</IntLink>.
       </P>
     </>
   );
