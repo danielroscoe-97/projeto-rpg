@@ -475,7 +475,8 @@
       "inspiration_label": "Inspiration",
       "spell_save_dc": "Spell Save DC",
       "attributes_label": "Attributes",
-      "no_character": "No character found"
+      "no_character": "No character found",
+      "level_prefix": "Lv"
     },
     "resources": {
       "trackers_title": "Class Resources",
@@ -504,7 +505,9 @@
       "spell_slots_add_first": "Configure spell slots",
       "spell_slots_empty": "No spell slots configured",
       "spell_slots_level": "Level",
-      "spell_slots_edit_max": "Edit max slots"
+      "spell_slots_edit_max": "Edit max slots",
+      "use_one": "Use one",
+      "restore_one": "Restore one"
     }
   },
   "sidebar": {
@@ -1437,7 +1440,29 @@
     "monsters_title": "Monster Content",
     "monsters_description": "Search and edit SRD monster data. Changes propagate to active sessions.",
     "spells_title": "Spell Content",
-    "spells_description": "Search and edit SRD spell data. Changes propagate to active sessions."
+    "spells_description": "Search and edit SRD spell data. Changes propagate to active sessions.",
+    "nav_whitelist": "Whitelist",
+    "whitelist_title": "Content Whitelist",
+    "whitelist_description": "Manage beta testers who can access the full compendium without acceptance gate.",
+    "whitelist_search_placeholder": "Search user by email to add...",
+    "whitelist_loading": "Loading whitelist...",
+    "whitelist_empty": "No beta testers added. Use the search above to add users.",
+    "whitelist_col_name": "Name",
+    "whitelist_col_added": "Added",
+    "whitelist_col_by": "By",
+    "whitelist_col_actions": "Actions",
+    "whitelist_col_revoked_at": "Revoked",
+    "whitelist_revoke": "Revoke",
+    "whitelist_revoke_title": "Revoke access",
+    "whitelist_revoke_confirm": "Remove {name} from the whitelist? They will need to accept the terms to access the full compendium again.",
+    "whitelist_revoke_btn": "Revoke",
+    "whitelist_cancel": "Cancel",
+    "whitelist_added": "{name} added to whitelist",
+    "whitelist_revoked": "{name} removed from whitelist",
+    "whitelist_already_exists": "User is already whitelisted",
+    "whitelist_already_badge": "Already added",
+    "whitelist_no_users_found": "No users found",
+    "whitelist_revoked_section": "Revoked ({count})"
   },
   "compendium": {
     "title": "Compendium",
@@ -1475,6 +1500,7 @@
     "view_details": "View details",
     "filters": "Filters",
     "select_monster": "Select a monster from the list to view its stat block",
+    "login_required_complete": "Log in to access the full compendium",
     "select_spell": "Select a spell from the list to view its details",
     "back_to_list": "Back to list",
     "hp_label": "HP",
@@ -1986,6 +2012,7 @@
     "gate_checkbox": "I have read and accept the terms above",
     "gate_activate": "Enable External Content",
     "gate_success": "Compendium expanded! {count} extra monsters available.",
+    "gate_error": "Failed to record agreement. Please try again.",
     "badge_external": "External",
     "badge_imported": "Imported",
     "cta_discover": "Can't find it? Search external content",

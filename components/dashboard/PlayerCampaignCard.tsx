@@ -21,9 +21,13 @@ export function PlayerCampaignCard({
   const hasActiveSession = membership.active_sessions > 0;
   const hasCharacter = !!membership.character_name;
 
+  const href = hasCharacter
+    ? `/app/campaigns/${membership.campaign_id}/sheet`
+    : `/app/campaigns/${membership.campaign_id}`;
+
   return (
     <Link
-      href={`/app/campaigns/${membership.campaign_id}`}
+      href={href}
       className="block bg-card border border-border rounded-lg p-4 hover:border-white/20 transition-all duration-[250ms] group"
     >
       <div className="flex items-start justify-between gap-2 mb-2">

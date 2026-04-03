@@ -158,6 +158,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           acLabel: t("ac_label"),
           loadMore: t("encounter_history_load_more"),
           quests: t("quests.title"),
+          playerHq: t("player_hq_button"),
         }}
       />
     )

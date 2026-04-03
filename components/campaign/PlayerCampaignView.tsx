@@ -76,6 +76,7 @@ interface PlayerCampaignViewProps {
     acLabel: string;
     loadMore: string;
     quests: string;
+    playerHq: string;
   };
 }
 
@@ -310,6 +311,13 @@ export function PlayerCampaignView({
                 </span>
               </span>
             </div>
+            <Link
+              href={`/app/campaigns/${campaignId}/sheet`}
+              className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 text-xs font-medium rounded-md bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 transition-colors"
+            >
+              <Shield className="w-3.5 h-3.5" />
+              {t.playerHq}
+            </Link>
           </div>
         ) : (
           <div className="text-center py-6">
