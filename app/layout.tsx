@@ -59,6 +59,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": "/blog/feed.xml",
+    },
     languages: {
       "pt-BR": "/",
       en: "/",

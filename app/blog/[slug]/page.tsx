@@ -65,6 +65,34 @@ export default async function BlogPostPage({
   const Content = CONTENT_MAP[slug];
   if (!Content) notFound();
 
+  // Related posts (exclude current)
+  const relatedPosts = BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 3);
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Pocket DM",
+        item: "https://pocketdm.com.br",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: "https://pocketdm.com.br/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `https://pocketdm.com.br/blog/${post.slug}`,
+      },
+    ],
+  };
+
   const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -86,6 +114,10 @@ export default async function BlogPostPage({
 
   return (
     <div className="min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
@@ -145,8 +177,33 @@ export default async function BlogPostPage({
             <Content />
           </div>
 
+          {/* Related posts */}
+          {relatedPosts.length > 0 && (
+            <div className="mt-14">
+              <h2 className="font-display text-lg text-gold/80 mb-4">
+                Leia também
+              </h2>
+              <div className="space-y-3">
+                {relatedPosts.map((rp) => (
+                  <Link
+                    key={rp.slug}
+                    href={`/blog/${rp.slug}`}
+                    className="block group rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 hover:border-gold/20 transition-all duration-200"
+                  >
+                    <p className="text-sm font-medium text-foreground group-hover:text-gold transition-colors">
+                      {rp.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {rp.readingTime} de leitura
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* CTA */}
-          <div className="mt-16 p-8 rounded-xl border border-white/[0.08] bg-white/[0.02] text-center">
+          <div className="mt-10 p-8 rounded-xl border border-white/[0.08] bg-white/[0.02] text-center">
             <p className="font-display text-xl text-gold mb-2">
               Experimente o Pocket DM
             </p>
