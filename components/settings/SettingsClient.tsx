@@ -15,6 +15,7 @@ const SubscriptionPanel = dynamic(() => import("@/components/billing/Subscriptio
   loading: () => <div className="animate-pulse h-32 bg-surface-secondary rounded-lg" />,
 });
 import { ImportManagement } from "@/components/import/ImportManagement";
+import { BugReportDialog } from "@/components/feedback/BugReportDialog";
 import { RoleSelector } from "@/components/settings/RoleSelector";
 import { UserProfile } from "@/components/settings/UserProfile";
 import { SettingsForm } from "@/components/settings/SettingsForm";
@@ -90,6 +91,7 @@ export function SettingsClient({ email, displayName = "", avatarUrl = null }: Se
 }
 
 function PreferencesTab({ email, displayName, avatarUrl }: { email: string; displayName: string; avatarUrl: string | null }) {
+  const t = useTranslations("settings");
   return (
     <div className="space-y-6 animate-[fade-in_0.3s_ease-out]">
       {/* User profile with avatar, name, email, plan */}
@@ -105,6 +107,13 @@ function PreferencesTab({ email, displayName, avatarUrl }: { email: string; disp
 
       {/* External content management */}
       <ImportManagement />
+
+      {/* Bug report / feedback */}
+      <section className="bg-card rounded-lg border border-border p-5">
+        <h2 className="text-foreground font-semibold mb-1">{t("feedback_title")}</h2>
+        <p className="text-muted-foreground text-sm mb-3">{t("feedback_description")}</p>
+        <BugReportDialog />
+      </section>
     </div>
   );
 }

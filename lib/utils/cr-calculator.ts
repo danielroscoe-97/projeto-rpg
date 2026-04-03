@@ -106,7 +106,7 @@ export function crToNum(cr: string): number {
 // Reverse map: numeric CR → canonical string for fractional CRs
 const NUM_TO_CR: Record<number, string> = { 0.125: "1/8", 0.25: "1/4", 0.5: "1/2" };
 
-function crToXP(cr: string): number {
+export function crToXP(cr: string): number {
   if (CR_XP_MAP[cr] !== undefined) return CR_XP_MAP[cr];
   const num = crToNum(cr);
   const canonical = NUM_TO_CR[num] ?? String(Math.round(num));

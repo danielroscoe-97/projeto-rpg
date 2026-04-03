@@ -41,6 +41,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       { data: activeSession },
       { data: historySessions },
       { data: dmUser },
+      campaignMembers,
     ] = await Promise.all([
       supabase
         .from('player_characters')
@@ -71,6 +72,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         .select('display_name')
         .eq('id', campaign.owner_id)
         .maybeSingle(),
+      getCampaignMembers(id),
     ])
 
     // Fetch active encounter if session exists (depends on activeSession)
@@ -140,6 +142,13 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           current_hp: c.current_hp,
           max_hp: c.max_hp,
         }))}
+        campaignMembers={(campaignMembers ?? []).map(m => ({
+          user_id: m.user_id,
+          display_name: m.display_name,
+          character_name: m.character_name,
+          role: m.role,
+        }))}
+        currentUserId={user.id}
         activeSession={activeSession ? {
           id: activeSession.id,
           name: activeSession.name ?? t("session_fallback"),
@@ -161,6 +170,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           sessionCurrentTurn: t("session_current_turn"),
           combatRounds: t("combat_rounds"),
           noCompanions: t("no_companions"),
+          companionsEmpty: t("companions_empty"),
+          youBadge: t("you_badge"),
           noCombatHistory: t("no_combat_history"),
           activeSession: tDash("active_session"),
           noActiveSession: tDash("no_active_session"),
