@@ -21,7 +21,8 @@ export async function reconcileFullState(
   roundNumber: number,
   currentTurnIndex: number,
   isActive: boolean,
-  mergeMode: "overwrite" | "merge_newer" = "merge_newer"
+  mergeMode: "overwrite" | "merge_newer" = "merge_newer",
+  forceDeleteIds: string[] = []
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
 
@@ -58,6 +59,7 @@ export async function reconcileFullState(
       p_current_turn_index: currentTurnIndex,
       p_is_active: isActive,
       p_merge_mode: mergeMode,
+      p_force_delete_ids: forceDeleteIds,
     });
 
     if (error) {

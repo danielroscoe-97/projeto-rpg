@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import type {
   CampaignQuest,
   QuestWithPlayerNotes,
@@ -22,6 +23,9 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
       .eq("player_quest_notes.user_id", userId)
       .order("sort_order", { ascending: true });
 
+    if (error) {
+      toast.error("Failed to load quests");
+    }
     if (!error && data) {
       setQuests(data as unknown as QuestWithPlayerNotes[]);
     }
@@ -61,7 +65,7 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
   const saveNote = useCallback(
     async (questId: string, notes: string) => {
       const supabase = supabaseRef.current;
-      await supabase
+      const { error } = await supabase
         .from("player_quest_notes")
         .upsert(
           {
@@ -73,7 +77,12 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
           { onConflict: "quest_id,user_id" }
         );
 
-      // Optimistic: update local state
+      if (error) {
+        toast.error("Failed to save note");
+        return;
+      }
+
+      // Only update local state on success
       setQuests((prev) =>
         prev.map((q) => {
           if (q.id !== questId) return q;
@@ -106,6 +115,9 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
       const currentFav = quest?.player_quest_notes?.[0]?.is_favorite ?? false;
       const newFav = !currentFav;
 
+      // Backup for rollback
+      const prevQuests = quests;
+
       // Optimistic update
       setQuests((prev) =>
         prev.map((q) => {
@@ -130,7 +142,7 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
       );
 
       const supabase = supabaseRef.current;
-      await supabase
+      const { error } = await supabase
         .from("player_quest_notes")
         .upsert(
           {
@@ -141,6 +153,11 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
           },
           { onConflict: "quest_id,user_id" }
         );
+
+      if (error) {
+        setQuests(prevQuests);
+        toast.error("Failed to update favorite");
+      }
     },
     [campaignId, userId, quests]
   );

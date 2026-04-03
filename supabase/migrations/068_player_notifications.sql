@@ -1,4 +1,4 @@
--- 062_player_notifications.sql
+-- 068_player_notifications.sql
 -- Player HQ Stream A: in-app notification system + auto-trigger on removal decisions
 
 CREATE TABLE player_notifications (

@@ -1,4 +1,4 @@
--- 061_inventory_removal_requests.sql
+-- 067_inventory_removal_requests.sql
 -- Player HQ Stream A: removal request tracking for Bag of Holding
 
 CREATE TABLE inventory_removal_requests (
