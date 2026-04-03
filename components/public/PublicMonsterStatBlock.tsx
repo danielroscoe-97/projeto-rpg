@@ -262,34 +262,34 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
             {skills}
           </p>
         )}
-        {monster.damage_vulnerabilities && (
+        {damageVuln && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
-            {monster.damage_vulnerabilities}
+            {damageVuln}
           </p>
         )}
-        {monster.damage_resistances && (
+        {damageRes && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
-            {monster.damage_resistances}
+            {damageRes}
           </p>
         )}
-        {monster.damage_immunities && (
+        {damageImm && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
-            {monster.damage_immunities}
+            {damageImm}
           </p>
         )}
-        {monster.condition_immunities && (
+        {conditionImm && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
-            {monster.condition_immunities}
+            {conditionImm}
           </p>
         )}
-        {monster.senses && (
+        {sensesStr && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.senses}</strong>{" "}
-            {monster.senses}
+            {sensesStr}
           </p>
         )}
         {monster.languages && (

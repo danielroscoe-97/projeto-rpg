@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 interface LoreSection {
@@ -13,128 +16,100 @@ interface PublicCTAProps {
   locale?: "en" | "pt-BR";
 }
 
-const CTA_LABELS = {
+const LABELS = {
   "en": {
     about: (name: string) => `About ${name}`,
     inCombat: "In Combat",
     inTheWorld: "In the World",
     dmTips: "DM Tips",
-    whatIs: "What is Pocket DM?",
-    desc: "A free D&D 5e combat tracker with real-time initiative, HP tracking, conditions, spell management, and more. Run encounters faster — no signup required.",
-    features: [
-      { icon: "⚔", text: "Drag-and-drop initiative with auto-roll" },
-      { icon: "❤", text: "HP tracking with damage tiers" },
-      { icon: "📖", text: "Full SRD bestiary and spell compendium" },
-      { icon: "📱", text: "Real-time player connections" },
-    ],
-    tryBtn: "Try Combat Tracker",
-    signUpBtn: "Create Free Account",
+    ctaHeadline: (name?: string) =>
+      name ? `Ready to roll initiative with ${name}?` : "What is Pocket DM?",
+    ctaSub: "Free D&D 5e combat tracker · real-time initiative · no signup",
+    ctaBtn: "Start Combat →",
   },
   "pt-BR": {
     about: (name: string) => `Sobre ${name}`,
     inCombat: "Em Combate",
     inTheWorld: "No Mundo",
-    dmTips: "Dicas para o Mestre",
-    whatIs: "O que é o Pocket DM?",
-    desc: "Um rastreador de combate gratuito para D&D 5e com iniciativa em tempo real, controle de PV, condições, gerenciamento de magias e muito mais. Conduza encontros mais rápido — sem cadastro.",
-    features: [
-      { icon: "⚔", text: "Iniciativa com arrastar e soltar e rolagem automática" },
-      { icon: "❤", text: "Controle de PV com indicadores de dano" },
-      { icon: "📖", text: "Bestiário e compêndio de magias SRD completos" },
-      { icon: "📱", text: "Conexões de jogadores em tempo real" },
-    ],
-    tryBtn: "Testar o Rastreador",
-    signUpBtn: "Criar Conta Gratuita",
+    dmTips: "Dicas",
+    ctaHeadline: (name?: string) =>
+      name ? `Pronto pra rolar iniciativa com ${name}?` : "O que é o Pocket DM?",
+    ctaSub: "Rastreador gratuito · D&D 5e · sem cadastro",
+    ctaBtn: "Iniciar Combate →",
   },
 } as const;
 
+type TabId = "combat" | "world" | "dmTips";
+
 export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
-  const L = CTA_LABELS[locale];
+  const L = LABELS[locale];
+
+  const availableTabs: { id: TabId; label: string; items: string[] }[] = [
+    lore?.combat?.length ? { id: "combat", label: L.inCombat, items: lore.combat } : null,
+    lore?.world?.length ? { id: "world", label: L.inTheWorld, items: lore.world } : null,
+    lore?.dmTips?.length ? { id: "dmTips", label: L.dmTips, items: lore.dmTips } : null,
+  ].filter(Boolean) as { id: TabId; label: string; items: string[] }[];
+
+  const [activeTab, setActiveTab] = useState<TabId>(availableTabs[0]?.id ?? "combat");
+
+  const activeItems = availableTabs.find((t) => t.id === activeTab)?.items ?? [];
 
   return (
-    <div className={`mt-8 grid gap-6 ${lore ? "md:grid-cols-2" : "md:grid-cols-1 max-w-xl mx-auto"}`}>
-      {/* Box 1: About this creature/spell */}
-      {lore && entityName && (
-        <div className="rounded-xl bg-gray-800/50 border border-white/[0.06] p-6">
-          <h2 className="text-lg font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-3">
-            {L.about(entityName)}
-          </h2>
-          <p className="text-gray-300 text-sm mb-4">{lore.overview}</p>
+    <div className="mt-8 space-y-4">
+      {/* Lore card — full-width, tabbed */}
+      {lore && entityName && availableTabs.length > 0 && (
+        <div className="rounded-xl bg-gray-800/50 border border-white/[0.06] overflow-hidden">
+          {/* Header: title + overview */}
+          <div className="px-6 pt-6 pb-4">
+            <h2 className="text-lg font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-2">
+              {L.about(entityName)}
+            </h2>
+            <p className="text-gray-300 text-sm leading-relaxed">{lore.overview}</p>
+          </div>
 
-          {lore.combat.length > 0 && (
-            <div className="mb-3">
-              <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.inCombat}</h3>
-              <ul className="space-y-1">
-                {lore.combat.map((tip, i) => (
-                  <li key={i} className="text-gray-400 text-sm flex gap-2">
-                    <span className="text-[#D4A853]/60 mt-0.5">&#x2022;</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Tab strip */}
+          <div className="flex border-t border-white/[0.06]">
+            {availableTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors ${
+                  activeTab === tab.id
+                    ? "text-[#D4A853] border-b-2 border-[#D4A853] bg-[#D4A853]/[0.06]"
+                    : "text-gray-500 hover:text-gray-300 border-b-2 border-transparent"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-          {lore.world.length > 0 && (
-            <div className="mb-3">
-              <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.inTheWorld}</h3>
-              <ul className="space-y-1">
-                {lore.world.map((tip, i) => (
-                  <li key={i} className="text-gray-400 text-sm flex gap-2">
-                    <span className="text-[#D4A853]/60 mt-0.5">&#x2022;</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {lore.dmTips.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.dmTips}</h3>
-              <ul className="space-y-1">
-                {lore.dmTips.map((tip, i) => (
-                  <li key={i} className="text-gray-400 text-sm flex gap-2">
-                    <span className="text-[#D4A853]/60 mt-0.5">&#x2022;</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Box 2: What is Pocket DM */}
-      <div className="rounded-xl bg-gradient-to-br from-[#D4A853]/[0.06] to-gray-800/50 border border-[#D4A853]/10 p-6 flex flex-col justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-3">
-            {L.whatIs}
-          </h2>
-          <p className="text-gray-300 text-sm mb-2">{L.desc}</p>
-          <ul className="space-y-1 mb-4">
-            {L.features.map((f, i) => (
+          {/* Tab content */}
+          <ul className="px-6 py-4 space-y-2">
+            {activeItems.map((tip, i) => (
               <li key={i} className="text-gray-400 text-sm flex gap-2">
-                <span className="text-[#D4A853]/60">{f.icon}</span>
-                <span>{f.text}</span>
+                <span className="text-[#D4A853]/60 mt-0.5 shrink-0">&#x2022;</span>
+                <span>{tip}</span>
               </li>
             ))}
           </ul>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            href="/try"
-            className="flex-1 text-center rounded-lg bg-[#D4A853] px-4 py-2.5 text-white font-semibold hover:bg-[#D4A853]/90 transition-colors text-sm"
-          >
-            {L.tryBtn}
-          </Link>
-          <Link
-            href="/auth/sign-up"
-            className="flex-1 text-center rounded-lg border border-[#D4A853]/30 px-4 py-2.5 text-[#D4A853] font-semibold hover:bg-[#D4A853]/10 transition-colors text-sm"
-          >
-            {L.signUpBtn}
-          </Link>
+      )}
+
+      {/* CTA banner — full-width, horizontal */}
+      <div className="rounded-xl bg-gradient-to-r from-[#D4A853]/[0.08] to-gray-800/40 border border-[#D4A853]/15 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-gray-100 font-semibold text-base leading-snug">
+            {L.ctaHeadline(entityName)}
+          </p>
+          <p className="text-gray-500 text-sm mt-0.5">{L.ctaSub}</p>
         </div>
+        <Link
+          href="/try"
+          className="shrink-0 rounded-lg bg-[#D4A853] px-5 py-2.5 text-white font-semibold text-sm hover:bg-[#D4A853]/90 transition-colors whitespace-nowrap"
+        >
+          {L.ctaBtn}
+        </Link>
       </div>
     </div>
   );

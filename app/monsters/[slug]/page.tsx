@@ -123,10 +123,10 @@ export default async function MonsterPage({
           )}
 
           {/* Stat block with token + dice rollers */}
-          <PublicMonsterStatBlock monster={monster} />
+          <PublicMonsterStatBlock monster={monster} locale="pt-BR" slug={slug} />
 
-          {/* Two-box CTA section */}
-          <PublicCTA entityName={monster.name} lore={lore ?? undefined} />
+          {/* Lore tabs + CTA banner */}
+          <PublicCTA entityName={monster.name} lore={lore ?? undefined} locale="pt-BR" />
         </main>
 
         {/* Footer */}

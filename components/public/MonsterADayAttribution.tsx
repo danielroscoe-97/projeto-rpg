@@ -11,11 +11,15 @@ export function MonsterADayAttribution({
 }: MonsterADayAttributionProps) {
   return (
     <aside className="mb-6 rounded-xl border border-[#D4A853]/20 bg-orange-950/20 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
-      {/* r/ logo mark */}
-      <div className="flex-shrink-0">
-        <div className="w-12 h-12 rounded-full bg-[#D4A853] flex items-center justify-center">
-          <span className="text-white font-black text-lg leading-none">r/</span>
-        </div>
+      {/* Reddit Snoo logo */}
+      <div className="flex-shrink-0 w-12 h-12">
+        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-label="Reddit">
+          <circle cx="10" cy="10" r="10" fill="#FF4500" />
+          <path d="M15.12 9.93c0-.71-.58-1.29-1.29-1.29-.35 0-.66.14-.9.36-1.11-.76-2.55-1.29-4.1-1.29l.77-3.11 2.37.5c.04.5.46.9.97.9.54 0 .97-.43.97-.97s-.43-.97-.97-.97c-.37 0-.69.22-.85.53L9.6 4.1 8.68 7.71c-1.5.04-2.9.57-3.97 1.7-.24-.22-.55-.36-.9-.36-.71 0-1.29.58-1.29 1.29 0 .5.28.93.69 1.15-.04.2-.06.4-.06.61 0 2.38 2.77 4.3 6.19 4.3s6.19-1.93 6.19-4.3c0-.21-.02-.41-.06-.61.41-.22.69-.65.69-1.15z" fill="white" />
+          <circle cx="8.18" cy="10.26" r=".77" fill="#FF4500" />
+          <circle cx="11.82" cy="10.26" r=".77" fill="#FF4500" />
+          <path d="M8.01 12.1c.62.66 1.72 1.1 2.99 1.1 1.27 0 2.37-.44 2.99-1.1.18-.2.16-.5-.04-.67-.19-.17-.48-.15-.66.05-.44.47-1.28.81-2.29.81-1.01 0-1.85-.34-2.29-.81-.18-.2-.47-.22-.66-.05-.2.17-.22.47-.04.67z" fill="#FF4500" />
+        </svg>
       </div>
 
       {/* Text */}
