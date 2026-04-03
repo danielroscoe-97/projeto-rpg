@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
@@ -14,6 +15,7 @@ interface CampaignOption {
 
 export default function NewEncounterPage() {
   const t = useTranslations("session");
+  const searchParams = useSearchParams();
 
   const [campaigns, setCampaigns] = useState<CampaignOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +27,16 @@ export default function NewEncounterPage() {
     preloadedPlayers: PlayerCharacter[];
   } | null>(null);
 
+  const isQuick = searchParams.get("quick") === "true";
+
   useEffect(() => {
+    // Skip campaign picker entirely for quick combat
+    if (isQuick) {
+      setChosen({ campaignId: null, preloadedPlayers: [] });
+      setIsLoading(false);
+      return;
+    }
+
     const load = async () => {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -54,7 +65,7 @@ export default function NewEncounterPage() {
       setIsLoading(false);
     };
     load();
-  }, [t]);
+  }, [t, isQuick]);
 
   const handlePickCampaign = async (campaignId: string) => {
     setIsLoading(true);
