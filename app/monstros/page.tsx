@@ -49,7 +49,7 @@ export default function MonstrosIndexPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
-      <PublicNav breadcrumbs={[{ label: "Monstros" }]} />
+      <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Monstros" }]} />
 
       <main className="mx-auto max-w-6xl px-4 py-8">
         {/* Hero */}

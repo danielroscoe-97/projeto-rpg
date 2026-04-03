@@ -110,6 +110,7 @@ export default async function MagiaPage({
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav
+          locale="pt-BR"
           breadcrumbs={[
             { label: "Magias", href: "/magias" },
             { label: spell.name },
@@ -136,7 +137,7 @@ export default async function MagiaPage({
           <PublicSpellCard spell={spell} tier={tier} />
 
           {/* Two-box CTA */}
-          <PublicCTA entityName={spell.name} />
+          <PublicCTA entityName={spell.name} locale="pt-BR" />
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">

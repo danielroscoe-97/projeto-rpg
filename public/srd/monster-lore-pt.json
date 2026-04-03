@@ -1,0 +1,462 @@
+{
+  "aboleth": {
+    "overview": "O aboleth é uma das criaturas mais antigas da existência, anterior até mesmo aos deuses. Esses aberrantes alienígenas, semelhantes a peixes colossais, lembram de tudo que já viram ou viveram — e observam o mundo desde antes de ele ter um nome.",
+    "combat": [
+      "Usa Escravizar para dominar mentalmente criaturas e criar um exército pessoal antes mesmo do confronto começar.",
+      "Sua Nuvem de Muco transforma quem toca — as vítimas precisam se manter úmidas ou começam a sufocar.",
+      "Recua para as profundezas aquáticas se ameaçado, atraindo perseguidores para seu elemento."
+    ],
+    "world": [
+      "Vive em ruínas subaquáticas sem luz solar ou lagos subterrâneos, cercado de servos escravizados.",
+      "Possui memória racial que remonta à era anterior à civilização — lembra de coisas que nenhum ser vivo deveria saber.",
+      "Despreza os deuses e vê a maioria das criaturas da superfície como gado ou pragas."
+    ],
+    "dmTips": [
+      "Use o aboleth como vilão de longo prazo — ele orquestra eventos há décadas antes dos jogadores chegarem.",
+      "Ideal para grupos de nível 8–14 que curtem horror psicológico e mistério."
+    ]
+  },
+  "adult-red-dragon": {
+    "overview": "O dragão vermelho adulto é uma criatura de ego puro, ganância e destruição. Está entre os seres mais temidos em qualquer mundo — uma montanha de escamas que cospe fogo e acredita que toda riqueza lhe pertence por direito, tratando todas as criaturas como servos ou presas.",
+    "combat": [
+      "Abre o combate com Sopro de Fogo (18d6 de dano de fogo) para devastar grupos de inimigos antes de fechar o confronto.",
+      "Usa Presença Aterrorizante para abalar a determinação do grupo, potencialmente paralisando os membros mais fracos.",
+      "Prefere terreno elevado e posicionamento aéreo — é sempre o predador supremo em qualquer encontro."
+    ],
+    "world": [
+      "Reivindica territórios imensos centrados em seu covil vulcânico, exigindo tributo de todos que vivem dentro deles.",
+      "Acumula tesouros compulsivamente — não pela riqueza, mas como prova de sua dominância sobre os outros.",
+      "Vive por séculos, o que significa séculos de rancores, esquemas e inimigos."
+    ],
+    "dmTips": [
+      "Ideal para um encontro climático entre os níveis 13–17. Considere dar um nome e uma história que os jogadores descubram antes da luta.",
+      "Um dragão vermelho que conversa antes de atacar cria encontros muito mais memoráveis do que um que simplesmente ataca."
+    ]
+  },
+  "ancient-red-dragon": {
+    "overview": "O dragão vermelho ancião é um apocalipse vivo — uma criatura tão velha e poderosa que reinos inteiros caíram apenas para apaziguá-lo. Poucos seres no multiverso podem rivalizar com sua combinação de poder bruto, astúcia e arrogância sem fundo.",
+    "combat": [
+      "O Sopro de Fogo causa 26d6 de dano em um cone de 27 metros — uma única exalação pode devastar o grupo inteiro.",
+      "Ações Lendárias permitem que ele aja três vezes fora do seu turno, tornando-o extraordinariamente móvel e perigoso.",
+      "Usa Ações de Covil (jatos de lava, erupções de magma) para controlar o campo de batalha se confrontado em seu domínio."
+    ],
+    "world": [
+      "Trata montanhas como mobília e florestas como lenha — sua passagem remodela a paisagem.",
+      "Os mais velhos dragões vermelhos anciões podem ter histórias pessoais com deuses, diabos e outros seres imortais.",
+      "Seu tesouro é lendário por si só — vale mais do que a economia total de algumas nações."
+    ],
+    "dmTips": [
+      "Reservado para os grupos de nível mais alto (17–20). Este é um encontro que define uma campanha.",
+      "Dê a ele Ações de Covil e Efeitos Regionais: áreas próximas ao covil devem ser marcadas, vulcânicas e cobertas de cinzas."
+    ]
+  },
+  "goblin": {
+    "overview": "Goblins são criaturas pequenas e oportunistas encontradas em praticamente todo lugar onde há sombra e miséria. Coveiros, ladrões e trapaceiros por natureza, compensam sua fraqueza individual com números, astúcia e uma disposição total para fugir quando as coisas ficam difíceis.",
+    "combat": [
+      "Usa Saída Ágil para se esconder ou desengajar como ação bônus — fugir é uma estratégia válida para eles.",
+      "Prefere emboscadas, armadilhas e ataques em grupo a confrontos diretos.",
+      "Frequentemente monta lobos ou worgs para compensar sua velocidade baixa."
+    ],
+    "world": [
+      "Vive em cavernas, ruínas e masmorras, geralmente sob o comando de bugbears ou hobgoblins mais fortes.",
+      "Seres extremamente tribais — a hierarquia é determinada por quem consegue intimidar os outros.",
+      "Fascinados por objetos brilhantes e comida, mas incapazes de resistir a vender uns aos outros."
+    ],
+    "dmTips": [
+      "Perfeito como encontro de nível 1 para grupos iniciantes — use muitos deles para criar tensão.",
+      "Goblins com personalidade e nomes são muito mais divertidos do que simples sacos de pontos de vida."
+    ]
+  },
+  "tarrasque": {
+    "overview": "A Tarrasca é possivelmente a criatura mais destrutiva do plano material — um monstro de CR 30 que existe apenas para devastar. Lendas descrevem a Tarrasca como o instrumento da ira dos deuses, um apocalipse de carne e fúria que pode destruir cidades inteiras antes de voltar a dormir.",
+    "combat": [
+      "Imune a fogo, veneno e a maioria das magias; qualquer feitiço que permita teste de resistência pode ser refletido de volta ao lançador.",
+      "Seus ataques multiataques e ações lendárias permitem que ele praticamente destrua um grupo inteiro por turno.",
+      "Praticamente imparável por meios normais — apenas a magia de desejo pode mandá-lo de volta ao sono."
+    ],
+    "world": [
+      "Dorme em algum lugar no interior do mundo, despertando periodicamente para devastar a superfície.",
+      "Não pode ser morto permanentemente — apenas colocado para dormir ou sequestrado para outro plano.",
+      "Sua chegada é geralmente prenunciada por terremotos, animais fugindo e profecias sombrias."
+    ],
+    "dmTips": [
+      "A Tarrasca não é um inimigo para ser derrotado em combate — é um desastre natural a ser sobrevivido ou redirecionado.",
+      "Use-a como um evento de campanha: os jogadores precisam encontrar outra solução além de lutar."
+    ]
+  },
+  "lich": {
+    "overview": "O lich é o que acontece quando um mago poderoso decide que a morte é apenas um obstáculo. Ao amarrar sua alma a um receptáculo mágico chamado Phylactério, o lich transcende a morte para continuar seus estudos arcanos por toda a eternidade — tornando-se algo muito mais frio e calculista do que era em vida.",
+    "combat": [
+      "Imune a encantamentos, à maioria das condições e ao dano de frio, eletricidade e dano não-mágico.",
+      "Seu Toque Paralisante pode incapacitar heróis inteiros, e sua Presença Aterrorizante paralisa os fracos.",
+      "Sempre tem magias de contingência preparadas — nunca enfrentar um lich sem descobrir onde está o Phylactério primeiro."
+    ],
+    "world": [
+      "Geralmente se retira para uma torre ou masmorra isolada, cercado de mortos-vivos e experimentos proibidos.",
+      "Pode ter sido um herói ou estudioso respeitado em vida — a motivação que os levou ao lich molda tudo sobre eles.",
+      "Regenera em 1d10 dias após a destruição, a não ser que o Phylactério seja destruído primeiro."
+    ],
+    "dmTips": [
+      "O Phylactério cria automaticamente uma busca secundária — os jogadores precisam encontrá-lo antes de poder derrotar permanentemente o lich.",
+      "Liches com histórias trágicas e objetivos pessoais fazem antagonistas muito mais ricos do que simples vilões do mal."
+    ]
+  },
+  "vampire": {
+    "overview": "O vampiro é a predador noturno por excelência — eternamente jovem, encantadoramente belo e mortalmente perigoso. Imortais e famintos, vampiros equilibram sua natureza predatória com séculos de elegância e manipulação social, tornando-os tão perigosos em um salão de baile quanto em um beco escuro.",
+    "combat": [
+      "Regenera 20 PV por turno a menos que esteja em luz solar ou água corrente, ou tenha sido atingido por madeira sagrada.",
+      "Seu Golpe de Vampiro drena a vida e pode escravizar vítimas que cheguem a 0 PV.",
+      "Pode se transformar em névoa ao chegar a 0 PV — ele não morre sem uma estaca no coração em seu caixão."
+    ],
+    "world": [
+      "Opera através de uma teia de mortos-vivos e thralls subjugados, raramente se expondo ao perigo.",
+      "Precisa de um convite para entrar em residências — e nunca esquece os que se recusaram.",
+      "Séculos de existência tornam os vampiros especialistas em política, manipulação e paciência."
+    ],
+    "dmTips": [
+      "O confronto mais tenso geralmente acontece antes da batalha — enquanto os jogadores descobrem as fraquezas e o covil.",
+      "Um vampiro como vilão recorrente que negocia e ameaça antes de atacar é muito mais memorável."
+    ]
+  },
+  "zombie": {
+    "overview": "Zumbis são o produto mais básico da necromancia — corpos reanimados sem vontade, sentimento ou propósito além de obedecer e destruir. Lentos, previsíveis e implacáveis, são frequentemente o primeiro sinal de que algo sombrio está acontecendo na região.",
+    "combat": [
+      "Imparáveis pela maioria dos efeitos de medo e encantamento — não têm mente para manipular.",
+      "Tenacidade Morta-Viva pode fazê-los sobreviver a um golpe que deveria matá-los, custando ações extras para terminá-los.",
+      "Perigosos em grandes números — um único zumbi é fácil, uma horda é um problema."
+    ],
+    "world": [
+      "Surgem onde há necromantes, maldições ou magia sombria corrompendo a terra.",
+      "Ao contrário dos mortos-vivos inteligentes, não têm agenda própria — são ferramentas.",
+      "Aldeias próximas a locais de batalha antigas vivem com o medo constante de que os mortos se levantem."
+    ],
+    "dmTips": [
+      "Use zumbis em grande número para criar pressão constante — eles não param e não negociam.",
+      "Ótimos para encontros de nível 1–3 ou como reforço para necromantes de nível mais alto."
+    ]
+  },
+  "skeleton": {
+    "overview": "Esqueletos são mortos-vivos clássicos — ossos reanimados que guardam masmorras, servem necromantes e emergem de cemitérios perturbados. Sem carne nem emoção, são guardiões eficientes que não precisam de comida, descanso ou motivação.",
+    "combat": [
+      "Imune a veneno e a condições que afetam criaturas vivas — não cansam, não sangram e não sentem dor.",
+      "Vulneráveis a dano de contundente — um bom golpe de maça pode destruí-los em um único acerto.",
+      "Arqueiros esqueléticos podem ser extremamente irritantes em grupos grandes."
+    ],
+    "world": [
+      "Frequentemente encontrados em antigas tumbas, catacumbas e ruínas que ninguém perturbou por séculos.",
+      "Ao contrário dos zumbis, esqueletos retêm a memória muscular de suas habilidades em vida — um guerreiro esquelético ainda luta com eficiência.",
+      "Podem ser criados em minutos por qualquer necromante com a magia certa."
+    ],
+    "dmTips": [
+      "Esqueletos com equipamento de herói morto criam mistério imediato — de onde veio essa armadura?",
+      "Perfeitos para encontros de nível 1–2, especialmente em masmorra ou cemitério."
+    ]
+  },
+  "troll": {
+    "overview": "O troll é a definição de ameaça persistente — uma criatura enorme, forte e quase impossível de matar por meios convencionais. Sua regeneração lendária significa que qualquer grupo que não tenha fogo ou ácido encontrará uma luta frustrante que simplesmente não termina.",
+    "combat": [
+      "Regenera 10 PV por turno — a menos que tenha sofrido dano de fogo ou ácido naquele turno.",
+      "Seus ataques de garra e mordida em multiataques podem rasgar um herói em dois turnos.",
+      "Estupidamente corajoso — nunca recua e raramente usa táticas além de 'ir na direção do inimigo e bater'."
+    ],
+    "world": [
+      "Vive em pântanos, cavernas e florestas densas, caçando qualquer coisa grande o suficiente para ser uma refeição.",
+      "Praticamente impossível de intimidar — sua capacidade de regenerar torna o medo um conceito abstrato.",
+      "Algumas culturas descobriram que trolls podem ser domesticados com comida constante, tornando-os guardas brutalmente eficientes."
+    ],
+    "dmTips": [
+      "Se o grupo não trouxer fogo ou ácido, a luta se torna uma experiência de terror lento — use isso.",
+      "Um troll recrutado por um vilão inteligente é uma combinação letal: a brutalidade do troll com estratégia humana."
+    ]
+  },
+  "owlbear": {
+    "overview": "O urso-coruja é prova de que nem todo experimento mágico deveria ter sido tentado. Um urso do tamanho de um cavalo com a cabeça de uma coruja gigante, o urso-coruja é um predador apex que combina força bruta com sentidos sobrenaturalmente aguçados e uma disposição perpetuamente ruim.",
+    "combat": [
+      "Seu Aperto do Bico captura alvos após uma mordida bem-sucedida, causando dano automático em turnos seguintes.",
+      "Detecta criaturas por audição e olfato — tentar se esconder de um urso-coruja raramente funciona.",
+      "Ataca até seus alvos pararem de se mover — sem negociação, sem recuo."
+    ],
+    "world": [
+      "Territorial no extremo — qualquer área de floresta ou planície com um urso-coruja pertence ao urso-coruja.",
+      "Encontrado em florestas temperadas e nas margens de planícies, muitas vezes próximo a ruínas antigas.",
+      "Dificilmente domesticável, mas grupos desesperados já tentaram — raramente com sucesso."
+    ],
+    "dmTips": [
+      "Ursos-coruja são ótimos como encontro inesperado em uma floresta 'segura' para grupos de nível 3–5.",
+      "Um filhote de urso-coruja pode ser plot hook: alguém quer que os jogadores o capturem... mas a mãe ainda está por perto."
+    ]
+  },
+  "mind-flayer": {
+    "overview": "O flagelador mental é uma das criaturas mais perturbadoras da existência — um ser de inteligência colossal com tentáculos onde deveria haver boca, que se alimenta literalmente de cérebros. Organizados em colônias governadas por um Elder Brain central, os flageladores mentais já controlaram impérios e ainda consideram todas as outras raças gado.",
+    "combat": [
+      "Explosão Mental (cone de 9 metros) pode atordoar múltiplos heróis de uma vez, essencialmente paralisando o grupo.",
+      "Extração de Cérebro instantaneamente mata criaturas Atordoadas com menos de 4 Dados de Vida.",
+      "Raramente luta sozinho — sempre tem thralls, mortos-vivos ou outros flageladores por perto."
+    ],
+    "world": [
+      "Vive no Subterrâneo profundo, em colônias organizadas em torno de um Elder Brain telepático.",
+      "Enxerga todas as outras raças como inferiores — são ingredientes para refeições ou ferramentas para seus esquemas.",
+      "Outrora controlaram um vasto império através da escravidão telepática; ainda buscam restaurá-lo."
+    ],
+    "dmTips": [
+      "O verdadeiro horror dos flageladores mentais é psicológico — use-os como manipuladores antes de revelar sua presença física.",
+      "Ideais para campanhas de níveis 7–14, especialmente como líderes de organizações sombrias."
+    ]
+  },
+  "adult-blue-dragon": {
+    "overview": "O dragão azul adulto é o mestre das tempestades — um predador elegante e metodicamente cruel que reina sobre desertos e planícies abertas. Ao contrário de seus primos vermelhos movidos pelo ego, os dragões azuis são planejadores pacientes que veem os mortais como peças em um jogo muito longo.",
+    "combat": [
+      "Sopro de Relâmpago (12d10 de dano em linha de 27 metros) pode varrer uma formação inteira.",
+      "Detecta criaturas soterradas com Tremorsense — não há como se esconder cavando.",
+      "Prefere atacar de cima durante tempestades elétricas, quando os trovões abafam o barulho de suas asas."
+    ],
+    "world": [
+      "Reivindica territórios áridos — desertos, estepes e planícies varridas pelo vento são seu lar.",
+      "Fascinado por poder e hierarquia: colecionará aliados mortais tanto quanto ouro.",
+      "Seus covils frequentemente ficam dentro de dunas ou escarpas rochosas, protegidos por escorpiões gigantes e elementais."
+    ],
+    "dmTips": [
+      "Um dragão azul como patrão ambíguo cria dilemas morais interessantes — ele cumpre acordos, mas seus objetivos finais nunca são bons.",
+      "Ideal para encontros de nível 10–15."
+    ]
+  },
+  "werewolf": {
+    "overview": "O lobisomem é a maldição que caminha entre os mundos — humano durante o dia, um predador implacável à noite. A licantropia é tanto doença quanto condição sobrenatural, e a ameaça de sua propagação é tão assustadora quanto o lobo em si.",
+    "combat": [
+      "Imune a dano não-mágico que não seja de prata — armas comuns simplesmente não funcionam.",
+      "Um jogador mordido pode contrair licantropia, transformando um encontro em uma crise de campanha.",
+      "Combina ferocidade animal com inteligência humana — usa terreno e emboscadas com eficiência."
+    ],
+    "world": [
+      "Frequentemente vive entre humanos sem que saibam, sofrendo com sua condição ou abraçando-a em segredo.",
+      "Manadas de lobisomens operam como clãs fechados, protegendo uns aos outros e seu segredo.",
+      "A prata é cara e rara — aldeias ameaçadas por lobisomens muitas vezes não têm meios de se defender."
+    ],
+    "dmTips": [
+      "A melhor sessão de lobisomem começa antes da revelação — pistas sutis, desaparecimentos inexplicáveis, uma aldeia assustada.",
+      "A ameaça de contágio transforma qualquer combate com lobisomem em algo muito mais tenso."
+    ]
+  },
+  "ghost": {
+    "overview": "O fantasma é o eco de uma vida não resolvida — uma alma presa entre os vivos e os mortos por um trauma, uma missão incompleta ou um apego tão forte que a morte não foi suficiente para rompê-lo. São melancólicos, perigosos e profundamente trágicos.",
+    "combat": [
+      "Incorporação permite que ele possua um humanóide, usando seu corpo como arma contra os aliados.",
+      "Toque Envelhecedor pode reduzir a idade de um herói em décadas — potencialmente fatal para personagens idosos.",
+      "Incorpóreo e capaz de atravessar paredes — combinar com um inimigo que ele não pode tocar é frustrante."
+    ],
+    "world": [
+      "Preso ao local de sua morte ou a um objeto com forte ligação emocional.",
+      "Geralmente não hostil até perturbado — mas sua simples presença causa Medo em quem o vê.",
+      "Libertar um fantasma de seu trauma é frequentemente a solução mais elegante do que destruí-lo."
+    ],
+    "dmTips": [
+      "O melhor uso de um fantasma é como mistério: quem era, por que está preso, e o que quer?",
+      "Encontros com fantasmas que terminam com repouso em paz em vez de combate são os mais memoráveis."
+    ]
+  },
+  "hill-giant": {
+    "overview": "O gigante das colinas é o menor e o mais estúpido dos gigantes verdadeiros — o que não significa que seja seguro. Com força capaz de demolir paredes e um apetite que faz aldeias desaparecerem, os gigantes das colinas são um problema constante para qualquer região sem cavaleiros dragão ou magos de alto nível por perto.",
+    "combat": [
+      "Pode atirar pedras com alcance de 18 metros, atacando antes que o grupo consiga chegar perto.",
+      "Seus golpes de clava causam 3d8+8 de dano — o suficiente para derrubar um herói de nível médio em um acerto.",
+      "Inteligência baixa significa táticas simples, mas também significa que é imprevisível e difícil de enganar."
+    ],
+    "world": [
+      "Vive em colinas e montanhas baixas, organizando saques contra aldeias próximas por comida.",
+      "A hierarquia entre gigantes é baseada em força bruta — o maior e mais forte manda.",
+      "Ocasionalmente domesticado por feiticeiros poderosos como guardas, mas eles sempre precisam de comida."
+    ],
+    "dmTips": [
+      "Gigantes das colinas são ótimos encontros de nível 5–8 — poderosos o suficiente para ser ameaça, mas derrotáveis.",
+      "Um gigante das colinas como vítima de manipulação por um vilão mais inteligente é um plot hook sólido."
+    ]
+  },
+  "gelatinous-cube": {
+    "overview": "O cubo gelatinoso é um dos encontros de masmorra mais icônicos do RPG — literalmente uma caixa d'água de gosma ácida transparente, quase invisível, que dissolve tudo que toca. Produto de magia antiga ou evolução bizarra, é o zelador perfeito de masmorras, consumindo todos os detritos que encontra.",
+    "combat": [
+      "Engole criaturas Entorpecidas — uma vez dentro, elas sofrem dano ácido a cada turno e podem sufocar.",
+      "Quase invisível em corredores de pedra — os jogadores podem caminhar direto para dentro antes de perceber.",
+      "Imune a maioria das condições, incluindo Enjoado, Apavorado e efeitos que requerem mente."
+    ],
+    "world": [
+      "Vive em masmorras e cavernas, 'limpando' restos orgânicos de qualquer coisa que morreu por ali.",
+      "Pode ser rastreado pelos itens não-orgânicos flutuando em seu interior — armor, moedas, ossos.",
+      "Algumas masmorras são projetadas com cubos gelatinosos como parte do sistema de limpeza."
+    ],
+    "dmTips": [
+      "A revelação clássica é perfeita: o grupo vê itens flutuando no ar e só então percebe o cubo.",
+      "Ótimo para partes de masmorras onde você quer que os jogadores se movam com cuidado."
+    ]
+  },
+  "orc": {
+    "overview": "Os orcs são guerreiros tribais ferozes que vivem para a batalha e para a honra conquistada pelo combate. Devotos de Gruumsh, o deus que lhes ordena que conquistem e destruam, os orcs raramente constroem — eles tomam o que os outros construíram.",
+    "combat": [
+      "Agressividade permite que se movam até um inimigo como ação bônus após um ataque — pressão constante.",
+      "Brigam bem em grupo, geralmente acompanhados de líderes mais poderosos como capitães ou xamãs.",
+      "Dispostos a morrer pela tribo — não recuam facilmente, o que os torna imprevisíveis."
+    ],
+    "world": [
+      "Organizam-se em clãs tribais competitivos, frequentemente em conflito entre si por território e recursos.",
+      "Vistos como inimigos naturais por humanos e elfos, mas com uma cultura rica de honra e tradição oral.",
+      "Orcs meio-sangue em sociedades humanas carregam o peso de ambos os mundos — excelentes personagens secundários."
+    ],
+    "dmTips": [
+      "Orcs com motivação além de 'saquear' — protegendo sua tribo, buscando comida, sendo usados por um vilão maior — são muito mais interessantes.",
+      "Encontros de nível 1–4, poderosos em número."
+    ]
+  },
+  "hobgoblin": {
+    "overview": "Os hobgoblins são o que acontece quando você pega a crueldade dos goblins e adiciona disciplina militar. São guerreiros bem organizados, estrategistas competentes e construtores de impérios que acreditam no poder através da ordem e da força.",
+    "combat": [
+      "Formação Marcial concede bônus de ataque quando aliados estão adjacentes — perigosos em grupo organizado.",
+      "Levam armadura e escudo, com CA mais alta do que a maioria dos humanoóides de CR similar.",
+      "Usam táticas militares: flancos, recuos estratégicos, cobertura de arqueiros."
+    ],
+    "world": [
+      "Organizam-se em fortalezas militaristas, com hierarquia rígida e punições severas para desobediência.",
+      "Consideram outras raças inferiores, mas respeitam força — um herói poderoso pode ganhar respeito relutante.",
+      "Às vezes controlam hordas de goblins e bugbears como tropas de linha."
+    ],
+    "dmTips": [
+      "Hobgoblins como facção política — com generais, negociadores e espias — criam conflitos de campanha muito mais ricos.",
+      "Bons antagonistas de nível 2–5 que escalam bem com reforços."
+    ]
+  },
+  "harpy": {
+    "overview": "A harpia é uma predadora alada que usa beleza e melodia como armas — seu Canto de Enfeitiçamento atrai presas para as pedras ou para as garras, tornando-a mais perigosa do que parece. Metade mulher, metade ave de rapina, as harpias habitam penhascos e costas rochosas onde podem controlar o tráfego.",
+    "combat": [
+      "Canto de Atração força um teste de Sabedoria ou o alvo se moverá compulsivamente em direção à harpia.",
+      "Ataca enquanto os alvos estão confusos, usando garras antes que possam se recuperar.",
+      "Perigosa no ar — atacar à distância é essencial se o grupo não tiver meios de voar."
+    ],
+    "world": [
+      "Habita penhascos costeiros, ilhas rochosas e montanhas, construindo ninhos nos pontos mais altos.",
+      "Coletoras compulsivas — seus ninhos estão cheios de ossos, restos de equipamento e itens brilhantes.",
+      "Em algumas lendas, as harpias eram criaturas belas que foram amaldiçoadas por arrogância divina."
+    ],
+    "dmTips": [
+      "O Canto de Atração cria momentos de pânico imediato — especialmente perto de bordas de penhascos.",
+      "Um grupo de harpias protegendo um ninho com algo valioso é um encontro de ambiente excelente."
+    ]
+  },
+  "banshee": {
+    "overview": "A banshee é o lamento da morte encarnado — o espírito atormentado de um elfo que, em vida, valorizou a beleza ou a vida acima de tudo e agora existe como um eco de pesar e destruição. Seu uivo pode matar, e sua simples presença é um lembrete da fragilidade da existência.",
+    "combat": [
+      "Lamento da Banshee: qualquer criatura que o ouça e falhe no teste de Constituição é reduzida a 1 PV.",
+      "Incorpórea e imune a dano não-mágico — o grupo precisa de prata ou armas mágicas.",
+      "Olhar Corruptor reduz o máximo de PV de um alvo — perigoso a longo prazo."
+    ],
+    "world": [
+      "Presa ao local de sua morte, geralmente uma floresta antiga ou ruína élfica.",
+      "Seu lamento pode ser ouvido a quilômetros de distância na noite — presságio de morte.",
+      "Alguns dizem que encontrar paz para a banshee requer descobrir e resolver o trauma de sua morte."
+    ],
+    "dmTips": [
+      "Use o ambiente: névoa, floresta antiga, ruínas — a atmosfera amplifica o horror da banshee.",
+      "O Lamento pode mudar completamente a dinâmica de uma batalha. Avise os jogadores que a criatura é assustadora."
+    ]
+  },
+  "kobold": {
+    "overview": "Os kobolds são as menores e, ironicamente, algumas das criaturas mais astuciosamente perigosas do mundo. Individualmente fracos, compensam com armadilhas engenhosas, táticas de grupo e uma devoção fanática aos dragões que frequentemente os protegem.",
+    "combat": [
+      "Vantagem para atacar quando um aliado está adjacente ao alvo — Tática de Enxame os torna perigosos em grupo.",
+      "Desvantagem em luz solar — o grupo pode usar isso como vantagem tática.",
+      "Mestres em armadilhas: qualquer covil de kobold está cheio delas."
+    ],
+    "world": [
+      "Constroem elaborados sistemas de túneis, sempre no estilo de miniatura das masmorras de seus dragões mestres.",
+      "Veneram dragões como deuses — qualquer dragão na área provavelmente tem kobolds em sua órbita.",
+      "Surpreendentemente habilidosos em mineração, engenharia básica e artesanato."
+    ],
+    "dmTips": [
+      "Um covil de kobolds com armadilhas bem projetadas pode desafiar grupos muito além do CR esperado.",
+      "Kobolds que negociam em vez de lutar criam situações inesperadamente divertidas."
+    ]
+  },
+  "chimera": {
+    "overview": "A quimera é a definição de criatura composta — leão na frente, bode no meio, dragão atrás, com cabeças correspondentes de cada um. Produto de experimentos mágicos antigos que escaparam ao controle, as quimeras são criaturas caóticas que atacam por instinto e raramente cooperam com qualquer um.",
+    "combat": [
+      "Três ataques de mordida de suas três cabeças mais um golpe com chifres ou garras por turno.",
+      "O Sopro de Fogo de sua cabeça de dragão causa 7d8 de dano em cone — perigoso para grupos agrupados.",
+      "Caótica e imprevisível — nem sempre ataca o mesmo alvo, dificultando a proteção de aliados."
+    ],
+    "world": [
+      "Territorialista e agressiva, caça qualquer criatura em sua área sem distinção.",
+      "Frequentemente encontrada em planícies abertas ou colinas, onde pode voar livremente.",
+      "Algumas histórias falam de quimeras treinadas como montaria, mas raramente com sucesso."
+    ],
+    "dmTips": [
+      "A quimera é um clássico encontro de 'boss de área' — um predador territorial que o grupo deve confrontar.",
+      "Ideal para nível 6–8 como encontro desafiador."
+    ]
+  },
+  "medusa": {
+    "overview": "A medusa é uma das criaturas mais perigosas que um grupo pode encontrar — não pela força física, mas pelo olhar que petrifica. Seres trágicos que foram amaldiçoados por deuses ciumentos ou transformados por magia proibida, as medusas habitam ruínas cheias das estátuas de seus visitadores anteriores.",
+    "combat": [
+      "Olhar da Pedra no início de cada turno petrifica progressivamente qualquer um que a olhe diretamente.",
+      "Arco mais garras mais mordida de serpentes em seu cabelo — perigosa até para quem evita o olhar.",
+      "O veneno de suas serpentes capilares adiciona dano e pode debilitar ainda mais.",
+      "Grupos que fecham os olhos perdem visão mas sobrevivem — combate às cegas é uma mecânica fascinante."
+    ],
+    "world": [
+      "Habita ruínas antigas, rodeada de estátuas de pedra que um dia foram aventureiros ou viajantes.",
+      "Algumas medusas são conscientes de sua tragédia e vivem em isolamento voluntário.",
+      "O sangue de uma medusa morta pode ter propriedades mágicas poderosas."
+    ],
+    "dmTips": [
+      "A batalha com uma medusa é sobre gerenciamento de recursos: como o grupo evita o olhar enquanto ainda luta?",
+      "Espelhos como mecânica (ver reflexo em vez de direto) adicionam camada tática interessante."
+    ]
+  },
+  "succubus-incubus": {
+    "overview": "O súcubo e o íncubo são demônios da sedução — criaturas do Abismo que assumem formas encantadoras para manipular, corromper e drenar a essência vital de mortais. São spies, manipuladores e assassinos que preferem nunca revelar sua verdadeira natureza.",
+    "combat": [
+      "Dreno de Força da Vida cura o súcubo/íncubo enquanto causa dano ao alvo — poderoso e regenerativo.",
+      "Charme funciona de forma diferente dos encantamentos normais — a vítima age em defesa do súcubo/íncubo.",
+      "Raramente combate diretamente — prefere usar thralls e aliados corrompidos como escudo."
+    ],
+    "world": [
+      "Opera por semanas ou meses, construindo uma relação de confiança com a vítima antes de explorar.",
+      "Um súcubo/íncubo bem estabelecido pode ter uma teia inteira de aliados corrompidos em uma cidade.",
+      "São agentes dos Lordes do Abismo, frequentemente com missões específicas de corrupção."
+    ],
+    "dmTips": [
+      "O melhor encontro com um súcubo/íncubo começa muito antes do combate — quem na cidade já foi corrompido?",
+      "Perfeito como vilão recorrente que nunca é pego de jeito fácil."
+    ]
+  },
+  "phase-spider": {
+    "overview": "A aranha de fase é um predador dimensional — uma aranha de tamanho considerável que pode se mover entre o Plano Material e o Plano Etéreo à vontade, tornando-a quase impossível de interceptar e extraordinariamente difícil de combater.",
+    "combat": [
+      "Pode se mover para o Plano Etéreo como ação bônus, tornando-se invisível e intangível no Material.",
+      "Ataca, envenena, então desaparece antes que o grupo possa retaliar.",
+      "Seu veneno é paralisante — uma criatura envenenada por ela pode se tornar uma refeição fácil."
+    ],
+    "world": [
+      "Constrói teias no Plano Etéreo que às vezes são visíveis como névoa brilhante no Material.",
+      "Caça através dos planos, esperando pacientemente pela oportunidade perfeita.",
+      "Encontrada em locais onde o véu entre planos é mais fino — antigas ruínas mágicas, locais de ritual."
+    ],
+    "dmTips": [
+      "A mecânica de mudar de plano transforma este em um dos combates mais frustrantes e memoráveis para os jogadores.",
+      "Dê ao grupo uma forma de rastrear ou prever os movimentos da aranha — caso contrário, pode ser apenas frustrante."
+    ]
+  },
+  "wight": {
+    "overview": "A aparição é um morto-vivo inteligente e malévolo — um guerreiro ou líder que morreu cheio de ódio e foi animado pelo Plano Sombra. Ao contrário de zumbis e esqueletos, aparições têm vontade própria, estratégia e o poder aterrorizante de drenar a vida de suas vítimas.",
+    "combat": [
+      "Dreno de Vida reduz o máximo de PV das vítimas — criaturas reduzidas a 0 PV por isso se tornam zumbis sob seu controle.",
+      "Resistente a dano não-mágico exceto prata — grupos despreparados se encontrarão em apuros.",
+      "Comanda outros mortos-vivos, tornando-se mais perigoso à medida que a luta se arrasta."
+    ],
+    "world": [
+      "Frequentemente encontrado em tumbas antigas ou fortalezas em ruínas, guardando algo com fervor obsessivo.",
+      "Pode ter memórias fragmentadas de sua vida — motivações que ainda guiam seu comportamento.",
+      "Sua presença gradualmente corrompe os arredores, tornando o terreno hostil aos vivos."
+    ],
+    "dmTips": [
+      "O Dreno de Vida cria pressão de recursos — os jogadores sabem que cada acerto reduz permanentemente seus PV máximos.",
+      "Uma aparição com história e motivação é muito mais assustadora do que uma sem passado."
+    ]
+  }
+}

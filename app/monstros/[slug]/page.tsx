@@ -13,6 +13,7 @@ import { PublicMonsterSearch } from "@/components/public/PublicMonsterSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
 import monsterLore from "@/public/srd/monster-lore.json";
+import monsterLorePt from "@/public/srd/monster-lore-pt.json";
 import Link from "next/link";
 
 // ── Static generation ──────────────────────────────────────────────
@@ -100,8 +101,10 @@ export default async function MonstroPage({
     };
   });
 
+  type LoreMap = Record<string, { overview: string; combat: string[]; world: string[]; dmTips: string[] }>;
   const isMAD = !!monster.monster_a_day_url;
-  const lore = (monsterLore as Record<string, { overview: string; combat: string[]; world: string[]; dmTips: string[] }>)[enSlug] ?? null;
+  // Prefer PT lore, fall back to EN lore
+  const lore = (monsterLorePt as LoreMap)[enSlug] ?? (monsterLore as LoreMap)[enSlug] ?? null;
 
   return (
     <>
@@ -109,6 +112,7 @@ export default async function MonstroPage({
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav
+          locale="pt-BR"
           breadcrumbs={[
             { label: "Monstros", href: "/monstros" },
             { label: monster.name },
@@ -141,10 +145,10 @@ export default async function MonstroPage({
           )}
 
           {/* Stat block with token + dice rollers */}
-          <PublicMonsterStatBlock monster={monster} />
+          <PublicMonsterStatBlock monster={monster} locale="pt-BR" />
 
           {/* Two-box CTA */}
-          <PublicCTA entityName={monster.name} lore={lore ?? undefined} />
+          <PublicCTA entityName={monster.name} lore={lore ?? undefined} locale="pt-BR" />
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">

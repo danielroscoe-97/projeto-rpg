@@ -22,11 +22,52 @@ function formatSpeed(speed: Record<string, string | number> | undefined): string
     .join(", ");
 }
 
+const STAT_LABELS = {
+  "en": {
+    armorClass: "Armor Class",
+    hitPoints: "Hit Points",
+    speed: "Speed",
+    initiative: "Initiative",
+    savingThrows: "Saving Throws",
+    skills: "Skills",
+    damageVulnerabilities: "Damage Vulnerabilities",
+    damageResistances: "Damage Resistances",
+    damageImmunities: "Damage Immunities",
+    conditionImmunities: "Condition Immunities",
+    senses: "Senses",
+    languages: "Languages",
+    challenge: "Challenge",
+    actions: "Actions",
+    reactions: "Reactions",
+    legendaryActions: "Legendary Actions",
+  },
+  "pt-BR": {
+    armorClass: "Classe de Armadura",
+    hitPoints: "Pontos de Vida",
+    speed: "Velocidade",
+    initiative: "Iniciativa",
+    savingThrows: "Testes de Resistência",
+    skills: "Perícias",
+    damageVulnerabilities: "Vulnerabilidades a Dano",
+    damageResistances: "Resistências a Dano",
+    damageImmunities: "Imunidades a Dano",
+    conditionImmunities: "Imunidades a Condição",
+    senses: "Sentidos",
+    languages: "Idiomas",
+    challenge: "Nível de Desafio",
+    actions: "Ações",
+    reactions: "Reações",
+    legendaryActions: "Ações Lendárias",
+  },
+} as const;
+
 interface PublicMonsterStatBlockProps {
   monster: SrdMonster;
+  locale?: "en" | "pt-BR";
 }
 
-export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps) {
+export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonsterStatBlockProps) {
+  const L = STAT_LABELS[locale];
   const abilities = [
     { label: "STR", value: monster.str ?? 10 },
     { label: "DEX", value: monster.dex ?? 10 },
@@ -79,11 +120,11 @@ export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps)
       {/* Core stats */}
       <div className="space-y-1 text-sm">
         <p>
-          <strong className="text-[var(--5e-accent-red)]">Armor Class</strong>{" "}
+          <strong className="text-[var(--5e-accent-red)]">{L.armorClass}</strong>{" "}
           {monster.armor_class}
         </p>
         <p>
-          <strong className="text-[var(--5e-accent-red)]">Hit Points</strong>{" "}
+          <strong className="text-[var(--5e-accent-red)]">{L.hitPoints}</strong>{" "}
           {monster.hit_points}
           {monster.hp_formula && (
             <>
@@ -100,11 +141,11 @@ export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps)
           )}
         </p>
         <p>
-          <strong className="text-[var(--5e-accent-red)]">Speed</strong>{" "}
+          <strong className="text-[var(--5e-accent-red)]">{L.speed}</strong>{" "}
           {formatSpeed(monster.speed)}
         </p>
         <p>
-          <strong className="text-[var(--5e-accent-red)]">Initiative</strong>{" "}
+          <strong className="text-[var(--5e-accent-red)]">{L.initiative}</strong>{" "}
           <ClickableRoll
             notation={initNotation}
             label={`${monster.name} Initiative`}
@@ -142,54 +183,54 @@ export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps)
       <div className="space-y-1 text-sm">
         {savingThrows && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Saving Throws</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.savingThrows}</strong>{" "}
             {savingThrows}
           </p>
         )}
         {skills && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Skills</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.skills}</strong>{" "}
             {skills}
           </p>
         )}
         {monster.damage_vulnerabilities && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Damage Vulnerabilities</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
             {monster.damage_vulnerabilities}
           </p>
         )}
         {monster.damage_resistances && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Damage Resistances</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
             {monster.damage_resistances}
           </p>
         )}
         {monster.damage_immunities && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Damage Immunities</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
             {monster.damage_immunities}
           </p>
         )}
         {monster.condition_immunities && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Condition Immunities</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
             {monster.condition_immunities}
           </p>
         )}
         {monster.senses && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Senses</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.senses}</strong>{" "}
             {monster.senses}
           </p>
         )}
         {monster.languages && (
           <p>
-            <strong className="text-[var(--5e-accent-red)]">Languages</strong>{" "}
+            <strong className="text-[var(--5e-accent-red)]">{L.languages}</strong>{" "}
             {monster.languages}
           </p>
         )}
         <p>
-          <strong className="text-[var(--5e-accent-red)]">Challenge</strong>{" "}
+          <strong className="text-[var(--5e-accent-red)]">{L.challenge}</strong>{" "}
           {monster.cr}
           {monster.xp ? ` (${monster.xp.toLocaleString()} XP)` : ""}
         </p>
@@ -220,7 +261,7 @@ export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps)
         <>
           <hr className="card-divider" />
           <h2 className="text-lg font-bold text-[var(--5e-accent-red)] border-b border-[var(--5e-accent-red)]/30 pb-1 mb-2 font-[family-name:var(--font-cinzel)]">
-            Actions
+            {L.actions}
           </h2>
           <div className="space-y-2 text-sm">
             {monster.actions.map((action, i) => (
@@ -243,7 +284,7 @@ export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps)
         <>
           <hr className="card-divider" />
           <h2 className="text-lg font-bold text-[var(--5e-accent-red)] border-b border-[var(--5e-accent-red)]/30 pb-1 mb-2 font-[family-name:var(--font-cinzel)]">
-            Reactions
+            {L.reactions}
           </h2>
           <div className="space-y-2 text-sm">
             {monster.reactions.map((reaction, i) => (
@@ -266,7 +307,7 @@ export function PublicMonsterStatBlock({ monster }: PublicMonsterStatBlockProps)
         <>
           <hr className="card-divider" />
           <h2 className="text-lg font-bold text-[var(--5e-accent-red)] border-b border-[var(--5e-accent-red)]/30 pb-1 mb-2 font-[family-name:var(--font-cinzel)]">
-            Legendary Actions
+            {L.legendaryActions}
           </h2>
           <div className="space-y-2 text-sm">
             {monster.legendary_actions.map((la, i) => (
