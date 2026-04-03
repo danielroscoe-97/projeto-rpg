@@ -123,7 +123,7 @@ export default async function MonstroPage({
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
             Página disponível em{" "}
-            <Link href={`/monsters/${enSlug}`} className="text-orange-400 hover:underline">
+            <Link href={`/monsters/${enSlug}`} className="text-[#D4A853] hover:underline">
               English
             </Link>
           </p>

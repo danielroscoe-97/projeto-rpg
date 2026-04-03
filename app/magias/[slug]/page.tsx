@@ -121,7 +121,7 @@ export default async function MagiaPage({
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
             Página disponível em{" "}
-            <Link href={`/spells/${enSlug}`} className="text-orange-400 hover:underline">
+            <Link href={`/spells/${enSlug}`} className="text-[#D4A853] hover:underline">
               English
             </Link>
           </p>

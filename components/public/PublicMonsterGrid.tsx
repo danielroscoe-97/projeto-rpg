@@ -152,7 +152,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-orange-500/40 transition-colors"
+            className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
           />
         </div>
 
@@ -166,7 +166,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
               onClick={() => setCrFilter(crFilter === r.label ? null : r.label)}
               className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 crFilter === r.label
-                  ? "bg-orange-600 text-white shadow-sm"
+                  ? "bg-[#D4A853] text-gray-950 shadow-sm"
                   : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
               }`}
             >
@@ -185,7 +185,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
               onClick={() => setTypeFilter(typeFilter === t ? null : t)}
               className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
                 typeFilter === t
-                  ? "bg-orange-600 text-white shadow-sm"
+                  ? "bg-[#D4A853] text-gray-950 shadow-sm"
                   : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
               }`}
             >
@@ -210,7 +210,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
             <a
               key={letter}
               href={`#letter-${letter}`}
-              className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-orange-600 hover:text-white transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-[#D4A853]/90 hover:text-white transition-colors"
             >
               {letter}
             </a>
@@ -221,7 +221,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
       {/* Monster grid by letter */}
       {Array.from(grouped.entries()).map(([letter, group]) => (
         <section key={letter} id={`letter-${letter}`} className="mb-8">
-          <h2 className="text-xl font-bold text-orange-400 border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)]">
+          <h2 className="text-xl font-bold text-[#D4A853] border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)]">
             {letter}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -232,7 +232,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
                 <Link
                   key={m.name}
                   href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
-                  className="flex items-center gap-2.5 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-orange-500/20 transition-all group"
+                  className="flex items-center gap-2.5 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
                 >
                   <span className="w-7 h-7 rounded-full bg-gray-700/50 flex items-center justify-center text-xs flex-shrink-0">
                     {emoji}
@@ -246,7 +246,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
                     CR {m.cr}
                   </span>
                   {m.isMAD && (
-                    <span className="text-[8px] font-bold bg-orange-600 text-white rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0" title="Monster a Day">
+                    <span className="text-[8px] font-bold bg-[#D4A853] text-gray-950 rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0" title="Monster a Day">
                       r/
                     </span>
                   )}
@@ -263,7 +263,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
           <button
             type="button"
             onClick={() => { setQuery(""); setCrFilter(null); setTypeFilter(null); }}
-            className="mt-3 text-orange-400 text-sm hover:underline"
+            className="mt-3 text-[#D4A853] text-sm hover:underline"
           >
             {clearAll}
           </button>

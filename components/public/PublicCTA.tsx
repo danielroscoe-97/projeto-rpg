@@ -63,11 +63,11 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
 
           {lore.combat.length > 0 && (
             <div className="mb-3">
-              <h3 className="text-sm font-semibold text-orange-400 mb-1">{L.inCombat}</h3>
+              <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.inCombat}</h3>
               <ul className="space-y-1">
                 {lore.combat.map((tip, i) => (
                   <li key={i} className="text-gray-400 text-sm flex gap-2">
-                    <span className="text-orange-500/60 mt-0.5">&#x2022;</span>
+                    <span className="text-[#D4A853]/60 mt-0.5">&#x2022;</span>
                     <span>{tip}</span>
                   </li>
                 ))}
@@ -77,11 +77,11 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
 
           {lore.world.length > 0 && (
             <div className="mb-3">
-              <h3 className="text-sm font-semibold text-orange-400 mb-1">{L.inTheWorld}</h3>
+              <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.inTheWorld}</h3>
               <ul className="space-y-1">
                 {lore.world.map((tip, i) => (
                   <li key={i} className="text-gray-400 text-sm flex gap-2">
-                    <span className="text-orange-500/60 mt-0.5">&#x2022;</span>
+                    <span className="text-[#D4A853]/60 mt-0.5">&#x2022;</span>
                     <span>{tip}</span>
                   </li>
                 ))}
@@ -91,11 +91,11 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
 
           {lore.dmTips.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-orange-400 mb-1">{L.dmTips}</h3>
+              <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.dmTips}</h3>
               <ul className="space-y-1">
                 {lore.dmTips.map((tip, i) => (
                   <li key={i} className="text-gray-400 text-sm flex gap-2">
-                    <span className="text-orange-500/60 mt-0.5">&#x2022;</span>
+                    <span className="text-[#D4A853]/60 mt-0.5">&#x2022;</span>
                     <span>{tip}</span>
                   </li>
                 ))}
@@ -106,7 +106,7 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
       )}
 
       {/* Box 2: What is Pocket DM */}
-      <div className="rounded-xl bg-gradient-to-br from-orange-950/30 to-gray-800/50 border border-orange-500/10 p-6 flex flex-col justify-between">
+      <div className="rounded-xl bg-gradient-to-br from-[#D4A853]/[0.06] to-gray-800/50 border border-[#D4A853]/10 p-6 flex flex-col justify-between">
         <div>
           <h2 className="text-lg font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-3">
             {L.whatIs}
@@ -115,7 +115,7 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
           <ul className="space-y-1 mb-4">
             {L.features.map((f, i) => (
               <li key={i} className="text-gray-400 text-sm flex gap-2">
-                <span className="text-orange-500/60">{f.icon}</span>
+                <span className="text-[#D4A853]/60">{f.icon}</span>
                 <span>{f.text}</span>
               </li>
             ))}
@@ -124,13 +124,13 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/try"
-            className="flex-1 text-center rounded-lg bg-orange-600 px-4 py-2.5 text-white font-semibold hover:bg-orange-500 transition-colors text-sm"
+            className="flex-1 text-center rounded-lg bg-[#D4A853] px-4 py-2.5 text-white font-semibold hover:bg-[#D4A853]/90 transition-colors text-sm"
           >
             {L.tryBtn}
           </Link>
           <Link
             href="/auth/sign-up"
-            className="flex-1 text-center rounded-lg border border-orange-500/30 px-4 py-2.5 text-orange-400 font-semibold hover:bg-orange-500/10 transition-colors text-sm"
+            className="flex-1 text-center rounded-lg border border-[#D4A853]/30 px-4 py-2.5 text-[#D4A853] font-semibold hover:bg-[#D4A853]/10 transition-colors text-sm"
           >
             {L.signUpBtn}
           </Link>

@@ -85,7 +85,7 @@ export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name..."
-              className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-orange-500/40 transition-colors"
+              className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
               autoFocus
             />
           </div>
@@ -95,7 +95,7 @@ export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = 
             {SPELL_SCHOOLS.map((s) => (
               <button key={s} type="button"
                 onClick={() => setSchoolFilter(schoolFilter === s ? null : s)}
-                className={`px-2 py-0.5 rounded-md text-xs transition-colors ${schoolFilter === s ? "bg-orange-600 text-white" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1]"}`}
+                className={`px-2 py-0.5 rounded-md text-xs transition-colors ${schoolFilter === s ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1]"}`}
               >
                 {s}
               </button>

@@ -10,10 +10,10 @@ export function MonsterADayAttribution({
   dayId,
 }: MonsterADayAttributionProps) {
   return (
-    <aside className="mb-6 rounded-xl border border-orange-500/20 bg-orange-950/20 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+    <aside className="mb-6 rounded-xl border border-[#D4A853]/20 bg-orange-950/20 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
       {/* r/ logo mark */}
       <div className="flex-shrink-0">
-        <div className="w-12 h-12 rounded-full bg-orange-600 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-[#D4A853] flex items-center justify-center">
           <span className="text-white font-black text-lg leading-none">r/</span>
         </div>
       </div>
@@ -29,7 +29,7 @@ export function MonsterADayAttribution({
             href="https://www.reddit.com/r/monsteraday"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-orange-400 hover:text-orange-300 underline underline-offset-2"
+            className="text-[#D4A853] hover:text-orange-300 underline underline-offset-2"
           >
             r/monsteraday
           </a>{" "}
@@ -43,7 +43,7 @@ export function MonsterADayAttribution({
                 href={postUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-orange-400 hover:text-orange-300 underline underline-offset-2"
+                className="text-[#D4A853] hover:text-orange-300 underline underline-offset-2"
               >
                 u/{author}
               </a>
@@ -60,7 +60,7 @@ export function MonsterADayAttribution({
         href={postUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-orange-500/30 px-3 py-2 text-xs font-medium text-orange-400 hover:bg-orange-500/10 transition-colors whitespace-nowrap"
+        className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[#D4A853]/30 px-3 py-2 text-xs font-medium text-[#D4A853] hover:bg-[#D4A853]/10 transition-colors whitespace-nowrap"
       >
         <svg
           className="w-3.5 h-3.5"

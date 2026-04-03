@@ -34,7 +34,7 @@ const SCHOOL_COLORS: Record<string, string> = {
   Evocation: "text-red-400",
   Illusion: "text-indigo-400",
   Necromancy: "text-green-400",
-  Transmutation: "text-orange-400",
+  Transmutation: "text-[#D4A853]",
 };
 
 function toSlug(name: string): string {
@@ -134,7 +134,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-orange-500/40 transition-colors"
+            className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
           />
         </div>
 
@@ -144,7 +144,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
           {SPELL_LEVELS.map((l) => (
             <button key={l.value} type="button"
               onClick={() => setLevelFilter(levelFilter === l.value ? null : l.value)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${levelFilter === l.value ? "bg-orange-600 text-white" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${levelFilter === l.value ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
             >
               {l.label}
             </button>
@@ -157,7 +157,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
           {SPELL_SCHOOLS.map((s) => (
             <button key={s} type="button"
               onClick={() => setSchoolFilter(schoolFilter === s ? null : s)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${schoolFilter === s ? "bg-orange-600 text-white" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${schoolFilter === s ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
             >
               {s}
             </button>
@@ -170,7 +170,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
           {SPELL_CLASSES.map((c) => (
             <button key={c} type="button"
               onClick={() => setClassFilter(classFilter === c ? null : c)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${classFilter === c ? "bg-orange-600 text-white" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${classFilter === c ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
             >
               {c}
             </button>
@@ -197,7 +197,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
             {hasFilters ? `${filtered.length} ${of} ${spells.length} ${spellsLabel}` : `${spells.length} ${spellsLabel}`}
           </span>
           {hasFilters && (
-            <button type="button" onClick={clearAllFilters} className="text-xs text-orange-400 hover:underline">
+            <button type="button" onClick={clearAllFilters} className="text-xs text-[#D4A853] hover:underline">
               {clearAll}
             </button>
           )}
@@ -209,7 +209,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
         <div className="flex flex-wrap gap-2 mb-8">
           {levelKeys.map((level) => (
             <a key={level} href={`#level-${level}`}
-              className="px-3 py-1 rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-orange-600 hover:text-white transition-colors"
+              className="px-3 py-1 rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-[#D4A853]/90 hover:text-white transition-colors"
             >
               {level === 0 ? "Cantrips" : `Level ${level}`}
             </a>
@@ -220,13 +220,13 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
       {/* Spell grid by level */}
       {levelKeys.map((level) => (
         <section key={level} id={`level-${level}`} className="mb-8">
-          <h2 className="text-xl font-bold text-orange-400 border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)]">
+          <h2 className="text-xl font-bold text-[#D4A853] border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)]">
             {level === 0 ? "Cantrips" : `${level}${["st","nd","rd"][level-1]||"th"}-Level Spells`}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {byLevel.get(level)!.map((s) => (
               <Link key={s.name} href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
-                className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-orange-500/20 transition-all group"
+                className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
               >
                 <span className="flex-1 min-w-0">
                   <span className="text-gray-200 group-hover:text-white text-sm font-medium block truncate">
@@ -249,7 +249,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", labels = {} }: P
       {filtered.length === 0 && hasFilters && (
         <div className="text-center py-12">
           <p className="text-gray-400 text-lg">{noResults}</p>
-          <button type="button" onClick={clearAllFilters} className="mt-3 text-orange-400 text-sm hover:underline">
+          <button type="button" onClick={clearAllFilters} className="mt-3 text-[#D4A853] text-sm hover:underline">
             {clearAll}
           </button>
         </div>

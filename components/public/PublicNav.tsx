@@ -117,7 +117,7 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
         <div className="flex items-center gap-2.5">
           <Link
             href="/try"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-orange-600 px-3 py-1.5 text-white text-sm font-semibold hover:bg-orange-500 transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-[#D4A853] px-3 py-1.5 text-white text-sm font-semibold hover:bg-[#D4A853]/90 transition-colors"
           >
             {l.tryFree}
           </Link>

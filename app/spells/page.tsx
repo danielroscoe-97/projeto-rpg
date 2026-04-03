@@ -63,7 +63,7 @@ export default function SpellsIndexPage() {
         <PublicSpellGrid spells={spells} />
 
         {/* CTA */}
-        <div className="mt-12 rounded-xl bg-gradient-to-br from-orange-950/30 to-gray-800/50 border border-orange-500/10 p-8 text-center">
+        <div className="mt-12 rounded-xl bg-gradient-to-br from-[#D4A853]/[0.06] to-gray-800/50 border border-[#D4A853]/10 p-8 text-center">
           <h2 className="text-xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-2">
             Track spells in combat
           </h2>
@@ -74,13 +74,13 @@ export default function SpellsIndexPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/try"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-6 py-3 text-white font-semibold hover:bg-orange-500 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4A853] px-6 py-3 text-white font-semibold hover:bg-[#D4A853]/90 transition-colors"
             >
               Try Combat Tracker — Free
             </Link>
             <Link
               href="/auth/sign-up"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-orange-500/30 px-6 py-3 text-orange-400 font-semibold hover:bg-orange-500/10 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D4A853]/30 px-6 py-3 text-[#D4A853] font-semibold hover:bg-[#D4A853]/10 transition-colors"
             >
               Create Free Account
             </Link>
