@@ -218,5 +218,61 @@
       { "name": "Endless Sustenance", "desc": "When a good-aligned creature casts a spell or uses a magical effect that causes another good-aligned creature to regain hit points, the target regains the maximum number of hit points possible for the spell or effect." }
     ],
     "regional_effects_closing": "If the unicorn dies, these effects fade over the course of 1d10 days."
+  },
+
+  "beholder": {
+    "lair_actions_intro": "When fighting inside its lair, a beholder can invoke the ambient magic to take lair actions. On initiative count 20 (losing initiative ties), the beholder can take one lair action to cause one of the following effects. The beholder can't repeat an effect until they have all been used, and it can't use the same effect two rounds in a row.",
+    "lair_actions": [
+      { "name": "Slimy Ground", "desc": "A 50-foot-square area of ground within 120 feet of the beholder becomes slimy; that area is difficult terrain until initiative count 20 on the next round." },
+      { "name": "Grasping Appendages", "desc": "Walls within 120 feet of the beholder sprout grasping appendages until initiative count 20 on the round after next. Each creature of the beholder's choice that starts its turn within 10 feet of such a wall must succeed on a DC 15 Dexterity saving throw or be grappled. Escaping requires a successful DC 15 Strength (Athletics) or Dexterity (Acrobatics) check." },
+      { "name": "Wandering Eye", "desc": "An eye opens on a solid surface within 60 feet of the beholder. One random eye ray of the beholder shoots from that eye at a target of the beholder's choice that it can see. The eye then closes and disappears." }
+    ],
+    "regional_effects_intro": "A region containing a beholder's lair is warped by the creature's unnatural presence, which creates one or more of the following effects:",
+    "regional_effects": [
+      { "name": "Paranoia", "desc": "Creatures within 1 mile of the beholder's lair sometimes feel as if they're being watched when they aren't." },
+      { "name": "Reality Warps", "desc": "When the beholder sleeps, minor warps in reality occur within 1 mile of its lair and then vanish 24 hours later. Marks on cave walls might change subtly, an eerie trinket might appear where none existed before, harmless slime might coat a statue, and so on. These effects apply only to natural surfaces and to nonmagical objects that aren't on anyone's person." }
+    ],
+    "regional_effects_closing": "If the beholder dies, these effects fade over the course of 1d10 days."
+  },
+
+  "mummy-lord": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the mummy lord takes a lair action to cause one of the following effects; the mummy lord can't use the same effect two rounds in a row:",
+    "lair_actions": [
+      { "name": "Undead Awareness", "desc": "Each undead creature in the lair can pinpoint the location of each living creature within 120 feet of it until initiative count 20 on the next round." },
+      { "name": "Turn Resistance", "desc": "Each undead in the lair has advantage on saving throws against effects that turn undead until initiative count 20 on the next round." },
+      { "name": "Spell Disruption", "desc": "Until initiative count 20 on the next round, any non-undead creature that tries to cast a spell of 4th level or lower in the mummy lord's lair is wracked with pain. The creature can choose another action, but if it tries to cast the spell, it must make a DC 16 Constitution saving throw. On a failed save, it takes 1d6 necrotic damage per level of the spell, and the spell has no effect and is wasted." }
+    ],
+    "regional_effects_intro": "A mummy lord's temple or tomb is warped in any of the following ways by the creature's dark presence:",
+    "regional_effects": [
+      { "name": "Food Decay", "desc": "Food instantly molders and water instantly evaporates when brought into the lair. Other nonmagical drinks are spoiled — wine turning to vinegar, for instance." },
+      { "name": "Divination Interference", "desc": "Divination spells cast within the lair by creatures other than the mummy lord have a 25 percent chance to provide misleading results, as determined by the DM. If a divination spell already has a chance to fail or become unreliable when cast multiple times, that chance increases by 25 percent." },
+      { "name": "Treasure Curse", "desc": "A creature that takes treasure from the lair is cursed until the treasure is returned. The cursed target has disadvantage on all saving throws. The curse lasts until removed by a remove curse spell or other magic." }
+    ],
+    "regional_effects_closing": "If the mummy lord is destroyed, these regional effects end immediately."
+  },
+
+  "sphinx": {
+    "lair_actions_intro": "On initiative count 20 (losing initiative ties), the sphinx can take a lair action to cause one of the following magical effects; the sphinx can't use an effect again until it finishes a short or long rest:",
+    "lair_actions": [
+      { "name": "Time Reroll", "desc": "The flow of time is altered such that every creature in the lair must reroll initiative. The sphinx can choose not to reroll." },
+      { "name": "Age Shift", "desc": "The effects of time are altered such that every creature in the lair must succeed on a DC 15 Constitution saving throw or become 1d20 years older or younger (the sphinx's choice), but never any younger than 1 year old. A greater restoration spell can restore a creature's age to normal." },
+      { "name": "Time Warp", "desc": "The flow of time within the lair is altered such that everything within moves up to 10 years forward or backward (sphinx's choice). Only the sphinx is immediately aware of the time change. A wish spell can return the caster and up to seven other creatures designated by the caster to their normal time." },
+      { "name": "Plane Shift", "desc": "The sphinx shifts itself and up to seven other creatures it can see within its lair to another plane of existence. Once outside its lair, the sphinx can't use lair actions, but it can return to its lair as a bonus action on its turn, taking up to seven creatures with it." }
+    ],
+    "regional_effects_intro": null,
+    "regional_effects": []
+  },
+
+  "vampire": {
+    "lair_actions_intro": null,
+    "lair_actions": [],
+    "regional_effects_intro": "The region surrounding a vampire's lair is warped by the creature's unnatural presence, creating any of the following effects:",
+    "regional_effects": [
+      { "name": "Vermin Surge", "desc": "There's a noticeable increase in the populations of bats, rats, and wolves in the region." },
+      { "name": "Withered Plants", "desc": "Plants within 500 feet of the lair wither, and their stems and branches become twisted and thorny." },
+      { "name": "Living Shadows", "desc": "Shadows cast within 500 feet of the lair seem abnormally gaunt and sometimes move as though alive." },
+      { "name": "Creeping Fog", "desc": "A creeping fog clings to the ground within 500 feet of the vampire's lair. The fog occasionally takes eerie forms, such as grasping claws and writhing serpents." }
+    ],
+    "regional_effects_closing": "If the vampire is destroyed, these effects end after 2d6 days."
   }
 }

@@ -15,7 +15,7 @@
  *   public/srd/monsters-2024.json   (2024 revised sources: XMM, XPHB, XDMG)
  */
 
-import { writeFileSync, mkdirSync } from "fs";
+import { writeFileSync, readFileSync, mkdirSync } from "fs";
 import { join } from "path";
 
 // ── Config ──────────────────────────────────────────────────────────
@@ -96,6 +96,10 @@ interface SrdMonster {
   actions: MonsterAction[] | null;
   legendary_actions: MonsterAction[] | null;
   reactions: MonsterAction[] | null;
+  lair_actions: MonsterAction[] | null;
+  lair_actions_intro: string | null;
+  regional_effects: MonsterAction[] | null;
+  regional_effects_intro: string | null;
 }
 
 // ── CR → XP table ──────────────────────────────────────────────────
@@ -622,12 +626,39 @@ function getOrdinal(n: number): string {
   return "th";
 }
 
+// ── Lair Data ──────────────────────────────────────────────────────
+
+interface LairData {
+  lair_actions_intro: string | null;
+  lair_actions: MonsterAction[];
+  regional_effects_intro: string | null;
+  regional_effects: MonsterAction[];
+  regional_effects_closing?: string;
+}
+
+function loadLairData(): Record<string, LairData> {
+  const filePath = join(__dirname, "data", "monster-lair-data.json");
+  const raw = JSON.parse(readFileSync(filePath, "utf-8"));
+  delete raw._comment;
+  return raw as Record<string, LairData>;
+}
+
+function getLairKey(monsterSlug: string): string | null {
+  const dragonMatch = monsterSlug.match(/^(?:adult|ancient)-(.+)-dragon$/);
+  if (dragonMatch) return `${dragonMatch[1]}-dragon`;
+  if (monsterSlug === "androsphinx" || monsterSlug === "gynosphinx") return "sphinx";
+  if (monsterSlug.startsWith("vampire") && monsterSlug !== "vampire-spawn") return "vampire";
+  if (monsterSlug === "beholder" || monsterSlug === "death-tyrant") return "beholder";
+  return monsterSlug;
+}
+
 // ── Main transform ─────────────────────────────────────────────────
 
 function transformMonster(
   raw: Record<string, unknown>,
   sourceCode: string,
-  version: "2014" | "2024"
+  version: "2014" | "2024",
+  lairDataMap?: Record<string, LairData>
 ): SrdMonster | null {
   // Skip copy/variant entries that reference other monsters
   if (raw._copy) return null;
@@ -661,7 +692,7 @@ function transformMonster(
     .replace(/[\u0300-\u036f]/g, "");
   const tokenUrl = `${TOKEN_BASE_URL}/${sourceCode}/${encodeURIComponent(tokenName)}.webp`;
 
-  return {
+  const monster: SrdMonster = {
     id,
     name,
     source: sourceCode,
@@ -694,7 +725,28 @@ function transformMonster(
     actions: parseActions(raw.action as unknown[] | undefined),
     legendary_actions: parseActions(raw.legendary as unknown[] | undefined),
     reactions: parseActions(raw.reaction as unknown[] | undefined),
+    lair_actions: null,
+    lair_actions_intro: null,
+    regional_effects: null,
+    regional_effects_intro: null,
   };
+
+  // Merge lair data if available
+  if (lairDataMap) {
+    const lairKey = getLairKey(slug);
+    const lair = lairKey ? lairDataMap[lairKey] : null;
+    if (lair) {
+      monster.lair_actions = lair.lair_actions.length > 0 ? lair.lair_actions : null;
+      monster.lair_actions_intro = lair.lair_actions_intro;
+      monster.regional_effects = lair.regional_effects.length > 0 ? lair.regional_effects : null;
+      monster.regional_effects_intro = lair.regional_effects_intro;
+      if (lair.regional_effects_closing && monster.regional_effects_intro) {
+        monster.regional_effects_intro += "\n\n" + lair.regional_effects_closing;
+      }
+    }
+  }
+
+  return monster;
 }
 
 // ── Fetch with retry ───────────────────────────────────────────────
@@ -880,6 +932,11 @@ function assignFallbackTokens(
 async function main() {
   mkdirSync(OUTPUT_DIR, { recursive: true });
 
+  // 0. Load curated lair actions data
+  console.log("Loading curated lair actions data...");
+  const lairData = loadLairData();
+  console.log(`  Loaded lair data for ${Object.keys(lairData).length} creature types`);
+
   // 1. Fetch index
   console.log("Fetching bestiary index from 5e.tools mirror...");
   const index = (await fetchJSON(INDEX_URL)) as Record<string, string>;
@@ -919,7 +976,7 @@ async function main() {
       const version = is2024 ? "2024" : "2014";
 
       for (const raw of monsters) {
-        const transformed = transformMonster(raw, sourceCode, version);
+        const transformed = transformMonster(raw, sourceCode, version, lairData);
         if (!transformed) {
           skippedCopies++;
           continue;

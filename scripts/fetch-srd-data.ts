@@ -231,7 +231,19 @@ function getLairKey(monsterIndex: string): string | null {
   if (dragonMatch) {
     return `${dragonMatch[1]}-dragon`;
   }
-  // Direct match for non-dragons (aboleth, kraken, lich, unicorn)
+  // Sphinx matching: androsphinx and gynosphinx share lair data
+  if (monsterIndex === "androsphinx" || monsterIndex === "gynosphinx") {
+    return "sphinx";
+  }
+  // Vampire matching: all vampire forms share regional effects (not spawn)
+  if (monsterIndex.startsWith("vampire-") && monsterIndex !== "vampire-spawn") {
+    return "vampire";
+  }
+  // Beholder matching (for when 5etools pack is used)
+  if (monsterIndex === "beholder" || monsterIndex === "death-tyrant") {
+    return "beholder";
+  }
+  // Direct match for non-dragons (aboleth, kraken, lich, unicorn, mummy-lord, etc.)
   return monsterIndex;
 }
 
