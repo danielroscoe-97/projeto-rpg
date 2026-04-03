@@ -194,7 +194,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             href="/try"
             className="group relative overflow-hidden w-full py-3 bg-gold/[0.08] text-foreground font-semibold text-lg rounded-lg border border-gold/25 shadow-[0_0_20px_rgba(212,168,83,0.08)] hover:bg-gold/[0.14] hover:border-gold/40 hover:text-gold hover:shadow-[0_0_24px_rgba(212,168,83,0.15)] transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
-            Testar Grátis
+            {isLoggedIn ? "Combate Rápido" : "Testar Grátis"}
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
 
@@ -495,7 +495,7 @@ function SocialProofSection() {
 }
 
 // ── How It Works ──────────────────────────────────────────────────────────────
-function HowItWorksSection() {
+function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
   const TOTAL_STEPS = 4;
   const steps = [
     {
@@ -645,13 +645,15 @@ function HowItWorksSection() {
         {/* CTA after steps */}
         <div className="text-center mt-12">
           <Button variant="gold" size="lg" asChild>
-            <Link href="/try">
-              Testar Combat Tracker — Grátis
+            <Link href={isLoggedIn ? "/app/dashboard" : "/try"}>
+              {isLoggedIn ? "Ir para o Dashboard" : "Testar Combat Tracker — Grátis"}
             </Link>
           </Button>
-          <p className="text-muted-foreground text-sm mt-3">
-            Sem conta necessária
-          </p>
+          {!isLoggedIn && (
+            <p className="text-muted-foreground text-sm mt-3">
+              Sem conta necessária
+            </p>
+          )}
         </div>
       </div>
     </section>
@@ -896,7 +898,7 @@ function ComparisonSection() {
 
 // ── Social Proof ─────────────────────────────────────────────────────────────
 // ── Final CTA ─────────────────────────────────────────────────────────────────
-function FinalCtaSection() {
+function FinalCtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <section data-section="final-cta" className="py-10 md:py-24 px-4 md:px-6 relative overflow-hidden">
       {/* Ambient glow */}
@@ -910,23 +912,25 @@ function FinalCtaSection() {
           <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">melhor</span>?
         </h2>
         <p className="text-muted-foreground text-sm md:text-lg hidden md:block">
-          Crie sua conta em segundos e transforme sua próxima sessão.
+          {isLoggedIn
+            ? "Acesse o dashboard e gerencie suas campanhas."
+            : "Crie sua conta em segundos e transforme sua próxima sessão."}
         </p>
 
         <div className="flex flex-col items-center gap-3 pt-2">
           <Link
-            href="/auth/sign-up"
+            href={isLoggedIn ? "/app/dashboard" : "/auth/sign-up"}
             className="group relative overflow-hidden inline-flex items-center gap-2.5 px-8 md:px-10 py-3 md:py-4 bg-gold text-surface-primary font-semibold text-base md:text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[48px] md:min-h-[52px] btn-shimmer"
           >
             <SparkleIcon className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-            Começar Agora — é Grátis
+            {isLoggedIn ? "Ir para o Dashboard" : "Começar Agora — é Grátis"}
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
           <Link
             href="/try"
             className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
           >
-            Testar sem conta
+            {isLoggedIn ? "Combate Rápido" : "Testar sem conta"}
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -995,13 +999,13 @@ export default async function LandingPage() {
       <SectionDivider />
       <FeaturesSection />
       <SectionDivider />
-      <HowItWorksSection />
+      <HowItWorksSection isLoggedIn={isLoggedIn} />
       <SectionDivider />
       <ComparisonSection />
       <SocialProofSection />
       <SectionDivider />
-      <LpPricingSection />
-      <FinalCtaSection />
+      <LpPricingSection isLoggedIn={isLoggedIn} />
+      <FinalCtaSection isLoggedIn={isLoggedIn} />
 
       <LandingPageTracker />
       <Footer />
