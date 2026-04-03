@@ -19,6 +19,7 @@ export interface UserMembership {
   campaign_id: string;
   campaign_name: string;
   campaign_description: string | null;
+  cover_image_url?: string | null;
   dm_name: string | null;
   dm_email: string;
   player_count: number;

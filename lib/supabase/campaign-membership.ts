@@ -40,6 +40,7 @@ export async function getUserMemberships(
         id,
         name,
         description,
+        cover_image_url,
         owner_id,
         users!campaigns_owner_id_fkey ( display_name, email )
       )
@@ -141,6 +142,7 @@ export async function getUserMemberships(
         campaign_id: campaignId,
         campaign_name: campaign.name as string,
         campaign_description: (campaign.description as string) ?? null,
+        cover_image_url: (campaign.cover_image_url as string) ?? null,
         dm_name: (dmUser?.display_name as string) ?? null,
         dm_email: (dmUser?.email as string) ?? "",
         player_count: playerCountMap[campaignId] ?? 0,

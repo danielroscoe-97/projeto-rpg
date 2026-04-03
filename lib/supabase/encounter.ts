@@ -186,3 +186,37 @@ export function monsterToCombatant(
     legendary_actions_used: 0,
   };
 }
+
+// ── F-42: Late difficulty voting helpers ──────────────────────────────────────
+
+/** Cast or update a late difficulty vote via DB RPC. Returns new avg + count. */
+export async function castLateVote(
+  encounterId: string,
+  vote: 1 | 2 | 3 | 4 | 5
+): Promise<{ avg: number; count: number }> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("cast_late_vote", {
+    p_encounter_id: encounterId,
+    p_vote: vote,
+  });
+  if (error) throw new Error(error.message);
+  return data as { avg: number; count: number };
+}
+
+/** Fetch the current user's votes for a list of encounter IDs.
+ *  Returns a Map<encounter_id, vote>. */
+export async function getMyEncounterVotes(
+  encounterIds: string[]
+): Promise<Map<string, number>> {
+  if (encounterIds.length === 0) return new Map();
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("encounter_votes")
+    .select("encounter_id, vote")
+    .in("encounter_id", encounterIds);
+  const map = new Map<string, number>();
+  for (const row of data ?? []) {
+    map.set(row.encounter_id, row.vote);
+  }
+  return map;
+}

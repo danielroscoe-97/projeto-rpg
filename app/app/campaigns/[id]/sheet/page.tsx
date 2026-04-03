@@ -44,6 +44,7 @@ export default async function PlayerHqSheetPage({
       characterId={character.id}
       campaignId={id}
       campaignName={campaign.name}
+      userId={user.id}
     />
   );
 }

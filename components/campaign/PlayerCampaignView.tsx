@@ -12,6 +12,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
+import { InlineDifficultyVote } from "@/components/combat/InlineDifficultyVote";
 import { getHpBarColor } from "@/lib/utils/hp-status";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -45,7 +46,12 @@ interface CombatHistoryEntry {
   id: string;
   name: string;
   round_number: number;
+  difficulty_rating?: number | null;
+  updated_at?: string;
 }
+
+/** 7-day TTL for late voting eligibility */
+const VOTE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 interface PlayerCampaignViewProps {
   campaignId: string;
@@ -55,6 +61,8 @@ interface PlayerCampaignViewProps {
   companions: CompanionInfo[];
   activeSession: ActiveSessionInfo | null;
   combatHistory: CombatHistoryEntry[];
+  /** Map of encounter_id → player's vote (1-5), for encounters already voted */
+  myVotes?: Record<string, number>;
   translations: {
     back: string;
     myCharacter: string;
@@ -77,6 +85,10 @@ interface PlayerCampaignViewProps {
     loadMore: string;
     quests: string;
     playerHq: string;
+    rateThis?: string;
+    yourVote?: string;
+    voteAvg?: string;
+    voteError?: string;
   };
 }
 
@@ -149,6 +161,7 @@ export function PlayerCampaignView({
   companions: initialCompanions,
   activeSession,
   combatHistory: initialHistory,
+  myVotes = {},
   translations: t,
 }: PlayerCampaignViewProps) {
   // ── Realtime companion HP ─────────────────────────────────────────────────
@@ -379,17 +392,40 @@ export function PlayerCampaignView({
       >
         {combatHistory.length > 0 ? (
           <div className="space-y-2">
-            {combatHistory.map((enc) => (
-              <div
-                key={enc.id}
-                className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg"
-              >
-                <span className="text-sm text-foreground">{enc.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {t.combatRounds.replace("{count}", String(enc.round_number))}
-                </span>
-              </div>
-            ))}
+            {combatHistory.map((enc) => {
+              const existingVote = myVotes[enc.id] ?? null;
+              const withinTtl = enc.updated_at
+                ? Date.now() - new Date(enc.updated_at).getTime() < VOTE_TTL_MS
+                : false;
+              const canVote = !existingVote && withinTtl;
+
+              return (
+                <div
+                  key={enc.id}
+                  className="flex items-center justify-between gap-2 px-3 py-2 bg-white/[0.03] rounded-lg"
+                >
+                  <span className="text-sm text-foreground truncate min-w-0">{enc.name}</span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {(canVote || existingVote) && t.rateThis ? (
+                      <InlineDifficultyVote
+                        encounterId={enc.id}
+                        existingVote={existingVote}
+                        currentAvg={enc.difficulty_rating}
+                        translations={{
+                          rateThis: t.rateThis!,
+                          yourVote: t.yourVote ?? "",
+                          avg: t.voteAvg ?? "",
+                          error: t.voteError ?? "Erro",
+                        }}
+                      />
+                    ) : null}
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      {t.combatRounds.replace("{count}", String(enc.round_number))}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
             {hasMore && (
               <Button
                 variant="ghost"

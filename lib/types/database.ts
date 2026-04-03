@@ -688,6 +688,140 @@ export interface Database {
           display_order?: number;
         };
       };
+      party_inventory_items: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          item_name: string;
+          quantity: number;
+          notes: string | null;
+          added_by: string;
+          added_at: string;
+          status: "active" | "pending_removal" | "removed";
+          removed_by: string | null;
+          removed_at: string | null;
+          removal_approved_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          item_name: string;
+          quantity?: number;
+          notes?: string | null;
+          added_by: string;
+          status?: "active" | "pending_removal" | "removed";
+        };
+        Update: {
+          item_name?: string;
+          quantity?: number;
+          notes?: string | null;
+          status?: "active" | "pending_removal" | "removed";
+          removed_by?: string | null;
+          removed_at?: string | null;
+          removal_approved_by?: string | null;
+        };
+      };
+      inventory_removal_requests: {
+        Row: {
+          id: string;
+          item_id: string;
+          campaign_id: string;
+          requested_by: string;
+          reason: string | null;
+          status: "pending" | "approved" | "denied";
+          decided_by: string | null;
+          decided_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          campaign_id: string;
+          requested_by: string;
+          reason?: string | null;
+          status?: "pending" | "approved" | "denied";
+        };
+        Update: {
+          status?: "pending" | "approved" | "denied";
+          decided_by?: string | null;
+          decided_at?: string | null;
+        };
+      };
+      player_notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          campaign_id: string | null;
+          type: string;
+          title: string;
+          message: string;
+          meta: Record<string, unknown>;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          campaign_id?: string | null;
+          type: string;
+          title: string;
+          message: string;
+          meta?: Record<string, unknown>;
+        };
+        Update: {
+          read_at?: string | null;
+        };
+      };
+      player_journal_entries: {
+        Row: {
+          id: string;
+          player_character_id: string;
+          campaign_id: string;
+          type: "quick_note" | "journal" | "lore";
+          title: string | null;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          player_character_id: string;
+          campaign_id: string;
+          type?: "quick_note" | "journal" | "lore";
+          title?: string | null;
+          content: string;
+        };
+        Update: {
+          type?: "quick_note" | "journal" | "lore";
+          title?: string | null;
+          content?: string;
+        };
+      };
+      player_npc_notes: {
+        Row: {
+          id: string;
+          player_character_id: string;
+          campaign_id: string;
+          npc_name: string;
+          relationship: "ally" | "enemy" | "neutral" | "unknown";
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          player_character_id: string;
+          campaign_id: string;
+          npc_name: string;
+          relationship?: "ally" | "enemy" | "neutral" | "unknown";
+          notes?: string | null;
+        };
+        Update: {
+          npc_name?: string;
+          relationship?: "ally" | "enemy" | "neutral" | "unknown";
+          notes?: string | null;
+        };
+      };
       session_tokens: {
         Row: {
           id: string;
@@ -740,3 +874,13 @@ export type MonsterPreset = Database["public"]["Tables"]["monster_presets"]["Row
 export type CampaignNote = Database["public"]["Tables"]["campaign_notes"]["Row"];
 export type CampaignNoteFolder = Database["public"]["Tables"]["campaign_note_folders"]["Row"];
 export type ResourceTracker = Database["public"]["Tables"]["character_resource_trackers"]["Row"];
+export type PartyInventoryItem = Database["public"]["Tables"]["party_inventory_items"]["Row"];
+export type InventoryRemovalRequest = Database["public"]["Tables"]["inventory_removal_requests"]["Row"];
+export type PlayerNotification = Database["public"]["Tables"]["player_notifications"]["Row"];
+export type JournalEntry = Database["public"]["Tables"]["player_journal_entries"]["Row"];
+export type JournalEntryInsert = Database["public"]["Tables"]["player_journal_entries"]["Insert"];
+export type NpcNote = Database["public"]["Tables"]["player_npc_notes"]["Row"];
+export type NpcNoteInsert = Database["public"]["Tables"]["player_npc_notes"]["Insert"];
+export type JournalEntryUpdate = Database["public"]["Tables"]["player_journal_entries"]["Update"];
+export type NpcNoteUpdate = Database["public"]["Tables"]["player_npc_notes"]["Update"];
+export type NpcRelationship = NpcNote["relationship"];

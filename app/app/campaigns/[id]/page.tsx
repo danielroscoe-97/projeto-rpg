@@ -91,13 +91,13 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     const t = await getTranslations("campaign")
     const tDash = await getTranslations("dashboard")
 
-    // Fetch combat history (finished encounters)
-    let combatHistory: { id: string; name: string; round_number: number }[] = []
+    // Fetch combat history (finished encounters) with difficulty data
+    let combatHistory: { id: string; name: string; round_number: number; difficulty_rating: number | null; updated_at: string }[] = []
     if (historySessions && historySessions.length > 0) {
       const sessionIds = historySessions.map(s => s.id)
       const { data: encounters } = await supabase
         .from('encounters')
-        .select('id, name, round_number')
+        .select('id, name, round_number, difficulty_rating, updated_at')
         .in('session_id', sessionIds)
         .eq('is_active', false)
         .order('updated_at', { ascending: false })
@@ -106,7 +106,17 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         id: e.id,
         name: e.name ?? t("encounter_fallback"),
         round_number: e.round_number ?? 0,
+        difficulty_rating: e.difficulty_rating ?? null,
+        updated_at: e.updated_at,
       }))
+    }
+
+    // F-42: Fetch player's existing votes for these encounters
+    let myVotes: Record<string, number> = {}
+    if (combatHistory.length > 0) {
+      const { getMyEncounterVotes } = await import("@/lib/supabase/encounter")
+      const votesMap = await getMyEncounterVotes(combatHistory.map(e => e.id))
+      myVotes = Object.fromEntries(votesMap)
     }
 
     return (
@@ -137,6 +147,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           current_turn_name: activeEncounter?.current_turn_name ?? null,
         } : null}
         combatHistory={combatHistory}
+        myVotes={myVotes}
         translations={{
           back: tDash("back_to_dashboard"),
           myCharacter: t("my_character"),
@@ -159,6 +170,10 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           loadMore: t("encounter_history_load_more"),
           quests: t("quests.title"),
           playerHq: t("player_hq_button"),
+          rateThis: t("rate_this_encounter"),
+          yourVote: t("your_vote"),
+          voteAvg: t("vote_avg"),
+          voteError: t("vote_error"),
         }}
       />
     )

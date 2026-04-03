@@ -3,27 +3,31 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Heart, Sparkles, ChevronLeft } from "lucide-react";
+import { Heart, Sparkles, Package, ScrollText, ChevronLeft } from "lucide-react";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
 import { ResourceTrackerList } from "./ResourceTrackerList";
 import { SpellSlotsHq } from "./SpellSlotsHq";
 import { RestResetPanel } from "./RestResetPanel";
+import { BagOfHolding } from "./BagOfHolding";
+import { PlayerNotesSection } from "./PlayerNotesSection";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 
-type Tab = "sheet" | "resources";
+type Tab = "sheet" | "resources" | "inventory" | "notes";
 
 interface PlayerHqShellProps {
   characterId: string;
   campaignId: string;
   campaignName: string;
+  userId: string;
 }
 
 export function PlayerHqShell({
   characterId,
   campaignId,
   campaignName,
+  userId,
 }: PlayerHqShellProps) {
   const t = useTranslations("player_hq");
   const [activeTab, setActiveTab] = useState<Tab>("sheet");
@@ -110,6 +114,30 @@ export function PlayerHqShell({
           <Sparkles className="w-4 h-4" />
           {t("tabs.resources")}
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("inventory")}
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "inventory"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Package className="w-4 h-4" />
+          {t("tabs.inventory")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("notes")}
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "notes"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <ScrollText className="w-4 h-4" />
+          {t("tabs.notes")}
+        </button>
       </div>
 
       {/* Tab content */}
@@ -164,6 +192,20 @@ export function PlayerHqShell({
             onDeleteTracker={resourceHook.deleteTracker}
           />
         </div>
+      )}
+      {activeTab === "inventory" && (
+        <BagOfHolding
+          campaignId={campaignId}
+          userId={userId}
+          isDm={false}
+        />
+      )}
+
+      {activeTab === "notes" && (
+        <PlayerNotesSection
+          characterId={characterId}
+          campaignId={campaignId}
+        />
       )}
     </div>
   );
