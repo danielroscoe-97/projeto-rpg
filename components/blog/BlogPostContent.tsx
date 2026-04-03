@@ -158,8 +158,9 @@ export function BlogPost1() {
       <P>
         Adicione os monstros que vão participar do combate. Um bom combat tracker
         já tem um bestiário integrado — você pesquisa pelo nome e adiciona com
-        um clique. No Pocket DM, por exemplo, são mais de 3.000 monstros SRD
-        disponíveis.
+        um clique. No Pocket DM, por exemplo, são mais de 1.200 monstros do{" "}
+        <ExtLink href="https://5e.d20srd.org/">SRD</ExtLink> + monstros do{" "}
+        <ExtLink href="https://www.reddit.com/r/monsteraday/">r/monsteraday</ExtLink> disponíveis.
       </P>
       <Img src="/art/blog/monster-search.png" alt="Busca de monstros SRD no Pocket DM — pesquise e adicione com um clique" />
 
@@ -256,11 +257,13 @@ export function BlogPost2() {
         digital com busca por nome, CR (Challenge Rating) ou tipo de criatura
         resolve isso. Os stat blocks ficam a um clique de distância.
       </P>
-      <Img src="/art/blog/bestiary-index.png" alt="Bestiário SRD do Pocket DM — 1247+ monstros organizados por letra e CR" />
+      <Img src="/art/blog/bestiary-index.png" alt="Bestiário do Pocket DM — monstros SRD + Monster a Day organizados por letra e CR" />
       <P>
         O conteúdo SRD (System Reference Document) do D&D 5e inclui centenas de
         monstros gratuitos. Ferramentas como o Pocket DM disponibilizam mais de
-        3.000 monstros com stat blocks completos, todos pesquisáveis.
+        1.200+ monstros SRD — além de monstros do compêndio{" "}
+        <ExtLink href="https://www.reddit.com/r/monsteraday/">Monster a Day</ExtLink>{" "}
+        — com stat blocks completos, todos pesquisáveis.
       </P>
 
       <H2>3. Catálogo de Magias</H2>
@@ -269,7 +272,7 @@ export function BlogPost2() {
         Ter um catálogo de magias com busca por nome, escola, nível e classe
         evita pausas desnecessárias.
       </P>
-      <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 752+ spells organizadas por nível e escola" />
+      <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 750+ spells organizadas por nível e escola" />
       <P>
         O Pocket DM inclui o que chamamos de &ldquo;oráculo de magias&rdquo; — uma busca
         inteligente em mais de 900 magias SRD, acessível durante o combate sem
@@ -753,8 +756,10 @@ export function BlogPost6() {
       <H2>Passo 2: Adicionar Monstros</H2>
       <P>
         Na barra de busca &ldquo;Pesquisar Monstros SRD&rdquo;, digite o nome do monstro
-        que quer adicionar. O Pocket DM tem mais de 3.000 monstros do{" "}
+        que quer adicionar. O Pocket DM tem 1.200+ monstros do{" "}
         <ExtLink href="https://5e.d20srd.org/">SRD (System Reference Document)</ExtLink>{" "}
+        + monstros do compêndio{" "}
+        <ExtLink href="https://www.reddit.com/r/monsteraday/">Monster a Day</ExtLink>,{" "}
         com stat blocks completos — HP, CA, ataques, habilidades e Challenge
         Rating.
       </P>
@@ -866,7 +871,7 @@ export function BlogPost6() {
         aparece sem sair da tela de combate.
       </P>
       <P>
-        O oráculo de magias permite buscar qualquer uma das 900+ magias SRD
+        O oráculo de magias permite buscar qualquer uma das 750+ magias SRD
         por nome, escola ou nível. Útil quando um jogador pergunta &ldquo;o que essa
         magia faz?&rdquo; e você precisa da resposta em 2 segundos.
       </P>
