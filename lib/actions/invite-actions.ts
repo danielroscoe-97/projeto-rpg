@@ -5,6 +5,7 @@ import {
   declineCampaignInvite as _declineCampaignInvite,
   getCampaignMembers as _getCampaignMembers,
   removeCampaignMember as _removeCampaignMember,
+  removeMemberAndCharacter as _removeMemberAndCharacter,
 } from "@/lib/supabase/campaign-membership";
 
 /**
@@ -29,4 +30,12 @@ export async function removeCampaignMemberAction(
   targetUserId: string
 ) {
   return _removeCampaignMember(campaignId, targetUserId);
+}
+
+export async function removeMemberAndCharacterAction(
+  campaignId: string,
+  userId: string,
+  alsoRemoveCharacter: boolean
+): Promise<void> {
+  return _removeMemberAndCharacter(campaignId, userId, alsoRemoveCharacter);
 }

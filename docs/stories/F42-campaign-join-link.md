@@ -32,7 +32,7 @@ O dialog existente fica com duas abas: "Via Link" (nova, padrão) e "Via E-mail"
 Se `join_code` for null, o GET da API gera um na hora. DM não precisa clicar em "Gerar" — o link simplesmente aparece.
 
 **D3: Botão "Renovar Link" com confirmação inline.**  
-Invalida o join_code atual e gera um novo. Confirmação por toast de 3s com undo (enquanto não confirmado, o código antigo ainda funciona). Após confirmação, o código antigo para de funcionar imediatamente.
+Invalida o join_code atual e gera um novo. Ao clicar em "Renovar Link", exibe inline: mensagem de aviso + [Confirmar] [Cancelar]. O código antigo só é invalidado após o usuário clicar em "Confirmar". Ação irreversível — não há undo após confirmação.
 
 **D4: Toggle "Desativar Link" sem renovar.**  
 DM pode pausar o link sem gerar um novo (ex: campanha cheia temporariamente). Toggle simples: ativo/inativo. Ao reativar, o mesmo código volta a funcionar.

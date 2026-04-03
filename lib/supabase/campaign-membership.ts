@@ -628,3 +628,76 @@ export async function removeCampaignMember(
     properties: { campaign_id: campaignId, removed_user_id: targetUserId },
   });
 }
+
+/**
+ * Removes a campaign member and optionally also deletes their linked character(s).
+ * Used in the unified Jogadores view (D7) when a "linked" entry is removed.
+ */
+export async function removeMemberAndCharacter(
+  campaignId: string,
+  targetUserId: string,
+  alsoRemoveCharacter: boolean
+): Promise<void> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Authentication required");
+
+  const { data: campaign } = await supabase
+    .from("campaigns")
+    .select("owner_id")
+    .eq("id", campaignId)
+    .single();
+
+  if (!campaign || campaign.owner_id !== user.id) {
+    throw new Error("Only the campaign owner can remove members");
+  }
+
+  if (targetUserId === user.id) {
+    throw new Error("Cannot remove yourself as DM");
+  }
+
+  if (alsoRemoveCharacter) {
+    const { error: charError } = await supabase
+      .from("player_characters")
+      .delete()
+      .eq("campaign_id", campaignId)
+      .eq("user_id", targetUserId);
+
+    if (charError) {
+      captureError(new Error(`Failed to remove character: ${charError.message}`), {
+        component: "removeMemberAndCharacter",
+        action: "deleteCharacter",
+        category: "database",
+        extra: { campaignId, targetUserId, code: charError.code },
+      });
+      throw new Error(`Failed to remove character: ${charError.message}`);
+    }
+  }
+
+  const { error: memberError } = await supabase
+    .from("campaign_members")
+    .delete()
+    .eq("campaign_id", campaignId)
+    .eq("user_id", targetUserId);
+
+  if (memberError) {
+    captureError(new Error(`Failed to remove member: ${memberError.message}`), {
+      component: "removeMemberAndCharacter",
+      action: "deleteMember",
+      category: "database",
+      extra: { campaignId, targetUserId, code: memberError.code },
+    });
+    throw new Error(`Failed to remove member: ${memberError.message}`);
+  }
+
+  trackServerEvent("campaign:member_removed", {
+    properties: {
+      campaign_id: campaignId,
+      removed_user_id: targetUserId,
+      also_removed_character: alsoRemoveCharacter,
+    },
+  });
+}
