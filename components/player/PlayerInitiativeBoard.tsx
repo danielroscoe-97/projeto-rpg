@@ -921,7 +921,7 @@ export function PlayerInitiativeBoard({
                 </div>
               ) : (combatant.hp_status || otherPlayerHpStatus) ? (
                 <div className="mt-1.5">
-                  <HpStatusBadge status={combatant.hp_status || otherPlayerHpStatus!} percentage={combatant.hp_percentage ?? otherPlayerHpPct} />
+                  <HpStatusBadge status={combatant.hp_status || otherPlayerHpStatus!} percentage={isPlayer ? otherPlayerHpPct : undefined} />
                 </div>
               ) : null}
 

@@ -440,7 +440,7 @@ export const CombatantRow = memo(function CombatantRow({
             )}
             {hpThresholdKey && (
               <span className="text-[10px] font-mono ml-0.5 text-muted-foreground" data-testid={`hp-threshold-${combatant.id}`}>
-                {t(hpThresholdKey as Parameters<typeof t>[0])}
+                · {Math.round(hpPct * 100)}% {t(hpThresholdKey as Parameters<typeof t>[0])}
               </span>
             )}
             {hasTempHp && (
