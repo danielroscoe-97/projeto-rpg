@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { ResourceTracker } from "@/lib/types/database";
+import { searchSrdResources, getPrefilledValues, type SrdResource } from "@/lib/data/srd-class-resources";
 
 const RESET_OPTIONS = [
   { value: "long_rest", labelKey: "reset_long_rest" },
@@ -47,6 +48,27 @@ export function AddResourceTrackerDialog({
     editing?.reset_type ?? "long_rest"
   );
   const [saving, setSaving] = useState(false);
+  const [srdResults, setSrdResults] = useState<SrdResource[]>([]);
+  const [showSrd, setShowSrd] = useState(false);
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (value.length >= 1 && !editing) {
+      const results = searchSrdResources(value);
+      setSrdResults(results);
+      setShowSrd(results.length > 0);
+    } else {
+      setShowSrd(false);
+    }
+  };
+
+  const selectSrdResource = (resource: SrdResource) => {
+    setName(resource.name);
+    const prefilled = getPrefilledValues(resource);
+    setMaxUses(String(prefilled.maxUses));
+    setResetType(prefilled.resetType);
+    setShowSrd(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,16 +94,38 @@ export function AddResourceTrackerDialog({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div className="space-y-1.5">
+          {/* Name with SRD autocomplete */}
+          <div className="space-y-1.5 relative">
             <Label htmlFor="tracker-name">{t("tracker_name")}</Label>
             <Input
               id="tracker-name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleNameChange(e.target.value)}
+              onFocus={() => { if (name.length >= 1 && srdResults.length > 0) setShowSrd(true); }}
+              onBlur={() => setTimeout(() => setShowSrd(false), 200)}
               placeholder={t("tracker_name_placeholder")}
               autoFocus
+              autoComplete="off"
             />
+            {/* SRD dropdown */}
+            {showSrd && srdResults.length > 0 && (
+              <div className="absolute z-50 top-full left-0 right-0 mt-1 max-h-[200px] overflow-y-auto bg-popover border border-border rounded-md shadow-lg">
+                {srdResults.slice(0, 8).map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); selectSrdResource(r); }}
+                    className="w-full text-left px-3 py-2 hover:bg-white/10 transition-colors border-b border-border/30 last:border-b-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-foreground">{r.name}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">SRD</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{r.class} · {r.description.slice(0, 60)}</p>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Max uses */}

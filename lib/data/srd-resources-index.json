@@ -1,0 +1,137 @@
+[
+  {
+    "id": "rage",
+    "name": "Rage",
+    "class": "Barbarian",
+    "category": "Combat",
+    "description": "Enter a fury. Recovers on Long Rest.",
+    "reset_type": "long_rest",
+    "uses_by_level": { "1": 2, "3": 3, "6": 4, "12": 5, "17": 6, "default": 2 }
+  },
+  {
+    "id": "reckless_attack",
+    "name": "Reckless Attack",
+    "class": "Barbarian",
+    "category": "Combat",
+    "description": "Advantage on melee attacks, enemies get advantage on you. No usage limit.",
+    "reset_type": "manual",
+    "uses_by_level": { "default": 1 }
+  },
+  {
+    "id": "bardic_inspiration",
+    "name": "Bardic Inspiration",
+    "class": "Bard",
+    "category": "Inspiration",
+    "description": "Grant inspiration die to allies. Recovers on Long Rest (Short at Lv5+).",
+    "reset_type": "long_rest",
+    "uses_by_level": "= charisma_modifier"
+  },
+  {
+    "id": "channel_divinity",
+    "name": "Channel Divinity",
+    "class": "Cleric / Paladin",
+    "category": "Divine",
+    "description": "Channel divine power. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "1": 1, "6": 2, "18": 3, "default": 1 }
+  },
+  {
+    "id": "wild_shape",
+    "name": "Wild Shape",
+    "class": "Druid",
+    "category": "Transformation",
+    "description": "Transform into a beast. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "default": 2 }
+  },
+  {
+    "id": "action_surge",
+    "name": "Action Surge",
+    "class": "Fighter",
+    "category": "Combat",
+    "description": "Take an additional action. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "1": 1, "17": 2, "default": 1 }
+  },
+  {
+    "id": "second_wind",
+    "name": "Second Wind",
+    "class": "Fighter",
+    "category": "Combat",
+    "description": "Recover HP as bonus action. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "default": 1 }
+  },
+  {
+    "id": "superiority_dice",
+    "name": "Superiority Dice",
+    "class": "Fighter (Battle Master)",
+    "category": "Combat",
+    "description": "Fuel combat maneuvers. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "3": 4, "7": 5, "15": 6, "default": 4 }
+  },
+  {
+    "id": "ki_points",
+    "name": "Ki Points",
+    "class": "Monk",
+    "category": "Ki",
+    "description": "Fuel ki abilities. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": "= level"
+  },
+  {
+    "id": "lay_on_hands",
+    "name": "Lay on Hands",
+    "class": "Paladin",
+    "category": "Healing",
+    "description": "HP pool for healing. Recovers on Long Rest.",
+    "reset_type": "long_rest",
+    "uses_by_level": "= level * 5"
+  },
+  {
+    "id": "divine_sense",
+    "name": "Divine Sense",
+    "class": "Paladin",
+    "category": "Divine",
+    "description": "Detect celestials, fiends, undead. Recovers on Long Rest.",
+    "reset_type": "long_rest",
+    "uses_by_level": "= charisma_modifier"
+  },
+  {
+    "id": "sorcery_points",
+    "name": "Sorcery Points",
+    "class": "Sorcerer",
+    "category": "Metamagic",
+    "description": "Fuel metamagic. Recovers on Long Rest.",
+    "reset_type": "long_rest",
+    "uses_by_level": "= level"
+  },
+  {
+    "id": "arcane_recovery",
+    "name": "Arcane Recovery",
+    "class": "Wizard",
+    "category": "Arcane",
+    "description": "Recover spell slots once per day on Short Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "default": 1 }
+  },
+  {
+    "id": "hexblades_curse",
+    "name": "Hexblade's Curse",
+    "class": "Warlock (Hexblade)",
+    "category": "Curse",
+    "description": "Curse a creature for bonus damage. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "default": 1 }
+  },
+  {
+    "id": "breath_weapon",
+    "name": "Breath Weapon",
+    "class": "Dragonborn",
+    "category": "Racial",
+    "description": "Exhale destructive energy. Recovers on Short or Long Rest.",
+    "reset_type": "short_rest",
+    "uses_by_level": { "default": 1 }
+  }
+]

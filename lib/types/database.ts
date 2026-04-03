@@ -822,6 +822,74 @@ export interface Database {
           notes?: string | null;
         };
       };
+      player_quest_notes: {
+        Row: {
+          id: string;
+          quest_id: string;
+          user_id: string;
+          campaign_id: string;
+          notes: string | null;
+          is_favorite: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          quest_id: string;
+          user_id: string;
+          campaign_id: string;
+          notes?: string | null;
+          is_favorite?: boolean;
+        };
+        Update: {
+          notes?: string | null;
+          is_favorite?: boolean;
+        };
+      };
+      character_spells: {
+        Row: {
+          id: string;
+          player_character_id: string;
+          spell_name: string;
+          spell_level: number;
+          school: string | null;
+          description_short: string | null;
+          compendium_ref: string | null;
+          status: "known" | "prepared" | "favorite";
+          is_concentration: boolean;
+          is_ritual: boolean;
+          casting_time: string | null;
+          range_text: string | null;
+          components: string | null;
+          duration: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          player_character_id: string;
+          spell_name: string;
+          spell_level?: number;
+          school?: string | null;
+          description_short?: string | null;
+          compendium_ref?: string | null;
+          status?: "known" | "prepared" | "favorite";
+          is_concentration?: boolean;
+          is_ritual?: boolean;
+          casting_time?: string | null;
+          range_text?: string | null;
+          components?: string | null;
+          duration?: string | null;
+        };
+        Update: {
+          spell_name?: string;
+          spell_level?: number;
+          school?: string | null;
+          description_short?: string | null;
+          status?: "known" | "prepared" | "favorite";
+          is_concentration?: boolean;
+          is_ritual?: boolean;
+        };
+      };
       session_tokens: {
         Row: {
           id: string;
@@ -884,3 +952,7 @@ export type NpcNoteInsert = Database["public"]["Tables"]["player_npc_notes"]["In
 export type JournalEntryUpdate = Database["public"]["Tables"]["player_journal_entries"]["Update"];
 export type NpcNoteUpdate = Database["public"]["Tables"]["player_npc_notes"]["Update"];
 export type NpcRelationship = NpcNote["relationship"];
+export type PlayerQuestNote = Database["public"]["Tables"]["player_quest_notes"]["Row"];
+export type CharacterSpell = Database["public"]["Tables"]["character_spells"]["Row"];
+export type CharacterSpellInsert = Database["public"]["Tables"]["character_spells"]["Insert"];
+export type SpellStatus = CharacterSpell["status"];

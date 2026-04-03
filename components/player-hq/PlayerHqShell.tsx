@@ -9,6 +9,7 @@ import { CharacterCoreStats } from "./CharacterCoreStats";
 import { ResourceTrackerList } from "./ResourceTrackerList";
 import { SpellSlotsHq } from "./SpellSlotsHq";
 import { RestResetPanel } from "./RestResetPanel";
+import { SpellListSection } from "./SpellListSection";
 import { BagOfHolding } from "./BagOfHolding";
 import { PlayerNotesSection } from "./PlayerNotesSection";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
@@ -191,6 +192,7 @@ export function PlayerHqShell({
             onUpdateTracker={resourceHook.updateTracker}
             onDeleteTracker={resourceHook.deleteTracker}
           />
+          <SpellListSection characterId={characterId} />
         </div>
       )}
       {activeTab === "inventory" && (
