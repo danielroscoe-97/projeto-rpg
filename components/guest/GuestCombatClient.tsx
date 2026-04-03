@@ -53,7 +53,7 @@ const EMPTY_ADD_ROW: AddRowForm = {
   notes: "",
 };
 
-const DEFAULT_ADD_ROW_ROLE: CombatantRole = "monster";
+const DEFAULT_ADD_ROW_ROLE: CombatantRole = "player";
 
 const ADD_ROW_ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string; label: string }> = {
   player: { icon: User, color: "text-blue-400 border-blue-400/30", label: "setup_role_player" },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { AccountDeletion } from "@/components/settings/AccountDeletion";
@@ -36,14 +37,9 @@ export function SettingsClient({ email, displayName = "", avatarUrl = null }: Se
   }, [loadSubscription]);
 
   // Support ?tab=billing query param for deep linking from billing CTAs
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get("tab");
-      if (tab === "billing") return "billing";
-    }
-    return "preferences";
-  });
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") === "billing" ? "billing" : "preferences";
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [wikiTab, setWikiTab] = useState<WikiTab>("spells");
 
   const tabs: { id: Tab; label: string; icon: string }[] = [

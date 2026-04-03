@@ -374,8 +374,8 @@ describe("GuestCombatClient", () => {
 
     const combatants = useGuestCombatStore.getState().combatants;
     expect(combatants).toHaveLength(1);
-    // Default role is monster
-    expect(combatants[0].combatant_role).toBe("monster");
+    // Default role for manual add is player
+    expect(combatants[0].combatant_role).toBe("player");
   });
 
   // ── Clear Confirmation ────────────────────────────────────────────────
