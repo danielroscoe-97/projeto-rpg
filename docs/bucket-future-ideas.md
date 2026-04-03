@@ -108,6 +108,7 @@
 | F-40 | Notas dos players durante combate | Beta Test #1, 2026-04-02 | ✅ DONE (fbddc9d) | Implementado Wave 1 — 2026-04-02 |
 | F-41 | Spell slots tracker (bolinhas marcáveis) | Beta Test #1, 2026-04-02 | ✅ DONE (fd564b9) | Implementado Wave 3 — 2026-04-02 |
 | F-42 | Difficulty vote (enquete pós-combate) | Beta Test #1, 2026-04-02 | ✅ DONE (d15ed6e) | Implementado Wave 3 — fix de broadcast 2026-04-03 |
+| F-44 | Email invite via Novu (workflow campaign-invite) | Party Mode Audit 2026-04-03 | PENDENTE | TODO em `app/api/campaign/[id]/invites/route.ts:75`. Atualmente DM recebe link pra compartilhar manualmente |
 
 ## Tech Debt (Baixa prioridade)
 
@@ -128,5 +129,5 @@
 
 ---
 
-> **Última atualização:** 2026-04-03 (F-25/F-27/F-35 implementados, B.11/B.12/B.21/F-29 confirmados DONE, F-05/06/07 absorvidos PHQ, F-36 mantido)
-> **Revisado por:** Dani_ + BMAD Party Mode (John, Winston, Mary, Bob)
+> **Última atualização:** 2026-04-03 (F-25/F-27/F-35 implementados, B.11/B.12/B.21/F-29 confirmados DONE, F-05/06/07 absorvidos PHQ, F-36 mantido, F-44 Novu invite adicionado)
+> **Revisado por:** Dani_ + BMAD Party Mode (John, Winston, Mary, Bob, Quinn, Sally, Amelia)

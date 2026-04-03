@@ -95,6 +95,10 @@ interface GuestCombatState {
   currentTurnIndex: number;
   roundNumber: number;
   combatStartTime: number | null;
+  turnStartedAt: number | null;
+  turnTimeAccumulated: Record<string, number>;
+  /** Turn count per combatant (ID → count). Incremented on advanceTurn. */
+  turnCountById: Record<string, number>;
   isExpired: boolean;
   expandedGroups: Record<string, boolean>;
 }
@@ -138,6 +142,9 @@ const initialState: GuestCombatState = {
   currentTurnIndex: 0,
   roundNumber: 1,
   combatStartTime: null,
+  turnStartedAt: null,
+  turnTimeAccumulated: {},
+  turnCountById: {},
   isExpired: false,
   expandedGroups: {},
 };
@@ -267,9 +274,13 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
 
       startCombat: () => {
         if (guardExpired()) return;
+        const now = Date.now();
         set((state) => {
           const sorted = assignInitiativeOrder(sortByInitiative(state.combatants));
-          return { phase: "combat", combatants: sorted, currentTurnIndex: 0, roundNumber: 1, combatStartTime: Date.now() };
+          // First combatant starts with turnCount 1 (their turn begins immediately)
+          const initialTurnCount: Record<string, number> = {};
+          if (sorted.length > 0) initialTurnCount[sorted[0].id] = 1;
+          return { phase: "combat", combatants: sorted, currentTurnIndex: 0, roundNumber: 1, combatStartTime: now, turnStartedAt: now, turnTimeAccumulated: {}, turnCountById: initialTurnCount };
         });
       },
 
@@ -278,6 +289,14 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
         set((state) => {
           const { combatants, currentTurnIndex, roundNumber } = state;
           if (combatants.length === 0) return state;
+
+          // Accumulate elapsed turn time for the current combatant
+          const currentId = combatants[currentTurnIndex]?.id;
+          const elapsed = state.turnStartedAt ? Date.now() - state.turnStartedAt : 0;
+          const accumulated = { ...state.turnTimeAccumulated };
+          if (currentId && elapsed > 0) {
+            accumulated[currentId] = (accumulated[currentId] ?? 0) + elapsed;
+          }
 
           // Re-sort by initiative (applies mid-combat initiative changes)
           const currentCombatantId = combatants[currentTurnIndex]?.id;
@@ -306,10 +325,17 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           const finalCombatants = roundBumped
             ? sorted.map((c) => c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c)
             : sorted;
+          // Increment turn count for the combatant whose turn is starting
+          const nextId = finalCombatants[next]?.id;
+          const updatedTurnCount = { ...state.turnCountById };
+          if (nextId) updatedTurnCount[nextId] = (updatedTurnCount[nextId] ?? 0) + 1;
           return {
             combatants: finalCombatants,
             currentTurnIndex: next,
             roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
+            turnTimeAccumulated: accumulated,
+            turnCountById: updatedTurnCount,
+            turnStartedAt: Date.now(),
           };
         });
       },

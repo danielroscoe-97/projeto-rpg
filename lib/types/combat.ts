@@ -59,7 +59,7 @@ export type UndoEntry =
   | { type: "hp"; combatantId: string; previousHp: number; previousTempHp: number; action: "damage" | "heal" | "temp" }
   | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean; previousDurations?: Record<string, number> }
   | { type: "defeated"; combatantId: string; wasDefeated: boolean; previousHp: number; previousDeathSaves?: { successes: number; failures: number } }
-  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[] }
+  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[]; previousTurnTimeAccumulated: Record<string, number>; previousTurnStartedAt: number | null }
   | { type: "hidden"; combatantId: string; wasHidden: boolean };
 
 /** @deprecated Use UndoEntry instead. Kept for backwards compatibility. */
@@ -84,6 +84,8 @@ export interface EncounterState {
   combatStartedAt: number | null;
   /** Timestamp (ms) when the current turn started. Client-side only. */
   turnStartedAt: number | null;
+  /** Accumulated turn time per combatant (ID → total ms). Client-side only. */
+  turnTimeAccumulated: Record<string, number>;
 }
 
 export interface CombatActions {

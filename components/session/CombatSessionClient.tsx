@@ -96,7 +96,7 @@ export function CombatSessionClient({
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
-  const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number }>({ name: "", rounds: 0 });
+  const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
@@ -105,7 +105,7 @@ export function CombatSessionClient({
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
-  const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number } | null>(null);
+  const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number; combatDuration: number } | null>(null);
   // C.15: Post-combat state machine (leaderboard → poll → result)
   type PostCombatPhase = "leaderboard" | "poll" | "result" | null;
   const [postCombatPhase, setPostCombatPhase] = useState<PostCombatPhase>(null);
@@ -145,7 +145,7 @@ export function CombatSessionClient({
     const pending = pendingStats;
     if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
       setLeaderboardData(pending.stats);
-      setLeaderboardMeta({ name: finalName, rounds: pending.rounds });
+      setLeaderboardMeta({ name: finalName, rounds: pending.rounds, combatDuration: pending.combatDuration });
       setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
       setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
@@ -155,6 +155,7 @@ export function CombatSessionClient({
           stats: pending.stats,
           encounter_name: finalName,
           rounds: pending.rounds,
+          combatDuration: pending.combatDuration,
         });
       }
     } else {
@@ -166,14 +167,31 @@ export function CombatSessionClient({
   // Intercept end encounter: show name modal, then compute stats and show leaderboard
   const handleEndEncounter = useCallback(() => {
     const logEntries = useCombatLogStore.getState().entries;
-    const stats = computeCombatStats(logEntries);
-    const rounds = getMaxRound(logEntries);
     const state = useCombatStore.getState();
+
+    // Accumulate the final (active) turn's elapsed time before computing stats
+    const finalAccumulated = { ...state.turnTimeAccumulated };
+    const currentId = state.combatants[state.current_turn_index]?.id;
+    const elapsed = state.turnStartedAt ? Date.now() - state.turnStartedAt : 0;
+    if (currentId && elapsed > 0) {
+      finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
+    }
+
+    // Build ID → name map for time injection
+    const idToName: Record<string, string> = {};
+    for (const c of state.combatants) {
+      idToName[c.id] = c.name;
+    }
+
+    const activeName = state.combatants[state.current_turn_index]?.name;
+    const stats = computeCombatStats(logEntries, finalAccumulated, idToName, activeName);
+    const rounds = getMaxRound(logEntries);
+    const combatDuration = state.combatStartedAt ? Date.now() - state.combatStartedAt : 0;
     const existingName = state.encounter_name.trim();
     const suggestedName = existingName || generateEncounterName(state.combatants);
 
     setPendingEncounterName(suggestedName);
-    setPendingStats({ stats, rounds });
+    setPendingStats({ stats, rounds, combatDuration });
     setNameModalOpen(true);
   }, []);
 
@@ -1172,6 +1190,7 @@ export function CombatSessionClient({
             stats={leaderboardData}
             encounterName={leaderboardMeta.name}
             rounds={leaderboardMeta.rounds}
+            combatDuration={leaderboardMeta.combatDuration}
             // UX.08 — DM skips poll (biased as encounter creator), goes straight to result
             onClose={() => setPostCombatPhase("result")}
           />

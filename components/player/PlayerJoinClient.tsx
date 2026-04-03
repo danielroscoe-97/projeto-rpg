@@ -197,6 +197,7 @@ export function PlayerJoinClient({
     stats: CombatantStats[];
     encounterName: string;
     rounds: number;
+    combatDuration: number;
   } | null>(null);
   const [showPoll, setShowPoll] = useState(false);
   // UX.18: transition screen after poll dismiss, before session:ended arrives
@@ -1131,6 +1132,7 @@ export function PlayerJoinClient({
               stats: payload.stats as CombatantStats[],
               encounterName: payload.encounter_name as string,
               rounds: (payload.rounds as number) ?? 0,
+              combatDuration: (payload.combatDuration as number) ?? 0,
             });
           }
         })
@@ -1721,6 +1723,7 @@ export function PlayerJoinClient({
         stats={combatStatsData.stats}
         encounterName={combatStatsData.encounterName}
         rounds={combatStatsData.rounds}
+        combatDuration={combatStatsData.combatDuration}
         onClose={() => setShowPoll(true)}
       />
     );

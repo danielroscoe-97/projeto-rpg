@@ -692,6 +692,7 @@ export function GuestCombatClient() {
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
+  const [guestCombatDuration, setGuestCombatDuration] = useState(0);
   const [spellsOpen, setSpellsOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
   // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
@@ -779,16 +780,13 @@ export function GuestCombatClient() {
     return map;
   }, [combatants]);
 
-  // Turn timer — resets each time currentTurnIndex changes
-  const [turnStartedAt, setTurnStartedAt] = useState<number | null>(null);
-  useEffect(() => {
-    if (phase === "combat") setTurnStartedAt(Date.now());
-  }, [currentTurnIndex, phase]);
+  // Turn timer — now sourced from the store (accumulates on advanceTurn)
+  const turnStartedAt = useGuestCombatStore((s) => s.turnStartedAt);
 
   // Wrap advanceTurn to push undo entry first (Story 1.1)
   const handleAdvanceTurn = useCallback(() => {
     const store = useGuestCombatStore.getState();
-    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber);
+    pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber, store.turnTimeAccumulated, store.turnStartedAt);
     advanceTurn();
     playTurnSfx();
   }, [advanceTurn, pushTurnUndo]);
@@ -1197,10 +1195,34 @@ export function GuestCombatClient() {
   );
 
   const handleEndEncounter = useCallback(() => {
+    const guestStore = useGuestCombatStore.getState();
+    // Accumulate the final (active) turn's elapsed time
+    const finalAccumulated = { ...guestStore.turnTimeAccumulated };
+    const currentId = guestStore.combatants[guestStore.currentTurnIndex]?.id;
+    const elapsed = guestStore.turnStartedAt ? Date.now() - guestStore.turnStartedAt : 0;
+    if (currentId && elapsed > 0) {
+      finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
+    }
+
+    // Convert ID-keyed maps to name-keyed for guest stats (use display_name ?? name for parity with damage tracking)
+    const turnTimeByName: Record<string, number> = {};
+    const turnCountByName: Record<string, number> = {};
+    for (const c of guestStore.combatants) {
+      const key = c.display_name ?? c.name;
+      if (finalAccumulated[c.id]) {
+        turnTimeByName[key] = (turnTimeByName[key] ?? 0) + finalAccumulated[c.id];
+      }
+      if (guestStore.turnCountById[c.id]) {
+        turnCountByName[key] = (turnCountByName[key] ?? 0) + guestStore.turnCountById[c.id];
+      }
+    }
+
     // Show leaderboard with accumulated stats before resetting
-    const stats = useGuestCombatStats.getState().getStats();
+    const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
+    const duration = guestStore.combatStartTime ? Date.now() - guestStore.combatStartTime : 0;
     if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
       setLeaderboardStats(stats);
+      setGuestCombatDuration(duration);
       setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
     } else {
       useGuestCombatStats.getState().reset();
@@ -1533,6 +1555,7 @@ export function GuestCombatClient() {
           stats={leaderboardStats}
           encounterName={tg("try_encounter_name")}
           rounds={roundNumber}
+          combatDuration={guestCombatDuration}
           onClose={handleLeaderboardClose}
         />
       )}

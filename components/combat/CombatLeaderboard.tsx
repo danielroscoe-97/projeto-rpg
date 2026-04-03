@@ -3,15 +3,16 @@
 import { useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Crown, Shield, Heart, Swords, Share2, X } from "lucide-react";
+import { Crown, Shield, Heart, Swords, Share2, X, Zap, Timer } from "lucide-react";
 import { toast } from "sonner";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
-import { getTopForStat, formatShareText } from "@/lib/utils/combat-stats";
+import { getTopForStat, getTimeAwards, formatShareText, formatDuration } from "@/lib/utils/combat-stats";
 
 interface CombatLeaderboardProps {
   stats: CombatantStats[];
   encounterName: string;
   rounds: number;
+  combatDuration?: number;
   onClose: () => void;
 }
 
@@ -27,7 +28,7 @@ const BAR_COLORS = [
   "bg-amber-600",     // #3 bronze
 ];
 
-export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: CombatLeaderboardProps) {
+export function CombatLeaderboard({ stats, encounterName, rounds, combatDuration, onClose }: CombatLeaderboardProps) {
   const t = useTranslations("combat");
 
   const maxDamage = stats.length > 0 ? stats[0].totalDamageDealt : 1;
@@ -35,9 +36,10 @@ export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: Com
   const tank = getTopForStat(stats, "totalDamageReceived");
   const healer = getTopForStat(stats, "totalHealing");
   const critKing = getTopForStat(stats, "criticalHits");
+  const { speedster, slowpoke } = getTimeAwards(stats);
 
   const handleShare = useCallback(async () => {
-    const text = formatShareText(stats, encounterName, rounds);
+    const text = formatShareText(stats, encounterName, rounds, combatDuration);
 
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
@@ -54,7 +56,7 @@ export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: Com
     } catch {
       // Clipboard also failed — silent fail
     }
-  }, [stats, encounterName, rounds, t]);
+  }, [stats, encounterName, rounds, combatDuration, t]);
 
   return (
       <motion.div
@@ -81,6 +83,9 @@ export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: Com
               <p className="text-xs text-muted-foreground mt-0.5">
                 {encounterName && <span className="mr-2">{encounterName}</span>}
                 {t("leaderboard_rounds", { rounds })}
+                {combatDuration != null && combatDuration > 0 && (
+                  <span className="ml-1">• {formatDuration(combatDuration)}</span>
+                )}
               </p>
             </div>
             <button
@@ -149,8 +154,15 @@ export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: Com
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
                           <span className="text-sm text-foreground truncate">{s.name}</span>
-                          <span className="text-xs text-muted-foreground font-mono ml-2 flex-shrink-0">
-                            {s.totalDamageDealt}
+                          <span className="flex items-center gap-2 ml-2 flex-shrink-0">
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {s.totalDamageDealt}
+                            </span>
+                            {s.totalTurnTime > 0 && (
+                              <span className="text-[10px] text-muted-foreground/50 font-mono">
+                                {formatDuration(s.totalTurnTime)}
+                              </span>
+                            )}
                           </span>
                         </div>
                         <div className="h-2 rounded-full bg-white/5 overflow-hidden">
@@ -169,7 +181,7 @@ export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: Com
             )}
 
             {/* Secondary Stats Row */}
-            {(tank || healer || critKing) && (
+            {(tank || healer || critKing || speedster || slowpoke) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -199,6 +211,22 @@ export function CombatLeaderboard({ stats, encounterName, rounds, onClose }: Com
                     label={t("leaderboard_crits")}
                     name={critKing.name}
                     value={critKing.criticalHits}
+                  />
+                )}
+                {speedster && (
+                  <SecondaryStatCard
+                    icon={<Zap className="size-4 text-cyan-400" />}
+                    label={t("leaderboard_speedster")}
+                    name={speedster.name}
+                    valueText={`avg ${formatDuration(speedster.totalTurnTime / speedster.turnCount)}/turn`}
+                  />
+                )}
+                {slowpoke && (
+                  <SecondaryStatCard
+                    icon={<Timer className="size-4 text-orange-400" />}
+                    label={t("leaderboard_slowpoke")}
+                    name={slowpoke.name}
+                    valueText={`avg ${formatDuration(slowpoke.totalTurnTime / slowpoke.turnCount)}/turn`}
                   />
                 )}
               </motion.div>
@@ -240,11 +268,13 @@ function SecondaryStatCard({
   label,
   name,
   value,
+  valueText,
 }: {
   icon: React.ReactNode;
   label: string;
   name: string;
-  value: number;
+  value?: number;
+  valueText?: string;
 }) {
   return (
     <div className="flex-shrink-0 flex items-center gap-2 rounded-lg bg-white/[0.04] border border-white/[0.06] px-3 py-2 min-w-[140px]">
@@ -252,7 +282,7 @@ function SecondaryStatCard({
       <div className="min-w-0">
         <p className="text-[10px] text-muted-foreground uppercase tracking-wider leading-tight">{label}</p>
         <p className="text-xs text-foreground font-medium truncate">{name}</p>
-        <p className="text-[10px] text-muted-foreground font-mono">{value}</p>
+        <p className="text-[10px] text-muted-foreground font-mono">{valueText ?? value}</p>
       </div>
     </div>
   );

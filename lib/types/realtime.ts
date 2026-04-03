@@ -171,6 +171,7 @@ export interface RealtimeCombatStats {
   stats: CombatantStats[];
   encounter_name: string;
   rounds: number;
+  combatDuration?: number;
 }
 
 export interface RealtimeSessionEnded {
