@@ -43,6 +43,8 @@ export interface ParsedStatBlock {
   actions: MonsterAction[] | null;
   legendary_actions: MonsterAction[] | null;
   reactions: MonsterAction[] | null;
+  lair_actions: MonsterAction[] | null;
+  regional_effects: MonsterAction[] | null;
   notes: string | null;
 }
 
@@ -226,6 +228,8 @@ export function parseStatBlock(text: string): ParsedStatBlock {
     actions: null,
     legendary_actions: null,
     reactions: null,
+    lair_actions: null,
+    regional_effects: null,
     notes: null,
   };
 
@@ -478,6 +482,12 @@ export function parseStatBlock(text: string): ParsedStatBlock {
     ) {
       const entries = parseNamedEntries(bodyText);
       if (entries.length > 0) result.legendary_actions = entries;
+    } else if (section.header === "lair actions") {
+      const entries = parseNamedEntries(bodyText);
+      if (entries.length > 0) result.lair_actions = entries;
+    } else if (section.header === "regional effects") {
+      const entries = parseNamedEntries(bodyText);
+      if (entries.length > 0) result.regional_effects = entries;
     } else {
       // Unknown section -> notes
       notes.push(`[${section.header}]`, ...section.body);

@@ -52,6 +52,8 @@ const STAT_LABELS = {
     actions: "Actions",
     reactions: "Reactions",
     legendaryActions: "Legendary Actions",
+    lairActions: "Lair Actions",
+    regionalEffects: "Regional Effects",
   },
   "pt-BR": {
     armorClass: "Classe de Armadura",
@@ -70,6 +72,8 @@ const STAT_LABELS = {
     actions: "Ações",
     reactions: "Reações",
     legendaryActions: "Ações Lendárias",
+    lairActions: "Ações de Covil",
+    regionalEffects: "Efeitos Regionais",
   },
 } as const;
 
@@ -387,6 +391,74 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
                   text={getDesc("legendary_actions", la.name, la.desc)}
                   rulesetVersion={monster.ruleset_version}
                   actionName={la.name}
+                  source={monster.name}
+                />
+              </p>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Lair Actions */}
+      {monster.lair_actions && monster.lair_actions.length > 0 && (
+        <>
+          <hr className="card-divider" />
+          <h2 className="text-lg font-bold text-[var(--5e-accent-red)] border-b border-[var(--5e-accent-red)]/30 pb-1 mb-2 font-[family-name:var(--font-cinzel)]">
+            {L.lairActions}
+          </h2>
+          {monster.lair_actions_intro && (
+            <p className="text-sm text-[var(--5e-text-muted)] italic mb-2">
+              <DiceText
+                text={getDesc("lair_actions", "_intro", monster.lair_actions_intro)}
+                rulesetVersion={monster.ruleset_version}
+                source={monster.name}
+              />
+            </p>
+          )}
+          <div className="space-y-2 text-sm">
+            {monster.lair_actions.map((la, i) => (
+              <p key={i}>
+                {la.name && (
+                  <><strong className="italic text-[var(--5e-accent-gold)]">{la.name}.</strong>{" "}</>
+                )}
+                <DiceText
+                  text={getDesc("lair_actions", la.name, la.desc)}
+                  rulesetVersion={monster.ruleset_version}
+                  actionName={la.name}
+                  source={monster.name}
+                />
+              </p>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Regional Effects */}
+      {monster.regional_effects && monster.regional_effects.length > 0 && (
+        <>
+          <hr className="card-divider" />
+          <h2 className="text-lg font-bold text-[var(--5e-accent-red)] border-b border-[var(--5e-accent-red)]/30 pb-1 mb-2 font-[family-name:var(--font-cinzel)]">
+            {L.regionalEffects}
+          </h2>
+          {monster.regional_effects_intro && (
+            <p className="text-sm text-[var(--5e-text-muted)] italic mb-2">
+              <DiceText
+                text={getDesc("regional_effects", "_intro", monster.regional_effects_intro)}
+                rulesetVersion={monster.ruleset_version}
+                source={monster.name}
+              />
+            </p>
+          )}
+          <div className="space-y-2 text-sm">
+            {monster.regional_effects.map((re, i) => (
+              <p key={i}>
+                {re.name && (
+                  <><strong className="italic text-[var(--5e-accent-gold)]">{re.name}.</strong>{" "}</>
+                )}
+                <DiceText
+                  text={getDesc("regional_effects", re.name, re.desc)}
+                  rulesetVersion={monster.ruleset_version}
+                  actionName={re.name}
                   source={monster.name}
                 />
               </p>

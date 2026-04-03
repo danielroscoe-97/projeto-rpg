@@ -114,6 +114,8 @@ export function StatBlockImporter({
         actions: parsed.actions,
         legendary_actions: parsed.legendary_actions,
         reactions: parsed.reactions,
+        lair_actions: parsed.lair_actions,
+        regional_effects: parsed.regional_effects,
         alignment: parsed.alignment,
         source_type: "homebrew_imported",
       };

@@ -10,8 +10,8 @@ interface MonsterTranslations {
   actions: SectionMap;
   reactions: SectionMap;
   legendary_actions: SectionMap;
-  lair_actions: SectionMap;
-  regional_effects: SectionMap;
+  lair_actions?: SectionMap;
+  regional_effects?: SectionMap;
 }
 
 type TranslationData = Record<string, MonsterTranslations>;

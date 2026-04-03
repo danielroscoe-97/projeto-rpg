@@ -21,7 +21,7 @@
  *   (conditions.json is NOT touched — managed by supabase/seed.sql)
  */
 
-import { writeFileSync, mkdirSync } from "fs";
+import { writeFileSync, readFileSync, mkdirSync } from "fs";
 import { join } from "path";
 
 // ── URLs ────────────────────────────────────────────────────────────
@@ -74,6 +74,10 @@ interface SrdMonster {
   actions: MonsterAction[] | null;
   legendary_actions: MonsterAction[] | null;
   reactions: MonsterAction[] | null;
+  lair_actions: MonsterAction[] | null;
+  lair_actions_intro: string | null;
+  regional_effects: MonsterAction[] | null;
+  regional_effects_intro: string | null;
 }
 
 interface SrdSpell {
@@ -197,11 +201,46 @@ function normalizeActions(
   });
 }
 
+// ── Lair Data ──────────────────────────────────────────────────────
+
+interface LairData {
+  lair_actions_intro: string;
+  lair_actions: MonsterAction[];
+  regional_effects_intro: string;
+  regional_effects: MonsterAction[];
+  regional_effects_closing?: string;
+}
+
+/** Load curated lair actions data from scripts/data/monster-lair-data.json */
+function loadLairData(): Record<string, LairData> {
+  const filePath = join(__dirname, "data", "monster-lair-data.json");
+  const raw = JSON.parse(readFileSync(filePath, "utf-8"));
+  // Remove _comment key
+  delete raw._comment;
+  return raw as Record<string, LairData>;
+}
+
+/**
+ * Match a monster index to its lair data key.
+ * Adult/Ancient dragons of the same color share lair data.
+ * e.g. "adult-blue-dragon" and "ancient-blue-dragon" both map to "blue-dragon"
+ */
+function getLairKey(monsterIndex: string): string | null {
+  // Dragon matching: extract color from "adult-{color}-dragon" or "ancient-{color}-dragon"
+  const dragonMatch = monsterIndex.match(/^(?:adult|ancient)-(.+)-dragon$/);
+  if (dragonMatch) {
+    return `${dragonMatch[1]}-dragon`;
+  }
+  // Direct match for non-dragons (aboleth, kraken, lich, unicorn)
+  return monsterIndex;
+}
+
 // ── Transformers ────────────────────────────────────────────────────
 
 function transformMonster(
   raw: Record<string, unknown>,
-  version: "2014" | "2024"
+  version: "2014" | "2024",
+  lairDataMap?: Record<string, LairData>
 ): SrdMonster {
   const index = String(raw.index || "");
   const id = version === "2024" ? `${index}-2024` : index;
@@ -210,7 +249,7 @@ function transformMonster(
     proficiency: { index: string; name: string };
   }>) || [];
 
-  return {
+  const monster: SrdMonster = {
     id,
     name: String(raw.name || ""),
     cr: crToString(raw.challenge_rating as number),
@@ -257,7 +296,29 @@ function transformMonster(
     reactions: normalizeActions(
       raw.reactions as Array<Record<string, unknown>> | undefined
     ),
+    lair_actions: null,
+    lair_actions_intro: null,
+    regional_effects: null,
+    regional_effects_intro: null,
   };
+
+  // Merge lair data if available
+  if (lairDataMap) {
+    const lairKey = getLairKey(index);
+    const lair = lairKey ? lairDataMap[lairKey] : null;
+    if (lair) {
+      monster.lair_actions = lair.lair_actions;
+      monster.lair_actions_intro = lair.lair_actions_intro;
+      monster.regional_effects = lair.regional_effects;
+      monster.regional_effects_intro = lair.regional_effects_intro;
+      // Append closing text to intro if present
+      if (lair.regional_effects_closing) {
+        monster.regional_effects_intro += "\n\n" + lair.regional_effects_closing;
+      }
+    }
+  }
+
+  return monster;
 }
 
 function transformSpell(
@@ -318,6 +379,11 @@ function transformSpell(
 async function main() {
   mkdirSync(OUTPUT_DIR, { recursive: true });
 
+  // Load curated lair actions data
+  console.log("Loading curated lair actions data...");
+  const lairData = loadLairData();
+  console.log(`  Loaded lair data for ${Object.keys(lairData).length} creature types`);
+
   // Fetch raw data from 5e-database
   console.log("Fetching SRD monsters from 5e-database...");
   const monstersRes = await fetch(MONSTER_URL);
@@ -333,14 +399,18 @@ async function main() {
   const rawSpells = (await spellsRes.json()) as Record<string, unknown>[];
   console.log(`  Received ${rawSpells.length} raw spells`);
 
-  // Transform to our format
+  // Transform to our format (with lair data merge)
   const monsters2014 = rawMonsters
-    .map((m) => transformMonster(m, "2014"))
+    .map((m) => transformMonster(m, "2014", lairData))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const monsters2024 = rawMonsters
-    .map((m) => transformMonster(m, "2024"))
+    .map((m) => transformMonster(m, "2024", lairData))
     .sort((a, b) => a.name.localeCompare(b.name));
+
+  // Report lair data coverage
+  const withLair = monsters2014.filter((m) => m.lair_actions !== null);
+  console.log(`  ${withLair.length} monsters received lair actions data`);
 
   const spells2014 = rawSpells
     .map((s) => transformSpell(s, "2014"))
