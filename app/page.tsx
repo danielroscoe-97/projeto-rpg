@@ -234,14 +234,14 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         {/* Stats strip */}
         <div className="flex items-center justify-center gap-0 pt-2 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           {[
-            { value: 3037, label: "monstros", sub: "SRD + MAD" },
-            { value: 935, label: "magias", sub: "2014 & 2024" },
+            { value: 1200, label: "monstros", sub: "SRD + Monster a Day" },
+            { value: 750, label: "magias", sub: "SRD 2014 & 2024" },
           ].map((stat, i) => (
             <React.Fragment key={stat.label}>
               {i > 0 && <div className="w-px h-7 bg-white/[0.08] mx-5" />}
               <div className="text-center">
                 <div className="text-gold font-mono font-bold text-sm leading-none">
-                  <AnimatedCounter target={stat.value} duration={2200} />
+                  <AnimatedCounter target={stat.value} duration={2200} />+
                 </div>
                 <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">{stat.label}</div>
                 {stat.sub && <div className="text-muted-foreground/50 text-[8px] tracking-wide">{stat.sub}</div>}
@@ -250,8 +250,9 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
           ))}
           <div className="w-px h-7 bg-white/[0.08] mx-5" />
           <div className="text-center">
-            <div className="text-gold font-mono font-bold text-sm leading-none">∞</div>
-            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">comece grátis</div>
+            <div className="text-gold font-mono font-bold text-sm leading-none">R$ 0</div>
+            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">pra começar</div>
+            <div className="text-muted-foreground/50 text-[8px] tracking-wide">sem cartão</div>
           </div>
         </div>
 
