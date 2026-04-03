@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { PipersSignature } from "./PipersSignature";
 
 export async function Footer() {
   const t = await getTranslations("nav");
@@ -80,6 +81,11 @@ export async function Footer() {
               {t("footer_srd_license")}
             </a>
           </p>
+        </div>
+
+        {/* Studio signature */}
+        <div className="mt-6">
+          <PipersSignature />
         </div>
       </div>
     </footer>
