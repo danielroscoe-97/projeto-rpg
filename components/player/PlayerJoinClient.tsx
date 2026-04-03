@@ -215,6 +215,7 @@ export function PlayerJoinClient({
   const [reconnectingAs, setReconnectingAs] = useState<string | null>(null);
   const [sessionRevoked, setSessionRevoked] = useState(false);
   const hiddenAtRef = useRef<number | null>(null);
+  const heartbeatRef = useRef<(() => Promise<void>) | null>(null);
   // F-41: Spell slots state — local tracking with debounced save to player_characters
   const [characterSpellSlots, setCharacterSpellSlots] = useState<Record<string, { max: number; used: number }> | null>(null);
   const spellSlotSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1278,9 +1279,13 @@ export function PlayerJoinClient({
           .eq("anon_user_id", authSession.user.id); // guard: don't renew if token transferred
       } catch { /* heartbeat is best-effort */ }
     };
+    heartbeatRef.current = heartbeat;
     heartbeat(); // immediate
     const id = setInterval(heartbeat, 30_000);
-    return () => clearInterval(id);
+    return () => {
+      clearInterval(id);
+      heartbeatRef.current = null;
+    };
   }, [isRegistered, active, effectiveTokenId]);
 
   // Bidirectional visibility handler — hidden: broadcast idle, visible: reconnect + validate
@@ -1341,9 +1346,18 @@ export function PlayerJoinClient({
         } catch { /* best-effort — continue normal reconnection */ }
       }
 
+      // Immediate heartbeat — clears the null last_seen_at set by sendBeacon on pagehide
+      heartbeatRef.current?.();
+
       // A.1: AWAIT fetch BEFORE reconnecting channel — prevents stale delta calculations
+      // Retry once after 2s if first attempt fails (transient network on wake)
       if (encounterIdRef.current) {
-        await fetchFullState(encounterIdRef.current);
+        try {
+          await fetchFullState(encounterIdRef.current);
+        } catch {
+          await new Promise((r) => setTimeout(r, 2000));
+          try { await fetchFullState(encounterIdRef.current!); } catch { /* give up */ }
+        }
       }
 
       // If realtime is disconnected, force reconnect via the same createChannel function
@@ -1361,17 +1375,59 @@ export function PlayerJoinClient({
       }
     };
 
-    // Also handle online/offline events for network loss
-    const handleOnline = () => {
-      if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
+    // Network loss/recovery — covers WiFi switch, airplane mode toggle with tab visible
+    const handleOnline = async () => {
+      // Broadcast player:active so DM knows we're back
+      if (channelRef.current && isRegisteredRef.current) {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "player:active",
+          payload: {
+            token_id: effectiveTokenIdRef.current,
+            player_name: registeredNameRef.current,
+          },
+        });
+      }
+      // Immediate heartbeat to clear any stale last_seen_at
+      heartbeatRef.current?.();
+      // Sync full state
+      if (encounterIdRef.current) {
+        try { await fetchFullState(encounterIdRef.current); } catch { /* best-effort */ }
+      }
+      // Reconnect channel if it died during offline
+      if (disconnectedAtRef.current && supabaseRef.current) {
+        if (channelRef.current) {
+          supabaseRef.current.removeChannel(channelRef.current);
+          channelRef.current = null;
+        }
+        reconnectBackoffRef.current = 1000;
+        createChannelRef.current?.();
+      }
+    };
+
+    const handleOffline = () => {
+      // Best-effort: broadcast player:idle so DM sees status change immediately
+      if (channelRef.current && isRegisteredRef.current) {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "player:idle",
+          payload: {
+            token_id: effectiveTokenIdRef.current,
+            player_name: registeredNameRef.current,
+            reason: "network_offline",
+          },
+        });
+      }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, [authReady, sessionId, fetchFullState]);
 
