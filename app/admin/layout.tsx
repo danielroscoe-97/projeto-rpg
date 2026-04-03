@@ -37,6 +37,7 @@ export default async function AdminLayout({
           { href: "/admin/users", label: t("nav_users") },
           { href: "/admin/content/monsters", label: t("nav_monsters") },
           { href: "/admin/content/spells", label: t("nav_spells") },
+          { href: "/admin/whitelist", label: t("nav_whitelist") },
           { href: "/app/dashboard", label: t("nav_back") },
         ]}
         rightSlot={<LogoutButton />}

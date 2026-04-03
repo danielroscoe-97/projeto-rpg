@@ -8,6 +8,9 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { MonsterADayBadge } from "@/components/compendium/MonsterADayBadge";
+import { useContentAccess } from "@/lib/hooks/use-content-access";
+import { ExternalContentGate } from "@/components/import/ExternalContentGate";
+import { toast } from "sonner";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 
 type SourceFilter = "all" | "srd" | "complete" | "mad";
@@ -112,6 +115,8 @@ export function MonsterBrowser() {
   const t = useTranslations("compendium");
   const allMonsters = useSrdStore((s) => s.monsters);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+  const { canAccess, isAuthenticated } = useContentAccess();
+  const [gateOpen, setGateOpen] = useState(false);
 
   // Filters
   const [nameFilter, setNameFilter] = useState("");
@@ -284,8 +289,27 @@ export function MonsterBrowser() {
         <div className="space-y-2 pl-1">
           <FilterGroup label={t("filter_source")}>
             {(["all", "srd", "complete", "mad"] as const).map((s) => (
-              <Chip key={s} active={sourceFilter === s} onClick={() => setSourceFilter(s)}>
+              <Chip
+                key={s}
+                active={sourceFilter === s}
+                onClick={() => {
+                  if (s === "complete" && !canAccess) {
+                    if (!isAuthenticated) {
+                      toast.info(t("login_required_complete"));
+                    } else {
+                      setGateOpen(true);
+                    }
+                    return;
+                  }
+                  setSourceFilter(s);
+                }}
+              >
                 {t(`filter_source_${s}`)}
+                {s === "complete" && !canAccess && (
+                  <svg className="w-3 h-3 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                  </svg>
+                )}
               </Chip>
             ))}
           </FilterGroup>
@@ -432,6 +456,8 @@ export function MonsterBrowser() {
           )}
         </div>
       </div>
+
+      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} />
     </div>
   );
 }

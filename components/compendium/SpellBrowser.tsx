@@ -5,7 +5,10 @@ import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
+import { useContentAccess } from "@/lib/hooks/use-content-access";
+import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { SpellCard } from "@/components/oracle/SpellCard";
+import { toast } from "sonner";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -53,8 +56,13 @@ const rowKey = (s: SrdSpell) => `${s.id}:${s.ruleset_version}`;
 export function SpellBrowser() {
   const t = useTranslations("compendium");
   const allSpells = useSrdStore((s) => s.spells);
-  const { filtered: spells } = useSrdContentFilter(allSpells);
+  const { filtered: spells, showNonSrd } = useSrdContentFilter(allSpells);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+  const { canAccess, isAuthenticated } = useContentAccess();
+  const [gateOpen, setGateOpen] = useState(false);
+
+  // Count hidden non-SRD spells for the gating banner
+  const hiddenSpellCount = !showNonSrd ? allSpells.filter((s) => s.is_srd === false).length : 0;
 
   // Filters
   const [nameFilter, setNameFilter] = useState("");
@@ -247,6 +255,26 @@ export function SpellBrowser() {
           <Chip active={sortBy === "level"} onClick={() => setSortBy("level")}>{t("sort_level")}</Chip>
         </div>
       </div>
+
+      {/* Gating banner: show when non-SRD spells are hidden */}
+      {hiddenSpellCount > 0 && !canAccess && (
+        <button
+          type="button"
+          onClick={() => {
+            if (!isAuthenticated) {
+              toast.info(t("login_required_complete"));
+            } else {
+              setGateOpen(true);
+            }
+          }}
+          className="w-full mt-1.5 flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] text-gold/80 bg-gold/[0.06] border border-gold/10 hover:bg-gold/[0.1] transition-colors"
+        >
+          <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+          {t("spells_unlock_more", { count: hiddenSpellCount })}
+        </button>
+      )}
     </div>
   );
 
@@ -395,6 +423,8 @@ export function SpellBrowser() {
           )}
         </div>
       </div>
+
+      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} />
     </div>
   );
 }

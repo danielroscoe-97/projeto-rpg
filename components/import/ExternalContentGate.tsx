@@ -11,6 +11,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useExtendedCompendium } from "@/lib/hooks/use-extended-compendium";
 import { useSrdStore } from "@/lib/stores/srd-store";
+import { CURRENT_AGREEMENT_VERSION } from "@/lib/constants/content";
 import { toast } from "sonner";
 
 interface ExternalContentGateProps {
@@ -23,14 +24,33 @@ export function ExternalContentGate({ open, onOpenChange }: ExternalContentGateP
   const { activate } = useExtendedCompendium();
   const monsters = useSrdStore((s) => s.monsters);
   const [accepted, setAccepted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const nonSrdCount = monsters.filter((m) => m.is_srd === false).length;
 
-  const handleActivate = () => {
-    activate();
-    onOpenChange(false);
-    setAccepted(false);
-    toast.success(t("gate_success", { count: nonSrdCount }));
+  const handleActivate = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/content/agree", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agreement_version: CURRENT_AGREEMENT_VERSION }),
+      });
+
+      if (!res.ok && res.status !== 409) {
+        throw new Error("Failed to record agreement");
+      }
+
+      // 409 = already agreed, still activate locally
+      activate();
+      onOpenChange(false);
+      setAccepted(false);
+      toast.success(t("gate_success", { count: nonSrdCount }));
+    } catch {
+      toast.error(t("gate_error"));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,10 +78,10 @@ export function ExternalContentGate({ open, onOpenChange }: ExternalContentGateP
         <button
           type="button"
           onClick={handleActivate}
-          disabled={!accepted}
+          disabled={!accepted || isSubmitting}
           className="mt-4 w-full py-2.5 rounded-md text-sm font-medium transition-all bg-gold text-surface-primary hover:bg-gold/90 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {t("gate_activate")}
+          {isSubmitting ? "..." : t("gate_activate")}
         </button>
       </DialogContent>
     </Dialog>
