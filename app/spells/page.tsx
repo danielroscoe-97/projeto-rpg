@@ -3,22 +3,19 @@ import type { Metadata } from "next";
 import { getSrdSpells, toSlug } from "@/lib/srd/srd-data-server";
 
 export const metadata: Metadata = {
-  title: "Magias D&D 5e — Lista de Spells SRD Completa | Pocket DM",
+  title: "D&D 5e Spell Compendium — SRD Spell List | Pocket DM",
   description:
-    "Catálogo completo de magias SRD de D&D 5e — descrição, alcance, componentes e dano. Pesquise por escola, nível ou classe. Free D&D 5e spell list with full descriptions.",
+    "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Search by school, level, or class. Free to use.",
   keywords: [
-    "magias D&D 5e",
-    "spells D&D 5e",
-    "lista de magias D&D",
-    "spell list 5e",
-    "dnd spells",
-    "oráculo de magias",
-    "D&D spell reference",
+    "D&D 5e spells",
+    "dnd spell list",
     "SRD spells",
+    "5e spell compendium",
+    "D&D spell reference",
+    "magias D&D 5e",
   ],
   alternates: {
-    canonical: "/spells",
-    languages: { "pt-BR": "/spells", en: "/spells" },
+    canonical: "https://www.pocketdm.com.br/spells",
   },
 };
 

@@ -32,9 +32,9 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title, description, type: "article", url: `/spells/${slug}` },
+    openGraph: { title, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}` },
     twitter: { card: "summary", title, description },
-    alternates: { canonical: `/spells/${slug}` },
+    alternates: { canonical: `https://www.pocketdm.com.br/spells/${slug}` },
   };
 }
 
