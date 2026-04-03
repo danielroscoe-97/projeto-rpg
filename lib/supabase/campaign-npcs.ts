@@ -11,7 +11,8 @@ import type {
 function mapRow(row: Record<string, unknown>): CampaignNpc {
   return {
     id: row.id as string,
-    campaign_id: row.campaign_id as string,
+    campaign_id: (row.campaign_id as string) ?? null,
+    user_id: row.user_id as string,
     name: row.name as string,
     description: (row.description as string) ?? null,
     stats: (row.stats as NpcStats) ?? {},
@@ -48,13 +49,17 @@ export async function getNpc(npcId: string): Promise<CampaignNpc | null> {
   return data ? mapRow(data) : null;
 }
 
-/** Create a new NPC. */
+/** Create a new NPC (campaign-bound or global). */
 export async function createNpc(npc: CampaignNpcInsert): Promise<CampaignNpc> {
   const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
   const { data, error } = await supabase
     .from("campaign_npcs")
     .insert({
-      campaign_id: npc.campaign_id,
+      campaign_id: npc.campaign_id ?? null,
+      user_id: user.id,
       name: npc.name,
       description: npc.description,
       stats: npc.stats,
@@ -66,6 +71,23 @@ export async function createNpc(npc: CampaignNpcInsert): Promise<CampaignNpc> {
 
   if (error) throw new Error(`Failed to create NPC: ${error.message}`);
   return mapRow(data);
+}
+
+/** List global NPCs (not tied to any campaign) for the current user. */
+export async function getGlobalNpcs(): Promise<CampaignNpc[]> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data, error } = await supabase
+    .from("campaign_npcs")
+    .select("*")
+    .eq("user_id", user.id)
+    .is("campaign_id", null)
+    .order("name");
+
+  if (error) throw new Error(`Failed to fetch global NPCs: ${error.message}`);
+  return (data ?? []).map(mapRow);
 }
 
 /** Update an existing NPC. */

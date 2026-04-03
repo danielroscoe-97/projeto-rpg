@@ -16,7 +16,7 @@ import type { CampaignNpc, CampaignNpcInsert, NpcStats } from "@/lib/types/campa
 interface NpcFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  campaignId: string;
+  campaignId?: string | null;
   npc?: CampaignNpc | null;
   onSave: (data: CampaignNpcInsert) => Promise<void>;
 }
@@ -36,6 +36,7 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
   const [visibleToPlayers, setVisibleToPlayers] = useState(npc?.is_visible_to_players ?? false);
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -48,14 +49,14 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
       }
 
       const stats: NpcStats = {};
-      if (hp) stats.hp = parseInt(hp, 10);
-      if (ac) stats.ac = parseInt(ac, 10);
-      if (initiativeMod) stats.initiative_mod = parseInt(initiativeMod, 10);
+      if (hp !== "") { const v = parseInt(hp, 10); if (!isNaN(v)) stats.hp = v; }
+      if (ac !== "") { const v = parseInt(ac, 10); if (!isNaN(v)) stats.ac = v; }
+      if (initiativeMod !== "") { const v = parseInt(initiativeMod, 10); if (!isNaN(v)) stats.initiative_mod = v; }
       if (cr.trim()) stats.cr = cr.trim();
       if (notes.trim()) stats.notes = notes.trim();
 
       const data: CampaignNpcInsert = {
-        campaign_id: campaignId,
+        campaign_id: campaignId ?? null,
         name: trimmedName,
         description: description.trim() || null,
         stats,
@@ -64,9 +65,12 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
       };
 
       setSaving(true);
+      setSaveError(false);
       try {
         await onSave(data);
         onOpenChange(false);
+      } catch {
+        setSaveError(true);
       } finally {
         setSaving(false);
       }
@@ -100,7 +104,7 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
             />
             {nameError && (
               <p className="text-xs text-red-400" data-testid="npc-name-error">
-                {t("name")} is required
+                {t("name_required")}
               </p>
             )}
           </div>
@@ -229,6 +233,13 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
               />
             </button>
           </div>
+
+          {/* Save error */}
+          {saveError && (
+            <p className="text-xs text-red-400" data-testid="npc-save-error">
+              {t("save_error")}
+            </p>
+          )}
 
           {/* Submit */}
           <div className="flex justify-end gap-2 pt-2">

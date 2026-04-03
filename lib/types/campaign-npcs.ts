@@ -8,7 +8,8 @@ export interface NpcStats {
 
 export interface CampaignNpc {
   id: string;
-  campaign_id: string;
+  campaign_id: string | null; // null for global NPCs
+  user_id: string;
   name: string;
   description: string | null;
   stats: NpcStats;
@@ -18,5 +19,5 @@ export interface CampaignNpc {
   updated_at: string;
 }
 
-export type CampaignNpcInsert = Omit<CampaignNpc, 'id' | 'created_at' | 'updated_at'>;
-export type CampaignNpcUpdate = Partial<Omit<CampaignNpc, 'id' | 'campaign_id' | 'created_at'>>;
+export type CampaignNpcInsert = Omit<CampaignNpc, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
+export type CampaignNpcUpdate = Partial<Omit<CampaignNpc, 'id' | 'campaign_id' | 'user_id' | 'created_at'>>;
