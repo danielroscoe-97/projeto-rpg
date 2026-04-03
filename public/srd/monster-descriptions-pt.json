@@ -1,0 +1,149 @@
+{
+  "adult-blue-dragon": {
+    "special_abilities": {
+      "Legendary Resistance (3/Day)": "Se o dragão falhar em um teste de resistência, ele pode optar por ter êxito."
+    },
+    "actions": {
+      "Multiattack": "O dragão pode usar sua Presença Aterrorizante. Ele então realiza três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +12 para acertar, alcance 3 m, um alvo. 18 (2d10 + 7) de dano perfurante mais 5 (1d10) de dano elétrico.",
+      "Claw": "Ataque com Arma Corpo a Corpo: +12 para acertar, alcance 1,5 m, um alvo. 14 (2d6 + 7) de dano cortante.",
+      "Tail": "Ataque com Arma Corpo a Corpo: +12 para acertar, alcance 4,5 m, um alvo. 16 (2d8 + 7) de dano de concussão.",
+      "Frightful Presence": "Cada criatura à escolha do dragão que estiver a até 36 m do dragão e ciente de sua presença deve ser bem-sucedida em um teste de resistência de Sabedoria CD 17 ou ficará amedrontada por 1 minuto. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesma em um êxito. Se o teste de resistência de uma criatura tiver êxito ou o efeito terminar para ela, a criatura ficará imune à Presença Aterrorizante do dragão pelas próximas 24 horas.",
+      "Lightning Breath (Recharge 5-6)": "O dragão expele raios em uma linha de 27 m de comprimento e 1,5 m de largura. Cada criatura nessa linha deve realizar um teste de resistência de Destreza CD 19, sofrendo 66 (12d10) de dano elétrico em uma falha, ou metade desse dano em um êxito."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Detect": "O dragão realiza um teste de Sabedoria (Percepção).",
+      "Tail Attack": "O dragão realiza um ataque de cauda.",
+      "Wing Attack (Costs 2 Actions)": "O dragão bate suas asas. Cada criatura a até 3 m do dragão deve ser bem-sucedida em um teste de resistência de Destreza CD 20 ou sofrerá 14 (2d6 + 7) de dano de concussão e será derrubada. O dragão pode então voar até metade de sua velocidade de voo."
+    }
+  },
+  "adult-red-dragon": {
+    "special_abilities": {
+      "Legendary Resistance (3/Day)": "Se o dragão falhar em um teste de resistência, ele pode optar por ter êxito."
+    },
+    "actions": {
+      "Multiattack": "O dragão pode usar sua Presença Aterrorizante. Ele então realiza três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +14 para acertar, alcance 3 m, um alvo. 19 (2d10 + 8) de dano perfurante mais 7 (2d6) de dano de fogo.",
+      "Claw": "Ataque com Arma Corpo a Corpo: +14 para acertar, alcance 1,5 m, um alvo. 15 (2d6 + 8) de dano cortante.",
+      "Tail": "Ataque com Arma Corpo a Corpo: +14 para acertar, alcance 4,5 m, um alvo. 17 (2d8 + 8) de dano de concussão.",
+      "Frightful Presence": "Cada criatura à escolha do dragão que estiver a até 36 m do dragão e ciente de sua presença deve ser bem-sucedida em um teste de resistência de Sabedoria CD 19 ou ficará amedrontada por 1 minuto. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesma em um êxito. Se o teste de resistência de uma criatura tiver êxito ou o efeito terminar para ela, a criatura ficará imune à Presença Aterrorizante do dragão pelas próximas 24 horas.",
+      "Fire Breath (Recharge 5-6)": "O dragão expele fogo em um cone de 18 m. Cada criatura nessa área deve realizar um teste de resistência de Destreza CD 21, sofrendo 63 (18d6) de dano de fogo em uma falha, ou metade desse dano em um êxito."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Detect": "O dragão realiza um teste de Sabedoria (Percepção).",
+      "Tail Attack": "O dragão realiza um ataque de cauda.",
+      "Wing Attack (Costs 2 Actions)": "O dragão bate suas asas. Cada criatura a até 3 m do dragão deve ser bem-sucedida em um teste de resistência de Destreza CD 22 ou sofrerá 15 (2d6 + 8) de dano de concussão e será derrubada. O dragão pode então voar até metade de sua velocidade de voo."
+    }
+  },
+  "goblin": {
+    "special_abilities": {
+      "Nimble Escape": "O goblin pode realizar a ação Desengajar ou Esconder como uma ação bônus em cada um de seus turnos."
+    },
+    "actions": {
+      "Scimitar": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5 m, um alvo. 5 (1d6 + 2) de dano cortante.",
+      "Shortbow": "Ataque com Arma à Distância: +4 para acertar, alcance 24/96 m, um alvo. 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "zombie": {
+    "special_abilities": {
+      "Undead Fortitude": "Se o dano reduzir o zumbi a 0 pontos de vida, ele deve realizar um teste de resistência de Constituição com CD igual a 5 + o dano sofrido, a menos que o dano seja radiante ou proveniente de um acerto crítico. Em um êxito, o zumbi cai a 1 ponto de vida."
+    },
+    "actions": {
+      "Slam": "Ataque com Arma Corpo a Corpo: +3 para acertar, alcance 1,5 m, um alvo. 4 (1d6 + 1) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "skeleton": {
+    "special_abilities": {},
+    "actions": {
+      "Shortsword": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5 m, um alvo. 5 (1d6 + 2) de dano perfurante.",
+      "Shortbow": "Ataque com Arma à Distância: +4 para acertar, alcance 24/96 m, um alvo. 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "vampire": {
+    "special_abilities": {
+      "Shapechanger": "Se o vampiro não estiver na luz solar ou em água corrente, ele pode usar sua ação para se transformar em um morcego Minúsculo ou em uma nuvem de névoa Média, ou voltar à sua forma verdadeira.\nNa forma de morcego, o vampiro não pode falar, sua velocidade de caminhada é 1,5 m, e possui uma velocidade de voo de 9 m. Suas estatísticas, exceto seu tamanho e velocidade, permanecem inalteradas. Qualquer coisa que ele estiver vestindo se transforma com ele, mas nada que ele estiver carregando. Ele reverte para sua forma verdadeira se morrer.\nNa forma de névoa, o vampiro não pode realizar ações, falar ou manipular objetos. Ele não tem peso, possui uma velocidade de voo de 6 m, pode planar, e pode entrar no espaço de uma criatura hostil e parar lá. Além disso, se o ar puder passar por um espaço, a névoa pode fazê-lo sem precisar se espremer, mas não pode passar pela água. Ele tem vantagem em testes de resistência de Força, Destreza e Constituição, e é imune a todos os danos não mágicos, exceto o dano que sofre com a luz solar.",
+      "Legendary Resistance (3/Day)": "Se o vampiro falhar em um teste de resistência, ele pode optar por ter êxito.",
+      "Misty Escape": "Quando cai a 0 pontos de vida fora de seu local de repouso, o vampiro se transforma em uma nuvem de névoa (como na habilidade Metamorfo) em vez de cair inconsciente, desde que não esteja na luz solar ou em água corrente. Se não puder se transformar, ele é destruído.\nEnquanto está com 0 pontos de vida em forma de névoa, ele não pode reverter para sua forma vampírica e deve alcançar seu local de repouso em 2 horas ou será destruído. Uma vez em seu local de repouso, ele reverte para sua forma vampírica. Ele então fica paralisado até recuperar pelo menos 1 ponto de vida. Após passar 1 hora em seu local de repouso com 0 pontos de vida, ele recupera 1 ponto de vida.",
+      "Regeneration": "O vampiro recupera 20 pontos de vida no início de seu turno se tiver pelo menos 1 ponto de vida e não estiver na luz solar ou em água corrente. Se o vampiro sofrer dano radiante ou dano de água benta, esta habilidade não funciona no início do próximo turno do vampiro.",
+      "Spider Climb": "O vampiro pode escalar superfícies difíceis, incluindo de cabeça para baixo em tetos, sem precisar realizar um teste de habilidade.",
+      "Vampire Weaknesses": "O vampiro possui as seguintes fraquezas:\n- O vampiro não pode entrar em uma residência sem um convite de um de seus ocupantes.\n- O vampiro sofre 20 de dano ácido se terminar seu turno em água corrente.\n- Se uma arma perfurante feita de madeira for cravada no coração do vampiro enquanto ele está incapacitado em seu local de repouso, o vampiro fica paralisado até que a estaca seja removida.\n- O vampiro sofre 20 de dano radiante quando inicia seu turno na luz solar. Enquanto na luz solar, ele tem desvantagem em jogadas de ataque e testes de habilidade."
+    },
+    "actions": {
+      "Multiattack (Vampire Form Only)": "O vampiro realiza dois ataques, sendo que apenas um deles pode ser um ataque de mordida.",
+      "Unarmed Strike (Vampire Form Only)": "Ataque com Arma Corpo a Corpo: +9 para acertar, alcance 1,5 m, uma criatura. 8 (1d8 + 4) de dano de concussão. Em vez de causar dano, o vampiro pode agarrar o alvo (CD de escape 18).",
+      "Bite (Bat or Vampire Form Only)": "Ataque com Arma Corpo a Corpo: +9 para acertar, alcance 1,5 m, uma criatura disposta, ou uma criatura agarrada pelo vampiro, incapacitada ou imobilizada. 7 (1d6 + 4) de dano perfurante mais 10 (3d6) de dano necrótico. O máximo de pontos de vida do alvo é reduzido em uma quantidade igual ao dano necrótico sofrido, e o vampiro recupera pontos de vida iguais a essa quantidade. A redução dura até o alvo concluir um descanso longo. O alvo morre se este efeito reduzir seu máximo de pontos de vida a 0. Um humanoide morto desta forma e então enterrado no chão ressurge na noite seguinte como um lacaio vampírico sob o controle do vampiro.",
+      "Charm": "O vampiro tem como alvo um humanoide que pode ver a até 9 m dele. Se o alvo puder ver o vampiro, ele deve ser bem-sucedido em um teste de resistência de Sabedoria CD 17 contra esta magia ou ficará enfeitiçado pelo vampiro. O alvo enfeitiçado considera o vampiro um amigo de confiança a ser obedecido e protegido. Embora o alvo não esteja sob o controle do vampiro, ele toma os pedidos ou ações do vampiro da maneira mais favorável possível, e é um alvo disposto para o ataque de mordida do vampiro.\nCada vez que o vampiro ou seus companheiros fazem algo prejudicial ao alvo, ele pode repetir o teste de resistência, encerrando o efeito sobre si mesmo em um êxito. Caso contrário, o efeito dura 24 horas ou até que o vampiro seja destruído, esteja em um plano de existência diferente do alvo, ou use uma ação bônus para encerrar o efeito.",
+      "Children of the Night (1/Day)": "O vampiro chama magicamente 2d4 enxames de morcegos ou ratos, desde que o sol não esteja alto. Ao ar livre, o vampiro pode chamar 3d6 lobos. As criaturas chamadas chegam em 1d4 rodadas, agindo como aliadas do vampiro e obedecendo seus comandos verbais. As bestas permanecem por 1 hora, até que o vampiro morra, ou até que o vampiro as dispense como uma ação bônus."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Move": "O vampiro se move até sua velocidade sem provocar ataques de oportunidade.",
+      "Unarmed Strike": "O vampiro realiza um golpe desarmado.",
+      "Bite (Costs 2 Actions)": "O vampiro realiza um ataque de mordida."
+    }
+  },
+  "lich": {
+    "special_abilities": {
+      "Legendary Resistance (3/Day)": "Se o lich falhar em um teste de resistência, ele pode optar por ter êxito.",
+      "Rejuvenation": "Se possuir um phylactery, um lich destruído ganha um novo corpo em 1d10 dias, recuperando todos os seus pontos de vida e voltando a ficar ativo. O novo corpo aparece a até 1,5 m do phylactery.",
+      "Turn Resistance": "O lich tem vantagem em testes de resistência contra qualquer efeito que afaste mortos-vivos.",
+      "Spellcasting": "O lich é um conjurador de 18º nível. Sua habilidade de conjuração é Inteligência (CD de resistência de magia 20, +12 para acertar com ataques mágicos). O lich tem as seguintes magias de mago preparadas:\nTruques (à vontade): mage hand, prestidigitation, ray of frost\n1º nível (4 espaços): detect magic, magic missile, shield, thunderwave\n2º nível (3 espaços): detect thoughts, invisibility, Melf's acid arrow, mirror image\n3º nível (3 espaços): animate dead, counterspell, dispel magic, fireball\n4º nível (3 espaços): blight, dimension door\n5º nível (3 espaços): cloudkill, scrying\n6º nível (1 espaço): disintegrate, globe of invulnerability\n7º nível (1 espaço): finger of death, plane shift\n8º nível (1 espaço): dominate monster, power word stun\n9º nível (1 espaço): power word kill"
+    },
+    "actions": {
+      "Paralyzing Touch": "Ataque Mágico Corpo a Corpo: +12 para acertar, alcance 1,5 m, uma criatura. 10 (3d6) de dano de frio. O alvo deve ser bem-sucedido em um teste de resistência de Constituição CD 18 ou ficará paralisado por 1 minuto. O alvo pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesmo em um êxito."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Cantrip": "O lich conjura um truque.",
+      "Paralyzing Touch (Costs 2 Actions)": "O lich usa seu Toque Paralisante.",
+      "Frightening Gaze (Costs 2 Actions)": "O lich fixa seu olhar em uma criatura que pode ver a até 3 m dele. O alvo deve ser bem-sucedido em um teste de resistência de Sabedoria CD 18 contra esta magia ou ficará amedrontado por 1 minuto. O alvo amedrontado pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesmo em um êxito. Se o teste de resistência de um alvo tiver êxito ou o efeito terminar para ele, o alvo ficará imune ao olhar do lich pelas próximas 24 horas.",
+      "Disrupt Life (Costs 3 Actions)": "Cada criatura não-morta-viva a até 6 m do lich deve realizar um teste de resistência de Constituição CD 18 contra esta magia, sofrendo 21 (6d6) de dano necrótico em uma falha, ou metade desse dano em um êxito."
+    }
+  },
+  "troll": {
+    "special_abilities": {
+      "Keen Smell": "O troll tem vantagem em testes de Sabedoria (Percepção) que dependem do olfato.",
+      "Regeneration": "O troll recupera 10 pontos de vida no início de seu turno. Se o troll sofrer dano ácido ou de fogo, esta habilidade não funciona no início do próximo turno do troll. O troll morre somente se iniciar seu turno com 0 pontos de vida e não se regenerar."
+    },
+    "actions": {
+      "Multiattack": "O troll realiza três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 1,5 m, um alvo. 7 (1d6 + 4) de dano perfurante.",
+      "Claw": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 1,5 m, um alvo. 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "orc": {
+    "special_abilities": {
+      "Aggressive": "Como uma ação bônus, o orc pode se mover até sua velocidade em direção a uma criatura hostil que ele possa ver."
+    },
+    "actions": {
+      "Greataxe": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 1,5 m, um alvo. 9 (1d12 + 3) de dano cortante.",
+      "Javelin": "Ataque com Arma Corpo a Corpo ou à Distância: +5 para acertar, alcance 1,5 m ou 9/36 m, um alvo. 6 (1d6 + 3) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "werewolf": {
+    "special_abilities": {
+      "Shapechanger": "O lobisomem pode usar sua ação para se transformar em um híbrido lobo-humanoide ou em um lobo, ou reverter para sua forma verdadeira, que é humanoide. Suas estatísticas, exceto sua CA, são as mesmas em cada forma. Qualquer equipamento que ele estiver vestindo ou carregando não se transforma. Ele reverte para sua forma verdadeira se morrer.",
+      "Keen Hearing and Smell": "O lobisomem tem vantagem em testes de Sabedoria (Percepção) que dependem da audição ou do olfato."
+    },
+    "actions": {
+      "Multiattack (Humanoid or Hybrid Form Only)": "O lobisomem realiza dois ataques: dois com sua lança (forma humanoide) ou um com sua mordida e um com suas garras (forma híbrida).",
+      "Bite (Wolf or Hybrid Form Only)": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5 m, um alvo. 6 (1d8 + 2) de dano perfurante. Se o alvo for um humanoide, ele deve ser bem-sucedido em um teste de resistência de Constituição CD 12 ou ficará amaldiçoado com a licantropia do lobisomem.",
+      "Claws (Hybrid Form Only)": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5 m, uma criatura. 7 (2d4 + 2) de dano cortante.",
+      "Spear (Humanoid Form Only)": "Ataque com Arma Corpo a Corpo ou à Distância: +4 para acertar, alcance 1,5 m ou 6/18 m, uma criatura. 5 (1d6 + 2) de dano perfurante, ou 6 (1d8 + 2) de dano perfurante se usado com duas mãos para um ataque corpo a corpo."
+    },
+    "reactions": {},
+    "legendary_actions": {}
+  }
+}

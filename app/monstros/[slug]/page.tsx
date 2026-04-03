@@ -145,7 +145,7 @@ export default async function MonstroPage({
           )}
 
           {/* Stat block with token + dice rollers */}
-          <PublicMonsterStatBlock monster={monster} locale="pt-BR" />
+          <PublicMonsterStatBlock monster={monster} locale="pt-BR" slug={enSlug} />
 
           {/* Two-box CTA */}
           <PublicCTA entityName={monster.name} lore={lore ?? undefined} locale="pt-BR" />

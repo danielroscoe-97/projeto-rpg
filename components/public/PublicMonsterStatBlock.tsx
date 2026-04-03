@@ -3,6 +3,18 @@
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { DiceText } from "@/components/dice/DiceText";
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
+import { useMonsterTranslation } from "@/lib/hooks/useMonsterTranslation";
+import {
+  translateSize,
+  translateType,
+  translateAlignment,
+  translateDamageString,
+  translateConditionString,
+  translateSkills,
+  translateSavingThrows,
+  translateSenses,
+  translateSpeed,
+} from "@/lib/i18n/dnd-terms-ptbr";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import "@/styles/stat-card-5e.css";
 
@@ -64,10 +76,14 @@ const STAT_LABELS = {
 interface PublicMonsterStatBlockProps {
   monster: SrdMonster;
   locale?: "en" | "pt-BR";
+  slug?: string;
 }
 
-export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonsterStatBlockProps) {
+export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: PublicMonsterStatBlockProps) {
   const L = STAT_LABELS[locale];
+  const { translated, globalPtBR, toggle, setGlobalPtBR, getDesc } = useMonsterTranslation(slug);
+  const isPtBr = locale === "pt-BR";
+
   const abilities = [
     { label: "STR", value: monster.str ?? 10 },
     { label: "DEX", value: monster.dex ?? 10 },
@@ -77,23 +93,76 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
     { label: "CHA", value: monster.cha ?? 10 },
   ];
 
-  const savingThrows = monster.saving_throws
-    ? Object.entries(monster.saving_throws)
-        .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} +${v}`)
-        .join(", ")
-    : null;
+  const savingThrows = isPtBr
+    ? translateSavingThrows(monster.saving_throws)
+    : monster.saving_throws
+      ? Object.entries(monster.saving_throws)
+          .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} +${v}`)
+          .join(", ")
+      : null;
 
-  const skills = monster.skills
-    ? Object.entries(monster.skills)
-        .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} +${v}`)
-        .join(", ")
-    : null;
+  const skills = isPtBr
+    ? translateSkills(monster.skills)
+    : monster.skills
+      ? Object.entries(monster.skills)
+          .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} +${v}`)
+          .join(", ")
+      : null;
+
+  const speedStr = isPtBr ? translateSpeed(monster.speed) : formatSpeed(monster.speed);
+  const damageVuln = isPtBr ? translateDamageString(monster.damage_vulnerabilities) : monster.damage_vulnerabilities;
+  const damageRes = isPtBr ? translateDamageString(monster.damage_resistances) : monster.damage_resistances;
+  const damageImm = isPtBr ? translateDamageString(monster.damage_immunities) : monster.damage_immunities;
+  const conditionImm = isPtBr ? translateConditionString(monster.condition_immunities) : monster.condition_immunities;
+  const sensesStr = isPtBr ? translateSenses(monster.senses) : monster.senses;
+  const sizeStr = isPtBr ? translateSize(monster.size) : monster.size;
+  const typeStr = isPtBr ? translateType(monster.type) : monster.type;
+  const alignmentStr = isPtBr ? translateAlignment(monster.alignment) : monster.alignment;
 
   const dexMod = abilityModNum(monster.dex ?? 10);
   const initNotation = `1d20${dexMod >= 0 ? `+${dexMod}` : `${dexMod}`}`;
 
   return (
     <article className="stat-card-5e stat-card-5e-inline !max-w-none">
+      {/* Language notice — only on PT-BR pages with a slug */}
+      {locale === "pt-BR" && slug && (
+        <p className="text-xs text-[var(--5e-text-muted)] mb-3 leading-relaxed">
+          {translated ? (
+            <>
+              Ficha em{" "}
+              <span className="text-[var(--5e-accent-gold)]">PT-BR</span>.{" "}
+              <button
+                onClick={toggle}
+                className="underline hover:text-[var(--5e-text)] transition-colors"
+              >
+                Ver em inglês (RAW)
+              </button>
+            </>
+          ) : (
+            <>
+              Ficha em inglês (RAW oficial) — melhor para interpretação.{" "}
+              <button
+                onClick={toggle}
+                className="underline hover:text-[var(--5e-text)] transition-colors"
+              >
+                Traduzir ficha
+              </button>
+              {!globalPtBR && (
+                <>
+                  {" · "}
+                  <button
+                    onClick={setGlobalPtBR}
+                    className="underline hover:text-[var(--5e-text)] transition-colors"
+                  >
+                    Sempre PT-BR
+                  </button>
+                </>
+              )}
+            </>
+          )}
+        </p>
+      )}
+
       {/* Header with token */}
       <div className="flex items-start gap-4 mb-1">
         <MonsterToken
@@ -109,8 +178,8 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
             {monster.name}
           </h1>
           <p className="text-[var(--5e-text-muted)] text-sm italic">
-            {monster.size} {monster.type}
-            {monster.alignment ? `, ${monster.alignment}` : ""}
+            {sizeStr} {typeStr}
+            {alignmentStr ? `, ${alignmentStr}` : ""}
           </p>
         </div>
       </div>
@@ -142,7 +211,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
         </p>
         <p>
           <strong className="text-[var(--5e-accent-red)]">{L.speed}</strong>{" "}
-          {formatSpeed(monster.speed)}
+          {speedStr}
         </p>
         <p>
           <strong className="text-[var(--5e-accent-red)]">{L.initiative}</strong>{" "}
@@ -245,7 +314,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
               <p key={i}>
                 <strong className="italic text-[var(--5e-accent-gold)]">{ability.name}.</strong>{" "}
                 <DiceText
-                  text={ability.desc}
+                  text={getDesc("special_abilities", ability.name, ability.desc)}
                   rulesetVersion={monster.ruleset_version}
                   actionName={ability.name}
                   source={monster.name}
@@ -268,7 +337,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
               <p key={i}>
                 <strong className="italic text-[var(--5e-accent-gold)]">{action.name}.</strong>{" "}
                 <DiceText
-                  text={action.desc}
+                  text={getDesc("actions", action.name, action.desc)}
                   rulesetVersion={monster.ruleset_version}
                   actionName={action.name}
                   source={monster.name}
@@ -291,7 +360,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
               <p key={i}>
                 <strong className="italic text-[var(--5e-accent-gold)]">{reaction.name}.</strong>{" "}
                 <DiceText
-                  text={reaction.desc}
+                  text={getDesc("reactions", reaction.name, reaction.desc)}
                   rulesetVersion={monster.ruleset_version}
                   actionName={reaction.name}
                   source={monster.name}
@@ -314,7 +383,7 @@ export function PublicMonsterStatBlock({ monster, locale = "en" }: PublicMonster
               <p key={i}>
                 <strong className="italic text-[var(--5e-accent-gold)]">{la.name}.</strong>{" "}
                 <DiceText
-                  text={la.desc}
+                  text={getDesc("legendary_actions", la.name, la.desc)}
                   rulesetVersion={monster.ruleset_version}
                   actionName={la.name}
                   source={monster.name}
