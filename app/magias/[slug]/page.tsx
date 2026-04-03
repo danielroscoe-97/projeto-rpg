@@ -47,7 +47,7 @@ export async function generateMetadata({
       type: "article",
       url: `https://www.pocketdm.com.br/magias/${slug}`,
     },
-    twitter: { card: "summary", title, description },
+    twitter: { card: "summary_large_image", title, description },
     alternates: {
       canonical: `https://www.pocketdm.com.br/magias/${slug}`,
       languages: {

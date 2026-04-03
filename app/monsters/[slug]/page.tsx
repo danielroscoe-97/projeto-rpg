@@ -43,7 +43,7 @@ export async function generateMetadata({
       url: `https://www.pocketdm.com.br/monsters/${slug}`,
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
       description,
     },

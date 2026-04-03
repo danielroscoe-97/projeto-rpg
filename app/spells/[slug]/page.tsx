@@ -38,7 +38,7 @@ export async function generateMetadata({
     title,
     description,
     openGraph: { title, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}` },
-    twitter: { card: "summary", title, description },
+    twitter: { card: "summary_large_image", title, description },
     alternates: { canonical: `https://www.pocketdm.com.br/spells/${slug}` },
   };
 }

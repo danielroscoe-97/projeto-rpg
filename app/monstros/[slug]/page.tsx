@@ -48,7 +48,7 @@ export async function generateMetadata({
       type: "article",
       url: `https://www.pocketdm.com.br/monstros/${slug}`,
     },
-    twitter: { card: "summary", title, description },
+    twitter: { card: "summary_large_image", title, description },
     alternates: {
       canonical: `https://www.pocketdm.com.br/monstros/${slug}`,
       languages: {

@@ -13,6 +13,7 @@ const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 const siteTitle = "Pocket DM — Rastreador de Combate D&D 5e | Combat Tracker";
+const siteTitleSocial = "Pocket DM — Master your table.";
 const siteDescription =
   "O rastreador de combate definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias em tempo real — grátis, no celular dos seus jogadores. Free D&D 5e combat tracker.";
 
@@ -73,7 +74,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: siteTitle,
+    title: siteTitleSocial,
     description: siteDescription,
     url: "/",
     siteName: "Pocket DM",
@@ -85,13 +86,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Pocket DM — Rastreador de Combate D&D 5e",
+        alt: "Pocket DM — Master your table.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteTitle,
+    title: siteTitleSocial,
     description: siteDescription,
     images: ["/opengraph-image"],
   },
