@@ -424,6 +424,8 @@
     "invite_select_campaign": "Selecione uma campanha",
     "no_campaigns_yet": "Nenhuma campanha ainda",
     "no_campaigns_create": "Crie uma campanha primeiro para convidar jogadores",
+    "no_campaigns_cta": "Criar campanha →",
+    "npc_global_badge": "Reutilizável",
     "create_first_campaign": "Comece sua jornada",
     "create_first_campaign_desc": "Crie sua primeira campanha e convide seus jogadores.",
     "waiting_for_invite": "Aguardando convite",

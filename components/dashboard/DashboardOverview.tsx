@@ -69,6 +69,9 @@ interface DashboardOverviewProps {
     invite_dialog_title: string;
     no_campaigns_yet: string;
     no_campaigns_create: string;
+    no_campaigns_cta: string;
+    npc_global_badge: string;
+    campaigns_players_singular: string;
     view_all: string;
     dm_empty_title: string;
     dm_empty_desc: string;
@@ -163,7 +166,10 @@ export function DashboardOverview({
             invite_dialog_title: t.invite_dialog_title,
             no_campaigns_yet: t.no_campaigns_yet,
             no_campaigns_create: t.no_campaigns_create,
+            no_campaigns_cta: t.no_campaigns_cta,
+            npc_global_badge: t.npc_global_badge,
             campaigns_players_plural: t.campaigns_players_plural,
+            campaigns_players_singular: t.campaigns_players_singular,
           }}
           campaigns={campaigns}
         />

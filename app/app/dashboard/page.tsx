@@ -135,6 +135,9 @@ export default async function DashboardPage() {
     invite_dialog_title: t("invite_dialog_title"),
     no_campaigns_yet: t("no_campaigns_yet"),
     no_campaigns_create: t("no_campaigns_create"),
+    no_campaigns_cta: t("no_campaigns_cta"),
+    npc_global_badge: t("npc_global_badge"),
+    campaigns_players_singular: t("campaigns_players_singular"),
     // Story 11.0 additions
     view_all: t("view_all"),
     dm_empty_title: t("dm_empty_title"),

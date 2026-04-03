@@ -424,6 +424,8 @@
     "invite_select_campaign": "Select a campaign",
     "no_campaigns_yet": "No campaigns yet",
     "no_campaigns_create": "Create a campaign first to invite players",
+    "no_campaigns_cta": "Create campaign →",
+    "npc_global_badge": "Reusable",
     "create_first_campaign": "Start your journey",
     "create_first_campaign_desc": "Create your first campaign and invite your players.",
     "waiting_for_invite": "Waiting for invite",

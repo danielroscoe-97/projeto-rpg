@@ -30,7 +30,10 @@ const translations = {
   invite_dialog_title: "Invite to which campaign?",
   no_campaigns_yet: "No campaigns yet",
   no_campaigns_create: "Create a campaign first",
+  no_campaigns_cta: "Create campaign →",
+  npc_global_badge: "Reusable",
   campaigns_players_plural: "players",
+  campaigns_players_singular: "player",
 };
 
 const campaigns = [
