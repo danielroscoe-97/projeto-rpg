@@ -91,9 +91,59 @@ export const CombatantRow = memo(function CombatantRow({
   const t = useTranslations("combat");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
+  // --- All hooks MUST be declared before any conditional return (React rules of hooks) ---
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
+  const [editingPlayerNotes, setEditingPlayerNotes] = useState(false);
+  const [editingDmNotes, setEditingDmNotes] = useState(false);
+  const [playerNotesValue, setPlayerNotesValue] = useState(combatant.player_notes);
+  const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
+  const [flash, setFlash] = useState<"damage" | "heal" | false>(false);
+  const [versionConfirmOpen, setVersionConfirmOpen] = useState(false);
+  const [inlineEditTarget, setInlineEditTarget] = useState<"current" | "max" | "initiative" | null>(null);
+  const [inlineHpValue, setInlineHpValue] = useState("");
+  const inlineEditRef = useRef<"current" | "max" | "initiative" | null>(null);
+  const prevHp = useRef(combatant.current_hp);
+
+  // Trigger red/green flash when current HP changes
+  useEffect(() => {
+    if (combatant.is_lair_action) return; // synthetic entry — no HP to flash
+    if (combatant.current_hp < prevHp.current) {
+      setFlash("damage");
+      const timer = setTimeout(() => setFlash(false), 800);
+      prevHp.current = combatant.current_hp;
+      return () => clearTimeout(timer);
+    }
+    if (combatant.current_hp > prevHp.current) {
+      setFlash("heal");
+      const timer = setTimeout(() => setFlash(false), 500);
+      prevHp.current = combatant.current_hp;
+      return () => clearTimeout(timer);
+    }
+    prevHp.current = combatant.current_hp;
+  }, [combatant.current_hp, combatant.is_lair_action]);
+
+  // Look up full monster data for stat block expansion
+  const fullMonster =
+    combatant.monster_id && combatant.ruleset_version
+      ? getMonsterById(combatant.monster_id, combatant.ruleset_version)
+      : undefined;
+  const canExpand = fullMonster !== undefined;
+  const isManualMonster = !combatant.monster_id && !combatant.is_player;
+  const canShowPartialStats = isManualMonster && (combatant.max_hp > 0 || combatant.ac > 0);
+
+  // Reset expansion if the monster data is no longer available (e.g. SRD reload)
+  useEffect(() => {
+    if (!canExpand && !canShowPartialStats) setIsExpanded(false);
+  }, [canExpand, canShowPartialStats]);
+
+  // Close any open panel when combatant is defeated
+  useEffect(() => {
+    if (combatant.is_defeated) setOpenPanel(null);
+  }, [combatant.is_defeated]);
+
   // --- Lair Action: special minimal row with expandable lair actions list ---
   if (combatant.is_lair_action) {
-    // Find all lair-capable monsters in combat to show their lair actions
     const lairMonsters: SrdMonster[] = [];
     if (allCombatants) {
       const seen = new Set<string>();
@@ -117,19 +167,6 @@ export const CombatantRow = memo(function CombatantRow({
     );
   }
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
-  const [editingPlayerNotes, setEditingPlayerNotes] = useState(false);
-  const [editingDmNotes, setEditingDmNotes] = useState(false);
-  const [playerNotesValue, setPlayerNotesValue] = useState(combatant.player_notes);
-  const [dmNotesValue, setDmNotesValue] = useState(combatant.dm_notes);
-  const [flash, setFlash] = useState<"damage" | "heal" | false>(false);
-  const [versionConfirmOpen, setVersionConfirmOpen] = useState(false);
-  const [inlineEditTarget, setInlineEditTarget] = useState<"current" | "max" | "initiative" | null>(null);
-  const [inlineHpValue, setInlineHpValue] = useState("");
-  const inlineEditRef = useRef<"current" | "max" | "initiative" | null>(null);
-  const prevHp = useRef(combatant.current_hp);
-
   /** Safely open an inline editor — clears stale value and tracks target via ref for blur guards. */
   const openInlineEdit = (target: "current" | "max" | "initiative", initialValue: string) => {
     inlineEditRef.current = target;
@@ -141,23 +178,6 @@ export const CombatantRow = memo(function CombatantRow({
     setInlineEditTarget(null);
     setInlineHpValue("");
   };
-
-  // Trigger red/green flash when current HP changes
-  useEffect(() => {
-    if (combatant.current_hp < prevHp.current) {
-      setFlash("damage");
-      const timer = setTimeout(() => setFlash(false), 800);
-      prevHp.current = combatant.current_hp;
-      return () => clearTimeout(timer);
-    }
-    if (combatant.current_hp > prevHp.current) {
-      setFlash("heal");
-      const timer = setTimeout(() => setFlash(false), 500);
-      prevHp.current = combatant.current_hp;
-      return () => clearTimeout(timer);
-    }
-    prevHp.current = combatant.current_hp;
-  }, [combatant.current_hp]);
 
   // HP bar: tiers calculated on normal HP only (immutable rule)
   const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
@@ -178,27 +198,7 @@ export const CombatantRow = memo(function CombatantRow({
     ? t(`hp_tooltip_dm`, { tier: t(hpTierTooltipKey), current: combatant.current_hp, max: combatant.max_hp })
     : undefined;
 
-  // Look up full monster data for stat block expansion
-  const fullMonster =
-    combatant.monster_id && combatant.ruleset_version
-      ? getMonsterById(combatant.monster_id, combatant.ruleset_version)
-      : undefined;
-  const canExpand = fullMonster !== undefined;
-
-  // A.8: Manual monsters (no SRD) — can show inline partial stats
-  const isManualMonster = !combatant.monster_id && !combatant.is_player;
-  const canShowPartialStats = isManualMonster && (combatant.max_hp > 0 || combatant.ac > 0);
   const isClickable = canExpand || canShowPartialStats;
-
-  // Reset expansion if the monster data is no longer available (e.g. SRD reload)
-  useEffect(() => {
-    if (!canExpand && !canShowPartialStats) setIsExpanded(false);
-  }, [canExpand, canShowPartialStats]);
-
-  // Close any open panel when combatant is defeated
-  useEffect(() => {
-    if (combatant.is_defeated) setOpenPanel(null);
-  }, [combatant.is_defeated]);
 
   const handleToggle = () => {
     if (isClickable) setIsExpanded((prev) => !prev);
@@ -931,6 +931,7 @@ function LairActionRow({
   onAdvanceTurn?: () => void;
   onRemoveCombatant?: (id: string) => void;
 }) {
+  const t = useTranslations("combat");
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -954,8 +955,8 @@ function LairActionRow({
         {/* Castle icon + label */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <span className="text-lg" aria-hidden>🏰</span>
-          <span className="font-semibold text-amber-200 text-sm">Lair Actions</span>
-          <span className="text-xs text-zinc-400 hidden sm:inline">— Initiative Count 20</span>
+          <span className="font-semibold text-amber-200 text-sm">{t("lair_actions_label")}</span>
+          <span className="text-xs text-zinc-400 hidden sm:inline">— {t("lair_actions_init_20")}</span>
           <span className="text-xs text-zinc-500 ml-1">{expanded ? "▾" : "▸"}</span>
         </div>
 
@@ -984,7 +985,7 @@ function LairActionRow({
 
       {/* Expanded: show lair actions from all lair-capable monsters */}
       <AnimatePresence>
-        {expanded && lairMonsters.length > 0 && (
+        {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -993,24 +994,28 @@ function LairActionRow({
             className="overflow-hidden"
           >
             <div className="px-4 pb-3 space-y-3 border-t border-amber-500/20 pt-2">
-              {lairMonsters.map((monster) => (
-                <div key={monster.id}>
-                  {lairMonsters.length > 1 && (
-                    <h5 className="text-xs font-bold text-amber-300 mb-1">{monster.name}</h5>
-                  )}
-                  {monster.lair_actions_intro && (
-                    <p className="text-xs text-zinc-400 italic mb-1.5">{monster.lair_actions_intro}</p>
-                  )}
-                  <ul className="space-y-1.5">
-                    {monster.lair_actions?.map((la, i) => (
-                      <li key={i} className="text-xs text-zinc-300">
-                        {la.name && <strong className="text-amber-200">{la.name}. </strong>}
-                        <span>{la.desc}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              {lairMonsters.length === 0 ? (
+                <p className="text-xs text-zinc-500 italic">{t("lair_no_monsters")}</p>
+              ) : (
+                lairMonsters.map((monster) => (
+                  <div key={monster.id}>
+                    {lairMonsters.length > 1 && (
+                      <h5 className="text-xs font-bold text-amber-300 mb-1">{monster.name}</h5>
+                    )}
+                    {monster.lair_actions_intro && (
+                      <p className="text-xs text-zinc-400 italic mb-1.5">{monster.lair_actions_intro}</p>
+                    )}
+                    <ul className="space-y-1.5">
+                      {monster.lair_actions?.map((la, i) => (
+                        <li key={i} className="text-xs text-zinc-300">
+                          {la.name && <strong className="text-amber-200">{la.name}. </strong>}
+                          <span>{la.desc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              )}
             </div>
           </motion.div>
         )}

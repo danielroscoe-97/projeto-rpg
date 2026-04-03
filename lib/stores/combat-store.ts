@@ -8,6 +8,8 @@ import {
 } from "@/lib/utils/initiative";
 import { saveCombatBackup } from "@/lib/stores/combat-persist";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
+import { cleanupOrphanedLairEntry, hasAnyLairMonster, hasLairActionEntry, createLairActionCombatant } from "@/lib/utils/lair-action";
+import { getMonsterById } from "@/lib/srd/srd-search";
 
 type CombatStore = EncounterState & CombatActions;
 
@@ -55,8 +57,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   removeCombatant: (id) =>
     set((state) => {
       const removed = state.combatants.find((c) => c.id === id);
+      const afterRemove = state.combatants.filter((c) => c.id !== id);
+      // Auto-remove orphaned lair action entry if no lair-capable monsters remain
+      const combatants = cleanupOrphanedLairEntry(afterRemove, getMonsterById);
       return {
-        combatants: state.combatants.filter((c) => c.id !== id),
+        combatants,
         removedCombatantNames: removed
           ? { ...state.removedCombatantNames, [id]: removed.name }
           : state.removedCombatantNames,
@@ -118,6 +123,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   },
 
   hydrateCombatants: (combatants) => {
+    // Re-create synthetic lair action entry if needed (it's not persisted to DB)
+    if (!hasLairActionEntry(combatants) && hasAnyLairMonster(combatants, getMonsterById)) {
+      const lairEntry = { ...createLairActionCombatant(), id: crypto.randomUUID() };
+      combatants = [...combatants, lairEntry];
+    }
     // Restore timer timestamps from localStorage only during active combat (survives page refresh)
     const { is_active } = get();
     let combatStartedAt: number | null = null;

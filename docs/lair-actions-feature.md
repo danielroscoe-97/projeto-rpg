@@ -131,17 +131,51 @@ Labels traduzidos em `PublicMonsterStatBlock.tsx`:
 - Clicavel para expandir/colapsar a lista de lair actions
 - Tema amber/dourado diferenciado do restante
 
+### Tie-breaking (D&D 5e)
+
+- `sortByInitiative()` em `lib/utils/initiative.ts` possui tiebreaker explicito
+- Lair actions com initiative 20 sao colocadas DEPOIS de combatants reais no mesmo initiative
+- `initiative_order: 999` como fallback adicional
+
+### Auto-cleanup (Orphaned Entry)
+
+- Quando o ultimo monstro com lair actions e removido do combate, a entrada e automaticamente removida
+- `cleanupOrphanedLairEntry()` verifica via `hasAnyLairMonster()` (exclui monstros defeated)
+- Integrado em `removeCombatant()` tanto no `combat-store` quanto no `guest-combat-store`
+
+### Persistencia (Client-Side Only)
+
+- A entrada sintetica **NAO** e persistida no Supabase (`is_lair_action` nao existe no DB schema)
+- `combat-sync.ts` filtra entries com `is_lair_action` antes de enviar ao DB
+- `hydrateCombatants()` re-cria a entrada automaticamente no reload se houver monstros com lair
+- Guest mode: persiste via localStorage (Zustand persist middleware)
+
+### i18n (Combat Tracker)
+
+Chaves no namespace `combat` em `messages/{locale}.json`:
+- `lair_actions_label` — "Lair Actions"
+- `lair_actions_init_20` — "Initiative Count 20"
+- `lair_actions_init_fixed` — "Init 20 (fixo)" / "Init 20 (fixed)"
+- `lair_no_monsters` — Mensagem de empty state quando expandido sem monstros com lair
+
 ### Arquivos
 
 ```
-lib/types/combat.ts          ← is_lair_action?: boolean no Combatant
-lib/utils/lair-action.ts     ← Helpers: hasLairActions, createLairActionCombatant
+lib/types/combat.ts              ← is_lair_action?: boolean no Combatant
+lib/utils/lair-action.ts         ← Helpers: hasLairActions, createLairActionCombatant,
+                                    cleanupOrphanedLairEntry, hasAnyLairMonster
+lib/utils/initiative.ts          ← Tiebreak para lair actions no sortByInitiative
+lib/stores/combat-store.ts       ← Cleanup em removeCombatant, re-create em hydrateCombatants
+lib/stores/guest-combat-store.ts ← Cleanup em removeCombatant
+lib/supabase/combat-sync.ts      ← Filtra lair entries antes de sync ao DB
 components/combat/
-  EncounterSetup.tsx          ← Auto-add em handleSelectMonster/Group
-  CombatantRow.tsx            ← LairActionRow component
-  CombatantSetupRow.tsx       ← Row especial no setup
+  EncounterSetup.tsx              ← Auto-add em handleSelectMonster/Group
+  CombatantRow.tsx                ← LairActionRow component (hooks-compliant, i18n, empty state)
+  CombatantSetupRow.tsx           ← Row especial no setup (i18n)
 components/guest/
-  GuestCombatClient.tsx       ← Mesma logica (parity Guest/Auth)
+  GuestCombatClient.tsx           ← Mesma logica (parity Guest/Auth)
+messages/pt-BR.json               ← Chaves i18n
+messages/en.json                  ← Chaves i18n
 ```
 
 ### Parity Rule
@@ -162,8 +196,7 @@ components/guest/
 
 ## Limitacoes Conhecidas
 
-- **Lair actions nao sao automatizadas no combate** — o DM escolhe e executa manualmente
-- **Nao ha automacao de initiative count 20** — a entrada aparece na ordem mas o DM resolve
+- **Lair actions nao sao automatizadas no combate** — o DM escolhe e executa manualmente (a entrada na initiative e informativa)
 - **Regional effects sao apenas informativos** — nao afetam mecanicamente o combate
 - **MAD monsters nao possuem lair data** — nao e padrao em homebrew
-- **A entrada de lair no DB (combatants table) nao persiste is_lair_action** — campo e client-side only
+- **A entrada sintetica nao persiste no DB** — `is_lair_action` e client-side only, re-criada no hydrate

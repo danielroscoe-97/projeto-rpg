@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import { sortByInitiative, assignInitiativeOrder } from "@/lib/utils/initiative";
+import { cleanupOrphanedLairEntry } from "@/lib/utils/lair-action";
+import { getMonsterById } from "@/lib/srd/srd-search";
 
 export type GuestCombatPhase = "setup" | "combat" | "ended";
 
@@ -189,9 +191,10 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
 
       removeCombatant: (id) => {
         if (guardExpired()) return;
-        set((state) => ({
-          combatants: state.combatants.filter((c) => c.id !== id),
-        }));
+        set((state) => {
+          const afterRemove = state.combatants.filter((c) => c.id !== id);
+          return { combatants: cleanupOrphanedLairEntry(afterRemove, getMonsterById) };
+        });
       },
 
       setInitiative: (id, value) => {

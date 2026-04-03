@@ -89,8 +89,16 @@ export function sortByInitiative(combatants: Combatant[]): Combatant[] {
     }
   }
 
-  // 3. Sort blocks descending by initiative (stable)
-  blocks.sort((a, b) => b.initiative - a.initiative);
+  // 3. Sort blocks descending by initiative (stable).
+  // D&D 5e: Lair actions at initiative 20 lose ties — placed after real combatants.
+  blocks.sort((a, b) => {
+    const diff = b.initiative - a.initiative;
+    if (diff !== 0) return diff;
+    // Tie-break: lair action entries go after real combatants at the same initiative
+    const aLair = a.members[0]?.is_lair_action ? 1 : 0;
+    const bLair = b.members[0]?.is_lair_action ? 1 : 0;
+    return aLair - bLair;
+  });
 
   // 4. Flatten back
   return blocks.flatMap((block) => block.members);

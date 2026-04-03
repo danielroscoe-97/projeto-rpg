@@ -27,7 +27,8 @@ export async function reconcileFullState(
   const supabase = createClient();
 
   try {
-    const rows = combatants.map((c) => ({
+    // Filter out synthetic lair action entries — they are client-side only
+    const rows = combatants.filter((c) => !c.is_lair_action).map((c) => ({
       id: c.id,
       encounter_id: encounterId,
       name: c.name,

@@ -80,8 +80,8 @@ export function CombatantSetupRow({
           20
         </div>
         <span className="text-lg" aria-hidden>🏰</span>
-        <span className="font-semibold text-amber-200 text-sm flex-1">Lair Actions</span>
-        <span className="text-xs text-zinc-400">Init 20 (fixed)</span>
+        <span className="font-semibold text-amber-200 text-sm flex-1">{t("lair_actions_label")}</span>
+        <span className="text-xs text-zinc-400">{t("lair_actions_init_fixed")}</span>
         <button
           onClick={() => onRemove(combatant.id)}
           className="text-zinc-500 hover:text-red-400 transition-colors text-xs px-1"
