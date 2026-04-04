@@ -1261,6 +1261,7 @@
     "recap_skip": "Pular animação",
     "recap_new_combat": "Novo Combate",
     "recap_save_and_signup": "Salvar resultados e criar campanha",
+    "recap_build_error": "Não foi possível gerar o relatório de combate. O combate foi reiniciado.",
     "recap_share_link": "Link",
     "recap_link_copied": "Link copiado! Cole no grupo pra compartilhar.",
     "recap_link_error": "Erro ao criar link. Tente novamente.",

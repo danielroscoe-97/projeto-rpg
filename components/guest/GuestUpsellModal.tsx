@@ -7,6 +7,14 @@ import { GoogleOAuthButton } from "@/components/auth/GoogleOAuthButton";
 
 export type UpsellTrigger = "save" | "export" | "player-link" | "weather" | "background";
 
+const TRIGGER_KEYS: Record<UpsellTrigger, { title: string; desc: string }> = {
+  save:          { title: "upsell_title_save",       desc: "upsell_description_save" },
+  export:        { title: "upsell_title",            desc: "upsell_description" },
+  "player-link": { title: "upsell_title_share",      desc: "upsell_description_share" },
+  weather:       { title: "upsell_title_weather",     desc: "upsell_description_weather" },
+  background:    { title: "upsell_title_background",  desc: "upsell_description_background" },
+};
+
 interface GuestUpsellModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -100,10 +108,10 @@ export function GuestUpsellModal({ isOpen, onClose, trigger, redirectTo }: Guest
             id="upsell-modal-title"
             className="font-display text-xl text-foreground"
           >
-            {trigger === "player-link" ? t("upsell_title_share") : trigger === "save" ? t("upsell_title_save") : trigger === "weather" ? t("upsell_title_weather") : trigger === "background" ? t("upsell_title_background") : t("upsell_title")}
+            {t(TRIGGER_KEYS[trigger].title)}
           </h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            {trigger === "player-link" ? t("upsell_description_share") : trigger === "save" ? t("upsell_description_save") : trigger === "weather" ? t("upsell_description_weather") : trigger === "background" ? t("upsell_description_background") : t("upsell_description")}
+            {t(TRIGGER_KEYS[trigger].desc)}
           </p>
           <p className="text-gold text-xs font-medium">
             {t("upsell_data_preserved")}

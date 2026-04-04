@@ -52,6 +52,10 @@ const ALLOWED_EVENTS = new Set([
   "guest:expired_cta_signup",
   "guest:expired_cta_reset",
   "guest:combat_imported",
+  "guest:combat_started",
+  "guest:combat_ended",
+  "guest:upsell_shown",
+  "guest:recap_save_signup",
 ]);
 
 // In-process rate limiter: 60 events/min per IP

@@ -1261,6 +1261,7 @@
     "recap_skip": "Skip animation",
     "recap_new_combat": "New Combat",
     "recap_save_and_signup": "Save results & create campaign",
+    "recap_build_error": "Could not generate combat report. Combat has been reset.",
     "recap_share_link": "Link",
     "recap_link_copied": "Link copied! Paste it in your group to share.",
     "recap_link_error": "Error creating link. Try again.",
