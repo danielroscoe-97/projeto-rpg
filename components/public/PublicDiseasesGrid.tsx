@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { SrdIconBiohazard } from "./SrdIcons";
 
 // -- Types --------------------------------------------------------------------
 interface DiseaseEntry {
@@ -35,35 +36,7 @@ const SOURCE_LABELS: Record<string, string> = {
   VRGR: "Van Richten's Guide to Ravenloft",
 };
 
-// -- Disease icons ------------------------------------------------------------
-const DISEASE_ICONS: Record<string, string> = {
-  "arcane blight": "\u{1F52E}",
-  "blinding sickness": "\u{1F441}\u{FE0F}",
-  "blue mist fever": "\u{1F32B}\u{FE0F}",
-  "bluerot": "\u{1F9EB}",
-  "cackle fever": "\u{1F923}",
-  "filth fever": "\u{1F922}",
-  "flesh rot": "\u{1FA78}",
-  "frigid woe": "\u{2744}\u{FE0F}",
-  "ghoul gut": "\u{1F47B}",
-  "grackle-lung": "\u{1FAB1}",
-  "lichen plague": "\u{1F33F}",
-  "mindfire": "\u{1F525}",
-  "mudpox": "\u{1F4A9}",
-  "redface": "\u{1F534}",
-  "saprophytic plague": "\u{1F344}",
-  "seizure": "\u{26A1}",
-  "sewer plague": "\u{1F400}",
-  "shaking plague": "\u{1F630}",
-  "shivering sickness": "\u{1F976}",
-  "sight rot": "\u{1F440}",
-  "slimy doom": "\u{1F9EA}",
-  "spider eggs": "\u{1F577}\u{FE0F}",
-  "super-tetanus": "\u{1FA79}",
-  "the gnawing plague": "\u{1F9DF}",
-  "the rusting": "\u{2699}\u{FE0F}",
-  "throat leeches": "\u{1F40D}",
-};
+// -- Disease icon (single generic icon for all diseases) ----------------------
 
 // -- PT-BR translations -------------------------------------------------------
 const DISEASE_NAMES_PT: Record<string, string> = {
@@ -193,7 +166,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
               onClick={() => setSearch("")}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-xs"
             >
-              ✕
+              &times;
             </button>
           )}
         </div>
@@ -209,7 +182,6 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((disease) => {
             const baseName = disease.name.toLowerCase();
-            const icon = DISEASE_ICONS[baseName] ?? "\u{1F9EA}";
             const displayName =
               locale === "pt-BR"
                 ? (DISEASE_NAMES_PT[baseName] ?? disease.name)
@@ -228,8 +200,8 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl shrink-0" role="img" aria-hidden>
-                    {icon}
+                  <span className="shrink-0 text-emerald-400" aria-hidden>
+                    <SrdIconBiohazard className="w-6 h-6" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">

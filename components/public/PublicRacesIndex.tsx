@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { SrdInitialCircle, SrdIconRuler, SrdIconBoot } from "./SrdIcons";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface RaceSummary {
@@ -43,13 +44,26 @@ const CARD_BORDER_COLORS: Record<string, string> = {
   ALL: "border-gray-700/50 hover:border-gray-600/50",
 };
 
+// ── Race accent colors ───────────────────────────────────────────
+const RACE_ACCENT: Record<string, string> = {
+  dwarf: "#DD6B20",
+  elf: "#38A169",
+  halfling: "#D69E2E",
+  human: "#A0AEC0",
+  dragonborn: "#E53E3E",
+  gnome: "#3182CE",
+  "half-elf": "#805AD5",
+  "half-orc": "#C53030",
+  tiefling: "#9F7AEA",
+};
+
 // ── SRD Race Data ─────────────────────────────────────────────────
 const RACES: RaceSummary[] = [
   {
     slug: "dwarf",
     nameEn: "Dwarf",
     namePt: "Anao",
-    icon: "\u26CF\uFE0F",
+    icon: "D",
     abilityBonuses: [{ ability: "CON", bonus: "+2" }],
     size: "Medium",
     speed: 25,
@@ -60,7 +74,7 @@ const RACES: RaceSummary[] = [
     slug: "elf",
     nameEn: "Elf",
     namePt: "Elfo",
-    icon: "\uD83E\uDDDD",
+    icon: "E",
     abilityBonuses: [{ ability: "DEX", bonus: "+2" }],
     size: "Medium",
     speed: 30,
@@ -71,7 +85,7 @@ const RACES: RaceSummary[] = [
     slug: "halfling",
     nameEn: "Halfling",
     namePt: "Halfling",
-    icon: "\uD83C\uDF40",
+    icon: "H",
     abilityBonuses: [{ ability: "DEX", bonus: "+2" }],
     size: "Small",
     speed: 25,
@@ -82,7 +96,7 @@ const RACES: RaceSummary[] = [
     slug: "human",
     nameEn: "Human",
     namePt: "Humano",
-    icon: "\uD83D\uDC64",
+    icon: "H",
     abilityBonuses: [{ ability: "ALL", bonus: "+1" }],
     size: "Medium",
     speed: 30,
@@ -93,7 +107,7 @@ const RACES: RaceSummary[] = [
     slug: "dragonborn",
     nameEn: "Dragonborn",
     namePt: "Draconato",
-    icon: "\uD83D\uDC09",
+    icon: "D",
     abilityBonuses: [
       { ability: "STR", bonus: "+2" },
       { ability: "CHA", bonus: "+1" },
@@ -107,7 +121,7 @@ const RACES: RaceSummary[] = [
     slug: "gnome",
     nameEn: "Gnome",
     namePt: "Gnomo",
-    icon: "\uD83D\uDD27",
+    icon: "G",
     abilityBonuses: [{ ability: "INT", bonus: "+2" }],
     size: "Small",
     speed: 25,
@@ -118,7 +132,7 @@ const RACES: RaceSummary[] = [
     slug: "half-elf",
     nameEn: "Half-Elf",
     namePt: "Meio-Elfo",
-    icon: "\uD83C\uDF19",
+    icon: "HE",
     abilityBonuses: [
       { ability: "CHA", bonus: "+2" },
       { ability: "ALL", bonus: "+1 x2" },
@@ -132,7 +146,7 @@ const RACES: RaceSummary[] = [
     slug: "half-orc",
     nameEn: "Half-Orc",
     namePt: "Meio-Orc",
-    icon: "\uD83D\uDCAA",
+    icon: "HO",
     abilityBonuses: [
       { ability: "STR", bonus: "+2" },
       { ability: "CON", bonus: "+1" },
@@ -146,7 +160,7 @@ const RACES: RaceSummary[] = [
     slug: "tiefling",
     nameEn: "Tiefling",
     namePt: "Tiefling",
-    icon: "\uD83D\uDE08",
+    icon: "T",
     abilityBonuses: [
       { ability: "CHA", bonus: "+2" },
       { ability: "INT", bonus: "+1" },
@@ -258,9 +272,11 @@ export function PublicRacesIndex({ locale = "en" }: PublicRacesIndexProps) {
             >
               {/* Icon + Name */}
               <div className="flex items-start gap-3 mb-3">
-                <span className="text-3xl shrink-0" role="img" aria-hidden>
-                  {race.icon}
-                </span>
+                <SrdInitialCircle
+                  letter={race.icon}
+                  color={RACE_ACCENT[race.slug]}
+                  className="w-10 h-10 text-base shrink-0"
+                />
                 <div className="min-w-0">
                   <h2 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-lg leading-tight group-hover:text-[#D4A853] transition-colors">
                     {displayName}
@@ -288,7 +304,7 @@ export function PublicRacesIndex({ locale = "en" }: PublicRacesIndexProps) {
               {/* Size + Speed row */}
               <div className="flex items-center gap-3 text-xs text-gray-400 mb-2">
                 <span className="flex items-center gap-1">
-                  <span aria-hidden>&#x1F4CF;</span>
+                  <SrdIconRuler className="w-3.5 h-3.5 text-gray-500" />
                   {race.size === "Small"
                     ? locale === "pt-BR"
                       ? L.small
@@ -298,7 +314,7 @@ export function PublicRacesIndex({ locale = "en" }: PublicRacesIndexProps) {
                       : "Medium"}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span aria-hidden>&#x1F97E;</span>
+                  <SrdIconBoot className="w-3.5 h-3.5 text-gray-500" />
                   {race.speed} {L.ft}
                 </span>
               </div>

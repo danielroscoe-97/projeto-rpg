@@ -1,6 +1,7 @@
 "use client";
 
 import type { SrdClass } from "@/lib/types/srd-class";
+import { SrdClassIcon } from "./SrdIcons";
 
 // ── Role colors (same as index) ──────────────────────────────────
 const ROLE_BADGE: Record<SrdClass["role"], { badge: string; label: string; labelPt: string }> = {
@@ -65,8 +66,8 @@ export function PublicClassDetail({ cls, locale = "en" }: PublicClassDetailProps
       {/* ── Hero section ────────────────────────────────────────── */}
       <div className="rounded-xl border border-white/[0.06] bg-gray-900/60 p-6 md:p-8">
         <div className="flex items-start gap-4">
-          <span className="text-5xl shrink-0" role="img" aria-hidden="true">
-            {cls.icon}
+          <span className="shrink-0 text-[#D4A853]" aria-hidden="true">
+            <SrdClassIcon iconName={cls.icon} className="w-12 h-12" />
           </span>
           <div className="min-w-0 flex-1">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] leading-tight">

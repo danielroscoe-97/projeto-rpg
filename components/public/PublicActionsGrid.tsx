@@ -1,6 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
+import {
+  SrdIconCrossedSwords,
+  SrdIconSparkle,
+  SrdIconRun,
+  SrdIconFlip,
+  SrdIconShield,
+  SrdIconHandshake,
+  SrdIconEyeOff,
+  SrdIconClock,
+  SrdIconSearch,
+  SrdIconBackpack,
+  SrdIconLightning,
+  SrdIconStopwatch,
+  SrdIconFootprints,
+  SrdIconDoor,
+  SrdIconSpeech,
+} from "./SrdIcons";
 
 // ── Types ─────────────────────────────────────────────────────────
 type Locale = "en" | "pt-BR";
@@ -9,7 +27,7 @@ type SectionId = "actions" | "bonus" | "reactions" | "other";
 
 interface ActionEntry {
   id: string;
-  icon: string;
+  icon: ReactNode;
   name: { en: string; "pt-BR": string };
   description: { en: string; "pt-BR": string };
   keyRule: { en: string; "pt-BR": string };
@@ -78,7 +96,7 @@ const ACTIONS: ActionEntry[] = [
   // ─── Main Actions ──────────────────────────────────────────────
   {
     id: "attack",
-    icon: "\u2694\uFE0F",
+    icon: <SrdIconCrossedSwords className="w-5 h-5" />,
     name: { en: "Attack", "pt-BR": "Atacar" },
     description: {
       en: "Make one melee or ranged attack. With the Extra Attack feature, you can make more than one attack with this action.",
@@ -96,7 +114,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "cast-a-spell",
-    icon: "\u2728",
+    icon: <SrdIconSparkle className="w-5 h-5" />,
     name: { en: "Cast a Spell", "pt-BR": "Conjurar uma Magia" },
     description: {
       en: "Cast a spell with a casting time of 1 action. Some spells require a bonus action or reaction instead.",
@@ -114,7 +132,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "dash",
-    icon: "\uD83C\uDFC3",
+    icon: <SrdIconRun className="w-5 h-5" />,
     name: { en: "Dash", "pt-BR": "Disparada" },
     description: {
       en: "Gain extra movement equal to your speed (after applying modifiers) for the current turn.",
@@ -132,7 +150,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "disengage",
-    icon: "\uD83E\uDD38",
+    icon: <SrdIconFlip className="w-5 h-5" />,
     name: { en: "Disengage", "pt-BR": "Desengajar" },
     description: {
       en: "Your movement doesn't provoke opportunity attacks for the rest of the turn.",
@@ -150,7 +168,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "dodge",
-    icon: "\uD83D\uDEE1\uFE0F",
+    icon: <SrdIconShield className="w-5 h-5" />,
     name: { en: "Dodge", "pt-BR": "Esquivar" },
     description: {
       en: "Until your next turn, attack rolls against you have disadvantage if you can see the attacker, and you make Dexterity saving throws with advantage.",
@@ -168,7 +186,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "help",
-    icon: "\uD83E\uDD1D",
+    icon: <SrdIconHandshake className="w-5 h-5" />,
     name: { en: "Help", "pt-BR": "Ajudar" },
     description: {
       en: "Give an ally advantage on their next ability check for a task, or advantage on their next attack roll against a creature within 5 feet of you.",
@@ -202,7 +220,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "hide",
-    icon: "\uD83D\uDE36\u200D\uD83C\uDF2B\uFE0F",
+    icon: <SrdIconEyeOff className="w-5 h-5" />,
     name: { en: "Hide", "pt-BR": "Esconder-se" },
     description: {
       en: "Make a Dexterity (Stealth) check to try to hide. If successful, you gain the benefits of being unseen.",
@@ -220,7 +238,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "ready",
-    icon: "\u23F3",
+    icon: <SrdIconClock className="w-5 h-5" />,
     name: { en: "Ready", "pt-BR": "Preparar" },
     description: {
       en: "Prepare an action to be triggered later. Specify the trigger circumstance and the action you'll take in response.",
@@ -238,7 +256,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "search",
-    icon: "\uD83D\uDD0D",
+    icon: <SrdIconSearch className="w-5 h-5" />,
     name: { en: "Search", "pt-BR": "Procurar" },
     description: {
       en: "Devote your attention to finding something. Make a Wisdom (Perception) check or an Intelligence (Investigation) check.",
@@ -272,7 +290,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "use-an-object",
-    icon: "\uD83C\uDF92",
+    icon: <SrdIconBackpack className="w-5 h-5" />,
     name: { en: "Use an Object", "pt-BR": "Usar um Objeto" },
     description: {
       en: "Interact with a second object on your turn, or use a special object feature such as a potion, magic item, or other equipment.",
@@ -292,7 +310,7 @@ const ACTIONS: ActionEntry[] = [
   // ─── Bonus Actions ────────────────────────────────────────────
   {
     id: "two-weapon-fighting",
-    icon: "\u2694\uFE0F",
+    icon: <SrdIconCrossedSwords className="w-5 h-5" />,
     name: { en: "Two-Weapon Fighting", "pt-BR": "Combate com Duas Armas" },
     description: {
       en: "When you take the Attack action with a light melee weapon, you can use a bonus action to attack with a different light melee weapon in the other hand.",
@@ -310,7 +328,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "bonus-action-spells",
-    icon: "\u2728",
+    icon: <SrdIconSparkle className="w-5 h-5" />,
     name: { en: "Bonus Action Spells", "pt-BR": "Magias de Ação Bônus" },
     description: {
       en: "Some spells have a casting time of 1 bonus action, such as Healing Word, Misty Step, and Spiritual Weapon.",
@@ -330,7 +348,7 @@ const ACTIONS: ActionEntry[] = [
   // ─── Reactions ─────────────────────────────────────────────────
   {
     id: "opportunity-attack",
-    icon: "\u26A1",
+    icon: <SrdIconLightning className="w-5 h-5" />,
     name: { en: "Opportunity Attack", "pt-BR": "Ataque de Oportunidade" },
     description: {
       en: "When a hostile creature you can see moves out of your reach, you can use your reaction to make one melee attack against it.",
@@ -348,7 +366,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "readied-action",
-    icon: "\u23F1\uFE0F",
+    icon: <SrdIconStopwatch className="w-5 h-5" />,
     name: { en: "Readied Action", "pt-BR": "Ação Preparada" },
     description: {
       en: "When the trigger you specified with the Ready action occurs, you can use your reaction to execute the readied action.",
@@ -366,7 +384,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "reaction-spells",
-    icon: "\u2728",
+    icon: <SrdIconSparkle className="w-5 h-5" />,
     name: { en: "Reaction Spells", "pt-BR": "Magias de Reação" },
     description: {
       en: "Some spells can be cast as a reaction, such as Shield and Counterspell, typically with a specific trigger.",
@@ -386,7 +404,7 @@ const ACTIONS: ActionEntry[] = [
   // ─── Other Activities ──────────────────────────────────────────
   {
     id: "movement",
-    icon: "\uD83D\uDC63",
+    icon: <SrdIconFootprints className="w-5 h-5" />,
     name: { en: "Movement", "pt-BR": "Movimento" },
     description: {
       en: "Move up to your speed on your turn. You can split movement before and after your action.",
@@ -404,7 +422,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "interact-with-object",
-    icon: "\uD83D\uDEAA",
+    icon: <SrdIconDoor className="w-5 h-5" />,
     name: { en: "Interact with Objects", "pt-BR": "Interagir com Objetos" },
     description: {
       en: "One free object interaction per turn, such as drawing a weapon, opening a door, or picking up a dropped item.",
@@ -422,7 +440,7 @@ const ACTIONS: ActionEntry[] = [
   },
   {
     id: "communicate",
-    icon: "\uD83D\uDCAC",
+    icon: <SrdIconSpeech className="w-5 h-5" />,
     name: { en: "Communicate", "pt-BR": "Comunicar-se" },
     description: {
       en: "Speak brief utterances and make gestures as you take your turn. Not limited to your turn.",
@@ -559,7 +577,7 @@ function ActionCard({
       style={{ borderLeftColor: sectionColor }}
     >
       <div className="flex items-start gap-3">
-        <span className="text-2xl shrink-0" role="img" aria-hidden>
+        <span className="shrink-0 text-[#D4A853]" aria-hidden>
           {action.icon}
         </span>
         <div className="min-w-0 flex-1">

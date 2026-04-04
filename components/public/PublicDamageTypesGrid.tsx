@@ -1,13 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
+import {
+  SrdIconDroplet,
+  SrdIconHammer,
+  SrdIconSnowflake,
+  SrdIconFlame,
+  SrdIconSparkle,
+  SrdIconLightning,
+  SrdIconMoon,
+  SrdIconDagger,
+  SrdIconVial,
+  SrdIconBrain,
+  SrdIconSun,
+  SrdIconSlash,
+  SrdIconExplosion,
+} from "./SrdIcons";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface DamageTypeEntry {
   id: string;
   nameEn: string;
   namePt: string;
-  emoji: string;
+  icon: ReactNode;
   color: string;
   group: "physical" | "elemental" | "magical";
   descriptionEn: string;
@@ -30,7 +46,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "acid",
     nameEn: "Acid",
     namePt: "Acido",
-    emoji: "\uD83E\uDDEA",
+    icon: <SrdIconDroplet className="w-6 h-6" />,
     color: "#68D391",
     group: "elemental",
     descriptionEn:
@@ -58,7 +74,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "bludgeoning",
     nameEn: "Bludgeoning",
     namePt: "Contundente",
-    emoji: "\uD83D\uDD28",
+    icon: <SrdIconHammer className="w-6 h-6" />,
     color: "#A0AEC0",
     group: "physical",
     descriptionEn:
@@ -88,7 +104,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "cold",
     nameEn: "Cold",
     namePt: "Frio",
-    emoji: "\u2744\uFE0F",
+    icon: <SrdIconSnowflake className="w-6 h-6" />,
     color: "#63B3ED",
     group: "elemental",
     descriptionEn:
@@ -116,7 +132,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "fire",
     nameEn: "Fire",
     namePt: "Fogo",
-    emoji: "\uD83D\uDD25",
+    icon: <SrdIconFlame className="w-6 h-6" />,
     color: "#F56565",
     group: "elemental",
     descriptionEn:
@@ -146,7 +162,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "force",
     nameEn: "Force",
     namePt: "Forca",
-    emoji: "\u2728",
+    icon: <SrdIconSparkle className="w-6 h-6" />,
     color: "#B794F4",
     group: "magical",
     descriptionEn:
@@ -174,7 +190,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "lightning",
     nameEn: "Lightning",
     namePt: "Relampago",
-    emoji: "\u26A1",
+    icon: <SrdIconLightning className="w-6 h-6" />,
     color: "#ECC94B",
     group: "elemental",
     descriptionEn:
@@ -202,7 +218,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "necrotic",
     nameEn: "Necrotic",
     namePt: "Necrotico",
-    emoji: "\uD83D\uDC80",
+    icon: <SrdIconMoon className="w-6 h-6" />,
     color: "#A0AEC0",
     group: "magical",
     descriptionEn:
@@ -230,7 +246,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "piercing",
     nameEn: "Piercing",
     namePt: "Perfurante",
-    emoji: "\uD83D\uDDE1\uFE0F",
+    icon: <SrdIconDagger className="w-6 h-6" />,
     color: "#A0AEC0",
     group: "physical",
     descriptionEn:
@@ -258,7 +274,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "poison",
     nameEn: "Poison",
     namePt: "Veneno",
-    emoji: "\u2620\uFE0F",
+    icon: <SrdIconVial className="w-6 h-6" />,
     color: "#48BB78",
     group: "elemental",
     descriptionEn:
@@ -288,7 +304,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "psychic",
     nameEn: "Psychic",
     namePt: "Psiquico",
-    emoji: "\uD83E\uDDE0",
+    icon: <SrdIconBrain className="w-6 h-6" />,
     color: "#D53F8C",
     group: "magical",
     descriptionEn:
@@ -316,7 +332,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "radiant",
     nameEn: "Radiant",
     namePt: "Radiante",
-    emoji: "\u2600\uFE0F",
+    icon: <SrdIconSun className="w-6 h-6" />,
     color: "#F6E05E",
     group: "magical",
     descriptionEn:
@@ -344,7 +360,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "slashing",
     nameEn: "Slashing",
     namePt: "Cortante",
-    emoji: "\u2694\uFE0F",
+    icon: <SrdIconSlash className="w-6 h-6" />,
     color: "#A0AEC0",
     group: "physical",
     descriptionEn:
@@ -372,7 +388,7 @@ const DAMAGE_TYPES: DamageTypeEntry[] = [
     id: "thunder",
     nameEn: "Thunder",
     namePt: "Trovao",
-    emoji: "\uD83D\uDCA5",
+    icon: <SrdIconExplosion className="w-6 h-6" />,
     color: "#76E4F7",
     group: "magical",
     descriptionEn:
@@ -543,8 +559,8 @@ export function PublicDamageTypesGrid({
             >
               {/* Card header */}
               <div className="flex items-start gap-3">
-                <span className="text-2xl shrink-0" role="img" aria-hidden>
-                  {dt.emoji}
+                <span className="shrink-0" style={{ color: dt.color }} aria-hidden>
+                  {dt.icon}
                 </span>
                 <div className="min-w-0 flex-1">
                   <h3 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-base">

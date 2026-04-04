@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SrdInitialCircle, SrdIconRuler, SrdIconBoot, SrdIconEye, SrdIconSpeech } from "./SrdIcons";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface Trait {
@@ -78,13 +79,26 @@ const LABELS = {
   },
 } as const;
 
+// ── Race accent colors ───────────────────────────────────────────
+const RACE_ACCENT: Record<string, string> = {
+  dwarf: "#DD6B20",
+  elf: "#38A169",
+  halfling: "#D69E2E",
+  human: "#A0AEC0",
+  dragonborn: "#E53E3E",
+  gnome: "#3182CE",
+  "half-elf": "#805AD5",
+  "half-orc": "#C53030",
+  tiefling: "#9F7AEA",
+};
+
 // ── Complete SRD Race Data ────────────────────────────────────────
 const RACE_DATA: Record<string, RaceData> = {
   dwarf: {
     slug: "dwarf",
     nameEn: "Dwarf",
     namePt: "Anao",
-    icon: "\u26CF\uFE0F",
+    icon: "D",
     abilityBonuses: [{ ability: "CON", bonus: "+2" }],
     size: "Medium",
     speed: 25,
@@ -145,7 +159,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "elf",
     nameEn: "Elf",
     namePt: "Elfo",
-    icon: "\uD83E\uDDDD",
+    icon: "E",
     abilityBonuses: [{ ability: "DEX", bonus: "+2" }],
     size: "Medium",
     speed: 30,
@@ -220,7 +234,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "halfling",
     nameEn: "Halfling",
     namePt: "Halfling",
-    icon: "\uD83C\uDF40",
+    icon: "H",
     abilityBonuses: [{ ability: "DEX", bonus: "+2" }],
     size: "Small",
     speed: 25,
@@ -273,7 +287,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "human",
     nameEn: "Human",
     namePt: "Humano",
-    icon: "\uD83D\uDC64",
+    icon: "H",
     abilityBonuses: [{ ability: "ALL", bonus: "+1" }],
     size: "Medium",
     speed: 30,
@@ -304,7 +318,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "dragonborn",
     nameEn: "Dragonborn",
     namePt: "Draconato",
-    icon: "\uD83D\uDC09",
+    icon: "D",
     abilityBonuses: [
       { ability: "STR", bonus: "+2" },
       { ability: "CHA", bonus: "+1" },
@@ -346,7 +360,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "gnome",
     nameEn: "Gnome",
     namePt: "Gnomo",
-    icon: "\uD83D\uDD27",
+    icon: "G",
     abilityBonuses: [{ ability: "INT", bonus: "+2" }],
     size: "Small",
     speed: 25,
@@ -399,7 +413,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "half-elf",
     nameEn: "Half-Elf",
     namePt: "Meio-Elfo",
-    icon: "\uD83C\uDF19",
+    icon: "HE",
     abilityBonuses: [
       { ability: "CHA", bonus: "+2" },
       { ability: "ALL", bonus: "+1 x2" },
@@ -441,7 +455,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "half-orc",
     nameEn: "Half-Orc",
     namePt: "Meio-Orc",
-    icon: "\uD83D\uDCAA",
+    icon: "HO",
     abilityBonuses: [
       { ability: "STR", bonus: "+2" },
       { ability: "CON", bonus: "+1" },
@@ -491,7 +505,7 @@ const RACE_DATA: Record<string, RaceData> = {
     slug: "tiefling",
     nameEn: "Tiefling",
     namePt: "Tiefling",
-    icon: "\uD83D\uDE08",
+    icon: "T",
     abilityBonuses: [
       { ability: "CHA", bonus: "+2" },
       { ability: "INT", bonus: "+1" },
@@ -589,9 +603,11 @@ export function PublicRaceDetail({
     <div className="space-y-8">
       {/* Hero section */}
       <div className="flex flex-col sm:flex-row items-start gap-4">
-        <span className="text-5xl" role="img" aria-hidden>
-          {race.icon}
-        </span>
+        <SrdInitialCircle
+          letter={race.icon}
+          color={RACE_ACCENT[race.slug]}
+          className="w-14 h-14 text-2xl shrink-0"
+        />
         <div className="min-w-0">
           <h1 className="text-3xl md:text-4xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">
             {displayName}
@@ -619,8 +635,8 @@ export function PublicRaceDetail({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {/* Size */}
         <div className="rounded-lg border border-white/[0.06] bg-gray-900/50 p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">
-            &#x1F4CF; {L.size}
+          <div className="text-xs text-gray-500 mb-1 flex items-center justify-center gap-1">
+            <SrdIconRuler className="w-3.5 h-3.5" /> {L.size}
           </div>
           <div className="text-sm font-semibold text-gray-200">
             {race.size === "Small" ? L.small : L.medium}
@@ -628,8 +644,8 @@ export function PublicRaceDetail({
         </div>
         {/* Speed */}
         <div className="rounded-lg border border-white/[0.06] bg-gray-900/50 p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">
-            &#x1F97E; {L.speed}
+          <div className="text-xs text-gray-500 mb-1 flex items-center justify-center gap-1">
+            <SrdIconBoot className="w-3.5 h-3.5" /> {L.speed}
           </div>
           <div className="text-sm font-semibold text-gray-200">
             {race.speed} {L.ft}
@@ -637,8 +653,8 @@ export function PublicRaceDetail({
         </div>
         {/* Darkvision */}
         <div className="rounded-lg border border-white/[0.06] bg-gray-900/50 p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">
-            &#x1F441;\uFE0F {L.darkvision}
+          <div className="text-xs text-gray-500 mb-1 flex items-center justify-center gap-1">
+            <SrdIconEye className="w-3.5 h-3.5" /> {L.darkvision}
           </div>
           <div className="text-sm font-semibold text-gray-200">
             {race.darkvision ? `${race.darkvision} ${L.ft}` : L.none}
@@ -646,8 +662,8 @@ export function PublicRaceDetail({
         </div>
         {/* Languages */}
         <div className="rounded-lg border border-white/[0.06] bg-gray-900/50 p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">
-            &#x1F4AC; {L.languages}
+          <div className="text-xs text-gray-500 mb-1 flex items-center justify-center gap-1">
+            <SrdIconSpeech className="w-3.5 h-3.5" /> {L.languages}
           </div>
           <div className="text-sm font-semibold text-gray-200">
             {locale === "pt-BR" ? race.languagesPt : race.languagesEn}

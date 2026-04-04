@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { SrdClass } from "@/lib/types/srd-class";
+import { SrdClassIcon } from "./SrdIcons";
 
 // ── Role colors ──────────────────────────────────────────────────
 const ROLE_STYLES: Record<SrdClass["role"], { border: string; badge: string; label: string; labelPt: string }> = {
@@ -110,8 +111,8 @@ export function PublicClassesIndex({ classes, locale = "en" }: PublicClassesInde
             >
               {/* Icon + Name row */}
               <div className="flex items-start gap-3 mb-3">
-                <span className="text-3xl shrink-0" role="img" aria-hidden="true">
-                  {cls.icon}
+                <span className="shrink-0 text-[#D4A853]" aria-hidden="true">
+                  <SrdClassIcon iconName={cls.icon} className="w-8 h-8" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <h2 className="font-bold text-gray-100 font-[family-name:var(--font-cinzel)] text-lg leading-tight">

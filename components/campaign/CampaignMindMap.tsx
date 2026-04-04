@@ -1354,9 +1354,9 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           return (
             <div className="space-y-1">
               <p className="font-semibold text-blue-300">{d.label as string}</p>
-              {d.noteTypeLabel && (
+              {(d.noteTypeLabel as string) ? (
                 <p className="text-muted-foreground">{d.noteTypeLabel as string}</p>
-              )}
+              ) : null}
               <p className={d.isShared ? "text-blue-300" : "text-gray-400"}>
                 {d.isShared ? t("tooltip_shared") : t("tooltip_private")}
               </p>
@@ -1366,9 +1366,9 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           return (
             <div className="space-y-1">
               <p className="font-semibold text-emerald-300">{d.label as string}</p>
-              {d.characterName && (
+              {(d.characterName as string) ? (
                 <p className="text-emerald-300/60">{d.characterName as string}</p>
-              )}
+              ) : null}
             </div>
           );
         case "session":

@@ -14,7 +14,7 @@
     "description_pt": "Guerreiros ferozes que canalizam fúria primal para alimentar ataques devastadores.",
     "spellcaster": false,
     "spellcasting_ability": null,
-    "icon": "⚔️",
+    "icon": "crossed-swords",
     "role": "martial"
   },
   {
@@ -32,7 +32,7 @@
     "description_pt": "Artistas versáteis que tecem magia por meio de palavras e música.",
     "spellcaster": true,
     "spellcasting_ability": "CHA",
-    "icon": "🎵",
+    "icon": "music",
     "role": "support"
   },
   {
@@ -50,7 +50,7 @@
     "description_pt": "Agentes divinos que canalizam o poder de sua divindade.",
     "spellcaster": true,
     "spellcasting_ability": "WIS",
-    "icon": "⛪",
+    "icon": "cross",
     "role": "support"
   },
   {
@@ -68,7 +68,7 @@
     "description_pt": "Guardiões da natureza que empunham magia elemental e primal.",
     "spellcaster": true,
     "spellcasting_ability": "WIS",
-    "icon": "🌿",
+    "icon": "leaf",
     "role": "caster"
   },
   {
@@ -86,7 +86,7 @@
     "description_pt": "Mestres do combate marcial, treinados com todas as armas e armaduras.",
     "spellcaster": false,
     "spellcasting_ability": null,
-    "icon": "🛡️",
+    "icon": "shield",
     "role": "martial"
   },
   {
@@ -104,7 +104,7 @@
     "description_pt": "Artistas marciais que dominam a energia interior do corpo como ki.",
     "spellcaster": false,
     "spellcasting_ability": null,
-    "icon": "👊",
+    "icon": "fist",
     "role": "martial"
   },
   {
@@ -122,7 +122,7 @@
     "description_pt": "Guerreiros sagrados vinculados por juramentos sagrados para combater o mal.",
     "spellcaster": true,
     "spellcasting_ability": "CHA",
-    "icon": "⚜️",
+    "icon": "fleur-de-lis",
     "role": "half-caster"
   },
   {
@@ -140,7 +140,7 @@
     "description_pt": "Guerreiros da natureza que rastreiam e caçam inimigos.",
     "spellcaster": true,
     "spellcasting_ability": "WIS",
-    "icon": "🏹",
+    "icon": "bow",
     "role": "half-caster"
   },
   {
@@ -158,7 +158,7 @@
     "description_pt": "Infiltradores habilidosos que atacam com precisão e astúcia.",
     "spellcaster": false,
     "spellcasting_ability": null,
-    "icon": "🗡️",
+    "icon": "dagger",
     "role": "martial"
   },
   {
@@ -176,7 +176,7 @@
     "description_pt": "Conjuradores inatos cuja magia flui de dentro.",
     "spellcaster": true,
     "spellcasting_ability": "CHA",
-    "icon": "🔮",
+    "icon": "crystal",
     "role": "caster"
   },
   {
@@ -194,7 +194,7 @@
     "description_pt": "Conjuradores que obtêm poder de um pacto com um patrono sobrenatural.",
     "spellcaster": true,
     "spellcasting_ability": "CHA",
-    "icon": "😈",
+    "icon": "flame",
     "role": "caster"
   },
   {
@@ -212,7 +212,7 @@
     "description_pt": "Magos estudiosos que estudam textos arcanos para desbloquear magia poderosa.",
     "spellcaster": true,
     "spellcasting_ability": "INT",
-    "icon": "📖",
+    "icon": "book",
     "role": "caster"
   }
 ]

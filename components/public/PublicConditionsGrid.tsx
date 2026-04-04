@@ -1,6 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
+import {
+  SrdIconEye,
+  SrdIconHeart,
+  SrdIconEar,
+  SrdIconSleepZz,
+  SrdIconGhost,
+  SrdIconFist,
+  SrdIconStop,
+  SrdIconEyeOff,
+  SrdIconLightning,
+  SrdIconStone,
+  SrdIconSkull,
+  SrdIconProneBody,
+  SrdIconChain,
+  SrdIconDizzy,
+} from "./SrdIcons";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface ConditionEntry {
@@ -37,22 +54,22 @@ const CATEGORY_MAP: Record<string, CategoryFilter> = {
   exhaustion: "debuff",
 };
 
-const CONDITION_ICONS: Record<string, string> = {
-  blinded: "\u{1F441}\u{FE0F}",
-  charmed: "\u{1F496}",
-  deafened: "\u{1F442}",
-  exhaustion: "\u{1F4A4}",
-  frightened: "\u{1F47B}",
-  grappled: "\u{270A}",
-  incapacitated: "\u{26D4}",
-  invisible: "\u{1F47D}",
-  paralyzed: "\u{26A1}",
-  petrified: "\u{1FAA8}",
-  poisoned: "\u{2620}\u{FE0F}",
-  prone: "\u{1F938}",
-  restrained: "\u{26D3}\u{FE0F}",
-  stunned: "\u{1F4AB}",
-  unconscious: "\u{1F634}",
+const CONDITION_ICONS: Record<string, ReactNode> = {
+  blinded: <SrdIconEye className="w-6 h-6" />,
+  charmed: <SrdIconHeart className="w-6 h-6" />,
+  deafened: <SrdIconEar className="w-6 h-6" />,
+  exhaustion: <SrdIconSleepZz className="w-6 h-6" />,
+  frightened: <SrdIconGhost className="w-6 h-6" />,
+  grappled: <SrdIconFist className="w-6 h-6" />,
+  incapacitated: <SrdIconStop className="w-6 h-6" />,
+  invisible: <SrdIconEyeOff className="w-6 h-6" />,
+  paralyzed: <SrdIconLightning className="w-6 h-6" />,
+  petrified: <SrdIconStone className="w-6 h-6" />,
+  poisoned: <SrdIconSkull className="w-6 h-6" />,
+  prone: <SrdIconProneBody className="w-6 h-6" />,
+  restrained: <SrdIconChain className="w-6 h-6" />,
+  stunned: <SrdIconDizzy className="w-6 h-6" />,
+  unconscious: <SrdIconSleepZz className="w-6 h-6" />,
 };
 
 const CONDITION_NAMES_PT: Record<string, string> = {
@@ -248,7 +265,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {filtered.map((cond) => {
           const baseName = cond.name.toLowerCase();
-          const icon = CONDITION_ICONS[baseName] ?? "⚔️";
+          const icon = CONDITION_ICONS[baseName] ?? <SrdIconSkull className="w-6 h-6" />;
           const displayName = locale === "pt-BR" ? (CONDITION_NAMES_PT[baseName] ?? cond.name) : cond.name;
           const isExpanded = expanded === cond.id;
           const cat = CATEGORY_MAP[baseName] ?? "debuff";
@@ -270,7 +287,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
               }`}
             >
               <div className="flex items-start gap-3">
-                <span className="text-2xl shrink-0" role="img" aria-hidden>
+                <span className="shrink-0 text-[#D4A853]" aria-hidden>
                   {icon}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -303,7 +320,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
       {(filter === "all" || filter === "debuff") && (
         <div className="mt-8 rounded-xl border border-red-900/30 bg-gray-900/50 p-5">
           <h2 className="text-xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] mb-4 flex items-center gap-2">
-            <span>💤</span>
+            <SrdIconSleepZz className="w-5 h-5 text-[#D4A853]" />
             {L.exhaustionLevels}
             <span className="text-xs font-normal text-gray-500 ml-2">{version}</span>
           </h2>

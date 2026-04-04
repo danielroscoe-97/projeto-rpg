@@ -1,6 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
+import {
+  SrdIconMuscle,
+  SrdIconRun,
+  SrdIconHeart,
+  SrdIconBrain,
+  SrdIconEye,
+  SrdIconSparkle,
+} from "./SrdIcons";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface PublicAbilityScoresGridProps {
@@ -13,7 +22,7 @@ interface AbilityScore {
   namePT: string;
   abbrEN: string;
   abbrPT: string;
-  icon: string;
+  icon: ReactNode;
   color: string;
   colorBg: string;
   colorBorder: string;
@@ -35,7 +44,7 @@ const ABILITIES: AbilityScore[] = [
     namePT: "Forca",
     abbrEN: "STR",
     abbrPT: "FOR",
-    icon: "\uD83D\uDCAA",
+    icon: <SrdIconMuscle className="w-8 h-8" />,
     color: "#E53E3E",
     colorBg: "rgba(229,62,62,0.08)",
     colorBorder: "rgba(229,62,62,0.25)",
@@ -68,7 +77,7 @@ const ABILITIES: AbilityScore[] = [
     namePT: "Destreza",
     abbrEN: "DEX",
     abbrPT: "DES",
-    icon: "\uD83C\uDFC3",
+    icon: <SrdIconRun className="w-8 h-8" />,
     color: "#38A169",
     colorBg: "rgba(56,161,105,0.08)",
     colorBorder: "rgba(56,161,105,0.25)",
@@ -101,7 +110,7 @@ const ABILITIES: AbilityScore[] = [
     namePT: "Constituicao",
     abbrEN: "CON",
     abbrPT: "CON",
-    icon: "\u2764\uFE0F",
+    icon: <SrdIconHeart className="w-8 h-8" />,
     color: "#DD6B20",
     colorBg: "rgba(221,107,32,0.08)",
     colorBorder: "rgba(221,107,32,0.25)",
@@ -134,7 +143,7 @@ const ABILITIES: AbilityScore[] = [
     namePT: "Inteligencia",
     abbrEN: "INT",
     abbrPT: "INT",
-    icon: "\uD83E\uDDE0",
+    icon: <SrdIconBrain className="w-8 h-8" />,
     color: "#3182CE",
     colorBg: "rgba(49,130,206,0.08)",
     colorBorder: "rgba(49,130,206,0.25)",
@@ -167,7 +176,7 @@ const ABILITIES: AbilityScore[] = [
     namePT: "Sabedoria",
     abbrEN: "WIS",
     abbrPT: "SAB",
-    icon: "\uD83D\uDC41\uFE0F",
+    icon: <SrdIconEye className="w-8 h-8" />,
     color: "#805AD5",
     colorBg: "rgba(128,90,213,0.08)",
     colorBorder: "rgba(128,90,213,0.25)",
@@ -200,7 +209,7 @@ const ABILITIES: AbilityScore[] = [
     namePT: "Carisma",
     abbrEN: "CHA",
     abbrPT: "CAR",
-    icon: "\u2728",
+    icon: <SrdIconSparkle className="w-8 h-8" />,
     color: "#D69E2E",
     colorBg: "rgba(214,158,46,0.08)",
     colorBorder: "rgba(214,158,46,0.25)",
@@ -450,7 +459,7 @@ export function PublicAbilityScoresGrid({
             >
               {/* Header */}
               <div className="flex items-start gap-3">
-                <span className="text-3xl shrink-0" role="img" aria-hidden>
+                <span className="shrink-0" style={{ color: ability.color }} aria-hidden>
                   {ability.icon}
                 </span>
                 <div className="min-w-0 flex-1">
