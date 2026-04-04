@@ -137,7 +137,9 @@ export function PlayerCampaignCard({
         {/* Footer */}
         <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
           <span>
-            {t.playerCount.replace("{count}", String(membership.player_count))}
+            {membership.player_count === 1
+              ? `1 jogador`
+              : `${membership.player_count} jogadores`}
           </span>
           {!hasActiveSession && <span>{t.noActiveSession}</span>}
         </div>

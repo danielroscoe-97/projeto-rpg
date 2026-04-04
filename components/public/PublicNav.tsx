@@ -74,7 +74,7 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
     <nav className="border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40 shadow-[0_1px_0_rgba(212,168,83,0.06)]">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
         {/* Left: logo + breadcrumbs */}
-        <div className="flex items-center gap-3 min-w-0 overflow-hidden">
+        <div className="flex items-center gap-3 min-w-0 overflow-hidden max-w-[55%] md:max-w-[45%]">
           <Link
             href="/"
             className="flex items-center gap-2 group shrink-0"
@@ -90,7 +90,7 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
               {crumb.href ? (
                 <Link
                   href={crumb.href}
-                  className="text-gray-400 hover:text-gray-200 text-sm transition-colors whitespace-nowrap"
+                  className="text-gray-400 hover:text-gray-200 text-sm transition-colors truncate max-w-[150px]"
                 >
                   {crumb.label}
                 </Link>
