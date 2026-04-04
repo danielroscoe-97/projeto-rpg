@@ -143,3 +143,24 @@ O prompt da sessao listava estes itens como pendentes, mas a verificacao confirm
 | `app/api/campaign/[id]/invites/route.ts` | Disparo de email via Novu (F-44) |
 | `messages/en.json` | Chaves para pausa, trend, e convite por email |
 | `messages/pt-BR.json` | Idem em portugues |
+
+---
+
+## Itens NAO Feitos (pendentes para proxima sessao)
+
+| # | Item | Esforco | Onde esta documentado |
+|---|------|---------|----------------------|
+| **BUG-T3-05** | og:image per-page para spells/monsters — preview de link generico em vez de especifico | ~2h | `docs/bucket-future-ideas.md` (Tech Debt) |
+| **Demo video** | `public/video/pocket-dm-demo.html` pode precisar update com features novas (CTA, pause, Player HQ) | ~1h | `docs/bucket-future-ideas.md` (F-45) |
+| **NOVU_API_KEY** | F-44 esta wired mas precisa do `NOVU_API_KEY` no `.env` de producao + workflow criado no dashboard Novu | Config | Nao requer codigo — apenas setup de infra |
+
+---
+
+## Code Review — Bugs Encontrados e Corrigidos
+
+| # | Bug | Severidade | Fix |
+|---|-----|-----------|-----|
+| 1 | HP sync: per-row update errors silenciados | LOW | Adicionado `console.warn` por row |
+| 2 | `advanceTurn` durante pausa acumulava tempo de break | MEDIUM | Usa `pausedAt` em vez de `Date.now()` quando pausado |
+| 3 | End-combat duration incluia tempo de pausa ativa | MEDIUM | Subtrai pausa ativa do calculo de duracao |
+| 4 | `advanceTurn` nao auto-despausava timers | LOW | Auto-unpause em `advanceTurn` (auth + guest) |

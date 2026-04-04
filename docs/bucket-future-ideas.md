@@ -118,6 +118,8 @@
 |---|------|--------|-------|
 | F-31 | Hardcoded colors cleanup (TD10) | prd-v2.md Backlog | Severidade baixa |
 | F-32 | E2E tests coverage (TD11) | prd-v2.md Backlog | Severidade baixa |
+| BUG-T3-05 | og:image per-page para spells/monsters detail pages | Session 2026-04-06 | ~2h. Ambas as paginas usam og:image generico. Gerar OG dinamico com nome/tipo/CR. Baixa prioridade, cosmético/SEO |
+| F-45 | Demo video update (`public/video/pocket-dm-demo.html`) | Session 2026-04-06 | HTML/CSS slideshow animado, pode precisar refresh com features novas (CTA, pause, Player HQ) |
 
 ---
 
