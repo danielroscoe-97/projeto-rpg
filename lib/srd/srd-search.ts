@@ -43,7 +43,8 @@ const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
     { name: "classes", weight: 0.2 },
     { name: "school", weight: 0.2 },
   ],
-  threshold: 0.3,
+  threshold: 0.35,
+  ignoreLocation: true,
   includeScore: true,
   minMatchCharLength: 2,
 };

@@ -70,6 +70,9 @@ export const SPELL_TIERS: Record<string, TierInfo> = {
   "feather-fall":       { tier: "C", reason: "Reaction that prevents fall damage — critical when needed, completely useless otherwise." },
   "longstrider":        { tier: "C", reason: "Adds 10 feet of speed for 1 hour. Useful but usually outshone by other options." },
   "ray-of-frost":       { tier: "C", reason: "Reduces speed by 10 feet. Decent early, unreliable vs high-HP enemies later." },
+  "fire-bolt":          { tier: "C", reason: "Best damage cantrip — 1d10 fire at 120 feet. Held back only by common fire resistance/immunity." },
+  "sacred-flame":       { tier: "C", reason: "Deals radiant damage which few creatures resist. Ignores cover, making it reliably useful." },
+  "prestidigitation":   { tier: "B", reason: "Staggering utility spell with countless creative uses. More valuable to creative players." },
 
   // ── D Tier ────────────────────────────────────────────────────────
   "gust-of-wind":       { tier: "D", reason: "Pushes creatures and clears gas, but the 60ft cone shape makes it awkward. Highly situational." },
@@ -78,12 +81,9 @@ export const SPELL_TIERS: Record<string, TierInfo> = {
   "friends":            { tier: "D", reason: "Disadvantage on Charisma checks after it ends makes targets hostile. Often creates more problems than it solves." },
   "acid-splash":        { tier: "D", reason: "Low damage with a Dexterity save. Better cantrips exist for pure damage dealing." },
   "dancing-lights":     { tier: "D", reason: "Light utility exists in many better forms. Requires concentration, limiting its value." },
-  "true-strike":        { tier: "D", reason: "Burns an action and concentration to gain advantage on your NEXT attack. Almost always worse than just attacking." },
 
   // ── E Tier ────────────────────────────────────────────────────────
-  "fire-bolt":          { tier: "C", reason: "Best damage cantrip — 1d10 fire at 120 feet. Held back only by common fire resistance/immunity." },
-  "sacred-flame":       { tier: "C", reason: "Deals radiant damage which few creatures resist. Ignores cover, making it reliably useful." },
-  "prestidigitation":   { tier: "B", reason: "Staggering utility spell with countless creative uses. More valuable to creative players." },
+  "true-strike":        { tier: "E", reason: "Burns an action and concentration to gain advantage on your NEXT attack. Almost always worse than just attacking." },
 };
 
 export function getSpellTier(slug: string): TierInfo | undefined {

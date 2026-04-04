@@ -2761,6 +2761,11 @@
     "mini_vote_error": "Could not record your vote. Try again.",
     "mini_vote_login": "Log in to vote",
     "mini_vote_count": "votes",
-    "mini_vote_voted": "Your vote"
+    "mini_vote_voted": "Your vote",
+    "spell_ranking_title": "Spell Tier Rankings",
+    "spell_ranking_subtitle": "How the community rates D&D 5e spells",
+    "spell_ranking_no_votes": "No votes yet — be the first! Visit any spell page to vote.",
+    "spell_ranking_consensus": "Consensus",
+    "spell_ranking_votes": "votes"
   }
 }

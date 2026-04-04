@@ -2761,6 +2761,11 @@
     "mini_vote_error": "Erro ao votar. Tente novamente.",
     "mini_vote_login": "Faça login para votar",
     "mini_vote_count": "votos",
-    "mini_vote_voted": "Seu voto"
+    "mini_vote_voted": "Seu voto",
+    "spell_ranking_title": "Ranking de Tiers de Magias",
+    "spell_ranking_subtitle": "Como a comunidade avalia as magias de D&D 5e",
+    "spell_ranking_no_votes": "Nenhum voto ainda — seja o primeiro! Acesse qualquer página de magia para votar.",
+    "spell_ranking_consensus": "Consenso",
+    "spell_ranking_votes": "votos"
   }
 }
