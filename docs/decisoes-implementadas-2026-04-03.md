@@ -166,7 +166,26 @@
 
 ---
 
+## 9. Wave 2 Bug Fixes — QA Tier 2/3 + UX Criticos
+
+**Commit:** fix(multi): invite link tab, section crash guard, mobile FAB, player onboarding
+**Data:** 2026-04-04
+**Tipo:** Bug Fix / UX / Resilience
+
+**Por que:** Segunda rodada de fixes pos-QA. Apos resolver os 5 bugs Tier 1 mobile, atacamos os bugs dos Tiers 2 e 3 que afetam fluxos core (convite, criacao de personagem, crash de campanha) e UX de onboarding.
+
+**O que foi feito:**
+- T2-01: InvitePlayerDialog "Via Link" tab mostra loading fallback em vez de `null`
+- T3-02: `SectionErrorBoundary` em CampaignSections — secao quebrada nao derruba a pagina inteira
+- T3-01: Logging melhorado em `createStandaloneCharacterAction` (message + code + details + hint)
+- Mobile FAB: Botao "Proximo Turno" fixo no canto inferior direito no mobile (`md:hidden`)
+- UX-T2-09: Onboarding verifica `campaign_members` alem de `campaigns` — players que entraram via convite pulam o wizard de DM
+
+**Arquivos:** `InvitePlayerDialog.tsx`, `CampaignSections.tsx`, `characters/actions.ts`, `GuestCombatClient.tsx`, `onboarding/page.tsx`
+
+---
+
 > **Criado:** 2026-04-03
-> **Atualizado:** 2026-04-04 (item 8 adicionado)
+> **Atualizado:** 2026-04-04 (items 8 e 9 adicionados)
 > **Revisado por:** Dani_ + BMAD Party Mode (John, Mary, Winston, Bob, Quinn)
 > **Proxima revisao:** Pre-beta test sessao #2
