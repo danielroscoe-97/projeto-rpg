@@ -21,10 +21,11 @@ interface NpcNodeProps {
 function NpcNodeComponent({ data }: NpcNodeProps) {
   const isDead = data.isAlive === false;
   const isHidden = data.isHidden === true;
+  const isNodeNew = data.isNodeNew === true;
 
   return (
     <div
-      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] ${
+      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] relative ${
         isDead
           ? "border-red-500/60 border-dashed opacity-60"
           : isHidden
@@ -60,6 +61,9 @@ function NpcNodeComponent({ data }: NpcNodeProps) {
             </span>
           )}
         </div>
+      )}
+      {isNodeNew && (
+        <span className="absolute -top-2 -right-2 z-10 new-badge-enter px-1.5 py-0.5 rounded-full bg-amber-500 text-[9px] font-bold text-black shadow-lg shadow-amber-500/30">NEW</span>
       )}
       <Handle type="source" position={Position.Bottom} className="!bg-purple-400 !w-2 !h-2" />
     </div>

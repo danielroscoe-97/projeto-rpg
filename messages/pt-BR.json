@@ -508,7 +508,8 @@
       "rel_enemy": "Inimigo",
       "rel_unknown": "Desconhecido",
       "your_notes": "Suas Notas",
-      "notes_placeholder": "O que você sabe sobre este NPC?"
+      "notes_placeholder": "O que você sabe sobre este NPC?",
+      "view_in_journal": "Ver no Journal de NPCs"
     },
     "quest_drawer": {
       "description": "Descrição",
@@ -518,7 +519,8 @@
       "status_active": "Ativa",
       "status_completed": "Completa",
       "favorite": "Favoritar",
-      "unfavorite": "Desfavoritar"
+      "unfavorite": "Desfavoritar",
+      "view_in_quest_board": "Ver no Quest Board"
     },
     "location_drawer": {
       "discovered_hint": "Você já visitou este local.",
@@ -541,6 +543,17 @@
       "add_pin": "Add Pin"
     },
     "map_new_nodes": "novidades no mapa",
+    "recap": {
+      "title": "{count} novidades desde sua ultima visita",
+      "type_npc": "NPC",
+      "type_quest": "Quest",
+      "type_location": "Local",
+      "type_faction": "Faccao",
+      "type_session": "Sessao",
+      "type_note": "Nota",
+      "more": "mais",
+      "mark_all_seen": "Marcar todas como vistas"
+    },
     "sheet": {
       "hp_label": "HP",
       "hp_full": "CHEIO",

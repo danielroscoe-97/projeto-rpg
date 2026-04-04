@@ -174,6 +174,7 @@ export function PlayerHqShell({
           campaignName={campaignName}
           characterId={characterId}
           userId={userId}
+          onNavigateTab={(tab) => setActiveTab(tab as Tab)}
         />
       )}
 

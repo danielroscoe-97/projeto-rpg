@@ -508,7 +508,8 @@
       "rel_enemy": "Enemy",
       "rel_unknown": "Unknown",
       "your_notes": "Your Notes",
-      "notes_placeholder": "What do you know about this NPC?"
+      "notes_placeholder": "What do you know about this NPC?",
+      "view_in_journal": "View in NPC Journal"
     },
     "quest_drawer": {
       "description": "Description",
@@ -518,7 +519,8 @@
       "status_active": "Active",
       "status_completed": "Completed",
       "favorite": "Favorite",
-      "unfavorite": "Unfavorite"
+      "unfavorite": "Unfavorite",
+      "view_in_quest_board": "View in Quest Board"
     },
     "location_drawer": {
       "discovered_hint": "You have visited this location.",
@@ -541,6 +543,17 @@
       "add_pin": "Add Pin"
     },
     "map_new_nodes": "new on the map",
+    "recap": {
+      "title": "{count} new since your last visit",
+      "type_npc": "NPC",
+      "type_quest": "Quest",
+      "type_location": "Location",
+      "type_faction": "Faction",
+      "type_session": "Session",
+      "type_note": "Note",
+      "more": "more",
+      "mark_all_seen": "Mark all as seen"
+    },
     "sheet": {
       "hp_label": "HP",
       "hp_full": "FULL",

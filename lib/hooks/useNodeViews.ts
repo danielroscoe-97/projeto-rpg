@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { nodeIdToKey } from "@/lib/utils/mind-map-layout";
 
@@ -9,11 +9,10 @@ interface NodeView {
   last_seen_at: string;
 }
 
-const NEW_BADGE_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
-
 export function useNodeViews(characterId: string, campaignId: string) {
   const [views, setViews] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
+  const seededRef = useRef(false);
 
   // Fetch all node views for this character
   useEffect(() => {
@@ -22,7 +21,8 @@ export function useNodeViews(characterId: string, campaignId: string) {
       const { data } = await supabase
         .from("player_node_views")
         .select("node_key, last_seen_at")
-        .eq("player_character_id", characterId);
+        .eq("player_character_id", characterId)
+        .eq("campaign_id", campaignId);
 
       if (data) {
         const map = new Map<string, string>();
@@ -30,15 +30,19 @@ export function useNodeViews(characterId: string, campaignId: string) {
           map.set(row.node_key, row.last_seen_at);
         }
         setViews(map);
+        seededRef.current = map.size > 0;
       }
       setLoading(false);
     }
     fetch();
-  }, [characterId]);
+  }, [characterId, campaignId]);
 
   // Check if a node should show "NEW" badge
   const isNew = useCallback(
     (nodeId: string, entityUpdatedAt?: string): boolean => {
+      // First-time user: no views yet, don't flood with badges
+      if (!seededRef.current && views.size === 0) return false;
+
       const key = nodeIdToKey(nodeId);
       const lastSeen = views.get(key);
 
@@ -50,9 +54,8 @@ export function useNodeViews(characterId: string, campaignId: string) {
         return new Date(entityUpdatedAt) > new Date(lastSeen);
       }
 
-      // Auto-dismiss after 48h
-      const seenTime = new Date(lastSeen).getTime();
-      return Date.now() - seenTime < NEW_BADGE_TTL_MS && !lastSeen;
+      // Already viewed, no entityUpdatedAt → not new
+      return false;
     },
     [views]
   );
@@ -105,6 +108,7 @@ export function useNodeViews(characterId: string, campaignId: string) {
         }
         return next;
       });
+      seededRef.current = true;
 
       const supabase = createClient();
       await supabase
@@ -114,5 +118,15 @@ export function useNodeViews(characterId: string, campaignId: string) {
     [characterId, campaignId]
   );
 
-  return { views, loading, isNew, markViewed, markAllViewed };
+  // Seed first visit: mark all current nodes as viewed so they don't all show as NEW
+  const seedFirstVisit = useCallback(
+    async (nodeIds: string[]) => {
+      if (seededRef.current || views.size > 0) return;
+      seededRef.current = true;
+      await markAllViewed(nodeIds);
+    },
+    [views.size, markAllViewed]
+  );
+
+  return { views, loading, isNew, markViewed, markAllViewed, seedFirstVisit };
 }

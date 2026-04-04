@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { UserCircle } from "lucide-react";
+import { UserCircle, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { DrawerShell } from "./DrawerShell";
 
@@ -12,6 +12,7 @@ interface PlayerNpcDrawerProps {
   characterId: string;
   campaignId: string;
   onClose: () => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 type Relationship = "ally" | "enemy" | "neutral" | "unknown";
@@ -22,6 +23,7 @@ export function PlayerNpcDrawer({
   characterId,
   campaignId,
   onClose,
+  onNavigateTab,
 }: PlayerNpcDrawerProps) {
   const t = useTranslations("player_hq.npc_drawer");
   const [noteId, setNoteId] = useState<string | null>(null);
@@ -156,6 +158,18 @@ export function PlayerNpcDrawer({
               className="w-full min-h-[120px] bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring resize-y"
             />
           </div>
+
+          {/* Quick access */}
+          {onNavigateTab && (
+            <button
+              type="button"
+              onClick={() => { onClose(); onNavigateTab("notes"); }}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-xs w-full"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              {t("view_in_journal")}
+            </button>
+          )}
         </>
       )}
     </DrawerShell>

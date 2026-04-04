@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Target, Star, StarOff } from "lucide-react";
+import { Target, Star, StarOff, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { DrawerShell } from "./DrawerShell";
 
@@ -13,6 +13,7 @@ interface PlayerQuestDrawerProps {
   userId: string;
   campaignId: string;
   onClose: () => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export function PlayerQuestDrawer({
@@ -22,6 +23,7 @@ export function PlayerQuestDrawer({
   userId,
   campaignId,
   onClose,
+  onNavigateTab,
 }: PlayerQuestDrawerProps) {
   const t = useTranslations("player_hq.quest_drawer");
   const [notes, setNotes] = useState("");
@@ -175,6 +177,18 @@ export function PlayerQuestDrawer({
               className="w-full min-h-[120px] bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring resize-y"
             />
           </div>
+
+          {/* Quick access */}
+          {onNavigateTab && (
+            <button
+              type="button"
+              onClick={() => { onClose(); onNavigateTab("quests"); }}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-xs w-full"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              {t("view_in_quest_board")}
+            </button>
+          )}
         </>
       )}
     </DrawerShell>

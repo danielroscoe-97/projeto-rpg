@@ -21,8 +21,6 @@ import { Plus } from "lucide-react";
 import { usePlayerMindMap, type PlayerMindMapNode } from "@/lib/hooks/usePlayerMindMap";
 import { usePlayerPins, type PinColor } from "@/lib/hooks/usePlayerPins";
 import { useNodeViews } from "@/lib/hooks/useNodeViews";
-import { nodeIdToKey } from "@/lib/utils/mind-map-layout";
-
 import { CampaignNode } from "@/components/campaign/nodes/CampaignNode";
 import { NpcNode } from "@/components/campaign/nodes/NpcNode";
 import { NoteNode } from "@/components/campaign/nodes/NoteNode";
@@ -39,6 +37,7 @@ import { PlayerLocationDrawer } from "./drawers/PlayerLocationDrawer";
 import { PlayerFactionDrawer } from "./drawers/PlayerFactionDrawer";
 import { PlayerSessionDrawer } from "./drawers/PlayerSessionDrawer";
 import { PlayerPinDrawer } from "./drawers/PlayerPinDrawer";
+import { MapRecap } from "./MapRecap";
 
 /* ---------- Node types map ---------- */
 
@@ -99,9 +98,10 @@ interface PlayerMindMapProps {
   campaignName: string;
   characterId: string;
   userId: string;
+  onNavigateTab?: (tab: string) => void;
 }
 
-export function PlayerMindMap({ campaignId, campaignName, characterId, userId }: PlayerMindMapProps) {
+export function PlayerMindMap({ campaignId, campaignName, characterId, userId, onNavigateTab }: PlayerMindMapProps) {
   const t = useTranslations("mindmap");
   const tHq = useTranslations("player_hq");
   const {
@@ -112,7 +112,7 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
   } = usePlayerMindMap(campaignId, campaignName);
 
   const { pins, canAdd, createPin, updatePin, deletePin } = usePlayerPins(characterId, campaignId);
-  const { isNew, markViewed } = useNodeViews(characterId, campaignId);
+  const { isNew, markViewed, markAllViewed, seedFirstVisit } = useNodeViews(characterId, campaignId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<PlayerMindMapNode>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
@@ -134,14 +134,24 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  /* ---- Build pin nodes ---- */
+  /* ---- Seed first visit: mark all existing nodes as viewed ---- */
+  useEffect(() => {
+    if (!loading && allNodes.length > 1) {
+      const campaignNodeIds = allNodes
+        .filter((n) => n.type !== "campaign")
+        .map((n) => n.id);
+      seedFirstVisit(campaignNodeIds);
+    }
+  }, [loading, allNodes, seedFirstVisit]);
+
+  /* ---- Build pin nodes (deterministic position from index) ---- */
   const pinNodes: PlayerMindMapNode[] = useMemo(() => {
-    return pins.map((pin) => ({
+    return pins.map((pin, i) => ({
       id: `pin-${pin.id}`,
       type: "pin" as const,
       position: {
-        x: pin.position_x ?? Math.random() * 400 - 200,
-        y: pin.position_y ?? Math.random() * 400 - 200,
+        x: pin.position_x ?? (i % 5) * 100 - 200,
+        y: pin.position_y ?? Math.floor(i / 5) * 80 + 200,
       },
       data: {
         label: pin.label,
@@ -153,7 +163,7 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
     }));
   }, [pins]);
 
-  /* ---- Apply filters (merge campaign nodes + pin nodes) ---- */
+  /* ---- Apply filters + annotate with NEW/reveal classes ---- */
   useEffect(() => {
     const visibleNodeIds = new Set<string>();
     const merged = [...allNodes, ...(filters.pin ? pinNodes : [])];
@@ -171,13 +181,24 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
       return false;
     });
 
+    // Annotate nodes with reveal animation class + isNodeNew data flag
+    const annotated = filteredNodes.map((node) => {
+      if (node.type === "campaign" || node.type === "pin") return node;
+      const nodeIsNew = isNew(node.id);
+      return {
+        ...node,
+        className: nodeIsNew ? "node-reveal" : undefined,
+        data: { ...node.data, isNodeNew: nodeIsNew },
+      };
+    });
+
     const filteredEdges = allEdges.filter(
       (edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
     );
 
-    setNodes(filteredNodes);
+    setNodes(annotated);
     setEdges(filteredEdges);
-  }, [allNodes, allEdges, pinNodes, filters, setNodes, setEdges]);
+  }, [allNodes, allEdges, pinNodes, filters, isNew, setNodes, setEdges]);
 
   /* ---- Node click → open drawer + mark viewed ---- */
   const onNodeClick: NodeMouseHandler<PlayerMindMapNode> = useCallback((_event, node) => {
@@ -237,9 +258,6 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
     );
   }
 
-  // Count new nodes for badge on filter bar
-  const newCount = allNodes.filter((n) => n.type !== "campaign" && isNew(n.id)).length;
-
   return (
     <div className="space-y-2">
       {/* Filter bar + Add Pin */}
@@ -270,14 +288,12 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
         )}
       </div>
 
-      {/* New nodes indicator */}
-      {newCount > 0 && (
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/20">
-          <span className="text-amber-400 text-xs font-medium">
-            {newCount} {tHq("map_new_nodes")}
-          </span>
-        </div>
-      )}
+      {/* Recap: what changed since last visit */}
+      <MapRecap
+        nodes={allNodes}
+        isNew={isNew}
+        onMarkAllViewed={markAllViewed}
+      />
 
       {/* Empty state when all filters off */}
       {nodes.length <= 1 && !loading && (
@@ -335,6 +351,7 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
           characterId={characterId}
           campaignId={campaignId}
           onClose={closeDrawer}
+          onNavigateTab={onNavigateTab}
         />
       )}
       {drawer.type === "quest" && (
@@ -345,6 +362,7 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
           userId={userId}
           campaignId={campaignId}
           onClose={closeDrawer}
+          onNavigateTab={onNavigateTab}
         />
       )}
       {drawer.type === "location" && (

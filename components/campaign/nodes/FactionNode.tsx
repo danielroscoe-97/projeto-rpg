@@ -39,10 +39,11 @@ const alignmentStyles: Record<FactionAlignment, { border: string; text: string; 
 function FactionNodeComponent({ data }: FactionNodeProps) {
   const style = alignmentStyles[data.alignment];
   const isHidden = data.isHidden === true;
+  const isNodeNew = data.isNodeNew === true;
 
   return (
     <div
-      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] ${
+      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] relative ${
         isHidden ? "border-rose-400/30 border-dashed opacity-50" : style.border
       }`}
     >
@@ -67,6 +68,9 @@ function FactionNodeComponent({ data }: FactionNodeProps) {
             {data.alignmentLabel}
           </span>
         </div>
+      )}
+      {isNodeNew && !isHidden && (
+        <span className="absolute -top-2 -right-2 z-10 new-badge-enter px-1.5 py-0.5 rounded-full bg-amber-500 text-[9px] font-bold text-black shadow-lg shadow-amber-500/30">NEW</span>
       )}
       <Handle type="source" position={Position.Bottom} className="!bg-rose-400 !w-2 !h-2" />
     </div>
