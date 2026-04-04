@@ -40,6 +40,9 @@ function Field({
   );
 }
 
+// ── Suspended flag — flip to false when importer is ready ─────────
+const IMPORT_SUSPENDED = true;
+
 // ── Main component ─────────────────────────────────────────────────
 export function StatBlockImporter({
   onImported,
@@ -142,6 +145,27 @@ export function StatBlockImporter({
       setSaving(false);
     }
   }, [parsed, onImported, t]);
+
+  // ── Suspended state ────────────────────────────────────────────
+  if (IMPORT_SUSPENDED) {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <ClipboardPaste className="h-4 w-4" />
+          <span>{t("paste_stat_block")}</span>
+        </div>
+        <div className="rounded-lg border border-orange-500/30 bg-orange-500/[0.06] px-4 py-6 text-center space-y-2">
+          <AlertTriangle className="h-5 w-5 text-orange-400 mx-auto" />
+          <p className="text-sm font-medium text-orange-300">
+            {t("import_suspended_title")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {t("import_suspended_desc")}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // ── Step 1: Paste ──────────────────────────────────────────────
   if (step === "paste") {

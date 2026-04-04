@@ -6,7 +6,7 @@ import { useFeatureGate } from "@/lib/hooks/use-feature-gate";
 import { CURRENT_AGREEMENT_VERSION } from "@/lib/constants/content";
 
 interface ContentAccess {
-  /** User can see "Completo" content (whitelisted OR accepted agreement) */
+  /** User can see "Completo" content (whitelisted beta testers only) */
   canAccess: boolean;
   /** User is on the admin whitelist (total bypass) */
   isWhitelisted: boolean;
@@ -155,8 +155,8 @@ export function useContentAccess(): ContentAccess {
 
   const isAuthenticated = authChecked && !!userId;
   const isLoading = !authChecked || (isAuthenticated && dbLoading);
-  const canAccess =
-    flagEnabled && isAuthenticated && (isWhitelisted || hasAgreed);
+  // Beta-only: only whitelisted users can access "Completo" content
+  const canAccess = flagEnabled && isAuthenticated && isWhitelisted;
 
   return {
     canAccess,
