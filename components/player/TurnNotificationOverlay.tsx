@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 const AUTO_DISMISS_MS = 3000;
+const TAB_FLASH_INTERVAL_MS = 1000;
 
 interface TurnNotificationOverlayProps {
   visible: boolean;
@@ -17,22 +18,32 @@ export function TurnNotificationOverlay({ visible, playerName, onDismiss }: Turn
   const t = useTranslations("player");
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const tabFlashRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const originalTitleRef = useRef<string>("");
 
   const dismiss = useCallback(() => {
     onDismiss?.();
   }, [onDismiss]);
 
-  // Haptic feedback + sound on turn start
+  // Haptic feedback + sound + tab title flash on turn start
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      // Restore tab title when overlay hides
+      if (tabFlashRef.current) {
+        clearInterval(tabFlashRef.current);
+        tabFlashRef.current = undefined;
+        document.title = originalTitleRef.current;
+      }
+      return;
+    }
 
-    // Vibration pattern: short-pause-short for urgency
+    // Vibration — works on Android, no-op on iOS
     navigator.vibrate?.([200, 100, 200]);
 
-    // Play notification sound if available and user has interacted with the page
+    // Play notification sound (fixed path)
     try {
       if (!audioRef.current) {
-        audioRef.current = new Audio("/sounds/turn-notification.mp3");
+        audioRef.current = new Audio("/sounds/sfx/notification.mp3");
         audioRef.current.volume = 0.5;
       }
       audioRef.current.currentTime = 0;
@@ -43,13 +54,26 @@ export function TurnNotificationOverlay({ visible, playerName, onDismiss }: Turn
       // Audio not available — ignore
     }
 
+    // Tab title flash — works on ALL platforms including iOS
+    originalTitleRef.current = document.title;
+    let flashState = false;
+    const turnText = t("turn_now", { playerName });
+    tabFlashRef.current = setInterval(() => {
+      flashState = !flashState;
+      document.title = flashState ? `🔔 ${turnText}` : originalTitleRef.current;
+    }, TAB_FLASH_INTERVAL_MS);
+
     // Auto-dismiss after 3 seconds
     timerRef.current = setTimeout(dismiss, AUTO_DISMISS_MS);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (tabFlashRef.current) {
+        clearInterval(tabFlashRef.current);
+        document.title = originalTitleRef.current;
+      }
     };
-  }, [visible, dismiss]);
+  }, [visible, dismiss, playerName, t]);
 
   return (
     <AnimatePresence>
