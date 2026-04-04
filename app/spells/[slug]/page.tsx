@@ -38,8 +38,8 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title: `${title} | Pocket DM`, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}` },
-    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
+    openGraph: { title: `${title} | Pocket DM`, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}`, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }] },
+    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description, images: ["/opengraph-image"] },
     alternates: {
       canonical: `https://www.pocketdm.com.br/spells/${slug}`,
       languages: {

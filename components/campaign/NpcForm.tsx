@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -8,6 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +47,33 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [discardOpen, setDiscardOpen] = useState(false);
+
+  const isDirty = useMemo(() => {
+    const init = npc;
+    if (!init) {
+      return !!(name || description || hp || ac || initiativeMod || cr || notes || avatarUrl || !visibleToPlayers);
+    }
+    return (
+      name !== (init.name ?? "") ||
+      description !== (init.description ?? "") ||
+      hp !== (init.stats.hp?.toString() ?? "") ||
+      ac !== (init.stats.ac?.toString() ?? "") ||
+      initiativeMod !== (init.stats.initiative_mod?.toString() ?? "") ||
+      cr !== (init.stats.cr ?? "") ||
+      notes !== (init.stats.notes ?? "") ||
+      avatarUrl !== (init.avatar_url ?? "") ||
+      visibleToPlayers !== (init.is_visible_to_players ?? true)
+    );
+  }, [npc, name, description, hp, ac, initiativeMod, cr, notes, avatarUrl, visibleToPlayers]);
+
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    if (!nextOpen && isDirty) {
+      setDiscardOpen(true);
+      return;
+    }
+    onOpenChange(nextOpen);
+  }, [isDirty, onOpenChange]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -81,7 +118,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
   const isEdit = !!npc;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? t("edit_npc") : t("add_npc")}</DialogTitle>
@@ -246,7 +284,7 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
             <Button
               type="button"
               variant="ghost"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
               disabled={saving}
             >
               {tCommon("cancel")}
@@ -258,5 +296,37 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
         </form>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={discardOpen} onOpenChange={setDiscardOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{tCommon("discard_title")}</AlertDialogTitle>
+          <AlertDialogDescription>{tCommon("discard_description")}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{tCommon("discard_cancel")}</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              setDiscardOpen(false);
+              // Reset fields to initial values so stale state doesn't persist
+              setName(npc?.name ?? "");
+              setDescription(npc?.description ?? "");
+              setHp(npc?.stats.hp?.toString() ?? "");
+              setAc(npc?.stats.ac?.toString() ?? "");
+              setInitiativeMod(npc?.stats.initiative_mod?.toString() ?? "");
+              setCr(npc?.stats.cr ?? "");
+              setNotes(npc?.stats.notes ?? "");
+              setAvatarUrl(npc?.avatar_url ?? "");
+              setVisibleToPlayers(npc?.is_visible_to_players ?? true);
+              onOpenChange(false);
+            }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {tCommon("discard_confirm")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

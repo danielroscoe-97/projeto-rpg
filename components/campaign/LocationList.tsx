@@ -149,7 +149,7 @@ interface LocationListProps {
 
 export function LocationList({ campaignId, isEditable = true }: LocationListProps) {
   const t = useTranslations("locations");
-  const { locations, loading, addLocation, updateLocation, deleteLocation } =
+  const { locations, loading, fetchError, addLocation, updateLocation, deleteLocation } =
     useCampaignLocations(campaignId);
   const [newName, setNewName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -172,6 +172,14 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
   if (loading) {
     return (
       <div className="text-sm text-muted-foreground py-4 text-center">{t("loading")}</div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="text-sm text-red-400 py-4 text-center">
+        {t("load_error")}
+      </div>
     );
   }
 

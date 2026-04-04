@@ -7,6 +7,9 @@ import { Swords, Zap, ChevronRight } from "lucide-react";
 
 import { InvitePlayersBanner } from "@/components/dashboard/InvitePlayersBanner";
 import { StreakBadge } from "@/components/dashboard/StreakBadge";
+import { PocketDmLabBadge } from "@/components/dashboard/PocketDmLabBadge";
+import { MethodologyMilestoneToast } from "@/components/dashboard/MethodologyMilestoneToast";
+import { ResearcherBadge } from "@/components/dashboard/ResearcherBadge";
 import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import { CampaignCard } from "@/components/dashboard/CampaignCard";
@@ -81,6 +84,12 @@ interface DashboardOverviewProps {
     dm_empty_cta: string;
     combats_empty_title: string;
     combats_empty_cta: string;
+    methodology_lab_tooltip: string;
+    methodology_milestone_toast: string;
+    methodology_milestone_link: string;
+    methodology_researcher_title: string;
+    methodology_researcher_subtitle: string;
+    methodology_researcher_link: string;
   };
   streakWeeks?: number;
 }
@@ -117,16 +126,25 @@ export function DashboardOverview({
 
   return (
     <>
+      {/* Methodology milestone toast — fires once per milestone */}
+      {isDmRole && (
+        <MethodologyMilestoneToast
+          toastMessage={t.methodology_milestone_toast}
+          linkText={t.methodology_milestone_link}
+        />
+      )}
+
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4" data-testid="dashboard-overview">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-semibold text-foreground">{t.title}</h1>
             <StreakBadge weeks={streakWeeks} />
+            {isDmRole && <PocketDmLabBadge tooltip={t.methodology_lab_tooltip} />}
           </div>
           <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
         </div>
-        {hasDmCampaigns && (
+        {hasDmCampaigns && isDmRole && (
           <div className="flex items-center sm:justify-end">
             <Link
               href="/app/session/new"
@@ -180,8 +198,21 @@ export function DashboardOverview({
             campaigns_players_singular: t.campaigns_players_singular,
           }}
           campaigns={campaigns}
+          userRole={userRole}
         />
       </div>
+
+      {/* Researcher Badge — easter egg for DMs with 10+ rated combats */}
+      {isDmRole && (
+        <div className="mb-6">
+          <ResearcherBadge
+            userId={userId}
+            title={t.methodology_researcher_title}
+            subtitle={t.methodology_researcher_subtitle}
+            linkText={t.methodology_researcher_link}
+          />
+        </div>
+      )}
 
       {/* Invite Players Banner — show when DM has campaigns with characters but no linked players */}
       {isDmRole && campaigns.some((c) => c.player_count > 0) && playerMemberships.length === 0 && (
@@ -354,7 +385,8 @@ function OverviewDmSection({
             key={c.id}
             campaign={c}
             translations={{
-              players: t.campaigns_players_plural,
+              players_singular: t.campaigns_players_singular,
+              players_plural: t.campaigns_players_plural,
               manage: t.campaigns_manage,
             }}
           />

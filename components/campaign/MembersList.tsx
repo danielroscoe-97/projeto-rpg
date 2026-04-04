@@ -84,8 +84,7 @@ export function MembersList({
       {isOwner && (
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-muted-foreground">
-            {members.length}{" "}
-            {members.length === 1 ? t("title").toLowerCase().slice(0, -1) : t("title").toLowerCase()}
+            {t("member_count", { count: members.length })}
           </span>
           <InvitePlayerDialog campaignId={campaignId} />
         </div>

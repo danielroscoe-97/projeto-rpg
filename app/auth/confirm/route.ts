@@ -64,11 +64,10 @@ export async function GET(request: NextRequest) {
     if (joinCode && /^[A-Z2-9]{8}$/.test(joinCode)) {
       return `/join-campaign/${joinCode}`;
     }
-    // If invite params present, preserve them
+    // If invite params present, go straight to invite page (user is now authenticated)
     const invite = searchParams.get("invite");
-    const campaign = searchParams.get("campaign");
-    if (invite && campaign) {
-      return `/auth/sign-up?invite=${invite}&campaign=${campaign}`;
+    if (invite) {
+      return `/invite/${invite}`;
     }
     // Check if user has campaigns — if not, go to onboarding
     const { data: { user } } = await supabase.auth.getUser();

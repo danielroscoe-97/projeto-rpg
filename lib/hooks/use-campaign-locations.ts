@@ -7,18 +7,33 @@ import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
 export function useCampaignLocations(campaignId: string) {
   const [locations, setLocations] = useState<CampaignLocation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const fetchLocations = useCallback(async () => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("campaign_locations")
-      .select("*")
-      .eq("campaign_id", campaignId)
-      .order("sort_order")
-      .order("name");
+    try {
+      setFetchError(null);
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("campaign_locations")
+        .select("*")
+        .eq("campaign_id", campaignId)
+        .order("sort_order")
+        .order("name");
 
-    setLocations((data as CampaignLocation[]) ?? []);
-    setLoading(false);
+      if (error) {
+        console.error("[useCampaignLocations] fetchLocations failed:", error.message);
+        setFetchError(error.message);
+        setLocations([]);
+      } else {
+        setLocations((data as CampaignLocation[]) ?? []);
+      }
+    } catch (err) {
+      console.error("[useCampaignLocations] fetchLocations failed:", err);
+      setFetchError(err instanceof Error ? err.message : String(err));
+      setLocations([]);
+    } finally {
+      setLoading(false);
+    }
   }, [campaignId]);
 
   useEffect(() => {
@@ -96,5 +111,5 @@ export function useCampaignLocations(campaignId: string) {
     []
   );
 
-  return { locations, loading, addLocation, updateLocation, deleteLocation, refetch: fetchLocations };
+  return { locations, loading, fetchError, addLocation, updateLocation, deleteLocation, refetch: fetchLocations };
 }

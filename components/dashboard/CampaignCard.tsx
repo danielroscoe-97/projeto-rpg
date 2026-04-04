@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { Users, Clock } from "lucide-react";
 
 export interface CampaignCardData {
   id: string;
@@ -14,12 +14,34 @@ export interface CampaignCardData {
 interface CampaignCardProps {
   campaign: CampaignCardData;
   translations: {
-    players: string;
+    players_singular: string;
+    players_plural: string;
     manage: string;
   };
 }
 
+function formatRelativeTime(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return "";
+    if (diffMin < 60) return `${diffMin}m`;
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffHours < 24) return `${diffHours}h`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 30) return `${diffDays}d`;
+    return date.toLocaleDateString();
+  } catch {
+    return "";
+  }
+}
+
 export function CampaignCard({ campaign, translations: t }: CampaignCardProps) {
+  const lastActivity = campaign.last_combat ? formatRelativeTime(campaign.last_combat) : "";
+
   return (
     <Link
       href={`/app/campaigns/${campaign.id}`}
@@ -35,15 +57,15 @@ export function CampaignCard({ campaign, translations: t }: CampaignCardProps) {
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <Users className="w-3.5 h-3.5" aria-hidden="true" />
-          {campaign.player_count} {t.players}
+          {campaign.player_count} {Number(campaign.player_count) === 1 ? t.players_singular : t.players_plural}
         </span>
+        {lastActivity && (
+          <span className="inline-flex items-center gap-1">
+            <Clock className="w-3 h-3" aria-hidden="true" />
+            {lastActivity}
+          </span>
+        )}
       </div>
-
-      {campaign.last_combat && (
-        <p className="text-[10px] text-muted-foreground/60 mt-2 truncate">
-          {campaign.last_combat}
-        </p>
-      )}
     </Link>
   );
 }
