@@ -710,14 +710,3 @@ export function PublicRaceDetail({
   );
 }
 
-/** Export race slugs for static generation */
-export function getRaceSlugs(): string[] {
-  return Object.keys(RACE_DATA);
-}
-
-/** Export race data for metadata generation */
-export function getRaceData(
-  slug: string
-): RaceData | undefined {
-  return RACE_DATA[slug];
-}

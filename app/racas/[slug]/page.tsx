@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PublicNav } from "@/components/public/PublicNav";
-import { PublicRaceDetail, getRaceSlugs, getRaceData } from "@/components/public/PublicRaceDetail";
+import { PublicRaceDetail } from "@/components/public/PublicRaceDetail";
+import { getRaceSlugs, getRaceData } from "@/lib/srd/races-data";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import Link from "next/link";
 
