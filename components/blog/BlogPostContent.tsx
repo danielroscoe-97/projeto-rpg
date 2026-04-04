@@ -3870,16 +3870,16 @@ export function BlogPost13() {
 
       <H2>Quem Foi Capa Barsavi</H2>
 
-      {/* Character Portrait — transparent PNG with gold glow */}
+      {/* Character Portrait — with gold glow + hover effect */}
       <div className="my-10 flex justify-center">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.04] via-gold/[0.10] to-gold/[0.04] rounded-full blur-[80px] scale-90" />
+        <div className="relative group">
+          <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.06] via-gold/[0.14] to-gold/[0.06] rounded-full blur-[80px] scale-90 transition-all duration-500 group-hover:scale-100 group-hover:via-gold/[0.20]" />
           <Image
             src="/art/blog/capa-barsavi-portrait.png"
             alt="Capa Barsavi — Order Cleric / Divine Soul Sorcerer"
-            width={960}
-            height={1360}
-            className="relative w-[260px] sm:w-[320px] h-auto drop-shadow-[0_0_40px_rgba(212,168,83,0.25)]"
+            width={1024}
+            height={1536}
+            className="relative w-[260px] sm:w-[320px] h-auto rounded-xl drop-shadow-[0_0_40px_rgba(212,168,83,0.25)] transition-all duration-500 group-hover:drop-shadow-[0_0_60px_rgba(212,168,83,0.4)] group-hover:scale-[1.02]"
             unoptimized
           />
         </div>
@@ -4403,16 +4403,16 @@ export function BlogPost14() {
 
       <H2>Who Was Capa Barsavi</H2>
 
-      {/* Character Portrait — transparent PNG with gold glow */}
+      {/* Character Portrait — with gold glow + hover effect */}
       <div className="my-10 flex justify-center">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.04] via-gold/[0.10] to-gold/[0.04] rounded-full blur-[80px] scale-90" />
+        <div className="relative group">
+          <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.06] via-gold/[0.14] to-gold/[0.06] rounded-full blur-[80px] scale-90 transition-all duration-500 group-hover:scale-100 group-hover:via-gold/[0.20]" />
           <Image
             src="/art/blog/capa-barsavi-portrait.png"
             alt="Capa Barsavi — Order Cleric / Divine Soul Sorcerer"
-            width={960}
-            height={1360}
-            className="relative w-[260px] sm:w-[320px] h-auto drop-shadow-[0_0_40px_rgba(212,168,83,0.25)]"
+            width={1024}
+            height={1536}
+            className="relative w-[260px] sm:w-[320px] h-auto rounded-xl drop-shadow-[0_0_40px_rgba(212,168,83,0.25)] transition-all duration-500 group-hover:drop-shadow-[0_0_60px_rgba(212,168,83,0.4)] group-hover:scale-[1.02]"
             unoptimized
           />
         </div>
