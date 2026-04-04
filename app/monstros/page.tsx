@@ -42,6 +42,8 @@ export default function MonstrosIndexPage() {
       type: m.type,
       isMAD: !!m.monster_a_day_url,
       slug: toMonsterSlugPt(enSlug),
+      tokenUrl: m.token_url,
+      fallbackTokenUrl: m.fallback_token_url,
     };
   });
 

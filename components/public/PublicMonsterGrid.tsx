@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 
 const CR_RANGES = [
   { label: "0–1", min: 0, max: 1 },
@@ -57,6 +58,8 @@ interface MonsterEntry {
   type: string;
   isMAD?: boolean;
   slug?: string;
+  tokenUrl?: string;
+  fallbackTokenUrl?: string;
 }
 
 interface PublicMonsterGridProps {
@@ -226,17 +229,21 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {group.map((m) => {
-              const baseType = m.type.split("(")[0].trim().toLowerCase();
-              const emoji = TYPE_EMOJI[baseType] ?? "\u2694";
+              const baseType = m.type.split("(")[0].trim();
               return (
                 <Link
                   key={m.name}
                   href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
                   className="flex items-center gap-2.5 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
                 >
-                  <span className="w-7 h-7 rounded-full bg-gray-700/50 flex items-center justify-center text-xs flex-shrink-0">
-                    {emoji}
-                  </span>
+                  <MonsterToken
+                    tokenUrl={m.tokenUrl}
+                    fallbackTokenUrl={m.fallbackTokenUrl}
+                    creatureType={baseType}
+                    name={m.name}
+                    size={28}
+                    isMonsterADay={m.isMAD}
+                  />
                   <span className="flex-1 min-w-0">
                     <span className="text-gray-200 group-hover:text-white text-sm font-medium block truncate">
                       {m.name}

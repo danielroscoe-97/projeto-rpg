@@ -31,6 +31,8 @@ export default function MonstersIndexPage() {
       cr: m.cr,
       type: m.type,
       isMAD: !!m.monster_a_day_url,
+      tokenUrl: m.token_url,
+      fallbackTokenUrl: m.fallback_token_url,
     }));
 
   return (
