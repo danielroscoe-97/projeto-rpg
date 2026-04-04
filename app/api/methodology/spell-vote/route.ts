@@ -16,6 +16,9 @@ const MAX_SPELL_NAME_LENGTH = 100;
 const getHandler: Parameters<typeof withRateLimit>[0] = async function GET(request: NextRequest) {
   try {
     const spellParam = request.nextUrl.searchParams.get("spell");
+    if (spellParam && spellParam.length > MAX_SPELL_NAME_LENGTH) {
+      return NextResponse.json([], { status: 400 });
+    }
     const supabase = await createClient();
     const { data, error } = await supabase.rpc("get_spell_tier_stats",
       spellParam ? { p_spell_name: spellParam.toLowerCase() } : {}

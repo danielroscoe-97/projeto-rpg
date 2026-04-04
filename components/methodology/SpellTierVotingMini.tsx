@@ -187,7 +187,7 @@ export function SpellTierVotingMini({ spellName, isLoggedIn, translations: t }: 
       )}
 
       {/* Confirmed state — locked */}
-      {hasVoted && !isEditing && (
+      {hasVoted && !isEditing && isLoggedIn && (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className={`text-xs font-semibold px-2 py-0.5 rounded ${TIER_COLORS[confirmedVote].selected}`}>
