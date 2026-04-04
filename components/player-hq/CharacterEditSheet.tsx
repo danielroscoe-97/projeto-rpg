@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Sheet,
   SheetTrigger,
@@ -88,6 +88,8 @@ function FieldInput({
       </span>
       <input
         type={type}
+        inputMode={type === "number" ? "numeric" : undefined}
+        step={type === "number" ? 1 : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -104,11 +106,13 @@ export function CharacterEditSheet({
 }: CharacterEditSheetProps) {
   const [open, setOpen] = useState(false);
 
-  // Local form state — syncs from character prop when sheet opens
+  // Local form state — syncs from character prop only when sheet first opens
   const [form, setForm] = useState(() => toFormState(character));
+  const prevOpenRef = useRef(false);
 
   useEffect(() => {
-    if (open) setForm(toFormState(character));
+    if (open && !prevOpenRef.current) setForm(toFormState(character));
+    prevOpenRef.current = open;
   }, [open, character]);
 
   const set = (key: keyof typeof form, value: string) =>
@@ -268,30 +272,38 @@ function toFormState(c: EditableFields): FormState {
   };
 }
 
+function toInt(val: string): number | null {
+  if (val === "") return null;
+  const n = Number(val);
+  if (!Number.isFinite(n)) return null;
+  return Math.round(n);
+}
+
 function toNum(val: string): number | null {
   if (val === "") return null;
   const n = Number(val);
   return Number.isFinite(n) ? n : null;
 }
 
-const STRING_FIELDS = new Set(["name", "race", "class", "subclass", "subrace", "background", "alignment", "notes"]);
-const NULLABLE_NUM_FIELDS = new Set(["level", "speed", "initiative_bonus", "spell_save_dc", "str", "dex", "con", "int_score", "wis", "cha_score"]);
+const STRING_FIELDS = new Set(["race", "class", "subclass", "subrace", "background", "alignment", "notes"]);
+const NULLABLE_INT_FIELDS = new Set(["level", "speed", "initiative_bonus", "spell_save_dc", "str", "dex", "con", "int_score", "wis", "cha_score"]);
 const REQUIRED_NUM_FIELDS = new Set(["max_hp", "ac"]);
 
 function fromFormField(key: string, value: string): Partial<PlayerCharacter> | null {
-  if (STRING_FIELDS.has(key)) {
-    return { [key]: value || null };
-  }
+  // name is non-nullable — dedicated handler, skip save if empty
   if (key === "name") {
     return value.trim() ? { name: value.trim() } : null;
   }
-  if (NULLABLE_NUM_FIELDS.has(key)) {
-    const n = toNum(value);
+  if (STRING_FIELDS.has(key)) {
+    return { [key]: value.trim() || null };
+  }
+  if (NULLABLE_INT_FIELDS.has(key)) {
+    const n = toInt(value);
     return { [key]: n };
   }
   if (REQUIRED_NUM_FIELDS.has(key)) {
-    const n = toNum(value);
-    return n != null ? { [key]: n } : null;
+    const n = toInt(value);
+    return n != null && n >= 0 ? { [key]: n } : null;
   }
   return null;
 }

@@ -52,7 +52,7 @@ function NotificationRow({
   return (
     <div
       className={`flex items-start gap-3 px-4 py-3 transition-colors ${
-        isUnread ? "bg-white/[0.03]" : ""
+        isUnread ? "bg-white/[0.06]" : ""
       }`}
     >
       <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${color}`} />
@@ -79,6 +79,7 @@ function NotificationRow({
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
+  if (!Number.isFinite(diff) || diff < 0) return "\u2014";
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "<1m";
   if (mins < 60) return `${mins}m`;
