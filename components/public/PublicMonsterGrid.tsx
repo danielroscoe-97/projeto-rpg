@@ -236,14 +236,16 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
                   href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
                   className="flex items-center gap-2.5 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
                 >
-                  <MonsterToken
-                    tokenUrl={m.tokenUrl}
-                    fallbackTokenUrl={m.fallbackTokenUrl}
-                    creatureType={baseType}
-                    name={m.name}
-                    size={28}
-                    isMonsterADay={m.isMAD}
-                  />
+                  <span className="relative inline-flex shrink-0 transition-transform duration-200 group-hover:scale-[1.8] group-hover:z-10">
+                    <MonsterToken
+                      tokenUrl={m.tokenUrl}
+                      fallbackTokenUrl={m.fallbackTokenUrl}
+                      creatureType={baseType}
+                      name={m.name}
+                      size={28}
+                      isMonsterADay={m.isMAD}
+                    />
+                  </span>
                   <span className="flex-1 min-w-0">
                     <span className="text-gray-200 group-hover:text-white text-sm font-medium block truncate">
                       {m.name}

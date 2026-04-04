@@ -33,6 +33,11 @@ export default function SpellsIndexPage() {
       classes: s.classes ?? [],
       concentration: s.concentration,
       ritual: s.ritual,
+      ruleset_version: s.ruleset_version,
+      casting_time: s.casting_time,
+      range: s.range,
+      duration: s.duration,
+      description: s.description?.slice(0, 200),
     }));
 
   return (

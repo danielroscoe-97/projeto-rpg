@@ -277,14 +277,21 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                         </span>
                       )}
                     </button>
-                    {count > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => removeDie(sides)}
-                        className="w-5 h-5 rounded-full border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400 text-xs flex items-center justify-center transition-colors"
-                      >
-                        −
-                      </button>
+                    {count > 0 ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => removeDie(sides)}
+                          className="w-5 h-5 rounded-full border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400 text-xs flex items-center justify-center transition-colors"
+                        >
+                          −
+                        </button>
+                        <span className="text-[10px] text-gray-500">
+                          {locale === "pt-BR" ? "clique +1" : "click +1"}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="h-5" />
                     )}
                   </div>
                 );

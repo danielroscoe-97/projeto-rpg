@@ -32,7 +32,7 @@ const LABELS = {
     diceHref: "/dados",
     rules: "Regras",
     rulesHref: "/regras",
-    combat: "Rastreador de Combate",
+    combat: "Combat Tracker",
     tryFree: "Testar Grátis",
     signUp: "Cadastrar",
   },

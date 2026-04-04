@@ -90,6 +90,24 @@ const CONDITION_NAMES_PT: Record<string, string> = {
   unconscious: "Inconsciente",
 };
 
+const CONDITION_DESCRIPTIONS_PT: Record<string, string> = {
+  blinded: "Uma criatura cega não pode ver e falha automaticamente em qualquer teste de habilidade que requeira visão. Jogadas de ataque contra a criatura têm vantagem, e as jogadas de ataque da criatura têm desvantagem.",
+  charmed: "Uma criatura encantada não pode atacar o encantador ou alvo o encantador com habilidades ou efeitos mágicos prejudiciais. O encantador tem vantagem em qualquer teste de habilidade para interagir socialmente com a criatura.",
+  deafened: "Uma criatura surda não pode ouvir e falha automaticamente em qualquer teste de habilidade que requeira audição.",
+  exhaustion: "Exaustão é medida em seis níveis. Um efeito pode dar a uma criatura um ou mais níveis de exaustão. Se uma criatura já exausta sofrer outro efeito que causa exaustão, seu nível atual de exaustão aumenta pela quantidade especificada.",
+  frightened: "Uma criatura amedrontada tem desvantagem em testes de habilidade e jogadas de ataque enquanto a fonte de seu medo estiver em sua linha de visão. A criatura não pode se mover voluntariamente para mais perto da fonte de seu medo.",
+  grappled: "A velocidade de uma criatura agarrada se torna 0, e ela não pode se beneficiar de nenhum bônus em sua velocidade. A condição termina se o agarrador ficar incapacitado ou se um efeito remover a criatura agarrada do alcance do agarrador.",
+  incapacitated: "Uma criatura incapacitada não pode realizar ações ou reações.",
+  invisible: "Uma criatura invisível é impossível de ver sem a ajuda de magia ou um sentido especial. Para fins de se esconder, a criatura está totalmente obscurecida. A localização da criatura pode ser detectada por qualquer barulho que ela faça ou rastros que deixe. Jogadas de ataque contra a criatura têm desvantagem, e as jogadas de ataque da criatura têm vantagem.",
+  paralyzed: "Uma criatura paralisada está incapacitada e não pode se mover ou falar. A criatura falha automaticamente em testes de resistência de Força e Destreza. Jogadas de ataque contra a criatura têm vantagem. Qualquer ataque que acerte a criatura é um acerto crítico se o atacante estiver a até 1,5 metro dela.",
+  petrified: "Uma criatura petrificada é transformada, junto com qualquer objeto não mágico que esteja vestindo ou carregando, em uma substância sólida inanimada. Seu peso aumenta por um fator de dez e ela para de envelhecer. A criatura está incapacitada, não pode se mover ou falar e não tem consciência do que acontece ao seu redor. Jogadas de ataque contra a criatura têm vantagem. A criatura falha automaticamente em testes de resistência de Força e Destreza. A criatura tem resistência a todos os tipos de dano. A criatura é imune a veneno e doença, embora um veneno ou doença já em seu sistema seja suspenso, não neutralizado.",
+  poisoned: "Uma criatura envenenada tem desvantagem em jogadas de ataque e testes de habilidade.",
+  prone: "Uma criatura caída tem como única opção de movimento rastejar, a menos que se levante e encerre a condição. A criatura tem desvantagem em jogadas de ataque. Uma jogada de ataque contra a criatura tem vantagem se o atacante estiver a até 1,5 metro dela. Caso contrário, a jogada de ataque tem desvantagem.",
+  restrained: "A velocidade de uma criatura contida se torna 0, e ela não pode se beneficiar de nenhum bônus em sua velocidade. Jogadas de ataque contra a criatura têm vantagem, e as jogadas de ataque da criatura têm desvantagem. A criatura tem desvantagem em testes de resistência de Destreza.",
+  stunned: "Uma criatura atordoada está incapacitada, não pode se mover e pode falar apenas com dificuldade. A criatura falha automaticamente em testes de resistência de Força e Destreza. Jogadas de ataque contra a criatura têm vantagem.",
+  unconscious: "Uma criatura inconsciente está incapacitada, não pode se mover ou falar e não tem consciência do que acontece ao seu redor. A criatura larga o que estiver segurando e cai em posição de caído. A criatura falha automaticamente em testes de resistência de Força e Destreza. Jogadas de ataque contra a criatura têm vantagem. Qualquer ataque que acerte a criatura é um acerto crítico se o atacante estiver a até 1,5 metro dela.",
+};
+
 const LABELS = {
   en: {
     title: "D&D 5e Conditions",
@@ -106,6 +124,8 @@ const LABELS = {
     effect: "Effect",
     clickToExpand: "Click to expand",
     searchPlaceholder: "Search conditions...",
+    langEn: "EN",
+    langPt: "PT",
   },
   "pt-BR": {
     title: "Condições D&D 5e",
@@ -122,6 +142,8 @@ const LABELS = {
     effect: "Efeito",
     clickToExpand: "Clique para expandir",
     searchPlaceholder: "Buscar condições...",
+    langEn: "EN",
+    langPt: "PT",
   },
 } as const;
 
@@ -158,6 +180,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
   const [filter, setFilter] = useState<CategoryFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
   const L = LABELS[locale];
 
   // Filter only core conditions (not diseases/statuses)
@@ -174,16 +197,18 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
           return CATEGORY_MAP[baseName] === filter;
         });
 
-  // Apply search filter (bilingual — matches EN name, PT name, or description)
+  // Apply search filter (bilingual — matches EN name, PT name, EN description, or PT description)
   const filtered = search.trim()
     ? categoryFiltered.filter((c) => {
         const q = search.toLowerCase();
         const baseName = c.name.toLowerCase();
         const ptName = (CONDITION_NAMES_PT[baseName] ?? "").toLowerCase();
+        const ptDesc = (CONDITION_DESCRIPTIONS_PT[baseName] ?? "").toLowerCase();
         return (
           baseName.includes(q) ||
           ptName.includes(q) ||
-          c.description.toLowerCase().includes(q)
+          c.description.toLowerCase().includes(q) ||
+          ptDesc.includes(q)
         );
       })
     : categoryFiltered;
@@ -208,28 +233,53 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
 
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-        {/* Version toggle */}
-        <div className="flex items-center gap-1 bg-gray-900/50 rounded-lg p-1 border border-gray-800">
-          <button
-            onClick={() => setVersion("2014")}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              version === "2014"
-                ? "bg-[#D4A853] text-white"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-          >
-            {L.version2014}
-          </button>
-          <button
-            onClick={() => setVersion("2024")}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              version === "2024"
-                ? "bg-[#D4A853] text-white"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-          >
-            {L.version2024}
-          </button>
+        {/* Version toggle + Language toggle */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-gray-900/50 rounded-lg p-1 border border-gray-800">
+            <button
+              onClick={() => setVersion("2014")}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                version === "2014"
+                  ? "bg-[#D4A853] text-white"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              {L.version2014}
+            </button>
+            <button
+              onClick={() => setVersion("2024")}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                version === "2024"
+                  ? "bg-[#D4A853] text-white"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              {L.version2024}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1 bg-gray-900/50 rounded-lg p-1 border border-gray-800">
+            <button
+              onClick={() => setDescLang("en")}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                descLang === "en"
+                  ? "bg-[#D4A853] text-white"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              {L.langEn}
+            </button>
+            <button
+              onClick={() => setDescLang("pt-BR")}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                descLang === "pt-BR"
+                  ? "bg-[#D4A853] text-white"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              {L.langPt}
+            </button>
+          </div>
         </div>
 
         {/* Category filters */}
@@ -266,7 +316,12 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
         {filtered.map((cond) => {
           const baseName = cond.name.toLowerCase();
           const icon = CONDITION_ICONS[baseName] ?? <SrdIconSkull className="w-6 h-6" />;
-          const displayName = locale === "pt-BR" ? (CONDITION_NAMES_PT[baseName] ?? cond.name) : cond.name;
+          const ptName = CONDITION_NAMES_PT[baseName] ?? cond.name;
+          const displayName = descLang === "pt-BR" ? ptName : cond.name;
+          const subtitleName = descLang === "pt-BR" ? cond.name : (locale === "pt-BR" ? ptName : null);
+          const displayDescription = descLang === "pt-BR"
+            ? (CONDITION_DESCRIPTIONS_PT[baseName] ?? cond.description)
+            : cond.description;
           const isExpanded = expanded === cond.id;
           const cat = CATEGORY_MAP[baseName] ?? "debuff";
 
@@ -294,17 +349,17 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
                   <h3 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-base">
                     {displayName}
                   </h3>
-                  {locale === "pt-BR" && baseName !== displayName.toLowerCase() && (
-                    <p className="text-xs text-gray-500 italic">{cond.name}</p>
+                  {subtitleName && subtitleName.toLowerCase() !== displayName.toLowerCase() && (
+                    <p className="text-xs text-gray-500 italic">{subtitleName}</p>
                   )}
                   <p
                     className={`text-sm text-gray-400 mt-1.5 ${
                       isExpanded ? "" : "line-clamp-2"
                     }`}
                   >
-                    {cond.description}
+                    {displayDescription}
                   </p>
-                  {!isExpanded && cond.description.length > 120 && (
+                  {!isExpanded && displayDescription.length > 120 && (
                     <span className="text-xs text-[#D4A853] mt-1 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
                       {L.clickToExpand}
                     </span>
@@ -338,7 +393,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
                 </tr>
               </thead>
               <tbody>
-                {EXHAUSTION_2014[locale].map(({ level, effect }) => (
+                {EXHAUSTION_2014[descLang === "pt-BR" ? "pt-BR" : "en"].map(({ level, effect }) => (
                   <tr key={level} className="border-b border-gray-800/50">
                     <td className={`py-2.5 font-bold ${levelColor(level)}`}>
                       {level}
@@ -352,36 +407,36 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
             <div className="space-y-3 text-sm text-gray-300">
               <p>
                 <strong className="text-yellow-400">
-                  {locale === "pt-BR" ? "Cumulativo" : "Cumulative"}:
+                  {descLang === "pt-BR" ? "Cumulativo" : "Cumulative"}:
                 </strong>{" "}
-                {locale === "pt-BR"
+                {descLang === "pt-BR"
                   ? "Cada vez que você recebe Exaustão, ganha 1 nível."
                   : "Each time you receive Exhaustion, you gain 1 level."}
               </p>
               <p>
                 <strong className="text-orange-400">
-                  {locale === "pt-BR" ? "Testes d20" : "D20 Tests"}:
+                  {descLang === "pt-BR" ? "Testes d20" : "D20 Tests"}:
                 </strong>{" "}
-                {locale === "pt-BR"
+                {descLang === "pt-BR"
                   ? "Rolagem reduzida em 2 × nível de Exaustão."
                   : "Roll is reduced by 2 × your Exhaustion level."}
               </p>
               <p>
                 <strong className="text-orange-400">
-                  {locale === "pt-BR" ? "Velocidade" : "Speed"}:
+                  {descLang === "pt-BR" ? "Velocidade" : "Speed"}:
                 </strong>{" "}
-                {locale === "pt-BR"
+                {descLang === "pt-BR"
                   ? "Reduzida em 5 × nível de Exaustão (pés)."
                   : "Reduced by 5 × your Exhaustion level (feet)."}
               </p>
               <p>
                 <strong className="text-red-400">
-                  {locale === "pt-BR" ? "Nível 6" : "Level 6"}:
+                  {descLang === "pt-BR" ? "Nível 6" : "Level 6"}:
                 </strong>{" "}
-                {locale === "pt-BR" ? "Você morre." : "You die."}
+                {descLang === "pt-BR" ? "Você morre." : "You die."}
               </p>
               <p className="text-gray-500 text-xs">
-                {locale === "pt-BR"
+                {descLang === "pt-BR"
                   ? "Descanso Longo remove 1 nível de Exaustão."
                   : "Finishing a Long Rest removes 1 Exhaustion level."}
               </p>

@@ -40,6 +40,11 @@ export default function MagiasIndexPage() {
         concentration: s.concentration,
         ritual: s.ritual,
         slug: toSpellSlugPt(enSlug),
+        ruleset_version: s.ruleset_version,
+        casting_time: s.casting_time,
+        range: s.range,
+        duration: s.duration,
+        description: s.description?.slice(0, 200),
       };
     });
 
@@ -71,6 +76,7 @@ export default function MagiasIndexPage() {
         <PublicSpellGrid
           spells={spells}
           basePath="/magias"
+          locale="pt-BR"
           labels={{
             searchPlaceholder: "Buscar magias pelo nome...",
             levelLabel: "Nível:",
@@ -82,6 +88,9 @@ export default function MagiasIndexPage() {
             spells: "magias",
             clearAll: "Limpar filtros",
             noResults: "Nenhuma magia encontrada com esses filtros.",
+            filtersLabel: "Filtros",
+            langEn: "English",
+            langPt: "Português",
           }}
         />
 
