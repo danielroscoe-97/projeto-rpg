@@ -217,3 +217,44 @@ RECONEXÃO DO JOGADOR (jogador volta):
   L4: Lista de nomes (server-side, 1 clique)
   L5: Formulário completo (último recurso)
 ```
+
+# SRD Content Compliance — REGRA IMUTÁVEL
+
+**NUNCA expor conteúdo não-SRD em páginas públicas.**
+
+## O que é SRD (seguro para uso público)
+
+O SRD 5.1 (Systems Reference Document) é licenciado sob **CC-BY-4.0** pela Wizards of the Coast. Apenas esse conteúdo pode aparecer em páginas públicas indexadas por mecanismos de busca.
+
+| Fonte | Licença | Status |
+|---|---|---|
+| SRD 5.1 monsters (~419) | CC-BY-4.0 | Permitido |
+| SRD 5.1 spells (~361) | CC-BY-4.0 | Permitido |
+| Monster-a-Day (MAD, 357) | CC (parceria r/monsteraday) | Permitido |
+| Qualquer outro livro WotC | Copyright WotC | **PROIBIDO em público** |
+
+## Mecanismo de Proteção
+
+- `public/srd/srd-monster-whitelist.json` — lista de slugs de monstros SRD permitidos
+- `public/srd/srd-spell-whitelist.json` — lista de slugs de magias SRD permitidos
+- `lib/srd/srd-data-server.ts` — filtra por whitelist antes de expor qualquer conteúdo
+- Os JSONs base (`monsters-2014.json`, `monsters-2024.json`, `spells-*.json`) contêm conteúdo misto — o filtro é a única barreira
+
+## Anti-Patterns — PROIBIDO
+
+```
+// ❌ NUNCA remover ou bypassar os filtros de whitelist
+// ❌ NUNCA adicionar conteúdo não-SRD aos whitelists
+// ❌ NUNCA expor getSrdMonsters() sem filtro de whitelist ativo
+// ❌ NUNCA regenerar JSONs base sem verificar que o filtro continua funcional
+// ❌ NUNCA usar fonte (VGM, MPMM, MTF, FTD, etc.) em páginas públicas
+// ✅ SEMPRE verificar build após alterar srd-data-server.ts
+// ✅ SEMPRE manter whitelists derivados do SRD 5.1 oficial
+```
+
+## Ao Alterar Conteúdo SRD
+
+1. Verificar que `srd-monster-whitelist.json` e `srd-spell-whitelist.json` existem
+2. Verificar que `getSrdMonsters()` e `getSrdSpells()` filtram por whitelist
+3. Contar resultados — monsters ~1122 (419 SRD + 346 SRD 2024 + 357 MAD), spells ~604
+4. Se os números subirem significativamente, investigar se conteúdo não-SRD vazou

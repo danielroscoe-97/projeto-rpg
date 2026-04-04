@@ -56,14 +56,43 @@ export function getSpellBySlugPt(ptSlug: string): SrdSpell | undefined {
 
 const SRD_DIR = join(process.cwd(), "public", "srd");
 
+// ── SRD whitelists (slug-based) ─────────────────────────────────
+// Only monsters/spells in these whitelists are exposed on public pages.
+// MAD (Monster-a-Day) monsters are CC-licensed and always allowed.
+let srdMonsterWhitelist: Set<string> | null = null;
+let srdSpellWhitelist: Set<string> | null = null;
+
+function getSrdMonsterWhitelist(): Set<string> {
+  if (srdMonsterWhitelist) return srdMonsterWhitelist;
+  try {
+    const slugs: string[] = JSON.parse(readFileSync(join(SRD_DIR, "srd-monster-whitelist.json"), "utf-8"));
+    srdMonsterWhitelist = new Set(slugs);
+  } catch {
+    srdMonsterWhitelist = new Set();
+  }
+  return srdMonsterWhitelist;
+}
+
+function getSrdSpellWhitelist(): Set<string> {
+  if (srdSpellWhitelist) return srdSpellWhitelist;
+  try {
+    const slugs: string[] = JSON.parse(readFileSync(join(SRD_DIR, "srd-spell-whitelist.json"), "utf-8"));
+    srdSpellWhitelist = new Set(slugs);
+  } catch {
+    srdSpellWhitelist = new Set();
+  }
+  return srdSpellWhitelist;
+}
+
 let monsterCache: SrdMonster[] | null = null;
 let spellCache: SrdSpell[] | null = null;
 
-/** Load all SRD monsters from static JSON (server-side only).
- *  Returns only is_srd: true entries for public pages. */
+/** Load SRD-licensed monsters only (CC-BY-4.0).
+ *  Filters 2014/2024 by srd-monster-whitelist.json; MAD are CC and always included. */
 export function getSrdMonsters(): SrdMonster[] {
   if (monsterCache) return monsterCache;
   try {
+    const whitelist = getSrdMonsterWhitelist();
     const m2014: SrdMonster[] = JSON.parse(
       readFileSync(join(SRD_DIR, "monsters-2014.json"), "utf-8")
     );
@@ -76,25 +105,29 @@ export function getSrdMonsters(): SrdMonster[] {
     } catch {
       // MAD file is optional
     }
-    monsterCache = [...m2014, ...m2024, ...mad];
+    // Filter WotC content by SRD whitelist; MAD is CC-licensed, include all
+    const srd2014 = m2014.filter((m) => whitelist.has(toSlug(m.name)));
+    const srd2024 = m2024.filter((m) => whitelist.has(toSlug(m.name)));
+    monsterCache = [...srd2014, ...srd2024, ...mad];
   } catch {
     monsterCache = [];
   }
   return monsterCache;
 }
 
-/** Load all SRD spells from static JSON (server-side only).
- *  Returns only is_srd: true entries for public pages. */
+/** Load SRD-licensed spells only (CC-BY-4.0).
+ *  Filters by srd-spell-whitelist.json to exclude non-SRD content. */
 export function getSrdSpells(): SrdSpell[] {
   if (spellCache) return spellCache;
   try {
+    const whitelist = getSrdSpellWhitelist();
     const s2014: SrdSpell[] = JSON.parse(
       readFileSync(join(SRD_DIR, "spells-2014.json"), "utf-8")
     );
     const s2024: SrdSpell[] = JSON.parse(
       readFileSync(join(SRD_DIR, "spells-2024.json"), "utf-8")
     );
-    spellCache = [...s2014, ...s2024];
+    spellCache = [...s2014, ...s2024].filter((s) => whitelist.has(toSlug(s.name)));
   } catch {
     spellCache = [];
   }
