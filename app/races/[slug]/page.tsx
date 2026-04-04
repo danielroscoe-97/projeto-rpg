@@ -100,22 +100,18 @@ export default async function RaceDetailPage({
         />
 
         <main className="mx-auto max-w-4xl px-4 py-8">
-          {/* Language toggle */}
-          <p className="text-xs text-gray-500 mb-4">
-            Also available in{" "}
-            <Link
-              href={`/racas/${slug}`}
-              className="text-[#D4A853] hover:underline"
-            >
-              Português
-            </Link>
-          </p>
-
           <PublicRaceDetail slug={slug} locale="en" />
 
           <div className="mt-12">
             <PublicCTA entityName={race.nameEn} locale="en" />
           </div>
+
+          <p className="text-xs text-gray-500 mt-12 text-center">
+            Also available in{" "}
+            <Link href={`/racas/${slug}`} className="text-[#D4A853] hover:underline">
+              Português
+            </Link>
+          </p>
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">

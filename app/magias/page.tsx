@@ -66,12 +66,6 @@ export default function MagiasIndexPage() {
             </a>
             .
           </p>
-          <p className="text-gray-500 text-sm mt-1">
-            Página disponível em{" "}
-            <Link href="/spells" className="text-[#D4A853] hover:underline">
-              English
-            </Link>
-          </p>
         </div>
 
         <PublicSpellGrid
@@ -115,6 +109,13 @@ export default function MagiasIndexPage() {
             </Link>
           </div>
         </div>
+
+        <p className="text-xs text-gray-500 mt-12 text-center">
+          Página disponível em{" "}
+          <Link href="/spells" className="text-[#D4A853] hover:underline">
+            English
+          </Link>
+        </p>
       </main>
 
       <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">

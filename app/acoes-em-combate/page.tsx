@@ -90,22 +90,18 @@ export default function AcoesEmCombatePage() {
         />
 
         <main className="mx-auto max-w-5xl px-4 py-8">
-          {/* Language toggle */}
-          <p className="text-xs text-gray-500 mb-4">
-            Página disponível em{" "}
-            <Link
-              href="/actions"
-              className="text-[#D4A853] hover:underline"
-            >
-              English
-            </Link>
-          </p>
-
           <PublicActionsGrid locale="pt-BR" />
 
           <div className="mt-12">
             <PublicCTA entityName="Ações de Combate D&D 5e" locale="pt-BR" />
           </div>
+
+          <p className="text-xs text-gray-500 mt-12 text-center">
+            Página disponível em{" "}
+            <Link href="/actions" className="text-[#D4A853] hover:underline">
+              English
+            </Link>
+          </p>
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">

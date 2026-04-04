@@ -94,22 +94,18 @@ export default function RacesPage() {
         <PublicNav breadcrumbs={[{ label: "Races" }]} />
 
         <main className="mx-auto max-w-6xl px-4 py-8">
-          {/* Language toggle */}
-          <p className="text-xs text-gray-500 mb-4">
-            Also available in{" "}
-            <Link
-              href="/racas"
-              className="text-[#D4A853] hover:underline"
-            >
-              Portugues
-            </Link>
-          </p>
-
           <PublicRacesIndex locale="en" />
 
           <div className="mt-12">
             <PublicCTA entityName="D&D 5e Races" locale="en" />
           </div>
+
+          <p className="text-xs text-gray-500 mt-12 text-center">
+            Also available in{" "}
+            <Link href="/racas" className="text-[#D4A853] hover:underline">
+              Português
+            </Link>
+          </p>
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">

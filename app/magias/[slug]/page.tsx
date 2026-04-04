@@ -118,14 +118,6 @@ export default async function MagiaPage({
         />
 
         <main className="mx-auto max-w-4xl px-4 py-8">
-          {/* Language toggle */}
-          <p className="text-xs text-gray-500 mb-4">
-            Página disponível em{" "}
-            <Link href={`/spells/${enSlug}`} className="text-[#D4A853] hover:underline">
-              English
-            </Link>
-          </p>
-
           {/* Collapsible search */}
           <PublicSpellSearch
             spells={allSpells}
@@ -138,6 +130,13 @@ export default async function MagiaPage({
 
           {/* Two-box CTA */}
           <PublicCTA entityName={spell.name} locale="pt-BR" />
+
+          <p className="text-xs text-gray-500 mt-12 text-center">
+            Página disponível em{" "}
+            <Link href={`/spells/${enSlug}`} className="text-[#D4A853] hover:underline">
+              English
+            </Link>
+          </p>
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
