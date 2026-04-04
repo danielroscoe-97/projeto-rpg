@@ -192,6 +192,9 @@ export function CombatSessionClient({
         started_at: combatStarted ? new Date(combatStarted).toISOString() : null,
         ended_at: new Date().toISOString(),
         ...qualityFlags,
+        // CTA-10: Persist time analytics for longitudinal analysis
+        duration_seconds: pending.combatDuration > 0 ? Math.round(pending.combatDuration / 1000) : undefined,
+        turn_time_data: Object.keys(pending.turnTimeAccumulated).length > 0 ? pending.turnTimeAccumulated : undefined,
       }).catch(() => { /* fire-and-forget */ });
     }
 

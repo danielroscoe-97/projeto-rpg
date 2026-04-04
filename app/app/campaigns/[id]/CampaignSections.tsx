@@ -2,7 +2,7 @@
 
 import { useState, Component, type ErrorInfo, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText, MapPin, Flag, AlertTriangle } from "lucide-react";
+import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText, MapPin, Flag, Package, AlertTriangle } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
@@ -11,6 +11,7 @@ import { CampaignMindMap } from "@/components/campaign/CampaignMindMap";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { LocationList } from "@/components/campaign/LocationList";
 import { FactionList } from "@/components/campaign/FactionList";
+import { BagOfHolding } from "@/components/player-hq/BagOfHolding";
 import { CampaignEncounterBuilder } from "@/components/campaign/CampaignEncounterBuilder";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
@@ -29,6 +30,7 @@ interface Props {
   campaignName: string;
   initialCharacters: PlayerCharacter[];
   isOwner: boolean;
+  userId: string;
   initialMembers?: CampaignMemberWithUser[];
   srdMonsters?: MonsterOption[];
 }
@@ -100,6 +102,7 @@ export function CampaignSections({
   campaignName,
   initialCharacters,
   isOwner,
+  userId,
   initialMembers,
   srdMonsters,
 }: Props) {
@@ -162,6 +165,12 @@ export function CampaignSections({
         <Section id="section_notes" icon={FileText} title={t("section_notes")} defaultOpen={false}>
           <CampaignNotes campaignId={campaignId} />
         </Section>
+
+        {isOwner && (
+          <Section id="section_inventory" icon={Package} title={t("section_inventory")} defaultOpen={false}>
+            <BagOfHolding campaignId={campaignId} userId={userId} isDm={true} />
+          </Section>
+        )}
       </div>
 
       {/* Sidebar — lighter sections */}

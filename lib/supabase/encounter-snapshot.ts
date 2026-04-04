@@ -32,6 +32,10 @@ export interface EncounterSnapshotData {
   has_manual_creatures: boolean;
   has_unknown_cr: boolean;
   has_incomplete_party: boolean;
+  /** CTA-10: Total combat duration in seconds */
+  duration_seconds?: number;
+  /** CTA-10: Per-combatant turn time { combatant_id: milliseconds } */
+  turn_time_data?: Record<string, number>;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -149,18 +153,23 @@ export async function persistEncounterSnapshot(
   data: EncounterSnapshotData
 ): Promise<void> {
   const supabase = createClient();
+  const updatePayload: Record<string, unknown> = {
+    party_snapshot: data.party_snapshot,
+    creatures_snapshot: data.creatures_snapshot,
+    combat_result: data.combat_result,
+    started_at: data.started_at,
+    ended_at: data.ended_at,
+    has_manual_creatures: data.has_manual_creatures,
+    has_unknown_cr: data.has_unknown_cr,
+    has_incomplete_party: data.has_incomplete_party,
+  };
+  // CTA-10: Include time analytics when available
+  if (data.duration_seconds != null) updatePayload.duration_seconds = data.duration_seconds;
+  if (data.turn_time_data) updatePayload.turn_time_data = data.turn_time_data;
+
   const { error } = await supabase
     .from("encounters")
-    .update({
-      party_snapshot: data.party_snapshot,
-      creatures_snapshot: data.creatures_snapshot,
-      combat_result: data.combat_result,
-      started_at: data.started_at,
-      ended_at: data.ended_at,
-      has_manual_creatures: data.has_manual_creatures,
-      has_unknown_cr: data.has_unknown_cr,
-      has_incomplete_party: data.has_incomplete_party,
-    })
+    .update(updatePayload)
     .eq("id", encounterId);
 
   if (error) {

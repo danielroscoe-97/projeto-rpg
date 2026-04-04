@@ -310,6 +310,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         campaignName={campaign.name}
         initialCharacters={characters ?? []}
         isOwner={isOwner}
+        userId={user.id}
         initialMembers={initialMembers}
         srdMonsters={isOwner ? getSrdMonsters().map((m) => ({
           name: m.name,

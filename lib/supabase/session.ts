@@ -185,12 +185,44 @@ export async function persistInitiativeOrder(
   );
 }
 
-/** Marks an encounter as completed (is_active = false). */
+/** Marks an encounter as completed (is_active = false) and syncs final HP/conditions back to player_characters. */
 export async function persistEndEncounter(
   encounterId: string,
   stats?: { rounds_total?: number; duration_seconds?: number; combatants_defeated?: number }
 ): Promise<void> {
   const supabase = createClient();
+
+  // Best-effort sync: copy final HP/conditions from combatants back to player_characters
+  // so Player HQ reflects post-combat state. Failures here must NOT block encounter end.
+  try {
+    const { data: playerCombatants } = await supabase
+      .from("combatants")
+      .select("player_character_id, current_hp, max_hp, temp_hp, ac, conditions")
+      .eq("encounter_id", encounterId)
+      .not("player_character_id", "is", null);
+
+    const linked = (playerCombatants ?? []).filter((c) => c.player_character_id);
+    if (linked.length > 0) {
+      await Promise.all(
+        linked.map((c) =>
+          supabase
+            .from("player_characters")
+            .update({
+              current_hp: c.current_hp,
+              max_hp: c.max_hp,
+              hp_temp: c.temp_hp,
+              ac: c.ac,
+              conditions: c.conditions,
+            })
+            .eq("id", c.player_character_id!)
+        )
+      );
+    }
+  } catch {
+    // Best-effort: log but don't block encounter end
+    console.error("[persistEndEncounter] Failed to sync player_characters — continuing");
+  }
+
   const { error } = await supabase
     .from("encounters")
     .update({ is_active: false })
