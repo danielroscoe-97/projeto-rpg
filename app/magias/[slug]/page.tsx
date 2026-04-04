@@ -6,6 +6,9 @@ import {
   getSrdSpells,
   toSlug,
   toSpellSlugPt,
+  getSpellNamePt,
+  getSpellDescriptionPt,
+  getSpellHigherLevelsPt,
 } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellCard } from "@/components/public/PublicSpellCard";
@@ -37,9 +40,11 @@ export async function generateMetadata({
   if (!spell) return { title: "Magia Não Encontrada" };
 
   const enSlug = toSlug(spell.name);
+  const ptName = getSpellNamePt(enSlug, spell.name);
   const levelStr = spell.level === 0 ? "Truque" : `Nível ${spell.level}`;
-  const title = `${spell.name} — Magia D&D 5e`;
-  const description = `${spell.name}, ${levelStr} de ${spell.school}. ${spell.casting_time}, alcance ${spell.range}.${spell.description ? ` ${spell.description.slice(0, 120)}...` : ""}`;
+  const title = `${ptName} — Magia D&D 5e`;
+  const ptDesc = getSpellDescriptionPt(enSlug);
+  const description = `${ptName}, ${levelStr} de ${spell.school}. ${spell.casting_time}, alcance ${spell.range}.${(ptDesc ?? spell.description) ? ` ${(ptDesc ?? spell.description).slice(0, 120)}...` : ""}`;
 
   return {
     title,
@@ -63,13 +68,13 @@ export async function generateMetadata({
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
-function SpellJsonLd({ spell, slug }: { spell: NonNullable<ReturnType<typeof getSpellBySlugPt>>; slug: string }) {
+function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<typeof getSpellBySlugPt>>; slug: string; ptName: string }) {
   const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
-    name: `${spell.name} — Magia D&D 5e`,
-    headline: `${spell.name} — Magia D&D 5e`,
-    description: `${spell.name}. ${spell.description.slice(0, 200)}`,
+    name: `${ptName} — Magia D&D 5e`,
+    headline: `${ptName} — Magia D&D 5e`,
+    description: `${ptName}. ${spell.description.slice(0, 200)}`,
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
     inLanguage: "pt-BR",
@@ -81,7 +86,7 @@ function SpellJsonLd({ spell, slug }: { spell: NonNullable<ReturnType<typeof get
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Início", item: "https://www.pocketdm.com.br" },
       { "@type": "ListItem", position: 2, name: "Magias", item: "https://www.pocketdm.com.br/magias" },
-      { "@type": "ListItem", position: 3, name: spell.name, item: `https://www.pocketdm.com.br/magias/${slug}` },
+      { "@type": "ListItem", position: 3, name: ptName, item: `https://www.pocketdm.com.br/magias/${slug}` },
     ],
   };
 
@@ -110,6 +115,7 @@ export default async function MagiaPage({
   if (!spell) notFound();
 
   const enSlug = toSlug(spell.name);
+  const ptName = getSpellNamePt(enSlug, spell.name);
   const tier = getSpellTier(enSlug);
   const t = await getTranslations("methodology");
 
@@ -135,14 +141,14 @@ export default async function MagiaPage({
 
   return (
     <>
-      <SpellJsonLd spell={spell} slug={slug} />
+      <SpellJsonLd spell={spell} slug={slug} ptName={ptName} />
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav
           locale="pt-BR"
           breadcrumbs={[
             { label: "Magias", href: "/magias" },
-            { label: spell.name },
+            { label: ptName },
           ]}
         />
 
@@ -154,8 +160,17 @@ export default async function MagiaPage({
             buttonLabel="Buscar mais magias"
           />
 
-          {/* Spell card with dice rollers */}
-          <PublicSpellCard spell={spell} tier={tier} />
+          {/* Spell card with dice rollers — PT-translated */}
+          <PublicSpellCard
+            spell={{
+              ...spell,
+              name: getSpellNamePt(enSlug, spell.name),
+              description: getSpellDescriptionPt(enSlug) ?? spell.description,
+              higher_levels: getSpellHigherLevelsPt(enSlug) ?? spell.higher_levels,
+            }}
+            tier={tier}
+            locale="pt-BR"
+          />
 
           {/* Community tier voting */}
           <SpellTierVotingMini

@@ -77,6 +77,11 @@ export function getSpellDescriptionPt(enSlug: string): string | undefined {
   return getSpellDescPtMap()[enSlug]?.description;
 }
 
+/** Get PT-BR higher-levels text for a spell (by EN slug). */
+export function getSpellHigherLevelsPt(enSlug: string): string | undefined {
+  return getSpellDescPtMap()[enSlug]?.higher_levels ?? undefined;
+}
+
 const SRD_DIR = join(process.cwd(), "public", "srd");
 
 // ── SRD whitelists (slug-based) ─────────────────────────────────
