@@ -3648,33 +3648,36 @@ export function BlogPost13() {
             Variante &mdash; Shadar-kai com Point Buy
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            Se sua mesa usa Point Buy e permite as regras de raça com ASIs
-            flex&iacute;veis (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> &eacute;
-            uma alternativa excelente a Half-Elf. A ideia &eacute; redistribuir os
-            b&ocirc;nus raciais para fechar tanto CHA quanto CON em n&uacute;meros pares
-            mais cedo, eliminando pontos &iacute;mpares desperdi&ccedil;ados.
+            Se sua mesa usa Point Buy e permite ASIs flex&iacute;veis
+            (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> &eacute;
+            uma alternativa excelente a Half-Elf. Voc&ecirc; consegue fechar{" "}
+            <strong>CHA 18, CON 18 e WIS par</strong> &mdash; todos os atributos
+            importantes em n&uacute;meros pares, sem desperd&iacute;cio.
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
             <strong>Como funciona:</strong> Compre CHA 15 e CON 15 no Point Buy.
             Distribua os b&ocirc;nus raciais como +2 CON e +1 CHA, chegando a{" "}
-            <strong>CON 17, CHA 16</strong> no n&iacute;vel 1. No n&iacute;vel 5 (Sorc 4),
-            pegue <strong>Resilient (CON)</strong> &rarr; CON 18 (modificador +4 E
-            profici&ecirc;ncia em saves de CON). No n&iacute;vel 9 (Sorc 8), pegue um
-            half-feat de CHA como <strong>Fey Touched (+1 CHA)</strong> &rarr; CHA 17...
-            ou melhor, inverta: pegue Fey Touched com +1 CHA no n&iacute;vel 5 (CHA 17 &eacute;
-            &iacute;mpar, mas voc&ecirc; ganha Misty Step + Gift of Alacrity), e{" "}
-            <strong>Resilient (CON)</strong> no n&iacute;vel 9 (CON 18). A ordem ideal
-            depende da sua mesa &mdash; se concentra&ccedil;&atilde;o &eacute; cr&iacute;tica desde cedo,
-            Resilient primeiro.
+            <strong>CHA 16, CON 17</strong> no n&iacute;vel 1.
           </p>
+          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-1.5 pl-0">
+            <li><strong>N&iacute;vel 5 (Sorc 4) &mdash; Resilient (CON):</strong>{" "}
+              CON 17 &rarr; <strong>CON 18</strong> (modificador +4) com profici&ecirc;ncia em saves de CON.
+              Concentra&ccedil;&atilde;o blindada desde cedo.</li>
+            <li><strong>N&iacute;vel 9 (Sorc 8) &mdash; Fey Touched (+1 WIS):</strong>{" "}
+              Coloque o +1 em <strong>WIS</strong> (n&atilde;o em CHA), fechando WIS num valor par.
+              Voc&ecirc; ganha Misty Step + Gift of Alacrity e fica mais tanque nos saves de WIS.</li>
+            <li><strong>N&iacute;vel 10 &mdash; Tome of Leadership:</strong>{" "}
+              CHA 16 &rarr; <strong>CHA 18</strong> (modificador +4). O Tome pula direto de 16 para 18,
+              por isso voc&ecirc; n&atilde;o precisa gastar Fey Touched em CHA.</li>
+          </ul>
           <p className="text-sm text-foreground/85 leading-relaxed">
-            <strong>Vantagem da Shadar-kai:</strong> Al&eacute;m da otimiza&ccedil;&atilde;o de ASIs,
-            voc&ecirc; ganha <em>Blessing of the Raven Queen</em> &mdash; um teleporte
+            <strong>Vantagem da Shadar-kai:</strong> Al&eacute;m de fechar todos os atributos pares,
+            voc&ecirc; ganha <em>Blessing of the Raven Queen</em> &mdash; teleporte
             de 30ft como b&ocirc;nus action com resist&ecirc;ncia a todo dano at&eacute; o pr&oacute;ximo
-            turno. Para um caster frontline que precisa manter concentra&ccedil;&atilde;o, isso
-            &eacute; uma ferramenta de sobreviv&ecirc;ncia brutal que Misty Step n&atilde;o oferece.
-            O trade-off &eacute; perder Fey Ancestry e os dois +1 extras do Half-Elf,
-            mas com Point Buy, os n&uacute;meros finais ficam melhores.
+            turno. Para um caster frontline, &eacute; uma ferramenta de sobreviv&ecirc;ncia
+            brutal que Misty Step n&atilde;o oferece. O trade-off &eacute; DEX mais baixo
+            (12 vs 14) e perder Fey Ancestry, mas com Point Buy os n&uacute;meros
+            finais compensam.
           </p>
         </div>
       </div>
@@ -4164,31 +4167,33 @@ export function BlogPost14() {
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
             If your table uses Point Buy and allows flexible ASI rules
             (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> is an
-            excellent alternative to Half-Elf. The idea is to redistribute racial
-            bonuses so both CHA and CON land on even numbers earlier, eliminating
-            wasted odd scores.
+            excellent alternative to Half-Elf. You can close{" "}
+            <strong>CHA 18, CON 18, and WIS even</strong> &mdash; every important
+            ability score on an even number, zero waste.
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
             <strong>How it works:</strong> Buy CHA 15 and CON 15 in Point Buy.
             Place racial bonuses as +2 CON and +1 CHA, arriving at{" "}
-            <strong>CON 17, CHA 16</strong> at level 1. At level 5 (Sorc 4), take{" "}
-            <strong>Resilient (CON)</strong> &rarr; CON 18 (+4 modifier AND
-            proficiency in CON saves). At level 9 (Sorc 8), take a CHA half-feat
-            like <strong>Fey Touched (+1 CHA)</strong> &rarr; CHA 17... or better
-            yet, swap the order: take Fey Touched with +1 CHA at level 5 (CHA 17
-            is odd, but you gain Misty Step + Gift of Alacrity), then{" "}
-            <strong>Resilient (CON)</strong> at level 9 (CON 18). The ideal order
-            depends on your table — if concentration is critical early on,
-            Resilient first.
+            <strong>CHA 16, CON 17</strong> at level 1.
           </p>
+          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-1.5 pl-0">
+            <li><strong>Level 5 (Sorc 4) &mdash; Resilient (CON):</strong>{" "}
+              CON 17 &rarr; <strong>CON 18</strong> (+4 modifier) with proficiency in CON saves.
+              Armored concentration from early on.</li>
+            <li><strong>Level 9 (Sorc 8) &mdash; Fey Touched (+1 WIS):</strong>{" "}
+              Put the +1 into <strong>WIS</strong> (not CHA), closing WIS to an even number.
+              You gain Misty Step + Gift of Alacrity and become tankier on WIS saves.</li>
+            <li><strong>Level 10 &mdash; Tome of Leadership:</strong>{" "}
+              CHA 16 &rarr; <strong>CHA 18</strong> (+4 modifier). The Tome jumps straight from 16 to 18,
+              which is why you don&apos;t need to spend Fey Touched on CHA.</li>
+          </ul>
           <p className="text-sm text-foreground/85 leading-relaxed">
-            <strong>Shadar-kai advantage:</strong> Beyond ASI optimization, you
-            gain <em>Blessing of the Raven Queen</em> — a 30ft teleport as a bonus
+            <strong>Shadar-kai advantage:</strong> Beyond closing all scores even,
+            you gain <em>Blessing of the Raven Queen</em> &mdash; a 30ft teleport as a bonus
             action with resistance to all damage until your next turn. For a
-            frontline caster who needs to maintain concentration, this is a brutal
-            survival tool that Misty Step doesn&apos;t offer. The trade-off is
-            losing Fey Ancestry and the two extra +1s from Half-Elf, but with
-            Point Buy, the final numbers come out ahead.
+            frontline caster, this is a brutal survival tool that Misty Step
+            doesn&apos;t offer. The trade-off is lower DEX (12 vs 14) and losing
+            Fey Ancestry, but with Point Buy the final numbers come out ahead.
           </p>
         </div>
       </div>

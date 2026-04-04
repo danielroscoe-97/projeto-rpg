@@ -252,9 +252,9 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer",
     title:
-      "Half-Elf Order Cleric 1 / Divine Soul Sorcerer — Build de Suporte Nível 10",
+      "Build de Suporte Nível 10 — Meio-Elfo Clérigo da Ordem 1 / Feiticeiro de Alma Divina",
     description:
-      "Build otimizada de Half-Elf (Drow) Order Cleric 1 / Divine Soul Sorcerer nível 10 para D&D 5e. Suporte tier S com Voice of Authority e Metamagic. Versão Point Buy e dados rolados.",
+      "Build otimizada de Meio-Elfo (Drow) Clérigo da Ordem 1 / Feiticeiro de Alma Divina nível 10 para D&D 5e. Suporte tier S com Voz de Autoridade e Metamagia. Versão Point Buy e dados rolados.",
     date: "2026-04-04",
     readingTime: "14 min",
     keywords: [
@@ -270,7 +270,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "build otimizada suporte D&D",
     ],
     ogTitle:
-      "Half-Elf Order Cleric / Divine Soul Sorcerer — Build Nível 10 | Pocket DM",
+      "Build de Suporte Nível 10 — Clérigo da Ordem / Feiticeiro de Alma Divina | Pocket DM",
     category: "build",
   },
   {
