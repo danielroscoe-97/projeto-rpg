@@ -284,9 +284,11 @@ export function CombatSessionClient({
     const state = useCombatStore.getState();
 
     // Accumulate the final (active) turn's elapsed time before computing stats
+    // CTA-12 fix: if paused, use pausedAt to exclude break time
     const finalAccumulated = { ...state.turnTimeAccumulated };
     const currentId = state.combatants[state.current_turn_index]?.id;
-    const elapsed = state.turnStartedAt ? Date.now() - state.turnStartedAt : 0;
+    const effectiveNow = (state.isPaused && state.pausedAt) ? state.pausedAt : Date.now();
+    const elapsed = state.turnStartedAt ? effectiveNow - state.turnStartedAt : 0;
     if (currentId && elapsed > 0) {
       finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
     }
@@ -303,7 +305,8 @@ export function CombatSessionClient({
 
     const stats = computeCombatStats(logEntries, finalAccumulated, idToName);
     const rounds = getMaxRound(logEntries);
-    const combatDuration = state.combatStartedAt ? Date.now() - state.combatStartedAt : 0;
+    // CTA-12 fix: exclude active pause time from duration
+    let combatDuration = state.combatStartedAt ? effectiveNow - state.combatStartedAt : 0;
     const existingName = state.encounter_name.trim();
     const suggestedName = existingName || generateEncounterName(state.combatants);
 

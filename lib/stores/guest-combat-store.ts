@@ -302,8 +302,10 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           if (combatants.length === 0) return state;
 
           // Accumulate elapsed turn time for the current combatant
+          // CTA-12 fix: if paused, use pausedAt instead of Date.now() to exclude break time
           const currentId = combatants[currentTurnIndex]?.id;
-          const elapsed = state.turnStartedAt ? Date.now() - state.turnStartedAt : 0;
+          const effectiveNow = (state.isPaused && state.pausedAt) ? state.pausedAt : Date.now();
+          const elapsed = state.turnStartedAt ? effectiveNow - state.turnStartedAt : 0;
           const accumulated = { ...state.turnTimeAccumulated };
           if (currentId && elapsed > 0) {
             accumulated[currentId] = (accumulated[currentId] ?? 0) + elapsed;
@@ -353,6 +355,9 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             turnTimeSnapshots: snapshots,
             turnCountById: updatedTurnCount,
             turnStartedAt: Date.now(),
+            // CTA-12 fix: auto-unpause on turn advance
+            isPaused: false,
+            pausedAt: null,
           };
         });
       },

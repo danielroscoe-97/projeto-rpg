@@ -1382,9 +1382,11 @@ export function GuestCombatClient() {
     try {
       const guestStore = useGuestCombatStore.getState();
       // Accumulate the final (active) turn's elapsed time
+      // CTA-12 fix: if paused, use pausedAt to exclude break time
       const finalAccumulated = { ...guestStore.turnTimeAccumulated };
       const currentId = guestStore.combatants[guestStore.currentTurnIndex]?.id;
-      const elapsed = guestStore.turnStartedAt ? Date.now() - guestStore.turnStartedAt : 0;
+      const effectiveNow = (guestStore.isPaused && guestStore.pausedAt) ? guestStore.pausedAt : Date.now();
+      const elapsed = guestStore.turnStartedAt ? effectiveNow - guestStore.turnStartedAt : 0;
       if (currentId && elapsed > 0) {
         finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
       }
@@ -1404,7 +1406,8 @@ export function GuestCombatClient() {
 
       // Show leaderboard with accumulated stats before resetting
       const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
-      const duration = guestStore.combatStartTime ? Date.now() - guestStore.combatStartTime : 0;
+      // CTA-12 fix: exclude active pause time from duration
+      const duration = guestStore.combatStartTime ? effectiveNow - guestStore.combatStartTime : 0;
       if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
         // Build CombatReport for the new Recap UI
         const report = buildCombatReportFromStats({
@@ -1518,6 +1521,7 @@ export function GuestCombatClient() {
             {t("next_turn")}
           </button>
         </div>
+        <div className="relative scroll-fade-hint">
         <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide" data-tour-id="combat-controls">
             {/* Action log toggle */}
             <button
@@ -1618,6 +1622,7 @@ export function GuestCombatClient() {
               <Undo2 className="w-4 h-4" aria-hidden="true" />
             </button>
 
+        </div>
         </div>
         {/* Sticky turn indicator row */}
         {phase === "combat" && (

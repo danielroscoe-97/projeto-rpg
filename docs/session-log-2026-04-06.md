@@ -89,3 +89,57 @@ O prompt da sessao listava estes itens como pendentes, mas a verificacao confirm
 - Next build: 0 errors, 0 warnings
 - Migration 103 aplicada em producao (Supabase)
 - Deploy: push to master → Vercel auto-deploy
+
+---
+
+## Segundo Lote — CTA-11, CTA-12, F-44
+
+### CTA-11: Comparacao de Tendencia Sessao-a-Sessao
+
+| Aspecto | Detalhe |
+|---|---|
+| **O que faz** | Mostra pill "X% mais rapido/lento que o ultimo combate" no RecapSummary |
+| **Threshold** | So exibe quando diferenca >= 5% (evita ruido) |
+| **Query** | Consulta `duration_seconds` do encontro anterior via inner join em `sessions.campaign_id` na tabela `encounters` |
+| **Visual** | Pill verde para mais rapido, amber para mais lento |
+| **Combat Parity** | Guest mode nao tem trend (sem persistencia DB) — regra cumprida |
+
+### CTA-12: Botao de Pausa para Timer de Combate
+
+| Aspecto | Detalhe |
+|---|---|
+| **State** | Novos campos `isPaused`/`pausedAt` em `EncounterState` e `GuestCombatState` |
+| **Action** | `toggleTimerPause` implementada em `combat-store` e `guest-combat-store` |
+| **Ao pausar** | Congela intervalos de timer, mostra pulso amber |
+| **Ao retomar** | Desloca `combatStartedAt` e `turnStartedAt` para frente pela duracao da pausa (exclui tempo de pausa da acumulacao) |
+| **Persistencia** | Salva em localStorage, sobrevive page refresh |
+| **UI** | Botao de pausa ao lado dos timers no header de combate (auth e guest) |
+| **Combat Parity** | Implementado nos dois modos (auth + guest) — regra cumprida |
+
+### F-44: Convite por Email via Novu
+
+| Aspecto | Detalhe |
+|---|---|
+| **Integracao** | Wired `sendCampaignInviteEmail()` existente na rota de API de convites |
+| **Personalizacao** | Busca `display_name` do DM na tabela `users` para email personalizado |
+| **Fail-open** | Se `NOVU_API_KEY` nao estiver configurada, link de convite funciona normalmente (sem email enviado) |
+| **Execucao** | Fire-and-forget — nao bloqueia resposta da API |
+
+---
+
+## Arquivos Modificados (Segundo Lote)
+
+| Arquivo | Mudanca |
+|---|---|
+| `lib/types/combat.ts` | Campos `isPaused`/`pausedAt` em EncounterState e GuestCombatState |
+| `lib/stores/combat-store.ts` | Action `toggleTimerPause`, logica de shift ao retomar |
+| `lib/stores/guest-combat-store.ts` | Idem para guest mode |
+| `components/combat/CombatTimer.tsx` | Botao de pausa, pulso amber, freeze de intervalo |
+| `components/combat/TurnTimer.tsx` | Respeita estado de pausa |
+| `components/combat/RecapSummary.tsx` | Trend pill CTA-11 (query + render) |
+| `components/combat/CombatRecap.tsx` | Passa dados de campanha para RecapSummary |
+| `components/session/CombatSessionClient.tsx` | Integracao pausa no fluxo auth |
+| `components/guest/GuestCombatClient.tsx` | Integracao pausa no fluxo guest |
+| `app/api/campaign/[id]/invites/route.ts` | Disparo de email via Novu (F-44) |
+| `messages/en.json` | Chaves para pausa, trend, e convite por email |
+| `messages/pt-BR.json` | Idem em portugues |
