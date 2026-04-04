@@ -10,7 +10,8 @@ interface PlayerCampaignCardProps {
   translations: {
     activeSession: string;
     noActiveSession: string;
-    playerCount: string;
+    playersSingular: string;
+    playersPlural: string;
     dmLabel: string;
     levelAbbrev?: string;
   };
@@ -137,9 +138,7 @@ export function PlayerCampaignCard({
         {/* Footer */}
         <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
           <span>
-            {membership.player_count === 1
-              ? `1 jogador`
-              : `${membership.player_count} jogadores`}
+            {membership.player_count} {membership.player_count === 1 ? t.playersSingular : t.playersPlural}
           </span>
           {!hasActiveSession && <span>{t.noActiveSession}</span>}
         </div>

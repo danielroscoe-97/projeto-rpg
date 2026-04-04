@@ -119,11 +119,11 @@ export default async function DashboardPage() {
     invite_accept_error: t("invite_accept_error"),
     invite_decline_error: t("invite_decline_error"),
     invite_accepted_redirect: t("invite_accepted_redirect"),
-    player_count_label: t("player_count_label", { count: "{count}" }),
+    campaigns_players_singular: t("campaigns_players_singular"),
+    campaigns_players_plural: t("campaigns_players_plural"),
     dm_label: t("dm_label"),
     encounters_round: t("encounters_round"),
     encounters_in_progress: t("encounters_in_progress"),
-    campaigns_players_plural: t("campaigns_players_plural"),
     campaigns_manage: t("campaigns_manage_players"),
     // Quick actions
     quick_actions: ts("quick_actions"),
@@ -141,7 +141,6 @@ export default async function DashboardPage() {
     no_campaigns_create: t("no_campaigns_create"),
     no_campaigns_cta: t("no_campaigns_cta"),
     npc_global_badge: t("npc_global_badge"),
-    campaigns_players_singular: t("campaigns_players_singular"),
     // Story 11.0 additions
     view_all: t("view_all"),
     dm_empty_title: t("dm_empty_title"),

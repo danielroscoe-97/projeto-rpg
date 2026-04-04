@@ -64,7 +64,8 @@ export default async function CampaignsPage() {
     invite_accepted_redirect: t("invite_accepted_redirect"),
     active_session: t("active_session"),
     no_active_session: t("no_active_session"),
-    player_count_label: t("player_count_label", { count: "{count}" }),
+    campaigns_players_singular: t("campaigns_players_singular"),
+    campaigns_players_plural: t("campaigns_players_plural"),
     dm_label: t("dm_label"),
   };
 

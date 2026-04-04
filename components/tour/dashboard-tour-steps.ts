@@ -9,7 +9,7 @@ export interface DashboardTourStepConfig extends TourStepConfig {
   mobileSelector?: string;
   mobilePosition?: "top" | "bottom";
   /** Which roles see this step. "all" = everyone, "dm" = DM only */
-  audience?: "all" | "dm";
+  audience: "all" | "dm";
 }
 
 export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [

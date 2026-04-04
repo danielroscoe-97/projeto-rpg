@@ -56,11 +56,11 @@ interface DashboardOverviewProps {
     invite_accept_error: string;
     invite_decline_error: string;
     invite_accepted_redirect: string;
-    player_count_label: string;
+    campaigns_players_singular: string;
+    campaigns_players_plural: string;
     dm_label: string;
     encounters_round: string;
     encounters_in_progress: string;
-    campaigns_players_plural: string;
     campaigns_manage: string;
     quick_actions: string;
     new_combat: string;
@@ -417,7 +417,8 @@ function OverviewPlayerSection({
             translations={{
               activeSession: t.active_session,
               noActiveSession: t.no_active_session,
-              playerCount: t.player_count_label,
+              playersSingular: t.campaigns_players_singular,
+              playersPlural: t.campaigns_players_plural,
               dmLabel: t.dm_label,
             }}
           />

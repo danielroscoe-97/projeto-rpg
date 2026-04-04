@@ -64,7 +64,8 @@ interface DashboardContentProps {
     invite_accept_error: string;
     invite_decline_error: string;
     invite_accepted_redirect: string;
-    player_count_label: string;
+    campaigns_players_singular: string;
+    campaigns_players_plural: string;
     dm_label: string;
   };
 }
@@ -341,7 +342,8 @@ function PlayerSection({
             translations={{
               activeSession: t.active_session,
               noActiveSession: t.no_active_session,
-              playerCount: t.player_count_label,
+              playersSingular: t.campaigns_players_singular,
+              playersPlural: t.campaigns_players_plural,
               dmLabel: t.dm_label,
             }}
           />

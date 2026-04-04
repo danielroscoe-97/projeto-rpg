@@ -33,7 +33,8 @@ interface CampaignsPageClientProps {
     invite_accepted_redirect: string;
     active_session: string;
     no_active_session: string;
-    player_count_label: string;
+    campaigns_players_singular: string;
+    campaigns_players_plural: string;
     dm_label: string;
   };
 }
@@ -95,7 +96,8 @@ export function CampaignsPageClient({
                 translations={{
                   activeSession: t.active_session,
                   noActiveSession: t.no_active_session,
-                  playerCount: t.player_count_label,
+                  playersSingular: t.campaigns_players_singular,
+                  playersPlural: t.campaigns_players_plural,
                   dmLabel: t.dm_label,
                 }}
               />
