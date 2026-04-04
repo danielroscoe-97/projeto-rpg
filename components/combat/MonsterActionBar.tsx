@@ -32,7 +32,7 @@ function clearCacheIfNeeded(cache: Map<string, unknown>): void {
 interface MonsterActionBarProps {
   combatant: Combatant;
   combatants: Combatant[];
-  onApplyDamage: (id: string, amount: number, options?: { damageType?: string; isHalfDamage?: boolean; source?: string }) => void;
+  onApplyDamage: (id: string, amount: number, options?: { damageType?: string; isHalfDamage?: boolean; source?: string; attackType?: "melee" | "ranged" | "spell" }) => void;
   onClose: () => void;
   rollMode?: RollMode;
 }
@@ -219,10 +219,20 @@ export function MonsterActionBar({
       }
 
       if (finalDamage > 0) {
+        // Derive attackType from parsed action
+        const actionType = state.selectedAction?.type;
+        const parsedAttackType = state.selectedAction?.attackType;
+        const resolvedAttackType: "melee" | "ranged" | "spell" | undefined =
+          actionType === "save" ? "spell" :
+          parsedAttackType === "melee" || parsedAttackType === "melee_or_ranged" ? "melee" :
+          parsedAttackType === "ranged" ? "ranged" :
+          undefined;
+
         onApplyDamage(state.targetId, finalDamage, {
           damageType: type,
           isHalfDamage: state.isHalfDamage,
           source: state.selectedAction?.name,
+          attackType: resolvedAttackType,
         });
       }
     }

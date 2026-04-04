@@ -150,7 +150,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [advanceTurn, setError, t, getSessionId]);
 
-  const handleApplyDamage = useCallback((id: string, amount: number, options?: { damageType?: string; isHalfDamage?: boolean; source?: string }) => {
+  const handleApplyDamage = useCallback((id: string, amount: number, options?: { damageType?: string; isHalfDamage?: boolean; source?: string; attackType?: "melee" | "ranged" | "spell" }) => {
     const snap = useCombatStore.getState();
     const before = snap.combatants.find((x) => x.id === id);
     if (!before) return;
@@ -199,7 +199,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       actorName: options?.source || getCurrentActorName(),
       targetName: before.name,
       description: `${before.name} takes ${finalAmount}${damageModifierResult ? ` (${damageModifierResult})` : ""} ${options?.damageType ?? ""} damage`,
-      details: { damageAmount: finalAmount, damageType: options?.damageType, damageModifier: damageModifierResult },
+      details: { damageAmount: finalAmount, damageType: options?.damageType, damageModifier: damageModifierResult, attackType: options?.attackType },
     });
 
     // CP.2.2: Concentration check on damage

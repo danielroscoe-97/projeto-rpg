@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { CampaignSections } from './CampaignSections'
+import { CampaignStatsBar } from '@/components/campaign/CampaignStatsBar'
+import { aggregateCampaignStats } from '@/lib/utils/campaign-stats'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
 import { CombatLaunchSheet } from '@/components/campaign/CombatLaunchSheet'
 import { Swords } from 'lucide-react'
@@ -243,6 +245,13 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     finishedEncounterCount = count ?? 0
   }
 
+  // F5: Fetch combat reports for campaign stats
+  const { data: campaignReports } = await supabase
+    .from('combat_reports')
+    .select('report_data')
+    .eq('campaign_id', id)
+  const campaignStats = aggregateCampaignStats(campaignReports ?? [])
+
   const t = await getTranslations("campaign")
   const tDash = await getTranslations("dashboard")
 
@@ -290,6 +299,9 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
       </div>
+
+      {/* Campaign Stats (F5) — only shows if >= 2 reports */}
+      <CampaignStatsBar stats={campaignStats} />
 
       {/* 2-Column Sections */}
       <CampaignSections

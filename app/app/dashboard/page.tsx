@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
+import { computeStreak } from "@/lib/utils/streak";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 import type { UserRole } from "@/lib/stores/role-store";
 import type { UserOnboarding } from "@/lib/types/database";
@@ -148,6 +149,9 @@ export default async function DashboardPage() {
     combats_empty_cta: t("combats_empty_cta"),
   };
 
+  // F6: Streak counter
+  const streakWeeks = userRole !== "player" ? await computeStreak(supabase, user.id) : 0;
+
   return (
     <div>
       <GuestDataImportModal />
@@ -159,6 +163,7 @@ export default async function DashboardPage() {
         memberships={memberships}
         pendingInvites={pendingInvites}
         translations={translations}
+        streakWeeks={streakWeeks}
       />
     </div>
   );
