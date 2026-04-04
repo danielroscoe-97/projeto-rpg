@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Component, type ErrorInfo, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText, MapPin, Flag } from "lucide-react";
+import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText, MapPin, Flag, AlertTriangle } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
@@ -31,6 +31,29 @@ interface Props {
   isOwner: boolean;
   initialMembers?: CampaignMemberWithUser[];
   srdMonsters?: MonsterOption[];
+}
+
+/** Inline error boundary to prevent one broken section from crashing the entire campaign page. */
+class SectionErrorBoundary extends Component<
+  { children: ReactNode; fallbackLabel: string },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[CampaignSection] crashed:", error, info.componentStack);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground py-4 px-2">
+          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+          <span>Erro ao carregar {this.props.fallbackLabel}. Tente recarregar a página.</span>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function Section({
@@ -63,7 +86,11 @@ function Section({
           }`}
         />
       </button>
-      {open && <div className="px-4 py-4 border-t border-border">{children}</div>}
+      {open && (
+        <div className="px-4 py-4 border-t border-border">
+          <SectionErrorBoundary fallbackLabel={title}>{children}</SectionErrorBoundary>
+        </div>
+      )}
     </div>
   );
 }

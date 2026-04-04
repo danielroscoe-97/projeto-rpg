@@ -51,8 +51,8 @@ export async function createStandaloneCharacterAction(data: CharacterData) {
     });
 
   if (error) {
-    console.error("[createStandaloneCharacter]", error.message, error.code);
-    throw new Error("Erro ao criar personagem");
+    console.error("[createStandaloneCharacter]", error.message, error.code, error.details, error.hint);
+    throw new Error(`Erro ao criar personagem: ${error.message}`);
   }
 
   revalidatePath("/app/dashboard/characters");

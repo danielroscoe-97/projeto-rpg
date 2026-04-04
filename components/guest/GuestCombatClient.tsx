@@ -1717,6 +1717,19 @@ export function GuestCombatClient() {
         </div>
       </div>
 
+      {/* Mobile-only sticky FAB for Next Turn — always visible at thumb reach */}
+      <div className="fixed bottom-4 right-4 z-40 md:hidden">
+        <button
+          type="button"
+          onClick={handleAdvanceTurn}
+          className="flex items-center gap-2 px-4 py-3 bg-gold text-foreground font-semibold rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all duration-200 min-h-[48px] text-sm"
+          aria-label={t("next_turn")}
+          data-testid="next-turn-fab"
+        >
+          ▶ {t("next_turn")}
+        </button>
+      </div>
+
       <GuestUpsellModal
         isOpen={upsellOpen}
         onClose={() => setUpsellOpen(false)}

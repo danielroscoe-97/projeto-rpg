@@ -224,7 +224,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
                   Tentar novamente
                 </Button>
               </div>
-            ) : linkCode ? (
+            ) : linkCode != null ? (
               <>
                 {/* URL display + copy */}
                 <div className="flex gap-2">
@@ -272,7 +272,9 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
                   </div>
                 )}
               </>
-            ) : null}
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">Gerando link...</p>
+            )}
           </TabsContent>
 
           {/* ── Via E-mail ── */}

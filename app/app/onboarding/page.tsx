@@ -13,13 +13,13 @@ export default async function OnboardingPage() {
     redirect("/auth/login");
   }
 
-  // Safety: if user already has campaigns, skip onboarding
-  const { count, error: countErr } = await supabase
-    .from("campaigns")
-    .select("id", { count: "exact", head: true })
-    .eq("owner_id", user.id);
+  // Safety: if user already has campaigns (as DM or player), skip onboarding
+  const [{ count: dmCount, error: dmErr }, { count: playerCount, error: playerErr }] = await Promise.all([
+    supabase.from("campaigns").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
+    supabase.from("campaign_members").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "active"),
+  ]);
 
-  if (!countErr && count !== null && count > 0) {
+  if ((!dmErr && dmCount !== null && dmCount > 0) || (!playerErr && playerCount !== null && playerCount > 0)) {
     redirect("/app/dashboard");
   }
 
