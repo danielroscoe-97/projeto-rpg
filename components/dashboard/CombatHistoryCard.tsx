@@ -48,7 +48,9 @@ export function CombatHistoryCard({ combat, translations: t }: CombatHistoryCard
       </div>
 
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{combat.session_name}</span>
+        <span>
+          {combat.session_name !== combat.encounter_name ? combat.session_name : ""}
+        </span>
         <div className="flex items-center gap-3">
           <span className="font-mono">
             {t.round} {combat.round_number}

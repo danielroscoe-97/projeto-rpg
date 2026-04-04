@@ -273,15 +273,15 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
               <span className="text-amber-400 text-sm font-semibold">{playerCount ?? 0}</span>
-              <span className="text-muted-foreground text-xs">{t("summary_players")}</span>
+              <span className="text-muted-foreground text-xs">{t("summary_players", { count: playerCount ?? 0 })}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
               <span className="text-amber-400 text-sm font-semibold">{sessionCount ?? 0}</span>
-              <span className="text-muted-foreground text-xs">{t("summary_sessions")}</span>
+              <span className="text-muted-foreground text-xs">{t("summary_sessions", { count: sessionCount ?? 0 })}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
               <span className="text-amber-400 text-sm font-semibold">{finishedEncounterCount}</span>
-              <span className="text-muted-foreground text-xs">{t("summary_encounters")}</span>
+              <span className="text-muted-foreground text-xs">{t("summary_encounters", { count: finishedEncounterCount })}</span>
             </div>
             <CombatLaunchSheet
               campaignId={campaign.id}
