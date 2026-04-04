@@ -1,5 +1,7 @@
 # Analise de Gaps Criticos — Pocket DM vs 9 Concorrentes
 
+> **Last Updated: 2026-04-04** — G-01, G-04, G-05 resolved
+
 > **Objetivo:** Cruzar os 9 concorrentes mapeados com as features do Pocket DM e identificar onde estamos expostos (gaps que um concorrente pode explorar contra nos).
 > **Data:** 2026-03-30
 > **Metodo:** Matriz feature x concorrente + classificacao de risco por gap
@@ -56,13 +58,13 @@
 | Real-time sync com players | PDM | D&D Beyond (dentro do VTT), Roll20/Foundry (VTT) | 3/9 (VTTs) | **VANTAGEM** (unico como companion) |
 | Guest access sem login | PDM | Nenhum combat tracker | 0/9 | **VANTAGEM** |
 | Player view no celular | PDM | Shieldmaiden (tela separada, nao sync) | 1/9 | **VANTAGEM** |
-| Turn notifications push | --- (em dev) | Nenhum | 0/9 | **GAP CRITICO** — prometido mas nao entregue |
+| Turn notifications push | PDM ✅ | Nenhum | 0/9 | ✅ **RESOLVED** (vibration + audio + tab title flash + visual overlay) |
 | Player character sheet view | --- | D&D Beyond, Roll20, Foundry, FG, MasterApp | 5/9 | **GAP ALTO** |
 | Player spell lookup | PDM | D&D Beyond | 1/9 | **VANTAGEM** |
 | Player dice rolling | --- | Roll20, Foundry, FG, MasterApp, Alchemy | 5/9 | **GAP MEDIO** |
 | Voice/video chat | --- | Roll20, Foundry, Alchemy | 3/9 | Nao — fora de escopo (mesa presencial) |
 
-**Veredito Player:** Dominamos a experiencia presencial. Gaps em notifications (critico, em dev), character sheet view (alto, bucket futuro). Dice rolling descartado (mesa presencial usa dados fisicos).
+**Veredito Player:** Dominamos a experiencia presencial. Notifications resolvido (2026-04-04). Gap restante: character sheet view (alto, bucket futuro). Dice rolling descartado (mesa presencial usa dados fisicos).
 
 ---
 
@@ -89,14 +91,14 @@
 | Criar/gerenciar campanhas | PDM | D&D Beyond, Roll20, Foundry, FG, Alchemy, MasterApp | 6/9 | Nao — temos |
 | Convite por link | PDM | MasterApp, Alchemy | 2/9 | Nao — temos |
 | Historico de sessoes | PDM (basico) | D&D Beyond, Roll20, FG, MasterApp | 4/9 | **GAP MEDIO** |
-| Character builder/wizard | --- | D&D Beyond, Roll20, FG, MasterApp (AI art cards) | 4/9 | **GAP ALTO** |
+| Character builder/wizard | PDM ✅ | D&D Beyond, Roll20, FG, MasterApp (AI art cards) | 4/9 | ✅ **RESOLVED** (ability scores, avatar upload, spell save DC, full CRUD) |
 | XP/level tracking auto | --- | D&D Beyond, MasterApp | 2/9 | **GAP MEDIO** |
 | Notas privadas DM | PDM (basico) | D&D Beyond, Roll20, Foundry, FG, MasterApp (pastas) | 5/9 | **GAP MEDIO** — MasterApp tem pastas |
-| Notas compartilhadas | --- (em dev) | D&D Beyond, Roll20, Foundry, MasterApp | 4/9 | **GAP ALTO** |
+| Notas compartilhadas | PDM ✅ | D&D Beyond, Roll20, Foundry, MasterApp | 4/9 | ✅ **RESOLVED** (search, chips, auto-save, NPC links, folders) |
 | Calendar/scheduling | --- | Roll20, Alchemy, StartPlaying | 3/9 | **GAP BAIXO** — fora de escopo |
 | Campaign image/banner | --- | MasterApp (AI art), D&D Beyond | 2/9 | **GAP BAIXO** |
 
-**Veredito Campanha:** Temos o basico. Character builder e gap alto mas intencional ("nao somos D&D Beyond"). Notas compartilhadas em dev. Historico de sessoes precisa melhorar.
+**Veredito Campanha:** Forte. Character builder simplificado resolvido (2026-04-04). Notas compartilhadas resolvido com search, folders, NPC links (2026-04-04). Historico de sessoes precisa melhorar.
 
 ---
 
@@ -144,11 +146,11 @@
 
 | # | Gap | Risco | Quem explora | Status Pocket DM | Acao recomendada |
 |---|-----|-------|-------------|-----------------|-----------------|
-| **G-01** | Turn notifications push ("E sua vez!") | **CRITICO** | Ninguem tem — mas e nossa promessa | Em dev (B.2.1) | **Prioridade maxima Sprint 1** — sem isso, real-time sync perde 50% do valor |
+| **G-01** | Turn notifications push ("E sua vez!") | ~~CRITICO~~ | Ninguem tem — mas e nossa promessa | ✅ **RESOLVED** (2026-04-04) — Tier 1: vibration + audio + tab title flash + visual overlay. iOS-compatible via AudioContext unlock | Concluido |
 | **G-02** | PWA / offline mode | **ALTO** | Game Master 5e (nativo) | Planejado H2 | WiFi na mesa e instavel. Sem PWA, perdemos para app nativo em confiabilidade |
 | **G-03** | D&D Beyond character import | **ALTO** | Shieldmaiden, Foundry | Nao planejado | 80%+ dos DMs tem personagens no D&D Beyond. Import via API publica do Beyond = killer integration |
-| **G-04** | Notas compartilhadas com jogadores | **ALTO** | D&D Beyond, Roll20, Foundry, MasterApp | Em dev (B.3.x) | MasterApp tem com pastas. Nosso basico precisa chegar rapido |
-| **G-05** | Character builder (simplificado) | **ALTO** | D&D Beyond, MasterApp (wizard visual) | Bucket futuro F-34 | NAO competir com D&D Beyond. Fazer versao "quick add" com classe+nivel+stats. Suficiente para mesa |
+| **G-04** | Notas compartilhadas com jogadores | ~~ALTO~~ | D&D Beyond, Roll20, Foundry, MasterApp | ✅ **RESOLVED** (2026-04-04) — search by title/content, collapsible type chips, auto-save feedback, NPC linking, folder system | Concluido |
+| **G-05** | Character builder (simplificado) | ~~ALTO~~ | D&D Beyond, MasterApp (wizard visual) | ✅ **RESOLVED** (2026-04-04) — ability scores STR-CHA, avatar upload, spell save DC, full CRUD | Concluido |
 | **G-06** | Multi-system (Pathfinder 2e) | **ALTO** | Foundry (200+), FG (50+), Roll20 | Planejado H3 | Foundry tem 18% do mercado PAGO. PF2e e o segundo maior sistema. Sem isso, TAM limitado a D&D |
 | **G-07** | Dice roller (pelo menos basico) | **MEDIO** | MasterApp (3D), Roll20, Foundry, FG | **Decision: Bucket (confirmed by user 2026-03-30)** | Mesa presencial — dados fisicos sao parte da experiencia. Nao incluir no roadmap |
 | **G-08** | Homebrew content creation | **MEDIO** | Foundry, Roll20, FG | Em dev (C.2.4) | Mestres criam monstros/spells custom. Sem isso, ficamos limitados ao SRD |
@@ -200,10 +202,10 @@ Estes gaps sao decisoes estrategicas, NAO vulnerabilidades:
 
 ### Sprint 1 (Imediato) — Proteger o Core
 
-| Gap | Acao | Story ref | Esforco |
-|-----|------|-----------|---------|
-| G-01 | Implementar turn notifications | B.2.1 + B.2.2 | G |
-| G-04 | Notas compartilhadas basicas | B.3.x | M |
+| Gap | Acao | Story ref | Esforco | Status |
+|-----|------|-----------|---------|--------|
+| G-01 | Implementar turn notifications | B.2.1 + B.2.2 | G | ✅ RESOLVED 2026-04-04 |
+| G-04 | Notas compartilhadas basicas | B.3.x | M | ✅ RESOLVED 2026-04-04 |
 
 ### Sprint 2 (Curto prazo) — Expandir Defesas
 
@@ -214,12 +216,12 @@ Estes gaps sao decisoes estrategicas, NAO vulnerabilidades:
 
 ### Sprint 3 (Medio prazo) — Ampliar TAM
 
-| Gap | Acao | Story ref | Esforco |
-|-----|------|-----------|---------|
-| G-03 | D&D Beyond character import | **NOVO — criar spec** | G |
-| G-05 | Quick character creator (classe+nivel+stats) | **NOVO — simplificar F-34** | M |
-| G-09 | Session history com resumo e stats | **NOVO — criar spec** | M |
-| G-10 | XP tracking basico (manual) | **NOVO — simplificar F-02** | P |
+| Gap | Acao | Story ref | Esforco | Status |
+|-----|------|-----------|---------|--------|
+| G-03 | D&D Beyond character import | **NOVO — criar spec** | G | Pending |
+| G-05 | Quick character creator (classe+nivel+stats) | **NOVO — simplificar F-34** | M | ✅ RESOLVED 2026-04-04 |
+| G-09 | Session history com resumo e stats | **NOVO — criar spec** | M | Pending |
+| G-10 | XP tracking basico (manual) | **NOVO — simplificar F-02** | P | Pending |
 
 ### Horizonte 3 (Longo prazo)
 
@@ -250,7 +252,7 @@ Estes gaps sao decisoes estrategicas, NAO vulnerabilidades:
 5. **Mesa presencial first** — quadrante competitivo que ocupamos sozinhos
 
 ### Onde estamos EXPOSTOS (fechar urgente):
-1. **Turn notifications** — prometido, nao entregue. E a segunda metade do real-time
+1. ~~**Turn notifications**~~ — ✅ RESOLVED 2026-04-04 (vibration + audio + tab title flash + visual overlay)
 2. **PWA/offline** — WiFi na mesa e instavel. App nativo ganha aqui
 3. **D&D Beyond import** — 80%+ dos DMs tem PCs la. Bridge = conversao
 
@@ -269,6 +271,6 @@ Estes gaps sao decisoes estrategicas, NAO vulnerabilidades:
 
 ---
 
-> **Ultima atualizacao:** 2026-03-30
+> **Ultima atualizacao:** 2026-04-04
 > **Gerado por:** Analise de Gaps Criticos — Brainstorming Session
 > **Documentos cruzados:** competitive-analysis-masterapp, market-research-ttrpg, value-proposition-canvas, competitive-moats-strategy, monetization-strategy, brainstorming-session radiografia

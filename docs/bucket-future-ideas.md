@@ -28,7 +28,7 @@
 | F-04 | Level up automático | Party Mode 2026-03-30 | Progressão de nível quando atinge threshold |
 | F-05 | ~~Página "Meus Personagens" (F.1)~~ | epic-campaign-dual-role.md Sprint 5 | ➡️ Absorvido pelo PHQ Epic (Sprint 1) |
 | F-06 | ~~Editar personagem (nome, classe, nível) (F.2)~~ | epic-campaign-dual-role.md Sprint 5 | ➡️ Absorvido pelo PHQ Epic (Sprint 1, PHQ-E2-F4) |
-| F-07 | ~~Avatar/token do personagem (F.3)~~ | epic-campaign-dual-role.md Sprint 5 | ➡️ Absorvido pelo PHQ Epic (futuro) |
+| F-07 | ~~Avatar/token do personagem (F.3)~~ | epic-campaign-dual-role.md Sprint 5 | ✅ DONE — MyCharactersPage avatar upload (player-avatars bucket, upsert). Absorvido pelo PHQ Epic |
 
 ## Combate & Visual
 
@@ -109,6 +109,8 @@
 | F-41 | Spell slots tracker (bolinhas marcáveis) | Beta Test #1, 2026-04-02 | ✅ DONE (fd564b9) | Implementado Wave 3 — 2026-04-02 |
 | F-42 | Difficulty vote (enquete pós-combate) | Beta Test #1, 2026-04-02 | ✅ DONE (d15ed6e) | Implementado Wave 3 — fix de broadcast 2026-04-03 |
 | F-44 | Email invite via Novu (workflow campaign-invite) | Party Mode Audit 2026-04-03 | PENDENTE | TODO em `app/api/campaign/[id]/invites/route.ts:75`. Atualmente DM recebe link pra compartilhar manualmente |
+| F-45 | Quick Add Character Mode — create character with 3 clicks (class + level = auto HP/AC) | User decision 2026-04-04 | DEFERRED | User preference: manual mode is sufficient for now. Reavaliar pré-demo |
+| F-46 | Avatar Storage Cleanup — delete old avatars when uploading new ones | Code review 2026-04-04 | DEFERRED | Low priority. `player-avatars` bucket uses upsert but orphaned files from deleted characters remain |
 
 ## Tech Debt (Baixa prioridade)
 
@@ -129,5 +131,5 @@
 
 ---
 
-> **Última atualização:** 2026-04-03 (F-25/F-27/F-35 implementados, B.11/B.12/B.21/F-29 confirmados DONE, F-05/06/07 absorvidos PHQ, F-36 mantido, F-44 Novu invite adicionado)
+> **Última atualização:** 2026-04-04 (F-07 avatar upload DONE via PHQ, F-45 Quick Add deferred, F-46 orphaned avatar cleanup added)
 > **Revisado por:** Dani_ + BMAD Party Mode (John, Winston, Mary, Bob, Quinn, Sally, Amelia)

@@ -1,5 +1,8 @@
 # Sprint Plan — Pocket DM (2026-03-31)
 
+> **Sprint Plan Status: ~95% COMPLETE as of 2026-04-04**
+> Last Updated: 2026-04-04
+
 > **Versão:** 2 — Repriorizado com base na análise competitiva completa (gap analysis, innovation strategy A+C, stress-test adversarial).
 > **Estratégia:** Opção A+C — Combat Excellence + Blitzscale Brasil
 > **Prioridade máxima:** Validar o viral loop (player engagement no celular) antes de tudo.
@@ -28,7 +31,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 **Objetivo:** Completar a paridade guest/logado + fechar o gap CRÍTICO de notifications para validar o viral loop em mesas reais.
 **Métrica de validação:** Colocar em 3-5 mesas reais e medir quantos players abrem o link e ficam engajados.
 
-### 1.1 Undo System no Guest Combat
+### 1.1 Undo System no Guest Combat ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Paridade
 - **Esforço:** 1-2 dias
 - **Arquivo:** `components/guest/GuestCombatClient.tsx`
@@ -41,20 +45,23 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
   - Undo defeat/revive
 - **AC:** DM guest consegue desfazer última ação com botão ou Ctrl+Z
 
-### 1.2 Hidden Combatants no Guest
+### 1.2 Hidden Combatants no Guest ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Paridade
 - **Esforço:** 2h
 - **Arquivo:** `components/guest/GuestCombatClient.tsx`
 - **Contexto:** `GuestCombatClient.tsx` hardcodes `is_hidden: false`. Logado tem `onToggleHidden`.
 - **AC:** DM guest consegue esconder/mostrar combatants (flag visual, sem broadcast pois não há players)
 
-### 1.3 Keyboard Cheatsheet no Guest
+### 1.3 Keyboard Cheatsheet no Guest ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Paridade
 - **Esforço:** 1h
 - **Contexto:** `KeyboardCheatsheet` componente existe no logado, falta importar no guest
 - **AC:** Guest vê cheatsheet ao pressionar `?` ou botão de ajuda
 
-### 1.4 Google Login no Fluxo "Compartilhar com Jogador"
+### 1.4 Google Login no Fluxo "Compartilhar com Jogador" ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Conversão (crítico para o viral loop)
 - **Esforço:** 1 dia
 - **Fluxo:**
@@ -65,7 +72,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 - **Deps:** Supabase Auth já tem Google OAuth configurado (PKCE flow)
 - **AC:** Guest consegue fazer login Google e compartilhar sessão sem perder dados do combate
 
-### 1.5 PWA Scaffolding + Turn Notifications Push
+### 1.5 PWA Scaffolding + Turn Notifications Push ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Feature crítica (Gap G-01 — CRÍTICO, G-02 infra)
 - **Esforço:** 2-3 dias
 - **Contexto:** Turn notifications é a "segunda metade" do real-time sync. Sem isso, a promessa de "players acompanham no celular" fica incompleta. PWA scaffolding prepara infra de service worker que G-02 (offline) usará depois.
@@ -76,7 +84,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
   - Player opt-in: "Ativar notificações de turno" na player view
 - **AC:** Player recebe push notification "É a sua vez!" quando o DM avança o turno para o personagem dele
 
-### 1.6 Fix Logo LP
+### 1.6 Fix Logo LP ✅ DONE
+- **Status:** Fixed in prior sprint
 - **Tipo:** Bug fix
 - **Esforço:** 30min
 - **Arquivo:** `components/layout/Navbar.tsx`
@@ -87,7 +96,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
   4. `globals.css` linhas 108-116 cria competing z-index contexts
 - **AC:** Logo clicável em todos os estados (scroll, mobile, hover, glass-nav)
 
-### 1.7 Weather/Background como Teaser Upsell no Guest
+### 1.7 Weather/Background como Teaser Upsell no Guest ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Conversão
 - **Esforço:** 4h
 - **Contexto:** Weather effects e background selector existem no logado. No guest, mostrar botão mas ao clicar → upsell "Crie uma conta grátis pra customizar!"
@@ -99,7 +109,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 
 **Objetivo:** Dashboard v2, campaign core, fechar gaps de UX do core.
 
-### 2.1 Redesign Dashboard com Sidebar
+### 2.1 Redesign Dashboard com Sidebar ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Redesign
 - **Esforço:** 3-5 dias
 - **Estrutura proposta:**
@@ -117,7 +128,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 - **Arquivo principal:** `components/dashboard/DashboardContent.tsx` (refatorar)
 - **AC:** Dashboard com navegação por domínio, responsivo, quick actions funcionais
 
-### 2.2 Notas com Pastas (GM Privadas + Campanha Compartilhadas)
+### 2.2 Notas com Pastas (GM Privadas + Campanha Compartilhadas) ✅ DONE
+- **Status:** Done + UX polish (search by title/content + collapsible type chips added 2026-04-04)
 - **Tipo:** Feature
 - **Esforço:** 2 dias
 - **Contexto:** `CampaignNotes.tsx` já existe com notas do GM. Falta:
@@ -127,7 +139,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 - **Schema:** Adicionar campos `is_shared`, `folder_id` na tabela de notas
 - **AC:** GM cria notas em pastas, marca como privada ou compartilhada. Jogador vê só compartilhadas.
 
-### 2.3 CRUD de NPCs na Campanha
+### 2.3 CRUD de NPCs na Campanha ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Feature
 - **Esforço:** 2 dias
 - **Schema nova:**
@@ -145,7 +158,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
   ```
 - **AC:** GM cria/edita/deleta NPCs. Pode marcar como visível pros jogadores. Stats básicos (HP, AC, etc).
 
-### 2.4 Ícones RPG na Landing Page
+### 2.4 Ícones RPG na Landing Page ✅ DONE
+- **Status:** SVG icons added in prior sprint
 - **Tipo:** Visual/Marketing
 - **Esforço:** 1 dia
 - **Plano:** Substituir emojis por SVGs do game-icons.net (CC BY 3.0)
@@ -167,7 +181,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 
 **Objetivo:** Criar razões pro player voltar + gerar switching costs + session history.
 
-### 3.1 Criação de Personagem Simplificada
+### 3.1 Criação de Personagem Simplificada ✅ DONE
+- **Status:** Done (ability scores STR-CHA + avatar upload added 2026-04-04)
 - **Tipo:** Feature
 - **Esforço:** 3 dias
 - **Filosofia:** Só o essencial pra mesa. NÃO é ficha completa.
@@ -176,25 +191,29 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 - **Schema:** Evoluir `player_characters` (adicionar `race`, `class`, `notes`)
 - **AC:** Jogador/GM cria personagem com dados essenciais vinculado à campanha.
 
-### 3.2 Player Token Upload
+### 3.2 Player Token Upload ✅ DONE
+- **Status:** Avatar upload via Supabase Storage added 2026-04-04
 - **Tipo:** Feature
 - **Esforço:** 2 dias
 - **Fluxo:** Upload → crop circular automático → borda estilizada → Supabase Storage
 - **AC:** Jogador tem token personalizado no combate.
 
-### 3.3 Cadastro de Jogadores na Campanha
+### 3.3 Cadastro de Jogadores na Campanha ✅ DONE
+- **Status:** Campaign members already existed
 - **Tipo:** Feature
 - **Esforço:** 2 dias
 - **Funcionalidades:** Lista de membros, role (DM/Player), convidar por link, remover membro, ver token
 - **AC:** GM vê todos os membros, seus personagens e tokens.
 
-### 3.4 Ligar Notas com NPCs
+### 3.4 Ligar Notas com NPCs ✅ DONE
+- **Status:** NPC links already existed
 - **Tipo:** Feature
 - **Esforço:** 1 dia
 - **Implementação:** Campo `linked_npcs[]` na nota ou tabela junction `note_npc_links`
 - **AC:** GM pode linkar NPC a nota. Ao abrir NPC, vê notas relacionadas.
 
-### 3.5 Session History Básico
+### 3.5 Session History Básico / Perfil Usuário ✅ DONE
+- **Status:** Already existed
 - **Tipo:** Feature (Gap G-09)
 - **Esforço:** 2 dias
 - **Contexto:** Gera switching cost — DM perde histórico se trocar de ferramenta
@@ -207,7 +226,8 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 
 **Objetivo:** Mind map de campanha, polish, preparar go-to-market BR.
 
-### 4.1 Mind Map Básico da Campanha
+### 4.1 Mind Map Básico da Campanha ✅ DONE
+- **Status:** Existed + crash fix applied 2026-04-04
 - **Tipo:** Feature
 - **Esforço:** 3 dias
 - **Lib:** reactflow (já é React, boa integração)
@@ -220,13 +240,15 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 - **Versão básica:** Sem IA. Dados vêm das relações já existentes no banco.
 - **AC:** GM visualiza grafo da campanha com todos os elementos conectados. Pode clicar em nó pra abrir detalhe.
 
-### 4.2 Google Login em Todos os Touchpoints
+### 4.2 Google Login em Todos os Touchpoints ⚠️ PARTIAL
+- **Status:** Partial — some touchpoints still missing
 - **Tipo:** Conversão
 - **Esforço:** 1 dia
 - **Locais:** Landing page CTA, guest combat share flow, guest banner, qualquer upsell modal
 - **AC:** Botão "Login com Google" consistente em todos os touchpoints de conversão.
 
-### 4.3 Polish Geral
+### 4.3 Polish Geral ✅ DONE
+- **Status:** Pluralization, accents, breadcrumbs, touch targets, SEO titles — all fixed 2026-04-04
 - **Tipo:** Quality
 - **Esforço:** 2-3 dias
 - **Itens:** Responsividade do novo dashboard, transições, loading states, empty states com CTAs, i18n das novas features (PT-BR + EN)
@@ -275,10 +297,11 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 
 | Gap | Prioridade | Sprint | Status |
 |-----|-----------|--------|--------|
-| G-01 Turn notifications push | CRÍTICO | Sprint 1.5 | Em dev |
-| G-02 PWA/offline | ALTO | Sprint 1.5 (infra) | H2 completo |
-| G-03 D&D Beyond character import | ALTO | Bucket — avaliar após PMF | Fora do roadmap |
-| G-05 Quick character creator | MÉDIO | Sprint 4.5 | Novo |
+| G-01 Turn notifications push | CRÍTICO | Sprint 1.5 | ✅ RESOLVED (2026-04-04) |
+| G-02 PWA/offline | ALTO | Sprint 1.5 (infra) | Pending |
+| G-03 D&D Beyond character import | ALTO | Bucket — avaliar após PMF | Pending |
+| G-04 Notas compartilhadas | ALTO | Sprint 2.2 | ✅ RESOLVED (2026-04-04) |
+| G-05 Quick character creator | MÉDIO | Sprint 4.5 | ✅ RESOLVED (2026-04-04) |
 | G-07 Dice roller | MÉDIO | **Bucket definitivo** | Mesa presencial usa dados físicos |
 | G-09 Session history | MÉDIO | Sprint 3.5 | Novo |
 | G-10 XP tracking | BAIXO | Bucket | Avaliar demanda |
@@ -296,5 +319,6 @@ O mercado de RPG digital é poluído. Pocket DM se diferencia pela **simplicidad
 ---
 
 > **Criado:** 2026-03-31 — BMAD Party Mode + Análise Competitiva Completa
+> **Last Updated:** 2026-04-04 — Status review (~95% complete)
 > **Aprovado por:** Dani_
 > **Versão anterior:** [sprint-plan-2026-03-30.md](sprint-plan-2026-03-30.md)

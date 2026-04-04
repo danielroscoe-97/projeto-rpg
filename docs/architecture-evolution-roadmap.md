@@ -10,7 +10,7 @@
 
 _"Fazer o que existe funcionar impecavelmente antes de adicionar mais."_
 
-### 1.1 Cobertura E2E Crítica
+### 1.1 Cobertura E2E Crítica — ⏳ IN PROGRESS
 
 **Problema:** Playwright existe mas cobre poucos fluxos. 60 testes pre-existentes falhando no B-stream sprint indicam fragilidade.
 
@@ -20,31 +20,37 @@ _"Fazer o que existe funcionar impecavelmente antes de adicionar mais."_
 - Meta: 0 flaky tests. Cada E2E deve ser determinístico
 - Rodar no CI antes de merge (Vercel preview + Playwright)
 
+**Status (2026-04-04):** Partially done. E2E helpers refactored (`e2e/helpers/auth.ts`, `session.ts`, `combat.ts`, `db.ts`). `campaign-seed.ts` created for campaign E2E. `e2e/campaign/mind-map.spec.ts` written. CI partially blocking — Playwright pitfalls documented in memory. Remaining: full happy-path coverage for 4 PRD journeys.
+
 **Impacto:** Confiança para fazer mudanças sem quebrar fluxos críticos.
 
-### 1.2 Guest Mode Hard Block
+### 1.2 Guest Mode Hard Block — ✅ DONE
 
 **Problema:** Timer de 60 min é apenas visual (GuestBanner). Não há enforcement real — usuário pode usar indefinidamente.
 
 **Ação:**
-- Adicionar verificação no `guest-combat-store` que bloqueia ações após SESSION_LIMIT_MS
-- Mostrar modal de conversão quando expirar (GuestUpsellModal já existe)
-- Preservar estado do combate para migração pós-signup
+- ~~Adicionar verificação no `guest-combat-store` que bloqueia ações após SESSION_LIMIT_MS~~
+- ~~Mostrar modal de conversão quando expirar (GuestUpsellModal já existe)~~
+- Preservar estado do combate para migração pós-signup (future)
+
+**Status (2026-04-04):** Implemented. `guest-combat-store.ts` has `guardExpired()` that checks `isGuestExpired()` and blocks ALL store actions (addCombatant, updateHP, etc.) after `SESSION_LIMIT_MS` (60 min). `isExpired` flag triggers GuestUpsellModal. State migration pós-signup deferred.
 
 **Impacto:** Funil de conversão funcional. Sem isso, o freemium não tem gatilho.
 
-### 1.3 Áudio Real (Substituir Placeholders)
+### 1.3 Áudio Real (Substituir Placeholders) — ✅ DONE
 
 **Problema:** Todos os 10 MP3s de SFX são placeholders idênticos. Feature existe no código mas não funciona na prática.
 
 **Ação:**
-- Substituir por arquivos reais (royalty-free, <100KB cada)
+- ~~Substituir por arquivos reais (royalty-free, <100KB cada)~~
 - Validar broadcast de áudio DM→Player end-to-end
 - Testar latência de playback no mobile
 
+**Status (2026-04-04):** Audio files replaced. Now 85+ real MP3s across 3 categories: `public/sounds/sfx/` (52 files — combat, spells, UI, monsters, items), `public/sounds/ambient/` (9 files — dungeon, forest, tavern, etc.), `public/sounds/music/` (14 files — battle, exploration, suspense). Audio path fixed. Broadcast validation and mobile latency testing remain as follow-ups.
+
 **Impacto:** Feature de imersão que diferencia de todos os concorrentes (nenhum tracker tem soundboard integrado).
 
-### 1.4 RLS Battle-Testing
+### 1.4 RLS Battle-Testing — 🔲 NOT STARTED
 
 **Problema:** Addendum do dual-role identificou bugs de RLS recursion. Migrations 032-039 adicionaram campaign_members com RLS complexo.
 
@@ -52,6 +58,8 @@ _"Fazer o que existe funcionar impecavelmente antes de adicionar mais."_
 - Criar testes E2E que validam isolamento: Player A não vê dados de Player B
 - Validar que SECURITY DEFINER functions não têm race conditions
 - Testar cenário: DM em campanha A é Player em campanha B (dual-role)
+
+**Status (2026-04-04):** Not started. RLS policies exist but no dedicated battle-testing. Blocked by E2E infrastructure (1.1) being partially complete.
 
 **Impacto:** Segurança de dados. Bug de RLS = vazamento de informação entre mesas.
 
@@ -281,3 +289,5 @@ Mês 4-6
 
 **Data:** 2026-03-30
 **Baseado em:** Auditoria documental completa, análise competitiva, estado real do código
+
+**Last reviewed:** 2026-04-04. Horizon 1 progress updated. 1.2 Guest Hard Block DONE, 1.3 Audio DONE (85+ real MP3s), 1.1 E2E partially done (helpers refactored, campaign-seed created), 1.4 RLS not started.
