@@ -42,6 +42,7 @@ export function DashboardLayout({
         shouldAutoStart={showDashboardTour}
         delayMs={tourDelayMs}
         source={tourSource}
+        hasDmAccess={hasDmAccess}
       />
       <DashboardTourHelpButton />
     </div>

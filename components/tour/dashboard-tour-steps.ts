@@ -8,10 +8,12 @@ export interface DashboardTourStepConfig extends TourStepConfig {
   /** Selector to use on mobile (viewport < 1024px) — e.g. bottom nav vs sidebar */
   mobileSelector?: string;
   mobilePosition?: "top" | "bottom";
+  /** Which roles see this step. "all" = everyone, "dm" = DM only */
+  audience?: "all" | "dm";
 }
 
 export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
-  // Step 0 — Welcome modal
+  // Step 0 — Welcome modal (all users)
   {
     id: "dash-welcome",
     targetSelector: '[data-tour-id="dash-overview"]',
@@ -21,8 +23,9 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     position: "bottom",
     phase: "setup",
     modal: true,
+    audience: "all",
   },
-  // Step 1 — Sidebar / bottom nav
+  // Step 1 — Sidebar / bottom nav (DM only — players don't need nav tour)
   {
     id: "dash-sidebar",
     targetSelector: '[data-tour-id="dash-sidebar"]',
@@ -33,8 +36,9 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     position: "right",
     mobilePosition: "top",
     phase: "setup",
+    audience: "dm",
   },
-  // Step 2 — Quick Actions
+  // Step 2 — Quick Actions (DM only)
   {
     id: "dash-quick-actions",
     targetSelector: '[data-tour-id="dash-quick-actions"]',
@@ -43,8 +47,9 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "setup",
+    audience: "dm",
   },
-  // Step 3 — DM Campaigns
+  // Step 3 — Campaigns (all users — players see "suas campanhas")
   {
     id: "dash-campaigns",
     targetSelector: '[data-tour-id="dash-campaigns"]',
@@ -53,8 +58,9 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "setup",
+    audience: "all",
   },
-  // Step 4 — Combats nav item
+  // Step 4 — Combats nav item (DM only)
   {
     id: "dash-combats",
     targetSelector: '[data-tour-id="dash-nav-combats"]',
@@ -64,8 +70,9 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     position: "right",
     mobilePosition: "top",
     phase: "setup",
+    audience: "dm",
   },
-  // Step 5 — Soundboard nav item
+  // Step 5 — Soundboard nav item (DM only)
   {
     id: "dash-soundboard",
     targetSelector: '[data-tour-id="dash-nav-soundboard"]',
@@ -75,8 +82,9 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     position: "right",
     mobilePosition: "top",
     phase: "setup",
+    audience: "dm",
   },
-  // Step 6 — Complete / CTA (modal)
+  // Step 6 — Complete / CTA (all users)
   {
     id: "dash-complete",
     targetSelector: '[data-tour-id="dash-new-session"]',
@@ -86,5 +94,6 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     position: "bottom",
     phase: "complete",
     modal: true,
+    audience: "all",
   },
 ];

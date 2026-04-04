@@ -17,6 +17,8 @@ interface DashboardTourProviderProps {
   delayMs?: number;
   /** Source of the user (affects last-step CTA copy) */
   source?: string;
+  /** Whether the user has DM access — filters DM-only tour steps */
+  hasDmAccess?: boolean;
 }
 
 function isMobileViewport(): boolean {
@@ -42,6 +44,7 @@ export function DashboardTourProvider({
   shouldAutoStart,
   delayMs = 1200,
   source,
+  hasDmAccess = false,
 }: DashboardTourProviderProps) {
   const router = useRouter();
   const {
@@ -57,9 +60,11 @@ export function DashboardTourProvider({
   const [mounted, setMounted] = useState(false);
 
   const effectiveSteps = useMemo(
-    () => DASHBOARD_TOUR_STEPS.map(resolveStep),
+    () => DASHBOARD_TOUR_STEPS
+      .filter((step) => step.audience === "all" || (step.audience === "dm" && hasDmAccess))
+      .map(resolveStep),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mounted]
+    [mounted, hasDmAccess]
   );
 
   // Auto-start tour — wait for both the delay AND the page content to be in the DOM.
