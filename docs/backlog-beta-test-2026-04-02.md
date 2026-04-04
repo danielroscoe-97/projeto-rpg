@@ -10,8 +10,8 @@
 >
 > | Trilha | Status | Pendencias |
 > |--------|--------|------------|
-> | **A — Combat Core** | ✅ A.1-A.6 DONE, A.7 DONE, A.8 DONE | Nenhuma |
-> | **B — Combat Display** | ⚠️ Parcial | B.11 parcial, B.12 parcial, B.21 DONE |
+> | **A — Combat Core** | ✅ A.1-A.8 DONE | Nenhuma |
+> | **B — Combat Display** | ✅ B.0, BT-06 a BT-12, BT-21 DONE | Nenhuma — verificado 2026-04-04 |
 > | **C — Player Agency** | ✅ C.13-C.15 DONE | Nenhuma |
 > | **D — Social/Login** | ✅ BT-16 a BT-20 DONE | Nenhuma (F-37 a F-42 implementados) |
 
@@ -231,7 +231,7 @@ const canExpand = fullMonster !== undefined;
 
 #### B.0 — Extrair HP_STATUS_STYLES pra Shared (PRÉ-REQUISITO)
 
-**Status:** Código duplicado em `PlayerInitiativeBoard.tsx:48-53` vs `hp-status.ts`
+**Status:** ✅ DONE — Duplicacao removida, `PlayerInitiativeBoard` importa de `hp-status.ts`
 **Impacto:** Pré-req para BT-06 (FULL tier) — sem isso, precisa atualizar em 2 lugares
 **Fix:** Centralizar estilos em `lib/utils/hp-status.ts`, importar em ambos clients
 
@@ -239,11 +239,11 @@ const canExpand = fullMonster !== undefined;
 
 | # | Tipo | Item | Descrição Detalhada | Impacto | Guest? |
 |---|------|------|---------------------|---------|--------|
-| BT-06 | 🟡 FEAT | Tier "FULL" no HP status | Adicionar FULL (100% HP) acima de LIGHT. `FULL/LIGHT/MODERATE/HEAVY/CRITICAL`. Atualizar `hp-status.ts` (tipo, getHpStatus, getHpBarColor, getHpThresholdKey). | ALTO | ✅ Guest + Auth |
-| BT-07 | 🟡 FEAT | Mostrar AC e Save DC | AC só aparece pro próprio char do player. Spell Save DC ausente em toda a player view. `broadcast.ts:109` strip spell_save_dc dos monsters. Precisa: (1) mostrar DC do próprio char em PlayerBottomBar, (2) DM vê AC/DC de todos — player vê **apenas os próprios** (aliados não exibem AC/DC). | ALTO | ✅ Guest + Auth |
+| BT-06 | ✅ DONE | Tier "FULL" no HP status | Adicionar FULL (100% HP) acima de LIGHT. `FULL/LIGHT/MODERATE/HEAVY/CRITICAL`. Atualizar `hp-status.ts` (tipo, getHpStatus, getHpBarColor, getHpThresholdKey). | ALTO | ✅ Guest + Auth |
+| BT-07 | ✅ DONE | Mostrar AC e Save DC | AC só aparece pro próprio char do player. Spell Save DC ausente em toda a player view. `broadcast.ts:109` strip spell_save_dc dos monsters. Precisa: (1) mostrar DC do próprio char em PlayerBottomBar, (2) DM vê AC/DC de todos — player vê **apenas os próprios** (aliados não exibem AC/DC). | ALTO | ✅ Guest + Auth |
 | BT-08 | ✅ DONE | % exato de HP | HP % é calculado mas só usado pra largura da barra. Adicionar label texto "45%" ao lado do tier badge. **Fix (2026-04-02):** `PlayerJoinClient.tsx:737` não propagava `hp_percentage` no store update de `combat:hp_update` para monstros. `HpStatusBadge` já renderizava `· {pct}%` quando disponível. Corrigido + guard: tier FULL não exibe %. Guest parity: N/A (DM vê HP exato, sem badge). | MÉDIO | ✅ Auth/Anon (realtime) |
-| BT-09 | 🟡 FEAT | Header sticky turno atual/próximo | Nenhuma view tem sticky no turn indicator durante combate ativo. Adicionar `sticky top-0 z-30` no turn display. | ALTO | ✅ Guest + Auth |
-| BT-10 | 🟡 FEAT | Visual "crítico" sombreado | Participantes em CRITICAL ficam opacity-50 + desaturate. Feedback visual de urgência. | BAIXO | ✅ Guest + Auth |
+| BT-09 | ✅ DONE | Header sticky turno atual/próximo | Nenhuma view tem sticky no turn indicator durante combate ativo. Adicionar `sticky top-0 z-30` no turn display. | ALTO | ✅ Guest + Auth |
+| BT-10 | ✅ DONE | Visual "crítico" sombreado | Participantes em CRITICAL ficam opacity-50 + desaturate. Feedback visual de urgência. | BAIXO | ✅ Guest + Auth |
 | BT-11 | ✅ DONE | Log de danos separado | **Completado 2026-04-03:** CombatActionLog wired em CombatSessionClient (DM auth), GuestCombatClient (DM guest), PlayerInitiativeBoard (player com filtro por `playerId`). ScrollText button no sticky header. Tabs all/damage. Parity verificada. | MÉDIO | ✅ Guest + Auth |
 | BT-12 | ✅ DONE | Legendary Actions counter | **Completado 2026-04-03:** UI dots em CombatantRow + auto-detect SRD (`getLegendaryActionCount`) + manual override no StatsEditor + reset automático por rodada + Guest parity (handleUpdateStats atualizado). Anti-metagaming: stripped em `sanitizeCombatant`. | MÉDIO | ✅ Guest (DM feature) |
 | BT-21 | ✅ DONE | Monster groups na player view | Players veem agrupamento visual como o DM (collapsed groups com expand). Anti-metagaming respeitado. | ALTO | ✅ Guest + Auth |

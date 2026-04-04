@@ -46,8 +46,9 @@ interface PlayerCombatant {
   is_player: boolean;
   monster_id: string | null;
   ruleset_version: string | null;
-  /** HP status label for monsters (LIGHT/MODERATE/HEAVY/CRITICAL) */
+  /** HP status label for monsters (FULL/LIGHT/MODERATE/HEAVY/CRITICAL) */
   hp_status?: string;
+  spell_save_dc?: number | null;
   /** Death saves state for players at 0 HP */
   death_saves?: { successes: number; failures: number };
   /** Turn count per condition — used for duration badges. Players only. */
