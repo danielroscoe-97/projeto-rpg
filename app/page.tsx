@@ -361,7 +361,7 @@ function FeaturesSection() {
           {features.map((f, i) => (
             <div
               key={f.title}
-              className="relative bg-card border border-border rounded-xl p-6 hover:border-gold/40 hover:shadow-[0_8px_32px_rgba(212,168,83,0.1),0_2px_8px_rgba(0,0,0,0.3)] hover:-translate-y-1.5 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group animate-fade-in-up"
+              className="relative bg-card border border-border rounded-xl p-6 hover:border-gold/50 hover:shadow-[0_16px_48px_rgba(212,168,83,0.15),0_4px_16px_rgba(0,0,0,0.4)] hover:-translate-y-3 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group animate-fade-in-up"
               style={{ animationDelay: `${i * 0.07}s` }}
             >
               {f.tag && (
@@ -369,8 +369,8 @@ function FeaturesSection() {
                   {f.tag}
                 </span>
               )}
-              <div className="bg-amber-400/10 rounded-full p-3 w-fit mb-4 group-hover:bg-amber-400/20 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.2)] transition-all duration-300">
-                <f.icon className={`w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-[200ms] ${f.hoverAnim}`} />
+              <div className="bg-amber-400/10 rounded-full p-3.5 w-fit mb-4 group-hover:bg-amber-400/20 group-hover:shadow-[0_0_32px_rgba(251,191,36,0.35)] transition-all duration-300">
+                <f.icon className={`w-7 h-7 text-amber-400 group-hover:text-amber-300 transition-colors duration-[200ms] ${f.hoverAnim}`} />
               </div>
               <h3 className="font-display text-foreground text-lg mb-2 group-hover:text-gold transition-colors duration-300">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
