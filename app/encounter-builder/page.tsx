@@ -6,11 +6,11 @@ import { getSrdMonsters, toSlug } from "@/lib/srd/srd-data-server";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Encounter Builder — Difficulty Calculator | Pocket DM",
+  title: "D&D 5e Encounter Builder — Difficulty Calculator",
   description:
     "Free encounter difficulty calculator for D&D 5e. Add monsters from 1,100+ SRD creatures, set party size and level, and instantly see if your encounter is Easy, Medium, Hard, or Deadly.",
   openGraph: {
-    title: "D&D 5e Encounter Builder — Difficulty Calculator | Pocket DM",
+    title: "D&D 5e Encounter Builder — Difficulty Calculator",
     description:
       "Free encounter builder with 1,100+ SRD monsters and instant difficulty calculation.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Encounter Builder | Pocket DM",
+    title: "D&D 5e Encounter Builder",
     description:
       "Free encounter builder with 1,100+ SRD monsters and instant difficulty calculation.",
   },

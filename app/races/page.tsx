@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Races — Player Character Species | Pocket DM",
+  title: "D&D 5e Races — Player Character Species",
   description:
     "All 9 SRD races for D&D 5e: Dwarf, Elf, Halfling, Human, Dragonborn, Gnome, Half-Elf, Half-Orc, and Tiefling. Ability scores, traits, and subraces.",
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "player character races",
   ],
   openGraph: {
-    title: "D&D 5e Races — Player Character Species | Pocket DM",
+    title: "D&D 5e Races — Player Character Species",
     description:
       "Complete reference for all 9 SRD races in D&D 5th Edition with ability scores and traits.",
     type: "website",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Races — Player Character Species | Pocket DM",
+    title: "D&D 5e Races — Player Character Species",
     description:
       "Complete reference for all 9 SRD races in D&D 5th Edition.",
   },

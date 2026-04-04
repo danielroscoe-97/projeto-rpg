@@ -6,11 +6,11 @@ import conditionsData from "@/public/srd/conditions.json";
 
 // -- Metadata -----------------------------------------------------------------
 export const metadata: Metadata = {
-  title: "D&D 5e Diseases — Reference | Pocket DM",
+  title: "D&D 5e Diseases — Reference",
   description:
     "Complete reference for D&D 5e diseases: Cackle Fever, Sewer Plague, Sight Rot, and more. Compare 2014 vs 2024 rules side by side.",
   openGraph: {
-    title: "D&D 5e Diseases — Reference | Pocket DM",
+    title: "D&D 5e Diseases — Reference",
     description:
       "Complete reference for all D&D 5e diseases with 2014/2024 comparison.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Diseases — Reference | Pocket DM",
+    title: "D&D 5e Diseases — Reference",
     description:
       "Complete reference for all D&D 5e diseases with 2014/2024 comparison.",
   },

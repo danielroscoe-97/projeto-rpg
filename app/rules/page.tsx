@@ -5,11 +5,11 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Rules Reference — Combat, Resting, Spellcasting | Pocket DM",
+  title: "D&D 5e Rules Reference — Combat, Resting, Spellcasting",
   description:
     "Complete D&D 5e rules reference: combat flow, attack rolls, damage & healing, cover, resting, conditions, and spellcasting basics. Free SRD 5.1 quick reference for your table.",
   openGraph: {
-    title: "D&D 5e Rules Reference — Combat, Resting, Spellcasting | Pocket DM",
+    title: "D&D 5e Rules Reference — Combat, Resting, Spellcasting",
     description:
       "Complete D&D 5e rules reference with visual diagrams, interactive death save tracker, and cover guide. Free SRD 5.1 content.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Rules Reference — Combat, Resting, Spellcasting | Pocket DM",
+    title: "D&D 5e Rules Reference — Combat, Resting, Spellcasting",
     description:
       "Complete D&D 5e rules reference with visual diagrams and interactive tools. Free SRD 5.1 content.",
   },

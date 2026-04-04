@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Racas D&D 5e — Especies de Personagem Jogador | Pocket DM",
+  title: "Racas D&D 5e — Especies de Personagem Jogador",
   description:
     "Todas as 9 racas SRD do D&D 5e: Anao, Elfo, Halfling, Humano, Draconato, Gnomo, Meio-Elfo, Meio-Orc e Tiefling. Atributos, tracos raciais e sub-racas.",
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "racas jogaveis D&D",
   ],
   openGraph: {
-    title: "Racas D&D 5e — Especies de Personagem Jogador | Pocket DM",
+    title: "Racas D&D 5e — Especies de Personagem Jogador",
     description:
       "Referencia completa das 9 racas SRD do D&D 5a Edicao com atributos e tracos.",
     type: "website",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Racas D&D 5e — Especies de Personagem Jogador | Pocket DM",
+    title: "Racas D&D 5e — Especies de Personagem Jogador",
     description:
       "Referencia completa das 9 racas SRD do D&D 5a Edicao.",
   },

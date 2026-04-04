@@ -5,11 +5,11 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Damage Types — Complete Reference | Pocket DM",
+  title: "D&D 5e Damage Types — Complete Reference",
   description:
     "Complete reference for all 13 D&D 5e damage types: acid, bludgeoning, cold, fire, force, lightning, necrotic, piercing, poison, psychic, radiant, slashing, and thunder. Resistances, immunities, and common sources.",
   openGraph: {
-    title: "D&D 5e Damage Types — Complete Reference | Pocket DM",
+    title: "D&D 5e Damage Types — Complete Reference",
     description:
       "All 13 damage types in D&D 5e with resistances, immunities, and common sources.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Damage Types — Complete Reference | Pocket DM",
+    title: "D&D 5e Damage Types — Complete Reference",
     description:
       "All 13 damage types in D&D 5e with resistances, immunities, and common sources.",
   },

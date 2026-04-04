@@ -10,7 +10,7 @@ import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Bestiário D&D 5e — Lista de Monstros SRD | Pocket DM",
+  title: "Bestiário D&D 5e — Lista de Monstros SRD",
   description:
     "Bestiário completo do D&D 5e com blocos de estatísticas interativos, roladores de dados e descrições táticas. Filtre por CR, tipo e muito mais. Gratuito.",
   keywords: [

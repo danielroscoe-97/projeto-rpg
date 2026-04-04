@@ -5,11 +5,11 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Dice Roller — Roll Online | Pocket DM",
+  title: "D&D 5e Dice Roller — Roll Online",
   description:
     "Free online dice roller for D&D 5e. Roll d4, d6, d8, d10, d12, d20, d100 with advantage, disadvantage, critical hits, and resistance. Quick presets for attacks, damage, and ability checks.",
   openGraph: {
-    title: "D&D 5e Dice Roller — Roll Online | Pocket DM",
+    title: "D&D 5e Dice Roller — Roll Online",
     description:
       "Free online dice roller with advantage, critical, presets, and roll history.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Dice Roller — Roll Online | Pocket DM",
+    title: "D&D 5e Dice Roller — Roll Online",
     description:
       "Free online dice roller with advantage, critical, presets, and roll history.",
   },

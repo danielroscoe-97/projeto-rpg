@@ -5,7 +5,7 @@ import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "D&D 5e Spell Compendium — SRD Spell List | Pocket DM",
+  title: "D&D 5e Spell Compendium — SRD Spell List",
   description:
     "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Filter by level, school, and class. Free to use.",
   keywords: [

@@ -5,11 +5,11 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Ability Scores & Modifier Calculator | Pocket DM",
+  title: "D&D 5e Ability Scores & Modifier Calculator",
   description:
     "Complete reference for all six D&D 5e ability scores: Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma. Interactive modifier calculator with full score-to-modifier table.",
   openGraph: {
-    title: "D&D 5e Ability Scores & Modifier Calculator | Pocket DM",
+    title: "D&D 5e Ability Scores & Modifier Calculator",
     description:
       "All six ability scores explained with interactive modifier calculator, associated skills, saving throws, and common uses.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Ability Scores & Modifier Calculator | Pocket DM",
+    title: "D&D 5e Ability Scores & Modifier Calculator",
     description:
       "All six ability scores explained with interactive modifier calculator, associated skills, saving throws, and common uses.",
   },

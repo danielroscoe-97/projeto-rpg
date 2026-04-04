@@ -5,11 +5,11 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Actions in Combat — Quick Reference | Pocket DM",
+  title: "D&D 5e Actions in Combat — Quick Reference",
   description:
     "Complete reference for all D&D 5e combat actions: Attack, Cast a Spell, Dash, Dodge, Disengage, Help, Hide, Ready, Search and more. Compare 2014 vs 2024 rules.",
   openGraph: {
-    title: "D&D 5e Actions in Combat — Quick Reference | Pocket DM",
+    title: "D&D 5e Actions in Combat — Quick Reference",
     description:
       "Complete reference for all D&D 5e combat actions with 2014/2024 comparison.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Actions in Combat — Quick Reference | Pocket DM",
+    title: "D&D 5e Actions in Combat — Quick Reference",
     description:
       "Complete reference for all D&D 5e combat actions with 2014/2024 comparison.",
   },

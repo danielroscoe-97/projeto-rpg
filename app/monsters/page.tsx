@@ -5,7 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
 
 export const metadata: Metadata = {
-  title: "D&D 5e Monster Compendium — SRD Bestiary | Pocket DM",
+  title: "D&D 5e Monster Compendium — SRD Bestiary",
   description:
     "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers. Search by CR, creature type, and name. Free to use.",
   keywords: [

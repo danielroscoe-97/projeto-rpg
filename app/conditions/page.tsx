@@ -6,11 +6,11 @@ import conditionsData from "@/public/srd/conditions.json";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Conditions — Quick Reference | Pocket DM",
+  title: "D&D 5e Conditions — Quick Reference",
   description:
     "Complete reference for all D&D 5e conditions: Blinded, Charmed, Frightened, Paralyzed, Stunned, and more. Compare 2014 vs 2024 rules side by side.",
   openGraph: {
-    title: "D&D 5e Conditions — Quick Reference | Pocket DM",
+    title: "D&D 5e Conditions — Quick Reference",
     description:
       "Complete reference for all D&D 5e conditions with 2014/2024 comparison.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Conditions — Quick Reference | Pocket DM",
+    title: "D&D 5e Conditions — Quick Reference",
     description:
       "Complete reference for all D&D 5e conditions with 2014/2024 comparison.",
   },

@@ -6,11 +6,11 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Tipos de Dano D&D 5e — Referencia Completa | Pocket DM",
+  title: "Tipos de Dano D&D 5e — Referencia Completa",
   description:
     "Referencia completa dos 13 tipos de dano do D&D 5e: acido, contundente, frio, fogo, forca, relampago, necrotico, perfurante, veneno, psiquico, radiante, cortante e trovao. Resistencias, imunidades e fontes comuns.",
   openGraph: {
-    title: "Tipos de Dano D&D 5e — Referencia Completa | Pocket DM",
+    title: "Tipos de Dano D&D 5e — Referencia Completa",
     description:
       "Todos os 13 tipos de dano do D&D 5e com resistencias, imunidades e fontes comuns.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tipos de Dano D&D 5e — Referencia Completa | Pocket DM",
+    title: "Tipos de Dano D&D 5e — Referencia Completa",
     description:
       "Todos os 13 tipos de dano do D&D 5e com resistencias, imunidades e fontes comuns.",
   },

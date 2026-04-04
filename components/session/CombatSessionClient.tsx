@@ -189,6 +189,7 @@ export function CombatSessionClient({
         .catch(() => { /* non-fatal */ });
 
       setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
+      setShowActionLog(false); // Close action log to avoid overlapping with recap
       setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
       if (sid) {

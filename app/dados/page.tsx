@@ -6,11 +6,11 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Rolador de Dados D&D 5e — Role Online | Pocket DM",
+  title: "Rolador de Dados D&D 5e — Role Online",
   description:
     "Rolador de dados grátis para D&D 5e. Role d4, d6, d8, d10, d12, d20, d100 com vantagem, desvantagem, acerto crítico e resistência. Presets rápidos para ataques, dano e testes.",
   openGraph: {
-    title: "Rolador de Dados D&D 5e — Role Online | Pocket DM",
+    title: "Rolador de Dados D&D 5e — Role Online",
     description:
       "Rolador de dados grátis com vantagem, crítico, presets e histórico.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rolador de Dados D&D 5e — Role Online | Pocket DM",
+    title: "Rolador de Dados D&D 5e — Role Online",
     description:
       "Rolador de dados grátis com vantagem, crítico, presets e histórico.",
   },

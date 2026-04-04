@@ -5,7 +5,7 @@ import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Magias D&D 5e — Compêndio SRD | Pocket DM",
+  title: "Magias D&D 5e — Compêndio SRD",
   description:
     "Compêndio completo de magias do D&D 5e com descrições, alcance, componentes e tier de poder. Filtre por nível, escola e classe. Gratuito.",
   keywords: [

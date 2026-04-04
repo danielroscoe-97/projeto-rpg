@@ -5,7 +5,7 @@ import { getCampaignMembership } from "@/lib/supabase/campaign-membership";
 import { PlayerHqShell } from "@/components/player-hq/PlayerHqShell";
 
 export const metadata: Metadata = {
-  title: "Player HQ | Pocket DM",
+  title: "Player HQ",
 };
 
 export default async function PlayerHqSheetPage({

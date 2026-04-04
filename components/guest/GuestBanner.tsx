@@ -62,7 +62,7 @@ export function GuestBanner() {
   return (
     <div
       role="status"
-      className={`w-full border-b px-4 py-2 flex items-center justify-between gap-4 text-sm ${
+      className={`w-full border-b px-4 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm ${
         isUrgent
           ? "bg-red-900/30 border-red-500/30"
           : "bg-white/[0.04] border-white/[0.06]"

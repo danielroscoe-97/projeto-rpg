@@ -6,11 +6,11 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Regras D&D 5e — Combate, Descanso, Conjuracao | Pocket DM",
+  title: "Regras D&D 5e — Combate, Descanso, Conjuracao",
   description:
     "Referencia completa de regras D&D 5e: fluxo de combate, jogadas de ataque, dano & cura, cobertura, descanso, condicoes e basico de conjuracao. Conteudo gratuito do SRD 5.1.",
   openGraph: {
-    title: "Regras D&D 5e — Combate, Descanso, Conjuracao | Pocket DM",
+    title: "Regras D&D 5e — Combate, Descanso, Conjuracao",
     description:
       "Referencia completa de regras D&D 5e com diagramas visuais, rastreador de testes contra a morte interativo e guia de cobertura. Conteudo gratuito do SRD 5.1.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Regras D&D 5e — Combate, Descanso, Conjuracao | Pocket DM",
+    title: "Regras D&D 5e — Combate, Descanso, Conjuracao",
     description:
       "Referencia completa de regras D&D 5e com diagramas visuais e ferramentas interativas. Conteudo gratuito do SRD 5.1.",
   },

@@ -647,7 +647,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
 
   // Start combat
   const handleStartCombat = async () => {
-    if (combatants.length === 0) {
+    if (combatants.length < 2) {
       setSubmitError(t("error_no_combatants"));
       return;
     }
@@ -870,15 +870,15 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       )}
 
       {/* Start Combat */}
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="text-muted-foreground text-xs">
             {combatants.length > 0
               ? t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })
               : ""}
           </p>
           {combatants.length > 0 && (
-            <div className="flex items-center gap-1.5 ml-2">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={handleRollAll}
@@ -905,8 +905,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
         <button
           type="button"
           onClick={handleStartCombat}
-          disabled={combatants.length === 0 || isPending}
-          className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          disabled={combatants.length < 2 || isPending}
+          className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] shrink-0"
           data-testid="start-combat-btn"
         >
           {isPending ? t("starting") : t("start_combat")}

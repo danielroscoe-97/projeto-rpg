@@ -7,7 +7,7 @@ import type { SrdClass } from "@/lib/types/srd-class";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Classes — SRD Class Reference | Pocket DM",
+  title: "D&D 5e Classes — SRD Class Reference",
   description:
     "Complete reference for all 12 D&D 5e SRD classes: Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, and Wizard. Hit dice, proficiencies, saving throws, and subclasses.",
   keywords: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "D&D combat tracker",
   ],
   openGraph: {
-    title: "D&D 5e Classes — SRD Class Reference | Pocket DM",
+    title: "D&D 5e Classes — SRD Class Reference",
     description:
       "All 12 SRD classes with hit dice, proficiencies, and subclasses. Free reference.",
     type: "website",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Classes — SRD Class Reference | Pocket DM",
+    title: "D&D 5e Classes — SRD Class Reference",
     description:
       "All 12 SRD classes with hit dice, proficiencies, and subclasses.",
   },

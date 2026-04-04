@@ -6,11 +6,11 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Atributos D&D 5e \u2014 Calculadora de Modificador | Pocket DM",
+  title: "Atributos D&D 5e \u2014 Calculadora de Modificador",
   description:
     "Referencia completa dos seis atributos do D&D 5e: Forca, Destreza, Constituicao, Inteligencia, Sabedoria e Carisma. Calculadora interativa de modificador com tabela completa.",
   openGraph: {
-    title: "Atributos D&D 5e \u2014 Calculadora de Modificador | Pocket DM",
+    title: "Atributos D&D 5e \u2014 Calculadora de Modificador",
     description:
       "Todos os seis atributos explicados com calculadora interativa de modificador, pericias associadas, testes de resistencia e usos comuns.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Atributos D&D 5e \u2014 Calculadora de Modificador | Pocket DM",
+    title: "Atributos D&D 5e \u2014 Calculadora de Modificador",
     description:
       "Todos os seis atributos explicados com calculadora interativa de modificador, pericias associadas, testes de resistencia e usos comuns.",
   },

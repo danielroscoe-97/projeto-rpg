@@ -17,6 +17,7 @@ import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatRecap } from "@/components/combat/CombatRecap";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
+import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { buildCombatReportFromStats } from "@/lib/utils/combat-stats";
 import type { CombatReport } from "@/lib/types/combat-report";
@@ -1151,7 +1152,15 @@ export function GuestCombatClient() {
       applyDamage(id, amount);
       if (actor && target) {
         const stats = useGuestCombatStats.getState();
-        stats.trackDamage(actor.display_name ?? actor.name, target.display_name ?? target.name, effectiveDamage);
+        stats.trackDamage(actor.name, target.name, effectiveDamage);
+        useCombatLogStore.getState().addEntry({
+          round: store.roundNumber,
+          type: "damage",
+          actorName: actor.name,
+          targetName: target.name,
+          description: `${target.name} takes ${effectiveDamage} damage`,
+          details: { damageAmount: effectiveDamage },
+        });
       }
     },
     [applyDamage, pushHpUndo]
@@ -1165,9 +1174,17 @@ export function GuestCombatClient() {
       // Calculate effective healing (clamped by max_hp - current_hp)
       const effectiveHealing = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
       applyHealing(id, amount);
-      if (actor) {
+      if (actor && target) {
         const stats = useGuestCombatStats.getState();
-        stats.trackHealing(actor.display_name ?? actor.name, effectiveHealing);
+        stats.trackHealing(actor.name, effectiveHealing);
+        useCombatLogStore.getState().addEntry({
+          round: store.roundNumber,
+          type: "heal",
+          actorName: actor.name,
+          targetName: target.name,
+          description: `${target.name} heals ${effectiveHealing} HP`,
+          details: { damageAmount: effectiveHealing },
+        });
       }
     },
     [applyHealing, pushHpUndo]
@@ -1201,7 +1218,7 @@ export function GuestCombatClient() {
       if (isDefeated) {
         const actor = store.combatants[store.currentTurnIndex];
         if (actor) {
-          useGuestCombatStats.getState().trackKill(actor.display_name ?? actor.name);
+          useGuestCombatStats.getState().trackKill(actor.name);
         }
       }
     },
@@ -1308,13 +1325,13 @@ export function GuestCombatClient() {
     (targetIds: string[], amount: number, mode: HpMode) => {
       const store = useGuestCombatStore.getState();
       const actor = store.combatants[store.currentTurnIndex];
-      const actorName = actor ? (actor.display_name ?? actor.name) : "Unknown";
+      const actorName = actor ? actor.name : "Unknown";
       for (const id of targetIds) {
         const target = store.combatants.find((c) => c.id === id);
         if (mode === "damage") {
           const effective = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
           applyDamage(id, amount);
-          if (target) useGuestCombatStats.getState().trackDamage(actorName, target.display_name ?? target.name, effective);
+          if (target) useGuestCombatStats.getState().trackDamage(actorName, target.name, effective);
         } else if (mode === "heal") {
           const effective = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
           applyHealing(id, amount);
@@ -1337,11 +1354,11 @@ export function GuestCombatClient() {
       finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
     }
 
-    // Convert ID-keyed maps to name-keyed for guest stats (use display_name ?? name for parity with damage tracking)
+    // Convert ID-keyed maps to name-keyed for guest stats (use real name for DM recap)
     const turnTimeByName: Record<string, number> = {};
     const turnCountByName: Record<string, number> = {};
     for (const c of guestStore.combatants) {
-      const key = c.display_name ?? c.name;
+      const key = c.name;
       if (finalAccumulated[c.id]) {
         turnTimeByName[key] = (turnTimeByName[key] ?? 0) + finalAccumulated[c.id];
       }
@@ -1367,6 +1384,7 @@ export function GuestCombatClient() {
         t,
       });
       setGuestCombatReport(report);
+      setShowActionLog(false); // Close action log to avoid overlapping with recap
       setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
     } else {
       useGuestCombatStats.getState().reset();
@@ -1380,6 +1398,7 @@ export function GuestCombatClient() {
     setLeaderboardStats(null);
     setGuestCombatReport(null);
     useGuestCombatStats.getState().reset();
+    useCombatLogStore.getState().clear();
     resetCombat();
   }, [resetCombat]);
 

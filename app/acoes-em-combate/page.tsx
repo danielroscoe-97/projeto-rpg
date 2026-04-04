@@ -6,11 +6,11 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Ações em Combate D&D 5e — Referência Rápida | Pocket DM",
+  title: "Ações em Combate D&D 5e — Referência Rápida",
   description:
     "Referência completa de todas as ações de combate do D&D 5e: Atacar, Conjurar, Disparada, Esquivar, Desengajar, Ajudar, Esconder-se, Preparar, Procurar e mais. Compare regras 2014 vs 2024.",
   openGraph: {
-    title: "Ações em Combate D&D 5e — Referência Rápida | Pocket DM",
+    title: "Ações em Combate D&D 5e — Referência Rápida",
     description:
       "Referência completa de todas as ações de combate do D&D 5e com comparação 2014/2024.",
     type: "website",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ações em Combate D&D 5e — Referência Rápida | Pocket DM",
+    title: "Ações em Combate D&D 5e — Referência Rápida",
     description:
       "Referência completa de todas as ações de combate do D&D 5e com comparação 2014/2024.",
   },

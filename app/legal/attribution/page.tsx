@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Atribuição / Attribution | Pocket DM",
+  title: "Atribuição / Attribution",
   description:
     "Licenciamento de conteúdo e atribuição SRD do Pocket DM. Content licensing and SRD attribution.",
 };

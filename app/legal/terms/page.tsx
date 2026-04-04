@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Termos de Uso | Pocket DM",
+  title: "Termos de Uso",
   description: "Termos de uso do Pocket DM — combat tracker gratuito para D&D 5e.",
 };
 

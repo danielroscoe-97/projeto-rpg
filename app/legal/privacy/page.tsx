@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Política de Privacidade | Pocket DM",
+  title: "Política de Privacidade",
   description: "Política de privacidade do Pocket DM — combat tracker gratuito para D&D 5e.",
 };
 
