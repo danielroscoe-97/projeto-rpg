@@ -2482,7 +2482,9 @@
     "ctx_change_relationship": "Mudar relação",
     "layout_hierarchical": "Hierárquico",
     "layout_force": "Força",
-    "layout_radial": "Radial"
+    "layout_radial": "Radial",
+    "connecting_banner": "Clique em um n\u00f3 para conectar, ou Esc para cancelar",
+    "collapse_group": "colapsar"
   },
   "locations": {
     "loading": "Carregando locais...",

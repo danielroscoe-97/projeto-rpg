@@ -218,9 +218,12 @@ function applyForceLayout(nodes: MindMapNode[], edges: Edge[]): MindMapNode[] {
   const REPULSION = 6000;
   const ATTRACTION = 0.008;
   const DAMPING = 0.85;
-  const ITERATIONS = 80;
+  const ITERATIONS = nodes.length > 60 ? 25 : nodes.length > 30 ? 45 : 80;
+  const CONVERGENCE_THRESHOLD = 0.5;
 
   for (let iter = 0; iter < ITERATIONS; iter++) {
+    let maxDelta = 0;
+
     for (const n1 of nodes) {
       if (n1.id === "campaign") continue;
       const p1 = positions.get(n1.id)!;
@@ -249,9 +252,15 @@ function applyForceLayout(nodes: MindMapNode[], edges: Edge[]): MindMapNode[] {
         fy += (p2.y - p1.y) * ATTRACTION;
       }
 
-      p1.x += fx * DAMPING;
-      p1.y += fy * DAMPING;
+      const dx = fx * DAMPING;
+      const dy = fy * DAMPING;
+      p1.x += dx;
+      p1.y += dy;
+      maxDelta = Math.max(maxDelta, Math.abs(dx) + Math.abs(dy));
     }
+
+    // Early exit when layout has converged
+    if (maxDelta < CONVERGENCE_THRESHOLD) break;
   }
 
   return nodes.map((n) => ({
@@ -453,9 +462,11 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   /* ---- Tooltip handlers ---- */
   const handleNodeMouseEnter: NodeMouseHandler<MindMapNode> = useCallback((_event, node) => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    const x = _event.clientX;
+    const y = _event.clientY;
     hoverTimerRef.current = setTimeout(() => {
       setHoveredNode(node);
-      setTooltipPos({ x: _event.clientX, y: _event.clientY });
+      setTooltipPos({ x, y });
     }, TOOLTIP_DELAY_MS);
   }, []);
 
@@ -1145,13 +1156,14 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       "campaign_factions",
       "campaign_mind_map_edges",
       "party_inventory_items",
+      "sessions",
     ];
 
     let channel = supabase.channel(`mindmap:${campaignId}`);
     for (const table of tables) {
       channel = channel.on(
-        "postgres_changes" as never,
-        { event: "*", schema: "public", table, filter: `campaign_id=eq.${campaignId}` },
+        "postgres_changes",
+        { event: "*", schema: "public", table, filter: `campaign_id=eq.${campaignId}` } as const,
         debouncedRefetch
       );
     }
@@ -1422,6 +1434,17 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     [t]
   );
 
+  /* ---- Memoized node counts per type (for filter chip badges) ---- */
+  const nodeCountsByType = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const n of allNodes) {
+      if (n.type && n.type !== "campaign") {
+        counts[n.type] = (counts[n.type] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }, [allNodes]);
+
   /* ---- Memoized default viewport ---- */
   const defaultViewport = useMemo(() => ({ x: 0, y: 0, zoom: 0.8 }), []);
 
@@ -1468,7 +1491,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             {t(`filter_${key}`)}
             {collapsedGroups.has(key) && (
               <span className="ml-1 text-[9px] opacity-60">
-                ({allNodes.filter((n) => n.type === key).length})
+                ({nodeCountsByType[key] ?? 0})
               </span>
             )}
           </button>
@@ -1478,7 +1501,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       {connectingFromNode && (
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs">
           <span className="animate-pulse">&#9679;</span>
-          <span>Click a node to connect, or press Esc to cancel</span>
+          <span>{t("connecting_banner")}</span>
         </div>
       )}
 
@@ -1537,7 +1560,10 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           <div className="fixed inset-0 z-[55]" onClick={closeContextMenu} />
           <div
             className="fixed z-[60] min-w-[180px] rounded-lg border border-border bg-surface-overlay shadow-xl py-1"
-            style={{ left: contextMenu.x, top: contextMenu.y }}
+            style={{
+              left: Math.min(contextMenu.x, (typeof window !== "undefined" ? window.innerWidth : 9999) - 200),
+              top: Math.min(contextMenu.y, (typeof window !== "undefined" ? window.innerHeight : 9999) - 200),
+            }}
           >
             {contextMenu.type === "node" &&
               contextMenu.nodeType !== "campaign" &&
@@ -1570,7 +1596,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
                     className="w-full px-3 py-1.5 text-left text-xs text-muted-foreground hover:bg-card transition-colors"
                     onClick={handleCollapseGroup}
                   >
-                    {t(`filter_${contextMenu.nodeType}`)} &#9654; collapse
+                    {t(`filter_${contextMenu.nodeType}`)} &#9654; {t("collapse_group")}
                   </button>
                 </>
               )}
