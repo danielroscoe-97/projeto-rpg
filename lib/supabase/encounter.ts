@@ -60,7 +60,11 @@ export async function createEncounterWithCombatants(
   /** If provided, reuses this session instead of creating a new one. */
   existingSessionId?: string | null,
   /** DM's current plan — snapshotted into session for Mesa model */
-  dmPlan?: Plan
+  dmPlan?: Plan,
+  /** FK to encounter_presets if built from a saved preset */
+  presetOriginId?: string | null,
+  /** Whether the DM modified creatures after loading from preset */
+  wasModifiedFromPreset?: boolean,
 ): Promise<CreateEncounterResult> {
   const supabase = createClient();
 
@@ -103,6 +107,8 @@ export async function createEncounterWithCombatants(
     .insert({
       session_id: sessionId,
       name: encounterName || "Encounter 1",
+      ...(presetOriginId ? { preset_origin_id: presetOriginId } : {}),
+      ...(wasModifiedFromPreset != null ? { was_modified_from_preset: wasModifiedFromPreset } : {}),
     })
     .select("id")
     .single();

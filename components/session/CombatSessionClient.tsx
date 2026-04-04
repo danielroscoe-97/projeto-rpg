@@ -406,8 +406,9 @@ export function CombatSessionClient({
 
   const handleStartCombat = async (encounterName?: string) => {
     // Sprint 2: Track preset usage (fire-and-forget, once only)
-    if (presetOriginRef.current) {
-      incrementPresetUsage(presetOriginRef.current).catch(() => { /* non-fatal */ });
+    const presetId = presetOriginRef.current;
+    if (presetId) {
+      incrementPresetUsage(presetId).catch(() => { /* non-fatal */ });
       presetOriginRef.current = null;
     }
 
@@ -457,12 +458,31 @@ export function CombatSessionClient({
     }
 
     try {
+      // Detect if DM modified the preset (added/removed creatures or changed quantities)
+      let wasModified = false;
+      if (presetId && preloadedPreset?.creatures) {
+        const presetSlugs = new Map<string, number>();
+        for (const c of preloadedPreset.creatures) {
+          presetSlugs.set(c.monster_slug ?? c.name, c.quantity);
+        }
+        const combatSlugs = new Map<string, number>();
+        for (const c of sorted.filter((x) => !x.is_player && !x.is_lair_action)) {
+          const key = c.monster_id ?? c.name.replace(/\s+\d+$/, "");
+          combatSlugs.set(key, (combatSlugs.get(key) ?? 0) + 1);
+        }
+        wasModified = presetSlugs.size !== combatSlugs.size ||
+          [...presetSlugs].some(([slug, qty]) => combatSlugs.get(slug) !== qty);
+      }
+
       const { session_id, encounter_id } = await createEncounterWithCombatants(
         sorted,
         rulesetVersion,
         campaignId,
         encounterName,
-        onDemandSessionId
+        onDemandSessionId,
+        undefined, // dmPlan
+        presetId ?? null,
+        wasModified,
       );
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
