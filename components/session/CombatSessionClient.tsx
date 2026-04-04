@@ -35,10 +35,11 @@ const DmAtmospherePanel = dynamic(() => import("@/components/audio/DmAtmosphereP
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
-import { computeCombatStats, getMaxRound } from "@/lib/utils/combat-stats";
+import { computeCombatStats, getMaxRound, buildCombatReport } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
+import type { CombatReport } from "@/lib/types/combat-report";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
-import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { CombatRecap } from "@/components/combat/CombatRecap";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
 import { createClient } from "@/lib/supabase/client";
@@ -98,6 +99,7 @@ export function CombatSessionClient({
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
+  const [combatReport, setCombatReport] = useState<CombatReport | null>(null);
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
@@ -106,7 +108,15 @@ export function CombatSessionClient({
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
-  const [pendingStats, setPendingStats] = useState<{ stats: CombatantStats[]; rounds: number; combatDuration: number } | null>(null);
+  const [pendingStats, setPendingStats] = useState<{
+    stats: CombatantStats[];
+    rounds: number;
+    combatDuration: number;
+    logEntries: import("@/lib/stores/combat-log-store").CombatLogEntry[];
+    combatantsSnapshot: Combatant[];
+    turnTimeAccumulated: Record<string, number>;
+    idToName: Record<string, string>;
+  } | null>(null);
   // C.15: Post-combat state machine (leaderboard → poll → result)
   type PostCombatPhase = "leaderboard" | "poll" | "result" | null;
   const [postCombatPhase, setPostCombatPhase] = useState<PostCombatPhase>(null);
@@ -147,6 +157,18 @@ export function CombatSessionClient({
     if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
       setLeaderboardData(pending.stats);
       setLeaderboardMeta({ name: finalName, rounds: pending.rounds, combatDuration: pending.combatDuration });
+      // Build CombatReport for the new Recap UI
+      const report = buildCombatReport({
+        entries: pending.logEntries,
+        combatants: pending.combatantsSnapshot,
+        turnTimeAccumulated: pending.turnTimeAccumulated,
+        idToName: pending.idToName,
+        encounterName: finalName,
+        combatDuration: pending.combatDuration,
+        roundNumber: pending.rounds,
+        t,
+      });
+      setCombatReport(report);
       setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
       setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
@@ -201,7 +223,7 @@ export function CombatSessionClient({
     const suggestedName = existingName || generateEncounterName(state.combatants);
 
     setPendingEncounterName(suggestedName);
-    setPendingStats({ stats, rounds, combatDuration });
+    setPendingStats({ stats, rounds, combatDuration, logEntries, combatantsSnapshot: [...state.combatants], turnTimeAccumulated: finalAccumulated, idToName });
     setNameModalOpen(true);
   }, []);
 
@@ -225,6 +247,7 @@ export function CombatSessionClient({
     // P2.01: Clear UI immediately before async — prevents stale screen on network error
     setPostCombatPhase(null);
     setPollVotes(new Map());
+    setCombatReport(null);
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
 
@@ -1249,12 +1272,9 @@ export function CombatSessionClient({
       </AlertDialog>
 
       <AnimatePresence>
-        {postCombatPhase === "leaderboard" && leaderboardData && (
-          <CombatLeaderboard
-            stats={leaderboardData}
-            encounterName={leaderboardMeta.name}
-            rounds={leaderboardMeta.rounds}
-            combatDuration={leaderboardMeta.combatDuration}
+        {postCombatPhase === "leaderboard" && combatReport && (
+          <CombatRecap
+            report={combatReport}
             // UX.08 — DM skips poll (biased as encounter creator), goes straight to result
             onClose={() => setPostCombatPhase("result")}
           />

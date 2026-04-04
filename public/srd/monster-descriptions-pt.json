@@ -5341,5 +5341,82 @@
     "legendary_actions": {},
     "lair_actions": {},
     "regional_effects": {}
+  },
+  "abominable-yeti": {
+    "name": "Yeti Abominável",
+    "special_abilities": {
+      "Fear of Fire": "Se o yeti sofrer dano de Fogo, ele tem Desvantagem em jogadas de ataque e testes de habilidade até o final de seu próximo turno."
+    },
+    "actions": {
+      "Multiattack": "O yeti pode usar seu Olhar Gélido e realiza dois ataques, usando Garra ou Arremesso de Gelo em qualquer combinação.",
+      "Claw": "Ataque Corpo a Corpo: +11, alcance 5 ft. 14 (2d6 + 7) de dano Cortante mais 7 (2d6) de dano de Frio.",
+      "Ice Throw": "Ataque à Distância: +11, alcance 60/240 ft. 12 (2d4 + 7) de dano de Concussão mais 7 (2d6) de dano de Frio.",
+      "Chilling Gaze": "con DC 18, uma criatura que o yeti possa ver a até 30 feet. {@actSaveFail} 21 (6d6) de dano de Frio, e o alvo fica com a condição Paralisado até o início do próximo turno do yeti, a menos que o alvo tenha Imunidade a dano de Frio. {@actSaveSuccess} O alvo fica imune ao Olhar Gélido deste yeti por 1 hora.",
+      "Cold Breath {@recharge}": "con DC 18, cada criatura em um Cone de 30 feet [Área de Efeito]. {@actSaveFail} 45 (10d8) de dano de Frio. {@actSaveSuccess} Metade do dano."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "allosaurus": {
+    "name": "Alossauro",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo: +6, alcance 5 ft. 15 (2d10 + 4) de dano Perfurante.",
+      "Claws": "Ataque Corpo a Corpo: +6, alcance 5 ft. 8 (1d8 + 4) de dano Cortante. Se o alvo for uma criatura Grande ou menor e o alossauro tiver se movido 30+ feet em linha reta em direção a ele imediatamente antes do acerto, o alvo fica com a condição Derrubado, e o alossauro pode fazer um ataque de Bite contra ele."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ankylosaurus": {
+    "name": "Anquilossauro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O anquilossauro faz dois ataques de Cauda.",
+      "Tail": "Ataque Corpo a Corpo: +6, alcance 10 ft. 9 (1d10 + 4) de dano de Concussão. Se o alvo for uma criatura Grande ou menor, ele fica com a condição Derrubado."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "arcanaloth": {
+    "name": "Arcanaloth",
+    "special_abilities": {
+      "Fiendish Restoration": "Se o arcanaloth morrer fora de Gehenna, seu corpo se dissolve em icor, e ele ganha um novo corpo instantaneamente e revive com todos os seus Pontos de Vida em Gehenna.",
+      "Magic Resistance": "O arcanaloth tem Vantagem em testes de resistência contra magias e outros efeitos mágicos.",
+      "Soul Tome": "O arcanaloth possui um tomo mágico. Enquanto estiver segurando ou carregando o tomo, o arcanaloth pode usar sua ação Garra Banidora.\nO tomo tem CA 17; PV 35; e Imunidade a dano Necrótico, Veneno e Psíquico. O tomo recupera todos os seus Pontos de Vida no final de cada turno, mas se transforma em pó se for reduzido a 0 Pontos de Vida ou quando o arcanaloth morrer. Se o tomo for destruído, o arcanaloth pode criar um novo quando terminar um Descanso Curto ou Descanso Longo.",
+      "Spellcasting": "O arcanaloth conjura uma das seguintes magias, sem necessidade de componentes Materiais, usando Inteligência como habilidade de conjuração (CD de resistência 17):\nÀ vontade: Alter Self, Detect Magic, Identify, Mage Hand, Prestidigitation\n1/dia cada: Contact Other Plane, Detect Thoughts, Dimension Door, Mind Blank",
+      "Counterspell": "O arcanaloth conjura Counterspell em resposta ao gatilho dessa magia, usando a mesma habilidade de conjuração de Spellcasting.\nÀ vontade: Counterspell"
+    },
+    "actions": {
+      "Multiattack": "O arcanaloth faz três ataques de Explosão Demoníaca. Ele pode substituir um ataque por um ataque de Garra Banidora.",
+      "Fiendish Burst": "Ataque Corpo a Corpo ou à Distância: +9, alcance 5 ft. ou distância 120 ft. 31 (4d12 + 5) de dano Necrótico.",
+      "Banishing Claw (Requires Soul Tome)": "Ataque Corpo a Corpo: +9, alcance 5 ft. 10 (2d4 + 5) de dano Cortante mais 19 (3d12) de dano Psíquico. Se o alvo for uma criatura, ele é submetido ao seguinte efeito. CD Car 17. {@actSaveFail} O alvo fica preso em um semiplano dentro do Tomo das Almas. Enquanto estiver preso lá, o alvo tem a condição Incapacitado. No final de cada um de seus turnos, o alvo repete o teste de resistência, escapando do tomo em caso de sucesso. Quando o alvo escapa, ele aparece no espaço que deixou ou, se esse espaço estiver ocupado, no espaço desocupado mais próximo.\nSe o alvo falhar em três desses testes de resistência enquanto estiver no semiplano, ele se torna vinculado ao tomo e só pode escapar se o tomo for reduzido a 0 Pontos de Vida."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "banshee": {
+    "name": "Banshee",
+    "special_abilities": {
+      "Detect Life": "A banshee sente magicamente a direção de criaturas a até 1 milha de distância que não sejam Constructos ou Mortos-Vivos.",
+      "Incorporeal Movement": "A banshee pode se mover através de outras criaturas e objetos como se fossem Terreno Difícil. Ela sofre 5 (1d10) de dano de Força se terminar seu turno dentro de um objeto."
+    },
+    "actions": {
+      "Multiattack": "A banshee faz dois ataques de Toque Corruptor e usa Horrificar.",
+      "Corrupting Touch": "Ataque Corpo a Corpo: +5, alcance 5 ft. 7 (1d8 + 3) de dano Necrótico.",
+      "Horrify": "sab DC 13, uma criatura que a banshee possa ver a até 60 feet que possa ver a banshee. {@actSaveFail} O alvo fica com a condição Amedrontado até o início do próximo turno da banshee. {@actSaveSuccess} O alvo fica imune ao Horrificar desta banshee por 24 horas.",
+      "Deathly Wail (1/Day)": "A banshee solta um lamento fúnebre se não estiver sob luz solar. con DC 13, cada criatura a até 30 feet que possa ouvir o lamento e não seja um Constructo ou Morto-Vivo. {@actSaveFail} Se o alvo tiver 25 Pontos de Vida ou menos, ele cai para 0 Pontos de Vida. Caso contrário, o alvo sofre 10 (3d6) de dano Psíquico."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
   }
 }

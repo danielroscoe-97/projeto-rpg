@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useDashboardTourStore } from "@/lib/stores/dashboard-tour-store";
 import { createClient } from "@/lib/supabase/client";
 import { trackEvent } from "@/lib/analytics/track";
@@ -42,6 +43,7 @@ export function DashboardTourProvider({
   delayMs = 1200,
   source,
 }: DashboardTourProviderProps) {
+  const router = useRouter();
   const {
     currentStep,
     isActive,
@@ -53,6 +55,12 @@ export function DashboardTourProvider({
 
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
+
+  // Check if we need to redirect after tour (Quick Combat path)
+  const postTourRedirect = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return new URLSearchParams(window.location.search).get("next");
+  }, []);
 
   const effectiveSteps = useMemo(
     () => DASHBOARD_TOUR_STEPS.map(resolveStep),
@@ -67,6 +75,12 @@ export function DashboardTourProvider({
   useEffect(() => {
     setMounted(true);
     if (!shouldAutoStart) return;
+
+    // DB says tour is pending — reset localStorage if it got out of sync
+    const { isCompleted } = useDashboardTourStore.getState();
+    if (isCompleted) {
+      useDashboardTourStore.getState().resetTour();
+    }
 
     const fromWizard = typeof window !== "undefined"
       && new URLSearchParams(window.location.search).get("from") === "wizard";
@@ -114,7 +128,7 @@ export function DashboardTourProvider({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Mark tour completed in DB when done or skipped
+  // Mark tour completed in DB when done or skipped, then handle redirect
   async function persistTourCompleted() {
     try {
       const supabase = createClient();
@@ -126,6 +140,10 @@ export function DashboardTourProvider({
         .eq("user_id", user.id);
     } catch {
       // best-effort
+    }
+    // Quick Combat path: redirect to session/new after tour
+    if (postTourRedirect === "session") {
+      router.push("/app/session/new");
     }
   }
 

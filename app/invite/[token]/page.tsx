@@ -86,6 +86,14 @@ export default async function InvitePage({ params }: InvitePageProps) {
     .is("campaign_id", null)
     .order("updated_at", { ascending: false });
 
+  // Fetch unlinked campaign characters (DM-created, available for claim)
+  const { data: unlinkedCharacters } = await supabase
+    .from("player_characters")
+    .select("id, name, max_hp, ac")
+    .eq("campaign_id", invite.campaign_id)
+    .is("user_id", null)
+    .order("name");
+
   // User is authenticated — show character selection / creation flow
   return (
     <div className="flex min-h-svh items-center justify-center p-6">
@@ -98,6 +106,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
           userId={user.id}
           token={token}
           existingCharacters={existingCharacters ?? []}
+          unlinkedCharacters={unlinkedCharacters ?? []}
         />
       </div>
     </div>

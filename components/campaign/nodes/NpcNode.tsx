@@ -2,13 +2,15 @@
 
 import { memo } from "react";
 import { Handle, Position } from "@xyflow/react";
-import { UserCircle } from "lucide-react";
+import { UserCircle, Skull } from "lucide-react";
 
 export interface NpcNodeData {
   label: string;
   hp?: number;
   ac?: number;
   npcId: string;
+  isAlive?: boolean;
+  isHidden?: boolean;
   [key: string]: unknown;
 }
 
@@ -17,12 +19,31 @@ interface NpcNodeProps {
 }
 
 function NpcNodeComponent({ data }: NpcNodeProps) {
+  const isDead = data.isAlive === false;
+  const isHidden = data.isHidden === true;
+
   return (
-    <div className="px-4 py-3 rounded-lg border border-purple-400/60 bg-surface-overlay shadow-md min-w-[120px]">
+    <div
+      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] ${
+        isDead
+          ? "border-red-500/60 border-dashed opacity-60"
+          : isHidden
+            ? "border-purple-400/30 border-dotted"
+            : "border-purple-400/60"
+      }`}
+    >
       <Handle type="target" position={Position.Top} className="!bg-purple-400 !w-2 !h-2" />
       <div className="flex items-center gap-2">
-        <UserCircle className="h-4 w-4 text-purple-400 flex-shrink-0" />
-        <span className="text-purple-400 font-semibold text-xs truncate max-w-[140px]">
+        {isDead ? (
+          <Skull className="h-4 w-4 text-red-400 flex-shrink-0" />
+        ) : (
+          <UserCircle className="h-4 w-4 text-purple-400 flex-shrink-0" />
+        )}
+        <span
+          className={`font-semibold text-xs truncate max-w-[140px] ${
+            isDead ? "text-red-400 line-through" : "text-purple-400"
+          }`}
+        >
           {data.label}
         </span>
       </div>

@@ -66,6 +66,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.82.0",
     "@eslint/eslintrc": "^3",
     "@jest/types": "^30.3.0",
     "@playwright/test": "^1.58.2",

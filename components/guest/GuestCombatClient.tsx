@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText } from "lucide-react";
 import { toast } from "sonner";
-import { useGuestCombatStore, getGuestNumberedName } from "@/lib/stores/guest-combat-store";
+import { useGuestCombatStore, getGuestNumberedName, saveGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
 import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
@@ -14,10 +14,12 @@ import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/comp
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
-import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { CombatRecap } from "@/components/combat/CombatRecap";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
+import { buildCombatReportFromStats } from "@/lib/utils/combat-stats";
+import type { CombatReport } from "@/lib/types/combat-report";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { GuestExpiryModal } from "@/components/guest/GuestExpiryModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
@@ -705,6 +707,7 @@ export function GuestCombatClient() {
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
+  const [guestCombatReport, setGuestCombatReport] = useState<CombatReport | null>(null);
   const [guestCombatDuration, setGuestCombatDuration] = useState(0);
   const [spellsOpen, setSpellsOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
@@ -1236,6 +1239,16 @@ export function GuestCombatClient() {
     if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
       setLeaderboardStats(stats);
       setGuestCombatDuration(duration);
+      // Build CombatReport for the new Recap UI
+      const report = buildCombatReportFromStats({
+        stats,
+        combatants: guestStore.combatants,
+        encounterName: tg("try_encounter_name"),
+        combatDuration: duration,
+        roundNumber: guestStore.roundNumber,
+        t,
+      });
+      setGuestCombatReport(report);
       setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
     } else {
       useGuestCombatStats.getState().reset();
@@ -1247,6 +1260,7 @@ export function GuestCombatClient() {
   const handleGuestDismissAll = useCallback(() => {
     setGuestPostCombatPhase(null);
     setLeaderboardStats(null);
+    setGuestCombatReport(null);
     useGuestCombatStats.getState().reset();
     resetCombat();
   }, [resetCombat]);
@@ -1256,6 +1270,17 @@ export function GuestCombatClient() {
   const handleLeaderboardClose = useCallback(() => {
     handleGuestDismissAll();
   }, [handleGuestDismissAll]);
+
+  // Conversion CTA: save guest snapshot and redirect to signup
+  const handleSaveAndSignup = useCallback(() => {
+    const guestStore = useGuestCombatStore.getState();
+    saveGuestCombatSnapshot({
+      combatants: guestStore.combatants,
+      currentTurnIndex: guestStore.currentTurnIndex,
+      roundNumber: guestStore.roundNumber,
+    });
+    window.location.href = "/auth/sign-up?from=guest-combat";
+  }, []);
 
   if (phase === "setup" || phase === "ended") {
     return (
@@ -1563,13 +1588,11 @@ export function GuestCombatClient() {
 
       {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
 
-      {guestPostCombatPhase === "leaderboard" && leaderboardStats && (
-        <CombatLeaderboard
-          stats={leaderboardStats}
-          encounterName={tg("try_encounter_name")}
-          rounds={roundNumber}
-          combatDuration={guestCombatDuration}
+      {guestPostCombatPhase === "leaderboard" && guestCombatReport && (
+        <CombatRecap
+          report={guestCombatReport}
           onClose={handleLeaderboardClose}
+          onSaveAndSignup={handleSaveAndSignup}
         />
       )}
 

@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText } from "lucide-react";
+import { Users, FileText, Swords, UserCircle, ChevronDown, Network, ScrollText, MapPin, Flag } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
 import { CampaignMindMap } from "@/components/campaign/CampaignMindMap";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
+import { LocationList } from "@/components/campaign/LocationList";
+import { FactionList } from "@/components/campaign/FactionList";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 
@@ -93,6 +95,14 @@ export function CampaignSections({
 
         <Section icon={ScrollText} title={t("section_quests")} defaultOpen={true}>
           <QuestBoard campaignId={campaignId} isEditable={true} />
+        </Section>
+
+        <Section icon={MapPin} title={t("section_locations")} defaultOpen={false}>
+          <LocationList campaignId={campaignId} />
+        </Section>
+
+        <Section icon={Flag} title={t("section_factions")} defaultOpen={false}>
+          <FactionList campaignId={campaignId} />
         </Section>
 
         <Section icon={Network} title={t("section_mindmap")} defaultOpen={false}>

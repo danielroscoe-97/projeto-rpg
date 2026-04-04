@@ -12,8 +12,10 @@ interface AcceptInviteData {
   currentHp?: number;
   ac?: number;
   spellSaveDc?: number | null;
-  // Existing character path
+  // Existing standalone character path
   existingCharacterId?: string;
+  // Claim DM-created campaign character path
+  claimCharacterId?: string;
 }
 
 /**
@@ -53,7 +55,20 @@ export async function acceptInviteAction(data: AcceptInviteData) {
 
   if (memberError && memberError.code !== "23505") throw new Error("Erro ao ingressar na campanha");
 
-  if (data.existingCharacterId) {
+  if (data.claimCharacterId) {
+    // Claim a DM-created campaign character (set user_id atomically, only if still unclaimed)
+    const { data: claimed, error } = await service
+      .from("player_characters")
+      .update({ user_id: user.id })
+      .eq("id", data.claimCharacterId)
+      .eq("campaign_id", invite.campaign_id)
+      .is("user_id", null)
+      .select("id")
+      .maybeSingle();
+
+    if (error) throw new Error("Erro ao clamar personagem");
+    if (!claimed) throw new Error("Personagem já foi escolhido por outro jogador");
+  } else if (data.existingCharacterId) {
     // Link existing standalone character to this campaign
     const { error } = await service
       .from("player_characters")

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Swords, Zap, ChevronRight } from "lucide-react";
 
+import { InvitePlayersBanner } from "@/components/dashboard/InvitePlayersBanner";
 import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import { CampaignCard } from "@/components/dashboard/CampaignCard";
@@ -175,6 +176,13 @@ export function DashboardOverview({
           campaigns={campaigns}
         />
       </div>
+
+      {/* Invite Players Banner — show when DM has campaigns with characters but no linked players */}
+      {isDmRole && campaigns.some((c) => c.player_count > 0) && playerMemberships.length === 0 && (
+        <InvitePlayersBanner
+          campaignsWithPlayers={campaigns.filter((c) => c.player_count > 0).length}
+        />
+      )}
 
       {/* Active Campaigns Summary */}
       {isDmFirst ? (
