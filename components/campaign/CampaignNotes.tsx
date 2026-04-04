@@ -17,7 +17,27 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye, Users } from "lucide-react";
+import {
+  Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye, Users,
+  FileText, BookOpen, MapPin, UserCircle, Scroll, EyeOff, Lightbulb,
+} from "lucide-react";
+import type { NoteType } from "@/lib/types/mind-map";
+
+const NOTE_TYPE_CONFIG: Array<{
+  key: NoteType;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  activeColor: string;
+  dotColor: string;
+}> = [
+  { key: "general", icon: FileText, color: "text-muted-foreground/60 border-border", activeColor: "text-blue-400 border-blue-400 bg-blue-400/10", dotColor: "bg-blue-400" },
+  { key: "lore", icon: BookOpen, color: "text-muted-foreground/60 border-border", activeColor: "text-indigo-400 border-indigo-400 bg-indigo-400/10", dotColor: "bg-indigo-400" },
+  { key: "location", icon: MapPin, color: "text-muted-foreground/60 border-border", activeColor: "text-cyan-400 border-cyan-400 bg-cyan-400/10", dotColor: "bg-cyan-400" },
+  { key: "npc", icon: UserCircle, color: "text-muted-foreground/60 border-border", activeColor: "text-purple-400 border-purple-400 bg-purple-400/10", dotColor: "bg-purple-400" },
+  { key: "session_recap", icon: Scroll, color: "text-muted-foreground/60 border-border", activeColor: "text-orange-400 border-orange-400 bg-orange-400/10", dotColor: "bg-orange-400" },
+  { key: "secret", icon: EyeOff, color: "text-muted-foreground/60 border-border", activeColor: "text-gray-400 border-gray-500 bg-gray-500/10", dotColor: "bg-gray-400" },
+  { key: "plot_hook", icon: Lightbulb, color: "text-muted-foreground/60 border-border", activeColor: "text-yellow-400 border-yellow-400 bg-yellow-400/10", dotColor: "bg-yellow-400" },
+];
 import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
@@ -283,7 +303,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   );
 
   const handleFieldChange = useCallback(
-    (id: string, field: "title" | "content", value: string) => {
+    (id: string, field: "title" | "content" | "note_type", value: string) => {
       setNotes((prev) =>
         prev.map((n) => (n.id === id ? { ...n, [field]: value } : n)),
       );
@@ -556,6 +576,14 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                           <Lock className="w-3 h-3" />
                         </span>
                       )}
+                      {note.note_type && note.note_type !== "general" && (
+                        <span
+                          className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                            NOTE_TYPE_CONFIG.find((c) => c.key === note.note_type)?.dotColor ?? "bg-blue-400"
+                          }`}
+                          title={t(`note_type_${note.note_type}`)}
+                        />
+                      )}
                     </div>
                     {!isExpanded && note.content && (
                       <p className="text-xs text-muted-foreground truncate mt-0.5">
@@ -601,6 +629,29 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       className="font-medium"
                       data-testid={`note-title-${note.id}`}
                     />
+
+                    {/* Note type chips */}
+                    {isOwner && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {NOTE_TYPE_CONFIG.map(({ key, icon: TypeIcon, color, activeColor }) => {
+                          const isActive = (note.note_type || "general") === key;
+                          return (
+                            <button
+                              key={key}
+                              type="button"
+                              onClick={() => handleFieldChange(note.id, "note_type", key)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-medium transition-all ${
+                                isActive ? activeColor : color
+                              }`}
+                            >
+                              <TypeIcon className="w-3 h-3" />
+                              {t(`note_type_${key}`)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
                     <textarea
                       value={note.content}
                       onChange={(e) => {

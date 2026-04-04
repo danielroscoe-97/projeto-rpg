@@ -316,7 +316,14 @@
     "cancel": "Cancelar",
     "player_notes_section": "Notas dos Jogadores",
     "player_notes_empty": "Nenhum jogador escreveu notas ainda",
-    "player_notes_by": "por {name}"
+    "player_notes_by": "por {name}",
+    "note_type_general": "Geral",
+    "note_type_lore": "Lore",
+    "note_type_location": "Local",
+    "note_type_npc": "NPC",
+    "note_type_session_recap": "Resumo",
+    "note_type_secret": "Segredo",
+    "note_type_plot_hook": "Gancho"
   },
   "links": {
     "related_npcs": "NPCs Relacionados",
@@ -2396,7 +2403,22 @@
     "filter_quest": "Quests",
     "filter_bag": "Bag",
     "filter_location": "Locais",
-    "filter_faction": "Facções"
+    "filter_faction": "Facções",
+    "connect_title": "Qual a relação?",
+    "connect_cancel": "Cancelar",
+    "connect_confirm": "Conectar",
+    "rel_linked_to": "Ligado a",
+    "rel_lives_in": "Mora em",
+    "rel_participated_in": "Participou de",
+    "rel_requires": "Requer",
+    "rel_leads_to": "Leva a",
+    "rel_allied_with": "Aliado de",
+    "rel_enemy_of": "Inimigo de",
+    "rel_gave_quest": "Deu quest",
+    "rel_member_of": "Membro de",
+    "rel_happened_at": "Aconteceu em",
+    "rel_guards": "Guarda",
+    "rel_owns": "Possui"
   },
   "locations": {
     "loading": "Carregando locais...",

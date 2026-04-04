@@ -316,7 +316,14 @@
     "cancel": "Cancel",
     "player_notes_section": "Player Notes",
     "player_notes_empty": "No players have written notes yet",
-    "player_notes_by": "by {name}"
+    "player_notes_by": "by {name}",
+    "note_type_general": "General",
+    "note_type_lore": "Lore",
+    "note_type_location": "Location",
+    "note_type_npc": "NPC",
+    "note_type_session_recap": "Recap",
+    "note_type_secret": "Secret",
+    "note_type_plot_hook": "Plot Hook"
   },
   "links": {
     "related_npcs": "Related NPCs",
@@ -2396,7 +2403,22 @@
     "filter_quest": "Quests",
     "filter_bag": "Bag",
     "filter_location": "Locations",
-    "filter_faction": "Factions"
+    "filter_faction": "Factions",
+    "connect_title": "What's the relationship?",
+    "connect_cancel": "Cancel",
+    "connect_confirm": "Connect",
+    "rel_linked_to": "Linked to",
+    "rel_lives_in": "Lives in",
+    "rel_participated_in": "Participated in",
+    "rel_requires": "Requires",
+    "rel_leads_to": "Leads to",
+    "rel_allied_with": "Allied with",
+    "rel_enemy_of": "Enemy of",
+    "rel_gave_quest": "Gave quest",
+    "rel_member_of": "Member of",
+    "rel_happened_at": "Happened at",
+    "rel_guards": "Guards",
+    "rel_owns": "Owns"
   },
   "locations": {
     "loading": "Loading locations...",

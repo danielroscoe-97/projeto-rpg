@@ -591,6 +591,7 @@ export interface Database {
           content: string;
           folder_id: string | null;
           is_shared: boolean;
+          note_type: string;
           created_at: string;
           updated_at: string;
         };
@@ -602,6 +603,7 @@ export interface Database {
           content?: string;
           folder_id?: string | null;
           is_shared?: boolean;
+          note_type?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -610,6 +612,7 @@ export interface Database {
           content?: string;
           folder_id?: string | null;
           is_shared?: boolean;
+          note_type?: string;
           updated_at?: string;
         };
       };

@@ -15,6 +15,7 @@ import {
   type NodeMouseHandler,
   type NodeTypes,
   type NodeChange,
+  type Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
@@ -22,7 +23,22 @@ import dagre from "@dagrejs/dagre";
 import { createClient } from "@/lib/supabase/client";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 import type { CampaignNote } from "@/lib/types/database";
-import type { NoteType, MindMapEdge, CampaignLocation, CampaignFaction, MindMapNodeLayout } from "@/lib/types/mind-map";
+import type { NoteType, MindMapEdge, EdgeRelationship, CampaignLocation, CampaignFaction, MindMapNodeLayout } from "@/lib/types/mind-map";
+
+const RELATIONSHIP_OPTIONS: Array<{ value: EdgeRelationship; label: string }> = [
+  { value: "linked_to", label: "linked_to" },
+  { value: "lives_in", label: "lives_in" },
+  { value: "participated_in", label: "participated_in" },
+  { value: "requires", label: "requires" },
+  { value: "leads_to", label: "leads_to" },
+  { value: "allied_with", label: "allied_with" },
+  { value: "enemy_of", label: "enemy_of" },
+  { value: "gave_quest", label: "gave_quest" },
+  { value: "member_of", label: "member_of" },
+  { value: "happened_at", label: "happened_at" },
+  { value: "guards", label: "guards" },
+  { value: "owns", label: "owns" },
+];
 import { CampaignNode, type CampaignNodeData } from "./nodes/CampaignNode";
 import { NpcNode, type NpcNodeData } from "./nodes/NpcNode";
 import { NoteNode, type NoteNodeData } from "./nodes/NoteNode";
@@ -730,6 +746,72 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     []
   );
 
+  /* ---- Drag-to-connect ---- */
+  const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
+  const [selectedRelationship, setSelectedRelationship] = useState<EdgeRelationship>("linked_to");
+
+  const onConnect = useCallback((connection: Connection) => {
+    if (connection.source && connection.target && connection.source !== connection.target) {
+      setPendingConnection(connection);
+      setSelectedRelationship("linked_to");
+    }
+  }, []);
+
+  const confirmConnection = useCallback(async () => {
+    if (!pendingConnection?.source || !pendingConnection?.target) return;
+
+    const sourceId = pendingConnection.source;
+    const targetId = pendingConnection.target;
+
+    // Extract type and uuid from node IDs (e.g., 'npc-<uuid>' → type='npc', id='<uuid>')
+    const parseNodeId = (nodeId: string) => {
+      const idx = nodeId.indexOf("-");
+      if (idx === -1) return { type: nodeId, id: nodeId };
+      return { type: nodeId.substring(0, idx), id: nodeId.substring(idx + 1) };
+    };
+
+    const source = parseNodeId(sourceId);
+    const target = parseNodeId(targetId);
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("campaign_mind_map_edges")
+      .insert({
+        campaign_id: campaignId,
+        source_type: source.type,
+        source_id: source.id,
+        target_type: target.type,
+        target_id: target.id,
+        relationship: selectedRelationship,
+        created_by: user.id,
+      })
+      .select("id")
+      .single();
+
+    if (!error && data) {
+      // Add the edge visually
+      const newEdge: Edge = {
+        id: `edge-${data.id}`,
+        source: sourceId,
+        target: targetId,
+        label: selectedRelationship.replace(/_/g, " "),
+        style: {
+          stroke: EDGE_COLORS[selectedRelationship] ?? "#6b7280",
+          strokeWidth: 1,
+          opacity: 0.5,
+        },
+        animated: selectedRelationship !== "linked_to",
+        labelStyle: { fontSize: 9, fill: "#9ca3af" },
+      };
+      setAllEdges((prev) => [...prev, newEdge]);
+    }
+
+    setPendingConnection(null);
+  }, [pendingConnection, selectedRelationship, campaignId, setAllEdges]);
+
   /* ---- Memoized default viewport ---- */
   const defaultViewport = useMemo(() => ({ x: 0, y: 0, zoom: 0.8 }), []);
 
@@ -767,6 +849,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
+          onConnect={onConnect}
           nodeTypes={nodeTypes}
           defaultViewport={defaultViewport}
           fitView
@@ -794,6 +877,49 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           />
         </ReactFlow>
       </div>
+
+      {/* Connection relationship dialog */}
+      {pendingConnection && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-surface-overlay border border-border rounded-xl p-5 shadow-2xl w-[320px] space-y-4">
+            <h3 className="text-sm font-semibold text-foreground">
+              {t("connect_title")}
+            </h3>
+            <div className="grid grid-cols-2 gap-1.5">
+              {RELATIONSHIP_OPTIONS.map(({ value }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setSelectedRelationship(value)}
+                  className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                    selectedRelationship === value
+                      ? "border-amber-400 bg-amber-400/20 text-amber-300"
+                      : "border-border text-muted-foreground hover:border-muted-foreground/50"
+                  }`}
+                >
+                  {t(`rel_${value}`)}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setPendingConnection(null)}
+                className="px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:bg-card"
+              >
+                {t("connect_cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={confirmConnection}
+                className="px-3 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400 text-xs font-medium text-amber-300 hover:bg-amber-400/30"
+              >
+                {t("connect_confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -175,45 +175,37 @@ CREATE TABLE campaign_factions (
 
 ---
 
-### FASE 4 — "Polimento e Inteligencia" (UX premium)
+### FASE 4a — "Persistencia e Status" (IMPLEMENTADO)
 
-**Objetivo**: O mind map e a ferramenta central do DM.
+**Status**: Implementado em 2026-04-03
 
-#### Migrations
+#### Migrations aplicadas
+- `083_mind_map_layout.sql` — Persistencia de posicao dos nos
+- `084_npc_is_alive.sql` — Status vivo/morto dos NPCs
 
-**Migration: `campaign_mind_map_layout`**
-```sql
-CREATE TABLE campaign_mind_map_layout (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  campaign_id uuid NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
-  node_key text NOT NULL, -- formato: 'npc:uuid', 'quest:uuid'
-  x float NOT NULL DEFAULT 0,
-  y float NOT NULL DEFAULT 0,
-  is_collapsed boolean NOT NULL DEFAULT false,
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  UNIQUE(campaign_id, node_key)
-);
-```
-
-**Migration: `is_alive` em campaign_npcs**
-```sql
-ALTER TABLE campaign_npcs ADD COLUMN is_alive boolean NOT NULL DEFAULT true;
-```
-
-#### Features
-- Persistencia de posicao (salva ao soltar no)
+#### Features implementadas
+- Persistencia de posicao (salva ao soltar no, debounced 1s)
 - Status visual completo:
-  - Quest: badge ?, !, check por status
-  - NPC morto: borda vermelha tracejada, skull overlay
-  - NPC hidden: borda pontilhada, icone olho fechado
-  - Session ativa: glow vermelho sutil
-  - Location nao descoberta: "?" no icone
+  - Quest: badge ?, !, check por status + opacity quando completed
+  - NPC morto: borda vermelha tracejada, skull overlay, line-through
+  - NPC hidden: borda pontilhada
+  - Session ativa: pulse no badge
+  - Location nao descoberta: "???" no icone
   - Faction: borda verde/cinza/vermelha por alignment
-- Group nodes colapsiveis (container por tipo)
-- Right-click context menu (editar, deletar link, criar note linkada)
-- Hover tooltip com preview rapido
-- Opcoes de layout: Dagre (hierarquico), Forca (organico), Radial
-- Realtime sync via Supabase Realtime
+- Drag-to-connect entre nos (ReactFlow onConnect + dialog de relacao)
+
+---
+
+### FASE 4b — "UX Premium" (FUTURO)
+
+**Objetivo**: Elevar o mind map a ferramenta central do DM.
+
+#### Features (priorizadas)
+1. **Hover tooltip** — Preview rapido do no ao passar o mouse (baixa complexidade)
+2. **Right-click context menu** — Editar, deletar link, criar note linkada (media complexidade)
+3. **Realtime sync** — Supabase Realtime pra updates live (media complexidade)
+4. **Group nodes colapsiveis** — Container por tipo, expande/colapsa (alta complexidade)
+5. **Opcoes de layout** — Dagre (hierarquico), Forca (organico), Radial (alta complexidade)
 
 ---
 
