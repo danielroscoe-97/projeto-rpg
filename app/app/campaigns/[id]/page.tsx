@@ -9,6 +9,7 @@ import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
 import { CombatLaunchSheet } from '@/components/campaign/CombatLaunchSheet'
 import { Swords } from 'lucide-react'
 import { getCampaignMembership, getCampaignMembers } from '@/lib/supabase/campaign-membership'
+import { getSrdMonsters, toSlug } from '@/lib/srd/srd-data-server'
 
 export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -310,6 +311,15 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         initialCharacters={characters ?? []}
         isOwner={isOwner}
         initialMembers={initialMembers}
+        srdMonsters={isOwner ? getSrdMonsters().map((m) => ({
+          name: m.name,
+          cr: m.cr,
+          type: m.type,
+          slug: toSlug(m.name),
+          token_url: m.token_url ?? null,
+          source: m.source === 'mad' || m.source === 'MAD' ? 'mad'
+            : m.ruleset_version === '2024' ? 'srd-2024' : 'srd',
+        })) : undefined}
       />
     </div>
   )

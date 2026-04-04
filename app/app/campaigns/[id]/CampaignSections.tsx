@@ -11,8 +11,17 @@ import { CampaignMindMap } from "@/components/campaign/CampaignMindMap";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { LocationList } from "@/components/campaign/LocationList";
 import { FactionList } from "@/components/campaign/FactionList";
+import { CampaignEncounterBuilder } from "@/components/campaign/CampaignEncounterBuilder";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
+
+interface MonsterOption {
+  name: string;
+  cr: string;
+  type?: string;
+  slug?: string;
+  token_url?: string | null;
+}
 
 interface Props {
   campaignId: string;
@@ -20,6 +29,7 @@ interface Props {
   initialCharacters: PlayerCharacter[];
   isOwner: boolean;
   initialMembers?: CampaignMemberWithUser[];
+  srdMonsters?: MonsterOption[];
 }
 
 function Section({
@@ -63,8 +73,11 @@ export function CampaignSections({
   initialCharacters,
   isOwner,
   initialMembers,
+  srdMonsters,
 }: Props) {
   const t = useTranslations("campaign");
+  const tBuilder = useTranslations("encounter_builder");
+  const [encounterTab, setEncounterTab] = useState<"builder" | "history">("builder");
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -80,6 +93,40 @@ export function CampaignSections({
           />
         </Section>
 
+        {/* Encounter Builder — DM only, full-width in main column */}
+        {isOwner && (
+          <Section id="section_encounters" icon={Swords} title={tBuilder("section_title")} defaultOpen={false}>
+            {/* Sub-tabs */}
+            <div className="flex gap-1 mb-4">
+              {(["builder", "history"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setEncounterTab(tab)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    encounterTab === tab
+                      ? "border-amber-500 text-amber-400 bg-amber-500/10"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tBuilder(`tab_${tab}`)}
+                </button>
+              ))}
+            </div>
+            {encounterTab === "builder" && srdMonsters && (
+              <CampaignEncounterBuilder
+                campaignId={campaignId}
+                members={initialMembers ?? []}
+                characters={initialCharacters}
+                monsters={srdMonsters}
+              />
+            )}
+            {encounterTab === "history" && (
+              <EncounterHistory campaignId={campaignId} />
+            )}
+          </Section>
+        )}
+
         <Section id="section_npcs" icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
           <NpcList campaignId={campaignId} />
         </Section>
@@ -91,9 +138,12 @@ export function CampaignSections({
 
       {/* Sidebar — lighter sections */}
       <div className="space-y-4">
-        <Section id="section_encounters" icon={Swords} title={t("section_encounters")} defaultOpen={false}>
-          <EncounterHistory campaignId={campaignId} />
-        </Section>
+        {/* Encounter History for non-owners (players see history only) */}
+        {!isOwner && (
+          <Section id="section_encounters" icon={Swords} title={t("section_encounters")} defaultOpen={false}>
+            <EncounterHistory campaignId={campaignId} />
+          </Section>
+        )}
 
         <Section id="section_quests" icon={ScrollText} title={t("section_quests")} defaultOpen={true}>
           <QuestBoard campaignId={campaignId} isEditable={isOwner} />
