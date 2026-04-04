@@ -16,8 +16,12 @@ import {
   type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Plus } from "lucide-react";
 
 import { usePlayerMindMap, type PlayerMindMapNode } from "@/lib/hooks/usePlayerMindMap";
+import { usePlayerPins, type PinColor } from "@/lib/hooks/usePlayerPins";
+import { useNodeViews } from "@/lib/hooks/useNodeViews";
+import { nodeIdToKey } from "@/lib/utils/mind-map-layout";
 
 import { CampaignNode } from "@/components/campaign/nodes/CampaignNode";
 import { NpcNode } from "@/components/campaign/nodes/NpcNode";
@@ -28,11 +32,13 @@ import { QuestNode } from "@/components/campaign/nodes/QuestNode";
 import { BagNode } from "@/components/campaign/nodes/BagNode";
 import { LocationNode } from "@/components/campaign/nodes/LocationNode";
 import { FactionNode } from "@/components/campaign/nodes/FactionNode";
+import { PinNode } from "@/components/campaign/nodes/PinNode";
 import { PlayerNpcDrawer } from "./drawers/PlayerNpcDrawer";
 import { PlayerQuestDrawer } from "./drawers/PlayerQuestDrawer";
 import { PlayerLocationDrawer } from "./drawers/PlayerLocationDrawer";
 import { PlayerFactionDrawer } from "./drawers/PlayerFactionDrawer";
 import { PlayerSessionDrawer } from "./drawers/PlayerSessionDrawer";
+import { PlayerPinDrawer } from "./drawers/PlayerPinDrawer";
 
 /* ---------- Node types map ---------- */
 
@@ -46,11 +52,12 @@ const nodeTypes: NodeTypes = {
   bag: BagNode,
   location: LocationNode,
   faction: FactionNode,
+  pin: PinNode,
 };
 
 /* ---------- Constants ---------- */
 
-type NodeFilter = "npc" | "note" | "player" | "session" | "quest" | "bag" | "location" | "faction";
+type NodeFilter = "npc" | "note" | "player" | "session" | "quest" | "bag" | "location" | "faction" | "pin";
 
 const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string }> = [
   { key: "npc", color: "border-purple-400/40 text-purple-400/60", activeColor: "border-purple-400 bg-purple-400/20 text-purple-300" },
@@ -61,6 +68,7 @@ const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string
   { key: "bag", color: "border-orange-400/40 text-orange-400/60", activeColor: "border-orange-400 bg-orange-400/20 text-orange-300" },
   { key: "location", color: "border-cyan-400/40 text-cyan-400/60", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
   { key: "faction", color: "border-rose-400/40 text-rose-400/60", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
+  { key: "pin", color: "border-amber-400/40 text-amber-400/60", activeColor: "border-amber-400 bg-amber-400/20 text-amber-300" },
 ];
 
 const MINIMAP_COLORS: Record<string, string> = {
@@ -73,12 +81,13 @@ const MINIMAP_COLORS: Record<string, string> = {
   bag: "#f97316",
   location: "#22d3ee",
   faction: "#fb7185",
+  pin: "#f59e0b",
 };
 
 /* ---------- Drawer state ---------- */
 
 interface DrawerState {
-  type: "npc" | "quest" | "location" | "faction" | "session" | null;
+  type: "npc" | "quest" | "location" | "faction" | "session" | "pin" | null;
   nodeId: string;
   data: Record<string, unknown>;
 }
@@ -94,12 +103,16 @@ interface PlayerMindMapProps {
 
 export function PlayerMindMap({ campaignId, campaignName, characterId, userId }: PlayerMindMapProps) {
   const t = useTranslations("mindmap");
+  const tHq = useTranslations("player_hq");
   const {
     nodes: allNodes,
     edges: allEdges,
     loading,
     error,
   } = usePlayerMindMap(campaignId, campaignName);
+
+  const { pins, canAdd, createPin, updatePin, deletePin } = usePlayerPins(characterId, campaignId);
+  const { isNew, markViewed } = useNodeViews(characterId, campaignId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<PlayerMindMapNode>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
@@ -112,6 +125,7 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
     bag: true,
     location: true,
     faction: true,
+    pin: true,
   });
   const [drawer, setDrawer] = useState<DrawerState>({ type: null, nodeId: "", data: {} });
 
@@ -120,11 +134,31 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  /* ---- Apply filters ---- */
+  /* ---- Build pin nodes ---- */
+  const pinNodes: PlayerMindMapNode[] = useMemo(() => {
+    return pins.map((pin) => ({
+      id: `pin-${pin.id}`,
+      type: "pin" as const,
+      position: {
+        x: pin.position_x ?? Math.random() * 400 - 200,
+        y: pin.position_y ?? Math.random() * 400 - 200,
+      },
+      data: {
+        label: pin.label,
+        note: pin.note,
+        pinColor: pin.color,
+        pinId: pin.id,
+      },
+      draggable: false,
+    }));
+  }, [pins]);
+
+  /* ---- Apply filters (merge campaign nodes + pin nodes) ---- */
   useEffect(() => {
     const visibleNodeIds = new Set<string>();
+    const merged = [...allNodes, ...(filters.pin ? pinNodes : [])];
 
-    const filteredNodes = allNodes.filter((node) => {
+    const filteredNodes = merged.filter((node) => {
       if (node.type === "campaign") {
         visibleNodeIds.add(node.id);
         return true;
@@ -143,12 +177,16 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
 
     setNodes(filteredNodes);
     setEdges(filteredEdges);
-  }, [allNodes, allEdges, filters, setNodes, setEdges]);
+  }, [allNodes, allEdges, pinNodes, filters, setNodes, setEdges]);
 
-  /* ---- Node click → open drawer ---- */
+  /* ---- Node click → open drawer + mark viewed ---- */
   const onNodeClick: NodeMouseHandler<PlayerMindMapNode> = useCallback((_event, node) => {
     const nodeType = node.type as string;
-    const drawerTypes = ["npc", "quest", "location", "faction", "session"];
+
+    // Mark as viewed (removes NEW badge)
+    markViewed(node.id);
+
+    const drawerTypes = ["npc", "quest", "location", "faction", "session", "pin"];
     if (drawerTypes.includes(nodeType)) {
       setDrawer({
         type: nodeType as DrawerState["type"],
@@ -156,12 +194,24 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
         data: node.data as Record<string, unknown>,
       });
     }
-  }, []);
+  }, [markViewed]);
 
   /* ---- Close drawer ---- */
   const closeDrawer = useCallback(() => {
     setDrawer({ type: null, nodeId: "", data: {} });
   }, []);
+
+  /* ---- Add pin ---- */
+  const handleAddPin = useCallback(async () => {
+    if (!canAdd) return;
+    await createPin({
+      label: "",
+      note: "",
+      color: "amber",
+      position_x: Math.random() * 300 - 150,
+      position_y: Math.random() * 300 + 100,
+    });
+  }, [canAdd, createPin]);
 
   /* ---- Minimap color ---- */
   const minimapNodeColor = useCallback(
@@ -187,10 +237,13 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
     );
   }
 
+  // Count new nodes for badge on filter bar
+  const newCount = allNodes.filter((n) => n.type !== "campaign" && isNew(n.id)).length;
+
   return (
     <div className="space-y-2">
-      {/* Filter bar */}
-      <div className="flex flex-wrap gap-1.5">
+      {/* Filter bar + Add Pin */}
+      <div className="flex flex-wrap items-center gap-1.5">
         {FILTER_CONFIG.map(({ key, color, activeColor }) => (
           <button
             key={key}
@@ -204,7 +257,27 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
             {t(`filter_${key}`)}
           </button>
         ))}
+        <div className="flex-1" />
+        {canAdd && (
+          <button
+            type="button"
+            onClick={handleAddPin}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-amber-400/40 text-amber-400/80 text-[11px] font-medium hover:bg-amber-400/10 transition-all"
+          >
+            <Plus className="w-3 h-3" />
+            {tHq("pin_drawer.add_pin")}
+          </button>
+        )}
       </div>
+
+      {/* New nodes indicator */}
+      {newCount > 0 && (
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/20">
+          <span className="text-amber-400 text-xs font-medium">
+            {newCount} {tHq("map_new_nodes")}
+          </span>
+        </div>
+      )}
 
       {/* Empty state when all filters off */}
       {nodes.length <= 1 && !loading && (
@@ -294,6 +367,17 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId }:
           sessionName={(drawer.data.label as string) ?? ""}
           isActive={(drawer.data.isActive as boolean) ?? false}
           statusLabel={(drawer.data.statusLabel as string) ?? ""}
+          onClose={closeDrawer}
+        />
+      )}
+      {drawer.type === "pin" && (
+        <PlayerPinDrawer
+          pinId={(drawer.data.pinId as string) ?? ""}
+          initialLabel={(drawer.data.label as string) ?? ""}
+          initialNote={(drawer.data.note as string) ?? ""}
+          initialColor={(drawer.data.pinColor as PinColor) ?? "amber"}
+          onUpdate={updatePin}
+          onDelete={deletePin}
           onClose={closeDrawer}
         />
       )}

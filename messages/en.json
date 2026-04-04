@@ -530,6 +530,17 @@
     "session_drawer": {
       "hint": "Session from your campaign."
     },
+    "pin_drawer": {
+      "default_title": "Pin",
+      "label": "Label",
+      "label_placeholder": "e.g. Check this out",
+      "note": "Note",
+      "note_placeholder": "Your personal note...",
+      "color": "Color",
+      "delete": "Delete pin",
+      "add_pin": "Add Pin"
+    },
+    "map_new_nodes": "new on the map",
     "sheet": {
       "hp_label": "HP",
       "hp_full": "FULL",
@@ -2436,6 +2447,7 @@
     "filter_bag": "Bag",
     "filter_location": "Locations",
     "filter_faction": "Factions",
+    "filter_pin": "Pins",
     "empty_filters": "No nodes match your filters.",
     "connect_title": "What's the relationship?",
     "connect_cancel": "Cancel",

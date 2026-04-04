@@ -530,6 +530,17 @@
     "session_drawer": {
       "hint": "Sessão da sua campanha."
     },
+    "pin_drawer": {
+      "default_title": "Pin",
+      "label": "Label",
+      "label_placeholder": "ex. Investigar isso",
+      "note": "Nota",
+      "note_placeholder": "Sua anotação pessoal...",
+      "color": "Cor",
+      "delete": "Deletar pin",
+      "add_pin": "Add Pin"
+    },
+    "map_new_nodes": "novidades no mapa",
     "sheet": {
       "hp_label": "HP",
       "hp_full": "CHEIO",
@@ -2436,6 +2447,7 @@
     "filter_bag": "Bag",
     "filter_location": "Locais",
     "filter_faction": "Facções",
+    "filter_pin": "Pins",
     "empty_filters": "Nenhum node corresponde aos filtros.",
     "connect_title": "Qual a relação?",
     "connect_cancel": "Cancelar",
