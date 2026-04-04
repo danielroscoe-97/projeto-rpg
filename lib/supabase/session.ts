@@ -204,8 +204,9 @@ export async function persistEndEncounter(
     const linked = (playerCombatants ?? []).filter((c) => c.player_character_id);
     if (linked.length > 0) {
       await Promise.all(
-        linked.map((c) =>
-          supabase
+        linked.map(async (c) => {
+          // conditions is TEXT[] in combatants but JSONB in player_characters — both are flat string arrays
+          const { error: syncErr } = await supabase
             .from("player_characters")
             .update({
               current_hp: c.current_hp,
@@ -214,8 +215,9 @@ export async function persistEndEncounter(
               ac: c.ac,
               conditions: c.conditions,
             })
-            .eq("id", c.player_character_id!)
-        )
+            .eq("id", c.player_character_id!);
+          if (syncErr) console.warn("[persistEndEncounter] sync failed for", c.player_character_id, syncErr.message);
+        })
       );
     }
   } catch {
