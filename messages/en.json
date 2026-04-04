@@ -759,7 +759,23 @@
   "characters_page": {
     "title": "My Characters",
     "empty": "You don't have any characters yet",
-    "view_campaigns": "View Campaigns"
+    "view_campaigns": "View Campaigns",
+    "avatar_label": "Avatar",
+    "avatar_uploading": "Uploading...",
+    "avatar_hint": "JPG, PNG or WebP (max 2MB)",
+    "avatar_upload_error": "Failed to upload image",
+    "ability_scores": "Ability Scores",
+    "new_character": "New Character",
+    "create_character": "Create Character",
+    "edit_character": "Edit Character",
+    "created_success": "Character created!",
+    "create_error": "Failed to create character.",
+    "saved_success": "Character saved!",
+    "save_error": "Failed to save character.",
+    "delete_error": "Failed to delete character.",
+    "delete_confirm_title": "Delete character?",
+    "delete_confirm_desc": "This action cannot be undone.",
+    "delete_button": "Delete character"
   },
   "onboarding": {
     "choose_title": "How do you want to start?",

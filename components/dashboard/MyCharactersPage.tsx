@@ -89,6 +89,31 @@ function formFromCharacter(char: PlayerCharacter): CharacterFormFields {
   };
 }
 
+function parseOptionalInt(val: string): number | null {
+  if (!val) return null;
+  const n = parseInt(val, 10);
+  return isNaN(n) ? null : n;
+}
+
+function buildCharacterData(fields: CharacterFormFields) {
+  return {
+    name: fields.name,
+    race: fields.race || null,
+    characterClass: fields.charClass || null,
+    level: parseOptionalInt(fields.level),
+    maxHp: parseOptionalInt(fields.hp),
+    ac: parseOptionalInt(fields.ac),
+    spellSaveDc: parseOptionalInt(fields.dc),
+    str: parseOptionalInt(fields.str),
+    dex: parseOptionalInt(fields.dex),
+    con: parseOptionalInt(fields.con),
+    intScore: parseOptionalInt(fields.intScore),
+    wis: parseOptionalInt(fields.wis),
+    chaScore: parseOptionalInt(fields.chaScore),
+    tokenUrl: fields.tokenUrl || null,
+  };
+}
+
 // ─── Formulário compartilhado ───────────────────────────────────────────────
 
 function CharacterForm({
@@ -106,6 +131,7 @@ function CharacterForm({
   submitting: boolean;
   footer?: React.ReactNode;
 }) {
+  const t = useTranslations("characters_page");
   const set = (key: keyof CharacterFormFields) => (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange({ ...fields, [key]: e.target.value });
   const fileRef = useRef<HTMLInputElement>(null);
@@ -126,11 +152,11 @@ function CharacterForm({
       const { data: urlData } = supabase.storage.from("player-avatars").getPublicUrl(path);
       onChange({ ...fields, tokenUrl: urlData.publicUrl });
     } catch {
-      toast.error("Erro ao enviar imagem");
+      toast.error(t("avatar_upload_error"));
     } finally {
       setUploading(false);
     }
-  }, [fields, onChange]);
+  }, [fields, onChange, t]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 pt-2">
@@ -150,8 +176,8 @@ function CharacterForm({
         </button>
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleAvatarUpload} />
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">{uploading ? "Enviando..." : "Avatar"}</p>
-          <p className="text-[10px] text-muted-foreground/50">JPG, PNG ou WebP (max 2MB)</p>
+          <p className="text-xs text-muted-foreground">{uploading ? t("avatar_uploading") : t("avatar_label")}</p>
+          <p className="text-[10px] text-muted-foreground/50">{t("avatar_hint")}</p>
         </div>
       </div>
 
@@ -195,7 +221,7 @@ function CharacterForm({
 
       {/* Ability Scores — 6 stats in 2 rows */}
       <div className="space-y-2 pt-1">
-        <p className="text-xs text-gold/60 uppercase tracking-widest font-medium">Ability Scores</p>
+        <p className="text-xs text-gold/60 uppercase tracking-widest font-medium">{t("ability_scores")}</p>
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
             <label className="text-[10px] text-muted-foreground uppercase tracking-wider">STR</label>
@@ -236,6 +262,7 @@ function CharacterForm({
 // ─── Dialog: Criar ──────────────────────────────────────────────────────────
 
 function CreateCharacterDialog({ onCreated }: { onCreated: () => void }) {
+  const tc = useTranslations("characters_page");
   const [open, setOpen] = useState(false);
   const [fields, setFields] = useState(emptyForm());
   const [submitting, setSubmitting] = useState(false);
@@ -244,28 +271,13 @@ function CreateCharacterDialog({ onCreated }: { onCreated: () => void }) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await createStandaloneCharacterAction({
-        name: fields.name,
-        race: fields.race || null,
-        characterClass: fields.charClass || null,
-        level: fields.level ? parseInt(fields.level) : null,
-        maxHp: fields.hp ? parseInt(fields.hp) : null,
-        ac: fields.ac ? parseInt(fields.ac) : null,
-        spellSaveDc: fields.dc ? parseInt(fields.dc) : null,
-        str: fields.str ? parseInt(fields.str) : null,
-        dex: fields.dex ? parseInt(fields.dex) : null,
-        con: fields.con ? parseInt(fields.con) : null,
-        intScore: fields.intScore ? parseInt(fields.intScore) : null,
-        wis: fields.wis ? parseInt(fields.wis) : null,
-        chaScore: fields.chaScore ? parseInt(fields.chaScore) : null,
-        tokenUrl: fields.tokenUrl || null,
-      });
-      toast.success("Personagem criado!");
+      await createStandaloneCharacterAction(buildCharacterData(fields));
+      toast.success(tc("created_success"));
       setOpen(false);
       setFields(emptyForm());
       onCreated();
     } catch {
-      toast.error("Erro ao criar personagem.");
+      toast.error(tc("create_error"));
     } finally {
       setSubmitting(false);
     }
@@ -276,18 +288,18 @@ function CreateCharacterDialog({ onCreated }: { onCreated: () => void }) {
       <DialogTrigger asChild>
         <Button variant="gold" size="sm" className="gap-2">
           <Plus className="w-4 h-4" />
-          Criar Personagem
+          {tc("create_character")}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Novo Personagem</DialogTitle>
+          <DialogTitle>{tc("new_character")}</DialogTitle>
         </DialogHeader>
         <CharacterForm
           fields={fields}
           onChange={setFields}
           onSubmit={handleSubmit}
-          submitLabel="Criar Personagem"
+          submitLabel={tc("create_character")}
           submitting={submitting}
         />
       </DialogContent>
@@ -308,6 +320,7 @@ function EditCharacterDialog({
   onSaved: () => void;
   onDeleted: () => void;
 }) {
+  const tc = useTranslations("characters_page");
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [fields, setFields] = useState(formFromCharacter(character));
@@ -316,53 +329,38 @@ function EditCharacterDialog({
 
   const handleOpen = (val: boolean) => {
     setOpen(val);
-    if (val) setFields(formFromCharacter(character)); // reset ao abrir
+    if (val) setFields(formFromCharacter(character));
   };
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await updateCharacterAction(character.id, {
-        name: fields.name,
-        race: fields.race || null,
-        characterClass: fields.charClass || null,
-        level: fields.level ? parseInt(fields.level) : null,
-        maxHp: fields.hp ? parseInt(fields.hp) : null,
-        ac: fields.ac ? parseInt(fields.ac) : null,
-        spellSaveDc: fields.dc ? parseInt(fields.dc) : null,
-        str: fields.str ? parseInt(fields.str) : null,
-        dex: fields.dex ? parseInt(fields.dex) : null,
-        con: fields.con ? parseInt(fields.con) : null,
-        intScore: fields.intScore ? parseInt(fields.intScore) : null,
-        wis: fields.wis ? parseInt(fields.wis) : null,
-        chaScore: fields.chaScore ? parseInt(fields.chaScore) : null,
-        tokenUrl: fields.tokenUrl || null,
-      });
-      toast.success("Personagem salvo!");
+      await updateCharacterAction(character.id, buildCharacterData(fields));
+      toast.success(tc("saved_success"));
       setOpen(false);
       onSaved();
     } catch {
-      toast.error("Erro ao salvar personagem.");
+      toast.error(tc("save_error"));
     } finally {
       setSubmitting(false);
     }
-  }, [character.id, fields, onSaved]);
+  }, [character.id, fields, onSaved, tc]);
 
   const handleDelete = useCallback(async () => {
     setDeleting(true);
     try {
       await deleteCharacterAction(character.id);
-      toast.success("Personagem excluído.");
+      toast.success(tc("delete_button"));
       setConfirmDelete(false);
       setOpen(false);
       onDeleted();
     } catch {
-      toast.error("Erro ao excluir personagem.");
+      toast.error(tc("delete_error"));
     } finally {
       setDeleting(false);
     }
-  }, [character.id, onDeleted]);
+  }, [character.id, onDeleted, tc]);
 
   return (
     <>
@@ -381,7 +379,7 @@ function EditCharacterDialog({
             fields={fields}
             onChange={setFields}
             onSubmit={handleSubmit}
-            submitLabel="Salvar"
+            submitLabel={tc("edit_character")}
             submitting={submitting}
             footer={
               isStandalone ? (
@@ -391,7 +389,7 @@ function EditCharacterDialog({
                   className="w-full flex items-center justify-center gap-2 text-sm text-red-400/70 hover:text-red-400 transition-colors py-1"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  Excluir personagem
+                  {tc("delete_button")}
                 </button>
               ) : null
             }
@@ -399,23 +397,22 @@ function EditCharacterDialog({
         </DialogContent>
       </Dialog>
 
-      {/* Confirmação de exclusão */}
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir {character.name}?</AlertDialogTitle>
+            <AlertDialogTitle>{tc("delete_confirm_title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. O personagem será removido permanentemente.
+              {tc("delete_confirm_desc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleting}
               className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600"
             >
-              {deleting ? "..." : "Excluir"}
+              {deleting ? "..." : tc("delete_button")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

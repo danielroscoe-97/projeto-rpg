@@ -759,7 +759,23 @@
   "characters_page": {
     "title": "Meus Personagens",
     "empty": "Você ainda não tem personagens",
-    "view_campaigns": "Ver Campanhas"
+    "view_campaigns": "Ver Campanhas",
+    "avatar_label": "Avatar",
+    "avatar_uploading": "Enviando...",
+    "avatar_hint": "JPG, PNG ou WebP (max 2MB)",
+    "avatar_upload_error": "Erro ao enviar imagem",
+    "ability_scores": "Atributos",
+    "new_character": "Novo Personagem",
+    "create_character": "Criar Personagem",
+    "edit_character": "Editar Personagem",
+    "created_success": "Personagem criado!",
+    "create_error": "Erro ao criar personagem.",
+    "saved_success": "Personagem salvo!",
+    "save_error": "Erro ao salvar personagem.",
+    "delete_error": "Erro ao excluir personagem.",
+    "delete_confirm_title": "Excluir personagem?",
+    "delete_confirm_desc": "Essa ação não pode ser desfeita.",
+    "delete_button": "Excluir personagem"
   },
   "onboarding": {
     "choose_title": "Como você quer começar?",
