@@ -110,6 +110,7 @@ interface PublicSpellGridProps {
     noResults?: string;
     langEn?: string;
     langPt?: string;
+    editionAll?: string;
   };
 }
 
@@ -128,8 +129,10 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
     noResults = "No spells match your filters.",
     langEn = "English",
     langPt = "Português",
+    editionAll = "Both",
   } = labels;
   const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const [editionFilter, setEditionFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<number | null>(null);
   const [schoolFilter, setSchoolFilter] = useState<string | null>(null);
@@ -154,6 +157,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
 
   const filtered = useMemo(() => {
     let result = spells;
+    if (editionFilter) result = result.filter((s) => s.ruleset_version === editionFilter);
     if (query) {
       const q = query.toLowerCase();
       result = result.filter((s) => s.name.toLowerCase().includes(q));
@@ -164,7 +168,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
     if (concFilter) result = result.filter((s) => s.concentration);
     if (ritualFilter) result = result.filter((s) => s.ritual);
     return result;
-  }, [spells, query, levelFilter, schoolFilter, classFilter, concFilter, ritualFilter]);
+  }, [spells, editionFilter, query, levelFilter, schoolFilter, classFilter, concFilter, ritualFilter]);
 
   // Detect duplicate names (e.g. Acid Splash 2014 + 2024) for version badge
   const duplicateNames = useMemo(() => {
@@ -184,8 +188,8 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
   }, [filtered]);
 
   const levelKeys = Array.from(byLevel.keys()).sort((a, b) => a - b);
-  const hasFilters = !!(query || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
-  const hasChipFilters = !!(levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
+  const hasFilters = !!(query || editionFilter || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
+  const hasChipFilters = !!(editionFilter || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
 
   // Smart hover positioning — flip popover above when near bottom of viewport
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -199,7 +203,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
   const handleMouseLeave = useCallback(() => setHoveredId(null), []);
 
   function clearAllFilters() {
-    setQuery(""); setLevelFilter(null); setSchoolFilter(null);
+    setQuery(""); setEditionFilter(null); setLevelFilter(null); setSchoolFilter(null);
     setClassFilter(null); setConcFilter(false); setRitualFilter(false);
   }
 
@@ -310,6 +314,29 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                 {clearAll}
               </button>
             )}
+            <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setEditionFilter(null)}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === null ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+              >
+                {editionAll}
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditionFilter(editionFilter === "2014" ? null : "2014")}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2014" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+              >
+                2014
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditionFilter(editionFilter === "2024" ? null : "2024")}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2024" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+              >
+                2024
+              </button>
+            </div>
             <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
               <button
                 type="button"

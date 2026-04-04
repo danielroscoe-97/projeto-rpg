@@ -94,6 +94,7 @@ export default function MagiasIndexPage() {
             filtersLabel: "Filtros",
             langEn: "English",
             langPt: "Português",
+            editionAll: "Ambas",
           }}
         />
 
