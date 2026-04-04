@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Pocket DM — Video Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold: #D4A853;
+  --gold-light: #E8C87A;
+  --gold-dark: #B8903D;
+  --bg-deep: #0A0A0F;
+  --bg-surface: #13131E;
+  --bg-elevated: #1A1A28;
+  --bg-tertiary: #222234;
+  --text-primary: #E8E6E0;
+  --text-secondary: #9896A0;
+  --text-tertiary: #5C5A65;
+  --hp-green: #22C55E;
+  --hp-yellow: #EAB308;
+  --hp-red: #EF4444;
+  --condition-blue: #3B82F6;
+}
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ===== SCENE SYSTEM ===== */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.scene.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== AMBIENT PARTICLES ===== */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: float-up 8s infinite;
+}
+@keyframes float-up {
+  0% { opacity: 0; transform: translateY(100vh) scale(0.5); }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.15; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1.2); }
+}
+
+/* ===== VIGNETTE ===== */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.cinzel { font-family: 'Cinzel', serif; }
+.jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.gold-text { color: var(--gold); }
+.gold-gradient {
+  background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-60px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideLeft { from { opacity: 0; transform: translateX(80px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideRight { from { opacity: 0; transform: translateX(-80px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulseGold { 0%, 100% { box-shadow: 0 0 20px rgba(212,168,83,0.3); } 50% { box-shadow: 0 0 40px rgba(212,168,83,0.6); } }
+@keyframes typewriter { from { width: 0; } to { width: 100%; } }
+@keyframes blink { 0%, 100% { border-color: var(--gold); } 50% { border-color: transparent; } }
+@keyframes glowPulse { 0%, 100% { filter: drop-shadow(0 0 8px rgba(212,168,83,0.4)); } 50% { filter: drop-shadow(0 0 20px rgba(212,168,83,0.8)); } }
+@keyframes hpDrain { from { width: 100%; } to { width: 35%; } }
+@keyframes hpDrainColor { from { background: var(--hp-green); } to { background: var(--hp-yellow); } }
+@keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@keyframes borderGlow { 0%, 100% { border-color: rgba(212,168,83,0.2); } 50% { border-color: rgba(212,168,83,0.7); } }
+
+/* ===== SCENE 1: HOOK ===== */
+#scene1 .hook-text {
+  font-size: 56px;
+  font-weight: 700;
+  text-align: center;
+  max-width: 900px;
+  line-height: 1.3;
+  animation: slideUp 0.8s ease-out 0.3s both;
+}
+#scene1 .hook-sub {
+  font-size: 28px;
+  color: var(--text-secondary);
+  margin-top: 24px;
+  animation: slideUp 0.8s ease-out 0.8s both;
+}
+#scene1 .pain-icons {
+  display: flex;
+  gap: 60px;
+  margin-top: 60px;
+  animation: fadeIn 0.6s ease-out 1.3s both;
+}
+#scene1 .pain-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+}
+#scene1 .pain-item:nth-child(1) { animation: slideUp 0.4s ease-out 1.5s both; }
+#scene1 .pain-item:nth-child(2) { animation: slideUp 0.4s ease-out 1.8s both; }
+#scene1 .pain-item:nth-child(3) { animation: slideUp 0.4s ease-out 2.1s both; }
+#scene1 .pain-item:nth-child(4) { animation: slideUp 0.4s ease-out 2.4s both; }
+#scene1 .pain-icon {
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--text-tertiary);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: var(--text-tertiary);
+}
+#scene1 .pain-label {
+  font-size: 16px;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 120px;
+}
+#scene1 .cross-line {
+  position: absolute;
+  width: 0;
+  height: 3px;
+  background: var(--hp-red);
+  top: 50%;
+  left: -10px;
+  transform: rotate(-10deg);
+  animation: crossGrow 0.4s ease-out 3s both;
+}
+@keyframes crossGrow { to { width: calc(100% + 20px); } }
+
+/* ===== SCENE 2: LOGO REVEAL ===== */
+#scene2 .logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+#scene2 .logo-svg {
+  width: 320px;
+  height: auto;
+  animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  filter: drop-shadow(0 0 30px rgba(212,168,83,0.3));
+}
+#scene2 .logo-svg.glow {
+  animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both, glowPulse 2.5s ease-in-out 1.2s infinite;
+}
+#scene2 .brand-name {
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: 12px;
+  animation: fadeIn 0.7s ease-out 0.8s both;
+}
+#scene2 .tagline {
+  font-size: 32px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-secondary);
+  animation: fadeIn 0.7s ease-out 1.3s both;
+}
+#scene2 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 28px;
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 100px;
+  font-size: 18px;
+  color: var(--gold);
+  margin-top: 20px;
+  animation: slideUp 0.6s ease-out 1.8s both;
+}
+#scene2 .badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--hp-green);
+  border-radius: 50%;
+  animation: pulseGold 2s infinite 3.5s;
+}
+
+/* ===== SCENE 3: SEARCH DEMO ===== */
+#scene3 { padding: 60px 120px; align-items: flex-start; }
+#scene3 .scene-title {
+  font-size: 24px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 10px;
+}
+#scene3 .scene-heading {
+  font-size: 52px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 50px;
+}
+#scene3 .app-frame {
+  width: 100%;
+  max-width: 1680px;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  border: 1px solid rgba(212,168,83,0.15);
+  overflow: hidden;
+  animation: scaleIn 0.8s ease-out 0.8s both;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+#scene3 .app-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+#scene3 .app-logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+#scene3 .app-content { padding: 30px; }
+#scene3 .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+}
+#scene3 .search-bar svg { color: var(--text-tertiary); flex-shrink: 0; }
+#scene3 .search-typing {
+  font-size: 18px;
+  color: var(--text-primary);
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--gold);
+  animation: typewriter 1.5s steps(14) 1.8s both, blink 0.8s infinite 1.8s;
+  width: 0;
+}
+#scene3 .monster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#scene3 .monster-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--bg-elevated);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  opacity: 0;
+}
+#scene3 .monster-row:nth-child(1) { animation: slideLeft 0.5s ease-out 3.5s both; }
+#scene3 .monster-row:nth-child(2) { animation: slideLeft 0.5s ease-out 3.7s both; }
+#scene3 .monster-row:nth-child(3) { animation: slideLeft 0.5s ease-out 3.9s both; }
+#scene3 .monster-row:nth-child(4) { animation: slideLeft 0.5s ease-out 4.1s both; }
+#scene3 .monster-row.highlight {
+  border-color: rgba(212,168,83,0.4);
+  animation: slideLeft 0.5s ease-out 3.5s both, borderGlow 2s ease-in-out 4.5s infinite;
+}
+#scene3 .monster-token {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--gold-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+}
+#scene3 .monster-info { flex: 1; }
+#scene3 .monster-name { font-size: 17px; font-weight: 600; }
+#scene3 .monster-meta { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+#scene3 .monster-cr {
+  font-size: 14px;
+  color: var(--gold);
+  padding: 4px 12px;
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 6px;
+}
+#scene3 .stat-badge {
+  display: flex;
+  gap: 24px;
+  margin-top: 30px;
+  opacity: 0;
+  animation: slideUp 0.6s ease-out 5s both;
+}
+#scene3 .stat-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+}
+#scene3 .stat-badge-item span { color: var(--gold); font-size: 32px; font-weight: 800; }
+
+/* ===== SCENE 4: COMBAT DEMO ===== */
+#scene4 { padding: 60px 120px; align-items: flex-start; }
+#scene4 .scene-title {
+  font-size: 24px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 10px;
+}
+#scene4 .scene-heading {
+  font-size: 52px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 40px;
+}
+#scene4 .combat-frame {
+  width: 100%;
+  max-width: 1680px;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  border: 1px solid rgba(212,168,83,0.15);
+  overflow: hidden;
+  animation: scaleIn 0.8s ease-out 0.8s both;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  padding: 24px;
+}
+#scene4 .round-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  animation: fadeIn 0.5s ease-out 1.2s both;
+}
+#scene4 .round-badge {
+  background: var(--gold);
+  color: var(--bg-deep);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+#scene4 .combatant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#scene4 .combatant {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  opacity: 0;
+  position: relative;
+}
+#scene4 .combatant:nth-child(1) { animation: slideRight 0.5s ease-out 1.4s both; }
+#scene4 .combatant:nth-child(2) { animation: slideRight 0.5s ease-out 1.6s both; }
+#scene4 .combatant:nth-child(3) { animation: slideRight 0.5s ease-out 1.8s both; }
+#scene4 .combatant:nth-child(4) { animation: slideRight 0.5s ease-out 2.0s both; }
+#scene4 .combatant:nth-child(5) { animation: slideRight 0.5s ease-out 2.2s both; }
+#scene4 .combatant.active-turn {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(212,168,83,0.2);
+}
+#scene4 .combatant.active-turn .turn-arrow {
+  display: block;
+}
+#scene4 .turn-arrow {
+  display: none;
+  color: var(--gold);
+  font-size: 22px;
+  animation: pulseGold 1.5s infinite;
+}
+#scene4 .init-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+#scene4 .combatant-token {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+.token-monster { background: #2D1B1B; border: 2px solid #7F1D1D; color: #FCA5A5; }
+.token-player { background: #1B2D1B; border: 2px solid #166534; color: #86EFAC; }
+#scene4 .combatant-info { flex: 1; }
+#scene4 .combatant-name { font-size: 17px; font-weight: 600; }
+#scene4 .combatant-type { font-size: 12px; color: var(--text-secondary); }
+#scene4 .hp-bar-container {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#scene4 .hp-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+#scene4 .hp-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+#scene4 .hp-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-out, background 1s ease-out;
+}
+.hp-full { width: 100%; background: var(--hp-green); }
+.hp-moderate { background: var(--hp-yellow); }
+.hp-low { background: var(--hp-red); }
+#scene4 .hp-bar-fill.drain {
+  animation: hpDrain 1.5s ease-out 4s both;
+}
+#scene4 .condition-badges {
+  display: flex;
+  gap: 6px;
+}
+#scene4 .condition-badge {
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  opacity: 0;
+}
+.cond-poison { background: rgba(34,197,94,0.15); color: #22C55E; border: 1px solid rgba(34,197,94,0.3); }
+.cond-prone { background: rgba(234,179,8,0.15); color: #EAB308; border: 1px solid rgba(234,179,8,0.3); }
+.cond-conc { background: rgba(59,130,246,0.15); color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
+#scene4 .condition-badge.pop {
+  animation: scaleIn 0.4s ease-out 5s both;
+}
+#scene4 .condition-badge.pop2 {
+  animation: scaleIn 0.4s ease-out 5.4s both;
+}
+#scene4 .keyboard-hint {
+  display: flex;
+  gap: 24px;
+  margin-top: 30px;
+  opacity: 0;
+  animation: slideUp 0.6s ease-out 6s both;
+}
+#scene4 .key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+#scene4 .key kbd {
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--gold);
+}
+
+/* ===== SCENE 5: PLAYER VIEW (REAL PHOTOS) ===== */
+#scene5 { padding: 60px 120px; }
+#scene5 .scene-title {
+  font-size: 24px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+#scene5 .scene-heading {
+  font-size: 52px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 50px;
+  align-self: flex-start;
+}
+#scene5 .split-view {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+}
+#scene5 .photo-frame {
+  flex: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(212,168,83,0.2);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  aspect-ratio: 16/10;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+#scene5 .photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#scene5 .photo-frame.left { animation: slideRight 1s ease-out 0.8s both; }
+#scene5 .photo-frame.right { animation: slideLeft 1s ease-out 1.2s both; }
+#scene5 .photo-label {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(10px);
+  padding: 8px 24px;
+  border-radius: 100px;
+  border: 1px solid rgba(212,168,83,0.3);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+#scene5 .zero-friction {
+  display: flex;
+  gap: 40px;
+  margin-top: 50px;
+  opacity: 0;
+  animation: slideUp 0.8s ease-out 2.5s both;
+}
+#scene5 .friction-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
+  font-weight: 500;
+}
+#scene5 .friction-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22C55E;
+  font-size: 20px;
+}
+
+/* ===== SCENE 6: FEATURES GRID ===== */
+#scene6 { padding: 80px 120px; }
+#scene6 .scene-title {
+  font-size: 24px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 10px;
+}
+#scene6 .scene-heading {
+  font-size: 52px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 60px;
+}
+#scene6 .features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1400px;
+}
+#scene6 .feature-card {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212,168,83,0.1);
+  border-radius: 16px;
+  padding: 36px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  opacity: 0;
+  transition: border-color 0.3s;
+}
+#scene6 .feature-card:nth-child(1) { animation: scaleIn 0.5s ease-out 1s both; }
+#scene6 .feature-card:nth-child(2) { animation: scaleIn 0.5s ease-out 1.2s both; }
+#scene6 .feature-card:nth-child(3) { animation: scaleIn 0.5s ease-out 1.4s both; }
+#scene6 .feature-card:nth-child(4) { animation: scaleIn 0.5s ease-out 1.6s both; }
+#scene6 .feature-card:nth-child(5) { animation: scaleIn 0.5s ease-out 1.8s both; }
+#scene6 .feature-card:nth-child(6) { animation: scaleIn 0.5s ease-out 2s both; }
+#scene6 .feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+.fi-gold { background: rgba(212,168,83,0.15); color: var(--gold); }
+.fi-green { background: rgba(34,197,94,0.15); color: #22C55E; }
+.fi-blue { background: rgba(59,130,246,0.15); color: #3B82F6; }
+.fi-purple { background: rgba(168,85,247,0.15); color: #A855F7; }
+.fi-red { background: rgba(239,68,68,0.15); color: #EF4444; }
+.fi-cyan { background: rgba(6,182,212,0.15); color: #06B6D4; }
+#scene6 .feature-title { font-size: 22px; font-weight: 700; }
+#scene6 .feature-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
+
+/* ===== SCENE 7: COMPARISON ===== */
+#scene7 { padding: 80px 120px; }
+#scene7 .scene-title {
+  font-size: 24px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 10px;
+}
+#scene7 .scene-heading {
+  font-size: 52px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 60px;
+}
+#scene7 .comparison {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1500px;
+}
+#scene7 .comp-card {
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  opacity: 0;
+  border: 2px solid transparent;
+}
+#scene7 .comp-card:nth-child(1) { animation: slideUp 0.5s ease-out 1s both; }
+#scene7 .comp-card:nth-child(2) { animation: slideUp 0.5s ease-out 1.3s both; }
+#scene7 .comp-card:nth-child(3) { animation: slideUp 0.5s ease-out 1.6s both; }
+#scene7 .comp-card.winner {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px rgba(212,168,83,0.15);
+  animation: slideUp 0.5s ease-out 2s both, pulseGold 3s ease-in-out 3s infinite;
+}
+#scene7 .comp-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+.comp-red { background: rgba(239,68,68,0.15); color: #EF4444; }
+.comp-yellow { background: rgba(234,179,8,0.15); color: #EAB308; }
+.comp-green { background: rgba(34,197,94,0.15); color: #22C55E; }
+.comp-gold { background: rgba(212,168,83,0.2); color: var(--gold); }
+#scene7 .comp-name { font-size: 24px; font-weight: 700; }
+#scene7 .comp-problems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+#scene7 .comp-problems .pro { color: #22C55E; }
+#scene7 .comp-problems .con { color: #EF4444; }
+
+/* ===== SCENE 8: CTA ===== */
+#scene8 {
+  background: radial-gradient(ellipse at center, rgba(212,168,83,0.08) 0%, transparent 70%);
+}
+#scene8 .cta-logo {
+  width: 200px;
+  animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  filter: drop-shadow(0 0 40px rgba(212,168,83,0.4));
+}
+#scene8 .cta-logo.glow {
+  animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both, glowPulse 2.5s ease-in-out 1.5s infinite;
+}
+#scene8 .cta-title {
+  font-size: 56px;
+  font-weight: 800;
+  margin-top: 40px;
+  animation: slideUp 0.8s ease-out 1s both;
+}
+#scene8 .cta-sub {
+  font-size: 28px;
+  color: var(--text-secondary);
+  margin-top: 16px;
+  animation: slideUp 0.8s ease-out 1.4s both;
+}
+#scene8 .cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 50px;
+  padding: 20px 56px;
+  background: linear-gradient(135deg, #D4A853 0%, #B8903D 100%);
+  border-radius: 14px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--bg-deep);
+  letter-spacing: 1px;
+  animation: slideUp 0.8s ease-out 1.8s both, pulseGold 2s ease-in-out 3s infinite;
+  box-shadow: 0 8px 30px rgba(212,168,83,0.3);
+}
+#scene8 .cta-url {
+  font-size: 22px;
+  color: var(--text-secondary);
+  margin-top: 24px;
+  letter-spacing: 3px;
+  animation: fadeIn 1s ease-out 2.2s both;
+}
+#scene8 .cta-free {
+  margin-top: 12px;
+  font-size: 18px;
+  color: var(--text-tertiary);
+  animation: fadeIn 1s ease-out 2.6s both;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+  z-index: 100;
+  transition: width 0.3s linear;
+  box-shadow: 0 0 10px rgba(212,168,83,0.5);
+}
+
+/* ===== SCENE COUNTER ===== */
+.scene-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  z-index: 100;
+  font-family: 'JetBrains Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Vignette -->
+<div class="vignette"></div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<!-- Scene Counter -->
+<div class="scene-counter" id="sceneCounter">1 / 8</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 1: HOOK (0:00 - 0:18) -->
+<!-- ============================================================ -->
+<div class="scene active" id="scene1">
+  <div class="hook-text cinzel gold-gradient">
+    Cansado de gerenciar combate<br>no papel?
+  </div>
+  <div class="hook-sub jakarta">
+    Initiative, HP, conditions, stat blocks... tudo ao mesmo tempo.
+  </div>
+  <div class="pain-icons">
+    <div class="pain-item" style="position:relative">
+      <div class="pain-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div class="pain-label">Fichas de papel</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="pain-label">Ferramentas complexas</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="pain-label">Combate lento</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+      </div>
+      <div class="pain-label">Sem sync com players</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 2: LOGO REVEAL (0:18 - 0:35) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene2">
+  <div class="logo-container">
+    <svg class="logo-svg glow" viewBox="0 0 512 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E8C87A"/>
+          <stop offset="50%" stop-color="#D4A853"/>
+          <stop offset="100%" stop-color="#B8903D"/>
+        </linearGradient>
+        <linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDCF82"/>
+          <stop offset="50%" stop-color="#D4A853"/>
+          <stop offset="100%" stop-color="#B89040"/>
+        </linearGradient>
+      </defs>
+      <g transform="translate(6, 10) scale(0.98)">
+        <g stroke="url(#lg1)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+          <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="11"/>
+          <polygon points="256,194 176,326 336,326" stroke-width="7" opacity="0.55"/>
+          <line x1="256" y1="110" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="256" y1="110" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="256" y1="410" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="256" y1="410" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="133" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+          <line x1="379" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+          <line x1="133" y1="185" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+          <line x1="379" y1="185" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+          <line x1="133" y1="335" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+          <line x1="379" y1="335" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+        </g>
+        <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
+          fill="url(#lg2)" stroke="url(#lg1)" stroke-width="2" stroke-linejoin="round"/>
+      </g>
+    </svg>
+    <div class="brand-name cinzel gold-gradient">POCKET DM</div>
+    <div class="tagline jakarta">Master your table.</div>
+    <div class="badge jakarta">
+      <span class="badge-dot"></span>
+      Combat Tracker Gratuito para D&D 5e
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 3: SEARCH DEMO (0:35 - 1:05) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene3">
+  <div class="scene-title cinzel">Passo 1</div>
+  <div class="scene-heading cinzel">Busque qualquer monstro SRD</div>
+  <div class="app-frame">
+    <div class="app-navbar">
+      <div class="app-logo-text cinzel gold-text">POCKET DM</div>
+      <div style="display:flex;gap:20px;align-items:center">
+        <span style="color:var(--text-secondary);font-size:14px">Novo Encontro</span>
+        <span style="background:var(--gold);color:var(--bg-deep);padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600">Criar Gratis</span>
+      </div>
+    </div>
+    <div class="app-content">
+      <div class="search-bar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <div class="search-typing mono">Adult Red Dragon</div>
+      </div>
+      <div class="monster-list">
+        <div class="monster-row highlight">
+          <div class="monster-token">D</div>
+          <div class="monster-info">
+            <div class="monster-name">Adult Red Dragon</div>
+            <div class="monster-meta">Huge Dragon, Chaotic Evil — SRD 2014</div>
+          </div>
+          <div class="monster-cr mono">CR 17</div>
+        </div>
+        <div class="monster-row">
+          <div class="monster-token">D</div>
+          <div class="monster-info">
+            <div class="monster-name">Adult Blue Dragon</div>
+            <div class="monster-meta">Huge Dragon, Lawful Evil — SRD 2014</div>
+          </div>
+          <div class="monster-cr mono">CR 16</div>
+        </div>
+        <div class="monster-row">
+          <div class="monster-token">D</div>
+          <div class="monster-info">
+            <div class="monster-name">Adult Black Dragon</div>
+            <div class="monster-meta">Huge Dragon, Chaotic Evil — SRD 2024</div>
+          </div>
+          <div class="monster-cr mono">CR 14</div>
+        </div>
+        <div class="monster-row">
+          <div class="monster-token">D</div>
+          <div class="monster-info">
+            <div class="monster-name">Adult Green Dragon</div>
+            <div class="monster-meta">Huge Dragon, Lawful Evil — SRD 2014</div>
+          </div>
+          <div class="monster-cr mono">CR 15</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stat-badge">
+    <div class="stat-badge-item jakarta"><span>1.100+</span> monstros</div>
+    <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
+    <div class="stat-badge-item jakarta"><span>604</span> magias</div>
+    <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
+    <div class="stat-badge-item jakarta"><span>2014</span> + <span>2024</span></div>
+    <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
+    <div class="stat-badge-item jakarta">Bilingue <span style="font-size:18px">EN + PT-BR</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 4: COMBAT (1:05 - 1:45) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene4">
+  <div class="scene-title cinzel">Passo 2</div>
+  <div class="scene-heading cinzel">Gerencie combate em tempo real</div>
+  <div class="combat-frame">
+    <div class="round-indicator">
+      <span class="round-badge">RODADA 3</span>
+      <span>Turno do Goblin Boss</span>
+      <span style="margin-left:auto;color:var(--gold)">7 combatentes</span>
+    </div>
+    <div class="combatant-list">
+      <div class="combatant active-turn">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">18</div>
+        <div class="combatant-token token-monster">G</div>
+        <div class="combatant-info">
+          <div class="combatant-name">Goblin Boss</div>
+          <div class="combatant-type">Small Humanoid</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--gold)">21 / 21</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full"></div></div>
+        </div>
+        <div class="condition-badges">
+          <!-- conditions appear later -->
+        </div>
+      </div>
+      <div class="combatant">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">16</div>
+        <div class="combatant-token token-player">R</div>
+        <div class="combatant-info">
+          <div class="combatant-name">Ragnar</div>
+          <div class="combatant-type">Jogador - Barbaro Lv 5</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-yellow)">32 / 55</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-moderate" style="width:58%"></div></div>
+        </div>
+        <div class="condition-badges">
+          <span class="condition-badge cond-poison pop">Envenenado</span>
+        </div>
+      </div>
+      <div class="combatant">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">14</div>
+        <div class="combatant-token token-player">L</div>
+        <div class="combatant-info">
+          <div class="combatant-name">Lyra</div>
+          <div class="combatant-type">Jogadora - Maga Lv 5</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-green)">28 / 32</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full" style="width:87%"></div></div>
+        </div>
+        <div class="condition-badges">
+          <span class="condition-badge cond-conc pop2">Concentrando</span>
+        </div>
+      </div>
+      <div class="combatant">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">12</div>
+        <div class="combatant-token token-monster">G</div>
+        <div class="combatant-info">
+          <div class="combatant-name">Goblin 1</div>
+          <div class="combatant-type">Small Humanoid</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-red)">3 / 7</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-low" style="width:43%"></div></div>
+        </div>
+        <div class="condition-badges">
+          <span class="condition-badge cond-prone pop2">Derrubado</span>
+        </div>
+      </div>
+      <div class="combatant">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">8</div>
+        <div class="combatant-token token-player">K</div>
+        <div class="combatant-info">
+          <div class="combatant-name">Kael</div>
+          <div class="combatant-type">Jogador - Paladino Lv 5</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-green)">44 / 44</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full"></div></div>
+        </div>
+        <div class="condition-badges"></div>
+      </div>
+    </div>
+  </div>
+  <div class="keyboard-hint">
+    <div class="key"><kbd>Space</kbd> Proximo turno</div>
+    <div class="key"><kbd>D</kbd> Aplicar dano</div>
+    <div class="key"><kbd>H</kbd> Curar</div>
+    <div class="key"><kbd>C</kbd> Condicoes</div>
+    <div class="key"><kbd>&#8593;&#8595;</kbd> Navegar</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 5: PLAYER VIEW — REAL PHOTOS (1:45 - 2:15) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene5">
+  <div class="scene-title cinzel">Passo 3</div>
+  <div class="scene-heading cinzel">Jogadores acompanham no celular</div>
+  <div class="split-view">
+    <div class="photo-frame left">
+      <!-- DM at laptop - Real session photo -->
+      <img src="assets/session-dm-laptop.jpg" alt="DM gerenciando combate no laptop"
+           onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;flex-direction:column;align-items:center;gap:16px;color:var(--text-secondary)\' ><svg width=\'80\' height=\'80\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><path d=\'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z\'/></svg><span style=\'font-size:18px\'>Coloque session-dm-laptop.jpg em /video/assets/</span></div>'">
+      <div class="photo-label">DM no Laptop</div>
+    </div>
+    <div class="photo-frame right">
+      <!-- Player on phone - Real session photo -->
+      <img src="assets/session-player-phone.jpg" alt="Player acompanhando no celular"
+           onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;flex-direction:column;align-items:center;gap:16px;color:var(--text-secondary)\'><svg width=\'80\' height=\'80\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'5\' y=\'2\' width=\'14\' height=\'20\' rx=\'2\' ry=\'2\'/><line x1=\'12\' y1=\'18\' x2=\'12.01\' y2=\'18\'/></svg><span style=\'font-size:18px\'>Coloque session-player-phone.jpg em /video/assets/</span></div>'">
+      <div class="photo-label">Player no Celular</div>
+    </div>
+  </div>
+  <div class="zero-friction">
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Sem instalar app
+    </div>
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Sem criar conta
+    </div>
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Sem fazer login
+    </div>
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Tempo real via QR Code
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 6: FEATURES (2:15 - 2:35) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene6">
+  <div class="scene-title cinzel">E mais...</div>
+  <div class="scene-heading cinzel">Tudo que um mestre precisa</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon fi-gold">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="15" r="3"/></svg>
+      </div>
+      <div class="feature-title">Soundboard</div>
+      <div class="feature-desc">Musica ambiente e efeitos sonoros integrados. Taverna, floresta, combate.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-blue">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      </div>
+      <div class="feature-title">Compendio SRD</div>
+      <div class="feature-desc">1.100+ monstros e 604 magias com stats completos. 2014 + 2024 lado a lado.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-purple">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      </div>
+      <div class="feature-title">Undo / Redo</div>
+      <div class="feature-desc">Errou o dano? Desfaca. Nenhum outro tracker tem isso.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-red">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </div>
+      <div class="feature-title">Death Saves</div>
+      <div class="feature-desc">Salvaguardas contra morte completas, com regras SRD integradas. Unico no mercado.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-green">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      </div>
+      <div class="feature-title">Leaderboard</div>
+      <div class="feature-desc">Ranking de dano em tempo real. Engajamento maximo para jogadores competitivos.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-cyan">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="feature-title">Bilingue</div>
+      <div class="feature-desc">Unico combat tracker com interface nativa em portugues. EN + PT-BR completo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 7: COMPARISON (2:35 - 2:55) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene7">
+  <div class="scene-title cinzel">Por que Pocket DM?</div>
+  <div class="scene-heading cinzel">Simples como papel. Poderoso como digital.</div>
+  <div class="comparison">
+    <div class="comp-card">
+      <div class="comp-icon comp-red">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+      </div>
+      <div class="comp-name">VTTs</div>
+      <div class="comp-problems">
+        <div class="con">Complexos demais</div>
+        <div class="con">Feitos pra mesa online</div>
+        <div class="con">30+ min de setup</div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon comp-yellow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <div class="comp-name">D&D Beyond</div>
+      <div class="comp-problems">
+        <div class="con">Tracker ainda fraco</div>
+        <div class="con">Exige comprar livros</div>
+        <div class="con">Em reconstrucao</div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon comp-yellow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div class="comp-name">Papel</div>
+      <div class="comp-problems">
+        <div class="con">Lento e desorganizado</div>
+        <div class="con">Players nao veem nada</div>
+        <div class="con">Sem historico</div>
+      </div>
+    </div>
+    <div class="comp-card winner">
+      <div class="comp-icon comp-gold">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l3.057-3L12 4.286 15.943 0 19 3l-7 14L5 3z"/><path d="M7 21h10"/><path d="M12 17v4"/></svg>
+      </div>
+      <div class="comp-name gold-text" style="font-size:28px">Pocket DM</div>
+      <div class="comp-problems">
+        <div class="pro">Setup em 3 minutos</div>
+        <div class="pro">Players no celular</div>
+        <div class="pro">100% gratuito</div>
+        <div class="pro">Feito pra mesa presencial</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 8: CTA (2:55 - 3:10) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene8">
+  <svg class="cta-logo glow" viewBox="0 0 512 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="lg3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#E8C87A"/>
+        <stop offset="50%" stop-color="#D4A853"/>
+        <stop offset="100%" stop-color="#B8903D"/>
+      </linearGradient>
+      <linearGradient id="lg4" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#EDCF82"/>
+        <stop offset="50%" stop-color="#D4A853"/>
+        <stop offset="100%" stop-color="#B89040"/>
+      </linearGradient>
+    </defs>
+    <g transform="translate(6, 10) scale(0.98)">
+      <g stroke="url(#lg3)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="11"/>
+        <polygon points="256,194 176,326 336,326" stroke-width="7" opacity="0.55"/>
+        <line x1="256" y1="110" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="256" y1="110" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="256" y1="410" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="256" y1="410" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="133" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+        <line x1="379" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+        <line x1="133" y1="185" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+        <line x1="379" y1="185" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+        <line x1="133" y1="335" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+        <line x1="379" y1="335" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+      </g>
+      <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
+        fill="url(#lg4)" stroke="url(#lg3)" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+  </svg>
+  <div class="cta-title cinzel gold-gradient">Teste agora</div>
+  <div class="cta-sub jakarta">Gratis. Sem cadastro. Sem instalar nada.</div>
+  <div class="cta-button cinzel">Comecar Agora &rarr;</div>
+  <div class="cta-url mono gold-text">pocketdm.app/try</div>
+  <div class="cta-free jakarta">Combat Tracker gratuito para D&D 5e</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT: Auto-play scene controller -->
+<!-- ============================================================ -->
+<script>
+// Scene timings in milliseconds
+const SCENES = [
+  { id: 'scene1', duration: 10000 },  // Hook: 10s
+  { id: 'scene2', duration: 8000 },   // Logo: 8s
+  { id: 'scene3', duration: 16000 },  // Search: 16s
+  { id: 'scene4', duration: 20000 },  // Combat: 20s
+  { id: 'scene5', duration: 16000 },  // Player View: 16s
+  { id: 'scene6', duration: 12000 },  // Features: 12s
+  { id: 'scene7', duration: 12000 },  // Comparison: 12s
+  { id: 'scene8', duration: 10000 },  // CTA: 10s
+];
+
+const TOTAL_DURATION = SCENES.reduce((sum, s) => sum + s.duration, 0);
+let currentScene = 0;
+let startTime = Date.now();
+let sceneStartTime = startTime;
+
+// Generate ambient particles
+const particleContainer = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.animationDelay = Math.random() * 8 + 's';
+  p.style.animationDuration = (6 + Math.random() * 6) + 's';
+  p.style.width = (2 + Math.random() * 3) + 'px';
+  p.style.height = p.style.width;
+  particleContainer.appendChild(p);
+}
+
+function showScene(index) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  const scene = document.getElementById(SCENES[index].id);
+  if (scene) {
+    scene.classList.add('active');
+    // Force re-trigger animations by removing and re-adding
+    scene.style.display = 'none';
+    scene.offsetHeight; // force reflow
+    scene.style.display = '';
+  }
+  document.getElementById('sceneCounter').textContent = `${index + 1} / ${SCENES.length}`;
+}
+
+function updateProgress() {
+  const elapsed = Date.now() - startTime;
+  const pct = Math.min((elapsed / TOTAL_DURATION) * 100, 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function nextScene() {
+  currentScene++;
+  if (currentScene >= SCENES.length) {
+    // Loop or stop
+    return;
+  }
+  sceneStartTime = Date.now();
+  showScene(currentScene);
+  setTimeout(nextScene, SCENES[currentScene].duration);
+}
+
+// Start auto-play
+showScene(0);
+setTimeout(nextScene, SCENES[0].duration);
+setInterval(updateProgress, 100);
+
+// Manual controls (keyboard)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    if (currentScene < SCENES.length - 1) {
+      currentScene++;
+      showScene(currentScene);
+    }
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (currentScene > 0) {
+      currentScene--;
+      showScene(currentScene);
+    }
+  }
+  if (e.key === 'r' || e.key === 'R') {
+    // Restart
+    currentScene = 0;
+    startTime = Date.now();
+    showScene(0);
+  }
+});
+</script>
+
+</body>
+</html>

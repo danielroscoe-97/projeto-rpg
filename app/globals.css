@@ -258,6 +258,62 @@ html {
     animation: spin-slow 12s linear infinite;
   }
 
+  /* ── Feature card icon hover animations ─────────────────── */
+  @keyframes icon-roll {
+    0%   { transform: rotate(0deg); }
+    30%  { transform: rotate(25deg); }
+    60%  { transform: rotate(-15deg); }
+    80%  { transform: rotate(8deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes icon-buzz {
+    0%, 100% { transform: translateX(0); }
+    10%  { transform: translateX(-2px); }
+    20%  { transform: translateX(2px); }
+    30%  { transform: translateX(-2px); }
+    40%  { transform: translateX(2px); }
+    50%  { transform: translateX(-1px); }
+    60%  { transform: translateX(1px); }
+    70%  { transform: translateX(0); }
+  }
+
+  @keyframes icon-sparkle {
+    0%   { transform: scale(1) rotate(0deg); }
+    25%  { transform: scale(1.2) rotate(15deg); }
+    50%  { transform: scale(0.95) rotate(-10deg); }
+    75%  { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  @keyframes icon-flip {
+    0%   { transform: perspective(200px) rotateY(0deg); }
+    100% { transform: perspective(200px) rotateY(360deg); }
+  }
+
+  @keyframes icon-bounce {
+    0%, 100% { transform: translateY(0); }
+    25%  { transform: translateY(-4px); }
+    50%  { transform: translateY(0); }
+    65%  { transform: translateY(-2px); }
+    80%  { transform: translateY(0); }
+  }
+
+  @keyframes icon-swing {
+    0%, 100% { transform: rotate(0deg); }
+    20%  { transform: rotate(12deg); }
+    40%  { transform: rotate(-10deg); }
+    60%  { transform: rotate(6deg); }
+    80%  { transform: rotate(-3deg); }
+  }
+
+  .group:hover .icon-anim-roll    { animation: icon-roll 0.6s ease-in-out; }
+  .group:hover .icon-anim-buzz    { animation: icon-buzz 0.5s ease-in-out; }
+  .group:hover .icon-anim-sparkle { animation: icon-sparkle 0.6s ease-in-out; }
+  .group:hover .icon-anim-flip    { animation: icon-flip 0.6s ease-in-out; }
+  .group:hover .icon-anim-bounce  { animation: icon-bounce 0.5s ease-in-out; }
+  .group:hover .icon-anim-swing   { animation: icon-swing 0.6s ease-in-out; }
+
   /* Flow connector — animated dash travel between steps */
   @keyframes flow-dash {
     from { stroke-dashoffset: 28; }

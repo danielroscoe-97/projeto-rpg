@@ -279,13 +279,14 @@ function SectionDivider() {
 
 // ── Features ─────────────────────────────────────────────────────────────────
 function FeaturesSection() {
-  const features: { icon: React.ComponentType<{ className?: string }>; tag: string | null; title: string; description: string }[] = [
+  const features: { icon: React.ComponentType<{ className?: string }>; tag: string | null; title: string; description: string; hoverAnim: string }[] = [
     {
       icon: D20Icon,
       tag: null,
       title: "Combat Tracker Completo",
       description:
         "Iniciativa automática, HP com temp HP, 13 condições D&D, derrota, adicionar/remover combatentes no meio do combate.",
+      hoverAnim: "icon-anim-roll",
     },
     {
       icon: Smartphone,
@@ -293,6 +294,7 @@ function FeaturesSection() {
       title: "Player View em Tempo Real",
       description:
         "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem fricção. Tudo atualiza ao vivo.",
+      hoverAnim: "icon-anim-buzz",
     },
     {
       icon: SparkleIcon,
@@ -300,6 +302,7 @@ function FeaturesSection() {
       title: "Oráculo de Magias & Monstros",
       description:
         "Bestiário SRD completo + monstros do compêndio Monster a Day. Stat blocks inline, descrições de magia em modal. Funciona offline.",
+      hoverAnim: "icon-anim-sparkle",
     },
     {
       icon: D8Icon,
@@ -307,6 +310,7 @@ function FeaturesSection() {
       title: "Regras 2014 & 2024",
       description:
         "Alterne entre as versões de regras por monstro instantaneamente, no meio do combate, sem reiniciar o encontro.",
+      hoverAnim: "icon-anim-flip",
     },
     {
       icon: D6Icon,
@@ -314,6 +318,7 @@ function FeaturesSection() {
       title: "Salvar & Retomar",
       description:
         "Fechou o navegador? Sem problema. O encontro persiste automaticamente. Retome de onde parou.",
+      hoverAnim: "icon-anim-bounce",
     },
     {
       icon: Moon,
@@ -321,6 +326,7 @@ function FeaturesSection() {
       title: "Dark Mode RPG",
       description:
         "Interface escura com toques dourados. Feita para sessões noturnas sem cansar a vista.",
+      hoverAnim: "icon-anim-swing",
     },
   ];
 
@@ -364,7 +370,7 @@ function FeaturesSection() {
                 </span>
               )}
               <div className="bg-amber-400/10 rounded-full p-3 w-fit mb-4 group-hover:bg-amber-400/15 transition-all duration-[200ms]">
-                <f.icon className="w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-[200ms]" />
+                <f.icon className={`w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-[200ms] ${f.hoverAnim}`} />
               </div>
               <h3 className="font-display text-foreground text-lg mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
