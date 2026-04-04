@@ -66,6 +66,15 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { DiceRoller } from "@/components/dice/DiceRoller";
+import { DmPostCombatFeedback } from "@/components/combat/DmPostCombatFeedback";
+import {
+  persistEncounterSnapshot,
+  persistDmFeedback,
+  detectCombatResult,
+  buildPartySnapshot,
+  buildCreaturesSnapshot,
+  computeDataQualityFlags,
+} from "@/lib/supabase/encounter-snapshot";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -119,8 +128,8 @@ export function CombatSessionClient({
     turnTimeSnapshots: Record<number, Record<string, number>>;
     idToName: Record<string, string>;
   } | null>(null);
-  // C.15: Post-combat state machine (leaderboard → poll → result)
-  type PostCombatPhase = "leaderboard" | "poll" | "result" | null;
+  // C.15: Post-combat state machine (leaderboard → dm_feedback → poll → result)
+  type PostCombatPhase = "leaderboard" | "dm_feedback" | "poll" | "result" | null;
   const [postCombatPhase, setPostCombatPhase] = useState<PostCombatPhase>(null);
   const [pollVotes, setPollVotes] = useState<Map<string, number>>(new Map());
 
@@ -156,6 +165,26 @@ export function CombatSessionClient({
   const proceedAfterNaming = useCallback((finalName: string) => {
     useCombatStore.setState({ encounter_name: finalName });
     const pending = pendingStats;
+
+    // Sprint 3: Persist encounter snapshot (fire-and-forget — never blocks UI)
+    const encIdForSnapshot = useCombatStore.getState().encounter_id;
+    if (encIdForSnapshot && pending) {
+      const snapshotCombatants = pending.combatantsSnapshot;
+      const partySnapshot = buildPartySnapshot(snapshotCombatants, preloadedPlayers);
+      const creaturesSnapshot = buildCreaturesSnapshot(snapshotCombatants);
+      const combatResult = detectCombatResult(snapshotCombatants);
+      const qualityFlags = computeDataQualityFlags(snapshotCombatants, preloadedPlayers);
+      const combatStarted = useCombatStore.getState().combatStartedAt;
+      persistEncounterSnapshot(encIdForSnapshot, {
+        party_snapshot: partySnapshot,
+        creatures_snapshot: creaturesSnapshot,
+        combat_result: combatResult,
+        started_at: combatStarted ? new Date(combatStarted).toISOString() : null,
+        ended_at: new Date().toISOString(),
+        ...qualityFlags,
+      }).catch(() => { /* fire-and-forget */ });
+    }
+
     if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
       setLeaderboardData(pending.stats);
       setLeaderboardMeta({ name: finalName, rounds: pending.rounds, combatDuration: pending.combatDuration });
@@ -208,7 +237,9 @@ export function CombatSessionClient({
         });
       }
     } else {
-      doEndEncounter();
+      // No meaningful combat stats — skip leaderboard but still offer DM feedback
+      setPostCombatPhase("dm_feedback");
+      setPollVotes(new Map());
     }
     setPendingStats(null);
   }, [doEndEncounter, getSessionId, pendingStats]);
@@ -1296,11 +1327,26 @@ export function CombatSessionClient({
         {postCombatPhase === "leaderboard" && combatReport && (
           <CombatRecap
             report={combatReport}
-            // UX.08 — DM skips poll (biased as encounter creator), goes straight to result
-            onClose={() => setPostCombatPhase("result")}
+            // Sprint 3: After leaderboard, DM goes to dm_feedback
+            onClose={() => setPostCombatPhase("dm_feedback")}
             existingShareUrl={reportShareUrl}
             campaignId={campaignId ?? undefined}
             encounterId={useCombatStore.getState().encounter_id ?? undefined}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {postCombatPhase === "dm_feedback" && (
+          <DmPostCombatFeedback
+            onSubmit={(rating, notes) => {
+              const encId = useCombatStore.getState().encounter_id;
+              if (encId) {
+                persistDmFeedback(encId, rating, notes).catch(() => { /* fire-and-forget */ });
+              }
+              setPostCombatPhase("result");
+            }}
+            onSkip={() => setPostCombatPhase("result")}
           />
         )}
       </AnimatePresence>
