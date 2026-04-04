@@ -170,7 +170,7 @@ export function BlogTOCMobile() {
         <SheetTrigger asChild>
           <button
             type="button"
-            className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-surface-primary/90 border border-gold/25 px-4 py-2.5 shadow-lg shadow-black/30 backdrop-blur-sm hover:border-gold/40 transition-all duration-200"
+            className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-surface-primary/80 border border-gold/25 px-4 py-2.5 shadow-lg shadow-black/30 backdrop-blur-sm hover:border-gold/40 hover:bg-surface-primary/95 transition-all duration-200 opacity-70 hover:opacity-100"
             aria-label="Abrir índice do artigo"
           >
             {/* List icon */}

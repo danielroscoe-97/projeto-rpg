@@ -249,7 +249,7 @@ export default async function BlogPostPage({
 
         {/* Article content + TOC sidebar */}
         <div className="max-w-3xl mx-auto xl:max-w-5xl px-6 pb-16 flex gap-10">
-          <article className="flex-1 min-w-0">
+          <article className="flex-1 min-w-0 pb-16 xl:pb-0">
             <div className="prose-pocket-dm">
               <Content />
             </div>
@@ -323,13 +323,13 @@ export default async function BlogPostPage({
             )}
 
             {/* CTA */}
-            <div className="mt-12 p-8 rounded-xl border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent text-center relative overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-gold/[0.06] rounded-full blur-[80px]" aria-hidden="true" />
+            <div className="mt-12 p-8 sm:p-10 rounded-xl border border-gold/25 bg-gradient-to-br from-gold/[0.06] to-transparent text-center relative overflow-hidden">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-gold/[0.08] rounded-full blur-[80px]" aria-hidden="true" />
               <div className="relative">
-                <p className="font-display text-xl text-gold mb-2">
+                <p className="font-display text-xl sm:text-2xl text-gold mb-2">
                   Experimente o Pocket DM
                 </p>
-                <p className="text-muted-foreground text-sm mb-6">
+                <p className="text-muted-foreground text-sm sm:text-base mb-6">
                   Combat tracker gratuito para D&D 5e — sem cadastro, sem download.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">

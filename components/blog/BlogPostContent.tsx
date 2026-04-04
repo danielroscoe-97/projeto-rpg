@@ -56,7 +56,7 @@ function H2({ children }: { children: React.ReactNode }) {
     <div className="mt-12 mb-5">
       <div className="flex items-center gap-3 mb-1">
         <div className="w-1 h-6 rounded-full bg-gold/60" />
-        <h2 className="font-display text-xl text-gold">{children}</h2>
+        <h2 className="font-display text-lg sm:text-xl text-gold">{children}</h2>
       </div>
       <div className="ml-4 h-px bg-gradient-to-r from-gold/15 to-transparent" />
     </div>
@@ -3572,9 +3572,9 @@ export function BlogPost13() {
       <H3>Progressão de atributos (Point Buy)</H3>
 
       <div className="overflow-x-auto mb-6">
-        <table className="w-full text-sm text-foreground/80 border-collapse">
+        <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
           <thead>
-            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+            <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
               <th className="py-2 text-left">Nível</th>
               <th className="py-2 text-left">Evento</th>
               <th className="py-2 text-center">STR</th>
@@ -3873,12 +3873,12 @@ export function BlogPost13() {
       {/* Character Portrait — transparent PNG with gold glow */}
       <div className="my-10 flex justify-center">
         <div className="relative">
-          <div className="absolute inset-0 bg-gold/[0.06] rounded-full blur-[80px] scale-75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.04] via-gold/[0.10] to-gold/[0.04] rounded-full blur-[80px] scale-90" />
           <Image
             src="/art/blog/capa-barsavi-portrait.png"
             alt="Capa Barsavi — Order Cleric / Divine Soul Sorcerer"
             width={960}
-            height={960}
+            height={1360}
             className="relative w-[260px] sm:w-[320px] h-auto drop-shadow-[0_0_40px_rgba(212,168,83,0.25)]"
             unoptimized
           />
@@ -4103,9 +4103,9 @@ export function BlogPost14() {
       <H3>Point Buy attribute progression</H3>
 
       <div className="overflow-x-auto mb-6">
-        <table className="w-full text-sm text-foreground/80 border-collapse">
+        <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
           <thead>
-            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+            <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
               <th className="py-2 text-left">Level</th>
               <th className="py-2 text-left">Event</th>
               <th className="py-2 text-center">STR</th>
@@ -4406,12 +4406,12 @@ export function BlogPost14() {
       {/* Character Portrait — transparent PNG with gold glow */}
       <div className="my-10 flex justify-center">
         <div className="relative">
-          <div className="absolute inset-0 bg-gold/[0.06] rounded-full blur-[80px] scale-75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.04] via-gold/[0.10] to-gold/[0.04] rounded-full blur-[80px] scale-90" />
           <Image
             src="/art/blog/capa-barsavi-portrait.png"
             alt="Capa Barsavi — Order Cleric / Divine Soul Sorcerer"
             width={960}
-            height={960}
+            height={1360}
             className="relative w-[260px] sm:w-[320px] h-auto drop-shadow-[0_0_40px_rgba(212,168,83,0.25)]"
             unoptimized
           />
