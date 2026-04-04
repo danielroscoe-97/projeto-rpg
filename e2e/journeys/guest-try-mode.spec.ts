@@ -44,10 +44,12 @@ test.describe("Guest Try Mode Journey", () => {
     }
 
     if (srdLoaded) {
-      // 5. Add Goblin to encounter — click first result
+      // 5. Add Goblin to encounter — click "Adicionar" button inside first result
       const firstResult = page.locator('[data-testid^="srd-result-"]').first();
       await expect(firstResult).toBeVisible({ timeout: 5_000 });
-      await firstResult.click();
+      const addBtn = firstResult.locator('button', { hasText: /Adicionar|Add/ });
+      await expect(addBtn).toBeVisible({ timeout: 3_000 });
+      await addBtn.click();
       await page.waitForTimeout(500);
       await srdSearchInput.clear();
     } else {
@@ -60,7 +62,15 @@ test.describe("Guest Try Mode Journey", () => {
       await page.waitForTimeout(500);
     }
 
-    // 6. Add PC manually
+    // 6. Add PC manually — open manual form if needed
+    const addRowName = page.locator('[data-testid="add-row-name"]');
+    if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
+      const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();
+      if (await manualToggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await manualToggle.click();
+        await page.waitForTimeout(300);
+      }
+    }
     await page.fill('[data-testid="add-row-name"]', "Hero");
     await page.fill('[data-testid="add-row-hp"]', "30");
     await page.fill('[data-testid="add-row-ac"]', "16");

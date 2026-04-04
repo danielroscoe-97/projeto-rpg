@@ -101,16 +101,32 @@ export async function dmSetupCombatSession(
   // Generate share token FIRST (before adding combatants)
   const token = await getShareToken(page);
 
-  // Set encounter name (required to start combat)
-  await page.fill('[data-testid="encounter-name-input"]', "E2E Combat Session");
+  // Close the QR code panel if it stayed open after share token generation
+  const closeQr = page.locator('button:has-text("Fechar"), button:has-text("✕")').first();
+  if (await closeQr.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await closeQr.click();
+    await page.waitForTimeout(300);
+  }
 
-  // Add combatants
+  // Encounter name is auto-generated — no input needed
+
+  // Add combatants — re-open manual form if closed (getShareToken may close it)
   for (const c of combatants) {
-    await page.fill('[data-testid="add-row-name"]', c.name);
+    const addRowName = page.locator('[data-testid="add-row-name"]');
+    if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
+      const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();
+      if (await manualToggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await manualToggle.click();
+        await expect(addRowName).toBeVisible({ timeout: 3_000 });
+      }
+    }
+    await addRowName.fill(c.name);
     await page.fill('[data-testid="add-row-hp"]', c.hp);
     await page.fill('[data-testid="add-row-ac"]', c.ac);
     await page.fill('[data-testid="add-row-init"]', c.init);
-    await page.click('[data-testid="add-row-btn"]');
+    const addBtn = page.locator('[data-testid="add-row-btn"]');
+    await addBtn.scrollIntoViewIfNeeded();
+    await addBtn.click();
     await page.waitForTimeout(500);
   }
 

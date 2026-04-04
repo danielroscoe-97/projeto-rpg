@@ -129,43 +129,31 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
 
   return (
     <article className="stat-card-5e stat-card-5e-inline !max-w-none">
-      {/* Language notice — only on PT-BR pages with a slug */}
+      {/* Language toggle — fixed layout to prevent button from shifting on toggle */}
       {locale === "pt-BR" && slug && (
-        <p className="text-xs text-[var(--5e-text-muted)] mb-3 leading-relaxed">
-          {translated ? (
-            <>
-              Ficha em{" "}
-              <span className="text-[var(--5e-accent-gold)]">PT-BR</span>.{" "}
-              <button
-                onClick={toggle}
-                className="underline hover:text-[var(--5e-text)] transition-colors"
-              >
-                Ver em inglês (RAW)
-              </button>
-            </>
-          ) : (
-            <>
-              Ficha em inglês (RAW oficial) — melhor para interpretação.{" "}
-              <button
-                onClick={toggle}
-                className="underline hover:text-[var(--5e-text)] transition-colors"
-              >
-                Traduzir ficha
-              </button>
-              {!globalPtBR && (
-                <>
-                  {" · "}
-                  <button
-                    onClick={setGlobalPtBR}
-                    className="underline hover:text-[var(--5e-text)] transition-colors"
-                  >
-                    Sempre PT-BR
-                  </button>
-                </>
-              )}
-            </>
+        <div className="flex items-center gap-2 text-xs text-[var(--5e-text-muted)] mb-3">
+          <span className="shrink-0">
+            {translated ? (
+              <>Ficha em <span className="text-[var(--5e-accent-gold)]">PT-BR</span></>
+            ) : (
+              <>Ficha em inglês (RAW)</>
+            )}
+          </span>
+          <button
+            onClick={toggle}
+            className="shrink-0 px-2 py-0.5 rounded border border-[var(--5e-accent-gold)]/30 text-[var(--5e-accent-gold)] hover:bg-[var(--5e-accent-gold)]/10 transition-colors"
+          >
+            {translated ? "Ver em inglês" : "Traduzir"}
+          </button>
+          {!translated && !globalPtBR && (
+            <button
+              onClick={setGlobalPtBR}
+              className="shrink-0 text-[var(--5e-text-muted)] underline hover:text-[var(--5e-text)] transition-colors"
+            >
+              Sempre PT-BR
+            </button>
           )}
-        </p>
+        </div>
       )}
 
       {/* Header with token */}

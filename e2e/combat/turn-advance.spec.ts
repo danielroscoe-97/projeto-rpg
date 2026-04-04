@@ -44,7 +44,7 @@ test.describe("P1 — Turn Advance & HP", () => {
 
     // HP adjuster should open
     await expect(
-      dmPage.locator('[data-testid="hp-adjuster"], [role="dialog"], .hp-adjust')
+      dmPage.locator('[data-testid="hp-adjuster"]').first()
     ).toBeVisible({ timeout: 5_000 });
 
     await dmContext.close();
@@ -63,18 +63,17 @@ test.describe("P1 — Turn Advance & HP", () => {
     await expect(endBtn).toBeVisible({ timeout: 5_000 });
     await endBtn.click();
 
-    // Confirmation dialog may appear
-    const confirmBtn = dmPage.locator(
-      'button:has-text("Confirmar"), button:has-text("Confirm"), button:has-text("Sim"), button:has-text("Yes"), button:has-text("Finalizar")'
-    );
-    if (await confirmBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await confirmBtn.click();
-    }
+    // Encounter name modal appears (AlertDialog) — click "Pular" (Skip) inside the dialog
+    const dialog = dmPage.locator('[role="alertdialog"]');
+    await expect(dialog).toBeVisible({ timeout: 5_000 });
+    const skipBtn = dialog.locator('button', { hasText: /Pular|Skip/ });
+    await expect(skipBtn).toBeVisible({ timeout: 3_000 });
+    await skipBtn.click();
 
-    // Active combat should disappear
-    await expect(dmPage.locator('[data-testid="active-combat"]')).not.toBeVisible({
-      timeout: 10_000,
-    });
+    // After ending, combat transitions to post-combat leaderboard/summary.
+    // Verify the encounter name modal is dismissed and next-turn button disappears.
+    await expect(dialog).not.toBeVisible({ timeout: 5_000 });
+    await expect(dmPage.locator('[data-testid="next-turn-btn"]')).not.toBeVisible({ timeout: 15_000 });
 
     await dmContext.close();
   });

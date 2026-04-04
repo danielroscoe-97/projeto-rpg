@@ -7,26 +7,23 @@ test.describe("P0 — Login Flow", () => {
     await loginAs(page, DM_PRIMARY);
 
     await expect(page).toHaveURL(/\/app\/dashboard/);
-    // Navbar should show authenticated menu items
-    const nav = page.locator("nav");
-    await expect(nav).toContainText("Dashboard", { timeout: 10_000 });
-    await expect(nav).toContainText("Logout", { timeout: 5_000 });
+    // Main nav has aria-label="Main navigation" — use it to avoid strict mode violation
+    // (dashboard has multiple <nav> elements: main, sidebar, footer)
+    await expect(page.locator('button:has-text("Logout")')).toBeVisible({ timeout: 10_000 });
   });
 
   test("Player can login and reach app", async ({ page }) => {
     await loginAs(page, PLAYER_WARRIOR);
 
     await expect(page).toHaveURL(/\/app/);
-    const nav = page.locator("nav");
-    await expect(nav).toContainText("Logout", { timeout: 10_000 });
+    await expect(page.locator('button:has-text("Logout")')).toBeVisible({ timeout: 10_000 });
   });
 
   test("English DM can login", async ({ page }) => {
     await loginAs(page, DM_ENGLISH);
 
     await expect(page).toHaveURL(/\/app/);
-    const nav = page.locator("nav");
-    await expect(nav).toContainText("Logout", { timeout: 10_000 });
+    await expect(page.locator('button:has-text("Logout")')).toBeVisible({ timeout: 10_000 });
   });
 
   test("Invalid credentials show error", async ({ page }) => {

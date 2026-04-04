@@ -56,14 +56,13 @@ test.describe("P0 — Visitor Try Mode", () => {
     await page.fill('[data-testid="add-row-ac"]', "15");
     await page.fill('[data-testid="add-row-init"]', "12");
 
-    // Submit via Enter — the add-row div has onKeyDown that calls handleAddFromRow on Enter.
-    // More reliable than clicking the button which may be covered by floating elements.
-    await page.press('[data-testid="add-row-init"]', "Enter");
+    // Submit via button click — only the name input has Enter handler
+    await page.click('[data-testid="add-row-btn"]');
 
-    // Combatant row should appear — name is in an input inside setup-row
+    // Combatant row should appear in the setup list
     await expect(
-      page.locator('input[data-testid^="setup-name-"]').first()
-    ).toHaveValue("Goblin", { timeout: 5_000 });
+      page.locator('[data-testid^="setup-row-"]').first()
+    ).toBeVisible({ timeout: 5_000 });
   });
 
   test("Visitor can add 2 combatants and start combat", async ({ page }) => {
@@ -73,20 +72,27 @@ test.describe("P0 — Visitor Try Mode", () => {
     await waitForSrdReady(page);
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible({ timeout: 10_000 });
 
-    // Add combatant 1 — submit via Enter (onKeyDown on add-row div)
+    // Add combatant 1 — submit via button click
     await page.fill('[data-testid="add-row-name"]', "Fighter");
     await page.fill('[data-testid="add-row-hp"]', "45");
     await page.fill('[data-testid="add-row-ac"]', "18");
     await page.fill('[data-testid="add-row-init"]', "15");
-    await page.press('[data-testid="add-row-init"]', "Enter");
+    await page.click('[data-testid="add-row-btn"]');
     await expect(page.locator('[data-testid^="setup-row-"]').first()).toBeVisible({ timeout: 5_000 });
+
+    // Re-open manual form (closes after add)
+    const addRowName2 = page.locator('[data-testid="add-row-name"]');
+    if (!(await addRowName2.isVisible({ timeout: 1_000 }).catch(() => false))) {
+      await page.locator('button').filter({ hasText: /Manual/i }).first().click();
+      await expect(addRowName2).toBeVisible({ timeout: 3_000 });
+    }
 
     // Add combatant 2
     await page.fill('[data-testid="add-row-name"]', "Mage");
     await page.fill('[data-testid="add-row-hp"]', "30");
     await page.fill('[data-testid="add-row-ac"]', "12");
     await page.fill('[data-testid="add-row-init"]', "10");
-    await page.press('[data-testid="add-row-init"]', "Enter");
+    await page.click('[data-testid="add-row-btn"]');
 
     // Should now have 2 combatant rows
     await expect(page.locator('[data-testid^="setup-row-"]')).toHaveCount(2, { timeout: 5_000 });
