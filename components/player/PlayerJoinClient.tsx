@@ -972,6 +972,10 @@ export function PlayerJoinClient({
                 clearTimeout(lateJoinTimeoutRef.current);
                 lateJoinTimeoutRef.current = null;
               }
+              if (lateJoinMaxTimeoutRef.current) {
+                clearTimeout(lateJoinMaxTimeoutRef.current);
+                lateJoinMaxTimeoutRef.current = null;
+              }
               lateJoinRequestIdRef.current = null;
               setLateJoinStatus("accepted");
               setIsRegistered(true);
@@ -981,6 +985,10 @@ export function PlayerJoinClient({
               if (lateJoinDataRef.current) {
                 markPlayerToken(effectiveTokenId, sessionId, lateJoinDataRef.current.name)
                   .catch(() => { /* Token may already be marked — ignore */ });
+              }
+              // CAT-1: Fetch full state to hydrate combat board after acceptance
+              if (encounterIdRef.current) {
+                fetchFullState(encounterIdRef.current).catch(() => { /* best-effort */ });
               }
             }
           }
@@ -1021,42 +1029,37 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:late_join_response" }, ({ payload }) => {
           if (payload.request_id !== lateJoinRequestIdRef.current) return;
-          // Clear the 60s timeout since DM responded
+          // Clear timeouts since DM responded
           if (lateJoinTimeoutRef.current) {
             clearTimeout(lateJoinTimeoutRef.current);
             lateJoinTimeoutRef.current = null;
           }
+          if (lateJoinMaxTimeoutRef.current) {
+            clearTimeout(lateJoinMaxTimeoutRef.current);
+            lateJoinMaxTimeoutRef.current = null;
+          }
           if (payload.accepted && !lateJoinRegisteredRef.current) {
             lateJoinRegisteredRef.current = true;
             lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
+            lateJoinRequestIdRef.current = null;
             setLateJoinStatus("accepted");
-            // Register the player in DB now that DM accepted
+            setIsRegistered(true);
+            setRegisteredName(lateJoinDataRef.current?.name);
             if (lateJoinDataRef.current) {
-              registerPlayerCombatant(effectiveTokenId, sessionId, lateJoinDataRef.current)
-                .then(async () => {
-                  setIsRegistered(true);
-                  setRegisteredName(lateJoinDataRef.current?.name);
-                  // Fetch full state to catch any events (turn_advance, hp_update) that arrived
-                  // during the registration DB write — reconciles any missed state
-                  if (encounterIdRef.current) {
-                    try { await fetchFullState(encounterIdRef.current); } catch { /* best-effort */ }
-                  }
-                })
-                .catch((err) => {
-                  // A.4 fix: reset guards so player can retry — DB failure should not lock them out permanently
-                  lateJoinFinalStatusRef.current = false;
-                  lateJoinRegisteredRef.current = false;
-                  setLateJoinStatus("idle");
-                  toast.error(tRef.current("registerError"));
-                  captureError(err, {
-                    component: "PlayerJoinClient",
-                    action: "registerAfterLateJoinAccept",
-                    category: "realtime",
-                    sessionId,
-                  });
-                });
+              persistPlayerIdentity(sessionId, effectiveTokenId, lateJoinDataRef.current.name);
             }
-          } else {
+            // CAT-1 FIX: DM already created the combatant via handleAddCombatant.
+            // Only mark the token — do NOT call registerPlayerCombatant (which would
+            // create a duplicate combatant row). Then fetch full state.
+            if (lateJoinDataRef.current) {
+              markPlayerToken(effectiveTokenId, sessionId, lateJoinDataRef.current.name)
+                .catch(() => { /* Token may already be marked — ignore */ });
+            }
+            // Fetch full state to hydrate the combat board
+            if (encounterIdRef.current) {
+              fetchFullState(encounterIdRef.current).catch(() => { /* best-effort */ });
+            }
+          } else if (!payload.accepted) {
             setLateJoinStatus("rejected");
           }
         })
@@ -1243,20 +1246,24 @@ export function PlayerJoinClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Channel setup must only re-run on auth/session changes; callbacks use refs internally and adding them would cause constant reconnects
   }, [authReady, sessionId, fetchFullState]);
 
-  // Polling fallback for late-join: if broadcast doesn't arrive, check server.
-  // Runs while "waiting" OR "rejected" (timeout fired but DM may still accept later).
-  // Stops only when "accepted" or "idle" (user cancelled).
+  // CAT-1 FIX: Polling is the PRIMARY mechanism for late-join acceptance detection.
+  // Supabase Realtime broadcasts can fail when DM and player share the same user_id
+  // (same JWT → self:false suppresses delivery). Polling the server is reliable regardless.
+  // Runs while "waiting" OR "polling" OR "rejected" (DM may still accept later).
+  // Stops only when "accepted", "timeout", or "idle" (user cancelled).
   useEffect(() => {
     const shouldPoll = (lateJoinStatus === "waiting" || lateJoinStatus === "polling" || lateJoinStatus === "rejected") && !!sessionId && !!lateJoinDataRef.current;
     if (!shouldPoll) return;
 
+    let cancelled = false;
+
     const poll = async () => {
       try {
-        if (lateJoinRegisteredRef.current) return; // Already resolved
+        if (cancelled || lateJoinRegisteredRef.current) return; // Already resolved or unmounted
         const res = await fetch(`/api/session/${sessionId}/state`);
-        if (!res.ok) return;
+        if (!res.ok || cancelled) return;
         const { data } = await res.json();
-        if (!data?.combatants || !lateJoinDataRef.current) return;
+        if (!data?.combatants || !lateJoinDataRef.current || cancelled) return;
 
         const playerName = lateJoinDataRef.current.name;
         const found = data.combatants.find(
@@ -1264,31 +1271,48 @@ export function PlayerJoinClient({
             c.is_player && c.name === playerName
         );
 
-        if (found && !lateJoinRegisteredRef.current) {
+        if (found && !lateJoinRegisteredRef.current && !cancelled) {
           lateJoinRegisteredRef.current = true;
           lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
           if (lateJoinTimeoutRef.current) {
             clearTimeout(lateJoinTimeoutRef.current);
             lateJoinTimeoutRef.current = null;
           }
+          if (lateJoinMaxTimeoutRef.current) {
+            clearTimeout(lateJoinMaxTimeoutRef.current);
+            lateJoinMaxTimeoutRef.current = null;
+          }
           lateJoinRequestIdRef.current = null;
           setLateJoinStatus("accepted");
           setIsRegistered(true);
           setRegisteredName(playerName);
+          persistPlayerIdentity(sessionId, effectiveTokenId, playerName);
           // Only mark token — combatant already created by DM
           markPlayerToken(effectiveTokenId, sessionId, playerName)
             .catch(() => { /* Token may already be marked — ignore */ });
+          // Hydrate full combat state from server response so player sees the board immediately
+          if (data.encounter) {
+            setRound(data.encounter.round_number ?? 1);
+            updateTurnIndex(data.encounter.current_turn_index ?? 0);
+            setActive(data.encounter.is_active ?? false);
+            if (data.encounter.id) setCurrentEncounterId(data.encounter.id);
+          }
+          if (data.combatants) {
+            updateCombatants(data.combatants);
+          }
         }
       } catch {
         /* silent — will retry on next poll */
       }
     };
 
-    // First poll after 3s, then every 5s
-    const firstPoll = setTimeout(poll, 3000);
-    const interval = setInterval(poll, 5000);
+    // CAT-1: Poll aggressively — 1s first poll, then every 2s.
+    // This is the primary detection mechanism since broadcasts may not arrive.
+    const firstPoll = setTimeout(poll, 1000);
+    const interval = setInterval(poll, 2000);
 
     return () => {
+      cancelled = true;
       clearTimeout(firstPoll);
       clearInterval(interval);
     };
