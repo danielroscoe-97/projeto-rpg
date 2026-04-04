@@ -844,6 +844,9 @@ export function GuestCombatClient() {
   type GuestPostCombatPhase = "leaderboard" | null;
   const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
 
+  // BUG-I2: Mutual exclusion — derived state prevents log during any post-combat phase
+  const effectiveShowActionLog = showActionLog && !guestPostCombatPhase;
+
   // Redirect URL for Google OAuth: returns to the confirm route with from=guest-combat
   // so the callback can track onboarding source and preserve combat data
   const googleRedirectTo =
@@ -941,7 +944,7 @@ export function GuestCombatClient() {
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
 
   useCombatKeyboardShortcuts({
-    enabled: phase === "combat",
+    enabled: phase === "combat" && !guestPostCombatPhase,
     onNextTurn: handleAdvanceTurn,
     combatantCount: combatants.length,
     focusedIndex,
@@ -1492,7 +1495,7 @@ export function GuestCombatClient() {
             {/* Action log toggle */}
             <button
               type="button"
-              onClick={() => setShowActionLog(v => !v)}
+              onClick={() => { if (!guestPostCombatPhase) setShowActionLog(v => !v); }}
               className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
               aria-label={t("combat_log_title")}
               title={t("combat_log_title")}
@@ -1739,7 +1742,7 @@ export function GuestCombatClient() {
       </div>
 
       {/* Mobile-only sticky FAB for Next Turn — always visible at thumb reach */}
-      <div className="fixed bottom-4 right-4 z-40 md:hidden">
+      {!guestPostCombatPhase && !showActionLog && <div className="fixed bottom-4 right-4 z-[41] md:hidden">
         <button
           type="button"
           onClick={handleAdvanceTurn}
@@ -1749,7 +1752,7 @@ export function GuestCombatClient() {
         >
           ▶ {t("next_turn")}
         </button>
-      </div>
+      </div>}
 
       <GuestUpsellModal
         isOpen={upsellOpen}
@@ -1784,7 +1787,7 @@ export function GuestCombatClient() {
         rulesetVersion={midCombatRuleset}
       />
 
-      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} />
+      <CombatActionLog open={effectiveShowActionLog} onClose={() => setShowActionLog(false)} />
     </>
   );
 }

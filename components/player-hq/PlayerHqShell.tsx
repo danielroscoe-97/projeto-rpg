@@ -6,16 +6,19 @@ import Link from "next/link";
 import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft } from "lucide-react";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
+import { CharacterEditSheet } from "./CharacterEditSheet";
 import { ResourceTrackerList } from "./ResourceTrackerList";
 import { SpellSlotsHq } from "./SpellSlotsHq";
 import { RestResetPanel } from "./RestResetPanel";
 import { SpellListSection } from "./SpellListSection";
 import { BagOfHolding } from "./BagOfHolding";
+import { NotificationFeed } from "./NotificationFeed";
 import { PlayerNotesSection } from "./PlayerNotesSection";
 import { PlayerQuestBoard } from "./PlayerQuestBoard";
 import { PlayerMindMap } from "./PlayerMindMap";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 
 type Tab = "map" | "sheet" | "resources" | "inventory" | "notes" | "quests";
 
@@ -44,10 +47,13 @@ export function PlayerHqShell({
     setConditions,
     toggleInspiration,
     updateSpellSlots,
+    saveField,
   } = useCharacterStatus(characterId);
 
   // C-01 fix: Single instance of useResourceTrackers, shared by RestResetPanel + ResourceTrackerList
   const resourceHook = useResourceTrackers(characterId);
+
+  const { notifications } = useNotifications(userId);
 
   const loading = charLoading || resourceHook.loading;
 
@@ -79,7 +85,7 @@ export function PlayerHqShell({
         >
           <ChevronLeft className="w-5 h-5" />
         </Link>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="text-lg font-semibold text-foreground truncate">
             {character.name}
           </h1>
@@ -89,6 +95,37 @@ export function PlayerHqShell({
               .join(" · ") || campaignName}
           </p>
         </div>
+        <CharacterEditSheet
+          character={character}
+          onSave={saveField}
+          translations={{
+            edit_character: t("edit.edit_character"),
+            identity: t("edit.identity"),
+            combat_stats: t("edit.combat_stats"),
+            attributes: t("edit.attributes"),
+            notes: t("edit.notes"),
+            name: t("edit.name"),
+            race: t("edit.race"),
+            class: t("edit.class"),
+            level: t("edit.level"),
+            subclass: t("edit.subclass"),
+            subrace: t("edit.subrace"),
+            background: t("edit.background"),
+            alignment: t("edit.alignment"),
+            max_hp: t("edit.max_hp"),
+            ac: t("edit.ac"),
+            speed: t("edit.speed"),
+            initiative_bonus: t("edit.initiative_bonus"),
+            spell_save_dc: t("edit.spell_save_dc"),
+            str: t("edit.str"),
+            dex: t("edit.dex"),
+            con: t("edit.con"),
+            int: t("edit.int"),
+            wis: t("edit.wis"),
+            cha: t("edit.cha"),
+            notes_placeholder: t("edit.notes_placeholder"),
+          }}
+        />
       </div>
 
       {/* Tab bar */}
@@ -232,11 +269,24 @@ export function PlayerHqShell({
         </div>
       )}
       {activeTab === "inventory" && (
-        <BagOfHolding
-          campaignId={campaignId}
-          userId={userId}
-          isDm={false}
-        />
+        <div className="space-y-4">
+          <BagOfHolding
+            campaignId={campaignId}
+            userId={userId}
+            isDm={false}
+          />
+          {notifications.length > 0 && (
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-wider px-4 pt-3 pb-1">
+                {t("notifications.title")}
+              </h3>
+              <NotificationFeed
+                notifications={notifications}
+                emptyMessage={t("notifications.empty")}
+              />
+            </div>
+          )}
+        </div>
       )}
 
       {activeTab === "notes" && (

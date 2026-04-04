@@ -303,6 +303,9 @@ export function CombatSessionClient({
   const postCombatPhaseRef = useRef<PostCombatPhase>(null);
   postCombatPhaseRef.current = postCombatPhase;
 
+  // BUG-I2: Mutual exclusion — derived state prevents log during any post-combat phase
+  const effectiveShowActionLog = showActionLog && !postCombatPhase;
+
   // C.15: Dismiss all post-combat screens — persist poll result + end encounter
   const handleDismissAll = useCallback(async () => {
     // P2.01: Clear UI immediately before async — prevents stale screen on network error
@@ -630,7 +633,7 @@ export function CombatSessionClient({
 
   // Keyboard shortcuts for DM combat view (NFR25)
   useCombatKeyboardShortcuts({
-    enabled: is_active,
+    enabled: is_active && !postCombatPhase,
     onNextTurn: handleAdvanceTurn,
     combatantCount: combatants.length,
     focusedIndex,
@@ -1113,7 +1116,7 @@ export function CombatSessionClient({
           </span>
           <button
             type="button"
-            onClick={() => setShowActionLog(v => !v)}
+            onClick={() => { if (!postCombatPhase) setShowActionLog(v => !v); }}
             className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
             aria-label={t("combat_log_title")}
             title={t("combat_log_title")}
@@ -1408,13 +1411,29 @@ export function CombatSessionClient({
         </div>
       )}
 
+      {/* Mobile-only sticky FAB for Next Turn — parity with guest mode */}
+      {is_active && !postCombatPhase && !showActionLog && (
+        <div className="fixed bottom-4 right-4 z-[41] md:hidden">
+          <button
+            type="button"
+            onClick={handleAdvanceTurn}
+            disabled={turnPending}
+            className="flex items-center gap-2 px-4 py-3 bg-gold text-foreground font-semibold rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all duration-200 min-h-[48px] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={t("next_turn")}
+            data-testid="next-turn-fab"
+          >
+            ▶ {turnPending ? t("next_turn_saving") : t("next_turn")}
+          </button>
+        </div>
+      )}
+
       <PlayerDrawer
         campaignId={campaignId}
         open={playerDrawerOpen}
         onClose={() => setPlayerDrawerOpen(false)}
       />
 
-      <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} />
+      <CombatActionLog open={effectiveShowActionLog} onClose={() => setShowActionLog(false)} />
     </div>
   );
 }

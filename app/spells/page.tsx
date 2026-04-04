@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSrdSpells } from "@/lib/srd/srd-data-server";
+import { getSrdSpells, spellSlug } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
@@ -33,6 +33,7 @@ export default function SpellsIndexPage() {
       classes: s.classes ?? [],
       concentration: s.concentration,
       ritual: s.ritual,
+      slug: spellSlug(s),
       ruleset_version: s.ruleset_version,
       casting_time: s.casting_time,
       range: s.range,

@@ -221,12 +221,41 @@ export function getSrdSpellsDeduped(): SrdSpell[] {
   return dedupBySlug(getSrdSpells());
 }
 
+/**
+ * Get unique slug for a spell, using its id for 2024 entries whose name
+ * collides with a 2014 spell (e.g. "acid-splash-2024" vs "acid-splash").
+ */
+export function spellSlug(spell: SrdSpell): string {
+  const nameSlug = toSlug(spell.name);
+  if (spell.ruleset_version === "2024" && spell.id && spell.id !== nameSlug) {
+    return spell.id;
+  }
+  return nameSlug;
+}
+
+/**
+ * Get all unique spell slugs for static generation (includes version-specific slugs).
+ */
+export function getSrdSpellStaticParams(): { slug: string }[] {
+  const seen = new Set<string>();
+  const params: { slug: string }[] = [];
+  for (const s of getSrdSpells()) {
+    const slug = spellSlug(s);
+    if (!seen.has(slug)) {
+      seen.add(slug);
+      params.push({ slug });
+    }
+  }
+  return params;
+}
+
 /** Find a monster by slug */
 export function getMonsterBySlug(slug: string): SrdMonster | undefined {
   return getSrdMonsters().find((m) => toSlug(m.name) === slug);
 }
 
-/** Find a spell by slug */
+/** Find a spell by slug (matches by name slug or by id for version-specific routes) */
 export function getSpellBySlug(slug: string): SrdSpell | undefined {
-  return getSrdSpells().find((s) => toSlug(s.name) === slug);
+  return getSrdSpells().find((s) => toSlug(s.name) === slug)
+    ?? getSrdSpells().find((s) => s.id === slug);
 }

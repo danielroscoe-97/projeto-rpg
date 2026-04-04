@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
-  getSrdSpellsDeduped,
+  getSrdSpellStaticParams,
   getSpellBySlug,
   getSrdSpells,
   toSlug,
   toSpellSlugPt,
+  spellSlug,
 } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellCard } from "@/components/public/PublicSpellCard";
@@ -18,7 +19,7 @@ import { getSpellTier } from "@/lib/srd/spell-tiers";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
-  return getSrdSpellsDeduped().map((s) => ({ slug: toSlug(s.name) }));
+  return getSrdSpellStaticParams();
 }
 
 export const revalidate = 86400;
@@ -47,7 +48,7 @@ export async function generateMetadata({
       canonical: `https://www.pocketdm.com.br/spells/${slug}`,
       languages: {
         en: `https://www.pocketdm.com.br/spells/${slug}`,
-        "pt-BR": `https://www.pocketdm.com.br/magias/${toSpellSlugPt(slug)}`,
+        "pt-BR": `https://www.pocketdm.com.br/magias/${toSpellSlugPt(toSlug(spell.name))}`,
       },
     },
   };
