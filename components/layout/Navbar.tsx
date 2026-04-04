@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 interface NavLink {
   href?: string;
@@ -29,6 +30,7 @@ interface NavbarProps {
 
 export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: NavbarProps) {
   const t = useTranslations("nav");
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -38,6 +40,9 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // D5: Close mobile drawer on route change (browser back/forward)
+  useEffect(() => { setMobileOpen(false) }, [pathname]);
 
   return (
     <>
@@ -166,47 +171,48 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
       {/* Mobile menu drawer */}
       {mobileOpen && (
         <div className="fixed inset-x-0 top-[72px] bottom-0 z-40 bg-background border-b border-white/[0.08] p-4 lg:hidden overflow-y-auto flex flex-col">
-          <div className="flex flex-col gap-1">
-            {links.map((link) =>
-              link.children ? (
-                <div key={link.label?.toString()}>
-                  <span className="text-muted-foreground font-medium px-4 py-3 min-h-[44px] flex items-center text-sm">
+          <ErrorBoundary name="MobileDrawer">
+            <div className="flex flex-col gap-1">
+              {links.map((link) =>
+                link.children ? (
+                  <div key={link.label?.toString()}>
+                    <span className="text-muted-foreground font-medium px-4 py-3 min-h-[44px] flex items-center text-sm">
+                      {link.label}
+                    </span>
+                    {link.children.map((child) => (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        className="text-muted-foreground font-medium pl-8 pr-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href!}
+                    className="text-muted-foreground font-medium px-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
+                    onClick={() => setMobileOpen(false)}
+                  >
                     {link.label}
-                  </span>
-                  {link.children.map((child) => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      className="text-muted-foreground font-medium pl-8 pr-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <Link
-                  key={link.href}
-                  href={link.href!}
-                  className="text-muted-foreground font-medium px-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ),
-            )}
-          </div>
-          {rightSlot && (
-            <div className="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-3">
-              {rightSlot}
+                  </Link>
+                ),
+              )}
             </div>
-          )}
+            {rightSlot && (
+              <div className="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-3">
+                {rightSlot}
+              </div>
+            )}
+          </ErrorBoundary>
 
           {/* Quick value prop — fills empty space */}
           <div className="mt-auto pb-6 pt-6 text-center">
             <p className="text-xs text-muted-foreground/40 leading-relaxed">
-              Combat tracker para D&D 5e.<br />
-              3000+ monstros · 900+ magias · Grátis.
+              {t("mobile_tagline")}
             </p>
           </div>
         </div>

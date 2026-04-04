@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardTourProvider } from "@/components/tour/DashboardTourProvider";
 import { DashboardTourHelpButton } from "@/components/tour/DashboardTourHelpButton";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -15,6 +17,7 @@ interface DashboardLayoutProps {
     presets: string;
     settings: string;
     profile: string;
+    more: string;
     nav_label: string;
   };
   hasDmAccess?: boolean;
@@ -31,11 +34,13 @@ export function DashboardLayout({
   tourDelayMs = 1200,
   tourSource,
 }: DashboardLayoutProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   return (
     <div className="flex min-h-0">
-      <DashboardSidebar translations={translations} hasDmAccess={hasDmAccess} />
+      <DashboardSidebar translations={translations} hasDmAccess={hasDmAccess} collapsed={sidebarCollapsed} onCollapse={setSidebarCollapsed} />
       {/* Main content — offset for sidebar on desktop, bottom nav padding on mobile */}
-      <div className="flex-1 lg:ml-64 pb-20 lg:pb-0" data-tour-id="dash-overview">
+      <div className={cn("flex-1 pb-20 lg:pb-0 transition-[margin] duration-200 ease-in-out", sidebarCollapsed ? "lg:ml-16" : "lg:ml-64")} data-tour-id="dash-overview">
         {children}
       </div>
       <DashboardTourProvider

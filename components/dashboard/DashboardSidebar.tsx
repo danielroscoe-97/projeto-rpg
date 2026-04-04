@@ -12,8 +12,9 @@ import {
   Users,
   Package,
   PanelLeftClose,
+  Ellipsis,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface SidebarTranslations {
@@ -26,11 +27,14 @@ interface SidebarTranslations {
   settings: string;
   profile: string;
   nav_label: string;
+  more: string;
 }
 
 interface DashboardSidebarProps {
   translations: SidebarTranslations;
   hasDmAccess?: boolean;
+  collapsed?: boolean;
+  onCollapse?: (collapsed: boolean) => void;
 }
 
 const NAV_ITEMS_DESKTOP_BASE = [
@@ -43,22 +47,58 @@ const NAV_ITEMS_DESKTOP_BASE = [
   { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings, dmOnly: false },
 ];
 
-const NAV_ITEMS_MOBILE = [
+const NAV_ITEMS_MOBILE_PRIMARY = [
   { key: "overview" as const, href: "/app/dashboard", icon: LayoutDashboard },
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
-  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
-  { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music },
-  { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings },
 ] as const;
 
-export function DashboardSidebar({ translations: t, hasDmAccess = false }: DashboardSidebarProps) {
+const NAV_ITEMS_MOBILE_MORE_BASE = [
+  { key: "characters" as const, href: "/app/dashboard/characters", icon: Users, dmOnly: false },
+  { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music, dmOnly: false },
+  { key: "presets" as const, href: "/app/dashboard/presets", icon: Package, dmOnly: true },
+  { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings, dmOnly: false },
+];
+
+export function DashboardSidebar({ translations: t, hasDmAccess = false, collapsed: controlledCollapsed, onCollapse }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  const collapsed = controlledCollapsed ?? internalCollapsed;
+  const setCollapsed = useCallback((val: boolean) => {
+    if (onCollapse) onCollapse(val);
+    else setInternalCollapsed(val);
+  }, [onCollapse]);
 
   const navItemsDesktop = NAV_ITEMS_DESKTOP_BASE.filter(
     (item) => !item.dmOnly || hasDmAccess
   );
+
+  const mobileMoreItems = NAV_ITEMS_MOBILE_MORE_BASE.filter(
+    (item) => !item.dmOnly || hasDmAccess
+  );
+
+  // P3: Close "More" popup on route change (browser back/forward)
+  useEffect(() => { setMoreOpen(false) }, [pathname]);
+
+  // P2: Close "More" popup on Escape key
+  useEffect(() => {
+    if (!moreOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMoreOpen(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [moreOpen]);
+
+  // D1: Close popup when focus leaves the popup area
+  const handlePopupBlur = useCallback((e: React.FocusEvent) => {
+    const popup = e.currentTarget;
+    if (e.relatedTarget && !popup.contains(e.relatedTarget as Node)) {
+      setMoreOpen(false);
+    }
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/app/dashboard") {
@@ -88,7 +128,7 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false }: Dashb
         <div className={cn("flex items-center justify-between px-4 py-4 border-b border-white/[0.08]", collapsed && "justify-center px-2")}>
           <button
             type="button"
-            onClick={() => setCollapsed((prev) => !prev)}
+            onClick={() => setCollapsed(!collapsed)}
             className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -169,8 +209,57 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false }: Dashb
         data-testid="bottom-nav"
         data-tour-id="dash-bottom-nav"
       >
+        {/* "More" overflow menu */}
+        <AnimatePresence>
+          {moreOpen && (
+            <>
+              <motion.div
+                className="fixed inset-0 z-30"
+                onClick={() => setMoreOpen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.01 }}
+                exit={{ opacity: 0 }}
+              />
+              <motion.div
+                id="more-menu"
+                role="menu"
+                onBlur={handlePopupBlur}
+                className="absolute bottom-full left-2 right-2 mb-1 bg-surface-secondary border border-white/[0.08] rounded-xl shadow-xl z-40 overflow-hidden"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.15 }}
+              >
+                {mobileMoreItems.map((item) => {
+                  const active = isActive(item.href);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.key}
+                      href={item.href}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      data-testid={`nav-${item.key}`}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors",
+                        active
+                          ? "text-amber-400 bg-amber-400/10"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/[0.05]"
+                      )}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <Icon className="w-5 h-5" aria-hidden="true" />
+                      {t[item.key]}
+                    </Link>
+                  );
+                })}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
         <div className="flex items-center justify-around py-1.5">
-          {NAV_ITEMS_MOBILE.map((item) => {
+          {NAV_ITEMS_MOBILE_PRIMARY.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
             return (
@@ -178,6 +267,7 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false }: Dashb
                 key={item.key}
                 href={item.href}
                 data-testid={`nav-${item.key}`}
+                onClick={() => setMoreOpen(false)}
                 className={cn(
                   "flex flex-col items-center gap-0.5 px-3 rounded-lg text-xs font-medium transition-colors min-w-[56px] min-h-[44px] justify-center",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50",
@@ -192,6 +282,26 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false }: Dashb
               </Link>
             );
           })}
+
+          {/* More button */}
+          <button
+            type="button"
+            onClick={() => setMoreOpen((prev) => !prev)}
+            data-testid="nav-more"
+            aria-controls="more-menu"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 rounded-lg text-xs font-medium transition-colors min-w-[56px] min-h-[44px] justify-center",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50",
+              mobileMoreItems.some((item) => isActive(item.href))
+                ? "text-amber-400"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            aria-expanded={moreOpen}
+            aria-label={t.more}
+          >
+            <Ellipsis className="w-5 h-5" aria-hidden="true" />
+            <span className="truncate">{t.more}</span>
+          </button>
         </div>
       </nav>
     </>

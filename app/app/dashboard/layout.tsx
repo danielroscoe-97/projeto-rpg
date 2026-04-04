@@ -20,6 +20,7 @@ export default async function DashboardRouteLayout({
     presets: t("presets"),
     settings: t("settings"),
     profile: t("profile"),
+    more: t("more"),
     nav_label: t("nav_label"),
   };
 
