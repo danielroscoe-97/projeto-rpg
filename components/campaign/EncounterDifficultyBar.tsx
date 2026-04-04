@@ -146,6 +146,16 @@ export function EncounterDifficultyBar({ partyLevel, partySize, monsters, formul
           {totalCount} {t("monsters_count")}
         </span>
       </div>
+
+      {/* Pocket DM label */}
+      <div className="flex items-center justify-center pt-2">
+        <span
+          className="text-[10px] px-2 py-0.5 rounded-full border border-amber-500/20 text-amber-400/60 bg-amber-500/5"
+          title={t("pocket_dm_tooltip")}
+        >
+          Pocket DM (Beta)
+        </span>
+      </div>
     </div>
   );
 }

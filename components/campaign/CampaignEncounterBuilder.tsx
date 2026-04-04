@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Plus, Minus, X, Save, Loader2 } from "lucide-react";
+import { Search, Plus, Minus, X, Save, Loader2, ChevronDown, Sparkles } from "lucide-react";
 import { EncounterPlayerSelector } from "./EncounterPlayerSelector";
 import { EncounterDifficultyBar } from "./EncounterDifficultyBar";
 import { CampaignEncounterList } from "./CampaignEncounterList";
@@ -15,6 +15,7 @@ import type { EncounterPreset } from "@/lib/types/encounter-preset";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 import { calculateDifficulty, type FormulaVersion } from "@/lib/utils/cr-calculator";
+import { BUILDER_STARTER_ENCOUNTERS, type BuilderStarterEncounter } from "@/lib/data/starter-encounters";
 
 interface MonsterOption {
   name: string;
@@ -228,6 +229,27 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
       setPresetName("");
       setPresetNotes("");
     }
+  }
+
+  // ── Starter Packs ──
+  const [startersOpen, setStartersOpen] = useState(false);
+
+  function loadStarter(starter: BuilderStarterEncounter) {
+    setEditingPresetId(null);
+    setPresetName("");
+    setPresetNotes("");
+    setEncounter(
+      starter.creatures.map((c) => ({
+        id: Math.random().toString(36).slice(2),
+        name: c.name,
+        cr: c.cr,
+        count: c.quantity,
+        slug: c.slug,
+        token_url: null,
+        source: c.source,
+      }))
+    );
+    setStartersOpen(false);
   }
 
   return (
@@ -444,6 +466,56 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
             formulaVersion={formulaVersion}
           />
         </div>
+      </div>
+
+      {/* Starter Packs */}
+      <div className="border-t border-border pt-6">
+        <button
+          type="button"
+          onClick={() => setStartersOpen((v) => !v)}
+          className="flex items-center gap-2 w-full text-left mb-3"
+        >
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <h2 className="text-sm font-semibold text-amber-400 flex-1">{t("starter_packs")}</h2>
+          <ChevronDown
+            className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+              startersOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+        {startersOpen && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+            {BUILDER_STARTER_ENCOUNTERS.map((starter) => {
+              const creaturePreview = starter.creatures
+                .map((c) => `${c.quantity}x ${c.name}`)
+                .join(", ");
+              const diffColor =
+                starter.difficulty === "easy" ? "text-green-400 border-green-700" :
+                starter.difficulty === "medium" ? "text-yellow-400 border-yellow-700" :
+                starter.difficulty === "hard" ? "text-orange-400 border-orange-700" :
+                "text-red-400 border-red-700";
+              return (
+                <button
+                  key={starter.id}
+                  type="button"
+                  onClick={() => loadStarter(starter)}
+                  className="text-left rounded-lg border border-border bg-card/50 p-3 hover:bg-accent transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-foreground">{t(starter.nameKey)}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium uppercase ${diffColor}`}>
+                      {t(`diff_${starter.difficulty}`)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{creaturePreview}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {t("level_range", { min: starter.levelRange[0], max: starter.levelRange[1] })}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Saved presets */}
