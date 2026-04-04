@@ -41,6 +41,16 @@ function IntLink({ slug, children }: { slug: string; children: React.ReactNode }
     </Link>
   );
 }
+function ProdLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="text-gold/90 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
+    >
+      {children}
+    </Link>
+  );
+}
 function H2({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-12 mb-5">
@@ -106,10 +116,11 @@ export function BlogPost1() {
   return (
     <>
       <P>
-        Um combat tracker é uma ferramenta digital que ajuda o mestre de D&D 5e
-        a gerenciar encontros de combate de forma rápida e organizada. Em vez de
-        anotar tudo em papel, você rastreia iniciativa, HP, condições e turnos em
-        uma interface visual — e seus jogadores podem acompanhar em tempo real.
+        Um <ProdLink href="/try">combat tracker</ProdLink> é uma ferramenta
+        digital que ajuda o mestre de D&D 5e a gerenciar encontros de combate de
+        forma rápida e organizada. Em vez de anotar tudo em papel, você rastreia
+        iniciativa, HP, condições e turnos em uma interface visual — e seus
+        jogadores podem acompanhar em tempo real.
       </P>
 
       <H2>O que é um Combat Tracker?</H2>
@@ -167,7 +178,8 @@ export function BlogPost1() {
       <P>
         Adicione os monstros que vão participar do combate. Um bom combat tracker
         já tem um bestiário integrado — você pesquisa pelo nome e adiciona com
-        um clique. No Pocket DM, por exemplo, são mais de 1.200 monstros do{" "}
+        um clique. No Pocket DM, por exemplo, são mais de{" "}
+        <ProdLink href="/monstros">1.200 monstros</ProdLink> do{" "}
         <ExtLink href="https://5e.d20srd.org/">SRD</ExtLink> + monstros do{" "}
         <ExtLink href="https://www.reddit.com/r/monsteraday/">r/monsteraday</ExtLink> disponíveis.
       </P>
@@ -213,7 +225,8 @@ export function BlogPost1() {
       </Ul>
       <P>
         Um combat tracker digital resolve tudo isso. E com ferramentas gratuitas
-        como o Pocket DM, não há desculpa para não experimentar.
+        como o <ProdLink href="/try">Pocket DM</ProdLink>, não há desculpa
+        para não experimentar.
       </P>
 
       <CTA />
@@ -248,10 +261,11 @@ export function BlogPost2() {
 
       <H2>1. Combat Tracker (Rastreador de Combate)</H2>
       <P>
-        O combat tracker é a ferramenta #1 porque combate é o momento em que o
-        mestre mais precisa de organização. Rastrear iniciativa, HP e condições
-        de 5+ criaturas simultaneamente em papel é caótico — especialmente com
-        jogadores impacientes esperando seu turno.
+        O <ProdLink href="/try">combat tracker</ProdLink> é a ferramenta #1
+        porque combate é o momento em que o mestre mais precisa de organização.
+        Rastrear iniciativa, HP e condições de 5+ criaturas simultaneamente em
+        papel é caótico — especialmente com jogadores impacientes esperando
+        seu turno.
       </P>
       <P>
         Um bom combat tracker permite adicionar monstros do bestiário com um
@@ -269,8 +283,9 @@ export function BlogPost2() {
       <Img src="/art/blog/bestiary-index.png" alt="Bestiário do Pocket DM — monstros SRD + Monster a Day organizados por letra e CR" />
       <P>
         O conteúdo SRD (System Reference Document) do D&D 5e inclui centenas de
-        monstros gratuitos. Ferramentas como o Pocket DM disponibilizam mais de
-        1.200+ monstros SRD — além de monstros do compêndio{" "}
+        monstros gratuitos. Ferramentas como o Pocket DM disponibilizam{" "}
+        <ProdLink href="/monstros">mais de 1.200+ monstros SRD</ProdLink> — além
+        de monstros do compêndio{" "}
         <ExtLink href="https://www.reddit.com/r/monsteraday/">Monster a Day</ExtLink>{" "}
         — com stat blocks completos, todos pesquisáveis.
       </P>
@@ -283,9 +298,9 @@ export function BlogPost2() {
       </P>
       <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 750+ spells organizadas por nível e escola" />
       <P>
-        O Pocket DM inclui o que chamamos de &ldquo;oráculo de magias&rdquo; — uma busca
-        inteligente em mais de 900 magias SRD, acessível durante o combate sem
-        interromper o fluxo do jogo.
+        O Pocket DM inclui o que chamamos de &ldquo;oráculo de magias&rdquo; — uma{" "}
+        <ProdLink href="/magias">busca inteligente em mais de 900 magias SRD</ProdLink>,
+        acessível durante o combate sem interromper o fluxo do jogo.
       </P>
 
       <H2>4. Música Ambiente</H2>
@@ -342,7 +357,11 @@ export function BlogPost2() {
         Não precisa de 10 ferramentas. Com cinco bem escolhidas — combat tracker,
         bestiário, magias, música e dados — você cobre o que realmente importa
         na mesa. O segredo é simplicidade: a ferramenta não pode ser mais
-        complexa que o problema que ela resolve.
+        complexa que o problema que ela resolve. Quer ver como funciona na
+        prática? Leia o{" "}
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>{" "}
+        ou o{" "}
+        <IntLink slug="como-usar-pocket-dm-tutorial">tutorial completo do Pocket DM</IntLink>.
       </P>
     </>
   );
@@ -382,15 +401,16 @@ export function BlogPost3() {
 
       <H2>O que é um Combat Tracker?</H2>
       <P>
-        Um combat tracker é uma ferramenta focada exclusivamente em gerenciar o
-        momento do combate. Ele faz menos coisas, mas faz melhor e mais rápido:
+        Um <ProdLink href="/try">combat tracker</ProdLink> é uma ferramenta focada
+        exclusivamente em gerenciar o momento do combate. Ele faz menos coisas,
+        mas faz melhor e mais rápido:
       </P>
       <Ul>
         <Li>Ordem de iniciativa automática</Li>
         <Li>Gerenciamento de HP com barras visuais</Li>
-        <Li>Condições ativas (blinded, stunned, etc.)</Li>
+        <Li><ProdLink href="/condicoes">Condições ativas</ProdLink> (blinded, stunned, etc.)</Li>
         <Li>Avanço de turnos</Li>
-        <Li>Bestiário integrado (stat blocks)</Li>
+        <Li><ProdLink href="/monstros">Bestiário integrado</ProdLink> (stat blocks)</Li>
         <Li>Funciona no celular dos jogadores</Li>
       </Ul>
 
@@ -474,8 +494,13 @@ export function BlogPost3() {
       <H2>Conclusão</H2>
       <P>
         VTTs são poderosos, mas são feitos para jogar online. Se sua mesa é
-        presencial, um combat tracker leve e gratuito como o Pocket DM é a
-        escolha certa — menos setup, menos complexidade, mais foco no jogo.
+        presencial, um combat tracker leve e gratuito como o{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink> é a escolha certa — menos
+        setup, menos complexidade, mais foco no jogo. Quer aprofundar? Leia
+        nosso{" "}
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker para D&amp;D 5e</IntLink>{" "}
+        ou confira as{" "}
+        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais para mestres</IntLink>.
         Para uma comparação detalhada de VTTs, veja o{" "}
         <ExtLink href="https://www.hipstersanddragons.com/best-virtual-tabletops/">guia do Hipsters &amp; Dragons</ExtLink>.
       </P>
@@ -603,9 +628,11 @@ export function BlogPost4() {
       ))}
 
       <Tip>
-        No Pocket DM, todas as 15 condições vêm com as regras integradas. Ao
-        marcar uma condição em um combatente, a descrição completa aparece para
-        consulta rápida — sem precisar abrir o livro.
+        No <ProdLink href="/try">Pocket DM</ProdLink>, todas as 15 condições
+        vêm com as regras integradas. Ao marcar uma condição em um combatente,
+        a descrição completa aparece para consulta rápida — sem precisar abrir
+        o livro. Veja também nossa{" "}
+        <ProdLink href="/condicoes">referência rápida de condições</ProdLink>.
       </Tip>
 
       <H2>Condições que Combinam</H2>
@@ -654,10 +681,11 @@ export function BlogPost5() {
       <H2>3. Use um Combat Tracker Digital</H2>
       <P>
         Anotar HP em papel, riscar, reescrever, perder o papel... isso consome
-        tempo. Um combat tracker digital com barras de HP visuais e avanço
-        automático de turno elimina essa fricção. Com o Pocket DM, você
-        adiciona monstros do bestiário, rola iniciativa e começa — em menos de
-        2 minutos.
+        tempo. Um <ProdLink href="/try">combat tracker digital</ProdLink> com
+        barras de HP visuais e avanço automático de turno elimina essa fricção.
+        Com o Pocket DM, você adiciona monstros do{" "}
+        <ProdLink href="/monstros">bestiário</ProdLink>, rola iniciativa e
+        começa — em menos de 2 minutos.
       </P>
       <Img src="/art/blog/combat-active.png" alt="Combate ativo no Pocket DM — barras de HP, turnos e condições gerenciados visualmente" />
 
@@ -732,7 +760,9 @@ export function BlogPost5() {
         e o artigo do{" "}
         <ExtLink href="https://rpgbot.net/dnd5/dungeonmasters/faster-combat/">RPGBot sobre combate mais rápido</ExtLink>.
         Veja também nosso{" "}
-        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>.
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>{" "}
+        e o{" "}
+        <IntLink slug="guia-condicoes-dnd-5e">guia completo de condições</IntLink>.
       </P>
     </>
   );
@@ -880,9 +910,10 @@ export function BlogPost6() {
         aparece sem sair da tela de combate.
       </P>
       <P>
-        O oráculo de magias permite buscar qualquer uma das 750+ magias SRD
-        por nome, escola ou nível. Útil quando um jogador pergunta &ldquo;o que essa
-        magia faz?&rdquo; e você precisa da resposta em 2 segundos.
+        O <ProdLink href="/magias">oráculo de magias</ProdLink> permite buscar
+        qualquer uma das 750+ magias SRD por nome, escola ou nível. Útil quando
+        um jogador pergunta &ldquo;o que essa magia faz?&rdquo; e você precisa da
+        resposta em 2 segundos.
       </P>
 
       <Img src="/art/blog/bestiary-index.png" alt="Bestiário SRD do Pocket DM — monstros organizados por letra com CR e tipo" />
@@ -1421,7 +1452,11 @@ export function BlogPost7() {
         comportamento dos monstros e lê as reações dos jogadores. Com prática,
         essas decisões se tornam instintivas. Use as ferramentas como ponto de
         partida, confie no seu instinto como mestre, e lembre-se: um encontro
-        é bom quando os jogadores saem da mesa falando sobre ele.
+        é bom quando os jogadores saem da mesa falando sobre ele. Para mais
+        contexto, veja nosso{" "}
+        <IntLink slug="guia-challenge-rating-dnd-5e">guia de Challenge Rating</IntLink>{" "}
+        e os{" "}
+        <IntLink slug="melhores-monstros-dnd-5e">10 monstros essenciais para mestres</IntLink>.
       </P>
 
       <CTA />
@@ -2200,9 +2235,14 @@ export function BlogPost9() {
       </Ul>
       <P>
         Todos os monstros desta lista estão disponíveis gratuitamente no{" "}
-        <a href="/monstros">compêndio de monstros do Pocket DM</a>, com stat
-        blocks completos em português. Boas sessões começam com bons monstros
-        &mdash; e agora você tem dez dos melhores no seu arsenal.
+        <ProdLink href="/monstros">compêndio de monstros do Pocket DM</ProdLink>, com stat
+        blocks completos em português. Quer testá-los em combate? Use o{" "}
+        <ProdLink href="/try">combat tracker gratuito</ProdLink> ou veja nosso{" "}
+        <IntLink slug="como-montar-encontro-balanceado-dnd-5e">guia de encontros balanceados</IntLink>{" "}
+        e o{" "}
+        <IntLink slug="guia-challenge-rating-dnd-5e">guia de Challenge Rating</IntLink>.
+        Boas sessões começam com bons monstros &mdash; e agora você tem dez dos
+        melhores no seu arsenal.
       </P>
 
       <CTA />
@@ -2620,9 +2660,13 @@ export function BlogPost10() {
       <P>
         Prepare pouco, improvise com confiança, use ferramentas que simplifiquem
         a mecânica e, acima de tudo, lembre que RPG é sobre histórias
-        compartilhadas. Você vai errar regras, vai esquecer condições, vai
+        compartilhadas. Você vai errar regras, vai esquecer{" "}
+        <IntLink slug="guia-condicoes-dnd-5e">condições</IntLink>, vai
         inventar NPCs com nomes ridículos na hora. E seus jogadores vão adorar
-        cada segundo.
+        cada segundo. Para aprofundar, leia nosso{" "}
+        <IntLink slug="como-usar-pocket-dm-tutorial">tutorial completo do Pocket DM</IntLink>{" "}
+        e o{" "}
+        <IntLink slug="como-montar-encontro-balanceado-dnd-5e">guia de encontros balanceados</IntLink>.
       </P>
       <P>
         Agora é com você: reúna o grupo, prepare um começo forte e jogue.
@@ -3042,7 +3086,8 @@ export function BlogPost11() {
       </P>
       <P>
         E se você quer uma ferramenta que integra combate e ambientação
-        sonora num só lugar, experimente o Pocket DM — combat tracker
+        sonora num só lugar, experimente o{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink> — combat tracker
         gratuito para D&D 5e com soundboard embutido, ideal para mestres
         que jogam presencialmente. Confira também nosso guia sobre{" "}
         <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">
@@ -3360,9 +3405,7 @@ export function BlogPost12() {
       </P>
       <P>
         Se você usa{" "}
-        <Link href="/condicoes" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          condições
-        </Link>{" "}
+        <ProdLink href="/condicoes">condições</ProdLink>{" "}
         no combate (e deveria!), o tracker aplica e rastreia automaticamente —
         algo que fica confuso no papel independente do estilo de combate.
       </P>
@@ -3384,9 +3427,7 @@ export function BlogPost12() {
         lembre-se: o que realmente importa é que todos na mesa estejam se
         divertindo — com ou sem miniaturas. Para manter o combate fluindo
         independente do estilo, experimente o{" "}
-        <Link href="/try" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          Pocket DM
-        </Link>{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>{" "}
         — combat tracker gratuito para D&D 5e que funciona direto no navegador.
         E para mais dicas de combate, confira nosso guia de{" "}
         <IntLink slug="como-agilizar-combate-dnd-5e">
