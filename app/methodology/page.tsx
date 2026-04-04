@@ -293,13 +293,15 @@ export default async function MethodologyPage() {
             translations={{
               title: t("spell_vote_title"),
               subtitle: t("spell_vote_subtitle"),
-              under_tiered: t("spell_vote_under"),
-              correct: t("spell_vote_correct"),
-              over_tiered: t("spell_vote_over"),
+              confirm: t("spell_vote_confirm"),
+              edit: t("spell_vote_edit"),
+              save: t("spell_vote_save"),
+              cancel: t("spell_vote_cancel"),
               vote_thanks: t("spell_vote_thanks"),
               vote_error: t("spell_vote_error"),
               login_to_vote: t("spell_vote_login"),
               votes_label: t("spell_vote_count"),
+              voted_label: t("spell_vote_voted"),
               vote_bar_label: t("spell_vote_bar_label"),
             }}
           />

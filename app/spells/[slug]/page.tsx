@@ -127,13 +127,15 @@ export default async function SpellPage({
             isLoggedIn={isLoggedIn}
             translations={{
               title: t("mini_vote_title"),
-              under_tiered: t("mini_vote_under"),
-              correct: t("mini_vote_correct"),
-              over_tiered: t("mini_vote_over"),
+              confirm: t("mini_vote_confirm"),
+              edit: t("mini_vote_edit"),
+              save: t("mini_vote_save"),
+              cancel: t("mini_vote_cancel"),
               vote_thanks: t("mini_vote_thanks"),
               vote_error: t("mini_vote_error"),
               login_to_vote: t("mini_vote_login"),
               votes_label: t("mini_vote_count"),
+              voted_label: t("mini_vote_voted"),
             }}
           />
 

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { withRateLimit } from "@/lib/rate-limit";
 import { captureError } from "@/lib/errors/capture";
 
-const VALID_VOTES = ["under_tiered", "correct", "over_tiered"] as const;
+const VALID_VOTES = ["S", "A", "B", "C", "D", "E"] as const;
 type SpellVote = (typeof VALID_VOTES)[number];
 
 const MAX_SPELL_NAME_LENGTH = 100;
