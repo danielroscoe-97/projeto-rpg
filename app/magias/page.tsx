@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSrdSpells, toSlug, toSpellSlugPt } from "@/lib/srd/srd-data-server";
+import { getSrdSpells, toSlug, toSpellSlugPt, getSpellNamePt, getSpellDescriptionPt } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
@@ -32,8 +32,10 @@ export default function MagiasIndexPage() {
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name))
     .map((s) => {
       const enSlug = toSlug(s.name);
+      const ptName = getSpellNamePt(enSlug, s.name);
+      const ptDesc = getSpellDescriptionPt(enSlug);
       return {
-        name: s.name,
+        name: ptName,
         level: s.level,
         school: s.school,
         classes: s.classes ?? [],
@@ -43,8 +45,9 @@ export default function MagiasIndexPage() {
         ruleset_version: s.ruleset_version,
         casting_time: s.casting_time,
         range: s.range,
+        components: s.components,
         duration: s.duration,
-        description: s.description?.slice(0, 200),
+        description: ptDesc?.slice(0, 300) ?? s.description?.slice(0, 200),
       };
     });
 

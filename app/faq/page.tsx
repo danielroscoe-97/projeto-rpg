@@ -161,8 +161,8 @@ export default function FaqPage() {
         brandHref="/"
         links={[
           { href: "/blog", label: "Blog" },
-          { href: "/monsters", label: "Monstros" },
-          { href: "/spells", label: "Magias" },
+          { href: "/monstros", label: "Monstros" },
+          { href: "/magias", label: "Magias" },
           { href: "/pricing", label: "Preços" },
         ]}
         rightSlot={

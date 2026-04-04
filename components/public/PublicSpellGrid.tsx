@@ -355,7 +355,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
               const isHovered = hoveredId === spellId;
               return (
               <div
-                key={s.name}
+                key={spellId}
                 className="relative"
                 onMouseEnter={(e) => s.description ? handleMouseEnter(e, spellId) : undefined}
                 onMouseLeave={handleMouseLeave}

@@ -54,6 +54,29 @@ export function getSpellBySlugPt(ptSlug: string): SrdSpell | undefined {
   return getSpellBySlug(enSlug);
 }
 
+// ── PT-BR display names + descriptions ─────────────────────────
+let spellDescPtMap: Record<string, { name_pt: string; description: string; higher_levels?: string | null }> | null = null;
+
+function getSpellDescPtMap() {
+  if (spellDescPtMap) return spellDescPtMap;
+  try {
+    spellDescPtMap = JSON.parse(readFileSync(join(process.cwd(), "public/srd/spell-descriptions-pt.json"), "utf-8"));
+  } catch {
+    spellDescPtMap = {};
+  }
+  return spellDescPtMap!;
+}
+
+/** Get PT-BR display name for a spell (by EN slug). Falls back to original name. */
+export function getSpellNamePt(enSlug: string, fallback: string): string {
+  return getSpellDescPtMap()[enSlug]?.name_pt ?? fallback;
+}
+
+/** Get PT-BR description for a spell (by EN slug). */
+export function getSpellDescriptionPt(enSlug: string): string | undefined {
+  return getSpellDescPtMap()[enSlug]?.description;
+}
+
 const SRD_DIR = join(process.cwd(), "public", "srd");
 
 // ── SRD whitelists (slug-based) ─────────────────────────────────

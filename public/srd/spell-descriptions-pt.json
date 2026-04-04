@@ -1,4 +1,9 @@
 {
+  "acid-arrow": {
+    "name_pt": "Flecha Ácida",
+    "description": "Uma flecha verde cintilante dispara em direção a um alvo dentro do alcance e explode em um jato de ácido. Faça um ataque de magia à distância contra o alvo. Em um acerto, o alvo sofre 4d4 de dano ácido imediatamente e 2d4 de dano ácido no final de seu próximo turno. Em uma falha, a flecha espirra ácido no alvo causando metade do dano inicial e nenhum dano no final do próximo turno.",
+    "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 3º nível ou superior, o dano (inicial e posterior) aumenta em 1d4 para cada nível de espaço acima do 2º."
+  },
   "acid-splash": {
     "name_pt": "Respingo Ácido",
     "description": "Você arremessa uma bolha de ácido. Escolha uma criatura dentro do alcance, ou escolha duas criaturas dentro do alcance que estejam a até 5 feet uma da outra. O alvo deve ser bem-sucedido em um saving throw de Destreza ou sofrer 1d6 de dano ácido.\n\nO dano dessa magia aumenta em 1d6 quando você alcança o 5º nível (2d6), o 11º nível (3d6) e o 17º nível (4d6).",
@@ -64,10 +69,40 @@
     "description": "Você cria um olho mágico invisível dentro do alcance que flutua no ar pela duração.\n\nVocê recebe mentalmente informações visuais do olho, que possui visão normal e visão no escuro até 30 feet. O olho pode olhar em todas as direções.\n\nComo uma ação, você pode mover o olho até 30 feet em qualquer direção. Não há limite para o quão longe de você o olho pode se mover, mas ele não pode entrar em outro plano de existência. Uma barreira sólida bloqueia o movimento do olho, mas o olho pode passar por uma abertura tão pequena quanto 1 inch de diâmetro.",
     "higher_levels": null
   },
+  "arcane-gate": {
+    "name_pt": "Portal Arcano",
+    "description": "Você cria portais de teletransporte interligados que permanecem abertos pela duração. Escolha dois pontos no chão que você possa ver, um dentro de 10 feet de você e um dentro de 500 feet de você. Um portal circular de 10 feet de diâmetro aparece em cada ponto. Qualquer criatura ou objeto que entre por um portal sai pelo outro como se os dois estivessem adjacentes um ao outro.\n\nComo ação bônus, você pode mudar a orientação de um portal ou realocá-lo para outro ponto dentro de 500 feet.",
+    "higher_levels": null
+  },
+  "arcane-hand": {
+    "name_pt": "Mão Arcana",
+    "description": "Você cria uma mão Grande de força translúcida e cintilante em um espaço desocupado que você possa ver dentro do alcance. A mão dura pela duração da magia e se move ao seu comando, imitando os movimentos de sua própria mão.\n\nA mão é um objeto que tem CA 20 e pontos de vida iguais ao seu máximo de pontos de vida. Se cair a 0 pontos de vida, a magia termina. Ela tem Força 26 (+8) e Destreza 10 (+0).\n\n***Punho Cerrado.*** A mão golpeia uma criatura a 5 feet dela. Faça um ataque corpo a corpo de magia. Em um acerto, o alvo sofre 4d8 de dano de força.\n\n***Mão Forçada.*** Tenta empurrar uma criatura. Vantagem se o alvo for Médio ou menor.\n\n***Mão Agarradora.*** Tenta agarrar criatura Enorme ou menor. Pode esmagar por 2d6 + modificador de conjuração.\n\n***Mão Interposta.*** Fornece meia cobertura contra um alvo escolhido.",
+    "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 6º nível ou superior, o dano do punho cerrado aumenta em 2d8 e o dano da mão agarradora aumenta em 2d6 para cada nível de espaço acima do 5º."
+  },
   "arcane-lock": {
     "name_pt": "Tranca Arcana",
     "description": "Você toca uma porta, janela, portão, baú ou outra entrada fechada, e ela se torna trancada pela duração. Você e as criaturas que você designar quando conjurar esta magia podem abrir o objeto normalmente. Você também pode definir uma senha que, quando falada a até 5 feet do objeto, suprime esta magia por 1 minuto. Caso contrário, ele é intransponível até ser quebrado ou a magia ser dissipada ou suprimida. Conjurar knock no objeto suprime arcane lock por 10 minutos.\n\nEnquanto afetado por esta magia, o objeto é mais difícil de quebrar ou forçar a abertura; a DC para quebrá-lo ou abrir quaisquer fechaduras nele aumenta em 10.",
     "higher_levels": null
+  },
+  "arcane-sword": {
+    "name_pt": "Espada Arcana",
+    "description": "Você cria um plano de força em forma de espada que paira dentro do alcance pela duração.\n\nQuando a espada aparece, você faz um ataque corpo a corpo de magia contra um alvo à sua escolha a 5 feet da espada. Em um acerto, o alvo sofre 3d10 de dano de força. Até a magia terminar, você pode usar uma ação bônus em cada um de seus turnos para mover a espada até 20 feet e repetir o ataque contra o mesmo alvo ou outro.",
+    "higher_levels": null
+  },
+  "arcanists-magic-aura": {
+    "name_pt": "Aura Mágica do Arcanista",
+    "description": "Você coloca uma ilusão em uma criatura ou um objeto que você toca para que magias de adivinhação revelem informações falsas sobre ele. O alvo pode ser uma criatura voluntária ou um objeto que não esteja sendo carregado por outra criatura.\n\nAo conjurar a magia, escolha um ou ambos os efeitos. O efeito dura pela duração. Se você conjurar essa magia no mesmo alvo todos os dias por 30 dias, a ilusão dura até ser dissipada.\n\n***Aura Falsa.*** Você muda a forma como o alvo aparece para magias que detectam auras mágicas, como detectar magia. Você pode fazer um objeto não mágico parecer mágico, ou mudar a aura do objeto para parecer pertencer a uma escola de magia específica.\n\n***Máscara.*** Você muda a forma como o alvo aparece para magias que detectam tipos de criatura. Você escolhe um tipo de criatura e outras magias tratam o alvo como se fosse desse tipo.",
+    "higher_levels": null
+  },
+  "armor-of-agathys": {
+    "name_pt": "Armadura de Agathys",
+    "description": "Uma força mágica protetora envolve você, manifestando-se como um revestimento espectral de gelo. Você ganha 5 pontos de vida temporários pela duração. Se uma criatura acertar você com um ataque corpo a corpo enquanto você tiver esses pontos de vida temporários, a criatura sofre 5 de dano de frio.",
+    "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 2º nível ou superior, tanto os pontos de vida temporários quanto o dano de frio aumentam em 5 para cada nível de espaço acima do 1º."
+  },
+  "arms-of-hadar": {
+    "name_pt": "Braços de Hadar",
+    "description": "Você invoca o poder de Hadar, o Estelar Sombrio. Tentáculos de energia escura e fria erupcionam de você e chicoteiam todas as criaturas a 10 feet de você. Cada criatura na área deve fazer um saving throw de Força. Em uma falha, a criatura sofre 2d6 de dano necrótico e não pode tomar reações até seu próximo turno. Em um sucesso, a criatura sofre metade do dano e nenhum efeito adicional.",
+    "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 2º nível ou superior, o dano aumenta em 1d6 para cada nível de espaço acima do 1º."
   },
   "astral-projection": {
     "name_pt": "Projeção Astral",
@@ -79,6 +114,21 @@
     "description": "Ao lançar varetas incrustadas com gemas, rolar ossos de dragão, dispor cartas ornamentadas ou empregar alguma outra ferramenta divinatória, você recebe um presságio de uma entidade sobrenatural sobre os resultados de um curso de ação específico que você planeja tomar nos próximos 30 minutos. O Mestre escolhe entre os seguintes presságios possíveis:\n\n- Prosperidade, para bons resultados\n\n- Infortúnio, para maus resultados\n\n- Prosperidade e infortúnio, para resultados bons e ruins\n\n- Nada, para resultados que não são especialmente bons ou ruins\n\nA magia não leva em consideração quaisquer possíveis circunstâncias que possam alterar o resultado, como a conjuração de magias adicionais ou a perda ou ganho de um companheiro.\n\nSe você conjurar a magia duas ou mais vezes antes de completar seu próximo descanso longo, há uma chance cumulativa de 25 por cento para cada conjuração após a primeira de que você receba uma leitura aleatória. O Mestre faz essa rolagem em segredo.",
     "higher_levels": null
   },
+  "aura-of-life": {
+    "name_pt": "Aura da Vida",
+    "description": "Energia vivificante irradia de você em uma aura de 30 feet de raio. Até a magia terminar, a aura se move com você. Cada criatura não hostil na aura (incluindo você) tem resistência a dano necrótico, e seu máximo de pontos de vida não pode ser reduzido. Além disso, uma criatura viva não hostil recupera 1 ponto de vida quando começa seu turno na aura com 0 pontos de vida.",
+    "higher_levels": null
+  },
+  "aura-of-purity": {
+    "name_pt": "Aura de Pureza",
+    "description": "Energia purificadora irradia de você em uma aura de 30 feet de raio. Cada criatura não hostil na aura (incluindo você) não pode ficar doente, tem resistência a dano de veneno e tem vantagem em saving throws contra efeitos que causem qualquer das seguintes condições: cego, enfeitiçado, surdo, amedrontado, paralisado, envenenado e atordoado.",
+    "higher_levels": null
+  },
+  "aura-of-vitality": {
+    "name_pt": "Aura de Vitalidade",
+    "description": "Energia curativa irradia de você em uma aura de 30 feet de raio. Até a magia terminar, a aura se move com você. Você pode usar uma ação bônus para fazer uma criatura na aura (incluindo você) recuperar 2d6 pontos de vida.",
+    "higher_levels": null
+  },
   "awaken": {
     "name_pt": "Despertar",
     "description": "Após gastar o tempo de conjuração traçando caminhos mágicos dentro de uma pedra preciosa, você toca uma besta ou planta de tamanho Enorme ou menor. O alvo deve ter nenhum valor de Inteligência ou uma Inteligência de 3 ou menos. O alvo ganha Inteligência 10. O alvo também ganha a habilidade de falar um idioma que você conhece. Se o alvo for uma planta, ela ganha a habilidade de mover seus galhos, raízes, vinhas, trepadeiras e afins, e ganha sentidos similares aos de um humano. Seu Mestre escolhe estatísticas apropriadas para a planta desperta, como as estatísticas do arbusto desperto ou da árvore desperta.\n\nA besta ou planta desperta fica enfeitiçada por você por 30 dias ou até que você ou seus companheiros façam algo prejudicial a ela. Quando a condição enfeitiçado termina, a criatura desperta escolhe se permanece amigável a você, baseado em como você a tratou enquanto estava enfeitiçada.",
@@ -88,6 +138,11 @@
     "name_pt": "Perdição",
     "description": "Até três criaturas à sua escolha que você possa ver dentro do alcance devem fazer salvaguardas de Carisma. Sempre que um alvo que falhou nessa salvaguarda fizer uma jogada de ataque ou uma salvaguarda antes da magia acabar, o alvo deve rolar um d4 e subtrair o número rolado da jogada de ataque ou salvaguarda.",
     "higher_levels": "Quando você conjura esta magia usando um espaço de magia de 2º nível ou superior, você pode afetar uma criatura adicional para cada nível de espaço acima do 1º."
+  },
+  "banishing-smite": {
+    "name_pt": "Golpe Banidor",
+    "description": "Na próxima vez que você acertar uma criatura com um ataque com arma antes da magia terminar, sua arma crepita com força, e o ataque causa 5d10 extras de dano de força ao alvo. Se esse ataque reduzir o alvo a 50 pontos de vida ou menos, você o bane. Se o alvo for nativo de um plano diferente, ele é banido de volta. Se for nativo do plano em que você está, é enviado para um semiplano inofensivo, ficando incapacitado até o final de seu próximo turno.",
+    "higher_levels": null
   },
   "banishment": {
     "name_pt": "Banimento",
@@ -104,14 +159,34 @@
     "description": "Esta magia concede esperança e vitalidade. Escolha qualquer número de criaturas dentro do alcance. Pela duração, cada alvo tem vantagem em testes de resistência de Sabedoria e testes de resistência contra morte, e recupera o número máximo de pontos de vida possível de qualquer cura.",
     "higher_levels": null
   },
+  "beast-sense": {
+    "name_pt": "Sentido Bestial",
+    "description": "Você toca uma besta voluntária. Pela duração da magia, você pode usar sua ação para ver pelos olhos da besta e ouvir o que ela ouve, continuando até usar sua ação para retornar aos seus sentidos normais. Enquanto percebe pelos sentidos da besta, você ganha os benefícios de quaisquer sentidos especiais que a criatura possua, embora fique cego e surdo em relação ao seu próprio ambiente.",
+    "higher_levels": null
+  },
   "bestow-curse": {
     "name_pt": "Rogar Maldição",
     "description": "Você toca uma criatura, e essa criatura deve ser bem-sucedida em um teste de resistência de Sabedoria ou ficará amaldiçoada pela duração da magia. Quando você conjura esta magia, escolha a natureza da maldição entre as seguintes opções:\n\n- Escolha uma habilidade. Enquanto amaldiçoado, o alvo tem desvantagem em testes de habilidade e testes de resistência feitos com essa habilidade.\n\n- Enquanto amaldiçoado, o alvo tem desvantagem em jogadas de ataque contra você.\n\n- Enquanto amaldiçoado, o alvo deve fazer um teste de resistência de Sabedoria no início de cada um de seus turnos. Se falhar, ele desperdiça sua ação naquele turno sem fazer nada.\n\n- Enquanto o alvo estiver amaldiçoado, seus ataques e magias causam 1d8 de dano necrótico extra ao alvo.\n\nA magia Remove Curse encerra este efeito. A critério do Mestre, você pode escolher um efeito de maldição alternativo, mas ele não deve ser mais poderoso do que os descritos acima. O Mestre tem a palavra final sobre o efeito de tal maldição.",
     "higher_levels": "Se você conjurar esta magia usando um espaço de magia de 4º nível ou superior, a duração é concentração, até 10 minutos. Se você usar um espaço de magia de 5º nível ou superior, a duração é 8 horas. Se você usar um espaço de magia de 7º nível ou superior, a duração é 24 horas. Se você usar um espaço de magia de 9º nível, a magia dura até ser dissipada. Usar um espaço de magia de 5º nível ou superior concede uma duração que não requer concentração."
   },
+  "bigbys-hand": {
+    "name_pt": "Mão de Bigby",
+    "description": "Você cria uma mão Grande de força translúcida e cintilante em um espaço desocupado que você possa ver dentro do alcance. A mão tem CA 20 e pontos de vida iguais ao seu máximo. Força 26 (+8), Destreza 10 (+0).\n\n***Punho Cerrado.*** A mão golpeia uma criatura a 5 feet. Em um acerto, 4d8 de dano de força.\n\n***Mão Forçada.*** Tenta empurrar uma criatura. Vantagem se Médio ou menor.\n\n***Mão Agarradora.*** Tenta agarrar criatura Enorme ou menor. Pode esmagar por 2d6 + modificador de conjuração.\n\n***Mão Interposta.*** Fornece meia cobertura contra um alvo escolhido.",
+    "higher_levels": "O dano do punho aumenta em 2d8 e da mão agarradora em 2d6 por nível acima do 5º."
+  },
+  "black-tentacles": {
+    "name_pt": "Tentáculos Negros",
+    "description": "Tentáculos retorcidos e negros preenchem um quadrado de 20 feet no chão que você possa ver dentro do alcance. Pela duração, esses tentáculos tornam o chão na área em terreno difícil.\n\nQuando uma criatura entra na área pela primeira vez em um turno ou começa seu turno lá, ela deve ser bem-sucedida em um saving throw de Destreza ou sofrer 3d6 de dano de concussão e ficar contida pelos tentáculos até a magia terminar. Uma criatura que começa seu turno na área e já está contida sofre 3d6 de dano de concussão.\n\nUma criatura contida pode usar sua ação para fazer um teste de Força ou Destreza contra a CD de sua magia para se libertar.",
+    "higher_levels": null
+  },
   "blade-barrier": {
     "name_pt": "Barreira de Lâminas",
     "description": "Você cria uma parede vertical de lâminas giratórias e afiadas feitas de energia mágica. A parede aparece dentro do alcance e dura pela duração. Você pode criar uma parede reta de até 100 feet de comprimento, 20 feet de altura e 5 feet de espessura, ou uma parede circular de até 60 feet de diâmetro, 20 feet de altura e 5 feet de espessura. A parede fornece três quartos de cobertura para criaturas atrás dela, e seu espaço é terreno difícil.\n\nQuando uma criatura entra na área da parede pela primeira vez em um turno ou começa seu turno lá, a criatura deve fazer um teste de resistência de Destreza. Em uma falha, a criatura sofre 6d10 de dano cortante. Em um sucesso, a criatura sofre metade desse dano.",
+    "higher_levels": null
+  },
+  "blade-ward": {
+    "name_pt": "Guarda-Lâmina",
+    "description": "Você estende a mão e traça um sigilo de proteção no ar. Até o final de seu próximo turno, você tem resistência contra dano de concussão, perfurante e cortante causado por ataques com arma.",
     "higher_levels": null
   },
   "bless": {
@@ -123,6 +198,11 @@
     "name_pt": "Praga",
     "description": "Energia necromântica envolve uma criatura à sua escolha que você possa ver dentro do alcance, drenando umidade e vitalidade dela. O alvo deve fazer um teste de resistência de Constituição. O alvo sofre 8d8 de dano necrótico em uma falha, ou metade desse dano em um sucesso. A magia não tem efeito em mortos-vivos ou constructos.\n\nSe você mirar em uma criatura planta ou uma planta mágica, ela faz o teste de resistência com desvantagem, e a magia causa o dano máximo a ela.\n\nSe você mirar em uma planta não mágica que não seja uma criatura, como uma árvore ou arbusto, ela não faz um teste de resistência; ela simplesmente murcha e morre.",
     "higher_levels": "Quando você conjurar esta magia usando um espaço de magia de 5º nível ou superior, o dano aumenta em 1d8 para cada nível de espaço acima do 4º."
+  },
+  "blinding-smite": {
+    "name_pt": "Golpe Cegante",
+    "description": "Na próxima vez que você acertar uma criatura com um ataque corpo a corpo com arma durante a duração da magia, sua arma irradia uma luz ofuscante, e o ataque causa 3d8 extras de dano radiante ao alvo. Além disso, o alvo deve ser bem-sucedido em um saving throw de Constituição ou ficará cego até a magia terminar. Uma criatura cega por essa magia faz outro saving throw de Constituição no final de cada turno. Em um sucesso, ela não está mais cega.",
+    "higher_levels": null
   },
   "blindness-deafness": {
     "name_pt": "Cegueira/Surdez",
@@ -174,10 +254,20 @@
     "description": "Você cria uma mão esquelética fantasmagórica no espaço de uma criatura dentro do alcance. Faça um ataque de magia à distância contra a criatura para assaltá-la com o frio do túmulo. Em um acerto, o alvo sofre 1d8 de dano necrótico, e não pode recuperar pontos de vida até o início do seu próximo turno. Até lá, a mão se agarra ao alvo.\n\nSe você acertar um alvo morto-vivo, ele também tem desvantagem em jogadas de ataque contra você até o final do seu próximo turno.\n\nO dano desta magia aumenta em 1d8 quando você alcança o 5º nível (2d8), 11º nível (3d8) e 17º nível (4d8).",
     "higher_levels": null
   },
+  "chromatic-orb": {
+    "name_pt": "Orbe Cromático",
+    "description": "Você arremessa uma esfera de energia de 4 polegadas de diâmetro em uma criatura que você possa ver dentro do alcance. Você escolhe ácido, frio, fogo, raio, veneno ou trovão como tipo da esfera e faz um ataque de magia à distância contra o alvo. Em um acerto, a criatura sofre 3d8 de dano do tipo escolhido.",
+    "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 2º nível ou superior, o dano aumenta em 1d8 para cada nível de espaço acima do 1º."
+  },
   "circle-of-death": {
     "name_pt": "Círculo da Morte",
     "description": "Uma esfera de energia negativa se propaga em um raio de 60 feet a partir de um ponto dentro do alcance. Cada criatura na área deve realizar um saving throw de Constitution. Um alvo sofre 8d6 de dano necrótico em uma falha, ou metade do dano em um sucesso.",
     "higher_levels": "Quando você conjura essa magia usando um slot de magia de 7º nível ou superior, o dano aumenta em 2d6 para cada nível de slot acima do 6º."
+  },
+  "circle-of-power": {
+    "name_pt": "Círculo de Poder",
+    "description": "Energia divina irradia de você, distorcendo e difundindo energia mágica dentro de 30 feet de você. Até a magia terminar, a esfera se move com você. Cada criatura amigável na área (incluindo você) tem vantagem em saving throws contra magias e outros efeitos mágicos. Além disso, quando uma criatura afetada é bem-sucedida em um saving throw contra uma magia que permite um saving throw para sofrer apenas metade do dano, ela não sofre nenhum dano.",
+    "higher_levels": null
   },
   "clairvoyance": {
     "name_pt": "Clarividência",
@@ -188,6 +278,11 @@
     "name_pt": "Clone",
     "description": "Esta magia cria uma duplicata inerte de uma criatura viva como uma proteção contra a morte. Este clone se forma dentro de um recipiente selado e cresce até o tamanho e maturidade completos após 120 dias; você também pode escolher que o clone seja uma versão mais jovem da mesma criatura. Ele permanece inerte e perdura indefinidamente, desde que seu recipiente permaneça intacto.\n\nA qualquer momento após o clone amadurecer, se a criatura original morrer, sua alma é transferida para o clone, desde que a alma esteja livre e disposta a retornar. O clone é fisicamente idêntico ao original e possui a mesma personalidade, memórias e habilidades, mas nenhum dos equipamentos do original. Os restos físicos da criatura original, se ainda existirem, tornam-se inertes e não podem mais ser restaurados à vida, pois a alma da criatura está em outro lugar.",
     "higher_levels": null
+  },
+  "cloud-of-daggers": {
+    "name_pt": "Nuvem de Adagas",
+    "description": "Você preenche o ar com adagas giratórias em um cubo de 5 feet centrado em um ponto que você escolher dentro do alcance. Uma criatura sofre 4d4 de dano cortante quando entra na área pela primeira vez em um turno ou começa seu turno lá.",
+    "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 3º nível ou superior, o dano aumenta em 2d4 para cada nível de espaço acima do 2º."
   },
   "cloudkill": {
     "name_pt": "Nuvem Mortal",
@@ -212,6 +307,11 @@
   "commune-with-nature": {
     "name_pt": "Comunhão com a Natureza",
     "description": "Você brevemente se torna um com a natureza e obtém conhecimento do território ao redor. Ao ar livre, a magia lhe dá conhecimento da terra em um raio de 3 miles de você. Em cavernas e outros ambientes subterrâneos naturais, o raio é limitado a 300 feet. A magia não funciona onde a natureza foi substituída por construções, como em masmorras e cidades.\n\nVocê instantaneamente obtém conhecimento de até três fatos de sua escolha sobre qualquer um dos seguintes assuntos relacionados à área:\n\n- terreno e corpos d'água\n\n- plantas, minerais, animais ou povos predominantes\n\n- celestiais, feéricos, corruptores, elementais ou mortos-vivos poderosos\n\n- influência de outros planos de existência\n\n- construções\n\nPor exemplo, você poderia determinar a localização de mortos-vivos poderosos na área, a localização das principais fontes de água potável segura e a localização de quaisquer cidades próximas.",
+    "higher_levels": null
+  },
+  "compelled-duel": {
+    "name_pt": "Duelo Compelido",
+    "description": "Você tenta compelir uma criatura a um duelo. Uma criatura de sua escolha que você possa ver dentro do alcance deve fazer um saving throw de Sabedoria. Em uma falha, a criatura é atraída a você, compelida por sua exigência divina. Pela duração, ela tem desvantagem em jogadas de ataque contra criaturas que não sejam você, e deve fazer um saving throw de Sabedoria cada vez que tentar se mover para um espaço a mais de 30 feet de você.\n\nA magia termina se você atacar outra criatura, conjurar uma magia que mire outra criatura hostil, se uma criatura amiga causar dano ao alvo, ou se você terminar seu turno a mais de 30 feet do alvo.",
     "higher_levels": null
   },
   "comprehend-languages": {
@@ -239,6 +339,11 @@
     "description": "Você invoca espíritos feéricos que assumem a forma de bestas e aparecem em espaços desocupados que você possa ver dentro do alcance. Escolha uma das seguintes opções para o que aparece:\n\n- Uma besta de nível de desafio 2 ou inferior\n\n- Duas bestas de nível de desafio 1 ou inferior\n\n- Quatro bestas de nível de desafio 1/2 ou inferior\n\n- Oito bestas de nível de desafio 1/4 ou inferior\n\n- Cada besta também é considerada feérica, e ela desaparece quando cai para 0 pontos de vida ou quando a magia termina.\n\nAs criaturas invocadas são amigáveis a você e seus companheiros. Role iniciativa para as criaturas invocadas como um grupo, que tem seus próprios turnos. Elas obedecem quaisquer comandos verbais que você emitir a elas (sem necessidade de ação sua). Se você não emitir nenhum comando a elas, elas se defendem de criaturas hostis, mas de outra forma não realizam ações.\n\nO Mestre tem as estatísticas das criaturas.",
     "higher_levels": "Quando você conjura esta magia usando certos slots de magia de nível superior, você escolhe uma das opções de invocação acima, e mais criaturas aparecem: o dobro com um slot de 5º nível, o triplo com um slot de 7º nível."
   },
+  "conjure-barrage": {
+    "name_pt": "Convocar Barragem",
+    "description": "Você arremessa uma arma não mágica ou dispara uma peça de munição não mágica no ar para criar um cone de armas idênticas que disparam para a frente e depois desaparecem. Cada criatura em um cone de 60 feet deve ser bem-sucedida em um saving throw de Destreza. Uma criatura sofre 3d8 de dano em uma falha, ou metade em um sucesso. O tipo de dano é o mesmo da arma ou munição usada como componente.",
+    "higher_levels": null
+  },
   "conjure-celestial": {
     "name_pt": "Conjurar Celestial",
     "description": "Você invoca um celestial de nível de desafio 4 ou inferior, que aparece em um espaço desocupado que você possa ver dentro do alcance. O celestial desaparece quando cai para 0 pontos de vida ou quando a magia termina.\n\nO celestial é amigável a você e seus companheiros pela duração. Role iniciativa para o celestial, que tem seus próprios turnos. Ele obedece quaisquer comandos verbais que você emitir a ele (sem necessidade de ação sua), desde que não violem seu alinhamento. Se você não emitir nenhum comando ao celestial, ele se defende de criaturas hostis, mas de outra forma não realiza ações.\n\nO Mestre tem as estatísticas do celestial.",
@@ -258,6 +363,11 @@
     "name_pt": "Conjurar Elementais Menores",
     "description": "Você convoca elementais que aparecem em espaços desocupados que você possa ver dentro do alcance. Você escolhe uma das seguintes opções para o que aparece:\n\n- Um elemental de nível de desafio 2 ou inferior\n\n- Dois elementais de nível de desafio 1 ou inferior\n\n- Quatro elementais de nível de desafio 1/2 ou inferior\n\n- Oito elementais de nível de desafio 1/4 ou inferior.\n\nUm elemental convocado por esta magia desaparece quando cai para 0 pontos de vida ou quando a magia termina.\n\nAs criaturas convocadas são amigáveis com você e seus companheiros. Role iniciativa para as criaturas convocadas como um grupo, que possui seus próprios turnos. Elas obedecem a quaisquer comandos verbais que você emita (sem necessidade de ação sua). Se você não emitir nenhum comando a elas, elas se defendem de criaturas hostis, mas não realizam outras ações.\n\nO Mestre possui as estatísticas das criaturas.",
     "higher_levels": "Quando você conjura esta magia usando certos espaços de magia de nível superior, você escolhe uma das opções de convocação acima, e mais criaturas aparecem: o dobro com um espaço de 6º nível e o triplo com um espaço de 8º nível."
+  },
+  "conjure-volley": {
+    "name_pt": "Chuva de Flechas",
+    "description": "Você dispara uma peça de munição ou arremessa uma arma não mágica no ar e escolhe um ponto dentro do alcance. Centenas de duplicatas caem em uma chuva em um cilindro de 40 feet de raio e 20 feet de altura centrado naquele ponto. Cada criatura no cilindro deve fazer um saving throw de Destreza. Uma criatura sofre 8d8 de dano em uma falha, ou metade em um sucesso. O tipo de dano é o mesmo da munição ou arma usada.",
+    "higher_levels": null
   },
   "conjure-woodland-beings": {
     "name_pt": "Conjurar Seres da Floresta",
@@ -294,6 +404,11 @@
     "description": "Você assume o controle do clima em um raio de 5 milhas de você pela duração. Você deve estar ao ar livre para conjurar esta magia. Mover-se para um lugar onde você não tenha um caminho livre para o céu termina a magia prematuramente.\n\nQuando você conjura a magia, você muda as condições climáticas atuais, que são determinadas pelo Mestre com base no clima e na estação. Você pode mudar a precipitação, a temperatura e o vento. Leva 1d4 x 10 minutos para as novas condições entrarem em efeito. Quando isso acontecer, você pode mudar as condições novamente. Quando a magia termina, o clima gradualmente retorna ao normal.\n\nQuando você muda as condições climáticas, encontre a condição atual nas tabelas a seguir e mude seu estágio em um, para cima ou para baixo. Ao mudar o vento, você pode mudar sua direção.\n\n##### Precipitação\n\n| Estágio | Condição |\n\n|---|---|\n\n| 1 | Céu limpo |\n\n| 2 | Nuvens leves |\n\n| 3 | Nublado ou neblina rasteira |\n\n| 4 | Chuva, granizo ou neve |\n\n| 5 | Chuva torrencial, granizo forte ou nevasca |\n\n##### Temperatura\n\n| Estágio | Condição |\n\n|---|---|\n\n| 1 | Calor insuportável |\n\n| 2 | Quente |\n\n| 3 | Morno |\n\n| 4 | Fresco |\n\n| 5 | Frio |\n\n| 6 | Frio ártico |\n\n##### Vento\n\n| Estágio | Condição |\n\n|---|---|\n\n| 1 | Calmaria |\n\n| 2 | Vento moderado |\n\n| 3 | Vento forte |\n\n| 4 | Vendaval |\n\n| 5 | Tempestade |",
     "higher_levels": null
   },
+  "cordon-of-arrows": {
+    "name_pt": "Cordão de Flechas",
+    "description": "Você planta quatro peças de munição não mágica no chão dentro do alcance e coloca uma magia nelas para proteger uma área. Até a magia terminar, sempre que outra criatura que não você chegar a 30 feet da munição pela primeira vez em um turno ou terminar seu turno lá, uma peça de munição voa para atingi-la. A criatura deve ser bem-sucedida em um saving throw de Destreza ou sofrer 1d6 de dano perfurante. A peça de munição é destruída. A magia termina quando nenhuma munição restar.",
+    "higher_levels": "A quantidade de munição que pode ser afetada aumenta em duas para cada nível acima do 2º."
+  },
   "counterspell": {
     "name_pt": "Contramágica",
     "description": "Você tenta interromper uma criatura no processo de conjurar uma magia. Se a criatura estiver conjurando uma magia de 3º nível ou inferior, sua magia falha e não tem efeito. Se estiver conjurando uma magia de 4º nível ou superior, faça um teste de habilidade usando sua habilidade de conjuração. A CD é igual a 10 + o nível da magia. Em um sucesso, a magia da criatura falha e não tem efeito.",
@@ -318,6 +433,16 @@
     "name_pt": "Criação",
     "description": "Você puxa fios de matéria sombria do Shadowfell para criar um objeto inanimado de matéria vegetal dentro do alcance: tecidos, corda, madeira ou algo similar. Você também pode usar essa magia para criar objetos minerais como pedra, cristal ou metal. O objeto criado não pode ser maior que um cubo de 5 feet, e o objeto deve ter uma forma e material que você já tenha visto antes.\n\nA duração depende do material do objeto. Se o objeto for composto de múltiplos materiais, use a menor duração.\n\n| Material | Duração |\n\n|---|---|\n\n| Matéria vegetal | 1 dia |\n\n| Pedra ou cristal | 12 horas |\n\n| Metais preciosos | 1 hora |\n\n| Gemas | 10 minutos |\n\n| Adamantine ou mithral | 1 minuto |\n\nUsar qualquer material criado por essa magia como componente material de outra magia faz com que essa magia falhe.",
     "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 6° nível ou superior, o cubo aumenta em 5 feet para cada nível de espaço acima do 5°."
+  },
+  "crown-of-madness": {
+    "name_pt": "Coroa da Loucura",
+    "description": "Uma criatura humanoide de sua escolha que você possa ver dentro do alcance deve ser bem-sucedida em um saving throw de Sabedoria ou ficará enfeitiçada por você pela duração. Uma coroa retorcida de espinhos de ferro aparece na cabeça do alvo.\n\nA criatura enfeitiçada deve usar sua ação antes de se mover em cada turno para fazer um ataque corpo a corpo contra uma criatura que você designar mentalmente. Se você não designar nenhuma criatura, o alvo age normalmente.\n\nNos seus turnos subsequentes, você deve usar sua ação para manter controle, ou a magia termina. O alvo pode fazer um saving throw de Sabedoria no final de cada turno. Em um sucesso, a magia termina.",
+    "higher_levels": null
+  },
+  "crusaders-mantle": {
+    "name_pt": "Manto do Cruzado",
+    "description": "Poder sagrado irradia de você em uma aura de 30 feet de raio, despertando ousadia em criaturas amigáveis. Até a magia terminar, a aura se move com você. Cada criatura não hostil na aura (incluindo você) causa 1d4 extras de dano radiante quando acerta com um ataque com arma.",
+    "higher_levels": null
   },
   "cure-wounds": {
     "name_pt": "Curar Ferimentos",
@@ -357,6 +482,11 @@
   "demiplane": {
     "name_pt": "Semiplano",
     "description": "Você cria uma porta sombria em uma superfície sólida e plana que você possa ver dentro do alcance. A porta é grande o suficiente para permitir que criaturas Médias passem sem impedimento. Quando aberta, a porta leva a um semiplano que aparenta ser uma sala vazia de 30 feet em cada dimensão, feita de madeira ou pedra. Quando a magia termina, a porta desaparece, e quaisquer criaturas ou objetos dentro do semiplano permanecem presos lá, pois a porta também desaparece do outro lado.\n\nCada vez que você conjura esta magia, você pode criar um novo semiplano ou fazer a porta sombria se conectar a um semiplano que você criou com uma conjuração anterior desta magia. Além disso, se você conhece a natureza e o conteúdo de um semiplano criado por uma conjuração desta magia por outra criatura, você pode fazer a porta sombria se conectar ao semiplano dela.",
+    "higher_levels": null
+  },
+  "destructive-wave": {
+    "name_pt": "Onda Destruidora",
+    "description": "Você golpeia o chão, criando uma explosão de energia divina que se propaga de você. Cada criatura que você escolher a 30 feet de você deve ser bem-sucedida em um saving throw de Constituição ou sofrer 5d6 de dano de trovão, 5d6 de dano radiante ou necrótico (sua escolha) e ser derrubada. Uma criatura bem-sucedida sofre metade do dano e não é derrubada.",
     "higher_levels": null
   },
   "detect-evil-and-good": {
@@ -404,6 +534,11 @@
     "description": "Escolha uma criatura, objeto ou efeito mágico dentro do alcance. Qualquer magia de 3º nível ou inferior no alvo é encerrada. Para cada magia de 4º nível ou superior no alvo, faça um teste de habilidade usando sua habilidade de conjuração. A DC é igual a 10 + o nível da magia. Em um teste bem-sucedido, a magia é encerrada.",
     "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 4º nível ou superior, você automaticamente encerra os efeitos de uma magia no alvo se o nível da magia for igual ou inferior ao nível do espaço de magia utilizado."
   },
+  "dissonant-whispers": {
+    "name_pt": "Sussurros Dissonantes",
+    "description": "Você sussurra uma melodia discordante que apenas uma criatura de sua escolha dentro do alcance pode ouvir, atormentando-a com uma dor terrível. O alvo deve fazer um saving throw de Sabedoria. Em uma falha, ele sofre 3d6 de dano psíquico e deve imediatamente usar sua reação para se mover o mais longe possível de você. Em um sucesso, o alvo sofre metade do dano e não precisa se mover. Uma criatura surda é automaticamente bem-sucedida.",
+    "higher_levels": "O dano aumenta em 1d6 para cada nível de espaço acima do 1º."
+  },
   "divination": {
     "name_pt": "Divinação",
     "description": "Sua magia e uma oferenda colocam você em contato com um deus ou os servos de um deus. Você faz uma única pergunta referente a um objetivo, evento ou atividade específica que ocorrerá dentro de 7 dias. O Mestre oferece uma resposta verdadeira. A resposta pode ser uma frase curta, uma rima enigmática ou um presságio.\n\nA magia não leva em consideração quaisquer circunstâncias possíveis que possam alterar o resultado, como a conjuração de magias adicionais ou a perda ou ganho de um companheiro.\n\nSe você conjurar a magia duas ou mais vezes antes de terminar seu próximo descanso longo, há uma chance cumulativa de 25 por cento para cada conjuração após a primeira de que você receba uma leitura aleatória. O Mestre faz essa rolagem em segredo.",
@@ -434,6 +569,11 @@
     "description": "Você tenta seduzir um humanoide que pode ver dentro do alcance. Ele deve ser bem-sucedido em um teste de resistência de Sabedoria ou ficará enfeitiçado por você pela duração. Se você ou criaturas amigáveis a você estiverem lutando contra ele, ele tem vantagem no teste de resistência.\n\nEnquanto o alvo estiver enfeitiçado, você tem um vínculo telepático com ele, desde que ambos estejam no mesmo plano de existência. Você pode usar esse vínculo telepático para emitir comandos à criatura enquanto estiver consciente (sem precisar de ação), e ela fará o melhor para obedecê-los. Você pode especificar um curso de ação simples e geral, como \"Ataque aquela criatura\", \"Corra até lá\" ou \"Pegue aquele objeto\". Se a criatura completar a ordem e não receber mais direções suas, ela se defende e se preserva da melhor forma possível.\n\nVocê pode usar sua ação para assumir controle total e preciso do alvo. Até o final do seu próximo turno, a criatura realiza apenas as ações que você escolher e não faz nada que você não permita. Durante esse tempo, você também pode fazer a criatura usar uma reação, mas isso requer que você use sua própria reação também.\n\nCada vez que o alvo sofrer dano, ele faz um novo teste de resistência de Sabedoria contra a magia. Se o teste de resistência for bem-sucedido, a magia termina.",
     "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 6º nível, a duração é concentração, até 10 minutos. Quando você usa um espaço de magia de 7º nível, a duração é concentração, até 1 hora. Quando você usa um espaço de magia de 8º nível ou superior, a duração é concentração, até 8 horas."
   },
+  "drawmijs-instant-summons": {
+    "name_pt": "Invocação Instantânea de Drawmij",
+    "description": "Você toca um objeto pesando 10 pounds ou menos. A magia deixa uma marca invisível em sua superfície e inscreve o nome do item na safira usada como componente material.\n\nA qualquer momento depois, você pode usar sua ação para falar o nome do item e esmagar a safira. O item aparece instantaneamente em sua mão independente de distâncias físicas ou planares.\n\nSe outra criatura estiver segurando o item, esmagar a safira não transporta o item, mas você aprende quem é a criatura e onde ela está naquele momento.",
+    "higher_levels": null
+  },
   "dream": {
     "name_pt": "Sonho",
     "description": "Essa magia molda os sonhos de uma criatura. Escolha uma criatura conhecida por você como o alvo dessa magia. O alvo deve estar no mesmo plano de existência que você. Criaturas que não dormem, como elfos, não podem ser contatadas por essa magia. Você, ou uma criatura voluntária que você toque, entra em um estado de transe, atuando como mensageiro.\n\nEnquanto estiver no transe, o mensageiro está ciente de seus arredores, mas não pode realizar ações ou se mover.\n\nSe o alvo estiver dormindo, o mensageiro aparece nos sonhos do alvo e pode conversar com ele enquanto permanecer adormecido, pela duração da magia. O mensageiro também pode moldar o ambiente do sonho, criando paisagens, objetos e outras imagens. O mensageiro pode emergir do transe a qualquer momento, encerrando o efeito da magia antecipadamente. O alvo se lembra do sonho perfeitamente ao acordar. Se o alvo estiver acordado quando você conjurar a magia, o mensageiro sabe disso e pode encerrar o transe (e a magia) ou esperar o alvo adormecer, momento em que o mensageiro aparece nos sonhos do alvo.\n\nVocê pode fazer o mensageiro parecer monstruoso e aterrorizante para o alvo. Se fizer isso, o mensageiro pode entregar uma mensagem de no máximo dez palavras e então o alvo deve fazer um teste de resistência de Sabedoria. Em uma falha, ecos da monstruosidade fantasmagórica geram um pesadelo que dura pela duração do sono do alvo e impede que o alvo obtenha qualquer benefício daquele descanso. Além disso, quando o alvo acordar, ele sofre 3d6 de dano psíquico.\n\nSe você tiver uma parte do corpo, mecha de cabelo, pedaço de unha ou porção similar do corpo do alvo, o alvo faz seu teste de resistência com desvantagem.",
@@ -454,6 +594,11 @@
     "description": "Um feixe de energia crepitante dispara em direção a uma criatura dentro do alcance. Faça um ataque à distância com magia contra o alvo. Em um acerto, o alvo sofre 1d10 de dano de força. A magia cria mais de um feixe quando você atinge níveis mais altos: dois feixes no 5º nível, três feixes no 11º nível e quatro feixes no 17º nível. Você pode direcionar os feixes ao mesmo alvo ou a alvos diferentes. Faça uma jogada de ataque separada para cada feixe.",
     "higher_levels": null
   },
+  "elemental-weapon": {
+    "name_pt": "Arma Elemental",
+    "description": "Uma arma não mágica que você toca se torna uma arma mágica. Escolha um dos seguintes tipos de dano: ácido, frio, fogo, raio ou trovão. Pela duração, a arma tem um bônus de +1 nas jogadas de ataque e causa 1d4 extras de dano do tipo escolhido quando acerta.",
+    "higher_levels": "No 5º ou 6º nível, o bônus é +2 e o dano extra é 2d4. No 7º nível ou superior, o bônus é +3 e o dano extra é 3d4."
+  },
   "enhance-ability": {
     "name_pt": "Aprimorar Habilidade",
     "description": "Você toca uma criatura e concede a ela um aprimoramento mágico. Escolha um dos seguintes efeitos; o alvo recebe esse efeito até a magia terminar.\n\n***Resistência do Urso.*** O alvo tem vantagem em testes de Constituição. Ele também recebe 2d6 pontos de vida temporários, que são perdidos quando a magia termina.\n\n***Força do Touro.*** O alvo tem vantagem em testes de Força, e sua capacidade de carga dobra.\n\n***Graça do Gato.*** O alvo tem vantagem em testes de Destreza. Ele também não sofre dano por quedas de 20 feet ou menos, desde que não esteja incapacitado.\n\n***Esplendor da Águia.*** O alvo tem vantagem em testes de Carisma.\n\n***Astúcia da Raposa.*** O alvo tem vantagem em testes de Inteligência.\n\n***Sabedoria da Coruja.*** O alvo tem vantagem em testes de Sabedoria.",
@@ -463,6 +608,11 @@
     "name_pt": "Aumentar/Reduzir",
     "description": "Você faz com que uma criatura ou objeto que você possa ver dentro do alcance cresça ou diminua pela duração. Escolha uma criatura ou um objeto que não esteja sendo vestido nem carregado. Se o alvo não for voluntário, ele pode fazer um teste de resistência de Constituição. Em um sucesso, a magia não tem efeito.\n\nSe o alvo for uma criatura, tudo que ela estiver vestindo e carregando muda de tamanho junto. Qualquer item largado por uma criatura afetada retorna ao tamanho normal imediatamente.\n\n***Aumentar.*** O tamanho do alvo dobra em todas as dimensões, e seu peso é multiplicado por oito. Esse crescimento aumenta seu tamanho em uma categoria — de Médio para Grande, por exemplo. Se não houver espaço suficiente para o alvo dobrar de tamanho, a criatura ou objeto atinge o tamanho máximo possível no espaço disponível. Até a magia terminar, o alvo também tem vantagem em testes de Força e testes de resistência de Força. As armas do alvo também crescem para corresponder ao seu novo tamanho. Enquanto essas armas estiverem aumentadas, os ataques do alvo com elas causam 1d4 de dano extra.\n\n***Reduzir.*** O tamanho do alvo é reduzido pela metade em todas as dimensões, e seu peso é reduzido a um oitavo do normal. Essa redução diminui seu tamanho em uma categoria — de Médio para Pequeno, por exemplo. Até a magia terminar, o alvo também tem desvantagem em testes de Força e testes de resistência de Força. As armas do alvo também encolhem para corresponder ao seu novo tamanho. Enquanto essas armas estiverem reduzidas, os ataques do alvo com elas causam 1d4 a menos de dano (isso não pode reduzir o dano abaixo de 1).",
     "higher_levels": null
+  },
+  "ensnaring-strike": {
+    "name_pt": "Golpe Enredante",
+    "description": "Na próxima vez que você acertar uma criatura com um ataque com arma, uma massa de vinhas espinhosas aparece no ponto de impacto, e o alvo deve ser bem-sucedido em um saving throw de Força ou ficará contido pelas vinhas até a magia terminar. Uma criatura Grande ou maior tem vantagem nesse saving throw.\n\nEnquanto contida, o alvo sofre 1d6 de dano perfurante no início de cada turno. Uma criatura contida pode usar sua ação para fazer um teste de Força contra a CD de sua magia para se libertar.",
+    "higher_levels": "O dano aumenta em 1d6 para cada nível acima do 1º."
   },
   "entangle": {
     "name_pt": "Enredar",
@@ -478,6 +628,11 @@
     "name_pt": "Forma Etérea",
     "description": "Você entra nas regiões fronteiriças do Plano Etéreo, na área onde ele se sobrepõe ao seu plano atual. Você permanece no Etéreo Fronteiriço pela duração ou até usar sua ação para dissipar a magia. Durante esse tempo, você pode se mover em qualquer direção. Se você se mover para cima ou para baixo, cada foot de movimento custa um foot extra. Você pode ver e ouvir o plano de onde veio, mas tudo lá parece cinza, e você não consegue ver nada a mais de 60 feet de distância.\n\nEnquanto estiver no Plano Etéreo, você só pode afetar e ser afetado por outras criaturas naquele plano. Criaturas que não estão no Plano Etéreo não podem percebê-lo e não podem interagir com você, a menos que uma habilidade especial ou magia lhes tenha concedido essa capacidade.\n\nVocê ignora todos os objetos e efeitos que não estão no Plano Etéreo, permitindo que você se mova através de objetos que percebe no plano de onde veio.\n\nQuando a magia termina, você retorna imediatamente ao plano de onde veio, no local que ocupa atualmente. Se você ocupar o mesmo espaço que um objeto sólido ou criatura quando isso acontecer, você é imediatamente empurrado para o espaço desocupado mais próximo que possa ocupar e sofre dano de força igual ao dobro do número de feet que foi movido.\n\nEsta magia não tem efeito se você a conjurar enquanto estiver no Plano Etéreo ou em um plano que não faz fronteira com ele, como um dos Planos Exteriores.",
     "higher_levels": "Quando você conjura esta magia usando um espaço de magia de 8º nível ou superior, você pode afetar até três criaturas voluntárias (incluindo você) para cada nível de espaço acima do 7º. As criaturas devem estar a até 10 feet de você quando você conjurar a magia."
+  },
+  "evards-black-tentacles": {
+    "name_pt": "Tentáculos Negros de Evard",
+    "description": "Tentáculos retorcidos e negros preenchem um quadrado de 20 feet no chão dentro do alcance. Pela duração, tornam o chão na área em terreno difícil.\n\nQuando uma criatura entra na área pela primeira vez em um turno ou começa seu turno lá, deve ser bem-sucedida em um saving throw de Destreza ou sofrer 3d6 de dano de concussão e ficar contida. Uma criatura já contida sofre 3d6 de dano de concussão. Pode usar sua ação para fazer um teste de Força ou Destreza contra a CD de sua magia para se libertar.",
+    "higher_levels": null
   },
   "expeditious-retreat": {
     "name_pt": "Retirada Acelerada",
@@ -499,6 +654,11 @@
     "description": "Cada objeto em um cubo de 20 feet dentro do alcance é delineado em luz azul, verde ou violeta (à sua escolha). Qualquer criatura na área quando a magia é conjurada também é delineada em luz se falhar em um teste de resistência de Destreza. Pela duração, objetos e criaturas afetadas emanam luz fraca em um raio de 10 feet.\n\nQualquer jogada de ataque contra uma criatura ou objeto afetado tem vantagem se o atacante puder vê-lo, e a criatura ou objeto afetado não pode se beneficiar de estar invisível.",
     "higher_levels": null
   },
+  "faithful-hound": {
+    "name_pt": "Cão Fiel",
+    "description": "Você conjura um cão de guarda fantasma em um espaço desocupado que você possa ver dentro do alcance. O cão é invisível para todas as criaturas exceto você e não pode ser ferido. Quando uma criatura Pequena ou maior chega a 30 feet dele sem falar a senha, o cão começa a latir alto. O cão vê criaturas invisíveis e pode ver o Plano Etéreo. Ele ignora ilusões.\n\nNo início de cada um de seus turnos, o cão tenta morder uma criatura hostil a 5 feet dele. O bônus de ataque é igual ao seu modificador de habilidade de conjuração + seu bônus de proficiência. Em um acerto, 4d8 de dano perfurante.",
+    "higher_levels": null
+  },
   "false-life": {
     "name_pt": "Vida Falsa",
     "description": "Fortalecendo-se com um fac-símile necromântico de vida, você ganha 1d4 + 4 pontos de vida temporários pela duração.",
@@ -517,6 +677,11 @@
   "feeblemind": {
     "name_pt": "Enfraquecer Intelecto",
     "description": "Você atinge a mente de uma criatura que você possa ver dentro do alcance, tentando despedaçar seu intelecto e personalidade. O alvo sofre 4d6 de dano psíquico e deve fazer um teste de resistência de Inteligência.\n\nEm uma falha, os valores de Inteligência e Carisma da criatura se tornam 1. A criatura não pode conjurar magias, ativar itens mágicos, compreender linguagem ou se comunicar de qualquer forma inteligível. A criatura pode, no entanto, identificar seus amigos, segui-los e até protegê-los.\n\nAo final de cada 30 dias, a criatura pode repetir seu teste de resistência contra essa magia. Se for bem-sucedida no teste de resistência, a magia termina.\n\nA magia também pode ser encerrada por greater restoration, heal ou wish.",
+    "higher_levels": null
+  },
+  "feign-death": {
+    "name_pt": "Fingir Morte",
+    "description": "Você toca uma criatura voluntária e a coloca em um estado catalético indistinguível da morte.\n\nPela duração, o alvo parece morto para toda inspeção externa e para magias usadas para determinar seu status. O alvo está cego e incapacitado, e sua velocidade cai para 0. O alvo tem resistência a todos os tipos de dano exceto psíquico. Se o alvo estiver doente ou envenenado, a doença e o veneno não têm efeito até a magia terminar.",
     "higher_levels": null
   },
   "find-familiar": {
@@ -584,6 +749,11 @@
     "description": "Você tenta transformar uma criatura que possa ver dentro do alcance em pedra. Se o corpo do alvo for feito de carne, a criatura deve fazer um saving throw de Constituição. Em uma falha, ela fica restringida conforme sua carne começa a endurecer. Em um sucesso, a criatura não é afetada.\n\nUma criatura restringida por essa magia deve fazer outro saving throw de Constituição no final de cada um de seus turnos. Se ela obtiver sucesso contra essa magia três vezes, a magia termina. Se ela falhar três vezes, é transformada em pedra e fica sujeita à condição petrificada pela duração. Os sucessos e falhas não precisam ser consecutivos; mantenha o registro de ambos até que o alvo acumule três do mesmo tipo.\n\nSe a criatura for fisicamente quebrada enquanto petrificada, ela sofre deformidades semelhantes caso reverta ao seu estado original.\n\nSe você mantiver sua concentração nessa magia pela duração total possível, a criatura é transformada em pedra até que o efeito seja removido.",
     "higher_levels": null
   },
+  "floating-disk": {
+    "name_pt": "Disco Flutuante",
+    "description": "Essa magia cria um plano de força circular e horizontal, de 3 feet de diâmetro e 1 polegada de espessura, que flutua 3 feet acima do chão. O disco permanece pela duração e pode suportar até 500 pounds. Se mais peso for colocado nele, a magia termina.\n\nO disco é imóvel enquanto você estiver a 20 feet dele. Se você se mover a mais de 20 feet, o disco o segue. Ele pode se mover por terreno irregular, escadas e similares, mas não pode cruzar uma mudança de elevação de 10 feet ou mais. Se você se mover a mais de 100 feet do disco, a magia termina.",
+    "higher_levels": null
+  },
   "fly": {
     "name_pt": "Voar",
     "description": "Você toca uma criatura voluntária. O alvo ganha deslocamento de voo de 60 feet pela duração. Quando a magia termina, o alvo cai se ainda estiver no ar, a menos que consiga interromper a queda.",
@@ -612,6 +782,16 @@
   "freedom-of-movement": {
     "name_pt": "Liberdade de Movimento",
     "description": "Você toca uma criatura voluntária. Pela duração, o movimento do alvo não é afetado por terreno difícil, e magias e outros efeitos mágicos não podem reduzir o deslocamento do alvo nem fazer com que o alvo fique paralisado ou contido.\n\nO alvo também pode gastar 5 feet de movimento para escapar automaticamente de restrições não mágicas, como algemas ou uma criatura que o tenha agarrado. Por fim, estar submerso não impõe penalidades ao movimento ou ataques do alvo.",
+    "higher_levels": null
+  },
+  "freezing-sphere": {
+    "name_pt": "Esfera Congelante",
+    "description": "Um globo frígido de energia gelada dispara de suas pontas dos dedos para um ponto dentro do alcance, onde explode em uma esfera de 60 feet de raio. Cada criatura na área deve fazer um saving throw de Constituição. Em uma falha, 10d6 de dano de frio. Em um sucesso, metade do dano.\n\nSe o globo atingir um corpo de água, ele congela o líquido a uma profundidade de 6 polegadas em 30 feet quadrados. Criaturas nadando ficam presas no gelo.\n\nVocê pode optar por não disparar o globo, mantendo-o em sua mão. A qualquer momento, pode arremessá-lo (alcance de 40 feet). Ele se estilhaça no impacto com o mesmo efeito.",
+    "higher_levels": "O dano aumenta em 1d6 para cada nível de espaço acima do 6º."
+  },
+  "friends": {
+    "name_pt": "Amigos",
+    "description": "Pela duração, você tem vantagem em todos os testes de Carisma direcionados a uma criatura de sua escolha que não seja hostil a você. Quando a magia termina, a criatura percebe que você usou magia para influenciar seu humor e se torna hostil a você. Uma criatura propensa à violência pode atacar você. Outra pode buscar retribuição de outras formas, dependendo da natureza de sua interação.",
     "higher_levels": null
   },
   "gaseous-form": {
@@ -659,6 +839,11 @@
     "description": "Até dez frutas aparecem em sua mão e são imbuídas com magia pela duração. Uma criatura pode usar sua ação para comer uma fruta. Comer uma fruta restaura 1 ponto de vida, e a fruta fornece nutrição suficiente para sustentar uma criatura por um dia.\n\nAs frutas perdem sua potência se não forem consumidas dentro de 24 horas após a conjuração desta magia.",
     "higher_levels": null
   },
+  "grasping-vine": {
+    "name_pt": "Trepadeira Agarradora",
+    "description": "Você conjura uma vinha que brota do chão em um espaço desocupado dentro do alcance. Quando você conjura essa magia, pode direcionar a vinha para chicotear uma criatura a 30 feet dela. Essa criatura deve ser bem-sucedida em um saving throw de Destreza ou será puxada 20 feet diretamente em direção à vinha.\n\nAté a magia terminar, você pode direcionar a vinha como ação bônus em cada um de seus turnos.",
+    "higher_levels": null
+  },
   "grease": {
     "name_pt": "Gordura",
     "description": "Gordura escorregadia cobre o chão em um quadrado de 10 feet centrado em um ponto dentro do alcance e o transforma em terreno difícil pela duração.\n\nQuando a gordura aparece, cada criatura em pé na área deve ser bem-sucedida em um teste de resistência de Destreza ou cair no chão. Uma criatura que entrar na área ou terminar seu turno lá também deve ser bem-sucedida em um teste de resistência de Destreza ou cair no chão.",
@@ -698,6 +883,11 @@
     "name_pt": "Rajada de Vento",
     "description": "Uma linha de vento forte com 60 feet de comprimento e 10 feet de largura sopra de você em uma direção de sua escolha pela duração da magia. Cada criatura que iniciar seu turno na linha deve ser bem-sucedida em um teste de resistência de Força ou ser empurrada 15 feet para longe de você em uma direção seguindo a linha.\n\nQualquer criatura na linha deve gastar 2 feet de movimento para cada 1 foot que se mover ao se aproximar de você.\n\nA rajada dispersa gás ou vapor, e apaga velas, tochas e chamas desprotegidas similares na área. Ela faz chamas protegidas, como as de lanternas, dançarem descontroladamente e tem 50 por cento de chance de apagá-las.\n\nComo uma ação bônus em cada um de seus turnos antes da magia terminar, você pode mudar a direção na qual a linha sopra de você.",
     "higher_levels": null
+  },
+  "hail-of-thorns": {
+    "name_pt": "Chuva de Espinhos",
+    "description": "Na próxima vez que você acertar uma criatura com um ataque com arma à distância antes da magia terminar, essa magia cria uma chuva de espinhos que brotam de sua munição. Além do efeito normal do ataque, o alvo e cada criatura a 5 feet dele devem fazer um saving throw de Destreza. Uma criatura sofre 1d10 de dano perfurante em uma falha, ou metade em um sucesso.",
+    "higher_levels": "O dano aumenta em 1d10 para cada nível acima do 1º (máximo 6d10)."
   },
   "hallow": {
     "name_pt": "Consagrar",
@@ -749,6 +939,16 @@
     "description": "Uma criatura voluntária que você toca é imbuída de bravura. Até a magia acabar, a criatura é imune à condição amedrontado e ganha pontos de vida temporários iguais ao seu modificador de habilidade de conjuração no início de cada um de seus turnos. Quando a magia termina, o alvo perde quaisquer pontos de vida temporários restantes desta magia.",
     "higher_levels": null
   },
+  "hex": {
+    "name_pt": "Maldição",
+    "description": "Você coloca uma maldição em uma criatura que você possa ver dentro do alcance. Até a magia terminar, você causa 1d6 extras de dano necrótico ao alvo sempre que o acertar com um ataque. Além disso, escolha uma habilidade quando conjurar a magia. O alvo tem desvantagem em testes com a habilidade escolhida.\n\nSe o alvo cair a 0 pontos de vida antes da magia terminar, você pode usar uma ação bônus em um turno subsequente para amaldiçoar uma nova criatura.",
+    "higher_levels": "No 3º ou 4º nível, concentração por até 8 horas. No 5º nível ou superior, até 24 horas."
+  },
+  "hideous-laughter": {
+    "name_pt": "Risada Terrível",
+    "description": "Uma criatura de sua escolha que você possa ver dentro do alcance percebe tudo como hilariantemente engraçado e cai em ataques de riso. O alvo deve ser bem-sucedido em um saving throw de Sabedoria ou cai no chão, ficando incapacitado e incapaz de se levantar pela duração. Uma criatura com Inteligência 4 ou menos não é afetada.\n\nNo final de cada turno, e cada vez que sofre dano, o alvo pode fazer outro saving throw de Sabedoria. Vantagem se provocado por dano. Em um sucesso, a magia termina.",
+    "higher_levels": null
+  },
   "hold-monster": {
     "name_pt": "Imobilizar Monstro",
     "description": "Escolha uma criatura que você possa ver e alcançar. O alvo deve realizar um teste de resistência de Sabedoria ou ficará paralisado pela duração da magia. Esta magia não tem efeito contra mortos-vivos. No final de cada rodada, o alvo pode realizar um novo teste de resistência de Sabedoria. Se for bem-sucedido, a magia termina para a criatura.",
@@ -762,6 +962,11 @@
   "holy-aura": {
     "name_pt": "Aura Sagrada",
     "description": "Luz divina emana de você e se condensa em uma radiância suave em um raio de 30 feet ao seu redor. Criaturas à sua escolha nesse raio quando você conjura esta magia emitem luz fraca em um raio de 5 feet e têm vantagem em todos os testes de resistência, e outras criaturas têm desvantagem em jogadas de ataque contra elas até a magia terminar. Além disso, quando um corruptor ou morto-vivo acerta uma criatura afetada com um ataque corpo a corpo, a aura brilha com luz intensa. O atacante deve ser bem-sucedido em um teste de resistência de Constituição ou ficará cego até a magia terminar.",
+    "higher_levels": null
+  },
+  "hunger-of-hadar": {
+    "name_pt": "Fome de Hadar",
+    "description": "Você abre um portal para o vazio escuro entre as estrelas. Uma esfera de escuridão de 20 feet de raio aparece centrada em um ponto dentro do alcance pela duração. A esfera é escuridão total — nenhuma luz pode iluminá-la, e criaturas totalmente dentro ficam cegas.\n\nO vazio cria terreno difícil. Qualquer criatura que comece seu turno na área sofre 2d6 de dano de frio. Qualquer criatura que termine seu turno na área deve fazer um saving throw de Destreza ou sofrer 2d6 de dano ácido.",
     "higher_levels": null
   },
   "hunters-mark": {
@@ -809,10 +1014,20 @@
     "description": "Um enxame de gafanhotos vorazes preenche uma esfera de 20 feet de raio centrada em um ponto à sua escolha dentro do alcance. A esfera se espalha ao redor de quinas. A esfera permanece pela duração, e sua área fica levemente obscurecida. A área da esfera é terreno difícil.\n\nQuando a área surge, cada criatura nela deve fazer um saving throw de Constituição. Uma criatura sofre 4d10 de dano perfurante em uma falha, ou metade desse dano em um sucesso. Uma criatura também deve fazer esse saving throw quando entra na área da magia pela primeira vez em um turno ou termina seu turno lá.",
     "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 6º nível ou superior, o dano aumenta em 1d10 para cada nível do espaço acima do 5º."
   },
+  "instant-summons": {
+    "name_pt": "Invocação Instantânea",
+    "description": "Você toca um objeto pesando 10 pounds ou menos. A magia deixa uma marca invisível em sua superfície e inscreve o nome do item na safira usada como componente material.\n\nA qualquer momento depois, você pode usar sua ação para falar o nome do item e esmagar a safira. O item aparece instantaneamente em sua mão independente de distâncias físicas ou planares.\n\nSe outra criatura estiver segurando o item, esmagar a safira não transporta o item, mas você aprende quem é a criatura e onde ela está. Dissipar magia aplicado na safira encerra o efeito.",
+    "higher_levels": null
+  },
   "invisibility": {
     "name_pt": "Invisibilidade",
     "description": "Uma criatura que você toca se torna invisível até a magia acabar. Qualquer coisa que o alvo esteja vestindo ou carregando fica invisível enquanto estiver com o alvo. A magia termina para um alvo que atacar ou conjurar uma magia.",
     "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 3º nível ou superior, você pode escolher uma criatura adicional como alvo para cada nível do espaço acima do 2º."
+  },
+  "irresistible-dance": {
+    "name_pt": "Dança Irresistível",
+    "description": "Escolha uma criatura que você possa ver dentro do alcance. O alvo começa uma dança cômica no lugar: arrastando os pés, sapateando e cabrioleando pela duração. Criaturas que não podem ser enfeitiçadas são imunes.\n\nA criatura dançando deve usar todo seu movimento para dançar sem sair de seu espaço e tem desvantagem em saving throws de Destreza e jogadas de ataque. Outras criaturas têm vantagem em jogadas de ataque contra ela. Como uma ação, a criatura faz um saving throw de Sabedoria para retomar o controle. Em um sucesso, a magia termina.",
+    "higher_levels": null
   },
   "jump": {
     "name_pt": "Salto",
@@ -829,6 +1044,16 @@
     "description": "Nomeie ou descreva uma pessoa, lugar ou objeto. A magia traz à sua mente um breve resumo do conhecimento significativo sobre aquilo que você nomeou. O conhecimento pode consistir em contos atuais, histórias esquecidas ou até mesmo segredos que nunca foram amplamente conhecidos. Se aquilo que você nomeou não possui importância lendária, você não obtém nenhuma informação. Quanto mais informação você já tiver sobre o assunto, mais precisa e detalhada será a informação que você recebe.\n\nA informação que você aprende é precisa, mas pode estar envolta em linguagem figurativa. Por exemplo, se você tiver um misterioso machado mágico em mãos, a magia pode revelar esta informação: \"Ai do malfeitor cuja mão toca o machado, pois até mesmo o cabo corta a mão dos perversos. Apenas um verdadeiro Filho da Pedra, amante e amado de Moradin, pode despertar os verdadeiros poderes do machado, e apenas com a palavra sagrada *Rudnogg* nos lábios.\"",
     "higher_levels": null
   },
+  "leomunds-secret-chest": {
+    "name_pt": "Baú Secreto de Leomund",
+    "description": "Você esconde um baú, e todo seu conteúdo, no Plano Etéreo. O baú pode conter até 12 cubic feet de material não vivo.\n\nEnquanto o baú permanece no Plano Etéreo, você pode usar uma ação e tocar a réplica para trazê-lo de volta. Você pode enviá-lo de volta usando uma ação e tocando ambos.\n\nApós 60 dias, há uma chance cumulativa de 5% por dia de que o efeito da magia termine. Se terminar e o baú estiver no Plano Etéreo, ele é irrecuperavelmente perdido.",
+    "higher_levels": null
+  },
+  "leomunds-tiny-hut": {
+    "name_pt": "Cabana Diminuta de Leomund",
+    "description": "Uma cúpula imóvel de força de 10 feet de raio surge ao redor e acima de você pela duração. A magia termina se você sair de sua área.\n\nNove criaturas de tamanho Médio ou menor podem caber dentro. Criaturas e objetos dentro quando você conjura podem se mover livremente. Todas as outras são impedidas de passar. Magias não podem se estender pela cúpula ou serem conjuradas através dela. A atmosfera dentro é confortável e seca. A cúpula é opaca do lado de fora mas transparente do lado de dentro.",
+    "higher_levels": null
+  },
   "lesser-restoration": {
     "name_pt": "Restauração Menor",
     "description": "Você toca uma criatura e pode encerrar uma doença ou uma condição que a esteja afligindo. A condição pode ser cego, surdo, paralisado ou envenenado.",
@@ -843,6 +1068,11 @@
     "name_pt": "Luz",
     "description": "Você toca um objeto que não seja maior que 10 feet em qualquer dimensão. Até a magia terminar, o objeto emite luz plena em um raio de 20 feet e luz fraca por 20 feet adicionais. A luz pode ser colorida como você desejar. Cobrir completamente o objeto com algo opaco bloqueia a luz. A magia termina se você lançá-la novamente ou dispensá-la como uma ação.\n\nSe você mirar em um objeto segurado ou vestido por uma criatura hostil, essa criatura deve ser bem-sucedida em um saving throw de Dexterity para evitar a magia.",
     "higher_levels": null
+  },
+  "lightning-arrow": {
+    "name_pt": "Flecha Relâmpago",
+    "description": "Na próxima vez que você fizer um ataque com arma à distância durante a duração, a munição se transforma em um raio. Faça a jogada de ataque normalmente. O alvo sofre 4d8 de dano de raio em um acerto, ou metade em uma falha, em vez do dano normal. Além disso, cada criatura a 10 feet do alvo deve fazer um saving throw de Destreza, sofrendo 2d8 de dano de raio em uma falha, ou metade em um sucesso.",
+    "higher_levels": "O dano de ambos os efeitos aumenta em 1d8 para cada nível acima do 3º."
   },
   "lightning-bolt": {
     "name_pt": "Relâmpago",
@@ -904,6 +1134,11 @@
     "description": "Você toca uma arma não mágica. Até a magia acabar, essa arma se torna uma arma mágica com +1 de bônus nas jogadas de ataque e nas jogadas de dano.",
     "higher_levels": "Quando você conjura essa magia usando um espaço de magia de 4º nível ou superior, o bônus aumenta para +2. Quando você usa um espaço de magia de 6º nível ou superior, o bônus aumenta para +3."
   },
+  "magnificent-mansion": {
+    "name_pt": "Mansão Magnífica",
+    "description": "Você conjura uma moradia extradimensional no alcance pela duração. A entrada brilha levemente e tem 5 feet de largura e 10 feet de altura.\n\nAlém do portal há um magnífico vestíbulo com numerosos aposentos. A atmosfera é limpa, fresca e quente. Você pode criar qualquer planta baixa, mas o espaço não pode exceder 50 cubos de 10 feet de lado. O lugar é mobiliado como você escolher. Contém comida para até 100 pessoas. Uma equipe de 100 servos quase transparentes atende todos que entram — eles são completamente obedientes mas não podem atacar. Móveis dissipam em fumaça se removidos da mansão.",
+    "higher_levels": null
+  },
   "major-image": {
     "name_pt": "Imagem Maior",
     "description": "Você cria a imagem de um objeto, uma criatura ou algum outro fenômeno visível que não seja maior que um cubo de 20 feet. A imagem aparece em um ponto que você possa ver dentro do alcance e dura pela duração. Ela parece completamente real, incluindo sons, cheiros e temperatura apropriados para o que é representado. Você não pode criar calor ou frio suficiente para causar dano, um som alto o bastante para causar dano de trovão ou ensurdecer uma criatura, ou um cheiro que possa enjoar uma criatura (como o fedor de um troglodyte).\n\nEnquanto você estiver dentro do alcance da ilusão, você pode usar sua ação para fazer a imagem se mover para qualquer outro ponto dentro do alcance. Conforme a imagem muda de local, você pode alterar sua aparência para que seus movimentos pareçam naturais para a imagem. Por exemplo, se você criar a imagem de uma criatura e movê-la, você pode alterar a imagem para que pareça estar caminhando. Da mesma forma, você pode fazer a ilusão produzir sons diferentes em momentos diferentes, até mesmo fazendo-a manter uma conversa, por exemplo.\n\nA interação física com a imagem revela que ela é uma ilusão, pois coisas podem passar através dela. Uma criatura que usar sua ação para examinar a imagem pode determinar que é uma ilusão com um teste bem-sucedido de Inteligência (Investigação) contra a DC de resistência da sua magia. Se uma criatura discernir a ilusão pelo que ela é, a criatura pode ver através da imagem, e suas outras qualidades sensoriais se tornam tênues para a criatura.",
@@ -938,6 +1173,11 @@
     "name_pt": "Fundir-se na Pedra",
     "description": "Você entra em um objeto ou superfície de pedra grande o suficiente para conter completamente seu corpo, fundindo-se junto com todo o equipamento que carrega com a pedra pela duração. Usando seu movimento, você entra na pedra em um ponto que possa tocar. Nada de sua presença permanece visível ou de outra forma detectável por sentidos não mágicos.\n\nEnquanto fundido com a pedra, você não pode ver o que ocorre fora dela, e quaisquer testes de Sabedoria (Percepção) que você fizer para ouvir sons do lado de fora são feitos com desvantagem. Você permanece ciente da passagem do tempo e pode conjurar magias em si mesmo enquanto fundido na pedra. Você pode usar seu movimento para deixar a pedra por onde entrou, o que encerra a magia. De outra forma, você não pode se mover.\n\nDano físico menor à pedra não o prejudica, mas sua destruição parcial ou uma mudança em sua forma (a ponto de você não caber mais dentro dela) o expulsa e causa 6d6 de dano de concussão a você. A destruição completa da pedra (ou transmutação em uma substância diferente) o expulsa e causa 50 de dano de concussão a você. Se expulso, você cai prostrado em um espaço desocupado mais próximo de onde você entrou pela primeira vez.",
     "higher_levels": null
+  },
+  "melfs-acid-arrow": {
+    "name_pt": "Flecha Ácida de Melf",
+    "description": "Uma flecha verde cintilante dispara em direção a um alvo dentro do alcance e explode em um jato de ácido. Faça um ataque de magia à distância. Em um acerto, o alvo sofre 4d4 de dano ácido imediatamente e 2d4 de dano ácido no final de seu próximo turno. Em uma falha, metade do dano inicial e nenhum dano posterior.",
+    "higher_levels": "O dano (inicial e posterior) aumenta em 1d4 para cada nível acima do 2º."
   },
   "mending": {
     "name_pt": "Remendo",
@@ -994,6 +1234,26 @@
     "description": "Um feixe prateado de luz pálida brilha em um cilindro de 5-foot de raio e 40-foot de altura centrado em um ponto dentro do alcance. Até a magia terminar, luz penumbrosa preenche o cilindro.\n\nQuando uma criatura entra na área da magia pela primeira vez em um turno ou começa seu turno lá, ela é envolvida por chamas fantasmagóricas que causam dor lancinante, e deve fazer um saving throw de Constitution. Ela sofre 2d10 de dano radiante em uma falha, ou metade desse dano em um sucesso.\n\nUm metamorfo faz seu saving throw com disadvantage. Se falhar, ele também reverte instantaneamente à sua forma original e não pode assumir uma forma diferente até deixar a luz da magia.\n\nEm cada um dos seus turnos após conjurar esta magia, você pode usar uma ação para mover o feixe 60 feet em qualquer direção.",
     "higher_levels": "Quando você conjura esta magia usando um espaço de magia de 3º nível ou superior, o dano aumenta em 1d10 para cada nível de espaço acima do 2º."
   },
+  "mordenkainens-faithful-hound": {
+    "name_pt": "Cão Fiel de Mordenkainen",
+    "description": "Você conjura um cão de guarda fantasma em um espaço desocupado dentro do alcance. O cão é invisível para todos exceto você e não pode ser ferido. Quando uma criatura Pequena ou maior chega a 30 feet sem falar a senha, o cão late alto. Ele vê criaturas invisíveis e o Plano Etéreo, e ignora ilusões.\n\nNo início de cada turno, o cão tenta morder uma criatura hostil a 5 feet. Bônus de ataque igual ao seu modificador de conjuração + proficiência. Em um acerto, 4d8 de dano perfurante.",
+    "higher_levels": null
+  },
+  "mordenkainens-magnificent-mansion": {
+    "name_pt": "Mansão Magnífica de Mordenkainen",
+    "description": "Você conjura uma moradia extradimensional no alcance pela duração. A entrada tem 5 feet de largura e 10 feet de altura. Além do portal há um vestíbulo magnífico com numerosos aposentos. O espaço pode ter até 50 cubos de 10 feet. É mobiliado como você escolher, com comida para 100 pessoas e 100 servos obedientes que não podem atacar.",
+    "higher_levels": null
+  },
+  "mordenkainens-private-sanctum": {
+    "name_pt": "Santuário Privado de Mordenkainen",
+    "description": "Você torna uma área dentro do alcance magicamente segura. A área é um cubo de 5 a 100 feet de lado. Você escolhe as propriedades de segurança: som bloqueado, visão bloqueada, sem sensores de adivinhação, sem teleporte, sem viagem planar. Conjurar no mesmo local por um ano torna permanente.",
+    "higher_levels": "O tamanho do cubo aumenta em 100 feet por nível acima do 4º."
+  },
+  "mordenkainens-sword": {
+    "name_pt": "Espada de Mordenkainen",
+    "description": "Você cria um plano de força em forma de espada que paira dentro do alcance pela duração. Quando a espada aparece, faça um ataque corpo a corpo de magia contra um alvo a 5 feet. Em um acerto, 3d10 de dano de força. Até a magia terminar, use ação bônus para mover a espada até 20 feet e repetir o ataque.",
+    "higher_levels": null
+  },
   "move-earth": {
     "name_pt": "Mover Terra",
     "description": "Escolha uma área de terreno não maior que 40 feet de lado dentro do alcance. Você pode remodelar terra, areia ou argila na área da maneira que escolher pela duração. Você pode elevar ou rebaixar a elevação da área, criar ou preencher uma trincheira, erguer ou aplainar uma parede, ou formar um pilar. A extensão de tais mudanças não pode exceder metade da maior dimensão da área. Então, se você afetar um quadrado de 40 feet, pode criar um pilar de até 20 feet de altura, elevar ou rebaixar a elevação do quadrado em até 20 feet, cavar uma trincheira de até 20 feet de profundidade, e assim por diante. Leva 10 minutos para essas mudanças se completarem.\n\nAo final de cada 10 minutos que você passar se concentrando na magia, pode escolher uma nova área de terreno para afetar.\n\nComo a transformação do terreno ocorre lentamente, criaturas na área normalmente não podem ser presas ou feridas pelo movimento do solo.\n\nEsta magia não pode manipular pedra natural ou construções de pedra. Rochas e estruturas se deslocam para acomodar o novo terreno. Se a maneira como você modela o terreno tornar uma estrutura instável, ela pode desmoronar.\n\nDa mesma forma, esta magia não afeta diretamente o crescimento de plantas. A terra movida carrega quaisquer plantas consigo.",
@@ -1004,6 +1264,26 @@
     "description": "Pela duração, você oculta um alvo que você toca de magias de adivinhação. O alvo pode ser uma criatura voluntária, um lugar ou um objeto que não tenha mais de 10 feet em qualquer dimensão. O alvo não pode ser alvo de nenhuma magia de adivinhação nem percebido através de sensores mágicos de vidência.",
     "higher_levels": null
   },
+  "nystuls-magic-aura": {
+    "name_pt": "Aura Mágica de Nystul",
+    "description": "Você coloca uma ilusão em uma criatura ou objeto que você toca para que magias de adivinhação revelem informações falsas. Escolha um ou ambos os efeitos pela duração. Conjurar por 30 dias consecutivos torna permanente.\n\n***Aura Falsa.*** Muda como o alvo aparece para magias que detectam auras mágicas.\n\n***Máscara.*** Muda como o alvo aparece para magias que detectam tipos de criatura.",
+    "higher_levels": null
+  },
+  "otilukes-freezing-sphere": {
+    "name_pt": "Esfera Congelante de Otiluke",
+    "description": "Um globo frígido de energia gelada explode em uma esfera de 60 feet de raio. Cada criatura na área deve fazer um saving throw de Constituição. Em uma falha, 10d6 de dano de frio. Em um sucesso, metade. Pode congelar água e pode ser mantido na mão para arremesso posterior.",
+    "higher_levels": "O dano aumenta em 1d6 para cada nível acima do 6º."
+  },
+  "otilukes-resilient-sphere": {
+    "name_pt": "Esfera Resiliente de Otiluke",
+    "description": "Uma esfera de força cintilante envolve uma criatura ou objeto de tamanho Grande ou menor. Uma criatura involuntária deve fazer um saving throw de Destreza. Nada pode passar pela barreira, em nenhuma direção. A esfera é imune a todo dano. Uma criatura dentro pode empurrar as paredes e rolar a esfera a até metade de sua velocidade. Desintegrar destrói a esfera sem causar dano ao interior.",
+    "higher_levels": null
+  },
+  "ottos-irresistible-dance": {
+    "name_pt": "Dança Irresistível de Otto",
+    "description": "Escolha uma criatura que você possa ver dentro do alcance. O alvo começa uma dança cômica no lugar pela duração. Criaturas que não podem ser enfeitiçadas são imunes. A criatura dançando deve usar todo seu movimento para dançar, tem desvantagem em saving throws de Destreza e jogadas de ataque. Outras criaturas têm vantagem em ataques contra ela. Como ação, pode fazer saving throw de Sabedoria para encerrar.",
+    "higher_levels": null
+  },
   "pass-without-trace": {
     "name_pt": "Passos sem Rastro",
     "description": "Um véu de sombras e silêncio irradia de você, ocultando você e seus companheiros de detecção. Pela duração, cada criatura que você escolher em até 30 feet de você (incluindo você) tem um bônus de +10 em testes de Destreza (Furtividade) e não pode ser rastreada exceto por meios mágicos. Uma criatura que recebe esse bônus não deixa rastros ou outros vestígios de sua passagem.",
@@ -1012,6 +1292,11 @@
   "passwall": {
     "name_pt": "Passamuros",
     "description": "Uma passagem aparece em um ponto de sua escolha que você possa ver em uma superfície de madeira, gesso ou pedra (como uma parede, um teto ou um chão) dentro do alcance, e dura pela duração. Você escolhe as dimensões da abertura: até 5 feet de largura, 8 feet de altura e 20 feet de profundidade. A passagem não cria instabilidade na estrutura ao seu redor.\n\nQuando a abertura desaparece, quaisquer criaturas ou objetos ainda na passagem criada pela magia são ejetados com segurança para um espaço desocupado mais próximo da superfície na qual você conjurou a magia.",
+    "higher_levels": null
+  },
+  "phantasmal-force": {
+    "name_pt": "Força Fantasmal",
+    "description": "Você cria uma ilusão fantasmagórica que se enraíza na mente de uma criatura dentro do alcance. O alvo deve fazer um saving throw de Inteligência. Em uma falha, você cria um fenômeno visível fantasmal de até um cubo de 10 feet que é perceptível apenas pelo alvo pela duração. A ilusão inclui som, temperatura e outros estímulos.\n\nO alvo pode usar sua ação para examinar a ilusão com um teste de Investigação contra a CD de sua magia. Em um sucesso, percebe que é ilusão e a magia termina. Enquanto afetado, o alvo trata a ilusão como real e racionaliza quaisquer resultados ilógicos.",
     "higher_levels": null
   },
   "phantasmal-killer": {
@@ -1054,6 +1339,11 @@
     "description": "Esta magia transforma uma criatura que você pode ver dentro do alcance em uma nova forma. Uma criatura involuntária deve fazer um teste de resistência de Sabedoria para evitar o efeito. Um metamorfo automaticamente é bem-sucedido neste teste de resistência.\n\nA transformação dura pela duração, ou até o alvo cair a 0 pontos de vida ou morrer. A nova forma pode ser qualquer besta cujo nível de desafio seja igual ou menor que o do alvo (ou o nível do alvo, se ele não tiver um nível de desafio). As estatísticas de jogo do alvo, incluindo valores de habilidade mentais, são substituídas pelas estatísticas da besta escolhida. Ele mantém seu alinhamento e personalidade.\n\nO alvo assume os pontos de vida de sua nova forma. Quando ele reverte à sua forma normal, a criatura retorna ao número de pontos de vida que tinha antes de se transformar. Se ele reverter como resultado de cair a 0 pontos de vida, qualquer dano excedente é transferido para sua forma normal. Desde que o dano excedente não reduza a forma normal da criatura a 0 pontos de vida, ela não fica inconsciente.\n\nA criatura é limitada nas ações que pode realizar pela natureza de sua nova forma, e não pode falar, conjurar magias, ou realizar qualquer outra ação que exija mãos ou fala.\n\nO equipamento do alvo se funde à nova forma. A criatura não pode ativar, usar, empunhar ou de outra forma se beneficiar de qualquer um de seus equipamentos.",
     "higher_levels": null
   },
+  "power-word-heal": {
+    "name_pt": "Palavra de Poder: Cura",
+    "description": "Uma onda de energia curativa lava sobre a criatura que você toca. O alvo recupera todos os seus pontos de vida. Se a criatura estiver enfeitiçada, amedrontada, paralisada ou atordoada, a condição termina. Se estiver caída, pode usar sua reação para se levantar. Essa magia não tem efeito sobre mortos-vivos ou constructos.",
+    "higher_levels": null
+  },
   "power-word-kill": {
     "name_pt": "Palavra de Poder: Matar",
     "description": "Você pronuncia uma palavra de poder que pode obrigar uma criatura que você pode ver dentro do alcance a morrer instantaneamente. Se a criatura que você escolher tiver 100 pontos de vida ou menos, ela morre. Caso contrário, a magia não tem efeito.",
@@ -1083,6 +1373,11 @@
     "name_pt": "Muralha Prismática",
     "description": "Um plano cintilante e multicolorido de luz forma uma parede vertical opaca — de até 90 feet de comprimento, 30 feet de altura e 1 inch de espessura — centrada em um ponto que você pode ver dentro do alcance. Alternativamente, você pode moldar a parede em uma esfera de até 30 feet de diâmetro centrada em um ponto que você escolher dentro do alcance. A parede permanece no lugar pela duração. Se você posicionar a parede de modo que ela passe por um espaço ocupado por uma criatura, a magia falha, e sua ação e o slot de magia são desperdiçados.\n\nA parede emite luz plena em um raio de 100 feet e luz fraca por mais 100 feet adicionais. Você e as criaturas que você designar no momento em que conjurar a magia podem passar através e permanecer perto da parede sem sofrer dano. Se outra criatura que pode ver a parede se mover para dentro de 20 feet dela ou começar seu turno lá, a criatura deve ter sucesso em um saving throw de Constituição ou ficar cega por 1 minuto.\n\nA parede consiste em sete camadas, cada uma com uma cor diferente. Quando uma criatura tenta alcançar ou passar através da parede, ela o faz uma camada por vez através de todas as camadas da parede. Ao passar ou alcançar através de cada camada, a criatura deve fazer um saving throw de Destreza ou ser afetada pelas propriedades daquela camada, conforme descrito abaixo.\n\nA parede pode ser destruída, também uma camada por vez, na ordem do vermelho ao violeta, por meios específicos de cada camada. Uma vez que uma camada é destruída, ela permanece assim pela duração da magia. Uma rod of cancellation destrói uma prismatic wall, mas um antimagic field não tem efeito sobre ela.\n\n***1. Vermelho.*** A criatura sofre 10d6 de dano de fogo em uma falha no saving throw, ou metade desse dano em um sucesso. Enquanto esta camada estiver ativa, ataques à distância não mágicos não podem passar pela parede. A camada pode ser destruída causando pelo menos 25 de dano de frio a ela.\n\n***2. Laranja.*** A criatura sofre 10d6 de dano de ácido em uma falha no saving throw, ou metade desse dano em um sucesso. Enquanto esta camada estiver ativa, ataques à distância mágicos não podem passar pela parede. A camada é destruída por um vento forte.\n\n***3. Amarelo.*** A criatura sofre 10d6 de dano de relâmpago em uma falha no saving throw, ou metade desse dano em um sucesso. Esta camada pode ser destruída causando pelo menos 60 de dano de força a ela.\n\n***4. Verde.*** A criatura sofre 10d6 de dano de veneno em uma falha no saving throw, ou metade desse dano em um sucesso. Uma magia Passwall, ou outra magia de nível igual ou superior que possa abrir um portal em uma superfície sólida, destrói esta camada.\n\n***5. Azul.*** A criatura sofre 10d6 de dano de frio em uma falha no saving throw, ou metade desse dano em um sucesso. Esta camada pode ser destruída causando pelo menos 25 de dano de fogo a ela.\n\n***6. Índigo.*** Em uma falha no saving throw, a criatura fica restringida. Ela deve então fazer um saving throw de Constituição no final de cada um de seus turnos. Se obtiver sucesso três vezes, a magia termina. Se falhar três vezes, ela permanentemente se transforma em pedra e fica sujeita à condição petrificado. Os sucessos e falhas não precisam ser consecutivos; mantenha registro de ambos até que a criatura acumule três do mesmo tipo.\n\nEnquanto esta camada estiver ativa, magias não podem ser conjuradas através da parede. A camada é destruída por luz plena emitida por uma magia Daylight ou uma magia similar de nível igual ou superior.\n\n***7. Violeta.*** Em uma falha no saving throw, a criatura fica cega. Ela deve então fazer um saving throw de Sabedoria no início do seu próximo turno. Um sucesso no saving throw encerra a cegueira. Se falhar nesse saving throw, a criatura é transportada para outro plano à escolha do Mestre e não está mais cega. (Normalmente, uma criatura que está em um plano que não é seu plano natal é banida para casa, enquanto outras criaturas geralmente são lançadas nos planos Astral ou Etéreo.) Esta camada é destruída por uma magia Dispel Magic ou uma magia similar de nível igual ou superior que possa encerrar magias e efeitos mágicos.",
     "higher_levels": null
+  },
+  "private-sanctum": {
+    "name_pt": "Santuário Privado",
+    "description": "Você torna uma área dentro do alcance magicamente segura. A área é um cubo que pode ter de 5 a 100 feet de lado. Ao conjurar, você decide as propriedades de segurança:\n\n- Som não pode passar pela barreira.\n- A barreira aparece escura e nebulosa, impedindo visão.\n- Sensores de adivinhação não podem aparecer ou passar pela barreira.\n- Criaturas na área não podem ser alvo de adivinhação.\n- Nada pode se teletransportar para dentro ou fora da área.\n- Viagem planar é bloqueada.\n\nConjurar no mesmo local por um ano torna o efeito permanente.",
+    "higher_levels": "O tamanho do cubo aumenta em 100 feet para cada nível acima do 4º."
   },
   "produce-flame": {
     "name_pt": "Produzir Chamas",
@@ -1124,6 +1419,11 @@
     "description": "Você devolve à vida uma criatura morta que você toca, desde que ela esteja morta há no máximo 10 dias. Se a alma da criatura estiver voluntária e livre para se reunir ao corpo, a criatura retorna à vida com 1 ponto de vida.\n\nEssa magia também neutraliza quaisquer venenos e cura doenças não mágicas que afetavam a criatura no momento de sua morte. Essa magia, no entanto, não remove doenças mágicas, maldições ou efeitos similares; se estes não forem removidos antes de conjurar a magia, eles voltam a fazer efeito quando a criatura retornar à vida. A magia não pode devolver à vida uma criatura morta-viva.\n\nEssa magia fecha todas as feridas mortais, mas não restaura partes do corpo faltantes. Se a criatura não possuir partes do corpo ou órgãos essenciais para sua sobrevivência — sua cabeça, por exemplo — a magia falha automaticamente.\n\nVoltar dos mortos é uma provação. O alvo sofre uma penalidade de -4 em todas as jogadas de ataque, testes de resistência e testes de habilidade. Cada vez que o alvo termina um descanso longo, a penalidade é reduzida em 1 até desaparecer.",
     "higher_levels": null
   },
+  "rarys-telepathic-bond": {
+    "name_pt": "Vínculo Telepático de Rary",
+    "description": "Você forja um vínculo telepático entre até oito criaturas voluntárias dentro do alcance. Criaturas com Inteligência 2 ou menos não são afetadas. Até a magia terminar, os alvos podem se comunicar telepaticamente pelo vínculo, tenham ou não um idioma em comum. A comunicação é possível a qualquer distância, mas não pode se estender a outros planos.",
+    "higher_levels": null
+  },
   "ray-of-enfeeblement": {
     "name_pt": "Raio de Enfraquecimento",
     "description": "Um feixe negro de energia enervante brota do seu dedo em direção a uma criatura dentro do alcance. Faça um ataque à distância com magia contra o alvo. Em um acerto, o alvo causa apenas metade do dano com ataques com arma que usam Força até a magia terminar.\n\nNo final de cada turno do alvo, ele pode fazer um teste de resistência de Constituição contra a magia. Em um sucesso, a magia termina.",
@@ -1133,6 +1433,11 @@
     "name_pt": "Raio de Gelo",
     "description": "Um feixe gélido de luz branco-azulada dispara em direção a uma criatura dentro do alcance. Faça um ataque à distância com magia contra o alvo. Em um acerto, ele sofre 1d8 de dano de frio, e seu deslocamento é reduzido em 10 feet até o início do seu próximo turno.\n\nO dano da magia aumenta em 1d8 quando você alcança o 5º nível (2d8), 11º nível (3d8) e 17º nível (4d8).",
     "higher_levels": null
+  },
+  "ray-of-sickness": {
+    "name_pt": "Raio de Doença",
+    "description": "Um raio de energia esverdeada e doentia se dirige a uma criatura dentro do alcance. Faça um ataque de magia à distância. Em um acerto, o alvo sofre 2d8 de dano de veneno e deve fazer um saving throw de Constituição. Em uma falha, também fica envenenado até o final de seu próximo turno.",
+    "higher_levels": "O dano aumenta em 1d8 para cada nível de espaço acima do 1º."
   },
   "regenerate": {
     "name_pt": "Regeneração",
@@ -1147,6 +1452,11 @@
   "remove-curse": {
     "name_pt": "Remover Maldição",
     "description": "Ao seu toque, todas as maldições afetando uma criatura ou objeto terminam. Se o objeto for um item mágico amaldiçoado, sua maldição permanece, mas a magia quebra a sintonização do proprietário com o objeto para que ele possa ser removido ou descartado.",
+    "higher_levels": null
+  },
+  "resilient-sphere": {
+    "name_pt": "Esfera Resiliente",
+    "description": "Uma esfera de força cintilante envolve uma criatura ou objeto de tamanho Grande ou menor. Uma criatura involuntária deve fazer um saving throw de Destreza. Em uma falha, fica envolvida pela duração.\n\nNada pode passar pela barreira. A esfera é imune a todo dano, e uma criatura dentro não pode ser danificada por ataques de fora, nem danificar nada fora dela. A esfera é leve e pode ser empurrada ou rolada. Desintegrar destrói a esfera sem causar dano ao interior.",
     "higher_levels": null
   },
   "resistance": {
@@ -1192,6 +1502,16 @@
   "scrying": {
     "name_pt": "Vidência",
     "description": "Você pode ver e ouvir uma criatura específica, à sua escolha, que esteja no mesmo plano de existência que você. O alvo deve fazer um teste de resistência de Sabedoria, que é modificado pelo quão bem você conhece o alvo e pelo tipo de conexão física que você tem com ele. Se o alvo souber que você está conjurando esta magia, ele pode falhar voluntariamente no teste de resistência se quiser ser observado.\n\n| Conhecimento | Modificador do Teste |\n\n|---|---|\n\n| Indireto (você ouviu falar do alvo) | +5 |\n\n| Direto (você já conheceu o alvo) | +0 |\n\n| Familiar (você conhece bem o alvo) | -5 |\n\n\n\n| Conexão | Modificador do Teste |\n\n|---|---|\n\n| Semelhança ou retrato | -2 |\n\n| Pertence ou vestimenta | -4 |\n\n| Parte do corpo, mecha de cabelo, pedaço de unha ou similar | -10 |\n\nEm um teste bem-sucedido, o alvo não é afetado, e você não pode usar esta magia contra ele novamente por 24 horas.\n\nEm um teste falho, a magia cria um sensor invisível a até 10 feet do alvo. Você pode ver e ouvir através do sensor como se estivesse lá. O sensor se move com o alvo, permanecendo a até 10 feet dele pela duração. Uma criatura que pode ver objetos invisíveis enxerga o sensor como um orbe luminoso do tamanho aproximado do seu punho.\n\nEm vez de mirar uma criatura, você pode escolher um local que já tenha visto como alvo desta magia. Quando o faz, o sensor aparece naquele local e não se move.",
+    "higher_levels": null
+  },
+  "searing-smite": {
+    "name_pt": "Golpe Cauterizante",
+    "description": "Na próxima vez que você acertar uma criatura com um ataque corpo a corpo com arma, sua arma flameja com calor branco, e o ataque causa 1d6 extras de dano de fogo ao alvo e o incendeia. No início de cada turno até a magia terminar, o alvo deve fazer um saving throw de Constituição. Em uma falha, sofre 1d6 de dano de fogo. Em um sucesso, a magia termina.",
+    "higher_levels": "O dano extra inicial aumenta em 1d6 para cada nível acima do 1º."
+  },
+  "secret-chest": {
+    "name_pt": "Baú Secreto",
+    "description": "Você esconde um baú no Plano Etéreo. O baú pode conter até 12 cubic feet de material não vivo. Enquanto no Plano Etéreo, você pode usar uma ação e tocar a réplica para trazê-lo de volta. Após 60 dias, há uma chance cumulativa de 5% por dia de que o efeito termine. Se terminar e o baú estiver no Plano Etéreo, ele é irrecuperavelmente perdido.",
     "higher_levels": null
   },
   "see-invisibility": {
@@ -1314,6 +1634,11 @@
     "description": "Você cria uma arma espectral flutuante dentro do alcance que dura pela duração ou até você conjurar esta magia novamente. Quando você conjura a magia, pode fazer um ataque corpo a corpo de magia contra uma criatura a até 5 feet da arma. Em um acerto, o alvo sofre dano de força igual a 1d8 + seu modificador de habilidade de conjuração.\n\nComo uma ação bônus no seu turno, você pode mover a arma até 20 feet e repetir o ataque contra uma criatura a até 5 feet dela.\n\nA arma pode assumir qualquer forma que você escolher. Clérigos de divindades associadas a uma arma específica (como St. Cuthbert é conhecido por sua maça e Thor por seu martelo) fazem o efeito desta magia se assemelhar a essa arma.",
     "higher_levels": "Quando você conjura esta magia usando um espaço de magia de 3º nível ou superior, o dano aumenta em 1d8 para cada dois níveis de espaço acima do 2º."
   },
+  "staggering-smite": {
+    "name_pt": "Golpe Cambaleante",
+    "description": "Na próxima vez que você acertar uma criatura com um ataque corpo a corpo com arma, sua arma perfura tanto o corpo quanto a mente, e o ataque causa 4d6 extras de dano psíquico ao alvo. O alvo deve fazer um saving throw de Sabedoria. Em uma falha, tem desvantagem em jogadas de ataque e testes de habilidade, e não pode tomar reações, até o final de seu próximo turno.",
+    "higher_levels": null
+  },
   "stinking-cloud": {
     "name_pt": "Nuvem Fétida",
     "description": "Você cria uma esfera de 20 feet de raio de gás amarelo e nauseante centrada em um ponto dentro do alcance. A nuvem se espalha ao redor de cantos, e sua área é fortemente obscurecida. A nuvem permanece no ar pela duração.\n\nCada criatura que estiver completamente dentro da nuvem no início de seu turno deve fazer um saving throw de Constituição contra veneno. Em uma falha, a criatura gasta sua ação naquele turno vomitando e cambaleando. Criaturas que não precisam respirar ou são imunes a veneno automaticamente passam neste saving throw.\n\nUm vento moderado (pelo menos 10 miles per hour) dispersa a nuvem após 4 rodadas. Um vento forte (pelo menos 20 miles per hour) a dispersa após 1 rodada.",
@@ -1349,14 +1674,34 @@
     "description": "Luz solar brilhante lampeja em um raio de 60 feet centrado em um ponto que você escolher dentro do alcance. Cada criatura nessa luz deve fazer um saving throw de Constituição. Em uma falha, a criatura sofre 12d6 de dano radiante e fica cega por 1 minuto. Em um sucesso, ela sofre metade desse dano e não fica cega por esta magia. Mortos-vivos e limos têm desvantagem neste saving throw.\n\nUma criatura cega por esta magia faz outro saving throw de Constituição no final de cada um de seus turnos. Em um sucesso, ela não está mais cega.\n\nEsta magia dissipa qualquer escuridão em sua área que tenha sido criada por uma magia.",
     "higher_levels": null
   },
+  "swift-quiver": {
+    "name_pt": "Carcaj Rápido",
+    "description": "Você transmuta sua aljava para que ela produza um suprimento infinito de munição não mágica. Em cada um de seus turnos até a magia terminar, você pode usar uma ação bônus para fazer dois ataques com uma arma que usa munição da aljava. Cada vez que ataca, a aljava repõe magicamente a munição usada.",
+    "higher_levels": null
+  },
   "symbol": {
     "name_pt": "Símbolo",
     "description": "Quando você conjura esta magia, você inscreve um glifo nocivo em uma superfície (como uma seção do chão, uma parede ou uma mesa) ou dentro de um objeto que pode ser fechado para ocultar o glifo (como um livro, um pergaminho ou um baú de tesouro). Se você escolher uma superfície, o glifo pode cobrir uma área da superfície de no máximo 10 feet de diâmetro. Se você escolher um objeto, esse objeto deve permanecer em seu lugar; se o objeto for movido mais de 10 feet de onde você conjurou esta magia, o glifo se quebra e a magia termina sem ser ativada.\n\nO glifo é quase invisível, exigindo um teste de Inteligência (Investigação) contra a CD de resistência da sua magia para encontrá-lo.\n\nVocê decide o que ativa o glifo quando conjura a magia. Para glifos inscritos em uma superfície, os gatilhos mais típicos incluem tocar ou pisar no glifo, remover outro objeto que o cobre, se aproximar a uma certa distância dele ou manipular o objeto que o contém. Para glifos inscritos dentro de um objeto, os gatilhos mais comuns são abrir o objeto, se aproximar a uma certa distância dele ou ver ou ler o glifo.\n\nVocê pode refinar ainda mais o gatilho para que a magia seja ativada apenas sob certas circunstâncias ou de acordo com as características físicas de uma criatura (como altura ou peso), ou tipo físico (por exemplo, a proteção poderia ser configurada para afetar bruxas ou metamorfos). Você também pode especificar criaturas que não ativam o glifo, como aquelas que dizem uma certa senha.\n\nQuando você inscreve o glifo, escolha uma das opções abaixo para seu efeito. Uma vez ativado, o glifo brilha, preenchendo uma esfera de 60 feet de raio com luz fraca por 10 minutos, após o que a magia termina. Cada criatura na esfera quando o glifo é ativado é alvo de seu efeito, assim como uma criatura que entra na esfera pela primeira vez em um turno ou termina seu turno lá.\n\n***Morte.*** Cada alvo deve fazer um teste de resistência de Constituição, sofrendo 10d10 de dano necrótico em uma falha, ou metade desse dano em um sucesso.\n\n***Discórdia.*** Cada alvo deve fazer um teste de resistência de Constituição. Em uma falha, o alvo discute e briga com outras criaturas por 1 minuto. Durante esse tempo, ele é incapaz de comunicação significativa e tem desvantagem em jogadas de ataque e testes de habilidade.\n\n***Medo.*** Cada alvo deve fazer um teste de resistência de Sabedoria e fica amedrontado por 1 minuto em uma falha. Enquanto amedrontado, o alvo larga o que estiver segurando e deve se mover pelo menos 30 feet para longe do glifo em cada um de seus turnos, se possível.\n\n***Desesperança.*** Cada alvo deve fazer um teste de resistência de Carisma. Em uma falha, o alvo é tomado pelo desespero por 1 minuto. Durante esse tempo, ele não pode atacar ou mirar em nenhuma criatura com habilidades nocivas, magias ou outros efeitos mágicos.\n\n***Insanidade.*** Cada alvo deve fazer um teste de resistência de Inteligência. Em uma falha, o alvo é levado à loucura por 1 minuto. Uma criatura insana não pode realizar ações, não consegue entender o que outras criaturas dizem, não consegue ler e fala apenas em algaravia. O Mestre controla seu movimento, que é errático.\n\n***Dor.*** Cada alvo deve fazer um teste de resistência de Constituição e fica incapacitado com dor excruciante por 1 minuto em uma falha.\n\n***Sono.*** Cada alvo deve fazer um teste de resistência de Sabedoria e cai inconsciente por 10 minutos em uma falha. Uma criatura acorda se sofrer dano ou se alguém usar uma ação para sacudi-la ou esbofeteá-la.\n\n***Atordoamento.*** Cada alvo deve fazer um teste de resistência de Sabedoria e fica atordoado por 1 minuto em uma falha.",
     "higher_levels": null
   },
+  "tashas-hideous-laughter": {
+    "name_pt": "Risada Terrível de Tasha",
+    "description": "Uma criatura de sua escolha dentro do alcance percebe tudo como hilariantemente engraçado e cai em ataques de riso. O alvo deve ser bem-sucedido em um saving throw de Sabedoria ou cai no chão, ficando incapacitado e incapaz de se levantar pela duração. Inteligência 4 ou menos é imune.\n\nNo final de cada turno, e cada vez que sofre dano, o alvo pode fazer outro saving throw (vantagem se provocado por dano). Em um sucesso, a magia termina.",
+    "higher_levels": null
+  },
   "telekinesis": {
     "name_pt": "Telecinesia",
     "description": "Você ganha a habilidade de mover ou manipular criaturas ou objetos pelo pensamento. Quando você conjura a magia, e como sua ação em cada rodada pela duração, você pode exercer sua vontade sobre uma criatura ou objeto que você possa ver dentro do alcance, causando o efeito apropriado abaixo. Você pode afetar o mesmo alvo rodada após rodada, ou escolher um novo a qualquer momento. Se você trocar de alvo, o alvo anterior não é mais afetado pela magia.\n\n***Criatura.*** Você pode tentar mover uma criatura de tamanho Enorme ou menor. Faça um teste de habilidade com sua habilidade de conjuração contestado pelo teste de Força da criatura. Se você vencer a disputa, você move a criatura até 30 feet em qualquer direção, incluindo para cima, mas não além do alcance desta magia. Até o final do seu próximo turno, a criatura está contida em sua garra telecinética. Uma criatura erguida para cima fica suspensa no ar.\n\nEm rodadas subsequentes, você pode usar sua ação para tentar manter sua garra telecinética na criatura repetindo a disputa.\n\n***Objeto.*** Você pode tentar mover um objeto que pese até 1.000 libras. Se o objeto não estiver sendo vestido ou carregado, você automaticamente o move até 30 feet em qualquer direção, mas não além do alcance desta magia.\n\nSe o objeto estiver sendo vestido ou carregado por uma criatura, você deve fazer um teste de habilidade com sua habilidade de conjuração contestado pelo teste de Força dessa criatura. Se você tiver sucesso, você puxa o objeto da criatura e pode movê-lo até 30 feet em qualquer direção, mas não além do alcance desta magia.\n\nVocê pode exercer controle fino sobre objetos com sua garra telecinética, como manipular uma ferramenta simples, abrir uma porta ou recipiente, guardar ou retirar um item de um recipiente aberto ou derramar o conteúdo de um frasco.",
+    "higher_levels": null
+  },
+  "telepathic-bond": {
+    "name_pt": "Vínculo Telepático",
+    "description": "Você forja um vínculo telepático entre até oito criaturas voluntárias dentro do alcance. Criaturas com Inteligência 2 ou menos não são afetadas. Até a magia terminar, os alvos podem se comunicar telepaticamente, tenham ou não um idioma em comum. A comunicação é possível a qualquer distância, mas não pode se estender a outros planos de existência.",
+    "higher_levels": null
+  },
+  "telepathy": {
+    "name_pt": "Telepatia",
+    "description": "Você cria um vínculo telepático entre você e uma criatura voluntária com a qual esteja familiarizado. A criatura pode estar em qualquer lugar no mesmo plano. A magia termina se não estiverem mais no mesmo plano.\n\nAté a magia terminar, vocês podem trocar instantaneamente palavras, imagens, sons e outras mensagens sensoriais. A magia permite que uma criatura com Inteligência de pelo menos 1 entenda o significado de suas palavras.",
     "higher_levels": null
   },
   "teleport": {
@@ -1369,9 +1714,24 @@
     "description": "Ao conjurar a magia, você desenha um círculo de 10 feet de diâmetro no chão inscrito com sigilos que conectam sua localização a um círculo de teletransporte permanente de sua escolha cuja sequência de sigilos você conhece e que está no mesmo plano de existência que você. Um portal cintilante se abre dentro do círculo que você desenhou e permanece aberto até o final do seu próximo turno. Qualquer criatura que entre no portal aparece instantaneamente a até 5 feet do círculo de destino ou no espaço desocupado mais próximo se aquele espaço estiver ocupado.\n\nMuitos templos importantes, guildas e outros lugares relevantes têm círculos de teletransporte permanentes inscritos em algum lugar de seus domínios. Cada círculo inclui uma sequência de sigilos única — uma sequência de runas mágicas arranjadas em um padrão específico. Quando você ganha pela primeira vez a habilidade de conjurar esta magia, você aprende as sequências de sigilos para dois destinos no Plano Material, determinados pelo Mestre. Você pode aprender sequências de sigilos adicionais durante suas aventuras. Você pode memorizar uma nova sequência de sigilos após estudá-la por 1 minuto.\n\nVocê pode criar um círculo de teletransporte permanente conjurando esta magia no mesmo local todos os dias por um ano. Você não precisa usar o círculo para se teletransportar quando conjura a magia desta forma.",
     "higher_levels": null
   },
+  "tensers-floating-disk": {
+    "name_pt": "Disco Flutuante de Tenser",
+    "description": "Essa magia cria um plano de força circular e horizontal, de 3 feet de diâmetro, que flutua 3 feet acima do chão. O disco permanece pela duração e pode suportar até 500 pounds. O disco é imóvel enquanto você estiver a 20 feet dele. Se mover a mais de 20 feet, o disco o segue. Se mover a mais de 100 feet, a magia termina.",
+    "higher_levels": null
+  },
   "thaumaturgy": {
     "name_pt": "Taumaturgia",
     "description": "Você manifesta uma maravilha menor, um sinal de poder sobrenatural, dentro do alcance. Você cria um dos seguintes efeitos mágicos dentro do alcance.\n\n- Sua voz ressoa até três vezes mais alto que o normal por 1 minuto.\n\n- Você faz chamas tremeluzir, brilhar mais, escurecer ou mudar de cor por 1 minuto.\n\n- Você causa tremores inofensivos no chão por 1 minuto.\n\n- Você cria um som instantâneo que se origina de um ponto à sua escolha dentro do alcance, como um estrondo de trovão, o grito de um corvo ou sussurros sinistros.\n\n- Você instantaneamente faz uma porta ou janela destrancada se abrir ou se fechar com força.\n\n- Você altera a aparência dos seus olhos por 1 minuto.\n\nSe você conjurar esta magia múltiplas vezes, pode ter até três de seus efeitos de 1 minuto ativos ao mesmo tempo, e pode dissipar tal efeito como uma ação.",
+    "higher_levels": null
+  },
+  "thorn-whip": {
+    "name_pt": "Chicote de Espinhos",
+    "description": "Você cria um longo chicote semelhante a uma vinha coberto de espinhos que chicoteia, ao seu comando, em direção a uma criatura no alcance. Faça um ataque de magia corpo a corpo contra o alvo. Se acertar, a criatura sofre 1d6 de dano perfurante e, se for de tamanho Grande ou menor, é puxada até 10 feet em sua direção.\n\nO dano dessa magia aumenta em 1d6 quando você alcança o 5º nível (2d6), o 11º nível (3d6) e o 17º nível (4d6).",
+    "higher_levels": null
+  },
+  "thunderous-smite": {
+    "name_pt": "Golpe Trovejante",
+    "description": "Na próxima vez que você acertar um ataque corpo a corpo com arma, sua arma ressoa com trovão, e o ataque causa 2d6 extras de dano de trovão. Além disso, se o alvo for uma criatura, deve ser bem-sucedido em um saving throw de Força ou será empurrado 10 feet para longe e ficará caído.",
     "higher_levels": null
   },
   "thunderwave": {
@@ -1382,6 +1742,11 @@
   "time-stop": {
     "name_pt": "Parar o Tempo",
     "description": "Você interrompe brevemente o fluxo do tempo para todos, exceto você. Nenhum tempo passa para outras criaturas, enquanto você realiza 1d4 + 1 turnos seguidos, durante os quais pode usar ações e se mover normalmente.\n\nEsta magia termina se uma das ações que você usar durante este período, ou qualquer efeito que você criar durante este período, afetar uma criatura que não seja você ou um objeto vestido ou carregado por alguém que não seja você. Além disso, a magia termina se você se mover para um lugar a mais de 1,000 feet do local onde a conjurou.",
+    "higher_levels": null
+  },
+  "tiny-hut": {
+    "name_pt": "Cabana Diminuta",
+    "description": "Uma cúpula imóvel de força de 10 feet de raio surge ao redor e acima de você pela duração. A magia termina se você sair da área. Nove criaturas de tamanho Médio ou menor podem caber dentro. Criaturas e objetos dentro podem se mover livremente. Todas as outras são impedidas de passar. Magias não podem se estender pela cúpula. A atmosfera dentro é confortável e seca. A cúpula é opaca do lado de fora, transparente do lado de dentro.",
     "higher_levels": null
   },
   "tongues": {
@@ -1417,6 +1782,11 @@
   "true-strike": {
     "name_pt": "Golpe Certeiro",
     "description": "Você estende sua mão e aponta um dedo para um alvo no alcance. Sua magia lhe concede uma breve percepção das defesas do alvo. No seu próximo turno, você ganha vantagem na sua primeira jogada de ataque contra o alvo, desde que esta magia não tenha terminado.",
+    "higher_levels": null
+  },
+  "tsunami": {
+    "name_pt": "Tsunami",
+    "description": "Uma parede de água surge à existência em um ponto que você escolher dentro do alcance. Você pode fazer a parede ter até 300 feet de comprimento, 300 feet de altura e 50 feet de espessura. A parede dura pela duração.\n\nQuando a parede aparece, cada criatura dentro de sua área deve fazer um saving throw de Força. Em uma falha, a criatura sofre 6d10 de dano de concussão, ou metade em um sucesso.\n\nNo início de cada turno após a parede aparecer, ela se move 50 feet para longe de você. Qualquer criatura enorme ou menor dentro da parede ou cujo espaço a parede entre deve ser bem-sucedida em um saving throw de Força ou sofrer 5d10 de dano de concussão. A parede também pode causar dano a objetos e estruturas.",
     "higher_levels": null
   },
   "unseen-servant": {
@@ -1499,9 +1869,19 @@
     "description": "Wish é a magia mais poderosa que uma criatura mortal pode conjurar. Simplesmente falando em voz alta, você pode alterar os próprios fundamentos da realidade de acordo com seus desejos.\n\nO uso básico desta magia é duplicar qualquer outra magia de 8º nível ou inferior. Você não precisa cumprir nenhum requisito daquela magia, incluindo componentes custosos. A magia simplesmente entra em efeito.\n\nAlternativamente, você pode criar um dos seguintes efeitos à sua escolha:\n\n- Você cria um objeto de até 25,000 po em valor que não seja um item mágico. O objeto não pode ter mais de 300 feet em qualquer dimensão, e aparece em um espaço desocupado que você possa ver no chão.\n\n- Você permite que até vinte criaturas que você possa ver recuperem todos os pontos de vida, e você encerra todos os efeitos sobre elas descritos na magia Greater Restoration.\n\n- Você concede a até dez criaturas que você possa ver resistência a um tipo de dano à sua escolha.\n\n- Você concede a até dez criaturas que você possa ver imunidade a uma única magia ou outro efeito mágico por 8 horas. Por exemplo, você poderia tornar a si mesmo e todos os seus companheiros imunes ao ataque de drenar vida de um lich.\n\n- Você desfaz um único evento recente forçando uma nova rolagem de qualquer rolagem feita na última rodada (incluindo seu último turno). A realidade se remodela para acomodar o novo resultado. Por exemplo, uma magia Wish poderia desfazer um saving throw bem-sucedido de um oponente, um acerto crítico de um inimigo ou um saving throw falho de um aliado. Você pode forçar a nova rolagem a ser feita com vantagem ou desvantagem, e pode escolher se usa a nova rolagem ou a rolagem original.\n\nVocê pode conseguir alcançar algo além do escopo dos exemplos acima. Declare seu desejo ao Mestre o mais precisamente possível. O Mestre tem grande liberdade para determinar o que ocorre em tal instância; quanto maior o desejo, maior a probabilidade de que algo dê errado. Esta magia pode simplesmente falhar, o efeito que você deseja pode ser apenas parcialmente alcançado, ou você pode sofrer alguma consequência imprevista como resultado de como formulou o desejo. Por exemplo, desejar que um vilão estivesse morto pode projetá-lo adiante no tempo para um período em que aquele vilão não está mais vivo, efetivamente removendo você do jogo. Da mesma forma, desejar um item mágico lendário ou artefato pode transportá-lo instantaneamente para a presença do atual dono do item.\n\nO estresse de conjurar esta magia para produzir qualquer efeito diferente de duplicar outra magia o enfraquece. Após suportar esse estresse, cada vez que você conjurar uma magia até terminar um descanso longo, você sofre 1d10 de dano necrótico por nível daquela magia. Este dano não pode ser reduzido ou prevenido de nenhuma forma. Além disso, sua Força cai para 3, se já não for 3 ou menor, por 2d4 dias. Para cada um desses dias que você passar descansando e não fazendo mais do que atividade leve, seu tempo de recuperação restante diminui em 2 dias. Finalmente, há uma chance de 33 por cento de que você nunca mais consiga conjurar Wish se sofrer esse estresse.",
     "higher_levels": null
   },
+  "witch-bolt": {
+    "name_pt": "Raio da Bruxa",
+    "description": "Um raio de energia azul crepitante se lança em direção a uma criatura dentro do alcance, formando um arco de eletricidade sustentado. Faça um ataque de magia à distância. Em um acerto, o alvo sofre 1d12 de dano de raio. Em cada turno seguinte pela duração, você pode usar sua ação para causar automaticamente 1d12 de dano de raio. A magia termina se você usar sua ação para outra coisa, se o alvo ficar fora do alcance ou tiver cobertura total.",
+    "higher_levels": "O dano inicial aumenta em 1d12 para cada nível de espaço acima do 1º."
+  },
   "word-of-recall": {
     "name_pt": "Palavra de Retorno",
     "description": "Você e até cinco criaturas voluntárias a até 5 feet de você se teletransportam instantaneamente para um santuário previamente designado. Você e quaisquer criaturas que se teletransportem com você aparecem no espaço desocupado mais próximo do ponto que você designou quando preparou seu santuário (veja abaixo). Se você conjurar esta magia sem antes ter preparado um santuário, a magia não tem efeito.\n\nVocê deve designar um santuário conjurando esta magia dentro de um local, como um templo, dedicado ou fortemente ligado à sua divindade. Se você tentar conjurar a magia dessa forma em uma área que não é dedicada à sua divindade, a magia não tem efeito.",
+    "higher_levels": null
+  },
+  "wrathful-smite": {
+    "name_pt": "Golpe Colérico",
+    "description": "Na próxima vez que você acertar um ataque corpo a corpo com arma, seu ataque causa 1d6 extra de dano psíquico. Além disso, se o alvo for uma criatura, ele deve fazer um saving throw de Sabedoria ou ficará amedrontado por você até a magia terminar. Como uma ação, a criatura pode fazer um teste de Sabedoria contra a CD de sua magia para encerrar a magia.",
     "higher_levels": null
   },
   "zone-of-truth": {

@@ -63,8 +63,8 @@ export async function generateMetadata({
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
-function MonsterJsonLd({ monster, ptName }: { monster: NonNullable<ReturnType<typeof getMonsterBySlugPt>>; ptName: string }) {
-  const jsonLd = {
+function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnType<typeof getMonsterBySlugPt>>; ptName: string; slug: string }) {
+  const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
     name: `${ptName} — Ficha D&D 5e`,
@@ -74,11 +74,28 @@ function MonsterJsonLd({ monster, ptName }: { monster: NonNullable<ReturnType<ty
     publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
     inLanguage: "pt-BR",
   };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: "https://www.pocketdm.com.br" },
+      { "@type": "ListItem", position: 2, name: "Monstros", item: "https://www.pocketdm.com.br/monstros" },
+      { "@type": "ListItem", position: 3, name: ptName, item: `https://www.pocketdm.com.br/monstros/${slug}` },
+    ],
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+    </>
   );
 }
 
@@ -112,7 +129,7 @@ export default async function MonstroPage({
 
   return (
     <>
-      <MonsterJsonLd monster={monster} ptName={ptName} />
+      <MonsterJsonLd monster={monster} ptName={ptName} slug={slug} />
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav
