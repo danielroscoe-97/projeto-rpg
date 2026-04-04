@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -10,8 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Swords, Zap, Send, Package, Copy, Check } from "lucide-react";
+import { Swords, Zap, Send, Package, Copy, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { fetchEncounterPresets } from "@/lib/supabase/encounter-presets";
+import type { EncounterPreset } from "@/lib/types/encounter-preset";
 
 interface CombatLaunchSheetProps {
   campaignId: string;
@@ -31,10 +33,14 @@ export function CombatLaunchSheet({
   const t = useTranslations("campaign_combat");
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState<"menu" | "new_combat" | "send_link">("menu");
+  const [view, setView] = useState<"menu" | "new_combat" | "send_link" | "load_preset">("menu");
   const [autoInitiative, setAutoInitiative] = useState(false);
   const [notifyPlayers, setNotifyPlayers] = useState(true);
   const [copied, setCopied] = useState(false);
+  // Preset picker state
+  const [presets, setPresets] = useState<EncounterPreset[]>([]);
+  const [presetsLoading, setPresetsLoading] = useState(false);
+  const presetsFetched = useRef(false);
 
   const handleNewCombat = () => {
     const params = new URLSearchParams({ campaign: campaignId });
@@ -46,6 +52,27 @@ export function CombatLaunchSheet({
 
   const handleQuickCombat = () => {
     router.push(`/app/session/new?campaign=${campaignId}&quick=true`);
+    setOpen(false);
+  };
+
+  const handleOpenPresets = async () => {
+    setView("load_preset");
+    if (!presetsFetched.current) {
+      setPresetsLoading(true);
+      try {
+        const data = await fetchEncounterPresets(campaignId);
+        setPresets(data);
+        presetsFetched.current = true;
+      } catch {
+        // Silent fail — empty list will be shown
+      } finally {
+        setPresetsLoading(false);
+      }
+    }
+  };
+
+  const handlePickPreset = (presetId: string) => {
+    router.push(`/app/session/new?campaign=${campaignId}&preset=${presetId}`);
     setOpen(false);
   };
 
@@ -61,6 +88,8 @@ export function CombatLaunchSheet({
   const resetView = () => {
     setView("menu");
     setCopied(false);
+    // Reset preset cache so re-opening fetches fresh data
+    presetsFetched.current = false;
   };
 
   return (
@@ -78,6 +107,7 @@ export function CombatLaunchSheet({
             {view === "menu" && t("title")}
             {view === "new_combat" && t("new_combat")}
             {view === "send_link" && t("send_link")}
+            {view === "load_preset" && t("load_preset")}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">{campaignName}</p>
         </DialogHeader>
@@ -132,21 +162,20 @@ export function CombatLaunchSheet({
               </div>
             </button>
 
-            {/* Carregar Preset de Combate — placeholder */}
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.06] opacity-50 cursor-not-allowed min-h-[56px]">
+            {/* Carregar Preset de Combate */}
+            <button
+              type="button"
+              onClick={handleOpenPresets}
+              className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.08] hover:bg-white/[0.04] transition-colors text-left min-h-[56px]"
+            >
               <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-400/10">
                 <Package className="w-5 h-5 text-purple-400" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-foreground">{t("load_preset")}</p>
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-purple-400/10 text-purple-400 border border-purple-400/20">
-                    {t("coming_soon")}
-                  </span>
-                </div>
+                <p className="text-sm font-medium text-foreground">{t("load_preset")}</p>
                 <p className="text-xs text-muted-foreground">{t("load_preset_desc")}</p>
               </div>
-            </div>
+            </button>
           </div>
         )}
 
@@ -235,6 +264,65 @@ export function CombatLaunchSheet({
                 {copied ? t("copied") : t("copy_link")}
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Sub-view: Load Preset */}
+        {view === "load_preset" && (
+          <div className="space-y-4">
+            {presetsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : presets.length === 0 ? (
+              <div className="text-center py-8">
+                <Package className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-40" />
+                <p className="text-sm text-muted-foreground">{t("no_presets")}</p>
+              </div>
+            ) : (
+              <ul className="space-y-2 max-h-[300px] overflow-y-auto">
+                {presets.map((preset) => {
+                  const creaturePreview = preset.creatures
+                    .map((c) => `${c.quantity}x ${c.name}`)
+                    .join(", ");
+                  const diffBadge: Record<string, string> = {
+                    easy: "text-green-400 border-green-700",
+                    medium: "text-yellow-400 border-yellow-700",
+                    hard: "text-orange-400 border-orange-700",
+                    deadly: "text-red-400 border-red-700",
+                  };
+                  return (
+                    <li key={preset.id}>
+                      <button
+                        type="button"
+                        onClick={() => handlePickPreset(preset.id)}
+                        className="w-full text-left bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 hover:bg-white/[0.06] transition-colors"
+                      >
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-sm font-medium text-foreground truncate">{preset.name}</span>
+                          {preset.difficulty && (
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium uppercase shrink-0 ${diffBadge[preset.difficulty] ?? "text-gray-400 border-gray-700"}`}>
+                              {preset.difficulty}
+                            </span>
+                          )}
+                        </div>
+                        {creaturePreview && (
+                          <p className="text-xs text-muted-foreground truncate">{creaturePreview}</p>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setView("menu")}
+              className="w-full px-4 py-2.5 text-sm font-medium rounded-lg border border-white/[0.08] text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-all min-h-[44px]"
+            >
+              {t("back")}
+            </button>
           </div>
         )}
       </DialogContent>

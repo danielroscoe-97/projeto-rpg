@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
 import type { PlayerCharacter } from "@/lib/types/database";
+import { fetchEncounterPreset } from "@/lib/supabase/encounter-presets";
+import type { EncounterPreset } from "@/lib/types/encounter-preset";
 
 interface CampaignOption {
   id: string;
@@ -25,9 +27,11 @@ export default function NewEncounterPage() {
   const [chosen, setChosen] = useState<{
     campaignId: string | null;
     preloadedPlayers: PlayerCharacter[];
+    preloadedPreset?: EncounterPreset | null;
   } | null>(null);
 
   const isQuick = searchParams.get("quick") === "true";
+  const presetParam = searchParams.get("preset");
 
   useEffect(() => {
     // Skip campaign picker entirely for quick combat
@@ -39,6 +43,49 @@ export default function NewEncounterPage() {
 
     const load = async () => {
       const supabase = createClient();
+      const campaignParam = searchParams.get("campaign");
+
+      // If preset param is provided, fetch preset + campaign players directly (skip picker)
+      if (presetParam && campaignParam) {
+        try {
+          const [preset, { data: players }, { data: members }] = await Promise.all([
+            fetchEncounterPreset(presetParam),
+            supabase
+              .from("player_characters")
+              .select("*")
+              .eq("campaign_id", campaignParam)
+              .order("created_at", { ascending: true }),
+            supabase
+              .from("campaign_members")
+              .select("id, user_id")
+              .eq("campaign_id", campaignParam),
+          ]);
+
+          // Filter players by preset's selected_members (member_id → user_id mapping)
+          let filteredPlayers = (players as PlayerCharacter[]) ?? [];
+          if (preset?.selected_members && preset.selected_members.length > 0 && members) {
+            const selectedUserIds = new Set(
+              preset.selected_members
+                .map((memberId) => members.find((m) => m.id === memberId)?.user_id)
+                .filter(Boolean)
+            );
+            if (selectedUserIds.size > 0) {
+              filteredPlayers = filteredPlayers.filter((p) => selectedUserIds.has(p.user_id));
+            }
+          }
+
+          setChosen({
+            campaignId: campaignParam,
+            preloadedPlayers: filteredPlayers,
+            preloadedPreset: preset,
+          });
+          setIsLoading(false);
+          return;
+        } catch {
+          // Fallback to normal picker on error
+        }
+      }
+
       const { data, error } = await supabase
         .from("campaigns")
         .select("id, name, player_characters(count)")
@@ -65,7 +112,7 @@ export default function NewEncounterPage() {
       setIsLoading(false);
     };
     load();
-  }, [t, isQuick]);
+  }, [t, isQuick, searchParams, presetParam]);
 
   const handlePickCampaign = async (campaignId: string) => {
     setIsLoading(true);
@@ -99,6 +146,7 @@ export default function NewEncounterPage() {
         currentTurnIndex={0}
         campaignId={chosen.campaignId}
         preloadedPlayers={chosen.preloadedPlayers}
+        preloadedPreset={chosen.preloadedPreset ?? null}
       />
     );
   }

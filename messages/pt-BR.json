@@ -240,7 +240,8 @@
     "session_link": "Link da sessão",
     "copy_link": "Copiar Link",
     "copied": "Copiado!",
-    "link_copied": "Link copiado para a área de transferência"
+    "link_copied": "Link copiado para a área de transferência",
+    "no_presets": "Nenhum preset de encontro salvo"
   },
   "soundboard": {
     "description": "Gerencie seus efeitos sonoros para usar nas sessões de combate.",
@@ -960,6 +961,7 @@
     "setup_empty": "Adicione combatentes para montar seu encontro.",
     "setup_empty_hint": "Pesquise monstros SRD acima ou digite abaixo.",
     "setup_empty_preset_hint": "Ou carregue um preset de combate salvo com o botão \"Carregar Preset de Combate\".",
+    "preset_loaded": "Preset: {name}",
     "monster_stats": "CR {cr} · HP {hp} · CA {ac}",
     "setup_add": "Adicionar",
     "error_no_combatants": "Adicione pelo menos um combatente antes de iniciar.",
@@ -2657,6 +2659,7 @@
     "thresholds": "Limites do Grupo",
     "error_save": "Falha ao salvar. Tente novamente.",
     "error_delete": "Falha ao excluir. Tente novamente.",
+    "start_combat": "Iniciar Combate",
     "section_title": "Encontros",
     "starter_packs": "Starter Packs",
     "level_range": "Nível {min}-{max}",

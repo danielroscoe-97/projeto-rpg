@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
-import { Info, Share2 } from "lucide-react";
+import { Info, Share2, Package } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
 import { createSessionOnly } from "@/lib/supabase/encounter";
@@ -28,11 +28,14 @@ import { generateEncounterName } from "@/lib/utils/encounter-name";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { resetDmChannel } from "@/lib/realtime/broadcast";
 import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
+import type { EncounterPreset } from "@/lib/types/encounter-preset";
 
 interface EncounterSetupProps {
   onStartCombat: (encounterName?: string) => Promise<void>;
   campaignId?: string | null;
   preloadedPlayers?: PlayerCharacter[];
+  /** Preset to auto-load creatures from (Sprint 2) */
+  preloadedPreset?: EncounterPreset | null;
   /** Session ID for listening to player registrations via realtime */
   sessionId?: string | null;
   /** Called when an on-demand session is created for sharing */
@@ -64,7 +67,7 @@ function getDefaultDisplayName(creatureType: string | null | undefined, existing
   return generateCreatureName(creatureType, existingNames);
 }
 
-export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, sessionId, onSessionCreated }: EncounterSetupProps) {
+export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, preloadedPreset, sessionId, onSessionCreated }: EncounterSetupProps) {
   const t = useTranslations("combat");
   const {
     combatants,
@@ -153,6 +156,70 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
     });
   }, [preloadedPlayers, addCombatant]);
+
+  // Sprint 2: Auto-load preset creatures (runs once on mount when preset is provided)
+  const hasPreloadedPreset = useRef(false);
+  useEffect(() => {
+    if (hasPreloadedPreset.current || !preloadedPreset || preloadedPreset.creatures.length === 0) return;
+    hasPreloadedPreset.current = true;
+
+    // Map source → RulesetVersion for SRD monster lookups
+    const sourceToVersion = (source: string): RulesetVersion =>
+      source === "srd-2024" ? "2024" : "2014";
+
+    for (const creature of preloadedPreset.creatures) {
+      // Try to resolve full SRD monster for HP/AC/DEX/initiative rolling
+      const srdMonster = creature.monster_slug
+        ? getMonsterById(creature.monster_slug, sourceToVersion(creature.source))
+        : undefined;
+
+      if (srdMonster) {
+        // Use the full monster add path (with initiative rolling, display names, etc.)
+        if (creature.quantity > 1) {
+          handleSelectMonsterGroup(srdMonster, creature.quantity);
+        } else {
+          handleSelectMonster(srdMonster);
+        }
+      } else {
+        // Manual/unresolved creature — add with basic info from preset
+        for (let i = 0; i < creature.quantity; i++) {
+          const all = [...useCombatStore.getState().combatants];
+          const numberedName = getNumberedName(creature.name, all);
+          const displayName = getDefaultDisplayName(null, all);
+          addCombatant({
+            name: numberedName,
+            current_hp: 0,
+            max_hp: 0,
+            temp_hp: 0,
+            ac: 0,
+            spell_save_dc: null,
+            initiative: null,
+            initiative_order: null,
+            conditions: [],
+            ruleset_version: sourceToVersion(creature.source),
+            is_defeated: false,
+            is_hidden: false,
+            is_player: false,
+            monster_id: creature.monster_slug,
+            token_url: null,
+            creature_type: null,
+            display_name: displayName,
+            monster_group_id: null,
+            group_order: null,
+            dm_notes: "",
+            player_notes: "",
+            player_character_id: null,
+            combatant_role: null,
+            legendary_actions_total: null,
+            legendary_actions_used: 0,
+          });
+        }
+      }
+    }
+
+    // Set formula version to match preset
+    setRulesetVersion(preloadedPreset.formula_version as RulesetVersion);
+  }, [preloadedPreset, handleSelectMonster, handleSelectMonsterGroup, addCombatant]);
 
   // Create session on-demand when DM wants to share before combat starts
   const handlePrepareShare = useCallback(async () => {
@@ -709,6 +776,27 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, se
           )
         )}
       </div>
+
+      {/* Sprint 2: Preset banner */}
+      {preloadedPreset && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+          <Package className="w-4 h-4 text-amber-400 shrink-0" />
+          <span className="text-sm text-amber-400 font-medium truncate">
+            {t("preset_loaded", { name: preloadedPreset.name })}
+          </span>
+          {preloadedPreset.difficulty && (
+            <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium uppercase shrink-0 ${
+              preloadedPreset.difficulty === "easy" ? "text-green-400 border-green-700" :
+              preloadedPreset.difficulty === "medium" ? "text-yellow-400 border-yellow-700" :
+              preloadedPreset.difficulty === "hard" ? "text-orange-400 border-orange-700" :
+              preloadedPreset.difficulty === "deadly" ? "text-red-400 border-red-700" :
+              "text-gray-400 border-gray-700"
+            }`}>
+              {preloadedPreset.difficulty}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Toolbar: Ruleset + CR Calculator + Campaign Loader + Preset Loader */}
       <div className="flex items-end gap-3 flex-wrap">

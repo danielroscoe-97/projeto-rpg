@@ -240,7 +240,8 @@
     "session_link": "Session link",
     "copy_link": "Copy Link",
     "copied": "Copied!",
-    "link_copied": "Link copied to clipboard"
+    "link_copied": "Link copied to clipboard",
+    "no_presets": "No saved encounter presets yet"
   },
   "soundboard": {
     "description": "Manage your sound effects for combat sessions.",
@@ -960,6 +961,7 @@
     "setup_empty": "Add combatants to build your encounter.",
     "setup_empty_hint": "Search SRD monsters above or type below.",
     "setup_empty_preset_hint": "Or load a saved combat preset with the \"Load Combat Preset\" button.",
+    "preset_loaded": "Preset: {name}",
     "monster_stats": "CR {cr} · HP {hp} · AC {ac}",
     "setup_add": "Add",
     "error_no_combatants": "Add at least one combatant before starting.",
@@ -2657,6 +2659,7 @@
     "thresholds": "Party Thresholds",
     "error_save": "Failed to save. Please try again.",
     "error_delete": "Failed to delete. Please try again.",
+    "start_combat": "Start Combat",
     "section_title": "Encounters",
     "starter_packs": "Starter Packs",
     "level_range": "Level {min}-{max}",

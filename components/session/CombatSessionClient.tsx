@@ -75,6 +75,8 @@ import {
   buildCreaturesSnapshot,
   computeDataQualityFlags,
 } from "@/lib/supabase/encounter-snapshot";
+import type { EncounterPreset } from "@/lib/types/encounter-preset";
+import { incrementPresetUsage } from "@/lib/supabase/encounter-presets";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -86,6 +88,7 @@ interface CombatSessionClientProps {
   rulesetVersion?: RulesetVersion;
   campaignId?: string | null;
   preloadedPlayers?: PlayerCharacter[];
+  preloadedPreset?: EncounterPreset | null;
 }
 
 export function CombatSessionClient({
@@ -98,6 +101,7 @@ export function CombatSessionClient({
   rulesetVersion = "2014",
   campaignId = null,
   preloadedPlayers = [],
+  preloadedPreset = null,
 }: CombatSessionClientProps) {
   const router = useRouter();
   const t = useTranslations("combat");
@@ -106,6 +110,8 @@ export function CombatSessionClient({
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
   // Session created on-demand by EncounterSetup for sharing before combat
   const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
+  // Sprint 2: Track preset origin for usage counting and Sprint 3 snapshot
+  const presetOriginRef = useRef<string | null>(preloadedPreset?.id ?? null);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
   const [combatReport, setCombatReport] = useState<CombatReport | null>(null);
@@ -399,6 +405,12 @@ export function CombatSessionClient({
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
 
   const handleStartCombat = async (encounterName?: string) => {
+    // Sprint 2: Track preset usage (fire-and-forget, once only)
+    if (presetOriginRef.current) {
+      incrementPresetUsage(presetOriginRef.current).catch(() => { /* non-fatal */ });
+      presetOriginRef.current = null;
+    }
+
     const store = useCombatStore.getState();
     const current = store.combatants;
     const sorted = assignInitiativeOrder(sortByInitiative(current));
@@ -1055,7 +1067,7 @@ export function CombatSessionClient({
 
   // Show unified setup if not yet active
   if (!is_active) {
-    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
+    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} preloadedPreset={preloadedPreset} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
   }
 
   // Active combat view

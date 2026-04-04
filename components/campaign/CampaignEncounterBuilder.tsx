@@ -126,6 +126,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           count: 1,
           slug: monster.slug,
           token_url: monster.token_url,
+          source: monster.source,
         },
       ];
     });
@@ -527,6 +528,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           </div>
         ) : (
           <CampaignEncounterList
+            campaignId={campaignId}
             presets={presets}
             onEdit={handleEditPreset}
             onDeleted={handleDeletedPreset}

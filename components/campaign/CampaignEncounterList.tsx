@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Trash2, Pencil, Calendar, Swords } from "lucide-react";
+import { Trash2, Pencil, Calendar, Swords, Play } from "lucide-react";
 import type { EncounterPreset } from "@/lib/types/encounter-preset";
 import { deleteEncounterPreset } from "@/lib/supabase/encounter-presets";
 
 interface Props {
+  campaignId: string;
   presets: EncounterPreset[];
   onEdit: (preset: EncounterPreset) => void;
   onDeleted: (presetId: string) => void;
@@ -20,11 +22,16 @@ const DIFF_BADGE: Record<string, string> = {
   deadly: "text-red-400 bg-red-500/10 border-red-700",
 };
 
-export function CampaignEncounterList({ presets, onEdit, onDeleted }: Props) {
+export function CampaignEncounterList({ campaignId, presets, onEdit, onDeleted }: Props) {
   const t = useTranslations("encounter_builder");
+  const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  function handleStartCombat(presetId: string) {
+    router.push(`/app/session/new?campaign=${campaignId}&preset=${presetId}`);
+  }
 
   async function handleDelete(id: string) {
     setDeleteLoading(true);
@@ -83,6 +90,15 @@ export function CampaignEncounterList({ presets, onEdit, onDeleted }: Props) {
 
               {/* Actions */}
               <div className="flex items-center gap-1 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleStartCombat(preset.id)}
+                  className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
+                  title={t("start_combat")}
+                >
+                  <Play className="w-3 h-3" />
+                  {t("start_combat")}
+                </button>
                 <button
                   type="button"
                   onClick={() => onEdit(preset)}
