@@ -3,6 +3,9 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { MethodologyProgressBar } from "@/components/methodology/MethodologyProgressBar";
+import { SpellTierVoting } from "@/components/methodology/SpellTierVoting";
+import { SimilarEncounterPreview } from "@/components/methodology/SimilarEncounterPreview";
+import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -25,6 +28,16 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function MethodologyPage() {
   const t = await getTranslations("methodology");
+
+  // Lightweight auth check for SpellTierVoting (no redirect)
+  let isLoggedIn = false;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    isLoggedIn = !!user && !user.is_anonymous;
+  } catch {
+    // Not logged in — that's fine for a public page
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -258,13 +271,38 @@ export default async function MethodologyPage() {
           </div>
         </div>
 
-        {/* Spell Tiers Teaser */}
+        {/* Section 6: Interactive Preview — Similar Encounters */}
+        <div className="max-w-3xl mx-auto px-6 pb-8">
+          <SimilarEncounterPreview
+            translations={{
+              title: t("similar_title"),
+              subtitle: t("similar_subtitle"),
+              party_size: t("similar_party_size"),
+              creature_count: t("similar_creature_count"),
+              result_text: t.raw("similar_result"),
+              no_data_text: t("similar_no_data"),
+              loading: t("similar_loading"),
+            }}
+          />
+        </div>
+
+        {/* Section 7: Spell Tier Voting */}
         <div className="max-w-3xl mx-auto px-6 pb-12">
-          <div className="rounded-lg border border-dashed border-gold/15 bg-white/[0.01] p-4 text-center">
-            <p className="text-foreground/35 text-xs">
-              {t("spell_teaser")}
-            </p>
-          </div>
+          <SpellTierVoting
+            isLoggedIn={isLoggedIn}
+            translations={{
+              title: t("spell_vote_title"),
+              subtitle: t("spell_vote_subtitle"),
+              under_tiered: t("spell_vote_under"),
+              correct: t("spell_vote_correct"),
+              over_tiered: t("spell_vote_over"),
+              vote_thanks: t("spell_vote_thanks"),
+              vote_error: t("spell_vote_error"),
+              login_to_vote: t("spell_vote_login"),
+              votes_label: t("spell_vote_count"),
+              vote_bar_label: t("spell_vote_bar_label"),
+            }}
+          />
         </div>
       </main>
 

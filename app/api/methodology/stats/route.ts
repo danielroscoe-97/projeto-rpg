@@ -20,6 +20,9 @@ const handler: Parameters<typeof withRateLimit>[0] = async function GET() {
       unique_dms: 0,
       current_phase: "collecting",
       phase_target: 500,
+      gold_count: 0,
+      silver_count: 0,
+      bronze_count: 0,
     }, {
       headers: {
         "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
@@ -33,6 +36,9 @@ const handler: Parameters<typeof withRateLimit>[0] = async function GET() {
       unique_dms: 0,
       current_phase: "collecting",
       phase_target: 500,
+      gold_count: 0,
+      silver_count: 0,
+      bronze_count: 0,
     }, {
       headers: {
         "Cache-Control": "public, s-maxage=60",

@@ -19,32 +19,14 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Count valid encounters — filters match RPC get_methodology_stats() exactly
-    const { count: total } = await supabase
-      .from("sessions")
-      .select("encounters!inner(id)", { count: "exact", head: true })
-      .eq("owner_id", user.id)
-      .not("encounters.party_snapshot", "is", null)
-      .not("encounters.creatures_snapshot", "is", null)
-      .not("encounters.combat_result", "is", null);
+    const { data, error } = await supabase.rpc("get_user_methodology_contribution", { p_user_id: user.id });
 
-    // Count encounters with DM rating (subset of valid)
-    const { count: rated } = await supabase
-      .from("sessions")
-      .select("encounters!inner(id)", { count: "exact", head: true })
-      .eq("owner_id", user.id)
-      .not("encounters.dm_difficulty_rating", "is", null)
-      .not("encounters.party_snapshot", "is", null)
-      .not("encounters.creatures_snapshot", "is", null)
-      .not("encounters.combat_result", "is", null);
+    if (error) throw error;
 
-    const t = total ?? 0;
-    const r = rated ?? 0;
-
-    return NextResponse.json({
-      total_combats: t,
-      rated_combats: r,
-      is_researcher: r >= 10,
+    return NextResponse.json(data ?? {
+      total_combats: 0,
+      rated_combats: 0,
+      is_researcher: false,
     });
   } catch (err) {
     captureError(err, { component: "methodology", action: "get-contribution" });

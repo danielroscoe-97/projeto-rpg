@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Search, Cog, Brain } from "lucide-react";
+import { QualityTierBreakdown } from "./QualityTierBreakdown";
 
 interface Milestone {
   value: number;
@@ -15,6 +16,9 @@ interface MethodologyStats {
   unique_dms: number;
   current_phase: string;
   phase_target: number;
+  gold_count: number;
+  silver_count: number;
+  bronze_count: number;
 }
 
 const MILESTONES: Milestone[] = [
@@ -40,6 +44,9 @@ export function MethodologyProgressBar() {
           unique_dms: 0,
           current_phase: "collecting",
           phase_target: 500,
+          gold_count: 0,
+          silver_count: 0,
+          bronze_count: 0,
         })
       )
       .finally(() => setLoading(false));
@@ -191,6 +198,15 @@ export function MethodologyProgressBar() {
             com rating do DM
           </span>
         </div>
+      )}
+
+      {/* Quality tier breakdown */}
+      {stats && (
+        <QualityTierBreakdown
+          gold={stats.gold_count}
+          silver={stats.silver_count}
+          bronze={stats.bronze_count}
+        />
       )}
     </div>
   );
