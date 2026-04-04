@@ -6,9 +6,10 @@ export async function fetchEncounterPresets(campaignId: string): Promise<Encount
   const supabase = createClient();
   const { data: presets, error } = await supabase
     .from("encounter_presets")
-    .select("*")
+    .select("id, campaign_id, name, notes, difficulty, total_xp, adjusted_xp, selected_members, formula_version, used_count, used_at, created_at, updated_at")
     .eq("campaign_id", campaignId)
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .limit(50);
 
   if (error) throw new Error(error.message);
   if (!presets || presets.length === 0) return [];
@@ -16,9 +17,10 @@ export async function fetchEncounterPresets(campaignId: string): Promise<Encount
   const presetIds = presets.map((p) => p.id);
   const { data: creatures, error: crErr } = await supabase
     .from("encounter_preset_creatures")
-    .select("*")
+    .select("id, preset_id, monster_slug, name, cr, quantity, source, sort_order")
     .in("preset_id", presetIds)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true })
+    .limit(500);
 
   if (crErr) throw new Error(crErr.message);
 

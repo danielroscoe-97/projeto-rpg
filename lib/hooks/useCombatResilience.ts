@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 3000, 8000]; // exponential-ish backoff
-const DM_HEARTBEAT_INTERVAL = 15_000; // 15s — players detect stale after 2 missed beats (~45s)
+const DM_HEARTBEAT_INTERVAL = 30_000; // 30s — players detect stale after 2 missed beats (~90s)
 
 /**
  * Combat resilience hook — handles:
@@ -18,7 +18,7 @@ const DM_HEARTBEAT_INTERVAL = 15_000; // 15s — players detect stale after 2 mi
  * 2. Online/offline detection: track connection status
  * 3. Reconnection sync: when going offline→online, push full Zustand state to DB
  * 4. Retry with backoff: if reconciliation fails, retry up to 3 times
- * 5. DM heartbeat: updates dm_last_seen_at every 15s + broadcasts dm:heartbeat
+ * 5. DM heartbeat: updates dm_last_seen_at every 30s (players detect stale after ~90s)
  *
  * Race condition mitigation: reads Zustand state at the moment of the DB write
  * (not when the sync was scheduled), so the latest DM state is always pushed.
@@ -214,7 +214,7 @@ export function useCombatResilience() {
       wasOfflineRef.current = true;
     }
 
-    // --- 5. DM heartbeat: update dm_last_seen_at every 15s ---
+    // --- 5. DM heartbeat: update dm_last_seen_at every 30s ---
     dmHeartbeat(); // Immediate on mount
     heartbeatRef.current = setInterval(dmHeartbeat, DM_HEARTBEAT_INTERVAL);
 

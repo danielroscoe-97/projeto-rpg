@@ -21,7 +21,8 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
       .select("*, player_quest_notes!left(id, notes, is_favorite, quest_id, user_id, campaign_id, created_at, updated_at)")
       .eq("campaign_id", campaignId)
       .eq("player_quest_notes.user_id", userId)
-      .order("sort_order", { ascending: true });
+      .order("sort_order", { ascending: true })
+      .limit(200);
 
     if (error) {
       toast.error("Failed to load quests");

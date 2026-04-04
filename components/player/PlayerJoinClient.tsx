@@ -1307,10 +1307,10 @@ export function PlayerJoinClient({
       }
     };
 
-    // CAT-1: Poll aggressively — 1s first poll, then every 2s.
-    // This is the primary detection mechanism since broadcasts may not arrive.
-    const firstPoll = setTimeout(poll, 1000);
-    const interval = setInterval(poll, 2000);
+    // CAT-1: Poll for late-join acceptance — 2s first poll, then every 5s.
+    // Broadcasts are primary detection; polling is fallback.
+    const firstPoll = setTimeout(poll, 2000);
+    const interval = setInterval(poll, 5000);
 
     return () => {
       cancelled = true;
@@ -1320,7 +1320,7 @@ export function PlayerJoinClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- effectiveTokenId is stable after auth init
   }, [lateJoinStatus, sessionId, effectiveTokenId]);
 
-  // A.5: Heartbeat — update last_seen_at every 30s, PAUSES when tab is hidden (saves battery)
+  // A.5: Heartbeat — update last_seen_at every 60s, PAUSES when tab is hidden (saves battery + DB writes)
   useEffect(() => {
     if (!isRegistered || !active || !effectiveTokenId) return;
     const supabase = createClient();
@@ -1339,7 +1339,7 @@ export function PlayerJoinClient({
     };
     heartbeatRef.current = heartbeat;
     heartbeat(); // immediate
-    const id = setInterval(heartbeat, 30_000);
+    const id = setInterval(heartbeat, 60_000); // 60s — balanced between presence accuracy and DB writes
     return () => {
       clearInterval(id);
       heartbeatRef.current = null;
@@ -1354,14 +1354,15 @@ export function PlayerJoinClient({
     const checkDmPresence = async () => {
       if (document.visibilityState === "hidden") return;
       try {
-        const res = await fetch(`/api/session/${sessionId}/state`);
+        // Use lightweight dm-presence endpoint (1 query) instead of full /state (5 queries)
+        const res = await fetch(`/api/session/${sessionId}/dm-presence`);
         if (!res.ok) return;
-        const { data } = await res.json();
+        const data = await res.json();
         if (data?.dm_last_seen_at) {
           const lastSeen = new Date(data.dm_last_seen_at).getTime();
           dmLastSeenRef.current = lastSeen;
-          // DM is considered offline if no heartbeat for 45s (3 missed beats)
-          setDmOffline(Date.now() - lastSeen > 45_000);
+          // DM is considered offline if no heartbeat for 90s (3 missed beats at 30s interval)
+          setDmOffline(Date.now() - lastSeen > 90_000);
         } else {
           // dm_last_seen_at is null — DM explicitly went offline (pagehide)
           setDmOffline(true);
@@ -1371,7 +1372,7 @@ export function PlayerJoinClient({
       }
     };
 
-    const id = setInterval(checkDmPresence, 15_000);
+    const id = setInterval(checkDmPresence, 30_000); // 30s — halved from 15s to reduce API calls
     return () => clearInterval(id);
   }, [active, sessionId]);
 
@@ -1583,7 +1584,7 @@ export function PlayerJoinClient({
       // RECONNECTING — don't fetch, wait for transition
       if (connStateRef.current === "RECONNECTING") return;
       fetchFullState(eid);
-    }, connStateRef.current === "CONNECTED" ? 15000 : 3000);
+    }, connStateRef.current === "CONNECTED" ? 30000 : 10000); // 30s connected, 10s fallback (was 15s/3s)
     return () => {
       if (turnPollRef.current) {
         clearInterval(turnPollRef.current);

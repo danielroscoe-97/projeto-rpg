@@ -21,87 +21,41 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Total registrations
-  const { count: totalUsers } = await admin
-    .from("users")
-    .select("id", { count: "exact", head: true });
-
-  // Last 7 days
+  // Batch: run independent count queries + RPCs in parallel
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-  const { count: last7 } = await admin
-    .from("users")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", sevenDaysAgo);
-
-  // Last 30 days
   const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
-  const { count: last30 } = await admin
-    .from("users")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", thirtyDaysAgo);
 
-  // Day-1 activation: % of users who created a session within 24h of signup
-  // Uses SQL aggregation via COUNT to avoid loading all rows into memory
-  const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
-  const { count: activatedCount } = await admin
-    .from("users")
-    .select("id", { count: "exact", head: true })
-    .filter(
-      "id",
-      "in",
-      `(select owner_id from sessions where created_at <= users.created_at + interval '1 day')`
-    )
-    .lt("created_at", oneDayAgo); // Only users old enough to have a day-1 window
+  const [totalResult, last7Result, last30Result, day1Result, week2Result, avgPlayersResult] = await Promise.all([
+    admin.from("users").select("id", { count: "exact", head: true }),
+    admin.from("users").select("id", { count: "exact", head: true }).gte("created_at", sevenDaysAgo),
+    admin.from("users").select("id", { count: "exact", head: true }).gte("created_at", thirtyDaysAgo),
+    admin.rpc("admin_day1_activation").single(),
+    admin.rpc("admin_week2_retention").single(),
+    admin.rpc("admin_avg_players_per_dm").single(),
+  ]);
 
-  const day1Activation =
-    (totalUsers ?? 0) > 0
-      ? Math.round(((activatedCount ?? 0) / (totalUsers ?? 1)) * 100)
-      : 0;
+  const totalUsers = totalResult.count ?? 0;
 
-  // Week-2 retention: % of users who had a session between day 7 and day 14 after signup
-  const { count: retainedCount } = await admin
-    .from("users")
-    .select("id", { count: "exact", head: true })
-    .filter(
-      "id",
-      "in",
-      `(select owner_id from sessions where created_at >= users.created_at + interval '7 days' and created_at <= users.created_at + interval '14 days')`
-    )
-    .lt("created_at", new Date(Date.now() - 14 * 86400000).toISOString());
+  const day1 = day1Result.data as { total_eligible: number; activated: number } | null;
+  const day1Activation = day1 && day1.total_eligible > 0
+    ? Math.round((day1.activated / day1.total_eligible) * 100)
+    : 0;
 
-  const week2Retention =
-    (totalUsers ?? 0) > 0
-      ? Math.round(((retainedCount ?? 0) / (totalUsers ?? 1)) * 100)
-      : 0;
+  const week2 = week2Result.data as { total_eligible: number; retained: number } | null;
+  const week2Retention = week2 && week2.total_eligible > 0
+    ? Math.round((week2.retained / week2.total_eligible) * 100)
+    : 0;
 
-  // Average players per DM: count unique player tokens (anon_user_id) per DM's sessions
-  const { data: tokenCounts } = await admin
-    .from("session_tokens")
-    .select("anon_user_id, sessions!inner(owner_id)")
-    .not("anon_user_id", "is", null);
-  const dmPlayers = new Map<string, Set<string>>();
-  if (tokenCounts) {
-    for (const t of tokenCounts) {
-      const ownerId = (t.sessions as unknown as { owner_id: string })?.owner_id;
-      if (ownerId && t.anon_user_id) {
-        if (!dmPlayers.has(ownerId)) dmPlayers.set(ownerId, new Set());
-        // Count unique players (anon_user_id), not sessions
-        dmPlayers.get(ownerId)!.add(t.anon_user_id);
-      }
-    }
-  }
-  const dmCount = dmPlayers.size;
-  const totalPlayerCount = Array.from(dmPlayers.values()).reduce((sum, s) => sum + s.size, 0);
-  const avgPlayersPerDm = dmCount > 0 ? Math.round((totalPlayerCount / dmCount) * 10) / 10 : 0;
+  const avgPlayers = avgPlayersResult.data as { dm_count: number; avg_players: number } | null;
 
   return NextResponse.json({
     data: {
-      total_users: totalUsers ?? 0,
-      registrations_last_7d: last7 ?? 0,
-      registrations_last_30d: last30 ?? 0,
+      total_users: totalUsers,
+      registrations_last_7d: last7Result.count ?? 0,
+      registrations_last_30d: last30Result.count ?? 0,
       day1_activation_pct: day1Activation,
       week2_retention_pct: week2Retention,
-      avg_players_per_dm: avgPlayersPerDm,
+      avg_players_per_dm: Number(avgPlayers?.avg_players ?? 0),
     },
   });
 };

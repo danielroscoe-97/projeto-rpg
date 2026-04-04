@@ -23,12 +23,14 @@ export function useBagOfHolding(campaignId: string, userId: string) {
           .from("party_inventory_items")
           .select("*")
           .eq("campaign_id", campaignId)
-          .order("added_at", { ascending: false }),
+          .order("added_at", { ascending: false })
+          .limit(500),
         supabase
           .from("inventory_removal_requests")
           .select("*")
           .eq("campaign_id", campaignId)
-          .eq("status", "pending"),
+          .eq("status", "pending")
+          .limit(100),
       ]);
 
       const requests = requestsData ?? [];

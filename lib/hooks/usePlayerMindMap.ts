@@ -330,55 +330,17 @@ export function usePlayerMindMap(campaignId: string, campaignName: string) {
     fetchData();
   }, [fetchData]);
 
-  // Debounced refetch for realtime — prevents stampede when DM makes rapid changes
-  const realtimeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const debouncedRefetch = useCallback(() => {
-    if (realtimeTimerRef.current) clearTimeout(realtimeTimerRef.current);
-    realtimeTimerRef.current = setTimeout(() => {
-      fetchData();
-    }, 500);
+  // Poll for mind map updates every 30s instead of 8 postgres_changes subscriptions.
+  // Mind map data changes infrequently (DM adds NPCs, locations, etc.) so polling is
+  // far cheaper than WAL replication on 8 tables. Only polls when tab is visible.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetchData();
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
   }, [fetchData]);
-
-  // Cleanup debounce timer on unmount
-  useEffect(() => {
-    return () => {
-      if (realtimeTimerRef.current) clearTimeout(realtimeTimerRef.current);
-    };
-  }, []);
-
-  // Realtime subscriptions for visibility changes
-  useEffect(() => {
-    const supabase = createClient();
-    const tables = [
-      "campaign_npcs",
-      "campaign_locations",
-      "campaign_factions",
-      "campaign_quests",
-      "campaign_mind_map_edges",
-      "campaign_notes",
-      "sessions",
-      "party_inventory_items",
-    ];
-
-    let channel = supabase.channel(`player-mindmap-${campaignId}`);
-    for (const table of tables) {
-      channel = channel.on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table,
-          filter: `campaign_id=eq.${campaignId}`,
-        },
-        debouncedRefetch
-      );
-    }
-    channel.subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [campaignId, debouncedRefetch]);
 
   return { nodes, edges, loading, error, refetch: fetchData };
 }

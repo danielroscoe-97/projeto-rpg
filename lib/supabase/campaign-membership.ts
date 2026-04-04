@@ -67,18 +67,24 @@ export async function getUserMemberships(
       (m.campaigns as Record<string, unknown>).id as string
   );
 
-  const { data: playerCounts } = await supabase
-    .from("campaign_members")
-    .select("campaign_id")
-    .in("campaign_id", campaignIds)
-    .eq("status", "active")
-    .eq("role", "player");
+  const [playerCountsResult, activeSessionsResult] = await Promise.all([
+    supabase
+      .from("campaign_members")
+      .select("campaign_id")
+      .in("campaign_id", campaignIds)
+      .eq("status", "active")
+      .eq("role", "player")
+      .limit(500),
+    supabase
+      .from("sessions")
+      .select("campaign_id")
+      .in("campaign_id", campaignIds)
+      .eq("is_active", true)
+      .limit(100),
+  ]);
 
-  const { data: activeSessions } = await supabase
-    .from("sessions")
-    .select("campaign_id")
-    .in("campaign_id", campaignIds)
-    .eq("is_active", true);
+  const playerCounts = playerCountsResult.data;
+  const activeSessions = activeSessionsResult.data;
 
   // Build player count map
   const playerCountMap: Record<string, number> = {};
@@ -112,7 +118,8 @@ export async function getUserMemberships(
       .from("player_characters")
       .select("campaign_id, name, current_hp, max_hp, race, class, level")
       .in("campaign_id", playerCampaignIds)
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .limit(100);
 
     for (const pc of characters ?? []) {
       if (!characterMap[pc.campaign_id]) {

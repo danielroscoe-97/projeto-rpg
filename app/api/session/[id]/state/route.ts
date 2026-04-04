@@ -32,15 +32,35 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
     // (anonymous players can't read these tables through RLS)
     const serviceClient = createServiceClient();
 
-    // Check if user has a valid session token
-    const { data: tokenRow, error: tokenError } = await serviceClient
-      .from("session_tokens")
-      .select("id")
-      .eq("session_id", sessionId)
-      .eq("anon_user_id", user.id)
-      .eq("is_active", true)
-      .limit(1)
-      .single();
+    // Batch: token check + session fetch + encounter fetch run in parallel
+    const [tokenResult, sessionResult, encounterResult] = await Promise.all([
+      // Check if user has a valid session token
+      serviceClient
+        .from("session_tokens")
+        .select("id")
+        .eq("session_id", sessionId)
+        .eq("anon_user_id", user.id)
+        .eq("is_active", true)
+        .limit(1)
+        .single(),
+      // Fetch dm_plan + dm_last_seen_at from sessions table
+      serviceClient
+        .from("sessions")
+        .select("dm_plan, dm_last_seen_at")
+        .eq("id", sessionId)
+        .single(),
+      // Fetch active encounter
+      serviceClient
+        .from("encounters")
+        .select("id, round_number, current_turn_index, is_active")
+        .eq("session_id", sessionId)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single(),
+    ]);
+
+    const { data: tokenRow, error: tokenError } = tokenResult;
 
     // PGRST116 = "0 rows" — not a DB failure, just no matching token
     if (tokenError && tokenError.code !== "PGRST116") {
@@ -51,24 +71,20 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    // Fetch dm_plan + dm_last_seen_at from sessions table
-    const { data: sessionRow } = await serviceClient
-      .from("sessions")
-      .select("dm_plan, dm_last_seen_at")
-      .eq("id", sessionId)
-      .single();
+    // Check session/encounter errors (PGRST116 = "0 rows" is OK — means no active encounter)
+    if (sessionResult.error && sessionResult.error.code !== "PGRST116") {
+      captureError(sessionResult.error, { component: "SessionStateAPI", action: "fetchSession", category: "database" });
+      return NextResponse.json({ error: "Failed to fetch session" }, { status: 500 });
+    }
+    if (encounterResult.error && encounterResult.error.code !== "PGRST116") {
+      captureError(encounterResult.error, { component: "SessionStateAPI", action: "fetchEncounter", category: "database" });
+      return NextResponse.json({ error: "Failed to fetch encounter" }, { status: 500 });
+    }
 
-    // Fetch active encounter + combatants
-    const { data: encounter } = await serviceClient
-      .from("encounters")
-      .select("id, round_number, current_turn_index, is_active")
-      .eq("session_id", sessionId)
-      .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
+    const sessionRow = sessionResult.data;
+    const encounter = encounterResult.data;
 
-    // Resolve token_owner for split-brain detection (bfcache)
+    // Resolve token_owner for split-brain detection (bfcache) — only if requested
     let tokenOwner: string | null = null;
     if (tokenIdParam && UUID_RE.test(tokenIdParam)) {
       const { data: ownerRow } = await serviceClient
@@ -91,7 +107,8 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
         "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations"
       )
       .eq("encounter_id", encounter.id)
-      .order("initiative_order", { ascending: true });
+      .order("initiative_order", { ascending: true })
+      .limit(200);
 
     // Strip sensitive data from monsters — players see only HP status label.
     // Also filter out hidden combatants and apply display_name anti-metagaming.

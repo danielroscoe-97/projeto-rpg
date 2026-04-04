@@ -24,8 +24,8 @@ interface PlayersOnlinePanelProps {
 }
 
 const OFFLINE_DELAY_MS = 5000;
-const STALE_CHECK_INTERVAL_MS = 15_000; // Quinn: DM polls last_seen_at every 15s
-const ACTIVE_THRESHOLD_MS = 90_000; // 3x heartbeat interval (30s) — avoids false-offline from JS throttling
+const STALE_CHECK_INTERVAL_MS = 30_000; // DM polls last_seen_at every 30s (halved from 15s to reduce DB reads)
+const ACTIVE_THRESHOLD_MS = 180_000; // 3x heartbeat interval (60s) — avoids false-offline from JS throttling
 const IDLE_THRESHOLD_MS = 300_000; // 5min
 
 export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastStatuses }: PlayersOnlinePanelProps) {

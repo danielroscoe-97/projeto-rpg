@@ -16,7 +16,8 @@ export async function fetchPresets(): Promise<PresetRow[]> {
   const { data, error } = await supabase
     .from("monster_presets")
     .select("id, name, monsters, ruleset_version, created_at, updated_at")
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .limit(100);
 
   if (error) throw new Error(error.message);
   return (data ?? []) as PresetRow[];

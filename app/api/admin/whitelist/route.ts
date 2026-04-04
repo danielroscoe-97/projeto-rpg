@@ -33,8 +33,9 @@ const getHandler: Parameters<typeof withRateLimit>[0] = async function (
 
   const { data: entries, error } = await adminClient
     .from("content_whitelist")
-    .select("*")
-    .order("granted_at", { ascending: false });
+    .select("id, user_id, granted_by, granted_at, revoked_at, notes")
+    .order("granted_at", { ascending: false })
+    .limit(200);
 
   if (error)
     return NextResponse.json({ error: "Query failed" }, { status: 500 });
@@ -65,14 +66,15 @@ const getHandler: Parameters<typeof withRateLimit>[0] = async function (
   // Also fetch all content agreements with user info
   const { data: agreements } = await adminClient
     .from("content_agreements")
-    .select("*")
-    .order("agreed_at", { ascending: false });
+    .select("id, user_id, agreed_at, agreement_version")
+    .order("agreed_at", { ascending: false })
+    .limit(200);
 
   const agreementUserIds = [
     ...new Set((agreements ?? []).map((a) => a.user_id)),
   ];
 
-  // Fetch user info for agreement holders (skip already-fetched)
+  // Fetch user info for agreement holders (skip already-fetched) — single query, no redundant re-fetch
   const missingUserIds = agreementUserIds.filter((id) => !userMap.has(id));
   if (missingUserIds.length > 0) {
     const { data: moreUsers } = await adminClient
@@ -80,15 +82,6 @@ const getHandler: Parameters<typeof withRateLimit>[0] = async function (
       .select("id, email, display_name, created_at, role")
       .in("id", missingUserIds);
     (moreUsers ?? []).forEach((u) => userMap.set(u.id, u));
-  }
-
-  // Also enrich existing users with extra fields for display
-  if (agreementUserIds.length > 0) {
-    const { data: fullUsers } = await adminClient
-      .from("users")
-      .select("id, email, display_name, created_at, role")
-      .in("id", agreementUserIds);
-    (fullUsers ?? []).forEach((u) => userMap.set(u.id, u));
   }
 
   const agreementsResult = (agreements ?? []).map((a) => ({

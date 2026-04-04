@@ -66,52 +66,67 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Fetch combatants for context-aware sanitization
+    // 4. Fetch combatants ONLY for events that need hidden-combatant context.
+    // Events like audio, weather, chat, state_sync (carries own data) skip the DB entirely.
+    const NEEDS_COMBATANT_CONTEXT = new Set([
+      "combat:turn_advance",
+      "combat:hp_update",
+      "combat:condition_change",
+      "combat:defeated_change",
+      "combat:stats_update",
+      "combat:player_notes_update",
+      "combat:version_switch",
+    ]);
+
     let combatants: Combatant[] = [];
-    const { data: encounter } = await supabaseAuth
-      .from("encounters")
-      .select("id")
-      .eq("session_id", sessionId)
-      .eq("is_active", true)
-      .single();
+    if (NEEDS_COMBATANT_CONTEXT.has(event.type)) {
+      const { data: encounter } = await supabaseAuth
+        .from("encounters")
+        .select("id")
+        .eq("session_id", sessionId)
+        .eq("is_active", true)
+        .single();
 
-    if (encounter) {
-      const { data: rawCombatants } = await supabaseAuth
-        .from("combatants")
-        .select("id, name, is_hidden, is_player, current_hp, max_hp, temp_hp, ac, spell_save_dc, conditions, initiative, initiative_order, is_defeated, monster_id, ruleset_version, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id, condition_durations, death_saves, legendary_actions_total, legendary_actions_used")
-        .eq("encounter_id", encounter.id)
-        .order("initiative_order", { ascending: true });
+      if (encounter) {
+        // Minimal columns: only what the sanitizer needs for hidden checks + turn adjustment
+        const { data: rawCombatants } = await supabaseAuth
+          .from("combatants")
+          .select("id, name, is_hidden, is_player, current_hp, max_hp, temp_hp, ac, spell_save_dc, conditions, initiative_order, is_defeated, display_name, condition_durations")
+          .eq("encounter_id", encounter.id)
+          .order("initiative_order", { ascending: true })
+          .limit(200);
 
-      combatants = (rawCombatants ?? []).map((r) => ({
-        id: r.id,
-        name: r.name,
-        is_hidden: r.is_hidden ?? false,
-        is_player: r.is_player ?? false,
-        current_hp: r.current_hp,
-        max_hp: r.max_hp,
-        temp_hp: r.temp_hp ?? 0,
-        ac: r.ac,
-        spell_save_dc: r.spell_save_dc ?? null,
-        conditions: r.conditions ?? [],
-        initiative: r.initiative ?? null,
-        initiative_order: r.initiative_order ?? null,
-        is_defeated: r.is_defeated ?? false,
-        monster_id: r.monster_id ?? null,
-        token_url: null,
-        creature_type: null,
-        ruleset_version: r.ruleset_version ?? null,
-        display_name: r.display_name ?? null,
-        monster_group_id: r.monster_group_id ?? null,
-        group_order: r.group_order ?? null,
-        dm_notes: r.dm_notes ?? "",
-        player_notes: r.player_notes ?? "",
-        player_character_id: r.player_character_id ?? null,
-        combatant_role: null,
-        condition_durations: (r.condition_durations as Record<string, number> | null) ?? {},
-        death_saves: (r.death_saves as { successes: number; failures: number } | null) ?? undefined,
-        legendary_actions_total: r.legendary_actions_total ?? null,
-        legendary_actions_used: r.legendary_actions_used ?? 0,
-      }));
+        combatants = (rawCombatants ?? []).map((r) => ({
+          id: r.id,
+          name: r.name,
+          is_hidden: r.is_hidden ?? false,
+          is_player: r.is_player ?? false,
+          current_hp: r.current_hp,
+          max_hp: r.max_hp,
+          temp_hp: r.temp_hp ?? 0,
+          ac: r.ac,
+          spell_save_dc: r.spell_save_dc ?? null,
+          conditions: r.conditions ?? [],
+          initiative: null,
+          initiative_order: r.initiative_order ?? null,
+          is_defeated: r.is_defeated ?? false,
+          monster_id: null,
+          token_url: null,
+          creature_type: null,
+          ruleset_version: null,
+          display_name: r.display_name ?? null,
+          monster_group_id: null,
+          group_order: null,
+          dm_notes: "",
+          player_notes: "",
+          player_character_id: null,
+          combatant_role: null,
+          condition_durations: (r.condition_durations as Record<string, number> | null) ?? {},
+          death_saves: undefined,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
+        }));
+      }
     }
 
     // 5. Sanitize payload (server-side — the anti-metagaming gate)
