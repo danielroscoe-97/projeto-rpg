@@ -17,6 +17,8 @@ import {
   BlogPost10,
   BlogPost11,
   BlogPost12,
+  BlogPost13,
+  BlogPost14,
 } from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC } from "@/components/blog/BlogTOC";
@@ -69,6 +71,8 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
   "como-mestrar-dnd-primeira-vez": BlogPost10,
   "musica-ambiente-para-rpg": BlogPost11,
   "teatro-da-mente-vs-grid-dnd-5e": BlogPost12,
+  "build-half-elf-order-cleric-divine-soul-sorcerer": BlogPost13,
+  "build-half-elf-order-cleric-divine-soul-sorcerer-en": BlogPost14,
 };
 
 export const revalidate = 86400;

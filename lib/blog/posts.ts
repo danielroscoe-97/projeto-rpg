@@ -249,6 +249,54 @@ export const BLOG_POSTS: BlogPost[] = [
       "Teatro da Mente vs Grid — Qual Estilo de Combate? | Pocket DM",
     category: "comparativo",
   },
+  {
+    slug: "build-half-elf-order-cleric-divine-soul-sorcerer",
+    title:
+      "Half-Elf Order Cleric 1 / Divine Soul Sorcerer — Build de Suporte Nível 10",
+    description:
+      "Build otimizada de Half-Elf (Drow) Order Cleric 1 / Divine Soul Sorcerer nível 10 para D&D 5e. Suporte tier S com Voice of Authority e Metamagic. Versão Point Buy e dados rolados.",
+    date: "2026-04-04",
+    readingTime: "14 min",
+    keywords: [
+      "build divine soul sorcerer D&D 5e",
+      "order cleric divine soul sorcerer",
+      "build sorcerer suporte D&D 5e",
+      "divine soul sorcerer build",
+      "order cleric multiclass",
+      "voice of authority D&D 5e",
+      "build half-elf sorcerer",
+      "ficha pronta sorcerer D&D 5e",
+      "point buy sorcerer D&D 5e",
+      "build otimizada suporte D&D",
+    ],
+    ogTitle:
+      "Half-Elf Order Cleric / Divine Soul Sorcerer — Build Nível 10 | Pocket DM",
+    category: "build",
+  },
+  {
+    slug: "build-half-elf-order-cleric-divine-soul-sorcerer-en",
+    title:
+      "Half-Elf Order Cleric 1 / Divine Soul Sorcerer — Level 10 Support Build",
+    description:
+      "Optimized Half-Elf (Drow) Order Cleric 1 / Divine Soul Sorcerer level 10 build for D&D 5e. S-tier support with Voice of Authority and Metamagic. Point Buy and rolled stats versions.",
+    date: "2026-04-04",
+    readingTime: "14 min",
+    keywords: [
+      "divine soul sorcerer build D&D 5e",
+      "order cleric divine soul sorcerer",
+      "support sorcerer build D&D 5e",
+      "order cleric multiclass 5e",
+      "voice of authority build",
+      "half-elf sorcerer build",
+      "sorcerer character sheet D&D 5e",
+      "point buy sorcerer D&D 5e",
+      "optimized support build D&D 5e",
+      "cleric sorcerer multiclass",
+    ],
+    ogTitle:
+      "Half-Elf Order Cleric / Divine Soul Sorcerer — Level 10 Build | Pocket DM",
+    category: "build",
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {

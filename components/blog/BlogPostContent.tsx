@@ -3402,3 +3402,872 @@ export function BlogPost12() {
     </>
   );
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Post 13 — Build: Half-Elf (Drow) Order Cleric 1 / Divine Soul Sorcerer — PT-BR
+   ═══════════════════════════════════════════════════════════════ */
+export function BlogPost13() {
+  return (
+    <>
+      {/* Quote de abertura */}
+      <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-6 my-8 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.06] rounded-full blur-[60px]" />
+        <p className="relative text-lg italic text-gold/90 font-display">
+          &ldquo;Eu serei a fundação.&rdquo;
+        </p>
+        <p className="relative text-xs text-muted-foreground mt-2">— Capa Barsavi</p>
+      </div>
+
+      <P>
+        Capa Barsavi não era o que causava mais dano, não era o que recebia os
+        golpes, e não era o que roubava a cena. Ele era o motivo pelo qual todos
+        os outros podiam fazer isso. Um <strong>Order Cleric 1 / Divine Soul Sorcerer</strong>{" "}
+        construído para ser a engrenagem invisível que faz a máquina funcionar —
+        e uma das builds de suporte mais eficientes do D&amp;D 5e.
+      </P>
+
+      <H2>Resumo da Build</H2>
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm text-foreground/80 border-collapse">
+          <tbody>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Raça</td>
+              <td className="py-2">Half-Elf (Drow)</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Classe</td>
+              <td className="py-2">Cleric 1 (Order Domain) / Sorcerer 9 (Divine Soul)</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Nível</td>
+              <td className="py-2">10</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Foco</td>
+              <td className="py-2">Suporte / Controle / Multiplicador de ação</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Feats</td>
+              <td className="py-2">Resilient (CON), Fey Touched</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Metamagic</td>
+              <td className="py-2">Extended Spell, Quickened Spell</td>
+            </tr>
+            <tr>
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Dificuldade</td>
+              <td className="py-2">Médio — exige conhecimento de sinergia e timing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <H2>Atributos — Dados Rolados vs Point Buy</H2>
+
+      <Tip>
+        Esta build foi criada com dados rolados (4d6 drop lowest). Abaixo
+        mostramos como reconstruí-la usando Point Buy para quem prefere um
+        método padronizado. As prioridades de atributo se mantêm, com pequenos
+        ajustes.
+      </Tip>
+
+      <H3>Comparação final (nível 10)</H3>
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm text-foreground/80 border-collapse">
+          <thead>
+            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+              <th className="py-2 text-left">Atributo</th>
+              <th className="py-2 text-center">Rolado</th>
+              <th className="py-2 text-center">Point Buy</th>
+              <th className="py-2 text-center">Diferença</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">STR</td>
+              <td className="py-2 text-center">10</td>
+              <td className="py-2 text-center">8</td>
+              <td className="py-2 text-center text-red-400/70">&minus;2</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">DEX</td>
+              <td className="py-2 text-center">14</td>
+              <td className="py-2 text-center">14</td>
+              <td className="py-2 text-center text-green-400/70">0</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">CON</td>
+              <td className="py-2 text-center">18 &rarr; 19*</td>
+              <td className="py-2 text-center">16 &rarr; 17*</td>
+              <td className="py-2 text-center text-red-400/70">&minus;2</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">INT</td>
+              <td className="py-2 text-center">8</td>
+              <td className="py-2 text-center">9</td>
+              <td className="py-2 text-center text-green-400/70">+1</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">WIS</td>
+              <td className="py-2 text-center">14&dagger;</td>
+              <td className="py-2 text-center">14&dagger;</td>
+              <td className="py-2 text-center text-green-400/70">0</td>
+            </tr>
+            <tr>
+              <td className="py-2 font-semibold">CHA</td>
+              <td className="py-2 text-center">18&Dagger;</td>
+              <td className="py-2 text-center">18&Dagger;</td>
+              <td className="py-2 text-center text-green-400/70">0</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="text-xs text-muted-foreground/60 mt-2">
+          * Inclui Resilient CON (+1) &nbsp;|&nbsp; &dagger; Inclui Fey Touched (+1 WIS) &nbsp;|&nbsp; &Dagger; Inclui Tome of Leadership (+2 CHA)
+        </p>
+      </div>
+
+      <H3>Progressão de atributos (Point Buy)</H3>
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm text-foreground/80 border-collapse">
+          <thead>
+            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+              <th className="py-2 text-left">Nível</th>
+              <th className="py-2 text-left">Evento</th>
+              <th className="py-2 text-center">STR</th>
+              <th className="py-2 text-center">DEX</th>
+              <th className="py-2 text-center">CON</th>
+              <th className="py-2 text-center">INT</th>
+              <th className="py-2 text-center">WIS</th>
+              <th className="py-2 text-center">CHA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-1.5">1</td>
+              <td className="py-1.5 text-xs">Point Buy + Racial</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center">16</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center">13</td>
+              <td className="py-1.5 text-center">16</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-1.5">5</td>
+              <td className="py-1.5 text-xs">Sorc 4 — Resilient CON</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center text-gold">17</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center">13</td>
+              <td className="py-1.5 text-center">16</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-1.5">9</td>
+              <td className="py-1.5 text-xs">Sorc 8 — Fey Touched (+1 WIS)</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center">17</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center text-gold">14</td>
+              <td className="py-1.5 text-center">16</td>
+            </tr>
+            <tr>
+              <td className="py-1.5">10</td>
+              <td className="py-1.5 text-xs">Tome of Leadership (+2 CHA)</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center">17</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center text-gold">18</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <P>
+        <strong>Trade-offs com Point Buy:</strong> A maior diferença é CON — com
+        dados rolados, Capa tinha +4 de modificador de CON durante toda a
+        campanha, enquanto com Point Buy ficaria em +3. Isso significa{" "}
+        <strong>&minus;1 HP por nível</strong> (&minus;10 no total) e &minus;1 nos testes de
+        Constituição para manter concentração. Para uma build que depende de
+        manter Bless e Spirit Guardians ativos, é uma diferença real — mas
+        Resilient CON compensa boa parte disso com proficiência nos saves.
+      </P>
+
+      <H2>Por Que Essas Escolhas?</H2>
+
+      <H3>Raça: Half-Elf (Drow)</H3>
+      <P>
+        Half-Elf é uma das raças mais flexíveis do 5e. O +2 CHA é exatamente o
+        que um Sorcerer precisa, e os dois +1 extras permitem arredondar CON e
+        DEX — atributos essenciais para sobrevivência e AC. A variante Drow
+        adiciona Darkvision 60ft e Fey Ancestry (vantagem contra charm e
+        imunidade a sono mágico), traços defensivos valiosos para quem precisa
+        manter concentração.
+      </P>
+
+      <H3>Cleric 1 — Order Domain</H3>
+      <P>
+        O dip de um nível em Cleric (Order Domain) é o coração da build.{" "}
+        <strong>Voice of Authority</strong> é a feature que transforma um
+        caster de suporte em um multiplicador de ações: toda vez que você
+        conjura uma magia com spell slot mirando um aliado, esse aliado pode
+        usar sua reação para fazer um ataque de arma. Combine com Quickened
+        Spell e você pode buffar alguém E conjurar uma magia ofensiva no mesmo
+        turno — enquanto seu aliado ainda ganha um ataque extra.
+      </P>
+      <P>
+        Além disso, o nível de Cleric traz proficiência em armaduras pesadas e
+        escudos (AC 19-21), saves de Sabedoria, e acesso a magias clericais de
+        1º nível que um Sorcerer normalmente não teria — como Command e
+        Heroism, ambas preparadas gratuitamente pelo domínio.
+      </P>
+
+      <H3>Sorcerer — Divine Soul</H3>
+      <P>
+        Divine Soul Sorcerer é avaliado pela comunidade como{" "}
+        <strong>tier S</strong> entre as subclasses de Sorcerer — e por bom
+        motivo. Ele dá acesso à <strong>lista inteira de magias de Cleric</strong>{" "}
+        sem precisar de mais níveis em Cleric. Isso significa Spirit Guardians,
+        Aid, Revivify, Death Ward — tudo usando Carisma e com Metamagic
+        disponível.
+      </P>
+      <P>
+        As features da subclasse são igualmente fortes:{" "}
+        <strong>Favored by the Gods</strong> (2d4 de bônus em um save ou ataque
+        falhado, 1x por descanso) e{" "}
+        <strong>Empowered Healing</strong> (reroll dados de cura para aliados
+        próximos). Ambas reforçam o papel de suporte confiável.
+      </P>
+
+      <H3>Feats</H3>
+      <Ul>
+        <Li>
+          <strong>Resilient (CON) — Sorc 4:</strong> Proficiência em saves de
+          Constituição é essencial para manter concentração em magias como
+          Bless e Spirit Guardians. No nível 10, o bônus de +7/+8 em saves de
+          CON torna quase impossível perder concentração em danos baixos e
+          moderados.
+        </Li>
+        <Li>
+          <strong>Fey Touched — Sorc 8:</strong> +1 WIS (arredondando de 13
+          para 14), Misty Step gratuito 1x/dia (mobilidade essencial para um
+          caster frontline), e Gift of Alacrity (bônus de iniciativa para
+          garantir que os buffs cheguem antes dos inimigos agirem).
+        </Li>
+      </Ul>
+
+      <H3>Metamagic</H3>
+      <Ul>
+        <Li>
+          <strong>Quickened Spell:</strong> Transforma uma magia de ação em
+          bônus action. Permite conjurar um buff (ativando Voice of Authority)
+          e ainda usar sua ação para um cantrip ou outra magia no mesmo turno.
+        </Li>
+        <Li>
+          <strong>Extended Spell:</strong> Dobra a duração de magias como Aid
+          (agora 16 horas em vez de 8), Death Ward, e qualquer buff de
+          concentração longa. Excelente para preparação antes de encontros.
+        </Li>
+      </Ul>
+
+      <H2>Combate — O Que Essa Build Faz de Melhor</H2>
+
+      <H3>Rotação típica</H3>
+      <Ul>
+        <Li>
+          <strong>Round 1:</strong> Quickened Bless em 3 aliados (Voice of
+          Authority dá um ataque de reação ao alvo principal) + Sacred Flame ou
+          Toll the Dead como ação.
+        </Li>
+        <Li>
+          <strong>Round 2+:</strong> Spirit Guardians (se em melee) ou Spiritual
+          Weapon + cantrips. Cada magia com slot mirando aliados continua
+          ativando Voice of Authority.
+        </Li>
+        <Li>
+          <strong>Reação:</strong> Shield (+5 AC por um turno, 1x grátis pelo
+          background), Absorb Elements, Silvery Barbs (forçar reroll inimigo E
+          dar vantagem a um aliado), ou Counterspell.
+        </Li>
+        <Li>
+          <strong>Emergência:</strong> Healing Word (cura à distância como bônus
+          action), Revivify, ou Dimension Door para reposicionamento.
+        </Li>
+      </Ul>
+
+      <H3>Onde a build brilha</H3>
+      <Ul>
+        <Li>Multiplicação de ações — cada buff gera ataques extras para o grupo</Li>
+        <Li>Concentração blindada — Resilient CON + alta CON = saves quase garantidos</Li>
+        <Li>Versatilidade — acesso a listas de Cleric e Sorcerer simultaneamente</Li>
+        <Li>AC alta para caster — 19-21 com Half Plate/Mithril Plate + Shield</Li>
+        <Li>Contramágica — Counterspell e Silvery Barbs para proteger o grupo</Li>
+      </Ul>
+
+      <H3>Onde a build sofre</H3>
+      <Ul>
+        <Li>Magias conhecidas limitadas — Sorcerer tem poucas magias, escolha com cuidado</Li>
+        <Li>Dependência de concentração — perder Bless ou Spirit Guardians dói</Li>
+        <Li>Dano direto baixo — o dano vem dos aliados, não de você</Li>
+        <Li>Início lento — níveis 1-4 antes de Metamagic e magias de 3º nível</Li>
+      </Ul>
+
+      <H2>Comparação com Builds Populares</H2>
+
+      <P>
+        O Order Cleric 1 / Divine Soul Sorcerer é considerado pela comunidade de
+        otimização (RPGBot, TabletopBuilds, Treantmonk, r/3d6) como{" "}
+        <strong>uma das builds de suporte mais eficientes do 5e</strong>. A
+        Divine Soul Sorcerer sozinha já é avaliada como tier S entre subclasses de
+        Sorcerer, e o dip de Order Cleric é amplamente reconhecido como um dos
+        melhores multiclass de 1 nível do jogo.
+      </P>
+      <P>
+        Comparada a outros suportes populares: <strong>Twilight Cleric</strong>{" "}
+        e <strong>Peace Cleric</strong> são frequentemente citados como mais
+        fortes em termos brutos (a aura de HP temporários do Twilight e o
+        Emboldening Bond do Peace são considerados &ldquo;broken&rdquo;). Porém,
+        o Order/DSS tem uma vantagem única: ele{" "}
+        <strong>multiplica a economia de ações do grupo inteiro</strong> em vez
+        de apenas adicionar um bônus. Quando seu Fighter e seu Paladin ganham
+        ataques extras como reação em todo turno que você buffa, a contribuição
+        de DPR indireta pode superar a de um caster blaster.
+      </P>
+      <P>
+        A build do Capa seguiu Quickened e Extended como metamagic em vez do
+        mais popular Twinned Spell. Isso troca a capacidade de buffar dois
+        alvos simultaneamente pela flexibilidade de fazer duas ações por turno
+        e estender buffs como Aid para 16 horas — uma escolha que prioriza
+        preparação e versatilidade sobre raw output.
+      </P>
+
+      <H2>Progressão — Para Onde Ir nos Próximos Níveis</H2>
+
+      <Ul>
+        <Li>
+          <strong>Nível 11 (Sorc 10):</strong> Mais um Metamagic — Twinned
+          Spell é a escolha óbvia aqui, finalmente adicionando a capacidade de
+          buffar dois aliados ao mesmo tempo.
+        </Li>
+        <Li>
+          <strong>Nível 12 (Sorc 11):</strong> Magias de 6º nível — Mass
+          Suggestion para controle fora de combate, ou Heal para cura massiva
+          de emergência.
+        </Li>
+        <Li>
+          <strong>Nível 13 (Sorc 12):</strong> ASI — +2 CHA (chegando a 20 com
+          o Tome) ou um feat como Alert para garantir iniciativa alta.
+        </Li>
+        <Li>
+          <strong>Itens desejados:</strong> Staff of Power (Very Rare) para mais
+          AC e magias, ou um Dragon Touched Focus (Legendary) para potencializar
+          magias de Sorcerer.
+        </Li>
+      </Ul>
+
+      <H2>A História de Capa Barsavi</H2>
+
+      <P>
+        Capa Barsavi nasceu como filho bastardo de um clérigo renomado e uma
+        aventureira meio-elfa de sangue drow que desapareceu logo após seu
+        nascimento. Criado sob rigor acadêmico e disciplina religiosa, estudou
+        teologia desde cedo e foi devotado a um deus da ordem e da justiça —
+        embora sua natureza cética sempre tenha contrastado com essa devoção.
+        &ldquo;Capa&rdquo; vem da tradição de nomear filhos bastardos com
+        termos que evocam proteção; &ldquo;Barsavi&rdquo; homenageia uma
+        figura lendária conhecida como &ldquo;O Guardião Sábio&rdquo;.
+      </P>
+      <P>
+        Após a desaparição misteriosa de seu pai durante uma expedição, Capa
+        enfrentou uma crise de fé que despertou poderes que ele não compreendia
+        — herança do sangue celestial de sua mãe, uma linhagem tocada por
+        forças divinas. Carregando bênçãos clericais e poder arcano ao mesmo
+        tempo, partiu em busca de respostas sobre o destino de seu pai e sobre
+        sua própria natureza.
+      </P>
+      <P>
+        Sua jornada o levou a terras sombrias sob o domínio de um vampiro, onde
+        Capa e seus companheiros enfrentaram horrores que testaram não apenas
+        suas habilidades, mas sua fé e seus ideais. Observador, erudito e
+        eternamente cético, ele encontrou ali algo que nunca esperava: pessoas
+        pelas quais valia a pena lutar. Capa se tornou a fundação do grupo — o
+        suporte silencioso que mantinha todos de pé quando tudo parecia perdido.
+      </P>
+      <P>
+        No final, Capa Barsavi morreu pelo seu grupo. A engrenagem parou para
+        que a máquina sobrevivesse. Uma fundação que cumpriu sua promessa.
+      </P>
+
+      <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 my-6 text-center">
+        <p className="text-xs text-muted-foreground/70">
+          Build criada e jogada por <strong className="text-foreground/80">Dani</strong> &middot; por Pocket DM
+        </p>
+      </div>
+
+      {/* CTA Build */}
+      <div className="rounded-lg border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 my-8 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.05] rounded-full blur-[60px]" />
+        <div className="relative">
+          <p className="font-display text-lg text-gold mb-1">Gostou dessa build?</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Monte o encontro perfeito para testá-la — use o Pocket DM gratuitamente.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/try"
+              className="bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200"
+            >
+              Testar Grátis &rarr;
+            </Link>
+            <Link
+              href="/auth/login"
+              className="border border-white/10 text-foreground/80 font-medium px-5 py-2.5 rounded-lg text-sm hover:border-white/20 hover:text-foreground transition-all duration-200"
+            >
+              Criar Conta
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Post 14 — Build: Half-Elf (Drow) Order Cleric 1 / Divine Soul Sorcerer — EN
+   ═══════════════════════════════════════════════════════════════ */
+export function BlogPost14() {
+  return (
+    <>
+      {/* Opening quote */}
+      <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-6 my-8 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.06] rounded-full blur-[60px]" />
+        <p className="relative text-lg italic text-gold/90 font-display">
+          &ldquo;I will be the foundation.&rdquo;
+        </p>
+        <p className="relative text-xs text-muted-foreground mt-2">— Capa Barsavi</p>
+      </div>
+
+      <P>
+        Capa Barsavi wasn&apos;t the one dealing the most damage, taking the
+        hits, or stealing the spotlight. He was the reason everyone else could.
+        An <strong>Order Cleric 1 / Divine Soul Sorcerer</strong> built to be
+        the invisible gear that makes the machine work — and one of the most
+        efficient support builds in D&amp;D 5e.
+      </P>
+
+      <H2>Build Summary</H2>
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm text-foreground/80 border-collapse">
+          <tbody>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Race</td>
+              <td className="py-2">Half-Elf (Drow)</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Class</td>
+              <td className="py-2">Cleric 1 (Order Domain) / Sorcerer 9 (Divine Soul)</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Level</td>
+              <td className="py-2">10</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Focus</td>
+              <td className="py-2">Support / Control / Action economy multiplier</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Feats</td>
+              <td className="py-2">Resilient (CON), Fey Touched</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Metamagic</td>
+              <td className="py-2">Extended Spell, Quickened Spell</td>
+            </tr>
+            <tr>
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Difficulty</td>
+              <td className="py-2">Medium — requires synergy knowledge and timing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <H2>Ability Scores — Rolled Stats vs Point Buy</H2>
+
+      <Tip>
+        This build was created with rolled stats (4d6 drop lowest). Below we
+        show how to rebuild it using Point Buy for those who prefer a
+        standardized method. Attribute priorities remain the same with minor
+        adjustments.
+      </Tip>
+
+      <H3>Final comparison (level 10)</H3>
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm text-foreground/80 border-collapse">
+          <thead>
+            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+              <th className="py-2 text-left">Ability</th>
+              <th className="py-2 text-center">Rolled</th>
+              <th className="py-2 text-center">Point Buy</th>
+              <th className="py-2 text-center">Diff</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">STR</td>
+              <td className="py-2 text-center">10</td>
+              <td className="py-2 text-center">8</td>
+              <td className="py-2 text-center text-red-400/70">&minus;2</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">DEX</td>
+              <td className="py-2 text-center">14</td>
+              <td className="py-2 text-center">14</td>
+              <td className="py-2 text-center text-green-400/70">0</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">CON</td>
+              <td className="py-2 text-center">18 &rarr; 19*</td>
+              <td className="py-2 text-center">16 &rarr; 17*</td>
+              <td className="py-2 text-center text-red-400/70">&minus;2</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">INT</td>
+              <td className="py-2 text-center">8</td>
+              <td className="py-2 text-center">9</td>
+              <td className="py-2 text-center text-green-400/70">+1</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-2 font-semibold">WIS</td>
+              <td className="py-2 text-center">14&dagger;</td>
+              <td className="py-2 text-center">14&dagger;</td>
+              <td className="py-2 text-center text-green-400/70">0</td>
+            </tr>
+            <tr>
+              <td className="py-2 font-semibold">CHA</td>
+              <td className="py-2 text-center">18&Dagger;</td>
+              <td className="py-2 text-center">18&Dagger;</td>
+              <td className="py-2 text-center text-green-400/70">0</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="text-xs text-muted-foreground/60 mt-2">
+          * Includes Resilient CON (+1) &nbsp;|&nbsp; &dagger; Includes Fey Touched (+1 WIS) &nbsp;|&nbsp; &Dagger; Includes Tome of Leadership (+2 CHA)
+        </p>
+      </div>
+
+      <H3>Point Buy attribute progression</H3>
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm text-foreground/80 border-collapse">
+          <thead>
+            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+              <th className="py-2 text-left">Level</th>
+              <th className="py-2 text-left">Event</th>
+              <th className="py-2 text-center">STR</th>
+              <th className="py-2 text-center">DEX</th>
+              <th className="py-2 text-center">CON</th>
+              <th className="py-2 text-center">INT</th>
+              <th className="py-2 text-center">WIS</th>
+              <th className="py-2 text-center">CHA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-1.5">1</td>
+              <td className="py-1.5 text-xs">Point Buy + Racial</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center">16</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center">13</td>
+              <td className="py-1.5 text-center">16</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-1.5">5</td>
+              <td className="py-1.5 text-xs">Sorc 4 — Resilient CON</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center text-gold">17</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center">13</td>
+              <td className="py-1.5 text-center">16</td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="py-1.5">9</td>
+              <td className="py-1.5 text-xs">Sorc 8 — Fey Touched (+1 WIS)</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center">17</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center text-gold">14</td>
+              <td className="py-1.5 text-center">16</td>
+            </tr>
+            <tr>
+              <td className="py-1.5">10</td>
+              <td className="py-1.5 text-xs">Tome of Leadership (+2 CHA)</td>
+              <td className="py-1.5 text-center">8</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center">17</td>
+              <td className="py-1.5 text-center">9</td>
+              <td className="py-1.5 text-center">14</td>
+              <td className="py-1.5 text-center text-gold">18</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <P>
+        <strong>Point Buy trade-offs:</strong> The biggest difference is CON —
+        with rolled stats, Capa had a +4 CON modifier throughout the campaign,
+        while Point Buy would give +3. That means{" "}
+        <strong>&minus;1 HP per level</strong> (&minus;10 total) and &minus;1 to concentration
+        saving throws. For a build that depends on maintaining Bless and Spirit
+        Guardians, that&apos;s a real difference — but Resilient CON compensates
+        significantly by granting proficiency in CON saves.
+      </P>
+
+      <H2>Why These Choices?</H2>
+
+      <H3>Race: Half-Elf (Drow)</H3>
+      <P>
+        Half-Elf is one of the most flexible races in 5e. The +2 CHA is exactly
+        what a Sorcerer needs, and the two floating +1s let you round out CON
+        and DEX — essential for survivability and AC. The Drow variant adds
+        Darkvision 60ft and Fey Ancestry (advantage against charm, immunity to
+        magical sleep), valuable defensive traits for someone who needs to
+        maintain concentration.
+      </P>
+
+      <H3>Cleric 1 — Order Domain</H3>
+      <P>
+        The one-level Cleric (Order Domain) dip is the heart of the build.{" "}
+        <strong>Voice of Authority</strong> transforms a support caster into an
+        action economy multiplier: every time you cast a spell with a spell slot
+        targeting an ally, that ally can use their reaction to make a weapon
+        attack. Combine with Quickened Spell and you can buff someone AND cast
+        an offensive spell in the same turn — while your ally still gets a
+        bonus attack.
+      </P>
+      <P>
+        The Cleric level also brings heavy armor and shield proficiency (AC
+        19-21), Wisdom save proficiency, and access to 1st-level Cleric spells
+        a Sorcerer normally wouldn&apos;t have — like Command and Heroism, both
+        prepared for free through the domain.
+      </P>
+
+      <H3>Sorcerer — Divine Soul</H3>
+      <P>
+        Divine Soul Sorcerer is rated by the optimization community as{" "}
+        <strong>S-tier</strong> among Sorcerer subclasses — and for good reason.
+        It grants access to the <strong>entire Cleric spell list</strong>{" "}
+        without needing additional Cleric levels. That means Spirit Guardians,
+        Aid, Revivify, Death Ward — all using Charisma and with Metamagic
+        available.
+      </P>
+      <P>
+        The subclass features are equally strong:{" "}
+        <strong>Favored by the Gods</strong> (add 2d4 to a failed save or
+        attack, once per rest) and{" "}
+        <strong>Empowered Healing</strong> (reroll healing dice for nearby
+        allies). Both reinforce the reliable support role.
+      </P>
+
+      <H3>Feats</H3>
+      <Ul>
+        <Li>
+          <strong>Resilient (CON) — Sorc 4:</strong> Proficiency in
+          Constitution saves is essential for maintaining concentration on
+          Bless and Spirit Guardians. By level 10, the +7/+8 CON save bonus
+          makes it nearly impossible to lose concentration on low to moderate
+          damage.
+        </Li>
+        <Li>
+          <strong>Fey Touched — Sorc 8:</strong> +1 WIS (rounding from 13 to
+          14), free Misty Step once per day (essential mobility for a frontline
+          caster), and Gift of Alacrity (initiative bonus to ensure buffs land
+          before enemies act).
+        </Li>
+      </Ul>
+
+      <H3>Metamagic</H3>
+      <Ul>
+        <Li>
+          <strong>Quickened Spell:</strong> Turns an action spell into a bonus
+          action. Cast a buff (triggering Voice of Authority) and still use your
+          action for a cantrip or another spell in the same turn.
+        </Li>
+        <Li>
+          <strong>Extended Spell:</strong> Doubles the duration of spells like
+          Aid (now 16 hours instead of 8), Death Ward, and any long-duration
+          concentration buff. Excellent for pre-combat preparation.
+        </Li>
+      </Ul>
+
+      <H2>Combat — What This Build Does Best</H2>
+
+      <H3>Typical rotation</H3>
+      <Ul>
+        <Li>
+          <strong>Round 1:</strong> Quickened Bless on 3 allies (Voice of
+          Authority grants a reaction attack to the primary target) + Sacred
+          Flame or Toll the Dead as your action.
+        </Li>
+        <Li>
+          <strong>Round 2+:</strong> Spirit Guardians (if in melee) or Spiritual
+          Weapon + cantrips. Every spell with a slot targeting allies keeps
+          triggering Voice of Authority.
+        </Li>
+        <Li>
+          <strong>Reaction:</strong> Shield (+5 AC for a round, 1x free from
+          background), Absorb Elements, Silvery Barbs (force enemy reroll AND
+          grant advantage to an ally), or Counterspell.
+        </Li>
+        <Li>
+          <strong>Emergency:</strong> Healing Word (ranged healing as bonus
+          action), Revivify, or Dimension Door for repositioning.
+        </Li>
+      </Ul>
+
+      <H3>Where the build shines</H3>
+      <Ul>
+        <Li>Action economy multiplication — every buff generates extra attacks for the party</Li>
+        <Li>Armored concentration — Resilient CON + high CON = nearly guaranteed saves</Li>
+        <Li>Versatility — access to both Cleric and Sorcerer spell lists</Li>
+        <Li>High AC for a caster — 19-21 with Half Plate/Mithril Plate + Shield</Li>
+        <Li>Counter-magic — Counterspell and Silvery Barbs to protect the group</Li>
+      </Ul>
+
+      <H3>Where the build struggles</H3>
+      <Ul>
+        <Li>Limited spells known — Sorcerer has few spell picks, choose carefully</Li>
+        <Li>Concentration-dependent — losing Bless or Spirit Guardians hurts</Li>
+        <Li>Low direct damage — your damage comes from allies, not from you</Li>
+        <Li>Slow start — levels 1-4 before Metamagic and 3rd-level spells feel weak</Li>
+      </Ul>
+
+      <H2>Community Tier Rating</H2>
+
+      <P>
+        The Order Cleric 1 / Divine Soul Sorcerer is considered by the
+        optimization community (RPGBot, TabletopBuilds, Treantmonk, r/3d6) as{" "}
+        <strong>one of the most efficient support builds in 5e</strong>. Divine
+        Soul Sorcerer alone is rated S-tier among Sorcerer subclasses, and the
+        Order Cleric dip is widely recognized as one of the best 1-level
+        multiclass options in the game.
+      </P>
+      <P>
+        Compared to other popular support builds: <strong>Twilight Cleric</strong>{" "}
+        and <strong>Peace Cleric</strong> are frequently cited as stronger in raw
+        terms (Twilight&apos;s temporary HP aura and Peace&apos;s Emboldening
+        Bond are considered &ldquo;broken&rdquo;). However, Order/DSS has a
+        unique advantage: it{" "}
+        <strong>multiplies the entire party&apos;s action economy</strong>{" "}
+        rather than just adding a bonus. When your Fighter and Paladin gain
+        extra reaction attacks every turn you buff, the indirect DPR
+        contribution can surpass a blaster caster&apos;s output.
+      </P>
+      <P>
+        Capa&apos;s build chose Quickened and Extended as metamagic instead of
+        the more popular Twinned Spell. This trades the ability to buff two
+        targets simultaneously for the flexibility of two actions per turn and
+        extending buffs like Aid to 16 hours — a choice that prioritizes
+        preparation and versatility over raw output.
+      </P>
+
+      <H2>Progression — Where to Go Next</H2>
+
+      <Ul>
+        <Li>
+          <strong>Level 11 (Sorc 10):</strong> Another Metamagic — Twinned
+          Spell is the obvious pick, finally adding the ability to buff two
+          allies simultaneously.
+        </Li>
+        <Li>
+          <strong>Level 12 (Sorc 11):</strong> 6th-level spells — Mass
+          Suggestion for out-of-combat control, or Heal for emergency massive
+          healing.
+        </Li>
+        <Li>
+          <strong>Level 13 (Sorc 12):</strong> ASI — +2 CHA (reaching 20 with
+          the Tome) or a feat like Alert for high initiative.
+        </Li>
+        <Li>
+          <strong>Desired items:</strong> Staff of Power (Very Rare) for more AC
+          and spells, or a Dragon Touched Focus (Legendary) to empower Sorcerer
+          spells.
+        </Li>
+      </Ul>
+
+      <H2>The Story of Capa Barsavi</H2>
+
+      <P>
+        Capa Barsavi was born as the illegitimate son of a renowned cleric and a
+        half-elf adventurer of drow heritage who vanished shortly after his
+        birth. Raised under strict academic discipline and religious devotion, he
+        studied theology from a young age and served a god of order and justice
+        — though his skeptical nature always clashed with that devotion.
+        &ldquo;Capa&rdquo; comes from a tradition of naming illegitimate
+        children with terms evoking protection; &ldquo;Barsavi&rdquo; honors a
+        legendary figure known as &ldquo;The Wise Guardian.&rdquo;
+      </P>
+      <P>
+        After the mysterious disappearance of his father during an expedition,
+        Capa faced a crisis of faith that awakened powers he didn&apos;t
+        understand — a celestial bloodline inherited from his mother, touched by
+        divine forces. Carrying both clerical blessings and arcane power, he set
+        out to find answers about his father&apos;s fate and his own nature.
+      </P>
+      <P>
+        His journey led him to dark lands under the dominion of a vampire, where
+        Capa and his companions faced horrors that tested not just their
+        abilities, but their faith and ideals. Observant, scholarly, and
+        eternally skeptical, he found there something he never expected: people
+        worth fighting for. Capa became the foundation of the group — the
+        silent support who kept everyone standing when all seemed lost.
+      </P>
+      <P>
+        In the end, Capa Barsavi died for his party. The gear stopped so the
+        machine could survive. A foundation that kept its promise.
+      </P>
+
+      <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 my-6 text-center">
+        <p className="text-xs text-muted-foreground/70">
+          Build created and played by <strong className="text-foreground/80">Dani</strong> &middot; by Pocket DM
+        </p>
+      </div>
+
+      {/* CTA Build */}
+      <div className="rounded-lg border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 my-8 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.05] rounded-full blur-[60px]" />
+        <div className="relative">
+          <p className="font-display text-lg text-gold mb-1">Like this build?</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Build the perfect encounter to test it — use Pocket DM for free.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/try"
+              className="bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200"
+            >
+              Try Free &rarr;
+            </Link>
+            <Link
+              href="/auth/login"
+              className="border border-white/10 text-foreground/80 font-medium px-5 py-2.5 rounded-lg text-sm hover:border-white/20 hover:text-foreground transition-all duration-200"
+            >
+              Create Account
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
