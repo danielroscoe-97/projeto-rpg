@@ -144,9 +144,10 @@ function LocationCard({ location, onUpdate, onDelete }: LocationCardProps) {
 
 interface LocationListProps {
   campaignId: string;
+  isEditable?: boolean;
 }
 
-export function LocationList({ campaignId }: LocationListProps) {
+export function LocationList({ campaignId, isEditable = true }: LocationListProps) {
   const t = useTranslations("locations");
   const { locations, loading, addLocation, updateLocation, deleteLocation } =
     useCampaignLocations(campaignId);
@@ -177,26 +178,28 @@ export function LocationList({ campaignId }: LocationListProps) {
   return (
     <div className="space-y-3">
       {/* Add form */}
-      <div className="flex gap-2">
-        <Input
-          ref={inputRef}
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={t("add_placeholder")}
-          className="h-8 text-sm flex-1"
-        />
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 px-3"
-          onClick={handleAdd}
-          disabled={!newName.trim()}
-        >
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          {t("add")}
-        </Button>
-      </div>
+      {isEditable && (
+        <div className="flex gap-2">
+          <Input
+            ref={inputRef}
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={t("add_placeholder")}
+            className="h-8 text-sm flex-1"
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 px-3"
+            onClick={handleAdd}
+            disabled={!newName.trim()}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            {t("add")}
+          </Button>
+        </div>
+      )}
 
       {/* Location list */}
       {locations.length === 0 ? (

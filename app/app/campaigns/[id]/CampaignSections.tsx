@@ -23,11 +23,13 @@ interface Props {
 }
 
 function Section({
+  id,
   icon: Icon,
   title,
   defaultOpen,
   children,
 }: {
+  id?: string;
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   defaultOpen: boolean;
@@ -36,7 +38,7 @@ function Section({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
+    <div id={id} className="border border-border rounded-lg overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -68,7 +70,7 @@ export function CampaignSections({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main column — content-heavy sections */}
       <div className="lg:col-span-2 space-y-4">
-        <Section icon={Users} title={t("section_players")} defaultOpen={true}>
+        <Section id="section_players" icon={Users} title={t("section_players")} defaultOpen={true}>
           <PlayerCharacterManager
             initialCharacters={initialCharacters}
             campaignId={campaignId}
@@ -78,34 +80,34 @@ export function CampaignSections({
           />
         </Section>
 
-        <Section icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
+        <Section id="section_npcs" icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
           <NpcList campaignId={campaignId} />
         </Section>
 
-        <Section icon={FileText} title={t("section_notes")} defaultOpen={false}>
+        <Section id="section_notes" icon={FileText} title={t("section_notes")} defaultOpen={false}>
           <CampaignNotes campaignId={campaignId} />
         </Section>
       </div>
 
       {/* Sidebar — lighter sections */}
       <div className="space-y-4">
-        <Section icon={Swords} title={t("section_encounters")} defaultOpen={false}>
+        <Section id="section_encounters" icon={Swords} title={t("section_encounters")} defaultOpen={false}>
           <EncounterHistory campaignId={campaignId} />
         </Section>
 
-        <Section icon={ScrollText} title={t("section_quests")} defaultOpen={true}>
-          <QuestBoard campaignId={campaignId} isEditable={true} />
+        <Section id="section_quests" icon={ScrollText} title={t("section_quests")} defaultOpen={true}>
+          <QuestBoard campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section icon={MapPin} title={t("section_locations")} defaultOpen={false}>
-          <LocationList campaignId={campaignId} />
+        <Section id="section_locations" icon={MapPin} title={t("section_locations")} defaultOpen={false}>
+          <LocationList campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section icon={Flag} title={t("section_factions")} defaultOpen={false}>
-          <FactionList campaignId={campaignId} />
+        <Section id="section_factions" icon={Flag} title={t("section_factions")} defaultOpen={false}>
+          <FactionList campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section icon={Network} title={t("section_mindmap")} defaultOpen={false}>
+        <Section id="section_mindmap" icon={Network} title={t("section_mindmap")} defaultOpen={false}>
           <CampaignMindMap campaignId={campaignId} campaignName={campaignName} />
         </Section>
       </div>

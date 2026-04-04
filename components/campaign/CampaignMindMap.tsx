@@ -173,6 +173,8 @@ interface CampaignMindMapProps {
 export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapProps) {
   const t = useTranslations("mindmap");
   const tNotes = useTranslations("notes");
+  const tLocations = useTranslations("locations");
+  const tFactions = useTranslations("factions");
   const [allNodes, setAllNodes] = useState<MindMapNode[]>([]);
   const [allEdges, setAllEdges] = useState<Edge[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>([]);
@@ -214,14 +216,25 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           })
         );
 
-        // Upsert all changed positions
-        await supabase
+        // Upsert all changed positions — best-effort, silent fail
+        const { error } = await supabase
           .from("campaign_mind_map_layout")
           .upsert(entries, { onConflict: "campaign_id,node_key" });
+
+        if (error) {
+          console.warn("[MindMap] Layout save failed:", error.message);
+        }
       }, 1000);
     },
     [campaignId]
   );
+
+  // Cleanup save timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, []);
 
   /* ---- Handle node drag end ---- */
   const handleNodesChange = useCallback(
@@ -304,10 +317,13 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           )
           .eq("campaign_id", campaignId)
           .eq("status", "active"),
-        supabase.from("note_npc_links").select("note_id, npc_id"),
+        supabase
+          .from("note_npc_links")
+          .select("note_id, npc_id, campaign_notes!inner(campaign_id)")
+          .eq("campaign_notes.campaign_id", campaignId),
         supabase
           .from("sessions")
-          .select("id, name, is_active")
+          .select("id, name, is_active, encounters(id, name)")
           .eq("campaign_id", campaignId)
           .order("created_at", { ascending: false }),
         supabase
@@ -332,7 +348,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           .order("sort_order"),
         supabase
           .from("campaign_mind_map_edges")
-          .select("*")
+          .select("id, source_type, source_id, target_type, target_id, relationship, custom_label")
           .eq("campaign_id", campaignId),
         supabase
           .from("campaign_mind_map_layout")
@@ -361,6 +377,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         id: string;
         name: string;
         is_active: boolean;
+        encounters: Array<{ id: string; name: string }>;
       }>;
       const quests = (questsRes.data ?? []) as Array<{
         id: string;
@@ -453,6 +470,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       // Note nodes
       for (const note of notes) {
         const nodeId = `note-${note.id}`;
+        const nt = note.note_type ?? "general";
         newNodes.push({
           id: nodeId,
           type: "note",
@@ -461,7 +479,8 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             label: note.title || tNotes("untitled"),
             isShared: note.is_shared,
             noteId: note.id,
-            noteType: note.note_type ?? "general",
+            noteType: nt,
+            noteTypeLabel: nt !== "general" ? t(`note_type_${nt}`) : undefined,
           },
           draggable: true,
         });
@@ -473,9 +492,9 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Player member nodes
+      // Player member nodes (use "player-" prefix to match EdgeEntityType)
       for (const member of membersRaw) {
-        const nodeId = `member-${member.id}`;
+        const nodeId = `player-${member.id}`;
         const displayName =
           member.users?.display_name ?? member.users?.email ?? "Unknown";
         newNodes.push({
@@ -508,6 +527,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             label: session.name,
             isActive: session.is_active,
             sessionId: session.id,
+            statusLabel: session.is_active ? t("session_active") : t("session_ended"),
           },
           draggable: true,
         });
@@ -517,6 +537,31 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           target: nodeId,
           style: CAMPAIGN_EDGE_STYLE,
         });
+      }
+
+      // Encounter nodes (sub-nodes of sessions)
+      for (const session of sessions) {
+        for (const enc of session.encounters ?? []) {
+          const encNodeId = `session-enc-${enc.id}`;
+          newNodes.push({
+            id: encNodeId,
+            type: "session",
+            position: { x: 0, y: 0 },
+            data: {
+              label: enc.name,
+              isActive: false,
+              sessionId: session.id,
+              statusLabel: t("encounter_label"),
+            },
+            draggable: true,
+          });
+          newEdges.push({
+            id: `session-${session.id}-enc-${enc.id}`,
+            source: `session-${session.id}`,
+            target: encNodeId,
+            style: { stroke: "#ef4444", strokeWidth: 1, opacity: 0.4 },
+          });
+        }
       }
 
       // Quest nodes
@@ -551,6 +596,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           data: {
             label: t("bag_node"),
             itemCount: bagItems.length,
+            itemsLabel: bagItems.length === 1 ? t("bag_item") : t("bag_items"),
           },
           draggable: true,
         });
@@ -572,6 +618,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           data: {
             label: loc.name,
             locationType: loc.location_type,
+            locationTypeLabel: tLocations(`type_${loc.location_type}`),
             isDiscovered: loc.is_discovered,
             locationId: loc.id,
           },
@@ -595,6 +642,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           data: {
             label: fac.name,
             alignment: fac.alignment,
+            alignmentLabel: tFactions(`alignment_${fac.alignment}`),
             factionId: fac.id,
           },
           draggable: true,
@@ -653,7 +701,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     return () => {
       cancelled = true;
     };
-  }, [campaignId, campaignName, t, tNotes]);
+  }, [campaignId, campaignName, t, tNotes, tLocations, tFactions]);
 
   /* ---- Node click handler ---- */
   const onNodeClick: NodeMouseHandler<MindMapNode> = useCallback((_event, node) => {

@@ -20,6 +20,7 @@ export interface NoteNodeData {
   isShared: boolean;
   noteId: string;
   noteType?: NoteType;
+  noteTypeLabel?: string;
   [key: string]: unknown;
 }
 
@@ -78,7 +79,7 @@ function NoteNodeComponent({ data }: NoteNodeProps) {
       {!isGeneral && (
         <div className="mt-1.5">
           <span className={`text-[10px] px-1.5 py-0.5 rounded bg-black/30 ${textColor}`}>
-            {noteType.replace("_", " ")}
+            {data.noteTypeLabel ?? noteType.replaceAll("_", " ")}
           </span>
         </div>
       )}

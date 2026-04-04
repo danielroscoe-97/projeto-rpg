@@ -8,6 +8,7 @@ import type { LocationType } from "@/lib/types/mind-map";
 export interface LocationNodeData {
   label: string;
   locationType: LocationType;
+  locationTypeLabel: string;
   isDiscovered: boolean;
   locationId: string;
   [key: string]: unknown;
@@ -53,7 +54,7 @@ function LocationNodeComponent({ data }: LocationNodeProps) {
       {!isHidden && (
         <div className="mt-1.5">
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-900/40 text-cyan-300">
-            {data.locationType}
+            {data.locationTypeLabel}
           </span>
         </div>
       )}

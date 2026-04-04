@@ -146,9 +146,10 @@ function FactionCard({ faction, onUpdate, onDelete }: FactionCardProps) {
 
 interface FactionListProps {
   campaignId: string;
+  isEditable?: boolean;
 }
 
-export function FactionList({ campaignId }: FactionListProps) {
+export function FactionList({ campaignId, isEditable = true }: FactionListProps) {
   const t = useTranslations("factions");
   const { factions, loading, addFaction, updateFaction, deleteFaction } =
     useCampaignFactions(campaignId);
@@ -179,26 +180,28 @@ export function FactionList({ campaignId }: FactionListProps) {
   return (
     <div className="space-y-3">
       {/* Add form */}
-      <div className="flex gap-2">
-        <Input
-          ref={inputRef}
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={t("add_placeholder")}
-          className="h-8 text-sm flex-1"
-        />
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 px-3"
-          onClick={handleAdd}
-          disabled={!newName.trim()}
-        >
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          {t("add")}
-        </Button>
-      </div>
+      {isEditable && (
+        <div className="flex gap-2">
+          <Input
+            ref={inputRef}
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={t("add_placeholder")}
+            className="h-8 text-sm flex-1"
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 px-3"
+            onClick={handleAdd}
+            disabled={!newName.trim()}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            {t("add")}
+          </Button>
+        </div>
+      )}
 
       {/* Faction list */}
       {factions.length === 0 ? (

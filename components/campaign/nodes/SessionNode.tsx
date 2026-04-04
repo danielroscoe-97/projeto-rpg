@@ -8,6 +8,7 @@ export interface SessionNodeData {
   label: string;
   isActive: boolean;
   sessionId: string;
+  statusLabel: string;
   [key: string]: unknown;
 }
 
@@ -28,11 +29,11 @@ function SessionNodeComponent({ data }: SessionNodeProps) {
       <div className="mt-1.5">
         {data.isActive ? (
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-900/40 text-red-300 animate-pulse">
-            Ativa
+            {data.statusLabel}
           </span>
         ) : (
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-800/40 text-gray-400">
-            Encerrada
+            {data.statusLabel}
           </span>
         )}
       </div>

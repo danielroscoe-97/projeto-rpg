@@ -8,6 +8,7 @@ import type { FactionAlignment } from "@/lib/types/mind-map";
 export interface FactionNodeData {
   label: string;
   alignment: FactionAlignment;
+  alignmentLabel: string;
   factionId: string;
   [key: string]: unknown;
 }
@@ -48,7 +49,7 @@ function FactionNodeComponent({ data }: FactionNodeProps) {
       </div>
       <div className="mt-1.5">
         <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${style.badge}`}>
-          {data.alignment}
+          {data.alignmentLabel}
         </span>
       </div>
       <Handle type="source" position={Position.Bottom} className="!bg-rose-400 !w-2 !h-2" />
