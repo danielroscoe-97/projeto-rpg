@@ -10,6 +10,7 @@ import { SortableCombatantList } from "@/components/combat/SortableCombatantList
 
 import { AddCombatantForm } from "@/components/combat/AddCombatantForm";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant } from "@/lib/utils/initiative";
@@ -67,6 +68,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { DmPostCombatFeedback } from "@/components/combat/DmPostCombatFeedback";
+import { PostCombatMethodologyNudge } from "@/components/combat/PostCombatMethodologyNudge";
 import {
   persistEncounterSnapshot,
   persistDmFeedback,
@@ -105,6 +107,7 @@ export function CombatSessionClient({
 }: CombatSessionClientProps) {
   const router = useRouter();
   const t = useTranslations("combat");
+  const tMeth = useTranslations("methodology");
   const [addMode, setAddMode] = useState<"open" | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
@@ -1226,18 +1229,11 @@ export function CombatSessionClient({
         </div>
       )}
 
-      {addMode && (
-        <div className="p-3 bg-white/[0.04] rounded-md space-y-2" data-testid="add-combatant-panel">
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              onClick={() => setAddMode(null)}
-              className="text-xs text-muted-foreground hover:text-foreground/80 transition-colors"
-              data-testid="add-close-btn"
-            >
-              &times;
-            </button>
-          </div>
+      <Sheet open={!!addMode} onOpenChange={(open) => { if (!open) setAddMode(null); }}>
+        <SheetContent side="bottom" data-testid="add-combatant-panel">
+          <SheetHeader>
+            <SheetTitle>{t("add_combatant_title")}</SheetTitle>
+          </SheetHeader>
           <MonsterSearchPanel
             rulesetVersion={rulesetVersion}
             onSelectMonster={handleSelectMonster}
@@ -1280,8 +1276,8 @@ export function CombatSessionClient({
               });
             }}
           />
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
       </div>{/* end sticky controls */}
 
       <div className="mt-4">
@@ -1390,6 +1386,16 @@ export function CombatSessionClient({
             onClose={handleDismissAll}
             // UX.10 — live player count so DM knows how many votes to wait for
             totalPlayers={useCombatStore.getState().combatants.filter((c) => c.is_player).length}
+          />
+        </div>
+      )}
+
+      {/* Methodology nudge — Auth-only, after DM gave rating */}
+      {postCombatPhase === "result" && (
+        <div className="fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto">
+          <PostCombatMethodologyNudge
+            text={tMeth("nudge_text")}
+            linkText={tMeth("nudge_link")}
           />
         </div>
       )}

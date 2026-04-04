@@ -150,6 +150,10 @@ export default {
           "75%": { opacity: "1", strokeWidth: "5" },
           "100%": { opacity: "0.6", strokeWidth: "3" },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         "torch-flicker": "torch-flicker 3s ease-in-out infinite",
@@ -157,6 +161,7 @@ export default {
         "rune-pulse": "rune-pulse 2s ease-in-out infinite",
         "tour-pulse": "tour-pulse 2s ease-in-out infinite",
         "tour-pulse-intense": "tour-pulse-intense 0.5s ease-in-out 2",
+        "fade-in": "fade-in 0.6s ease-out",
       },
     },
   },

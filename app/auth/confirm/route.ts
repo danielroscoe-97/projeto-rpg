@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     }
     // If invite params present, go straight to invite page (user is now authenticated)
     const invite = searchParams.get("invite");
-    if (invite) {
+    if (invite && /^[a-f0-9-]{36}$/.test(invite)) {
       return `/invite/${invite}`;
     }
     // Check if user has campaigns — if not, go to onboarding

@@ -18,6 +18,7 @@ import {
 export default async function DashboardPage() {
   const t = await getTranslations("dashboard");
   const ts = await getTranslations("sidebar");
+  const tm = await getTranslations("methodology");
   const supabase = await createClient();
   const {
     data: { user },
@@ -66,7 +67,7 @@ export default async function DashboardPage() {
   // Fetch campaigns owned by user
   const { data: rawCampaigns } = await supabase
     .from("campaigns")
-    .select("id, name, created_at, cover_image_url, player_characters(count)")
+    .select("id, name, created_at, updated_at, cover_image_url, player_characters(count)")
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -77,6 +78,7 @@ export default async function DashboardPage() {
     cover_image_url: (c.cover_image_url as string | null) ?? null,
     player_count:
       (c.player_characters as { count: number }[])[0]?.count ?? 0,
+    last_combat: (c.updated_at as string | null) ?? null,
   }));
 
   // Fetch active encounters for resume
@@ -147,6 +149,13 @@ export default async function DashboardPage() {
     dm_empty_cta: t("dm_empty_cta"),
     combats_empty_title: t("combats_empty_title"),
     combats_empty_cta: t("combats_empty_cta"),
+    // Methodology hooks
+    methodology_lab_tooltip: tm("lab_badge_tooltip"),
+    methodology_milestone_toast: tm("milestone_toast"),
+    methodology_milestone_link: tm("milestone_link"),
+    methodology_researcher_title: tm("researcher_title"),
+    methodology_researcher_subtitle: tm("researcher_subtitle"),
+    methodology_researcher_link: tm("researcher_link"),
   };
 
   // F6: Streak counter

@@ -84,9 +84,9 @@ interface DashboardOverviewProps {
     dm_empty_cta: string;
     combats_empty_title: string;
     combats_empty_cta: string;
-    methodology_lab_tooltip: string;
     methodology_milestone_toast: string;
     methodology_milestone_link: string;
+    methodology_lab_tooltip: string;
     methodology_researcher_title: string;
     methodology_researcher_subtitle: string;
     methodology_researcher_link: string;

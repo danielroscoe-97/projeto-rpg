@@ -283,7 +283,7 @@ html, body {
   overflow: hidden;
   white-space: nowrap;
   border-right: 2px solid var(--gold);
-  animation: typewriter 1.5s steps(14) 1.8s both, blink 0.8s infinite 1.8s;
+  animation: typewriter 1s steps(14) 1s both, blink 0.8s infinite 1s;
   width: 0;
 }
 #scene3 .monster-list {
@@ -301,13 +301,13 @@ html, body {
   border: 1px solid transparent;
   opacity: 0;
 }
-#scene3 .monster-row:nth-child(1) { animation: slideLeft 0.5s ease-out 3.5s both; }
-#scene3 .monster-row:nth-child(2) { animation: slideLeft 0.5s ease-out 3.7s both; }
-#scene3 .monster-row:nth-child(3) { animation: slideLeft 0.5s ease-out 3.9s both; }
-#scene3 .monster-row:nth-child(4) { animation: slideLeft 0.5s ease-out 4.1s both; }
+#scene3 .monster-row:nth-child(1) { animation: slideLeft 0.4s ease-out 2.2s both; }
+#scene3 .monster-row:nth-child(2) { animation: slideLeft 0.4s ease-out 2.4s both; }
+#scene3 .monster-row:nth-child(3) { animation: slideLeft 0.4s ease-out 2.6s both; }
+#scene3 .monster-row:nth-child(4) { animation: slideLeft 0.4s ease-out 2.8s both; }
 #scene3 .monster-row.highlight {
   border-color: rgba(212,168,83,0.4);
-  animation: slideLeft 0.5s ease-out 3.5s both, borderGlow 2s ease-in-out 4.5s infinite;
+  animation: slideLeft 0.4s ease-out 2.2s both, borderGlow 2s ease-in-out 3.2s infinite;
 }
 #scene3 .monster-token {
   width: 44px;
@@ -337,7 +337,7 @@ html, body {
   gap: 24px;
   margin-top: 30px;
   opacity: 0;
-  animation: slideUp 0.6s ease-out 5s both;
+  animation: slideUp 0.5s ease-out 3.5s both;
 }
 #scene3 .stat-badge-item {
   display: flex;
@@ -408,11 +408,11 @@ html, body {
   opacity: 0;
   position: relative;
 }
-#scene4 .combatant:nth-child(1) { animation: slideRight 0.5s ease-out 1.4s both; }
-#scene4 .combatant:nth-child(2) { animation: slideRight 0.5s ease-out 1.6s both; }
-#scene4 .combatant:nth-child(3) { animation: slideRight 0.5s ease-out 1.8s both; }
-#scene4 .combatant:nth-child(4) { animation: slideRight 0.5s ease-out 2.0s both; }
-#scene4 .combatant:nth-child(5) { animation: slideRight 0.5s ease-out 2.2s both; }
+#scene4 .combatant:nth-child(1) { animation: slideRight 0.4s ease-out 0.8s both; }
+#scene4 .combatant:nth-child(2) { animation: slideRight 0.4s ease-out 1.0s both; }
+#scene4 .combatant:nth-child(3) { animation: slideRight 0.4s ease-out 1.2s both; }
+#scene4 .combatant:nth-child(4) { animation: slideRight 0.4s ease-out 1.4s both; }
+#scene4 .combatant:nth-child(5) { animation: slideRight 0.4s ease-out 1.6s both; }
 #scene4 .combatant.active-turn {
   border-color: var(--gold);
   box-shadow: 0 0 15px rgba(212,168,83,0.2);
@@ -481,7 +481,7 @@ html, body {
 .hp-moderate { background: var(--hp-yellow); }
 .hp-low { background: var(--hp-red); }
 #scene4 .hp-bar-fill.drain {
-  animation: hpDrain 1.5s ease-out 4s both;
+  animation: hpDrain 1s ease-out 2.5s both;
 }
 #scene4 .condition-badges {
   display: flex;
@@ -498,17 +498,17 @@ html, body {
 .cond-prone { background: rgba(234,179,8,0.15); color: #EAB308; border: 1px solid rgba(234,179,8,0.3); }
 .cond-conc { background: rgba(59,130,246,0.15); color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
 #scene4 .condition-badge.pop {
-  animation: scaleIn 0.4s ease-out 5s both;
+  animation: scaleIn 0.3s ease-out 3s both;
 }
 #scene4 .condition-badge.pop2 {
-  animation: scaleIn 0.4s ease-out 5.4s both;
+  animation: scaleIn 0.3s ease-out 3.3s both;
 }
 #scene4 .keyboard-hint {
   display: flex;
   gap: 24px;
   margin-top: 30px;
   opacity: 0;
-  animation: slideUp 0.6s ease-out 6s both;
+  animation: slideUp 0.5s ease-out 4s both;
 }
 #scene4 .key {
   display: flex;
@@ -570,8 +570,8 @@ html, body {
   height: 100%;
   object-fit: cover;
 }
-#scene5 .photo-frame.left { animation: slideRight 1s ease-out 0.8s both; }
-#scene5 .photo-frame.right { animation: slideLeft 1s ease-out 1.2s both; }
+#scene5 .photo-frame.left { animation: slideRight 0.7s ease-out 0.5s both; }
+#scene5 .photo-frame.right { animation: slideLeft 0.7s ease-out 0.8s both; }
 #scene5 .photo-label {
   position: absolute;
   bottom: 16px;
@@ -592,7 +592,7 @@ html, body {
   gap: 40px;
   margin-top: 50px;
   opacity: 0;
-  animation: slideUp 0.8s ease-out 2.5s both;
+  animation: slideUp 0.6s ease-out 1.8s both;
 }
 #scene5 .friction-item {
   display: flex;

@@ -43,6 +43,7 @@ interface QuickActionsTranslations {
 interface QuickActionsProps {
   translations: QuickActionsTranslations;
   campaigns: Campaign[];
+  userRole?: "player" | "dm" | "both";
 }
 
 // ── Avatar com inicial + cor determinística ────────────────────────────────
@@ -95,7 +96,8 @@ const campaignCardClass =
 
 // ── Component ─────────────────────────────────────────────────────────────
 
-export function QuickActions({ translations: t, campaigns }: QuickActionsProps) {
+export function QuickActions({ translations: t, campaigns, userRole = "both" }: QuickActionsProps) {
+  const showDmActions = userRole !== "player";
   const router = useRouter();
   const [npcDialogOpen, setNpcDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -132,6 +134,8 @@ export function QuickActions({ translations: t, campaigns }: QuickActionsProps) 
   const playerLabel = (count: number) =>
     count === 1 ? `1 ${t.campaigns_players_singular}` : `${count} ${t.campaigns_players_plural}`;
 
+  if (!showDmActions) return null;
+
   return (
     <div className="space-y-3" data-tour-id="dash-quick-actions">
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
@@ -139,49 +143,53 @@ export function QuickActions({ translations: t, campaigns }: QuickActionsProps) 
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 
-        {/* Novo Combate */}
-        <Link
-          href="/app/session/new"
-          data-testid="quick-action-new_combat"
-          className={`${actionCardClass} hover:border-amber-400/30 hover:bg-white/[0.02]`}
-        >
-          <Swords className="w-5 h-5 text-amber-400 shrink-0" aria-hidden="true" />
-          <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
-            {t.new_combat}
-          </span>
-        </Link>
+        {showDmActions && (
+          <>
+            {/* Novo Combate */}
+            <Link
+              href="/app/session/new"
+              data-testid="quick-action-new_combat"
+              className={`${actionCardClass} hover:border-amber-400/30 hover:bg-white/[0.02]`}
+            >
+              <Swords className="w-5 h-5 text-amber-400 shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
+                {t.new_combat}
+              </span>
+            </Link>
 
-        {/* Criar NPC */}
-        <button
-          type="button"
-          onClick={() => setNpcDialogOpen(true)}
-          data-testid="quick-action-create_npc"
-          className={`${actionCardClass} hover:border-blue-400/30 hover:bg-white/[0.02] cursor-pointer`}
-        >
-          <Plus className="w-5 h-5 text-blue-400 shrink-0" aria-hidden="true" />
-          <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
-            {t.create_npc}
-          </span>
-        </button>
+            {/* Criar NPC */}
+            <button
+              type="button"
+              onClick={() => setNpcDialogOpen(true)}
+              data-testid="quick-action-create_npc"
+              className={`${actionCardClass} hover:border-blue-400/30 hover:bg-white/[0.02] cursor-pointer`}
+            >
+              <Plus className="w-5 h-5 text-blue-400 shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
+                {t.create_npc}
+              </span>
+            </button>
 
-        {/* Convidar Jogador */}
-        <button
-          type="button"
-          onClick={() => {
-            if (campaigns.length === 1) {
-              router.push(`/app/campaigns/${campaigns[0].id}`);
-            } else {
-              setInviteDialogOpen(true);
-            }
-          }}
-          data-testid="quick-action-invite_player"
-          className={`${actionCardClass} hover:border-emerald-400/30 hover:bg-white/[0.02] cursor-pointer`}
-        >
-          <UserPlus className="w-5 h-5 text-emerald-400 shrink-0" aria-hidden="true" />
-          <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
-            {t.invite_player}
-          </span>
-        </button>
+            {/* Convidar Jogador */}
+            <button
+              type="button"
+              onClick={() => {
+                if (campaigns.length === 1) {
+                  router.push(`/app/campaigns/${campaigns[0].id}`);
+                } else {
+                  setInviteDialogOpen(true);
+                }
+              }}
+              data-testid="quick-action-invite_player"
+              className={`${actionCardClass} hover:border-emerald-400/30 hover:bg-white/[0.02] cursor-pointer`}
+            >
+              <UserPlus className="w-5 h-5 text-emerald-400 shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
+                {t.invite_player}
+              </span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* ── NPC Scope Dialog ──────────────────────────────────────────────── */}

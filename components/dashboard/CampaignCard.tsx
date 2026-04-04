@@ -24,10 +24,11 @@ function formatRelativeTime(dateStr: string): string {
   if (!dateStr) return "";
   try {
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 1) return "";
+    if (diffMin < 1) return "<1m";
     if (diffMin < 60) return `${diffMin}m`;
     const diffHours = Math.floor(diffMin / 60);
     if (diffHours < 24) return `${diffHours}h`;

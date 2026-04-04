@@ -39,8 +39,8 @@ const NAV_ITEMS_DESKTOP_BASE = [
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText, dmOnly: false },
   { key: "characters" as const, href: "/app/dashboard/characters", icon: Users, dmOnly: false },
   { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music, dmOnly: false },
-  { key: "presets" as const, href: "/app/presets", icon: Package, dmOnly: true },
-  { key: "settings" as const, href: "/app/settings", icon: Settings, dmOnly: false },
+  { key: "presets" as const, href: "/app/dashboard/presets", icon: Package, dmOnly: true },
+  { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings, dmOnly: false },
 ];
 
 const NAV_ITEMS_MOBILE = [
@@ -49,7 +49,7 @@ const NAV_ITEMS_MOBILE = [
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText },
   { key: "characters" as const, href: "/app/dashboard/characters", icon: Users },
   { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music },
-  { key: "settings" as const, href: "/app/settings", icon: Settings },
+  { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings },
 ] as const;
 
 export function DashboardSidebar({ translations: t, hasDmAccess = false }: DashboardSidebarProps) {
@@ -64,11 +64,11 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false }: Dashb
     if (href === "/app/dashboard") {
       return pathname === "/app/dashboard";
     }
-    if (href === "/app/settings") {
-      return pathname === "/app/settings" || pathname.startsWith("/app/dashboard/settings");
+    if (href === "/app/dashboard/settings") {
+      return pathname.startsWith("/app/dashboard/settings") || pathname === "/app/settings";
     }
-    if (href === "/app/presets") {
-      return pathname.startsWith("/app/presets");
+    if (href === "/app/dashboard/presets") {
+      return pathname.startsWith("/app/dashboard/presets") || pathname.startsWith("/app/presets");
     }
     return pathname.startsWith(href);
   };

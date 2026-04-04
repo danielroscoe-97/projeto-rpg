@@ -187,7 +187,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
   }, [campaignId, t]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(nextOpen) => { setOpen(nextOpen); if (!nextOpen) setEmail(""); }}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Mail className="w-4 h-4" />
@@ -277,6 +277,9 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
 
           {/* ── Via E-mail ── */}
           <TabsContent value="email" className="mt-4 space-y-4 flex-none">
+            <p className="text-sm text-muted-foreground">
+              {t("invite_email_description")}
+            </p>
             <form onSubmit={handleSubmit} className="flex gap-2">
               <Input
                 type="email"

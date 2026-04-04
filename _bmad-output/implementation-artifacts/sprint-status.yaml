@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-03-31  # V2 Epic 2 done — MonsterGroupHeader integrado no render ativo (logado + guest)
+last_updated: 2026-04-04  # Methodology Community Page epic added (METH-0 through METH-3)
 project: projeto-rpg
 
 project_key: NOKEY
@@ -282,3 +282,37 @@ development_status:
   v2-8-2-app-projector-integration: backlog
   v2-8-3-business-model-research: backlog
   v2-epic-8-retrospective: optional
+
+  # ============================================================
+  # METHODOLOGY EPICS — Pocket DM Methodology Community Page
+  # Community page + dashboard hooks + gamification.
+  # Epic pai: docs/epic-metodologia-pocket-dm.md
+  # Sprint plan: sprint-plan-methodology.md
+  # ============================================================
+
+  # METH Sprint 0: Data Foundation ─────────────────────────────
+  meth-epic-0: done
+  meth-0-1-excluded-accounts-and-methodology-stats-rpc: done    # 094_methodology_stats.sql
+  meth-0-2-api-endpoint-methodology-stats: done                 # /api/methodology/stats + /contribution
+  meth-epic-0-retrospective: optional
+
+  # METH Sprint 1: Community Page MVP ──────────────────────────
+  meth-epic-1: done
+  meth-1-1-methodology-progress-bar-component: done             # MethodologyProgressBar.tsx
+  meth-1-2-methodology-page-layout-and-sections: done           # /methodology page with 5 sections
+  meth-1-3-seo-json-ld-and-i18n: done                           # ResearchProject JSON-LD, bilingual
+  meth-1-4-navigation-links-footer-and-about: done              # Footer link added
+  meth-epic-1-retrospective: optional
+
+  # METH Sprint 2: Dashboard Hooks ─────────────────────────────
+  meth-epic-2: done
+  meth-2-1-pocket-dm-lab-badge-dashboard: done                  # PocketDmLabBadge in header
+  meth-2-2-post-combat-methodology-nudge: done                  # PostCombatMethodologyNudge component
+  meth-2-3-methodology-milestone-toast: done                    # MethodologyMilestoneToast via Sonner
+  meth-epic-2-retrospective: optional
+
+  # METH Sprint 3: Easter Egg & Gamification ───────────────────
+  meth-epic-3: done
+  meth-3-1-researcher-badge-and-personal-counter: done          # ResearcherBadge in dashboard
+  meth-3-2-spell-tiers-teaser-banner: done                      # Teaser on /methodology page
+  meth-epic-3-retrospective: optional
