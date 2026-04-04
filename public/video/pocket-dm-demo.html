@@ -124,19 +124,19 @@ html, body {
   text-align: center;
   max-width: 900px;
   line-height: 1.3;
-  animation: slideUp 0.8s ease-out 0.3s both;
+  animation: slideUp 0.6s ease-out 0.2s both;
 }
 #scene1 .hook-sub {
   font-size: 28px;
   color: var(--text-secondary);
   margin-top: 24px;
-  animation: slideUp 0.8s ease-out 0.8s both;
+  animation: slideUp 0.6s ease-out 0.6s both;
 }
 #scene1 .pain-icons {
   display: flex;
   gap: 60px;
   margin-top: 60px;
-  animation: fadeIn 0.6s ease-out 1.3s both;
+  animation: fadeIn 0.4s ease-out 1s both;
 }
 #scene1 .pain-item {
   display: flex;
@@ -145,10 +145,10 @@ html, body {
   gap: 12px;
   opacity: 0;
 }
-#scene1 .pain-item:nth-child(1) { animation: slideUp 0.4s ease-out 1.5s both; }
-#scene1 .pain-item:nth-child(2) { animation: slideUp 0.4s ease-out 1.8s both; }
-#scene1 .pain-item:nth-child(3) { animation: slideUp 0.4s ease-out 2.1s both; }
-#scene1 .pain-item:nth-child(4) { animation: slideUp 0.4s ease-out 2.4s both; }
+#scene1 .pain-item:nth-child(1) { animation: slideUp 0.3s ease-out 1.1s both; }
+#scene1 .pain-item:nth-child(2) { animation: slideUp 0.3s ease-out 1.3s both; }
+#scene1 .pain-item:nth-child(3) { animation: slideUp 0.3s ease-out 1.5s both; }
+#scene1 .pain-item:nth-child(4) { animation: slideUp 0.3s ease-out 1.7s both; }
 #scene1 .pain-icon {
   width: 80px;
   height: 80px;
@@ -174,7 +174,7 @@ html, body {
   top: 50%;
   left: -10px;
   transform: rotate(-10deg);
-  animation: crossGrow 0.4s ease-out 3s both;
+  animation: crossGrow 0.4s ease-out 2s both;
 }
 @keyframes crossGrow { to { width: calc(100% + 20px); } }
 
@@ -188,24 +188,24 @@ html, body {
 #scene2 .logo-svg {
   width: 320px;
   height: auto;
-  animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
   filter: drop-shadow(0 0 30px rgba(212,168,83,0.3));
 }
 #scene2 .logo-svg.glow {
-  animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both, glowPulse 2.5s ease-in-out 1.2s infinite;
+  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both, glowPulse 2s ease-in-out 0.8s infinite;
 }
 #scene2 .brand-name {
   font-size: 72px;
   font-weight: 800;
   letter-spacing: 12px;
-  animation: fadeIn 0.7s ease-out 0.8s both;
+  animation: fadeIn 0.5s ease-out 0.5s both;
 }
 #scene2 .tagline {
   font-size: 32px;
   font-weight: 400;
   font-style: italic;
   color: var(--text-secondary);
-  animation: fadeIn 0.7s ease-out 1.3s both;
+  animation: fadeIn 0.5s ease-out 0.9s both;
 }
 #scene2 .badge {
   display: inline-flex;
@@ -217,7 +217,7 @@ html, body {
   font-size: 18px;
   color: var(--gold);
   margin-top: 20px;
-  animation: slideUp 0.6s ease-out 1.8s both;
+  animation: slideUp 0.5s ease-out 1.3s both;
 }
 #scene2 .badge-dot {
   width: 8px;
@@ -283,7 +283,7 @@ html, body {
   overflow: hidden;
   white-space: nowrap;
   border-right: 2px solid var(--gold);
-  animation: typewriter 1s steps(14) 1s both, blink 0.8s infinite 1s;
+  animation: typewriter 0.8s steps(14) 0.7s both, blink 0.8s infinite 0.7s;
   width: 0;
 }
 #scene3 .monster-list {
@@ -301,13 +301,13 @@ html, body {
   border: 1px solid transparent;
   opacity: 0;
 }
-#scene3 .monster-row:nth-child(1) { animation: slideLeft 0.4s ease-out 2.2s both; }
-#scene3 .monster-row:nth-child(2) { animation: slideLeft 0.4s ease-out 2.4s both; }
-#scene3 .monster-row:nth-child(3) { animation: slideLeft 0.4s ease-out 2.6s both; }
-#scene3 .monster-row:nth-child(4) { animation: slideLeft 0.4s ease-out 2.8s both; }
+#scene3 .monster-row:nth-child(1) { animation: slideLeft 0.3s ease-out 1.6s both; }
+#scene3 .monster-row:nth-child(2) { animation: slideLeft 0.3s ease-out 1.8s both; }
+#scene3 .monster-row:nth-child(3) { animation: slideLeft 0.3s ease-out 2s both; }
+#scene3 .monster-row:nth-child(4) { animation: slideLeft 0.3s ease-out 2.2s both; }
 #scene3 .monster-row.highlight {
   border-color: rgba(212,168,83,0.4);
-  animation: slideLeft 0.4s ease-out 2.2s both, borderGlow 2s ease-in-out 3.2s infinite;
+  animation: slideLeft 0.3s ease-out 1.6s both, borderGlow 2s ease-in-out 2.2s infinite;
 }
 #scene3 .monster-token {
   width: 44px;
@@ -337,7 +337,7 @@ html, body {
   gap: 24px;
   margin-top: 30px;
   opacity: 0;
-  animation: slideUp 0.5s ease-out 3.5s both;
+  animation: slideUp 0.4s ease-out 2.8s both;
 }
 #scene3 .stat-badge-item {
   display: flex;
@@ -382,7 +382,7 @@ html, body {
   margin-bottom: 20px;
   font-size: 16px;
   color: var(--text-secondary);
-  animation: fadeIn 0.5s ease-out 1.2s both;
+  animation: fadeIn 0.4s ease-out 0.6s both;
 }
 #scene4 .round-badge {
   background: var(--gold);
@@ -408,11 +408,11 @@ html, body {
   opacity: 0;
   position: relative;
 }
-#scene4 .combatant:nth-child(1) { animation: slideRight 0.4s ease-out 0.8s both; }
-#scene4 .combatant:nth-child(2) { animation: slideRight 0.4s ease-out 1.0s both; }
-#scene4 .combatant:nth-child(3) { animation: slideRight 0.4s ease-out 1.2s both; }
-#scene4 .combatant:nth-child(4) { animation: slideRight 0.4s ease-out 1.4s both; }
-#scene4 .combatant:nth-child(5) { animation: slideRight 0.4s ease-out 1.6s both; }
+#scene4 .combatant:nth-child(1) { animation: slideRight 0.3s ease-out 0.6s both; }
+#scene4 .combatant:nth-child(2) { animation: slideRight 0.3s ease-out 0.75s both; }
+#scene4 .combatant:nth-child(3) { animation: slideRight 0.3s ease-out 0.9s both; }
+#scene4 .combatant:nth-child(4) { animation: slideRight 0.3s ease-out 1.05s both; }
+#scene4 .combatant:nth-child(5) { animation: slideRight 0.3s ease-out 1.2s both; }
 #scene4 .combatant.active-turn {
   border-color: var(--gold);
   box-shadow: 0 0 15px rgba(212,168,83,0.2);
@@ -481,7 +481,7 @@ html, body {
 .hp-moderate { background: var(--hp-yellow); }
 .hp-low { background: var(--hp-red); }
 #scene4 .hp-bar-fill.drain {
-  animation: hpDrain 1s ease-out 2.5s both;
+  animation: hpDrain 0.8s ease-out 1.8s both;
 }
 #scene4 .condition-badges {
   display: flex;
@@ -498,17 +498,17 @@ html, body {
 .cond-prone { background: rgba(234,179,8,0.15); color: #EAB308; border: 1px solid rgba(234,179,8,0.3); }
 .cond-conc { background: rgba(59,130,246,0.15); color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
 #scene4 .condition-badge.pop {
-  animation: scaleIn 0.3s ease-out 3s both;
+  animation: scaleIn 0.3s ease-out 2.2s both;
 }
 #scene4 .condition-badge.pop2 {
-  animation: scaleIn 0.3s ease-out 3.3s both;
+  animation: scaleIn 0.3s ease-out 2.5s both;
 }
 #scene4 .keyboard-hint {
   display: flex;
   gap: 24px;
   margin-top: 30px;
   opacity: 0;
-  animation: slideUp 0.5s ease-out 4s both;
+  animation: slideUp 0.4s ease-out 3s both;
 }
 #scene4 .key {
   display: flex;
@@ -570,8 +570,8 @@ html, body {
   height: 100%;
   object-fit: cover;
 }
-#scene5 .photo-frame.left { animation: slideRight 0.7s ease-out 0.5s both; }
-#scene5 .photo-frame.right { animation: slideLeft 0.7s ease-out 0.8s both; }
+#scene5 .photo-frame.left { animation: slideRight 0.5s ease-out 0.3s both; }
+#scene5 .photo-frame.right { animation: slideLeft 0.5s ease-out 0.5s both; }
 #scene5 .photo-label {
   position: absolute;
   bottom: 16px;
@@ -592,7 +592,7 @@ html, body {
   gap: 40px;
   margin-top: 50px;
   opacity: 0;
-  animation: slideUp 0.6s ease-out 1.8s both;
+  animation: slideUp 0.5s ease-out 1.2s both;
 }
 #scene5 .friction-item {
   display: flex;
@@ -646,14 +646,20 @@ html, body {
   flex-direction: column;
   gap: 16px;
   opacity: 0;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+  cursor: default;
 }
-#scene6 .feature-card:nth-child(1) { animation: scaleIn 0.35s ease-out 0.6s both; }
-#scene6 .feature-card:nth-child(2) { animation: scaleIn 0.35s ease-out 0.75s both; }
-#scene6 .feature-card:nth-child(3) { animation: scaleIn 0.35s ease-out 0.9s both; }
-#scene6 .feature-card:nth-child(4) { animation: scaleIn 0.35s ease-out 1.05s both; }
-#scene6 .feature-card:nth-child(5) { animation: scaleIn 0.35s ease-out 1.2s both; }
-#scene6 .feature-card:nth-child(6) { animation: scaleIn 0.35s ease-out 1.35s both; }
+#scene6 .feature-card:hover {
+  border-color: rgba(212,168,83,0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(212,168,83,0.08), 0 4px 12px rgba(0,0,0,0.3);
+}
+#scene6 .feature-card:nth-child(1) { animation: scaleIn 0.3s ease-out 0.4s both; }
+#scene6 .feature-card:nth-child(2) { animation: scaleIn 0.3s ease-out 0.5s both; }
+#scene6 .feature-card:nth-child(3) { animation: scaleIn 0.3s ease-out 0.6s both; }
+#scene6 .feature-card:nth-child(4) { animation: scaleIn 0.3s ease-out 0.7s both; }
+#scene6 .feature-card:nth-child(5) { animation: scaleIn 0.3s ease-out 0.8s both; }
+#scene6 .feature-card:nth-child(6) { animation: scaleIn 0.3s ease-out 0.9s both; }
 #scene6 .feature-icon {
   width: 56px;
   height: 56px;
@@ -662,15 +668,148 @@ html, body {
   align-items: center;
   justify-content: center;
   font-size: 26px;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s, background 0.3s;
 }
+#scene6 .feature-card:hover .feature-icon {
+  transform: scale(1.15) rotate(-8deg);
+  box-shadow: 0 0 20px currentColor;
+}
+/* Unique hover animations per card */
+#scene6 .feature-card:nth-child(1):hover .feature-icon { animation: iconPulseRotate 0.6s ease-out forwards; }
+#scene6 .feature-card:nth-child(2):hover .feature-icon { animation: iconFlipY 0.5s ease-out forwards; }
+#scene6 .feature-card:nth-child(3):hover .feature-icon { animation: iconSpin 0.5s ease-out forwards; }
+#scene6 .feature-card:nth-child(4):hover .feature-icon { animation: iconHeartbeat 0.6s ease-out forwards; }
+#scene6 .feature-card:nth-child(5):hover .feature-icon { animation: iconBounce 0.5s ease-out forwards; }
+#scene6 .feature-card:nth-child(6):hover .feature-icon { animation: iconWobble 0.5s ease-out forwards; }
+@keyframes iconPulseRotate {
+  0% { transform: scale(1) rotate(0); }
+  40% { transform: scale(1.3) rotate(-15deg); }
+  100% { transform: scale(1.15) rotate(-8deg); }
+}
+@keyframes iconFlipY {
+  0% { transform: scale(1) rotateY(0); }
+  50% { transform: scale(1.1) rotateY(180deg); }
+  100% { transform: scale(1.15) rotateY(360deg) rotate(-8deg); }
+}
+@keyframes iconSpin {
+  0% { transform: scale(1) rotate(0); }
+  100% { transform: scale(1.15) rotate(352deg); }
+}
+@keyframes iconHeartbeat {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.35); }
+  30% { transform: scale(1.05); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1.15) rotate(-8deg); }
+}
+@keyframes iconBounce {
+  0% { transform: scale(1) translateY(0); }
+  30% { transform: scale(1.1) translateY(-12px); }
+  50% { transform: scale(1.05) translateY(0); }
+  70% { transform: scale(1.15) translateY(-5px); }
+  100% { transform: scale(1.15) translateY(0) rotate(-8deg); }
+}
+@keyframes iconWobble {
+  0% { transform: scale(1) rotate(0); }
+  20% { transform: scale(1.1) rotate(14deg); }
+  40% { transform: scale(1.15) rotate(-12deg); }
+  60% { transform: scale(1.15) rotate(8deg); }
+  80% { transform: scale(1.15) rotate(-4deg); }
+  100% { transform: scale(1.15) rotate(-8deg); }
+}
+#scene6 .feature-title {
+  font-size: 22px;
+  font-weight: 700;
+  transition: color 0.3s;
+}
+#scene6 .feature-card:hover .feature-title { color: var(--gold); }
 .fi-gold { background: rgba(212,168,83,0.15); color: var(--gold); }
 .fi-green { background: rgba(34,197,94,0.15); color: #22C55E; }
 .fi-blue { background: rgba(59,130,246,0.15); color: #3B82F6; }
 .fi-purple { background: rgba(168,85,247,0.15); color: #A855F7; }
 .fi-red { background: rgba(239,68,68,0.15); color: #EF4444; }
 .fi-cyan { background: rgba(6,182,212,0.15); color: #06B6D4; }
-#scene6 .feature-title { font-size: 22px; font-weight: 700; }
+/* Hover glow per color */
+#scene6 .feature-card:hover .fi-gold { background: rgba(212,168,83,0.25); box-shadow: 0 0 24px rgba(212,168,83,0.3); }
+#scene6 .feature-card:hover .fi-green { background: rgba(34,197,94,0.25); box-shadow: 0 0 24px rgba(34,197,94,0.3); }
+#scene6 .feature-card:hover .fi-blue { background: rgba(59,130,246,0.25); box-shadow: 0 0 24px rgba(59,130,246,0.3); }
+#scene6 .feature-card:hover .fi-purple { background: rgba(168,85,247,0.25); box-shadow: 0 0 24px rgba(168,85,247,0.3); }
+#scene6 .feature-card:hover .fi-red { background: rgba(239,68,68,0.25); box-shadow: 0 0 24px rgba(239,68,68,0.3); }
+#scene6 .feature-card:hover .fi-cyan { background: rgba(6,182,212,0.25); box-shadow: 0 0 24px rgba(6,182,212,0.3); }
 #scene6 .feature-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
+
+/* ===== SCENE INDIE: PROJETO BRASILEIRO + METODOLOGIA ===== */
+#sceneIndie { padding: 80px 140px; }
+#sceneIndie .indie-layout {
+  display: flex;
+  gap: 80px;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+}
+#sceneIndie .indie-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+#sceneIndie .indie-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 100px;
+  font-size: 15px;
+  color: #22C55E;
+  width: fit-content;
+  animation: fadeIn 0.4s ease-out 0.3s both;
+}
+#sceneIndie .indie-title {
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1.15;
+  animation: slideUp 0.5s ease-out 0.5s both;
+}
+#sceneIndie .indie-desc {
+  font-size: 20px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  animation: slideUp 0.5s ease-out 0.8s both;
+}
+#sceneIndie .indie-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#sceneIndie .method-card {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  opacity: 0;
+}
+#sceneIndie .method-card:nth-child(1) { animation: slideLeft 0.4s ease-out 1s both; }
+#sceneIndie .method-card:nth-child(2) { animation: slideLeft 0.4s ease-out 1.3s both; }
+#sceneIndie .method-card:nth-child(3) { animation: slideLeft 0.4s ease-out 1.6s both; }
+#sceneIndie .method-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 22px;
+}
+#sceneIndie .method-info { flex: 1; }
+#sceneIndie .method-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+#sceneIndie .method-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
 
 /* ===== SCENE 7: COMPARISON ===== */
 #scene7 { padding: 80px 120px; }
@@ -707,13 +846,13 @@ html, body {
   opacity: 0;
   border: 2px solid transparent;
 }
-#scene7 .comp-card:nth-child(1) { animation: slideUp 0.4s ease-out 0.6s both; }
-#scene7 .comp-card:nth-child(2) { animation: slideUp 0.4s ease-out 0.9s both; }
-#scene7 .comp-card:nth-child(3) { animation: slideUp 0.4s ease-out 1.2s both; }
+#scene7 .comp-card:nth-child(1) { animation: slideUp 0.3s ease-out 0.4s both; }
+#scene7 .comp-card:nth-child(2) { animation: slideUp 0.3s ease-out 0.6s both; }
+#scene7 .comp-card:nth-child(3) { animation: slideUp 0.3s ease-out 0.8s both; }
 #scene7 .comp-card.winner {
   border-color: var(--gold);
   box-shadow: 0 0 30px rgba(212,168,83,0.15);
-  animation: slideUp 0.4s ease-out 1.6s both, pulseGold 2.5s ease-in-out 2.2s infinite;
+  animation: slideUp 0.3s ease-out 1.1s both, pulseGold 2s ease-in-out 1.5s infinite;
 }
 #scene7 .comp-icon {
   width: 64px;
@@ -745,23 +884,23 @@ html, body {
 }
 #scene8 .cta-logo {
   width: 200px;
-  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
   filter: drop-shadow(0 0 40px rgba(212,168,83,0.4));
 }
 #scene8 .cta-logo.glow {
-  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both, glowPulse 2s ease-in-out 1s infinite;
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both, glowPulse 2s ease-in-out 0.6s infinite;
 }
 #scene8 .cta-title {
   font-size: 56px;
   font-weight: 800;
   margin-top: 40px;
-  animation: slideUp 0.6s ease-out 0.6s both;
+  animation: slideUp 0.5s ease-out 0.4s both;
 }
 #scene8 .cta-sub {
   font-size: 28px;
   color: var(--text-secondary);
   margin-top: 16px;
-  animation: slideUp 0.6s ease-out 1s both;
+  animation: slideUp 0.5s ease-out 0.7s both;
 }
 #scene8 .cta-button {
   display: inline-flex;
@@ -775,7 +914,7 @@ html, body {
   font-weight: 700;
   color: var(--bg-deep);
   letter-spacing: 1px;
-  animation: slideUp 0.6s ease-out 1.4s both, pulseGold 2s ease-in-out 2s infinite;
+  animation: slideUp 0.5s ease-out 1s both, pulseGold 2s ease-in-out 1.5s infinite;
   box-shadow: 0 8px 30px rgba(212,168,83,0.3);
 }
 #scene8 .cta-url {
@@ -783,13 +922,13 @@ html, body {
   color: var(--text-secondary);
   margin-top: 24px;
   letter-spacing: 3px;
-  animation: fadeIn 0.7s ease-out 1.8s both;
+  animation: fadeIn 0.5s ease-out 1.3s both;
 }
 #scene8 .cta-free {
   margin-top: 12px;
   font-size: 18px;
   color: var(--text-tertiary);
-  animation: fadeIn 0.7s ease-out 2.1s both;
+  animation: fadeIn 0.5s ease-out 1.6s both;
 }
 
 /* ===== PROGRESS BAR ===== */
@@ -1183,7 +1322,71 @@ html, body {
 </div>
 
 <!-- ============================================================ -->
-<!-- SCENE 7: COMPARISON (2:35 - 2:55) -->
+<!-- SCENE INDIE: PROJETO BRASILEIRO + METODOLOGIA -->
+<!-- ============================================================ -->
+<div class="scene" id="sceneIndie">
+  <div class="indie-layout">
+    <div class="indie-left">
+      <div class="indie-badge jakarta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        Projeto indie 100% brasileiro
+      </div>
+      <div class="indie-title cinzel gold-gradient">
+        Feito por mestre,<br>para mestres.
+      </div>
+      <div class="indie-desc jakarta">
+        O Pocket DM e um projeto independente criado por um DM brasileiro que queria uma ferramenta simples, bonita e gratuita para usar na propria mesa. Sem investidor, sem comite, sem burocracia — evolucao constante.
+      </div>
+      <div class="pipers-love jakarta" style="display:flex;align-items:center;gap:10px;font-size:17px;color:var(--text-secondary);opacity:0;animation:fadeIn 0.5s ease-out 1.2s both;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#D4A853" stroke="none"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span>Feito com amor pelos <strong style="color:var(--gold)">Pipers</strong></span>
+      </div>
+    </div>
+    <div class="indie-right">
+      <div class="method-card" style="flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div class="method-icon fi-gold">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div class="method-info">
+            <div class="method-title">Metodologia Pocket DM</div>
+            <div class="method-desc">Calculo de dificuldade baseado em dados reais. Cada sessao alimenta o modelo.</div>
+          </div>
+        </div>
+        <div class="goal-bar-wrap" style="width:100%;opacity:0;animation:fadeIn 0.4s ease-out 1.6s both;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+            <span style="font-size:13px;color:var(--text-secondary);">Meta: 5.000 combates registrados</span>
+            <span id="goalCounter" class="mono" style="font-size:18px;font-weight:700;color:var(--gold);">0</span>
+          </div>
+          <div style="width:100%;height:12px;background:var(--bg-tertiary);border-radius:6px;overflow:hidden;">
+            <div id="goalBar" style="width:0%;height:100%;border-radius:6px;background:linear-gradient(90deg,#B8903D,#D4A853,#E8C87A);box-shadow:0 0 12px rgba(212,168,83,0.5);transition:none;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-icon fi-green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <div class="method-info">
+          <div class="method-title">Comunidade no centro</div>
+          <div class="method-desc">DMs e jogadores votam a dificuldade real do encontro. Dupla perspectiva que nenhum concorrente tem.</div>
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-icon fi-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div class="method-info">
+          <div class="method-title">Evolui a cada sessao</div>
+          <div class="method-desc">Quanto mais mesas usam, mais inteligente fica. Uma ferramenta que aprende com a comunidade brasileira de RPG.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 7: COMPARISON -->
 <!-- ============================================================ -->
 <div class="scene" id="scene7">
   <div class="scene-title cinzel">Por que Pocket DM?</div>
@@ -1286,14 +1489,15 @@ html, body {
 <script>
 // Scene timings in milliseconds
 const SCENES = [
-  { id: 'scene1', duration: 10000 },  // Hook: 10s
-  { id: 'scene2', duration: 8000 },   // Logo: 8s
-  { id: 'scene3', duration: 16000 },  // Search: 16s
-  { id: 'scene4', duration: 20000 },  // Combat: 20s
-  { id: 'scene5', duration: 16000 },  // Player View: 16s
-  { id: 'scene6', duration: 12000 },  // Features: 12s
-  { id: 'scene7', duration: 12000 },  // Comparison: 12s
-  { id: 'scene8', duration: 10000 },  // CTA: 10s
+  { id: 'scene1', duration: 7000 },       // Hook: 7s
+  { id: 'scene2', duration: 5000 },       // Logo: 5s
+  { id: 'scene3', duration: 10000 },      // Search: 10s
+  { id: 'scene4', duration: 14000 },      // Combat: 14s
+  { id: 'scene5', duration: 10000 },      // Player View: 10s
+  { id: 'scene6', duration: 8000 },       // Features: 8s
+  { id: 'sceneIndie', duration: 12000 },  // Indie + Metodologia: 12s
+  { id: 'scene7', duration: 8000 },       // Comparison: 8s
+  { id: 'scene8', duration: 8000 },       // CTA: 8s
 ];
 
 const TOTAL_DURATION = SCENES.reduce((sum, s) => sum + s.duration, 0);
@@ -1314,17 +1518,44 @@ for (let i = 0; i < 30; i++) {
   particleContainer.appendChild(p);
 }
 
+let goalAnimated = false;
+function animateGoalBar() {
+  if (goalAnimated) return;
+  goalAnimated = true;
+  const bar = document.getElementById('goalBar');
+  const counter = document.getElementById('goalCounter');
+  if (!bar || !counter) return;
+  const target = 1247;
+  const goalMax = 5000;
+  const duration = 2500;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3); // easeOutCubic
+    const val = Math.round(ease * target);
+    counter.textContent = val.toLocaleString('pt-BR');
+    bar.style.width = ((val / goalMax) * 100) + '%';
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  // delay to sync with card animation
+  setTimeout(() => requestAnimationFrame(tick), 1800);
+}
+
 function showScene(index) {
   document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
   const scene = document.getElementById(SCENES[index].id);
   if (scene) {
     scene.classList.add('active');
-    // Force re-trigger animations by removing and re-adding
     scene.style.display = 'none';
-    scene.offsetHeight; // force reflow
+    scene.offsetHeight;
     scene.style.display = '';
   }
   document.getElementById('sceneCounter').textContent = `${index + 1} / ${SCENES.length}`;
+  // Trigger goal bar animation on indie scene
+  if (SCENES[index].id === 'sceneIndie') {
+    goalAnimated = false;
+    animateGoalBar();
+  }
 }
 
 function updateProgress() {
