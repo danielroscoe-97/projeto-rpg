@@ -21,6 +21,7 @@ interface MonsterOption {
   type?: string;
   slug?: string;
   token_url?: string | null;
+  source?: string;
 }
 
 interface Props {

@@ -93,7 +93,7 @@ export const BUILDER_STARTER_ENCOUNTERS: BuilderStarterEncounter[] = [
     id: "starter-dragons-lair",
     nameKey: "starter.dragons_lair",
     descriptionKey: "starter.dragons_lair_desc",
-    difficulty: "hard",
+    difficulty: "deadly",
     levelRange: [5, 8],
     creatures: [
       { slug: "young-red-dragon", name: "Young Red Dragon", cr: "10", quantity: 1, source: "srd" },
@@ -125,7 +125,7 @@ export const BUILDER_STARTER_ENCOUNTERS: BuilderStarterEncounter[] = [
     id: "starter-giants-den",
     nameKey: "starter.giants_den",
     descriptionKey: "starter.giants_den_desc",
-    difficulty: "hard",
+    difficulty: "medium",
     levelRange: [7, 10],
     creatures: [
       { slug: "hill-giant", name: "Hill Giant", cr: "5", quantity: 1, source: "srd" },

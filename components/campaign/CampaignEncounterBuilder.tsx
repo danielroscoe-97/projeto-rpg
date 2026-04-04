@@ -236,7 +236,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
 
   function loadStarter(starter: BuilderStarterEncounter) {
     setEditingPresetId(null);
-    setPresetName("");
+    setPresetName(t(starter.nameKey));
     setPresetNotes("");
     setEncounter(
       starter.creatures.map((c) => ({
@@ -507,9 +507,9 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                       {t(`diff_${starter.difficulty}`)}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">{creaturePreview}</p>
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    {t("level_range", { min: starter.levelRange[0], max: starter.levelRange[1] })}
+                  <p className="text-xs text-muted-foreground">{t(starter.descriptionKey)}</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-1">
+                    {creaturePreview} &middot; {t("level_range", { min: starter.levelRange[0], max: starter.levelRange[1] })}
                   </p>
                 </button>
               );
