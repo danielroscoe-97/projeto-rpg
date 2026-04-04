@@ -30,7 +30,7 @@ import { createClient } from "@supabase/supabase-js";
  * Create a Supabase admin client for test cleanup.
  * Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars.
  */
-function getServiceClient() {
+export function getServiceClient() {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
