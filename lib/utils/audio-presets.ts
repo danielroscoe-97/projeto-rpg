@@ -60,6 +60,49 @@ const PRESETS: AudioPreset[] = [
   { id: "asura-strike", name_key: "audio.preset_asura_strike", file: "/sounds/sfx/asura-strike.mp3", icon: "\uD83D\uDCA3", category: "dramatic" },
   { id: "level-up", name_key: "audio.preset_level_up", file: "/sounds/sfx/level-up.mp3", icon: "\uD83C\uDF1F", category: "dramatic" },
 
+  // ── SFX — RO-inspired wave 2 ──────────────────────────────────
+  // Attack effects
+  { id: "sonic-blow", name_key: "audio.preset_sonic_blow", file: "/sounds/sfx/sonic-blow.mp3", icon: "\uD83D\uDCA8", category: "attack" },
+  { id: "bowling-bash", name_key: "audio.preset_bowling_bash", file: "/sounds/sfx/bowling-bash.mp3", icon: "\uD83D\uDCA5", category: "attack" },
+  { id: "spear-thrust", name_key: "audio.preset_spear_thrust", file: "/sounds/sfx/spear-thrust.mp3", icon: "\uD83D\uDD31", category: "attack" },
+  { id: "cleave", name_key: "audio.preset_cleave", file: "/sounds/sfx/cleave.mp3", icon: "\u2694\uFE0F", category: "attack" },
+  { id: "bash", name_key: "audio.preset_bash", file: "/sounds/sfx/bash.mp3", icon: "\uD83D\uDC4A", category: "attack" },
+  { id: "holy-cross", name_key: "audio.preset_holy_cross", file: "/sounds/sfx/holy-cross.mp3", icon: "\u271D\uFE0F", category: "attack" },
+  { id: "shield-bash", name_key: "audio.preset_shield_bash", file: "/sounds/sfx/shield-bash.mp3", icon: "\uD83D\uDEE1\uFE0F", category: "attack" },
+  // Magic effects
+  { id: "fireball", name_key: "audio.preset_fireball", file: "/sounds/sfx/fireball.mp3", icon: "\uD83D\uDD25", category: "magic" },
+  { id: "fire-pillar", name_key: "audio.preset_fire_pillar", file: "/sounds/sfx/fire-pillar.mp3", icon: "\uD83D\uDD25", category: "magic" },
+  { id: "grand-cross", name_key: "audio.preset_grand_cross", file: "/sounds/sfx/grand-cross.mp3", icon: "\u2728", category: "magic" },
+  { id: "sanctuary", name_key: "audio.preset_sanctuary", file: "/sounds/sfx/sanctuary.mp3", icon: "\uD83D\uDFE1", category: "magic" },
+  { id: "divine-ray", name_key: "audio.preset_divine_ray", file: "/sounds/sfx/divine-ray.mp3", icon: "\u2600\uFE0F", category: "magic" },
+  { id: "elemental-burst", name_key: "audio.preset_elemental_burst", file: "/sounds/sfx/elemental-burst.mp3", icon: "\uD83C\uDF0A", category: "magic" },
+  { id: "ice-burst", name_key: "audio.preset_ice_burst", file: "/sounds/sfx/ice-burst.mp3", icon: "\u2744\uFE0F", category: "magic" },
+  { id: "magma-eruption", name_key: "audio.preset_magma_eruption", file: "/sounds/sfx/magma-eruption.mp3", icon: "\uD83C\uDF0B", category: "magic" },
+  { id: "earthquake", name_key: "audio.preset_earthquake", file: "/sounds/sfx/earthquake.mp3", icon: "\uD83C\uDF0D", category: "magic" },
+  { id: "quagmire", name_key: "audio.preset_quagmire", file: "/sounds/sfx/quagmire.mp3", icon: "\uD83E\uDEB9", category: "magic" },
+  // Holy / Dark
+  { id: "turn-undead", name_key: "audio.preset_turn_undead", file: "/sounds/sfx/turn-undead.mp3", icon: "\u2620\uFE0F", category: "magic" },
+  { id: "holy-weapon", name_key: "audio.preset_holy_weapon", file: "/sounds/sfx/holy-weapon.mp3", icon: "\uD83D\uDD31", category: "magic" },
+  { id: "glory", name_key: "audio.preset_glory", file: "/sounds/sfx/glory.mp3", icon: "\uD83D\uDE4F", category: "magic" },
+  // Status effects
+  { id: "blind", name_key: "audio.preset_blind", file: "/sounds/sfx/blind.mp3", icon: "\uD83D\uDE36\u200D\uD83C\uDF2B\uFE0F", category: "magic" },
+  { id: "stun", name_key: "audio.preset_stun", file: "/sounds/sfx/stun.mp3", icon: "\uD83D\uDCAB", category: "magic" },
+  { id: "petrify", name_key: "audio.preset_petrify", file: "/sounds/sfx/petrify.mp3", icon: "\uD83E\uDEA8", category: "magic" },
+  { id: "vulnerability", name_key: "audio.preset_vulnerability", file: "/sounds/sfx/vulnerability.mp3", icon: "\uD83C\uDFAF", category: "magic" },
+  { id: "poison", name_key: "audio.preset_poison", file: "/sounds/sfx/poison.mp3", icon: "\u2620\uFE0F", category: "magic" },
+  { id: "venom-dust", name_key: "audio.preset_venom_dust", file: "/sounds/sfx/venom-dust.mp3", icon: "\uD83D\uDC0D", category: "magic" },
+  // Interaction / Utility
+  { id: "stealth", name_key: "audio.preset_stealth", file: "/sounds/sfx/stealth.mp3", icon: "\uD83E\uDD77", category: "interaction" },
+  { id: "hide", name_key: "audio.preset_hide", file: "/sounds/sfx/hide.mp3", icon: "\uD83D\uDC41\uFE0F", category: "interaction" },
+  { id: "portal", name_key: "audio.preset_portal", file: "/sounds/sfx/portal.mp3", icon: "\uD83C\uDF00", category: "interaction" },
+  { id: "warp", name_key: "audio.preset_warp", file: "/sounds/sfx/warp.mp3", icon: "\u26A1", category: "interaction" },
+  { id: "endure", name_key: "audio.preset_endure", file: "/sounds/sfx/endure.mp3", icon: "\uD83D\uDCAA", category: "defense" },
+  // Dramatic
+  { id: "boss-kill", name_key: "audio.preset_boss_kill", file: "/sounds/sfx/boss-kill.mp3", icon: "\uD83C\uDFC6", category: "dramatic" },
+  { id: "dragon-roar", name_key: "audio.preset_dragon_roar", file: "/sounds/sfx/dragon-roar.mp3", icon: "\uD83D\uDC09", category: "dramatic" },
+  { id: "success", name_key: "audio.preset_success", file: "/sounds/sfx/success.mp3", icon: "\u2705", category: "dramatic" },
+  { id: "fail", name_key: "audio.preset_fail", file: "/sounds/sfx/fail.mp3", icon: "\u274C", category: "dramatic" },
+
   // ── Ambient — loopable atmosphere (auto-loop) ───────────────
   { id: "ambient-bonfire", name_key: "audio.preset_ambient_bonfire", file: "/sounds/ambient/bonfire.mp3", icon: "\uD83D\uDD25", category: "ambient" },
   { id: "ambient-thunder-storm", name_key: "audio.preset_ambient_thunder_storm", file: "/sounds/ambient/thunder-storm.mp3", icon: "\u26C8\uFE0F", category: "ambient" },

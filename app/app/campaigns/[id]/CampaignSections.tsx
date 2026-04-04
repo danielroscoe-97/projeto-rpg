@@ -49,7 +49,7 @@ function Section({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div id={id} className="border border-border rounded-lg overflow-hidden">
+    <div id={id} className="border border-border rounded-lg overflow-hidden scroll-mt-20">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

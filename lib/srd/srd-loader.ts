@@ -268,6 +268,7 @@ export function loadFeats(): Promise<SrdFeat[]> {
 const itemCache = new Map<string, Promise<SrdItem[]>>();
 
 /** Fetches the SRD items bundle (consolidated mundane + magic).
+ *  Filters to SRD/Basic Rules items only (defense in depth — server also filters).
  *  Promise is cached so multiple callers share one fetch+parse. */
 export function loadItems(): Promise<SrdItem[]> {
   const key = "all";
@@ -278,7 +279,9 @@ export function loadItems(): Promise<SrdItem[]> {
       itemCache.delete(key);
       throw new Error(`Failed to load SRD items: ${res.status}`);
     }
-    return res.json() as Promise<SrdItem[]>;
+    return (res.json() as Promise<SrdItem[]>).then((items) =>
+      items.filter((i) => i.srd === true || i.basicRules === true)
+    );
   });
   itemCache.set(key, promise);
   return promise;

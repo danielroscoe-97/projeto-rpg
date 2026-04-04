@@ -523,8 +523,10 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     };
     const sectionId = sectionMap[contextMenu.nodeType];
     if (sectionId) {
-      const el = document.getElementById(sectionId);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     }
     closeContextMenu();
   }, [contextMenu, closeContextMenu]);
@@ -1226,8 +1228,13 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       const nodeType = node.type ?? "";
       const sectionId = sectionMap[nodeType];
       if (sectionId) {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Small delay lets mobile browsers settle touch events before scrolling.
+        // block:"start" + scroll-margin-top on the section avoids the wrong-offset
+        // bug that block:"center" causes with fixed headers on mobile.
+        setTimeout(() => {
+          const el = document.getElementById(sectionId);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 50);
       }
     },
     [connectingFromNode, toggleGroup]

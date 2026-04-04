@@ -302,7 +302,7 @@ export function DmAtmospherePanel({
                           key={loop.id}
                           className="inline-flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full px-2 py-0.5 text-[10px]"
                         >
-                          {loop.icon} {t(`preset_${loop.label?.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof t>[0])}
+                          {loop.icon} {t(loop.label as Parameters<typeof t>[0])}
                           <button
                             type="button"
                             onClick={() => {

@@ -170,7 +170,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       id: presetId,
       audio,
       icon: preset.icon,
-      label: preset.id,
+      label: preset.name_key.replace("audio.", ""),
     };
     const newLoops = [...activeLoops, newLoop];
 
@@ -178,7 +178,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       activeLoops: newLoops,
       activeAmbientId: newLoops[0]?.id ?? null,
       activeAmbientAudio: newLoops[0]?.audio ?? null,
-      lastSoundLabel: `${preset.icon} ${preset.id}`,
+      lastSoundLabel: `${preset.icon} ${preset.name_key.replace("audio.", "")}`,
     });
   },
 

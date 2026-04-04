@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { X, SkipForward } from "lucide-react";
@@ -37,13 +37,20 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
     setPhase("details");
   }, []);
 
+  // Lock body scroll while recap is open (prevents mobile scroll-through)
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
       data-testid="combat-recap"
     >
       <motion.div
@@ -51,7 +58,7 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 40, scale: 0.95 }}
         transition={{ duration: 0.4, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl border border-gold/30 bg-surface-primary shadow-card"
+        className="w-full max-w-lg max-h-[85vh] sm:max-h-[90vh] overflow-y-auto overscroll-contain rounded-xl border border-gold/30 bg-surface-primary shadow-card"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6 sm:py-4">

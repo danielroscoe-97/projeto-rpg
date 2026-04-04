@@ -21,7 +21,8 @@ import {
   BlogPost14,
 } from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
-import { BlogTOC } from "@/components/blog/BlogTOC";
+import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
+import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
 
@@ -143,7 +144,7 @@ export default async function BlogPostPage({
       },
     },
     mainEntityOfPage: `${BASE_URL}/blog/${post.slug}`,
-    inLanguage: "pt-BR",
+    inLanguage: slug.endsWith("-en") ? "en-US" : "pt-BR",
   };
 
   return (
@@ -233,6 +234,9 @@ export default async function BlogPostPage({
             <p className="mt-4 text-foreground/65 leading-relaxed max-w-2xl text-[15px]">
               {post.description}
             </p>
+
+            {/* Language switcher */}
+            <BlogLanguageSwitcher slug={slug} />
 
             {/* Divider */}
             <div className="flex items-center gap-3 mt-10 xl:max-w-3xl">
@@ -348,6 +352,9 @@ export default async function BlogPostPage({
 
           {/* TOC Sidebar — desktop only */}
           <BlogTOC />
+
+          {/* TOC — mobile floating button + bottom sheet */}
+          <BlogTOCMobile />
         </div>
       </main>
 

@@ -182,7 +182,7 @@ export function SoundboardPageClient({ title }: { title: string }) {
                   key={loop.id}
                   className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full px-2.5 py-1 text-xs"
                 >
-                  {loop.icon} {tAudio(`preset_${loop.label?.replace("ambient-", "ambient_").replace("music-", "music_")}` as Parameters<typeof tAudio>[0])}
+                  {loop.icon} {tAudio(loop.label as Parameters<typeof tAudio>[0])}
                   <button
                     type="button"
                     onClick={() => stopLoop(loop.id)}

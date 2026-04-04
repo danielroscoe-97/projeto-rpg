@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import type { SrdMonster, SrdSpell } from "./srd-loader";
+import type { SrdMonster, SrdSpell, SrdItem } from "./srd-loader";
 
 // ── PT-BR slug maps (EN slug → PT slug) ───────────────────────────
 let monsterPtMap: Record<string, string> | null = null;
@@ -89,6 +89,7 @@ const SRD_DIR = join(process.cwd(), "public", "srd");
 // MAD (Monster-a-Day) monsters are CC-licensed and always allowed.
 let srdMonsterWhitelist: Set<string> | null = null;
 let srdSpellWhitelist: Set<string> | null = null;
+let srdItemWhitelist: Set<string> | null = null;
 
 function getSrdMonsterWhitelist(): Set<string> {
   if (srdMonsterWhitelist) return srdMonsterWhitelist;
@@ -112,8 +113,20 @@ function getSrdSpellWhitelist(): Set<string> {
   return srdSpellWhitelist;
 }
 
+function getSrdItemWhitelist(): Set<string> {
+  if (srdItemWhitelist) return srdItemWhitelist;
+  try {
+    const slugs: string[] = JSON.parse(readFileSync(join(SRD_DIR, "srd-item-whitelist.json"), "utf-8"));
+    srdItemWhitelist = new Set(slugs);
+  } catch {
+    srdItemWhitelist = new Set();
+  }
+  return srdItemWhitelist;
+}
+
 let monsterCache: SrdMonster[] | null = null;
 let spellCache: SrdSpell[] | null = null;
+let itemCache: SrdItem[] | null = null;
 
 /** Load SRD-licensed monsters only (CC-BY-4.0).
  *  Filters 2014/2024 by srd-monster-whitelist.json; MAD are CC and always included. */
@@ -160,6 +173,22 @@ export function getSrdSpells(): SrdSpell[] {
     spellCache = [];
   }
   return spellCache;
+}
+
+/** Load SRD-licensed items only (CC-BY-4.0).
+ *  Filters by srd-item-whitelist.json to exclude non-SRD content. */
+export function getSrdItems(): SrdItem[] {
+  if (itemCache) return itemCache;
+  try {
+    const whitelist = getSrdItemWhitelist();
+    const items: SrdItem[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "items.json"), "utf-8")
+    );
+    itemCache = items.filter((i) => whitelist.has(i.id));
+  } catch {
+    itemCache = [];
+  }
+  return itemCache;
 }
 
 /** Generate a URL-safe slug from a monster/spell name */

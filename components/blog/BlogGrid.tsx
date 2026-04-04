@@ -5,6 +5,13 @@ import Link from "next/link";
 import type { BlogPost, BlogCategory } from "@/lib/blog/posts";
 import { BLOG_CATEGORIES } from "@/lib/blog/posts";
 
+type LangFilter = "all" | "pt" | "en";
+
+/** Determine post language from slug convention: -en suffix = English, otherwise Portuguese */
+function getPostLang(slug: string): "pt" | "en" {
+  return slug.endsWith("-en") ? "en" : "pt";
+}
+
 const CATEGORY_COLORS: Record<BlogCategory, string> = {
   tutorial: "bg-blue-500/15 text-blue-400 border-blue-500/20",
   guia: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
@@ -31,6 +38,21 @@ function CategoryBadge({ category }: { category: BlogCategory }) {
   );
 }
 
+function LangBadge({ slug }: { slug: string }) {
+  const lang = getPostLang(slug);
+  return (
+    <span
+      className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+        lang === "en"
+          ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+          : "bg-green-500/10 text-green-400 border-green-500/20"
+      }`}
+    >
+      {lang === "en" ? "EN" : "PT"}
+    </span>
+  );
+}
+
 /* ─── Featured Card (latest post) ───────────────────────────── */
 function FeaturedCard({ post }: { post: BlogPost }) {
   return (
@@ -40,6 +62,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
     >
       <div className="flex items-center gap-3 mb-3">
         <CategoryBadge category={post.category} />
+        <LangBadge slug={post.slug} />
         <span className="text-xs text-muted-foreground">{formatDate(post.date)}</span>
         <span className="text-xs text-muted-foreground">·</span>
         <span className="text-xs text-muted-foreground">{post.readingTime}</span>
@@ -69,6 +92,7 @@ function PostCard({ post }: { post: BlogPost }) {
     >
       <div className="flex items-center gap-2 mb-3">
         <CategoryBadge category={post.category} />
+        <LangBadge slug={post.slug} />
         <span className="text-[11px] text-muted-foreground ml-auto">{post.readingTime}</span>
       </div>
       <h3 className="font-display text-[15px] text-foreground group-hover:text-gold transition-colors duration-200 mb-2 leading-snug flex-1">
@@ -93,14 +117,27 @@ function PostCard({ post }: { post: BlogPost }) {
 export function BlogGrid({ posts }: { posts: BlogPost[] }) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<BlogCategory | null>(null);
+  const [langFilter, setLangFilter] = useState<LangFilter>("all");
+
+  // Language detection removed — default is "all", user filters manually
 
   const categories = useMemo(() => {
     const cats = new Set(posts.map((p) => p.category));
     return Array.from(cats) as BlogCategory[];
   }, [posts]);
 
+  // Check if there are posts in multiple languages (to decide whether to show the filter)
+  const hasMultipleLanguages = useMemo(() => {
+    const langs = new Set(posts.map((p) => getPostLang(p.slug)));
+    return langs.size > 1;
+  }, [posts]);
+
   const filtered = useMemo(() => {
     let result = posts;
+    // Language filter
+    if (langFilter !== "all") {
+      result = result.filter((p) => getPostLang(p.slug) === langFilter);
+    }
     if (query) {
       const q = query.toLowerCase();
       result = result.filter(
@@ -113,7 +150,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
       result = result.filter((p) => p.category === activeCategory);
     }
     return result;
-  }, [posts, query, activeCategory]);
+  }, [posts, query, activeCategory, langFilter]);
 
   // Sort by date descending
   const sorted = useMemo(
@@ -122,7 +159,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
   );
 
   const [featured, ...rest] = sorted;
-  const hasFilters = !!(query || activeCategory);
+  const hasFilters = !!(query || activeCategory || langFilter !== "all");
 
   return (
     <div>
@@ -152,7 +189,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
           />
         </div>
 
-        {/* Category chips */}
+        {/* Category chips + language toggle */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             type="button"
@@ -179,6 +216,27 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
               {BLOG_CATEGORIES[cat]}
             </button>
           ))}
+
+          {/* Language toggle */}
+          {hasMultipleLanguages && (
+            <>
+              <span className="w-px h-5 bg-white/[0.08] mx-1 hidden sm:block" />
+              {(["all", "pt", "en"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLangFilter(l)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    langFilter === l
+                      ? "bg-gold/15 text-gold border border-gold/25"
+                      : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
+                  }`}
+                >
+                  {l === "all" ? "All" : l === "pt" ? "PT" : "EN"}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 
@@ -195,7 +253,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
           <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
           <button
             type="button"
-            onClick={() => { setQuery(""); setActiveCategory(null); }}
+            onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
             className="mt-3 text-gold text-sm hover:underline"
           >
             Limpar filtros

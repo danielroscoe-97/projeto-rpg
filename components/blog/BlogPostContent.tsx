@@ -3599,6 +3599,45 @@ export function BlogPost13() {
         Resilient CON compensa boa parte disso com proficiência nos saves.
       </P>
 
+      {/* Variante Point Buy — Shadar-kai */}
+      <div className="rounded-xl border border-gold/25 bg-gold/[0.05] p-5 my-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
+        <div className="pl-3">
+          <p className="text-gold font-display text-xs uppercase tracking-wider font-bold mb-2">
+            Variante &mdash; Shadar-kai com Point Buy
+          </p>
+          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
+            Se sua mesa usa Point Buy e permite as regras de raça com ASIs
+            flex&iacute;veis (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> &eacute;
+            uma alternativa excelente a Half-Elf. A ideia &eacute; redistribuir os
+            b&ocirc;nus raciais para fechar tanto CHA quanto CON em n&uacute;meros pares
+            mais cedo, eliminando pontos &iacute;mpares desperdi&ccedil;ados.
+          </p>
+          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
+            <strong>Como funciona:</strong> Compre CHA 15 e CON 15 no Point Buy.
+            Distribua os b&ocirc;nus raciais como +2 CON e +1 CHA, chegando a{" "}
+            <strong>CON 17, CHA 16</strong> no n&iacute;vel 1. No n&iacute;vel 5 (Sorc 4),
+            pegue <strong>Resilient (CON)</strong> &rarr; CON 18 (modificador +4 E
+            profici&ecirc;ncia em saves de CON). No n&iacute;vel 9 (Sorc 8), pegue um
+            half-feat de CHA como <strong>Fey Touched (+1 CHA)</strong> &rarr; CHA 17...
+            ou melhor, inverta: pegue Fey Touched com +1 CHA no n&iacute;vel 5 (CHA 17 &eacute;
+            &iacute;mpar, mas voc&ecirc; ganha Misty Step + Gift of Alacrity), e{" "}
+            <strong>Resilient (CON)</strong> no n&iacute;vel 9 (CON 18). A ordem ideal
+            depende da sua mesa &mdash; se concentra&ccedil;&atilde;o &eacute; cr&iacute;tica desde cedo,
+            Resilient primeiro.
+          </p>
+          <p className="text-sm text-foreground/85 leading-relaxed">
+            <strong>Vantagem da Shadar-kai:</strong> Al&eacute;m da otimiza&ccedil;&atilde;o de ASIs,
+            voc&ecirc; ganha <em>Blessing of the Raven Queen</em> &mdash; um teleporte
+            de 30ft como b&ocirc;nus action com resist&ecirc;ncia a todo dano at&eacute; o pr&oacute;ximo
+            turno. Para um caster frontline que precisa manter concentra&ccedil;&atilde;o, isso
+            &eacute; uma ferramenta de sobreviv&ecirc;ncia brutal que Misty Step n&atilde;o oferece.
+            O trade-off &eacute; perder Fey Ancestry e os dois +1 extras do Half-Elf,
+            mas com Point Buy, os n&uacute;meros finais ficam melhores.
+          </p>
+        </div>
+      </div>
+
       <H2>Por Que Essas Escolhas?</H2>
 
       <H3>Raça: Half-Elf (Drow)</H3>
@@ -4033,6 +4072,45 @@ export function BlogPost14() {
         Guardians, that&apos;s a real difference — but Resilient CON compensates
         significantly by granting proficiency in CON saves.
       </P>
+
+      {/* Point Buy Variant — Shadar-kai */}
+      <div className="rounded-xl border border-gold/25 bg-gold/[0.05] p-5 my-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
+        <div className="pl-3">
+          <p className="text-gold font-display text-xs uppercase tracking-wider font-bold mb-2">
+            Variant &mdash; Shadar-kai with Point Buy
+          </p>
+          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
+            If your table uses Point Buy and allows flexible ASI rules
+            (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> is an
+            excellent alternative to Half-Elf. The idea is to redistribute racial
+            bonuses so both CHA and CON land on even numbers earlier, eliminating
+            wasted odd scores.
+          </p>
+          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
+            <strong>How it works:</strong> Buy CHA 15 and CON 15 in Point Buy.
+            Place racial bonuses as +2 CON and +1 CHA, arriving at{" "}
+            <strong>CON 17, CHA 16</strong> at level 1. At level 5 (Sorc 4), take{" "}
+            <strong>Resilient (CON)</strong> &rarr; CON 18 (+4 modifier AND
+            proficiency in CON saves). At level 9 (Sorc 8), take a CHA half-feat
+            like <strong>Fey Touched (+1 CHA)</strong> &rarr; CHA 17... or better
+            yet, swap the order: take Fey Touched with +1 CHA at level 5 (CHA 17
+            is odd, but you gain Misty Step + Gift of Alacrity), then{" "}
+            <strong>Resilient (CON)</strong> at level 9 (CON 18). The ideal order
+            depends on your table — if concentration is critical early on,
+            Resilient first.
+          </p>
+          <p className="text-sm text-foreground/85 leading-relaxed">
+            <strong>Shadar-kai advantage:</strong> Beyond ASI optimization, you
+            gain <em>Blessing of the Raven Queen</em> — a 30ft teleport as a bonus
+            action with resistance to all damage until your next turn. For a
+            frontline caster who needs to maintain concentration, this is a brutal
+            survival tool that Misty Step doesn&apos;t offer. The trade-off is
+            losing Fey Ancestry and the two extra +1s from Half-Elf, but with
+            Point Buy, the final numbers come out ahead.
+          </p>
+        </div>
+      </div>
 
       <H2>Why These Choices?</H2>
 

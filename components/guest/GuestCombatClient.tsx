@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText } from "lucide-react";
 import { toast } from "sonner";
+import { AnimatePresence } from "framer-motion";
 import { useGuestCombatStore, getGuestNumberedName, saveGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
 import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
 import { RulesetSelector } from "@/components/session/RulesetSelector";
@@ -1357,52 +1358,61 @@ export function GuestCombatClient() {
   );
 
   const handleEndEncounter = useCallback(() => {
-    const guestStore = useGuestCombatStore.getState();
-    // Accumulate the final (active) turn's elapsed time
-    const finalAccumulated = { ...guestStore.turnTimeAccumulated };
-    const currentId = guestStore.combatants[guestStore.currentTurnIndex]?.id;
-    const elapsed = guestStore.turnStartedAt ? Date.now() - guestStore.turnStartedAt : 0;
-    if (currentId && elapsed > 0) {
-      finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
-    }
-
-    // Convert ID-keyed maps to name-keyed for guest stats (use real name for DM recap)
-    const turnTimeByName: Record<string, number> = {};
-    const turnCountByName: Record<string, number> = {};
-    for (const c of guestStore.combatants) {
-      const key = c.name;
-      if (finalAccumulated[c.id]) {
-        turnTimeByName[key] = (turnTimeByName[key] ?? 0) + finalAccumulated[c.id];
+    try {
+      const guestStore = useGuestCombatStore.getState();
+      // Accumulate the final (active) turn's elapsed time
+      const finalAccumulated = { ...guestStore.turnTimeAccumulated };
+      const currentId = guestStore.combatants[guestStore.currentTurnIndex]?.id;
+      const elapsed = guestStore.turnStartedAt ? Date.now() - guestStore.turnStartedAt : 0;
+      if (currentId && elapsed > 0) {
+        finalAccumulated[currentId] = (finalAccumulated[currentId] ?? 0) + elapsed;
       }
-      if (guestStore.turnCountById[c.id]) {
-        turnCountByName[key] = (turnCountByName[key] ?? 0) + guestStore.turnCountById[c.id];
-      }
-    }
 
-    // Show leaderboard with accumulated stats before resetting
-    const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
-    const duration = guestStore.combatStartTime ? Date.now() - guestStore.combatStartTime : 0;
-    if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
-      setLeaderboardStats(stats);
-      setGuestCombatDuration(duration);
-      // Build CombatReport for the new Recap UI
-      const report = buildCombatReportFromStats({
-        stats,
-        combatants: guestStore.combatants,
-        encounterName: tg("try_encounter_name"),
-        combatDuration: duration,
-        roundNumber: guestStore.roundNumber,
-        turnTimeSnapshots: guestStore.turnTimeSnapshots,
-        t,
-      });
-      setGuestCombatReport(report);
-      setShowActionLog(false); // Close action log to avoid overlapping with recap
-      setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
-    } else {
+      // Convert ID-keyed maps to name-keyed for guest stats (use real name for DM recap)
+      const turnTimeByName: Record<string, number> = {};
+      const turnCountByName: Record<string, number> = {};
+      for (const c of guestStore.combatants) {
+        const key = c.name;
+        if (finalAccumulated[c.id]) {
+          turnTimeByName[key] = (turnTimeByName[key] ?? 0) + finalAccumulated[c.id];
+        }
+        if (guestStore.turnCountById[c.id]) {
+          turnCountByName[key] = (turnCountByName[key] ?? 0) + guestStore.turnCountById[c.id];
+        }
+      }
+
+      // Show leaderboard with accumulated stats before resetting
+      const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
+      const duration = guestStore.combatStartTime ? Date.now() - guestStore.combatStartTime : 0;
+      if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
+        setLeaderboardStats(stats);
+        setGuestCombatDuration(duration);
+        // Build CombatReport for the new Recap UI
+        const report = buildCombatReportFromStats({
+          stats,
+          combatants: guestStore.combatants,
+          encounterName: tg("try_encounter_name"),
+          combatDuration: duration,
+          roundNumber: guestStore.roundNumber,
+          turnTimeSnapshots: guestStore.turnTimeSnapshots,
+          t,
+        });
+        setGuestCombatReport(report);
+        setShowActionLog(false); // Close action log to avoid overlapping with recap
+        setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
+      } else {
+        useGuestCombatStats.getState().reset();
+        resetCombat();
+      }
+    } catch (err) {
+      // Defensive: if report building fails, still reset combat instead of leaving
+      // the user stuck on the active combat screen with no way to proceed.
+      console.error("[GuestCombat] handleEndEncounter failed:", err);
       useGuestCombatStats.getState().reset();
+      useCombatLogStore.getState().clear();
       resetCombat();
     }
-  }, [resetCombat]);
+  }, [resetCombat, t, tg]);
 
   // C.15: Dismiss all post-combat screens — guest has no DB persistence
   const handleGuestDismissAll = useCallback(() => {
@@ -1721,13 +1731,15 @@ export function GuestCombatClient() {
 
       {isExpired && <GuestExpiryModal onReset={handleExpiryReset} />}
 
-      {guestPostCombatPhase === "leaderboard" && guestCombatReport && (
-        <CombatRecap
-          report={guestCombatReport}
-          onClose={handleLeaderboardClose}
-          onSaveAndSignup={handleSaveAndSignup}
-        />
-      )}
+      <AnimatePresence>
+        {guestPostCombatPhase === "leaderboard" && guestCombatReport && (
+          <CombatRecap
+            report={guestCombatReport}
+            onClose={handleLeaderboardClose}
+            onSaveAndSignup={handleSaveAndSignup}
+          />
+        )}
+      </AnimatePresence>
 
       {/* UX.04 — Guest poll phase removed: DM jumps from leaderboard directly to dismiss */}
 
