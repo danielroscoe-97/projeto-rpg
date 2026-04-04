@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Users, Plus, Trash2 } from "lucide-react";
+import { Users, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 import { CharacterCard } from "@/components/character/CharacterCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,10 +57,17 @@ interface CharacterFormFields {
   hp: string;
   ac: string;
   dc: string;
+  str: string;
+  dex: string;
+  con: string;
+  intScore: string;
+  wis: string;
+  chaScore: string;
+  tokenUrl: string;
 }
 
 function emptyForm(): CharacterFormFields {
-  return { name: "", race: "", charClass: "", level: "", hp: "", ac: "", dc: "" };
+  return { name: "", race: "", charClass: "", level: "", hp: "", ac: "", dc: "", str: "", dex: "", con: "", intScore: "", wis: "", chaScore: "", tokenUrl: "" };
 }
 
 function formFromCharacter(char: PlayerCharacter): CharacterFormFields {
@@ -71,6 +79,13 @@ function formFromCharacter(char: PlayerCharacter): CharacterFormFields {
     hp: char.max_hp > 0 ? char.max_hp.toString() : "",
     ac: char.ac > 0 ? char.ac.toString() : "",
     dc: char.spell_save_dc?.toString() ?? "",
+    str: char.str?.toString() ?? "",
+    dex: char.dex?.toString() ?? "",
+    con: char.con?.toString() ?? "",
+    intScore: char.int_score?.toString() ?? "",
+    wis: char.wis?.toString() ?? "",
+    chaScore: char.cha_score?.toString() ?? "",
+    tokenUrl: char.token_url ?? "",
   };
 }
 
@@ -93,9 +108,53 @@ function CharacterForm({
 }) {
   const set = (key: keyof CharacterFormFields) => (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange({ ...fields, [key]: e.target.value });
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const ext = file.name.split(".").pop() ?? "png";
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("player-avatars").upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("player-avatars").getPublicUrl(path);
+      onChange({ ...fields, tokenUrl: urlData.publicUrl });
+    } catch {
+      toast.error("Erro ao enviar imagem");
+    } finally {
+      setUploading(false);
+    }
+  }, [fields, onChange]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 pt-2">
+      {/* Avatar */}
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="w-16 h-16 rounded-full border-2 border-dashed border-gold/30 hover:border-gold/60 transition-colors flex items-center justify-center overflow-hidden bg-white/[0.04] shrink-0"
+        >
+          {fields.tokenUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={fields.tokenUrl} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <Upload className="w-5 h-5 text-muted-foreground/40" />
+          )}
+        </button>
+        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleAvatarUpload} />
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground">{uploading ? "Enviando..." : "Avatar"}</p>
+          <p className="text-[10px] text-muted-foreground/50">JPG, PNG ou WebP (max 2MB)</p>
+        </div>
+      </div>
+
       <div className="space-y-1.5">
         <label className="text-xs text-gold/80 uppercase tracking-widest font-medium">
           Nome *
@@ -134,6 +193,37 @@ function CharacterForm({
         <Input type="number" value={fields.dc} onChange={set("dc")} placeholder="15" className={inputClass} />
       </div>
 
+      {/* Ability Scores — 6 stats in 2 rows */}
+      <div className="space-y-2 pt-1">
+        <p className="text-xs text-gold/60 uppercase tracking-widest font-medium">Ability Scores</p>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">STR</label>
+            <Input type="number" value={fields.str} onChange={set("str")} placeholder="10" className={inputClass} />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">DEX</label>
+            <Input type="number" value={fields.dex} onChange={set("dex")} placeholder="10" className={inputClass} />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">CON</label>
+            <Input type="number" value={fields.con} onChange={set("con")} placeholder="10" className={inputClass} />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">INT</label>
+            <Input type="number" value={fields.intScore} onChange={set("intScore")} placeholder="10" className={inputClass} />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">WIS</label>
+            <Input type="number" value={fields.wis} onChange={set("wis")} placeholder="10" className={inputClass} />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">CHA</label>
+            <Input type="number" value={fields.chaScore} onChange={set("chaScore")} placeholder="10" className={inputClass} />
+          </div>
+        </div>
+      </div>
+
       <Button type="submit" variant="gold" className="w-full min-h-[44px]" disabled={submitting || !fields.name.trim()}>
         {submitting ? "..." : submitLabel}
       </Button>
@@ -162,6 +252,13 @@ function CreateCharacterDialog({ onCreated }: { onCreated: () => void }) {
         maxHp: fields.hp ? parseInt(fields.hp) : null,
         ac: fields.ac ? parseInt(fields.ac) : null,
         spellSaveDc: fields.dc ? parseInt(fields.dc) : null,
+        str: fields.str ? parseInt(fields.str) : null,
+        dex: fields.dex ? parseInt(fields.dex) : null,
+        con: fields.con ? parseInt(fields.con) : null,
+        intScore: fields.intScore ? parseInt(fields.intScore) : null,
+        wis: fields.wis ? parseInt(fields.wis) : null,
+        chaScore: fields.chaScore ? parseInt(fields.chaScore) : null,
+        tokenUrl: fields.tokenUrl || null,
       });
       toast.success("Personagem criado!");
       setOpen(false);
@@ -234,6 +331,13 @@ function EditCharacterDialog({
         maxHp: fields.hp ? parseInt(fields.hp) : null,
         ac: fields.ac ? parseInt(fields.ac) : null,
         spellSaveDc: fields.dc ? parseInt(fields.dc) : null,
+        str: fields.str ? parseInt(fields.str) : null,
+        dex: fields.dex ? parseInt(fields.dex) : null,
+        con: fields.con ? parseInt(fields.con) : null,
+        intScore: fields.intScore ? parseInt(fields.intScore) : null,
+        wis: fields.wis ? parseInt(fields.wis) : null,
+        chaScore: fields.chaScore ? parseInt(fields.chaScore) : null,
+        tokenUrl: fields.tokenUrl || null,
       });
       toast.success("Personagem salvo!");
       setOpen(false);

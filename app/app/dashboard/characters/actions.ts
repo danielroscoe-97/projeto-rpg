@@ -11,6 +11,13 @@ interface CharacterData {
   maxHp?: number | null;
   ac?: number | null;
   spellSaveDc?: number | null;
+  str?: number | null;
+  dex?: number | null;
+  con?: number | null;
+  intScore?: number | null;
+  wis?: number | null;
+  chaScore?: number | null;
+  tokenUrl?: string | null;
 }
 
 export async function createStandaloneCharacterAction(data: CharacterData) {
@@ -34,6 +41,13 @@ export async function createStandaloneCharacterAction(data: CharacterData) {
       current_hp: maxHp,
       ac: data.ac ?? 10,
       spell_save_dc: data.spellSaveDc || null,
+      str: data.str || null,
+      dex: data.dex || null,
+      con: data.con || null,
+      int_score: data.intScore || null,
+      wis: data.wis || null,
+      cha_score: data.chaScore || null,
+      token_url: data.tokenUrl || null,
     });
 
   if (error) {
@@ -61,6 +75,13 @@ export async function updateCharacterAction(id: string, data: CharacterData) {
       max_hp: data.maxHp ?? 10,
       ac: data.ac ?? 10,
       spell_save_dc: data.spellSaveDc || null,
+      str: data.str || null,
+      dex: data.dex || null,
+      con: data.con || null,
+      int_score: data.intScore || null,
+      wis: data.wis || null,
+      cha_score: data.chaScore || null,
+      token_url: data.tokenUrl || null,
     })
     .eq("id", id)
     .eq("user_id", user.id);

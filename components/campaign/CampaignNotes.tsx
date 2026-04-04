@@ -84,6 +84,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [optionsOpenIds, setOptionsOpenIds] = useState<Set<string>>(new Set());
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
 
   // Fetch notes and folders on mount
@@ -167,13 +168,19 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     return map;
   }, [folders]);
 
-  // Filter notes by selected folder
+  // Filter notes by selected folder + search query
   const filteredNotes = useMemo(() => {
-    if (selectedFolderId === null) {
-      return notes; // show all notes when "All/Unfiled" is selected
+    let result = selectedFolderId === null
+      ? notes
+      : notes.filter((n) => n.folder_id === selectedFolderId);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((n) =>
+        n.title.toLowerCase().includes(q) || n.content?.toLowerCase().includes(q)
+      );
     }
-    return notes.filter((n) => n.folder_id === selectedFolderId);
-  }, [notes, selectedFolderId]);
+    return result;
+  }, [notes, selectedFolderId, searchQuery]);
 
   // Player notes (notes from non-DM campaign members) — read-only for DM
   const playerNotes = useMemo(() => {
@@ -493,6 +500,14 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         )}
       </div>
 
+      {/* Search */}
+      <Input
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder={t("search_placeholder")}
+        className="bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg"
+      />
+
       <div className="flex gap-4">
         {/* Sidebar: Folder tree */}
         <div className="w-48 shrink-0 space-y-2">
@@ -632,27 +647,52 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       data-testid={`note-title-${note.id}`}
                     />
 
-                    {/* Note type chips */}
-                    {isOwner && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {NOTE_TYPE_CONFIG.map(({ key, icon: TypeIcon, color, activeColor }) => {
-                          const isActive = (note.note_type || "general") === key;
-                          return (
-                            <button
-                              key={key}
-                              type="button"
-                              onClick={() => handleFieldChange(note.id, "note_type", key)}
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-medium transition-all ${
-                                isActive ? activeColor : color
-                              }`}
-                            >
-                              <TypeIcon className="w-3 h-3" />
-                              {t(`note_type_${key}`)}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
+                    {/* Note type chips — collapsible to reduce visual noise */}
+                    {isOwner && (() => {
+                      const isOpen = optionsOpenIds.has(note.id);
+                      const activeConfig = NOTE_TYPE_CONFIG.find(({ key }) => key === (note.note_type || "general"));
+                      const ActiveIcon = activeConfig?.icon ?? FileText;
+                      return (
+                        <div className="space-y-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setOptionsOpenIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(note.id)) next.delete(note.id); else next.add(note.id);
+                              return next;
+                            })}
+                            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-medium transition-all ${activeConfig?.activeColor ?? "text-muted-foreground/60 border-border"}`}
+                          >
+                            <ActiveIcon className="w-3 h-3" />
+                            {t(`note_type_${note.note_type || "general"}`)}
+                            <Settings2 className="w-2.5 h-2.5 opacity-40" />
+                          </button>
+                          {isOpen && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {NOTE_TYPE_CONFIG.map(({ key, icon: TypeIcon, color, activeColor }) => {
+                                const isActive = (note.note_type || "general") === key;
+                                return (
+                                  <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => {
+                                      handleFieldChange(note.id, "note_type", key);
+                                      setOptionsOpenIds((prev) => { const next = new Set(prev); next.delete(note.id); return next; });
+                                    }}
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-medium transition-all ${
+                                      isActive ? activeColor : color
+                                    }`}
+                                  >
+                                    <TypeIcon className="w-3 h-3" />
+                                    {t(`note_type_${key}`)}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     <textarea
                       value={note.content}

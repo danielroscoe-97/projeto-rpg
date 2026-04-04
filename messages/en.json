@@ -316,6 +316,7 @@
     "no_notes": "No notes yet",
     "create_first": "Create your first note",
     "new_note": "New note",
+    "search_placeholder": "Search notes...",
     "untitled": "Untitled",
     "title_placeholder": "Note title...",
     "content_placeholder": "Write your note here...",
