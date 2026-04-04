@@ -103,7 +103,7 @@ function CTA() {
         href="/try"
         className="inline-flex items-center gap-1 bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:shadow-gold-glow transition-all duration-200"
       >
-        Experimentar o Pocket DM &rarr;
+        Experimentar o Pocket DM →
       </Link>
     </div>
   );
@@ -292,13 +292,13 @@ export function BlogPost2() {
 
       <H2>3. Catálogo de Magias</H2>
       <P>
-        &ldquo;O que essa magia faz mesmo?&rdquo; — essa pergunta aparece em toda sessão.
+        {"\u201C"}O que essa magia faz mesmo?{"\u201D"} — essa pergunta aparece em toda sessão.
         Ter um catálogo de magias com busca por nome, escola, nível e classe
         evita pausas desnecessárias.
       </P>
       <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 750+ spells organizadas por nível e escola" />
       <P>
-        O Pocket DM inclui o que chamamos de &ldquo;oráculo de magias&rdquo; — uma{" "}
+        O Pocket DM inclui o que chamamos de {"\u201C"}oráculo de magias{"\u201D"} — uma{" "}
         <ProdLink href="/magias">busca inteligente em mais de 900 magias SRD</ProdLink>,
         acessível durante o combate sem interromper o fluxo do jogo.
       </P>
@@ -637,7 +637,7 @@ export function BlogPost4() {
 
       <H2>Condições que Combinam</H2>
       <P>
-        Algumas condições são &ldquo;pré-requisitos&rdquo; de outras. <strong>Paralyzed</strong>,{" "}
+        Algumas condições são {"\u201C"}pré-requisitos{"\u201D"} de outras. <strong>Paralyzed</strong>,{" "}
         <strong>Stunned</strong> e <strong>Unconscious</strong> todos incluem{" "}
         <strong>Incapacitated</strong>. Isso significa que se uma criatura está
         paralisada, ela também está incapacitada automaticamente.
@@ -699,8 +699,8 @@ export function BlogPost5() {
       <H2>5. Timer de Turno (Suave)</H2>
       <P>
         Não precisa ser rígido, mas combinar que cada jogador tem ~60 segundos
-        para decidir sua ação mantém o ritmo. A regra: &ldquo;se não decidiu,
-        seu personagem usa o turno se defendendo (Dodge).&rdquo;
+        para decidir sua ação mantém o ritmo. A regra: {"\u201C"}se não decidiu,
+        seu personagem usa o turno se defendendo (Dodge).{"\u201D"}
       </P>
 
       <H2>6. Delegue Tarefas aos Jogadores</H2>
@@ -717,7 +717,7 @@ export function BlogPost5() {
         Monstros inteligentes não lutam até a morte. Quando um goblin cai
         a 20% de HP, ele foge. Isso encurta combates e adiciona realismo.
         Os jogadores ainda ganham ataques de oportunidade, e você elimina 2-3
-        rodadas de &ldquo;acabamento&rdquo;.
+        rodadas de {"\u201C"}acabamento{"\u201D"}.
       </P>
 
       <H2>8. Teatro da Mente para Combates Menores</H2>
@@ -794,7 +794,7 @@ export function BlogPost6() {
 
       <H2>Passo 2: Adicionar Monstros</H2>
       <P>
-        Na barra de busca &ldquo;Pesquisar Monstros SRD&rdquo;, digite o nome do monstro
+        Na barra de busca {"\u201C"}Pesquisar Monstros SRD{"\u201D"}, digite o nome do monstro
         que quer adicionar. O Pocket DM tem 1.200+ monstros do{" "}
         <ExtLink href="https://5e.d20srd.org/">SRD (System Reference Document)</ExtLink>{" "}
         + monstros do compêndio{" "}
@@ -803,16 +803,16 @@ export function BlogPost6() {
         Rating.
       </P>
       <P>
-        Clique em <strong>&ldquo;Adicionar&rdquo;</strong> para colocar o monstro no
+        Clique em <strong>{"\u201C"}Adicionar{"\u201D"}</strong> para colocar o monstro no
         encontro. Você pode adicionar vários do mesmo tipo usando o botão
-        <strong> &ldquo;+2 grupo&rdquo;</strong> para combates com múltiplos inimigos.
+        <strong> {"\u201C"}+2 grupo{"\u201D"}</strong> para combates com múltiplos inimigos.
       </P>
 
       <Img src="/art/blog/monster-search.png" alt="Busca de monstros no Pocket DM — resultados para 'Dragon' com CR, HP e AC" />
 
       <Tip>
         Você também pode adicionar jogadores e NPCs manualmente clicando em
-        &ldquo;+ Monstro/Jogador Manual&rdquo;. Só o nome é obrigatório — HP, CA e
+        {"\u201C"}+ Monstro/Jogador Manual{"\u201D"}. Só o nome é obrigatório — HP, CA e
         iniciativa são opcionais.
       </Tip>
 
@@ -840,13 +840,13 @@ export function BlogPost6() {
 
       <H2>Passo 4: Iniciar o Combate</H2>
       <P>
-        Clique em <strong>&ldquo;Iniciar Combate&rdquo;</strong>. O Pocket DM ordena
+        Clique em <strong>{"\u201C"}Iniciar Combate{"\u201D"}</strong>. O Pocket DM ordena
         todos os combatentes por iniciativa e marca quem age primeiro. A partir
         daqui, o combate roda turno a turno:
       </P>
       <Ul>
         <Li>O combatente ativo fica destacado com borda dourada</Li>
-        <Li>Clique <strong>&ldquo;Próximo Turno&rdquo;</strong> para avançar para o próximo combatente</Li>
+        <Li>Clique <strong>{"\u201C"}Próximo Turno{"\u201D"}</strong> para avançar para o próximo combatente</Li>
         <Li>O contador de rodadas avança automaticamente</Li>
         <Li>O timer mostra quanto tempo a rodada está levando</Li>
       </Ul>
@@ -855,7 +855,7 @@ export function BlogPost6() {
 
       <H2>Passo 5: Gerenciar HP</H2>
       <P>
-        Clique no botão <strong>&ldquo;HP&rdquo;</strong> de qualquer combatente para
+        Clique no botão <strong>{"\u201C"}HP{"\u201D"}</strong> de qualquer combatente para
         abrir o painel de vida. Você pode:
       </P>
       <Ul>
@@ -876,7 +876,7 @@ export function BlogPost6() {
 
       <H2>Passo 6: Aplicar Condições</H2>
       <P>
-        Clique no botão <strong>&ldquo;Cond&rdquo;</strong> para ver todas as 15{" "}
+        Clique no botão <strong>{"\u201C"}Cond{"\u201D"}</strong> para ver todas as 15{" "}
         <IntLink slug="guia-condicoes-dnd-5e">condições do D&D 5e</IntLink>.
         Clique em qualquer condição para aplicar — ela fica visível para o
         mestre e para os jogadores. Cada condição vem com a descrição das
@@ -887,7 +887,7 @@ export function BlogPost6() {
 
       <H2>Passo 7: Convidar Jogadores</H2>
       <P>
-        Clique em <strong>&ldquo;Compartilhar com jogadores&rdquo;</strong> no topo da
+        Clique em <strong>{"\u201C"}Compartilhar com jogadores{"\u201D"}</strong> no topo da
         página. O Pocket DM gera um link único que seus jogadores abrem no
         celular. Eles entram instantaneamente e veem:
       </P>
@@ -906,13 +906,13 @@ export function BlogPost6() {
       <H2>Passo 8: Usar o Bestiário e Oráculo de Magias</H2>
       <P>
         Durante o combate, você pode consultar o bestiário completo clicando em
-        <strong> &ldquo;Ver Ficha&rdquo;</strong> em qualquer monstro — o stat block completo
+        <strong> {"\u201C"}Ver Ficha{"\u201D"}</strong> em qualquer monstro — o stat block completo
         aparece sem sair da tela de combate.
       </P>
       <P>
         O <ProdLink href="/magias">oráculo de magias</ProdLink> permite buscar
         qualquer uma das 750+ magias SRD por nome, escola ou nível. Útil quando
-        um jogador pergunta &ldquo;o que essa magia faz?&rdquo; e você precisa da
+        um jogador pergunta {"\u201C"}o que essa magia faz?{"\u201D"} e você precisa da
         resposta em 2 segundos.
       </P>
 
@@ -1006,7 +1006,7 @@ export function BlogPost7() {
 
       <H2>O Método do Orçamento de XP (DMG)</H2>
       <P>
-        O método oficial do Dungeon Master&apos;s Guide é o mais conhecido. Ele
+        O método oficial do Dungeon Master{"'"}s Guide é o mais conhecido. Ele
         funciona em quatro passos:
       </P>
 
@@ -1164,7 +1164,7 @@ export function BlogPost7() {
         monstro. A variedade de funções táticas é o que transforma um combate
         mecânico em algo dinâmico e inesquecível.{" "}
         <ExtLink href="https://www.themonstersknow.com/thoughts-constructing-encounters/">
-          Keith Ammann (The Monsters Know What They&apos;re Doing)
+          Keith Ammann (The Monsters Know What They{"'"}re Doing)
         </ExtLink>{" "}
         defende que a composição de monstros deve seguir a lógica ecológica
         do mundo: criaturas que naturalmente coexistem no mesmo ambiente.
@@ -1493,9 +1493,9 @@ export function BlogPost8() {
       <P>
         Challenge Rating é um número que representa a dificuldade relativa de um
         monstro. Em teoria, um monstro com CR X deveria ser um desafio
-        &quot;médio&quot; para um grupo de quatro aventureiros de nível X. Um
+        {'"'}médio{'"'} para um grupo de quatro aventureiros de nível X. Um
         grupo de quatro personagens de nível 5 deveria enfrentar um monstro
-        CR 5 como um encontro &quot;justo&quot; — nem trivial, nem mortal.
+        CR 5 como um encontro {'"'}justo{'"'} — nem trivial, nem mortal.
       </P>
       <P>
         Na prática, essa equivalência é muito mais sutil. O CR leva em conta HP,
@@ -1508,7 +1508,7 @@ export function BlogPost8() {
       <P>
         Cada monstro também possui um valor de XP correspondente ao seu CR. Esses
         valores de XP são a base do sistema de orçamento de encontros do{" "}
-        <em>Dungeon Master&apos;s Guide</em>. Você soma o XP dos monstros,
+        <em>Dungeon Master{"'"}s Guide</em>. Você soma o XP dos monstros,
         aplica multiplicadores por quantidade, e compara com os limiares de XP do
         grupo para determinar a dificuldade.
       </P>
@@ -1517,7 +1517,7 @@ export function BlogPost8() {
       <P>
         Esta tabela mostra o limiar de XP <strong>por personagem</strong> em cada
         nível. Multiplique pelo número de jogadores para obter o orçamento do
-        grupo. Se um encontro ultrapassa o limiar &quot;Mortal&quot;, há risco
+        grupo. Se um encontro ultrapassa o limiar {'"'}Mortal{'"'}, há risco
         real de morte de personagem.
       </P>
       <div className="overflow-x-auto my-8 rounded-xl border border-white/[0.08]">
@@ -1621,7 +1621,7 @@ export function BlogPost8() {
         Alguns monstros têm AC extremamente alta com HP baixo (ou vice-versa). Um
         monstro com AC 19 mas apenas 30 HP pode frustrar um grupo que não acerta
         ataques, mas desmoronar em dois turnos quando finalmente conectam. O CR
-        trata isso como &quot;médio&quot;, mas a experiência real na mesa é
+        trata isso como {'"'}médio{'"'}, mas a experiência real na mesa é
         bipolar — ou o monstro parece invencível, ou morre instantaneamente.
       </P>
 
@@ -1640,7 +1640,7 @@ export function BlogPost8() {
       <H3>4. Fragilidade do Nível 1</H3>
       <P>
         Nos níveis 1-2, personagens têm tão pouco HP que qualquer variação de
-        dano pode ser letal. Um encontro &quot;Médio&quot; para nível 1 pode
+        dano pode ser letal. Um encontro {'"'}Médio{'"'} para nível 1 pode
         facilmente se tornar mortal se os monstros rolam dano alto ou acertam
         crits. Mestres iniciantes devem tratar encontros de nível 1 com extrema
         cautela — um grupo de 4 Goblins pode causar um TPK com facilidade.
@@ -1649,10 +1649,10 @@ export function BlogPost8() {
       <H3>5. Itens Mágicos e Otimização</H3>
       <P>
         O CR assume que o grupo não tem itens mágicos significativos e que os
-        personagens são construídos de forma &quot;razoável&quot;. Um grupo com
+        personagens são construídos de forma {'"'}razoável{'"'}. Um grupo com
         um Paladin usando <em>Great Weapon Master</em> e <em>Smite</em>, um
         Wizard com <em>Web</em> e <em>Hypnotic Pattern</em>, e itens mágicos +1
-        vai demolir encontros que o CR classifica como &quot;Difíceis&quot;. O
+        vai demolir encontros que o CR classifica como {'"'}Difíceis{'"'}. O
         inverso também vale: grupos com builds sub-ótimos vão sofrer mais do que
         o CR prevê.
       </P>
@@ -1673,7 +1673,7 @@ export function BlogPost8() {
         é provavelmente o método mais rápido para balancear encontros. A regra é
         simples: <strong>some o nível de todos os personagens e divida por
         4</strong>. O resultado é o CR de referência para um encontro
-        &quot;médio&quot; com um único monstro. Para encontros com múltiplos
+        {'"'}médio{'"'} com um único monstro. Para encontros com múltiplos
         monstros, use vários monstros de CR menor que somem aproximadamente o
         mesmo orçamento.
       </P>
@@ -1686,8 +1686,8 @@ export function BlogPost8() {
       <H3>Regra CR = Nível do Grupo</H3>
       <P>
         Para quem quer algo ainda mais simples: um monstro com CR igual ao nível
-        do grupo (para 4 PCs) é geralmente um encontro &quot;médio&quot; a
-        &quot;difícil&quot;. Monstro com CR = nível + 2 é mortal. Monstro com
+        do grupo (para 4 PCs) é geralmente um encontro {'"'}médio{'"'} a
+        {'"'}difícil{'"'}. Monstro com CR = nível + 2 é mortal. Monstro com
         CR = nível - 2 é fácil. Não é preciso, mas funciona surpreendentemente
         bem para mesas casuais.
       </P>
@@ -1697,8 +1697,8 @@ export function BlogPost8() {
         Tanto Sly Flourish quanto The Angry GM concordam em um ponto: o encontro
         deve servir a história, não ao contrário. Comece pela narrativa — que
         monstros fazem sentido nesta cena? Depois verifique o CR como sanity
-        check. Se o resultado é &quot;mortal&quot;, ajuste: reduza HP, remova um
-        monstro ou dê ao grupo vantagem tática. Se é &quot;fácil&quot;, adicione
+        check. Se o resultado é {'"'}mortal{'"'}, ajuste: reduza HP, remova um
+        monstro ou dê ao grupo vantagem tática. Se é {'"'}fácil{'"'}, adicione
         monstros ou coloque os inimigos em terreno vantajoso.
       </P>
 
@@ -1730,7 +1730,7 @@ export function BlogPost8() {
       <P>
         Se o monstro está causando muito dano e o encontro está ficando mortal,
         role dano na faixa mais baixa. Se está fácil, use o dano máximo. Você
-        também pode &quot;esquecer&quot; de usar uma habilidade poderosa por um
+        também pode {'"'}esquecer{'"'} de usar uma habilidade poderosa por um
         turno se perceber que o próximo golpe vai derrubar um jogador de forma
         anticlimática.
       </P>
@@ -1801,7 +1801,7 @@ export function BlogPost8() {
         <Li>
           <strong>Tratar nível 1 como qualquer outro nível:</strong> Nos níveis
           1-2, os personagens são extremamente frágeis. Um encontro
-          &quot;Médio&quot; pode matar facilmente. Comece com encontros Fáceis e
+          {'"'}Médio{'"'} pode matar facilmente. Comece com encontros Fáceis e
           aumente gradualmente.
         </Li>
         <Li>
@@ -1859,7 +1859,7 @@ export function BlogPost9() {
         Existem centenas de monstros no bestiário do D&D 5e. Só no SRD (System
         Reference Document) são mais de 400 criaturas, e quando você junta
         suplementos oficiais, esse número ultrapassa mil. Para um mestre que
-        está começando &mdash; ou mesmo um veterano buscando variedade &mdash;
+        está começando — ou mesmo um veterano buscando variedade —
         a quantidade de opções pode paralisar. Qual monstro vale o tempo de
         preparo? Qual vai criar aquele momento inesquecível na mesa?
       </P>
@@ -1874,17 +1874,17 @@ export function BlogPost9() {
       <P>
         Para cada monstro, incluímos por que ele merece seu lugar na mesa, uma
         dica tática baseada em referências como{" "}
-        <ExtLink href="https://www.themonstersknow.com/">The Monsters Know What They&apos;re Doing</ExtLink>{" "}
+        <ExtLink href="https://www.themonstersknow.com/">The Monsters Know What They{"'"}re Doing</ExtLink>{" "}
         e{" "}
         <ExtLink href="https://slyflourish.com/making_monsters_interesting.html">Sly Flourish</ExtLink>,
         e um link direto para a ficha no nosso compêndio gratuito.
       </P>
 
       {/* ── 1. GOBLIN ─────────────────────────────────────────────── */}
-      <H2>1. Goblin &mdash; O Clássico Versátil</H2>
+      <H2>1. Goblin — O Clássico Versátil</H2>
       <P>
         Se existe um monstro que todo mestre deveria dominar, é o Goblin. Com
-        CR 1/4, ele parece inofensivo no papel &mdash; 7 pontos de vida, um
+        CR 1/4, ele parece inofensivo no papel — 7 pontos de vida, um
         arco curto e uma cimitarra. Mas subestimar goblins é exatamente o erro
         que eles exploram. A habilidade <strong>Nimble Escape</strong> permite
         que o goblin realize a ação Esconder ou Desengajar como ação bônus,
@@ -1895,7 +1895,7 @@ export function BlogPost9() {
         <Li>Funciona em qualquer nível: bandidos de estrada no nível 1, tropas de um hobgoblin warlord no nível 8</Li>
         <Li>Ensina novos jogadores sobre ação bônus, cobertura e vantagem/desvantagem</Li>
         <Li>Em grupo, goblins com arcos a 80 pés de distância são surpreendentemente letais</Li>
-        <Li>Perfeito para emboscadas &mdash; a habilidade Stealth (+6) é melhor que a de muitos personagens</Li>
+        <Li>Perfeito para emboscadas — a habilidade Stealth (+6) é melhor que a de muitos personagens</Li>
       </Ul>
       <Tip>
         Como{" "}
@@ -1903,7 +1903,7 @@ export function BlogPost9() {
         goblins nunca lutam em campo aberto. Eles atacam de posições
         elevadas, usam Nimble Escape para se esconder após cada tiro e
         fogem quando perdem vantagem numérica. Rode goblins assim e seus
-        jogadores nunca mais vão dizer que &ldquo;goblin é mob de tutorial&rdquo;.
+        jogadores nunca mais vão dizer que {"\u201C"}goblin é mob de tutorial{"\u201D"}.
       </Tip>
       <P>
         Veja a ficha completa:{" "}
@@ -1911,7 +1911,7 @@ export function BlogPost9() {
       </P>
 
       {/* ── 2. DIRE WOLF ──────────────────────────────────────────── */}
-      <H2>2. Dire Wolf &mdash; O Predador dos Primeiros Níveis</H2>
+      <H2>2. Dire Wolf — O Predador dos Primeiros Níveis</H2>
       <P>
         O Dire Wolf (Lobo Terrível) é possivelmente o melhor monstro de CR 1
         do jogo. Com 37 pontos de vida, um ataque de mordida que causa 2d6+3
@@ -1923,7 +1923,7 @@ export function BlogPost9() {
       </P>
       <H3>Quando usar</H3>
       <Ul>
-        <Li>Viagens por floresta ou tundra &mdash; perfeito para encontros aleatórios com peso narrativo</Li>
+        <Li>Viagens por floresta ou tundra — perfeito para encontros aleatórios com peso narrativo</Li>
         <Li>Montaria de orcs, goblins ou druidas corrompidos</Li>
         <Li>Caçada reversa: os jogadores são a presa, não os predadores</Li>
         <Li>Introdução natural ao conceito de Pack Tactics para novos jogadores</Li>
@@ -1932,7 +1932,7 @@ export function BlogPost9() {
         Lobos terríveis caçam em matilha e tentam separar o grupo. Faça
         dois lobos focarem no mesmo alvo para derrubar, enquanto o terceiro
         circunda o mago na retaguarda. Se um lobo derruba alguém, os
-        outros ganham vantagem automática contra o alvo caído &mdash; é
+        outros ganham vantagem automática contra o alvo caído — é
         brutal e realista.
       </Tip>
       <P>
@@ -1941,29 +1941,29 @@ export function BlogPost9() {
       </P>
 
       {/* ── 3. OWLBEAR ────────────────────────────────────────────── */}
-      <H2>3. Owlbear &mdash; O Terror Icônico</H2>
+      <H2>3. Owlbear — O Terror Icônico</H2>
       <P>
         Poucos monstros são tão <em>D&D</em> quanto o Owlbear (Urso-coruja).
-        Ele não existe em nenhuma mitologia &mdash; é uma criação original do
+        Ele não existe em nenhuma mitologia — é uma criação original do
         jogo, provavelmente inspirada em brinquedos de plástico dos anos 70. E
         é exatamente isso que o torna especial. Com CR 3, 59 HP e um
         multiattack de garra+bico que pode causar até 24 de dano em um turno,
-        o Owlbear é a introdução perfeita ao conceito de &ldquo;monstro que não
-        negocia&rdquo;.
+        o Owlbear é a introdução perfeita ao conceito de {"\u201C"}monstro que não
+        negocia{"\u201D"}.
       </P>
       <H3>Por que funciona tão bem</H3>
       <Ul>
-        <Li>É puro instinto: sem magias, sem habilidades especiais, sem planos &mdash; só fúria</Li>
+        <Li>É puro instinto: sem magias, sem habilidades especiais, sem planos — só fúria</Li>
         <Li>Excelente para forçar decisões: lutar, fugir ou tentar acalmar a fera?</Li>
-        <Li>A descrição visual é inesquecível &mdash; cabeça de coruja no corpo de urso</Li>
-        <Li>Funciona como encontro aleatório, guardião de covil ou &ldquo;o que acordou na caverna&rdquo;</Li>
+        <Li>A descrição visual é inesquecível — cabeça de coruja no corpo de urso</Li>
+        <Li>Funciona como encontro aleatório, guardião de covil ou {"\u201C"}o que acordou na caverna{"\u201D"}</Li>
       </Ul>
       <Tip>
         O Owlbear é territorial, não malvado. Ele ataca quem entra no seu
         território e persegue até perder interesse ou ficar gravemente ferido.{" "}
         <ExtLink href="https://www.themonstersknow.com/owlbear-tactics/">Segundo a análise do The Monsters Know</ExtLink>,
         o Owlbear vai correr atrás do alvo mais próximo até derrubá-lo,
-        depois pular pro seguinte. Use isso &mdash; faça ele ignorar o
+        depois pular pro seguinte. Use isso — faça ele ignorar o
         tanque que bloqueia o caminho e correr direto pro bardo que
         tropeçou nos arbustos.
       </Tip>
@@ -1973,11 +1973,11 @@ export function BlogPost9() {
       </P>
 
       {/* ── 4. MIMIC ──────────────────────────────────────────────── */}
-      <H2>4. Mimic &mdash; O Combustível de Paranoia</H2>
+      <H2>4. Mimic — O Combustível de Paranoia</H2>
       <P>
         O Mimic é um dos monstros mais elegantes do D&D. Com CR 2, ele se
-        disfarça como um objeto mundano &mdash; um baú, uma porta, uma
-        estante &mdash; e ataca quando alguém toca nele. Sua existência muda
+        disfarça como um objeto mundano — um baú, uma porta, uma
+        estante — e ataca quando alguém toca nele. Sua existência muda
         fundamentalmente o comportamento dos jogadores: depois do primeiro
         encontro com um Mimic, <em>todo</em> baú se torna suspeito. E isso,
         como mestre, é ouro puro.
@@ -1985,16 +1985,16 @@ export function BlogPost9() {
       <H3>O impacto real do Mimic</H3>
       <Ul>
         <Li>Cria tensão em ambientes de exploração sem precisar de combate constante</Li>
-        <Li>Ensina jogadores a investigar antes de agir &mdash; hábito que melhora toda a campanha</Li>
+        <Li>Ensina jogadores a investigar antes de agir — hábito que melhora toda a campanha</Li>
         <Li>O efeito Adhesive gruda o alvo ao Mimic, criando pânico imediato</Li>
         <Li>Versatilidade de forma: pode ser qualquer objeto, em qualquer dungeon</Li>
       </Ul>
       <Tip>
         O segredo do Mimic é o setup. Descreva três baús normais com
         tesouro real nas sessões anteriores. Na quarta vez, quando o
-        jogador disser &ldquo;abro o baú&rdquo; sem pensar duas vezes, revele
+        jogador disser {"\u201C"}abro o baú{"\u201D"} sem pensar duas vezes, revele
         que o baú morde de volta. O Mimic funciona como predador emboscador
-        &mdash; ele ataca o primeiro alvo e se agarra. Se o grupo todo
+        — ele ataca o primeiro alvo e se agarra. Se o grupo todo
         reagir, ele larga e foge (Mimics são mais espertos do que parecem).
       </Tip>
       <P>
@@ -2003,19 +2003,19 @@ export function BlogPost9() {
       </P>
 
       {/* ── 5. BASILISK ───────────────────────────────────────────── */}
-      <H2>5. Basilisk &mdash; A Petrificação Dramática</H2>
+      <H2>5. Basilisk — A Petrificação Dramática</H2>
       <P>
         Existe algo especialmente visceral na petrificação. Diferente de dano
         de HP que se cura com uma poção, virar pedra é <em>permanente</em> sem
         a magia certa. O Basilisk (CR 3) entrega exatamente essa ameaça: seu
         olhar petrificante força um teste de resistência de Constituição CD 12,
         e falhar em dois turnos seguidos significa estátua. Não é letal no
-        sentido tradicional &mdash; é pior.
+        sentido tradicional — é pior.
       </P>
       <H3>Quando brilha</H3>
       <Ul>
-        <Li>Cavernas e ruínas subterrâneas com estátuas &ldquo;decorativas&rdquo; que são aventureiros anteriores</Li>
-        <Li>Como guardião de tesouros &mdash; alguém colocou esse basilisco ali de propósito</Li>
+        <Li>Cavernas e ruínas subterrâneas com estátuas {"\u201C"}decorativas{"\u201D"} que são aventureiros anteriores</Li>
+        <Li>Como guardião de tesouros — alguém colocou esse basilisco ali de propósito</Li>
         <Li>Ensina jogadores sobre condições além de dano: desviar o olhar, espelhos, estratégia</Li>
         <Li>Funciona como puzzle de combate: como derrotar algo que você não pode olhar?</Li>
       </Ul>
@@ -2024,7 +2024,7 @@ export function BlogPost9() {
         não olhar para o Basilisk (evitando o olhar petrificante), mas
         ataques contra ele terão desvantagem. Isso cria uma escolha
         tática genuína em cada turno. Coloque espelhos quebrados na sala
-        como pista &mdash; e recompense jogadores criativos que tentarem
+        como pista — e recompense jogadores criativos que tentarem
         refletir o olhar.
       </Tip>
       <P>
@@ -2033,7 +2033,7 @@ export function BlogPost9() {
       </P>
 
       {/* ── 6. MANTICORE ──────────────────────────────────────────── */}
-      <H2>6. Manticore &mdash; O Combo Corpo a Corpo + Longo Alcance</H2>
+      <H2>6. Manticore — O Combo Corpo a Corpo + Longo Alcance</H2>
       <P>
         A Manticora é um dos monstros mais subestimados de CR 3. Ela voa, atira
         espinhos da cauda a 100/200 pés de distância e, quando chega perto,
@@ -2044,7 +2044,7 @@ export function BlogPost9() {
       <H3>O que a torna especial</H3>
       <Ul>
         <Li>Voo + ataque ranged: ela não precisa pousar se não quiser</Li>
-        <Li>24 espinhos na cauda, recarregando entre descansos &mdash; munição é finita, o que cria urgência</Li>
+        <Li>24 espinhos na cauda, recarregando entre descansos — munição é finita, o que cria urgência</Li>
         <Li>Pode negociar: Manticoras são inteligentes o suficiente para exigir tributo em vez de lutar</Li>
         <Li>Perfeita para encontros em áreas abertas, desfiladeiros e montanhas</Li>
       </Ul>
@@ -2054,7 +2054,7 @@ export function BlogPost9() {
         só pousa quando os espinhos acabam (ou quando o grupo fica
         vulnerável o bastante). Use-a em campo aberto, voando a 60 pés
         de altura, e force os jogadores a pensar em soluções além de
-        &ldquo;corro e bato&rdquo;. Magos com alcance longo viram MVPs nesse encontro.
+        {"\u201C"}corro e bato{"\u201D"}. Magos com alcance longo viram MVPs nesse encontro.
       </Tip>
       <P>
         Veja a ficha completa:{" "}
@@ -2062,21 +2062,21 @@ export function BlogPost9() {
       </P>
 
       {/* ── 7. YOUNG GREEN DRAGON ─────────────────────────────────── */}
-      <H2>7. Young Green Dragon &mdash; O Dragão Político</H2>
+      <H2>7. Young Green Dragon — O Dragão Político</H2>
       <P>
         Todos os dragões são ameaças formidáveis, mas o Green Dragon
         (Dragão Verde) é especial porque sua arma mais perigosa não é o
-        sopro venenoso &mdash; é a mente. Dragões verdes são manipuladores,
+        sopro venenoso — é a mente. Dragões verdes são manipuladores,
         mentirosos e pacientes. O Young Green Dragon (CR 8) é forte o
         suficiente para ser um vilão de arco inteiro, mas inteligente o
         suficiente para nunca precisar lutar.
       </P>
       <H3>Por que o dragão verde é o melhor primeiro dragão</H3>
       <Ul>
-        <Li>CR 8 é acessível para grupos de nível 5-7 &mdash; o sweet spot de muitas campanhas</Li>
+        <Li>CR 8 é acessível para grupos de nível 5-7 — o sweet spot de muitas campanhas</Li>
         <Li>Sopro venenoso em cone de 30 pés: 12d6 de dano, devastador em áreas fechadas</Li>
-        <Li>Anfíbio e pode respirar embaixo d&apos;água &mdash; táticas de fuga inesperadas</Li>
-        <Li>Pode ser patrono, informante, chantagista ou vilão &mdash; raramente &ldquo;só um monstro&rdquo;</Li>
+        <Li>Anfíbio e pode respirar embaixo d{"'"}água — táticas de fuga inesperadas</Li>
+        <Li>Pode ser patrono, informante, chantagista ou vilão — raramente {"\u201C"}só um monstro{"\u201D"}</Li>
       </Ul>
       <Tip>
         O Young Green Dragon não ataca um grupo que pode derrotá-lo.{" "}
@@ -2093,20 +2093,20 @@ export function BlogPost9() {
       </P>
 
       {/* ── 8. MIND FLAYER ────────────────────────────────────────── */}
-      <H2>8. Mind Flayer &mdash; Horror e Psionismo</H2>
+      <H2>8. Mind Flayer — Horror e Psionismo</H2>
       <P>
         Poucos monstros geram tanto medo em jogadores experientes quanto o
         Mind Flayer (Devorador de Mentes). CR 7 não parece muito no papel, mas
-        o Mind Blast &mdash; um cone de 60 pés que causa 4d8+4 de dano psíquico
-        e atordoa quem falhar no teste &mdash; pode acabar com um encontro em
+        o Mind Blast — um cone de 60 pés que causa 4d8+4 de dano psíquico
+        e atordoa quem falhar no teste — pode acabar com um encontro em
         um único turno. Jogadores atordoados não agem, não reagem e falham
         automaticamente em testes de Força e Destreza. Enquanto isso, o Mind
         Flayer caminha até alguém e tenta extrair o cérebro.
       </P>
       <H3>O que faz dele inesquecível</H3>
       <Ul>
-        <Li>O Mind Blast atordoa múltiplos alvos &mdash; é o grande equalizador contra grupos poderosos</Li>
-        <Li>Extract Brain mata instantaneamente criaturas incapacitadas &mdash; morte permanente, sem death saves</Li>
+        <Li>O Mind Blast atordoa múltiplos alvos — é o grande equalizador contra grupos poderosos</Li>
+        <Li>Extract Brain mata instantaneamente criaturas incapacitadas — morte permanente, sem death saves</Li>
         <Li>Altamente inteligente: planeja, recua, usa lacaios e nunca luta em condições desfavoráveis</Li>
         <Li>Perfeito para arcos de horror, conspirações subterrâneas e momentos de desespero</Li>
       </Ul>
@@ -2116,16 +2116,16 @@ export function BlogPost9() {
         termos iguais. Coloque-os com lacaios (grimlocks, intellect devourers)
         que servem de escudo e distração. O Mind Flayer abre com Mind Blast,
         se teletransporta via Plane Shift se as coisas ficam feias, e volta
-        mais preparado. A sensação de &ldquo;ele escapou&rdquo; é mais aterrorizante
+        mais preparado. A sensação de {"\u201C"}ele escapou{"\u201D"} é mais aterrorizante
         do que qualquer derrota.
       </Tip>
 
       {/* ── 9. BEHOLDER ───────────────────────────────────────────── */}
-      <H2>9. Beholder &mdash; O BBEG Icônico</H2>
+      <H2>9. Beholder — O BBEG Icônico</H2>
       <P>
         O Beholder é, para muitos, <em>o</em> monstro de D&D. Uma esfera
         flutuante com um olho central gigante e dez pedúnculos oculares, cada
-        um disparando um raio diferente &mdash; desintegração, petrificação,
+        um disparando um raio diferente — desintegração, petrificação,
         charme, medo, telecinesia, entre outros. Com CR 13, é um boss fight
         de campanha inteira. E o mais impressionante: sua habilidade
         Antimagic Cone anula toda magia num cone de 150 pés na direção que
@@ -2133,37 +2133,37 @@ export function BlogPost9() {
       </P>
       <H3>Por que é o boss definitivo</H3>
       <Ul>
-        <Li>10 raios oculares com efeitos diferentes &mdash; cada turno é imprevisível</Li>
-        <Li>Antimagic Cone desliga magias, itens mágicos e concentração &mdash; terrível para casters</Li>
+        <Li>10 raios oculares com efeitos diferentes — cada turno é imprevisível</Li>
+        <Li>Antimagic Cone desliga magias, itens mágicos e concentração — terrível para casters</Li>
         <Li>Lair Actions tornam o covil tão perigoso quanto a criatura: limo no chão, tentáculos nas paredes</Li>
-        <Li>Paranoico e megalomaníaco &mdash; o roleplay de um Beholder escreve a aventura sozinho</Li>
+        <Li>Paranoico e megalomaníaco — o roleplay de um Beholder escreve a aventura sozinho</Li>
       </Ul>
       <Tip>
         <ExtLink href="https://www.themonstersknow.com/beholder-tactics/">Segundo a análise do The Monsters Know</ExtLink>,
-        Beholders são agressivos e antissociais &mdash; atacam invasores
+        Beholders são agressivos e antissociais — atacam invasores
         imediatamente. O Beholder aponta o Antimagic Cone para onde estão
         os casters e usa os raios dos pedúnculos contra os marciais. Rode
         o covil com as Lair Actions: chão escorregadio, olhos nas paredes,
         apêndices que agarram. O grupo precisa se dividir para vencer
-        &mdash; e dividir o grupo contra um Beholder é aterrorizante.
+        — e dividir o grupo contra um Beholder é aterrorizante.
       </Tip>
 
       {/* ── 10. LICH ──────────────────────────────────────────────── */}
-      <H2>10. Lich &mdash; O Vilão Definitivo</H2>
+      <H2>10. Lich — O Vilão Definitivo</H2>
       <P>
         Se o Beholder é o boss de uma dungeon, o Lich é o vilão de uma
         campanha inteira. Um mago que transcendeu a morte através de um
         phylactery, o Lich (CR 21) tem acesso a magias de até 9º nível,
         Legendary Resistance (3/dia), Legendary Actions e um covil com
         efeitos devastadores. Derrotá-lo em combate é apenas metade da
-        batalha &mdash; se o phylactery não for destruído, ele retorna em
+        batalha — se o phylactery não for destruído, ele retorna em
         1d10 dias com HP completo.
       </P>
       <H3>O que torna o Lich inigualável</H3>
       <Ul>
         <Li>Spellcasting de 18º nível: Power Word Kill, Disintegrate, Globe of Invulnerability</Li>
         <Li>Legendary Resistance garante que ele não morra para um único Banishment bem sucedido</Li>
-        <Li>O phylactery cria uma quest dentro da quest &mdash; encontrá-lo e destruí-lo é uma aventura à parte</Li>
+        <Li>O phylactery cria uma quest dentro da quest — encontrá-lo e destruí-lo é uma aventura à parte</Li>
         <Li>Lair Actions que drenam vida, invocam espíritos e conectam-se telepaticamente a intrusos</Li>
         <Li>Funciona como BBEG de campanha, patrono traiçoeiro ou ameaça ancestral adormecida</Li>
       </Ul>
@@ -2173,7 +2173,7 @@ export function BlogPost9() {
         necessário. Toda interação com os jogadores acontece através de
         lacaios, ilusões e manipulação política. Quando o grupo finalmente
         chega ao covil, o Lich já sabe tudo sobre eles. Rode o Lich como
-        alguém que teve <em>séculos</em> para se preparar &mdash; porque teve.
+        alguém que teve <em>séculos</em> para se preparar — porque teve.
         Ele sabe as magias do mago, as fraquezas do paladino e a
         identidade do assassino disfarçado.
       </Tip>
@@ -2212,7 +2212,7 @@ export function BlogPost9() {
         (spellcasting de 18º nível + legendary actions) exigem que o mestre
         gerencie muita informação simultânea. Um combat tracker digital
         mantém HP, condições, ordem de iniciativa e stat blocks organizados
-        &mdash; para que você possa focar na narrativa em vez de consultar
+        — para que você possa focar na narrativa em vez de consultar
         tabelas.
       </P>
 
@@ -2221,16 +2221,16 @@ export function BlogPost9() {
       <H2>Referências e Leitura Adicional</H2>
       <Ul>
         <Li>
-          <ExtLink href="https://www.themonstersknow.com/">The Monsters Know What They&apos;re Doing</ExtLink>{" "}
-          &mdash; Análises táticas detalhadas para centenas de monstros do D&D 5e
+          <ExtLink href="https://www.themonstersknow.com/">The Monsters Know What They{"'"}re Doing</ExtLink>{" "}
+          — Análises táticas detalhadas para centenas de monstros do D&D 5e
         </Li>
         <Li>
           <ExtLink href="https://slyflourish.com/making_monsters_interesting.html">Making Monsters Interesting (Sly Flourish)</ExtLink>{" "}
-          &mdash; Como customizar e dar personalidade a qualquer monstro
+          — Como customizar e dar personalidade a qualquer monstro
         </Li>
         <Li>
           <ExtLink href="https://slyflourish.com/choosing_monsters.html">Choosing Monsters for Your Game (Sly Flourish)</ExtLink>{" "}
-          &mdash; Filosofia de seleção de monstros baseada na história
+          — Filosofia de seleção de monstros baseada na história
         </Li>
       </Ul>
       <P>
@@ -2241,7 +2241,7 @@ export function BlogPost9() {
         <IntLink slug="como-montar-encontro-balanceado-dnd-5e">guia de encontros balanceados</IntLink>{" "}
         e o{" "}
         <IntLink slug="guia-challenge-rating-dnd-5e">guia de Challenge Rating</IntLink>.
-        Boas sessões começam com bons monstros &mdash; e agora você tem dez dos
+        Boas sessões começam com bons monstros — e agora você tem dez dos
         melhores no seu arsenal.
       </P>
 
@@ -3135,27 +3135,27 @@ export function BlogPost12() {
         acontece inteiramente na imaginação dos jogadores e do mestre. Não há
         mapa, grid ou miniaturas — o mestre descreve o ambiente verbalmente e os
         jogadores declaram suas ações com base nessa descrição. O posicionamento
-        é abstrato: &quot;você está perto do ogro&quot;, &quot;o arqueiro está do
-        outro lado da sala&quot;, &quot;há aproximadamente 30 pés entre
-        vocês&quot;.
+        é abstrato: {'"'}você está perto do ogro{'"'}, {'"'}o arqueiro está do
+        outro lado da sala{'"'}, {'"'}há aproximadamente 30 pés entre
+        vocês{'"'}.
       </P>
       <P>
         Como{" "}
         <ExtLink href="https://slyflourish.com/guide_to_narrative_combat.html">
           Sly Flourish descreve em seu guia de combate narrativo
         </ExtLink>, o TotM coloca a narrativa no centro. A pergunta não é
-        &quot;quantos quadrados eu posso me mover?&quot; mas sim &quot;o que meu
-        personagem faz?&quot;. Isso naturalmente encoraja descrições mais
-        criativas e imersivas. O jogador não diz &quot;movo 6 quadrados para a
-        esquerda&quot; — ele diz &quot;corro para trás da coluna, usando-a como
-        cobertura&quot;.
+        {'"'}quantos quadrados eu posso me mover?{'"'} mas sim {'"'}o que meu
+        personagem faz?{'"'}. Isso naturalmente encoraja descrições mais
+        criativas e imersivas. O jogador não diz {'"'}movo 6 quadrados para a
+        esquerda{'"'} — ele diz {'"'}corro para trás da coluna, usando-a como
+        cobertura{'"'}.
       </P>
       <P>
         No TotM, o mestre é o árbitro final de distâncias e posicionamento. Isso
         dá grande flexibilidade narrativa, mas também exige que o mestre seja
         consistente e justo em suas decisões. Uma boa prática é declarar
-        distâncias aproximadas no início do encontro: &quot;os goblins estão a
-        uns 60 pés na beira da floresta&quot;.
+        distâncias aproximadas no início do encontro: {'"'}os goblins estão a
+        uns 60 pés na beira da floresta{'"'}.
       </P>
 
       <H2>O Que É Combate com Grid?</H2>
@@ -3250,7 +3250,7 @@ export function BlogPost12() {
         Sem a necessidade de mover miniaturas, contar quadrados ou debater
         posicionamento exato, os turnos fluem mais rápido. Como{" "}
         <ExtLink href="https://slyflourish.com/tyranny_of_the_grid.html">
-          Sly Flourish argumenta sobre a &quot;tirania do grid&quot;
+          Sly Flourish argumenta sobre a {'"'}tirania do grid{'"'}
         </ExtLink>, o mapa pode desacelerar o jogo ao transformar cada decisão em
         um exercício de otimização espacial. No TotM, o jogador declara o que
         quer fazer e o jogo avança.
@@ -3277,7 +3277,7 @@ export function BlogPost12() {
 
       <H3>Clareza Total</H3>
       <P>
-        Com o grid, não há discussão sobre &quot;quem está onde&quot;. Todos
+        Com o grid, não há discussão sobre {'"'}quem está onde{'"'}. Todos
         veem exatamente a posição de cada criatura. Isso elimina
         mal-entendidos, reduz conflitos na mesa e dá aos jogadores informação
         perfeita para tomar decisões táticas.
@@ -3307,16 +3307,16 @@ export function BlogPost12() {
         grupo, e sentir o campo de batalha tomar forma. Para muitos jogadores, o
         componente visual e tátil do grid é uma parte essencial da experiência
         do D&D. Miniaturas pintadas e mapas bonitos tornam a sessão mais
-        &quot;especial&quot;.
+        {'"'}especial{'"'}.
       </P>
 
       <H2>Abordagem Híbrida: Zonas de Combate</H2>
       <P>
         E se existisse um meio-termo? Existe, e é cada vez mais popular: o
         combate baseado em <strong>zonas</strong>. Em vez de quadrados precisos,
-        o campo de batalha é dividido em zonas abstratas — &quot;entrada da
-        caverna&quot;, &quot;rio de lava&quot;, &quot;ponte estreita&quot;,
-        &quot;altar do dragão&quot;. Mover-se dentro da mesma zona custa pouco
+        o campo de batalha é dividido em zonas abstratas — {'"'}entrada da
+        caverna{'"'}, {'"'}rio de lava{'"'}, {'"'}ponte estreita{'"'},
+        {'"'}altar do dragão{'"'}. Mover-se dentro da mesma zona custa pouco
         ou nada; mover entre zonas adjacentes custa um turno de movimento.
       </P>
       <P>
@@ -3324,15 +3324,15 @@ export function BlogPost12() {
           Sly Flourish adaptou o sistema de zonas do FATE para o D&D 5e
         </ExtLink>, e o resultado é elegante: você mantém a clareza espacial do
         grid (todo mundo sabe em qual zona está) com a velocidade e liberdade
-        narrativa do TotM (sem contar quadrados). Áreas de efeito afetam &quot;a
-        zona inteira&quot; ou &quot;duas zonas adjacentes&quot;, dependendo do
+        narrativa do TotM (sem contar quadrados). Áreas de efeito afetam {'"'}a
+        zona inteira{'"'} ou {'"'}duas zonas adjacentes{'"'}, dependendo do
         tamanho da spell.
       </P>
       <P>
         Na prática, você pode desenhar as zonas como bolhas ou retângulos num
         papel comum (nem precisa de grid), com setas indicando conexões. Cada
-        zona pode ter propriedades — &quot;cobertura parcial&quot;, &quot;terreno
-        difícil&quot;, &quot;escuridão total&quot; — que afetam mecanicamente
+        zona pode ter propriedades — {'"'}cobertura parcial{'"'}, {'"'}terreno
+        difícil{'"'}, {'"'}escuridão total{'"'} — que afetam mecanicamente
         quem está lá dentro.
       </P>
 
@@ -3412,7 +3412,7 @@ export function BlogPost12() {
 
       <H2>Conclusão</H2>
       <P>
-        Não existe estilo &quot;certo&quot; de combate no D&D 5e. Teatro da
+        Não existe estilo {'"'}certo{'"'} de combate no D&D 5e. Teatro da
         mente é rápido, imersivo e barato. Grid é preciso, visual e tátil.
         Zonas são o meio-termo elegante. A melhor abordagem é ser flexível: use
         TotM para encontros simples, grid para boss fights e zonas para tudo que
@@ -3454,7 +3454,7 @@ export function BlogPost13() {
       <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-6 my-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.06] rounded-full blur-[60px]" />
         <p className="relative text-lg italic text-gold/90 font-display">
-          &ldquo;Eu serei a fundação.&rdquo;
+          {"\u201C"}Eu serei a fundação.{"\u201D"}
         </p>
         <p className="relative text-xs text-muted-foreground mt-2">— Capa Barsavi</p>
       </div>
@@ -3540,8 +3540,8 @@ export function BlogPost13() {
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 font-semibold">CON</td>
-              <td className="py-2 text-center">18 &rarr; 19*</td>
-              <td className="py-2 text-center">16 &rarr; 17*</td>
+              <td className="py-2 text-center">18 → 19*</td>
+              <td className="py-2 text-center">16 → 17*</td>
               <td className="py-2 text-center text-red-400/70">&minus;2</td>
             </tr>
             <tr className="border-b border-white/[0.06]">
@@ -3645,39 +3645,53 @@ export function BlogPost13() {
         <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
         <div className="pl-3">
           <p className="text-gold font-display text-xs uppercase tracking-wider font-bold mb-2">
-            Variante &mdash; Shadar-kai com Point Buy
+            Variante — Shadar-kai com Point Buy
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            Se sua mesa usa Point Buy e permite ASIs flex&iacute;veis
-            (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> &eacute;
-            uma alternativa excelente a Half-Elf. Voc&ecirc; consegue fechar{" "}
-            <strong>CHA 18, CON 18 e WIS par</strong> &mdash; todos os atributos
-            importantes em n&uacute;meros pares, sem desperd&iacute;cio.
+            Se sua mesa usa Point Buy e permite ASIs flexíveis
+            (Tasha{"'"}s Cauldron / MotM),{" "}
+            <strong>Shadar-kai</strong> é uma alternativa excelente a
+            Half-Elf. Você consegue fechar{" "}
+            <strong>CHA 18, CON 18 e WIS par</strong> — todos os
+            atributos importantes em números pares, sem desperdício.
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            <strong>Como funciona:</strong> Compre CHA 15 e CON 15 no Point Buy.
-            Distribua os b&ocirc;nus raciais como +2 CON e +1 CHA, chegando a{" "}
-            <strong>CHA 16, CON 17</strong> no n&iacute;vel 1.
+            <strong>Como funciona:</strong>{" "}
+            Compre CHA 15 e CON 15 no Point Buy. Distribua os bônus
+            raciais como +2 CON e +1 CHA, chegando a{" "}
+            <strong>CHA 16, CON 17</strong>{" "}
+            no nível 1.
           </p>
-          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-1.5 pl-0">
-            <li><strong>N&iacute;vel 5 (Sorc 4) &mdash; Resilient (CON):</strong>{" "}
-              CON 17 &rarr; <strong>CON 18</strong> (modificador +4) com profici&ecirc;ncia em saves de CON.
-              Concentra&ccedil;&atilde;o blindada desde cedo.</li>
-            <li><strong>N&iacute;vel 9 (Sorc 8) &mdash; Fey Touched (+1 WIS):</strong>{" "}
-              Coloque o +1 em <strong>WIS</strong> (n&atilde;o em CHA), fechando WIS num valor par.
-              Voc&ecirc; ganha Misty Step + Gift of Alacrity e fica mais tanque nos saves de WIS.</li>
-            <li><strong>N&iacute;vel 10 &mdash; Tome of Leadership:</strong>{" "}
-              CHA 16 &rarr; <strong>CHA 18</strong> (modificador +4). O Tome pula direto de 16 para 18,
-              por isso voc&ecirc; n&atilde;o precisa gastar Fey Touched em CHA.</li>
+          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-2.5 pl-0">
+            <li>
+              <strong>Nível 5 (Sorc 4) — Resilient (CON):</strong>{" "}
+              CON 17 → <strong>CON 18</strong>{" "}
+              (modificador +4) com proficiência em saves de CON.
+              Concentração blindada desde cedo.
+            </li>
+            <li>
+              <strong>Nível 9 (Sorc 8) — Fey Touched (+1 WIS):</strong>{" "}
+              Coloque o +1 em <strong>WIS</strong>{" "}
+              (não em CHA), fechando WIS num valor par. Você ganha
+              Misty Step + Gift of Alacrity e fica mais tanque nos
+              saves de WIS.
+            </li>
+            <li>
+              <strong>Nível 10 — Tome of Leadership:</strong>{" "}
+              CHA 16 → <strong>CHA 18</strong>{" "}
+              (modificador +4). O Tome pula direto de 16 para 18,
+              por isso você não precisa gastar Fey Touched em CHA.
+            </li>
           </ul>
           <p className="text-sm text-foreground/85 leading-relaxed">
-            <strong>Vantagem da Shadar-kai:</strong> Al&eacute;m de fechar todos os atributos pares,
-            voc&ecirc; ganha <em>Blessing of the Raven Queen</em> &mdash; teleporte
-            de 30ft como b&ocirc;nus action com resist&ecirc;ncia a todo dano at&eacute; o pr&oacute;ximo
-            turno. Para um caster frontline, &eacute; uma ferramenta de sobreviv&ecirc;ncia
-            brutal que Misty Step n&atilde;o oferece. O trade-off &eacute; DEX mais baixo
-            (12 vs 14) e perder Fey Ancestry, mas com Point Buy os n&uacute;meros
-            finais compensam.
+            <strong>Vantagem da Shadar-kai:</strong>{" "}
+            Além de fechar todos os atributos pares, você ganha{" "}
+            <em>Blessing of the Raven Queen</em> — teleporte de 30ft
+            como bônus action com resistência a todo dano até o
+            próximo turno. Para um caster frontline, é uma ferramenta
+            de sobrevivência brutal que Misty Step não oferece. O
+            trade-off é DEX mais baixo (12 vs 14) e perder Fey
+            Ancestry, mas com Point Buy os números finais compensam.
           </p>
         </div>
       </div>
@@ -3815,7 +3829,7 @@ export function BlogPost13() {
         Comparada a outros suportes populares: <strong>Twilight Cleric</strong>{" "}
         e <strong>Peace Cleric</strong> são frequentemente citados como mais
         fortes em termos brutos (a aura de HP temporários do Twilight e o
-        Emboldening Bond do Peace são considerados &ldquo;broken&rdquo;). Porém,
+        Emboldening Bond do Peace são considerados {"\u201C"}broken{"\u201D"}). Porém,
         o Order/DSS tem uma vantagem única: ele{" "}
         <strong>multiplica a economia de ações do grupo inteiro</strong> em vez
         de apenas adicionar um bônus. Quando seu Fighter e seu Paladin ganham
@@ -3872,64 +3886,64 @@ export function BlogPost13() {
       </div>
 
       <P>
-        Um meio-elfo de linhagem drow que caminha entre dois mundos: o da f&eacute;
-        e o do poder inato. Capa Barsavi nasceu em uma grande metr&oacute;pole costeira,
+        Um meio-elfo de linhagem drow que caminha entre dois mundos: o da fé
+        e o do poder inato. Capa Barsavi nasceu em uma grande metrópole costeira,
         longe dos olhares da nobreza. Filho bastardo de{" "}
-        <strong>Auri Raelistor</strong>, um respeitado cl&eacute;rigo e nobre devoto de
-        um deus da justi&ccedil;a, e de <strong>Lyna</strong>, uma aventureira
-        meio-elfa drow que desapareceu logo ap&oacute;s o nascimento do filho.
-        &ldquo;Capa&rdquo; vem da tradi&ccedil;&atilde;o de nomear filhos bastardos com termos que
-        evocam prote&ccedil;&atilde;o; &ldquo;Barsavi&rdquo; homenageia uma figura lend&aacute;ria
-        conhecida como &ldquo;O Guardi&atilde;o S&aacute;bio&rdquo;.
+        <strong>Auri Raelistor</strong>, um respeitado clérigo e nobre devoto de
+        um deus da justiça, e de <strong>Lyna</strong>, uma aventureira
+        meio-elfa drow que desapareceu logo após o nascimento do filho.
+        {"\u201C"}Capa{"\u201D"} vem da tradição de nomear filhos bastardos com termos que
+        evocam proteção; {"\u201C"}Barsavi{"\u201D"} homenageia uma figura lendária
+        conhecida como {"\u201C"}O Guardião Sábio{"\u201D"}.
       </P>
       <P>
         Embora bastardo, Capa nunca foi abandonado. Seu pai garantiu que ele
-        tivesse acesso &agrave;s melhores institui&ccedil;&otilde;es de ensino: escolas clericais,
-        academias de filosofia, fortalezas-biblioteca lend&aacute;rias e centros
-        religiosos de todo o continente. Foi nesse per&iacute;odo que desenvolveu
-        habilidades em ret&oacute;rica, diplomacia, teologia e magia divina &mdash; e
-        conheceu uma duquesa influente, ap&oacute;s impression&aacute;-la com um discurso
-        sobre a &eacute;tica da paz em tempos de guerra.
+        tivesse acesso às melhores instituições de ensino: escolas clericais,
+        academias de filosofia, fortalezas-biblioteca lendárias e centros
+        religiosos de todo o continente. Foi nesse período que desenvolveu
+        habilidades em retórica, diplomacia, teologia e magia divina — e
+        conheceu uma duquesa influente, após impressioná-la com um discurso
+        sobre a ética da paz em tempos de guerra.
       </P>
       <P>
-        Tudo mudou quando seu pai partiu em uma expedi&ccedil;&atilde;o rumo a mares
+        Tudo mudou quando seu pai partiu em uma expedição rumo a mares
         distantes e nunca retornou. Nenhum corpo. Nenhuma pista. Nenhuma
-        resposta. Se o deus que servia representava justi&ccedil;a e ordem, por que
-        permitiu tal sil&ecirc;ncio? Esse questionamento n&atilde;o destruiu sua f&eacute; &mdash; mas
-        a transformou em algo mais pragm&aacute;tico: ele acredita na justi&ccedil;a e na
-        ordem, mas n&atilde;o depende cegamente delas.
+        resposta. Se o deus que servia representava justiça e ordem, por que
+        permitiu tal silêncio? Esse questionamento não destruiu sua fé — mas
+        a transformou em algo mais pragmático: ele acredita na justiça e na
+        ordem, mas não depende cegamente delas.
       </P>
       <P>
-        Foi ent&atilde;o que poderes que n&atilde;o vinham de estudo nem de ora&ccedil;&atilde;o
-        come&ccedil;aram a se manifestar. Um s&aacute;bio em uma antiga fortaleza-biblioteca
-        revelou a verdade: sua m&atilde;e, Lyna, possu&iacute;a linhagem descendente de um
+        Foi então que poderes que não vinham de estudo nem de oração
+        começaram a se manifestar. Um sábio em uma antiga fortaleza-biblioteca
+        revelou a verdade: sua mãe, Lyna, possuía linhagem descendente de um
         ser celestial tocado por uma deusa da magia. Esse sangue despertou
-        dentro de Capa, tornando-o portador de duas fontes de poder &mdash; a
-        disciplina da f&eacute; clerical e o poder inato de seu sangue divino.
+        dentro de Capa, tornando-o portador de duas fontes de poder — a
+        disciplina da fé clerical e o poder inato de seu sangue divino.
       </P>
       <P>
-        Ao aceitar o convite da duquesa para um encontro diplom&aacute;tico, Capa
-        iniciou a jornada que o levaria &agrave;s n&eacute;voas de uma terra amaldi&ccedil;oada sob
-        o dom&iacute;nio de um vampiro ancestral. Em apenas <strong>19 dias</strong>,
-        enfrentou horrores sobrenaturais, viu aldeias destru&iacute;das, ficou cara a
-        cara com o senhor das n&eacute;voas &mdash; e morreu <strong>duas vezes</strong>.
-        E voltou duas vezes.
+        Ao aceitar o convite da duquesa para um encontro diplomático, Capa
+        iniciou a jornada que o levaria às névoas de uma terra amaldiçoada sob
+        o domínio de um vampiro ancestral. Em apenas{" "}
+        <strong>19 dias</strong>, enfrentou horrores sobrenaturais, viu aldeias
+        destruídas, ficou cara a cara com o senhor das névoas — e morreu{" "}
+        <strong>duas vezes</strong>. E voltou duas vezes.
       </P>
       <P>
-        Entre seus companheiros &mdash; Amum Titus, Skid, S&oacute;crates, Auditore e
-        Lauren Nailo &mdash; Capa se tornou o elo que mantinha o grupo unido.
+        Entre seus companheiros — Amum Titus, Skid, Sócrates, Auditore e
+        Lauren Nailo — Capa se tornou o elo que mantinha o grupo unido.
         Estrategista em combate, curandeiro, voz de comando em momentos
-        cr&iacute;ticos, defensor dos mais vulner&aacute;veis. Ele n&atilde;o buscava protagonismo.
-        Mas quando tudo come&ccedil;ava a ruir, todos olhavam para ele.
+        críticos, defensor dos mais vulneráveis. Ele não buscava protagonismo.
+        Mas quando tudo começava a ruir, todos olhavam para ele.
       </P>
       <P>
         No final, Capa Barsavi morreu pelo seu grupo. A engrenagem parou para
-        que a m&aacute;quina sobrevivesse. Uma funda&ccedil;&atilde;o que cumpriu sua promessa.
+        que a máquina sobrevivesse. Uma fundação que cumpriu sua promessa.
       </P>
 
       <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 my-6 text-center">
         <p className="text-xs text-muted-foreground/70">
-          Build criada e jogada por <strong className="text-foreground/80">Dani</strong> &middot; por Pocket DM
+          Build criada e jogada por <strong className="text-foreground/80">Dani</strong> · por Pocket DM
         </p>
       </div>
 
@@ -3946,7 +3960,7 @@ export function BlogPost13() {
               href="/try"
               className="bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200"
             >
-              Testar Grátis &rarr;
+              Testar Grátis →
             </Link>
             <Link
               href="/auth/login"
@@ -3971,13 +3985,13 @@ export function BlogPost14() {
       <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-6 my-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.06] rounded-full blur-[60px]" />
         <p className="relative text-lg italic text-gold/90 font-display">
-          &ldquo;I will be the foundation.&rdquo;
+          {"\u201C"}I will be the foundation.{"\u201D"}
         </p>
         <p className="relative text-xs text-muted-foreground mt-2">— Capa Barsavi</p>
       </div>
 
       <P>
-        Capa Barsavi wasn&apos;t the one dealing the most damage, taking the
+        Capa Barsavi wasn{"'"}t the one dealing the most damage, taking the
         hits, or stealing the spotlight. He was the reason everyone else could.
         An <strong>Order Cleric 1 / Divine Soul Sorcerer</strong> built to be
         the invisible gear that makes the machine work — and one of the most
@@ -4057,8 +4071,8 @@ export function BlogPost14() {
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 font-semibold">CON</td>
-              <td className="py-2 text-center">18 &rarr; 19*</td>
-              <td className="py-2 text-center">16 &rarr; 17*</td>
+              <td className="py-2 text-center">18 → 19*</td>
+              <td className="py-2 text-center">16 → 17*</td>
               <td className="py-2 text-center text-red-400/70">&minus;2</td>
             </tr>
             <tr className="border-b border-white/[0.06]">
@@ -4153,7 +4167,7 @@ export function BlogPost14() {
         while Point Buy would give +3. That means{" "}
         <strong>&minus;1 HP per level</strong> (&minus;10 total) and &minus;1 to concentration
         saving throws. For a build that depends on maintaining Bless and Spirit
-        Guardians, that&apos;s a real difference — but Resilient CON compensates
+        Guardians, that{"'"}s a real difference — but Resilient CON compensates
         significantly by granting proficiency in CON saves.
       </P>
 
@@ -4162,38 +4176,55 @@ export function BlogPost14() {
         <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
         <div className="pl-3">
           <p className="text-gold font-display text-xs uppercase tracking-wider font-bold mb-2">
-            Variant &mdash; Shadar-kai with Point Buy
+            Variant — Shadar-kai with Point Buy
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
             If your table uses Point Buy and allows flexible ASI rules
-            (Tasha&apos;s Cauldron / MotM), <strong>Shadar-kai</strong> is an
-            excellent alternative to Half-Elf. You can close{" "}
-            <strong>CHA 18, CON 18, and WIS even</strong> &mdash; every important
-            ability score on an even number, zero waste.
+            (Tasha{"'"}s Cauldron / MotM),{" "}
+            <strong>Shadar-kai</strong> is an excellent alternative to
+            Half-Elf. You can close{" "}
+            <strong>CHA 18, CON 18, and WIS even</strong> — every
+            important ability score on an even number, zero waste.
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            <strong>How it works:</strong> Buy CHA 15 and CON 15 in Point Buy.
-            Place racial bonuses as +2 CON and +1 CHA, arriving at{" "}
-            <strong>CHA 16, CON 17</strong> at level 1.
+            <strong>How it works:</strong>{" "}
+            Buy CHA 15 and CON 15 in Point Buy. Place racial bonuses
+            as +2 CON and +1 CHA, arriving at{" "}
+            <strong>CHA 16, CON 17</strong>{" "}
+            at level 1.
           </p>
-          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-1.5 pl-0">
-            <li><strong>Level 5 (Sorc 4) &mdash; Resilient (CON):</strong>{" "}
-              CON 17 &rarr; <strong>CON 18</strong> (+4 modifier) with proficiency in CON saves.
-              Armored concentration from early on.</li>
-            <li><strong>Level 9 (Sorc 8) &mdash; Fey Touched (+1 WIS):</strong>{" "}
-              Put the +1 into <strong>WIS</strong> (not CHA), closing WIS to an even number.
-              You gain Misty Step + Gift of Alacrity and become tankier on WIS saves.</li>
-            <li><strong>Level 10 &mdash; Tome of Leadership:</strong>{" "}
-              CHA 16 &rarr; <strong>CHA 18</strong> (+4 modifier). The Tome jumps straight from 16 to 18,
-              which is why you don&apos;t need to spend Fey Touched on CHA.</li>
+          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-2.5 pl-0">
+            <li>
+              <strong>Level 5 (Sorc 4) — Resilient (CON):</strong>{" "}
+              CON 17 → <strong>CON 18</strong>{" "}
+              (+4 modifier) with proficiency in CON saves. Armored
+              concentration from early on.
+            </li>
+            <li>
+              <strong>Level 9 (Sorc 8) — Fey Touched (+1 WIS):</strong>{" "}
+              Put the +1 into <strong>WIS</strong>{" "}
+              (not CHA), closing WIS to an even number. You gain
+              Misty Step + Gift of Alacrity and become tankier on WIS
+              saves.
+            </li>
+            <li>
+              <strong>Level 10 — Tome of Leadership:</strong>{" "}
+              CHA 16 → <strong>CHA 18</strong>{" "}
+              (+4 modifier). The Tome jumps straight from 16 to 18,
+              which is why you don{"'"}t need to spend Fey Touched on
+              CHA.
+            </li>
           </ul>
           <p className="text-sm text-foreground/85 leading-relaxed">
-            <strong>Shadar-kai advantage:</strong> Beyond closing all scores even,
-            you gain <em>Blessing of the Raven Queen</em> &mdash; a 30ft teleport as a bonus
-            action with resistance to all damage until your next turn. For a
-            frontline caster, this is a brutal survival tool that Misty Step
-            doesn&apos;t offer. The trade-off is lower DEX (12 vs 14) and losing
-            Fey Ancestry, but with Point Buy the final numbers come out ahead.
+            <strong>Shadar-kai advantage:</strong>{" "}
+            Beyond closing all scores even, you gain{" "}
+            <em>Blessing of the Raven Queen</em> — a 30ft teleport
+            as a bonus action with resistance to all damage until
+            your next turn. For a frontline caster, this is a brutal
+            survival tool that Misty Step doesn{"'"}t offer. The
+            trade-off is lower DEX (12 vs 14) and losing Fey
+            Ancestry, but with Point Buy the final numbers come out
+            ahead.
           </p>
         </div>
       </div>
@@ -4223,7 +4254,7 @@ export function BlogPost14() {
       <P>
         The Cleric level also brings heavy armor and shield proficiency (AC
         19-21), Wisdom save proficiency, and access to 1st-level Cleric spells
-        a Sorcerer normally wouldn&apos;t have — like Command and Heroism, both
+        a Sorcerer normally wouldn{"'"}t have — like Command and Heroism, both
         prepared for free through the domain.
       </P>
 
@@ -4330,16 +4361,16 @@ export function BlogPost14() {
       <P>
         Compared to other popular support builds: <strong>Twilight Cleric</strong>{" "}
         and <strong>Peace Cleric</strong> are frequently cited as stronger in raw
-        terms (Twilight&apos;s temporary HP aura and Peace&apos;s Emboldening
-        Bond are considered &ldquo;broken&rdquo;). However, Order/DSS has a
+        terms (Twilight{"'"}s temporary HP aura and Peace{"'"}s Emboldening
+        Bond are considered {"\u201C"}broken{"\u201D"}). However, Order/DSS has a
         unique advantage: it{" "}
-        <strong>multiplies the entire party&apos;s action economy</strong>{" "}
+        <strong>multiplies the entire party{"'"}s action economy</strong>{" "}
         rather than just adding a bonus. When your Fighter and Paladin gain
         extra reaction attacks every turn you buff, the indirect DPR
-        contribution can surpass a blaster caster&apos;s output.
+        contribution can surpass a blaster caster{"'"}s output.
       </P>
       <P>
-        Capa&apos;s build chose Quickened and Extended as metamagic instead of
+        Capa{"'"}s build chose Quickened and Extended as metamagic instead of
         the more popular Twinned Spell. This trades the ability to buff two
         targets simultaneously for the flexibility of two actions per turn and
         extending buffs like Aid to 16 hours — a choice that prioritizes
@@ -4393,17 +4424,17 @@ export function BlogPost14() {
         the eyes of nobility. The illegitimate son of{" "}
         <strong>Auri Raelistor</strong>, a respected cleric and noble devoted to
         a god of justice, and <strong>Lyna</strong>, a half-elf drow adventurer
-        who vanished shortly after his birth. &ldquo;Capa&rdquo; comes from a
-        tradition of naming illegitimate children with terms evoking protection;
-        &ldquo;Barsavi&rdquo; honors a legendary figure known as &ldquo;The
-        Wise Guardian.&rdquo;
+        who vanished shortly after his birth. {"\u201C"}Capa{"\u201D"} comes from a
+        tradition of naming illegitimate children with terms evoking protection;{" "}
+        {"\u201C"}Barsavi{"\u201D"} honors a legendary figure known as {"\u201C"}The
+        Wise Guardian.{"\u201D"}
       </P>
       <P>
         Though illegitimate, Capa was never abandoned. His father ensured he had
         access to the finest institutions: clerical schools, philosophy
         academies, legendary fortress-libraries, and religious centers across
         the continent. During those years he developed skills in rhetoric,
-        diplomacy, theology, and divine magic &mdash; and met an influential
+        diplomacy, theology, and divine magic — and met an influential
         duchess, after impressing her with a speech on the ethics of peace in
         times of war.
       </P>
@@ -4411,7 +4442,7 @@ export function BlogPost14() {
         Everything changed when his father departed on an expedition to distant
         seas and never returned. No body. No clues. No answers. If the god he
         served stood for justice and order, why allow such silence? This
-        questioning didn&apos;t destroy his faith &mdash; it transformed it into
+        questioning didn{"'"}t destroy his faith — it transformed it into
         something more pragmatic: he believes in justice and order, but no
         longer depends on them blindly.
       </P>
@@ -4420,20 +4451,20 @@ export function BlogPost14() {
         sage in an ancient fortress-library revealed the truth: his mother, Lyna,
         carried a bloodline descended from a celestial being touched by a goddess
         of magic. That blood awakened within Capa, making him the bearer of two
-        sources of power &mdash; the discipline of clerical faith and the innate
+        sources of power — the discipline of clerical faith and the innate
         force of his divine heritage.
       </P>
       <P>
-        After accepting the duchess&apos;s invitation to a diplomatic meeting,
+        After accepting the duchess{"'"}s invitation to a diplomatic meeting,
         Capa began the journey that would lead him into the mists of a cursed
         land ruled by an ancient vampire. In just{" "}
         <strong>19 days</strong>, he faced supernatural horrors, watched
-        villages burn, stood face to face with the lord of the mists &mdash; and
+        villages burn, stood face to face with the lord of the mists — and
         died <strong>twice</strong>. And came back twice.
       </P>
       <P>
-        Among his companions &mdash; Amum Titus, Skid, Socrates, Auditore, and
-        Lauren Nailo &mdash; Capa became the link that held the group together.
+        Among his companions — Amum Titus, Skid, Socrates, Auditore, and
+        Lauren Nailo — Capa became the link that held the group together.
         Combat strategist, healer, voice of command in critical moments,
         defender of the vulnerable. He never sought the spotlight. But when
         everything started to crumble, everyone looked to him.
@@ -4445,7 +4476,7 @@ export function BlogPost14() {
 
       <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 my-6 text-center">
         <p className="text-xs text-muted-foreground/70">
-          Build created and played by <strong className="text-foreground/80">Dani</strong> &middot; by Pocket DM
+          Build created and played by <strong className="text-foreground/80">Dani</strong> · by Pocket DM
         </p>
       </div>
 
@@ -4462,7 +4493,7 @@ export function BlogPost14() {
               href="/try"
               className="bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200"
             >
-              Try Free &rarr;
+              Try Free →
             </Link>
             <Link
               href="/auth/login"
