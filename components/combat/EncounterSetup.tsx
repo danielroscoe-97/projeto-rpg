@@ -741,7 +741,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
   };
 
   const inputClass =
-    "bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px]";
+    "bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]";
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2">

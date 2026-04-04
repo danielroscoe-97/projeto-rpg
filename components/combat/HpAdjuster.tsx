@@ -144,7 +144,7 @@ export function HpAdjuster({
               key={m}
               type="button"
               onClick={() => setMode(m)}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[32px] transition-colors ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-colors ${
                 mode === m
                   ? m === "damage"
                     ? "bg-red-600 text-white"
@@ -167,7 +167,7 @@ export function HpAdjuster({
           onKeyDown={handleKeyDown}
           onFocus={(e) => e.target.select()}
           placeholder="0"
-          className="w-16 px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono text-center min-h-[32px] focus:outline-none focus:ring-1 focus:ring-ring"
+          className="w-16 px-2 py-1 bg-white/[0.06] border border-border rounded text-foreground text-sm font-mono text-center min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
           aria-label={t("hp_amount_aria", { mode: mode === "damage" ? t("hp_mode_damage") : mode === "heal" ? t("hp_mode_heal") : t("hp_mode_temp") })}
           data-testid="hp-amount-input"
           autoFocus
@@ -175,7 +175,7 @@ export function HpAdjuster({
         <button
           type="button"
           onClick={handleApply}
-          className={`px-3 py-1 text-white text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[32px] ${
+          className={`px-3 py-1 text-white text-xs font-medium rounded transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] ${
             mode === "damage"
               ? "bg-red-600 hover:bg-red-500"
               : mode === "heal"
@@ -194,7 +194,7 @@ export function HpAdjuster({
         <button
           type="button"
           onClick={onClose}
-          className="px-2 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]"
+          className="px-2 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[44px]"
           aria-label={t("hp_close")}
           data-testid="hp-close-btn"
         >

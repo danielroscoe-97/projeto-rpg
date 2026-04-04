@@ -537,9 +537,17 @@ export function buildAwards(
 
 /** Classify combatants into PCs vs monsters and format the matchup string. */
 function computeMatchup(combatants: Combatant[]) {
+  // Primary check: is_player flag or explicit "player" role tag.
   const isPC = (c: Combatant) => c.is_player || c.combatant_role === "player";
-  const pcs = combatants.filter(isPC);
-  const monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
+  let pcs = combatants.filter(isPC);
+  let monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
+
+  // Fallback: if no PCs detected (e.g. stale state), split by monster_id presence.
+  if (pcs.length === 0 && combatants.length > 0) {
+    pcs = combatants.filter((c) => !c.monster_id && !c.is_lair_action);
+    monsters = combatants.filter((c) => !!c.monster_id && !c.is_lair_action);
+  }
+
   const matchup = pcs.length > 0
     ? `${pcs.length} vs ${monsters.length}`
     : `${combatants.filter((c) => !c.is_lair_action).length} combatants`;
@@ -565,6 +573,24 @@ export function buildCombatReport(opts: {
 
   // Rankings (reuses existing logic)
   const rankings = computeCombatStats(entries, turnTimeAccumulated, idToName);
+
+  // Defensive: ensure rankings use real names (not display_name) by cross-referencing combatants.
+  // Only remap if the ranking name is NOT already a valid combatant real name (avoids false positives).
+  const realNames = new Set(combatants.map((c) => c.name));
+  const displayToReal = new Map<string, string>();
+  for (const c of combatants) {
+    if (c.display_name && c.display_name !== c.name && !realNames.has(c.display_name)) {
+      displayToReal.set(c.display_name, c.name);
+    }
+  }
+  if (displayToReal.size > 0) {
+    for (const r of rankings) {
+      if (!realNames.has(r.name)) {
+        const real = displayToReal.get(r.name);
+        if (real) r.name = real;
+      }
+    }
+  }
 
   // Awards
   const awards = buildAwards(rankings, t);
@@ -630,6 +656,24 @@ export function buildCombatReportFromStats(opts: {
   t: (key: string, values?: Record<string, string | number>) => string;
 }): CombatReport {
   const { stats, combatants, encounterName, combatDuration, roundNumber, turnTimeSnapshots, t } = opts;
+
+  // Defensive: ensure stats use real names (not display_name) by cross-referencing combatants.
+  // Only remap if the stat name is NOT already a valid combatant real name (avoids false positives).
+  const realNames = new Set(combatants.map((c) => c.name));
+  const displayToReal = new Map<string, string>();
+  for (const c of combatants) {
+    if (c.display_name && c.display_name !== c.name && !realNames.has(c.display_name)) {
+      displayToReal.set(c.display_name, c.name);
+    }
+  }
+  if (displayToReal.size > 0) {
+    for (const s of stats) {
+      if (!realNames.has(s.name)) {
+        const real = displayToReal.get(s.name);
+        if (real) s.name = real;
+      }
+    }
+  }
 
   const awards = buildAwards(stats, t);
 

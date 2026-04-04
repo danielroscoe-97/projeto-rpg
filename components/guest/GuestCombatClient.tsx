@@ -17,10 +17,8 @@ import { TurnTimer } from "@/components/combat/TurnTimer";
 import { StickyTurnHeader } from "@/components/combat/StickyTurnHeader";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatRecap } from "@/components/combat/CombatRecap";
-import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
-import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { buildCombatReportFromStats } from "@/lib/utils/combat-stats";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
@@ -48,6 +46,7 @@ import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { applyGroupRename } from "@/lib/utils/group-rename";
 import { playTurnSfx } from "@/lib/utils/turn-sfx";
 import { DiceRoller } from "@/components/dice/DiceRoller";
+import { trackEvent } from "@/lib/analytics/track";
 
 interface AddRowForm {
   initiative: string;
@@ -585,7 +584,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   };
 
   const inputClass =
-    "bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px]";
+    "bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]";
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-tour-id="welcome">
@@ -693,7 +692,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
       {/* Column headers — Sticky for usability in long lists */}
       <div
-        className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider border-b border-border/50 mb-1 md:grid md:gap-x-1.5 md:items-center"
+        className="sticky top-[72px] z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-4 hidden md:grid md:gap-x-1.5 md:items-center text-xs font-medium text-muted-foreground uppercase tracking-wider border-b border-border/50 mb-1"
         style={{ gridTemplateColumns: "20px 64px 32px 1fr 64px 56px 1fr 170px" }}
       >
         <span /> {/* drag handle spacer */}
@@ -749,7 +748,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           <button
             type="button"
             onClick={handleConfirmClear}
-            className="px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-500 transition-colors min-h-[32px]"
+            className="px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-500 transition-colors min-h-[44px]"
             data-testid="clear-confirm-yes"
           >
             {t("clear_all_confirm_yes")}
@@ -757,7 +756,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           <button
             type="button"
             onClick={() => setShowClearConfirm(false)}
-            className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded transition-colors min-h-[32px]"
+            className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded transition-colors min-h-[44px]"
             data-testid="clear-confirm-no"
           >
             {tCommon("cancel")}
@@ -766,7 +765,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       )}
 
       {/* Footer controls */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-2 flex-wrap gap-y-2">
         {combatants.length > 0 ? (
           <button
             type="button"
@@ -778,19 +777,19 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         ) : (
           <span />
         )}
-        <div className="flex items-center flex-wrap gap-2 sm:gap-4">
+        <div className="flex items-center flex-wrap gap-1.5 sm:gap-4">
           <p className="text-muted-foreground text-xs hidden sm:block">
             {combatants.length > 0
               ? t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })
               : ""}
           </p>
           {combatants.length > 0 && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={handleRollAll}
                 disabled={combatants.every((c) => c.initiative !== null)}
-                className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-2 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px]"
                 title={t("roll_all_title")}
                 data-testid="roll-all-init-btn"
                 data-tour-id="roll-initiative"
@@ -801,7 +800,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
                 type="button"
                 onClick={handleRollNpcs}
                 disabled={combatants.filter((c) => !c.is_player && c.initiative === null).length === 0}
-                className="px-2.5 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-2 py-1 text-xs font-medium rounded border border-border text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px]"
                 title={t("roll_npcs_title")}
                 data-testid="roll-npcs-init-btn"
               >
@@ -837,9 +836,7 @@ export function GuestCombatClient() {
   const [midCombatAddRowRole, setMidCombatAddRowRole] = useState<CombatantRole>(DEFAULT_ADD_ROW_ROLE);
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
-  const [leaderboardStats, setLeaderboardStats] = useState<CombatantStats[] | null>(null);
   const [guestCombatReport, setGuestCombatReport] = useState<CombatReport | null>(null);
-  const [guestCombatDuration, setGuestCombatDuration] = useState(0);
   const [spellsOpen, setSpellsOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
   // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
@@ -1002,21 +999,18 @@ export function GuestCombatClient() {
   }, [resetForNewSession]);
 
   const openUpsell = useCallback((trigger: UpsellTrigger) => {
-    // Save current combat state to localStorage before showing upsell
+    // Save current combat state for post-signup migration
     try {
       const state = useGuestCombatStore.getState();
-      const combatSnapshot = state.combatants.map((c) => ({
-        name: c.name,
-        current_hp: c.current_hp,
-        max_hp: c.max_hp,
-        ac: c.ac,
-        initiative: c.initiative,
-        conditions: c.conditions,
-      }));
-      localStorage.setItem("guest-combat-state", JSON.stringify(combatSnapshot));
+      saveGuestCombatSnapshot({
+        combatants: state.combatants,
+        currentTurnIndex: state.currentTurnIndex,
+        roundNumber: state.roundNumber,
+      });
     } catch {
       // storage unavailable
     }
+    trackEvent("guest:upsell_shown", { trigger });
     setUpsellTrigger(trigger);
     setUpsellOpen(true);
   }, []);
@@ -1036,6 +1030,8 @@ export function GuestCombatClient() {
   }, [currentTurnIndex, phase]);
 
   const handleStartCombat = useCallback(() => {
+    const store = useGuestCombatStore.getState();
+    trackEvent("guest:combat_started", { combatant_count: store.combatants.length });
     startCombat();
   }, [startCombat]);
 
@@ -1385,8 +1381,6 @@ export function GuestCombatClient() {
       const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
       const duration = guestStore.combatStartTime ? Date.now() - guestStore.combatStartTime : 0;
       if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
-        setLeaderboardStats(stats);
-        setGuestCombatDuration(duration);
         // Build CombatReport for the new Recap UI
         const report = buildCombatReportFromStats({
           stats,
@@ -1396,6 +1390,11 @@ export function GuestCombatClient() {
           roundNumber: guestStore.roundNumber,
           turnTimeSnapshots: guestStore.turnTimeSnapshots,
           t,
+        });
+        trackEvent("guest:combat_ended", {
+          rounds: guestStore.roundNumber,
+          combatant_count: guestStore.combatants.length,
+          duration_ms: duration,
         });
         setGuestCombatReport(report);
         setShowActionLog(false); // Close action log to avoid overlapping with recap
@@ -1408,6 +1407,7 @@ export function GuestCombatClient() {
       // Defensive: if report building fails, still reset combat instead of leaving
       // the user stuck on the active combat screen with no way to proceed.
       console.error("[GuestCombat] handleEndEncounter failed:", err);
+      toast.error(t("recap_build_error"));
       useGuestCombatStats.getState().reset();
       useCombatLogStore.getState().clear();
       resetCombat();
@@ -1417,21 +1417,16 @@ export function GuestCombatClient() {
   // C.15: Dismiss all post-combat screens — guest has no DB persistence
   const handleGuestDismissAll = useCallback(() => {
     setGuestPostCombatPhase(null);
-    setLeaderboardStats(null);
     setGuestCombatReport(null);
     useGuestCombatStats.getState().reset();
     useCombatLogStore.getState().clear();
     resetCombat();
   }, [resetCombat]);
 
-  // UX.04/P3.04 — Guest skips poll: no players to collect votes from, no DB persistence.
-  // Vote would be discarded intentionally — showing poll UI would be misleading.
-  const handleLeaderboardClose = useCallback(() => {
-    handleGuestDismissAll();
-  }, [handleGuestDismissAll]);
 
   // Conversion CTA: save guest snapshot and redirect to signup
   const handleSaveAndSignup = useCallback(() => {
+    trackEvent("guest:recap_save_signup");
     const guestStore = useGuestCombatStore.getState();
     saveGuestCombatSnapshot({
       combatants: guestStore.combatants,
@@ -1611,14 +1606,14 @@ export function GuestCombatClient() {
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleMidCombatAddFromRow(); } }}
               data-testid="mid-combat-add-row"
             >
-              <input type="text" inputMode="numeric" pattern="-?[0-9]*" value={midCombatAddRow.initiative} onChange={(e) => { const raw = e.target.value; if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) setMidCombatAddRow((f) => ({ ...f, initiative: raw })); }} placeholder={t("setup_col_init")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] w-16 md:w-full text-center font-mono" />
-              <input type="text" value={midCombatAddRow.name} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, name: e.target.value }))} placeholder={t("setup_col_name")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] basis-full md:basis-auto md:w-full min-w-0" />
-              <input type="number" value={midCombatAddRow.hp} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, hp: e.target.value }))} placeholder={t("setup_col_hp")} min={1} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-              <input type="number" value={midCombatAddRow.ac} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, ac: e.target.value }))} placeholder={t("setup_col_ac")} min={1} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-              <input type="text" value={midCombatAddRow.notes} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, notes: e.target.value }))} placeholder={t("setup_col_notes")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[32px] hidden md:block w-full min-w-0 text-muted-foreground" />
+              <input type="text" inputMode="numeric" pattern="-?[0-9]*" value={midCombatAddRow.initiative} onChange={(e) => { const raw = e.target.value; if (raw === "" || raw === "-" || /^-?\d+$/.test(raw)) setMidCombatAddRow((f) => ({ ...f, initiative: raw })); }} placeholder={t("setup_col_init")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px] w-16 md:w-full text-center font-mono" />
+              <input type="text" value={midCombatAddRow.name} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, name: e.target.value }))} placeholder={t("setup_col_name")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px] basis-full md:basis-auto md:w-full min-w-0" />
+              <input type="number" value={midCombatAddRow.hp} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, hp: e.target.value }))} placeholder={t("setup_col_hp")} min={1} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px] w-12 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <input type="number" value={midCombatAddRow.ac} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, ac: e.target.value }))} placeholder={t("setup_col_ac")} min={1} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px] w-10 md:w-full text-center font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <input type="text" value={midCombatAddRow.notes} onChange={(e) => setMidCombatAddRow((f) => ({ ...f, notes: e.target.value }))} placeholder={t("setup_col_notes")} className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px] hidden md:block w-full min-w-0 text-muted-foreground" />
               <div className="flex items-center gap-1 md:w-full">
-                {(() => { const config = ADD_ROW_ROLE_CONFIG[midCombatAddRowRole]; const Icon = config.icon; const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(midCombatAddRowRole) + 1) % COMBATANT_ROLE_CYCLE.length]; return (<button type="button" onClick={() => setMidCombatAddRowRole(nextRole)} className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-0 ${config.color}`} title={t("setup_role_tooltip")} data-testid="mid-add-row-role"><Icon className="w-3.5 h-3.5" /><span>{t(config.label)}</span></button>); })()}
-                <button type="button" onClick={handleMidCombatAddFromRow} className="flex-1 py-1.5 px-3 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center" data-testid="mid-add-row-btn">{t("setup_add")}</button>
+                {(() => { const config = ADD_ROW_ROLE_CONFIG[midCombatAddRowRole]; const Icon = config.icon; const nextRole = COMBATANT_ROLE_CYCLE[(COMBATANT_ROLE_CYCLE.indexOf(midCombatAddRowRole) + 1) % COMBATANT_ROLE_CYCLE.length]; return (<button type="button" onClick={() => setMidCombatAddRowRole(nextRole)} className={`flex items-center justify-center gap-1 px-1.5 py-1 text-xs rounded transition-all flex-shrink-0 border min-h-[44px] min-w-[44px] md:min-h-[44px] md:min-w-0 ${config.color}`} title={t("setup_role_tooltip")} data-testid="mid-add-row-role"><Icon className="w-3.5 h-3.5" /><span>{t(config.label)}</span></button>); })()}
+                <button type="button" onClick={handleMidCombatAddFromRow} className="flex-1 py-1.5 px-3 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[44px] text-center" data-testid="mid-add-row-btn">{t("setup_add")}</button>
               </div>
             </div>
           </SheetContent>
@@ -1735,7 +1730,7 @@ export function GuestCombatClient() {
         {guestPostCombatPhase === "leaderboard" && guestCombatReport && (
           <CombatRecap
             report={guestCombatReport}
-            onClose={handleLeaderboardClose}
+            onClose={handleGuestDismissAll}
             onSaveAndSignup={handleSaveAndSignup}
           />
         )}

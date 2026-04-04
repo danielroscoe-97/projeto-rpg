@@ -674,7 +674,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("hp")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] min-w-[44px] inline-flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "hp" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("adjust_hp")}
@@ -685,7 +685,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("conditions")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "conditions" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("manage_conditions")}
@@ -697,7 +697,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onSetDefeated?.(combatant.id, true)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-red-900/20 text-red-400 hover:bg-red-900/40"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-red-900/20 text-red-400 hover:bg-red-900/40"
                 aria-label={t("defeat_aria")}
                 data-testid={`defeat-btn-${combatant.id}`}
               >
@@ -707,7 +707,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onSetDefeated?.(combatant.id, false)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600/50 border border-emerald-500/30"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600/50 border border-emerald-500/30"
                 aria-label={t("revive_aria")}
                 data-testid={`revive-btn-${combatant.id}`}
               >
@@ -717,7 +717,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("edit")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "edit" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("edit_stats")}
@@ -757,7 +757,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onToggleHidden(combatant.id)}
-                className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] inline-flex items-center gap-1 ${
+                className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center gap-1 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                   combatant.is_hidden
                     ? "bg-purple-900/30 text-purple-400 hover:bg-purple-900/50"
                     : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"

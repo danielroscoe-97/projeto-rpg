@@ -36,7 +36,8 @@ export function GuestBanner() {
       };
 
       updateTimer();
-      intervalRef.current = setInterval(updateTimer, 30000);
+      // Update more frequently when time is running low (every 10s under 15min, else 30s)
+      intervalRef.current = setInterval(updateTimer, 10_000);
     } catch {
       setDismissed(false);
     }
@@ -65,7 +66,7 @@ export function GuestBanner() {
   return (
     <div
       role="status"
-      className={`w-full border-b px-4 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm ${
+      className={`w-full border-b px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-x-2 sm:gap-x-4 gap-y-1.5 text-sm ${
         isUrgent
           ? "bg-red-900/30 border-red-500/30"
           : "bg-white/[0.04] border-white/[0.06]"
@@ -93,12 +94,12 @@ export function GuestBanner() {
           await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-              redirectTo: `${window.location.origin}/auth/callback?from=guest-combat`,
+              redirectTo: `${window.location.origin}/auth/confirm?from=guest-combat`,
               queryParams: { access_type: "offline", prompt: "consent" },
             },
           });
         }}
-        className="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-50 transition-colors min-h-[32px]"
+        className="shrink-0 flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-50 transition-colors min-h-[44px]"
         data-testid="guest-banner-google"
       >
         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" aria-hidden="true">
