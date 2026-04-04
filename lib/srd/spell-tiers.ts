@@ -58,6 +58,7 @@ export const SPELL_TIERS: Record<string, TierInfo> = {
   "speak-with-dead":    { tier: "B", reason: "Can extract critical information from corpses. Niche but unmatched in specific situations." },
   "charm-person":       { tier: "B", reason: "Excellent for social encounters. Combat utility is limited to preventing one creature from attacking." },
   "detect-magic":       { tier: "B", reason: "Essential utility for identifying magical items and illusions. Ritual casting makes it free." },
+  "prestidigitation":   { tier: "B", reason: "Staggering utility spell with countless creative uses. More valuable to creative players." },
 
   // ── C Tier ────────────────────────────────────────────────────────
   "sleep":              { tier: "C", reason: "Only affects low-HP creatures and stops working at higher levels. Situationally strong early on." },
@@ -72,7 +73,6 @@ export const SPELL_TIERS: Record<string, TierInfo> = {
   "ray-of-frost":       { tier: "C", reason: "Reduces speed by 10 feet. Decent early, unreliable vs high-HP enemies later." },
   "fire-bolt":          { tier: "C", reason: "Best damage cantrip — 1d10 fire at 120 feet. Held back only by common fire resistance/immunity." },
   "sacred-flame":       { tier: "C", reason: "Deals radiant damage which few creatures resist. Ignores cover, making it reliably useful." },
-  "prestidigitation":   { tier: "B", reason: "Staggering utility spell with countless creative uses. More valuable to creative players." },
 
   // ── D Tier ────────────────────────────────────────────────────────
   "gust-of-wind":       { tier: "D", reason: "Pushes creatures and clears gas, but the 60ft cone shape makes it awkward. Highly situational." },

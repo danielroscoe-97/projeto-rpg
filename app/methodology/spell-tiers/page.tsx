@@ -55,8 +55,8 @@ export default async function SpellTiersPage() {
         brandHref="/"
         links={[
           { href: "/blog", label: "Blog" },
-          { href: "/monsters", label: "Monstros" },
-          { href: "/spells", label: "Magias" },
+          { href: "/monstros", label: "Monstros" },
+          { href: "/magias", label: "Magias" },
           { href: "/pricing", label: "Preços" },
         ]}
         rightSlot={
@@ -88,10 +88,10 @@ export default async function SpellTiersPage() {
             {/* Breadcrumb */}
             <nav className="flex items-center justify-center gap-2 text-xs text-foreground/35 mb-6">
               <Link href="/methodology" className="hover:text-foreground/60 transition-colors">
-                Methodology
+                {t("breadcrumb_methodology")}
               </Link>
               <span aria-hidden="true">›</span>
-              <span className="text-foreground/55">Spell Tiers</span>
+              <span className="text-foreground/55">{t("breadcrumb_spell_tiers")}</span>
             </nav>
 
             <h1 className="font-display text-2xl md:text-3xl text-gold mb-3">
@@ -142,6 +142,8 @@ export default async function SpellTiersPage() {
               spell_ranking_no_votes: t("spell_ranking_no_votes"),
               spell_ranking_consensus: t("spell_ranking_consensus"),
               spell_ranking_votes: t("spell_ranking_votes"),
+              spell_ranking_spell: t("spell_ranking_spell"),
+              spell_ranking_distribution: t("spell_ranking_distribution"),
             }}
           />
         </div>
@@ -157,7 +159,7 @@ export default async function SpellTiersPage() {
                 href="/spells"
                 className="border border-white/10 text-foreground/80 font-medium px-6 py-3 rounded-lg hover:border-white/20 hover:text-foreground transition-all duration-200 text-sm"
               >
-                Browse Spells
+                {t("browse_spells")}
               </Link>
               <Link
                 href="/auth/sign-up"

@@ -23,6 +23,8 @@ interface SpellTierRankingProps {
     spell_ranking_no_votes: string;
     spell_ranking_consensus: string;
     spell_ranking_votes: string;
+    spell_ranking_spell: string;
+    spell_ranking_distribution: string;
   };
 }
 
@@ -79,8 +81,9 @@ function getConsensusTier(stats: SpellVoteStats): SpellTier {
     D: stats.tier_d,
     E: stats.tier_e,
   };
-  let best: SpellTier = "S";
-  let bestCount = -1;
+  // Find tier(s) with highest votes — on tie, pick the lower (more conservative) tier
+  let best: SpellTier = "C"; // default middle ground
+  let bestCount = 0;
   for (const tier of TIERS) {
     if (counts[tier] > bestCount) {
       bestCount = counts[tier];
@@ -91,7 +94,7 @@ function getConsensusTier(stats: SpellVoteStats): SpellTier {
 }
 
 function toSpellSlug(spellName: string): string {
-  return spellName.toLowerCase().replace(/\s+/g, "-");
+  return spellName.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 function toDisplayName(spellName: string): string {
@@ -156,16 +159,21 @@ export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
   const [spells, setSpells] = useState<SpellVoteStats[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     fetch("/api/methodology/spell-vote")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("fetch failed");
+        return r.json();
+      })
       .then((data: SpellVoteStats[]) => {
         if (Array.isArray(data)) {
           const sorted = [...data].sort((a, b) => b.total_votes - a.total_votes);
           setSpells(sorted);
         }
       })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -180,8 +188,8 @@ export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
         </div>
       )}
 
-      {/* Empty state */}
-      {!loading && spells.length === 0 && (
+      {/* Empty / error state */}
+      {!loading && (spells.length === 0 || error) && (
         <div className="rounded-xl border border-dashed border-white/[0.08] bg-white/[0.01] px-6 py-12 text-center">
           <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-gold/10 flex items-center justify-center">
             <svg
@@ -214,13 +222,13 @@ export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
                     #
                   </th>
                   <th className="text-left px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider">
-                    Spell
+                    {t.spell_ranking_spell}
                   </th>
                   <th className="text-center px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider w-28">
                     {t.spell_ranking_consensus}
                   </th>
                   <th className="text-left px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider">
-                    Distribution
+                    {t.spell_ranking_distribution}
                   </th>
                   <th className="text-right px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider w-24">
                     {t.spell_ranking_votes}

@@ -2766,6 +2766,11 @@
     "spell_ranking_subtitle": "Como a comunidade avalia as magias de D&D 5e",
     "spell_ranking_no_votes": "Nenhum voto ainda — seja o primeiro! Acesse qualquer página de magia para votar.",
     "spell_ranking_consensus": "Consenso",
-    "spell_ranking_votes": "votos"
+    "spell_ranking_votes": "votos",
+    "spell_ranking_spell": "Magia",
+    "spell_ranking_distribution": "Distribuição",
+    "breadcrumb_methodology": "Metodologia",
+    "breadcrumb_spell_tiers": "Tiers de Magias",
+    "browse_spells": "Explorar Magias"
   }
 }

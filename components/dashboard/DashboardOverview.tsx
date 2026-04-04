@@ -77,7 +77,6 @@ interface DashboardOverviewProps {
     no_campaigns_create: string;
     no_campaigns_cta: string;
     npc_global_badge: string;
-    campaigns_players_singular: string;
     view_all: string;
     dm_empty_title: string;
     dm_empty_desc: string;
