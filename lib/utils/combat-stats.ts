@@ -561,9 +561,10 @@ export function buildCombatReport(opts: {
   // Narratives
   const narratives = detectNarratives(entries, combatants, t);
 
-  // Summary
-  const pcs = combatants.filter((c) => c.is_player);
-  const monsters = combatants.filter((c) => !c.is_player && !c.is_lair_action);
+  // Summary — include combatant_role "player" as PCs (manual add sets is_player=false but role="player")
+  const isPC = (c: Combatant) => c.is_player || c.combatant_role === "player";
+  const pcs = combatants.filter(isPC);
+  const monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
 
   const totalDamage = rankings.reduce((sum, s) => sum + s.totalDamageDealt, 0);
   const totalCrits = rankings.reduce((sum, s) => sum + s.criticalHits, 0);
@@ -638,8 +639,9 @@ export function buildCombatReportFromStats(opts: {
     }
   }
 
-  const pcs = combatants.filter((c) => c.is_player);
-  const monsters = combatants.filter((c) => !c.is_player && !c.is_lair_action);
+  const isPC = (c: Combatant) => c.is_player || c.combatant_role === "player";
+  const pcs = combatants.filter(isPC);
+  const monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
   const totalDamage = stats.reduce((sum, s) => sum + s.totalDamageDealt, 0);
   const totalTurnTime = stats.reduce((sum, s) => sum + s.totalTurnTime, 0);
   const totalTurnCount = stats.reduce((sum, s) => sum + s.turnCount, 0);
