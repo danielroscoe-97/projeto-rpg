@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicEncounterBuilder } from "@/components/public/PublicEncounterBuilder";
 import { PublicCTA } from "@/components/public/PublicCTA";
-import { getSrdMonsters } from "@/lib/srd/srd-data-server";
+import { getSrdMonsters, toSlug } from "@/lib/srd/srd-data-server";
 import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
@@ -71,6 +71,9 @@ export default function CalculadoraEncontroPage() {
     name: m.name,
     cr: m.cr,
     type: m.type,
+    slug: toSlug(m.name),
+    token_url: m.token_url ?? null,
+    fallback_token_url: m.fallback_token_url ?? null,
   }));
 
   return (

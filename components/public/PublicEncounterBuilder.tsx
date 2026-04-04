@@ -7,6 +7,9 @@ interface MonsterOption {
   name: string;
   cr: string | number;
   type: string;
+  slug?: string;
+  token_url?: string | null;
+  fallback_token_url?: string | null;
 }
 
 interface EncounterMonster {
@@ -14,6 +17,9 @@ interface EncounterMonster {
   name: string;
   cr: string | number;
   count: number;
+  slug?: string;
+  token_url?: string | null;
+  fallback_token_url?: string | null;
 }
 
 interface PublicEncounterBuilderProps {
@@ -206,7 +212,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
       }
       return [
         ...prev,
-        { id: Math.random().toString(36).slice(2), name: monster.name, cr: monster.cr, count: 1 },
+        { id: Math.random().toString(36).slice(2), name: monster.name, cr: monster.cr, count: 1, slug: monster.slug, token_url: monster.token_url, fallback_token_url: monster.fallback_token_url },
       ];
     });
     setSearch("");
@@ -302,10 +308,19 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                       key={m.name + m.cr}
                       type="button"
                       onClick={() => addMonster(m)}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 transition-colors flex items-center justify-between"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 transition-colors flex items-center gap-2"
                     >
-                      <span className="text-[#F5F0E8]">{m.name}</span>
-                      <span className="text-xs text-gray-500">CR {m.cr}</span>
+                      <div className="w-6 h-6 shrink-0 rounded-full overflow-hidden bg-gray-800 border border-gray-700">
+                        {(m.token_url || m.fallback_token_url) ? (
+                          <img src={m.token_url || m.fallback_token_url || ""} alt="" className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-600 text-[10px]">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-[#F5F0E8] flex-1 truncate">{m.name}</span>
+                      <span className="text-xs text-gray-500 shrink-0">CR {m.cr}</span>
                     </button>
                   ))}
                 </div>
@@ -339,6 +354,22 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                     className="flex items-center justify-between rounded-lg border border-gray-800/50 bg-gray-950/50 px-3 py-2"
                   >
                     <div className="flex items-center gap-3 min-w-0">
+                      {/* Token */}
+                      <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden bg-gray-800 border border-gray-700">
+                        {(m.token_url || m.fallback_token_url) ? (
+                          <img
+                            src={m.token_url || m.fallback_token_url || ""}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                          </div>
+                        )}
+                      </div>
+                      {/* Count controls */}
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => adjustCount(m.id, -1)}
@@ -356,7 +387,20 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                           +
                         </button>
                       </div>
-                      <span className="text-sm text-[#F5F0E8] truncate">{m.name}</span>
+                      {/* Name with stat block link */}
+                      {m.slug ? (
+                        <a
+                          href={`/monsters/${m.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-[#F5F0E8] truncate hover:text-[#D4A853] transition-colors"
+                          title={locale === "pt-BR" ? "Ver ficha" : "View stat block"}
+                        >
+                          {m.name}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-[#F5F0E8] truncate">{m.name}</span>
+                      )}
                       <span className="text-xs text-gray-500 shrink-0">CR {m.cr}</span>
                     </div>
                     <div className="flex items-center gap-2">

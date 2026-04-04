@@ -88,6 +88,7 @@ const LABELS = {
     level: "Level",
     effect: "Effect",
     clickToExpand: "Click to expand",
+    searchPlaceholder: "Search conditions...",
   },
   "pt-BR": {
     title: "Condições D&D 5e",
@@ -103,6 +104,7 @@ const LABELS = {
     level: "Nível",
     effect: "Efeito",
     clickToExpand: "Clique para expandir",
+    searchPlaceholder: "Buscar condições...",
   },
 } as const;
 
@@ -138,6 +140,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
   const [version, setVersion] = useState<"2014" | "2024">("2024");
   const [filter, setFilter] = useState<CategoryFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const L = LABELS[locale];
 
   // Filter only core conditions (not diseases/statuses)
@@ -145,13 +148,28 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
     .filter((c) => c.category === "condition" && c.ruleset_version === version)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const filtered =
+  // Apply category filter
+  const categoryFiltered =
     filter === "all"
       ? coreConditions
       : coreConditions.filter((c) => {
           const baseName = c.name.toLowerCase();
           return CATEGORY_MAP[baseName] === filter;
         });
+
+  // Apply search filter (bilingual — matches EN name, PT name, or description)
+  const filtered = search.trim()
+    ? categoryFiltered.filter((c) => {
+        const q = search.toLowerCase();
+        const baseName = c.name.toLowerCase();
+        const ptName = (CONDITION_NAMES_PT[baseName] ?? "").toLowerCase();
+        return (
+          baseName.includes(q) ||
+          ptName.includes(q) ||
+          c.description.toLowerCase().includes(q)
+        );
+      })
+    : categoryFiltered;
 
   const categories: { key: CategoryFilter; label: string }[] = [
     { key: "all", label: L.all },
@@ -213,6 +231,17 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Search bar */}
+      <div>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={L.searchPlaceholder}
+          className="w-full sm:max-w-sm rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-[#F5F0E8] placeholder-gray-600 focus:outline-none focus:border-[#D4A853]/50 transition-colors"
+        />
       </div>
 
       {/* Conditions grid */}

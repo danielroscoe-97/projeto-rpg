@@ -70,6 +70,9 @@ export default function EncounterBuilderPage() {
     name: m.name,
     cr: m.cr,
     type: m.type,
+    slug: toSlug(m.name),
+    token_url: m.token_url ?? null,
+    fallback_token_url: m.fallback_token_url ?? null,
   }));
 
   return (

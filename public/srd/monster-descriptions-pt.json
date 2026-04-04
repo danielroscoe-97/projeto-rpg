@@ -17,6 +17,18 @@
       "Detect": "O dragão realiza um teste de Sabedoria (Percepção).",
       "Tail Attack": "O dragão realiza um ataque de cauda.",
       "Wing Attack (Costs 2 Actions)": "O dragão bate suas asas. Cada criatura a até 3 m do dragão deve ser bem-sucedida em um teste de resistência de Destreza CD 20 ou sofrerá 14 (2d6 + 7) de dano de concussão e será derrubada. O dragão pode então voar até metade de sua velocidade de voo."
+    },
+    "lair_actions": {
+      "_intro": "Na contagem de iniciativa 20 (perdendo empates de iniciativa), o dragão realiza uma ação de covil para causar um dos seguintes efeitos; o dragão não pode usar o mesmo efeito duas rodadas seguidas:",
+      "Ceiling Collapse": "Parte do teto desaba sobre uma criatura que o dragão possa ver a até 120 feet dele. A criatura deve ser bem-sucedida em um saving throw de Dexterity DC 15 ou sofrer 10 (3d6) de dano de concussão, ser derrubada e ficar soterrada. O alvo soterrado está restrained e incapaz de respirar ou se levantar. Uma criatura pode usar uma ação para fazer um teste de Strength DC 10, encerrando a condição de soterrado em um sucesso.",
+      "Sand Cloud": "Uma nuvem de areia gira em uma esfera de 20-foot de raio centrada em um ponto que o dragão possa ver a até 120 feet dele. A nuvem se espalha ao redor de cantos. Cada criatura na nuvem deve ser bem-sucedida em um saving throw de Constitution DC 15 ou ficar blinded por 1 minuto. Uma criatura pode repetir o saving throw no final de cada um de seus turnos, encerrando o efeito sobre si mesma em um sucesso.",
+      "Lightning Arc": "Arcos de relâmpago formam uma linha de 5-foot de largura entre duas superfícies sólidas do covil que o dragão possa ver. Elas devem estar a até 120 feet do dragão e a 120 feet uma da outra. Cada criatura nessa linha deve ser bem-sucedida em um saving throw de Dexterity DC 15 ou sofrer 10 (3d6) de dano elétrico."
+    },
+    "regional_effects": {
+      "_intro": "A região que contém o covil de um dragão azul lendário é distorcida pela magia do dragão, que cria um ou mais dos seguintes efeitos:\n\nSe o dragão morrer, as tempestades cessam em 1d10 dias, mas os outros efeitos persistem.",
+      "Thunderstorms": "Tempestades com trovões rugem em um raio de 6 milhas do covil.",
+      "Dust Devils": "Redemoinhos de poeira varrem a terra em um raio de 6 milhas do covil. Um redemoinho de poeira possui as estatísticas de um elemental do ar, mas não pode voar, possui deslocamento de 50 feet e tem Intelligence e Charisma de 1 (-5).",
+      "Hidden Sinkholes": "Sumidouros ocultos se formam dentro e ao redor do covil do dragão. Um sumidouro pode ser detectado a uma distância segura com um teste bem-sucedido de Wisdom (Perception) DC 20. Caso contrário, a primeira criatura a pisar na cobertura fina sobre o sumidouro deve ser bem-sucedida em um saving throw de Dexterity DC 15 ou cair 1d6 x 10 feet dentro do sumidouro."
     }
   },
   "adult-red-dragon": {
@@ -37,6 +49,18 @@
       "Detect": "O dragão realiza um teste de Sabedoria (Percepção).",
       "Tail Attack": "O dragão realiza um ataque de cauda.",
       "Wing Attack (Costs 2 Actions)": "O dragão bate suas asas. Cada criatura a até 3 m do dragão deve ser bem-sucedida em um teste de resistência de Destreza CD 22 ou sofrerá 15 (2d6 + 8) de dano de concussão e será derrubada. O dragão pode então voar até metade de sua velocidade de voo."
+    },
+    "lair_actions": {
+      "_intro": "Na contagem de iniciativa 20 (perdendo empates de iniciativa), o dragão realiza uma ação de covil para causar um dos seguintes efeitos; o dragão não pode usar o mesmo efeito duas rodadas seguidas:",
+      "Magma Eruption": "Magma irrompe de um ponto no chão que o dragão pode ver a até 120 feet dele, criando um gêiser de 20 feet de altura e 5 feet de raio. Cada criatura na área do gêiser deve fazer um teste de resistência de Destreza DC 15, sofrendo 21 (6d6) de dano de fogo em uma falha, ou metade desse dano em um sucesso.",
+      "Tremor": "Um tremor sacode o covil em um raio de 60 feet ao redor do dragão. Cada criatura além do dragão que esteja no chão nessa área deve ser bem-sucedida em um teste de resistência de Destreza DC 15 ou ser derrubada.",
+      "Volcanic Gas": "Gases vulcânicos formam uma nuvem em uma esfera de 20 feet de raio centrada em um ponto que o dragão pode ver a até 120 feet dele. A esfera se espalha ao redor de cantos, e sua área é levemente obscurecida. Ela dura até a contagem de iniciativa 20 na próxima rodada. Cada criatura que iniciar seu turno na nuvem deve ser bem-sucedida em um teste de resistência de Constituição DC 13 ou ficará envenenada até o final de seu turno. Enquanto envenenada dessa forma, a criatura fica incapacitada."
+    },
+    "regional_effects": {
+      "_intro": "A região que contém o covil de um dragão vermelho lendário é distorcida pela magia do dragão, o que cria um ou mais dos seguintes efeitos:\n\nSe o dragão morrer, esses efeitos desaparecem ao longo de 1d10 dias.",
+      "Minor Earthquakes": "Pequenos terremotos são comuns em um raio de 6 milhas do covil do dragão.",
+      "Sulfurous Fumes": "Fontes de água em um raio de 1 milha do covil são sobrenaturalmente quentes e contaminadas por enxofre.",
+      "Rocky Fissures": "Fissuras rochosas em um raio de 1 milha do covil do dragão formam portais para o Plano Elemental do Fogo, permitindo que criaturas de fogo elemental entrem no mundo para habitar as proximidades."
     }
   },
   "goblin": {
@@ -94,6 +118,13 @@
       "Move": "O vampiro se move até sua velocidade sem provocar ataques de oportunidade.",
       "Unarmed Strike": "O vampiro realiza um golpe desarmado.",
       "Bite (Costs 2 Actions)": "O vampiro realiza um ataque de mordida."
+    },
+    "regional_effects": {
+      "_intro": "A região ao redor do covil de um vampiro é distorcida pela presença sobrenatural da criatura, criando qualquer um dos seguintes efeitos:\n\nSe o vampiro for destruído, esses efeitos terminam após 2d6 dias.",
+      "Vermin Surge": "Há um aumento perceptível nas populações de morcegos, ratos e lobos na região.",
+      "Withered Plants": "Plantas em um raio de 500 feet do covil murcham, e seus caules e galhos se tornam retorcidos e espinhosos.",
+      "Living Shadows": "Sombras projetadas em um raio de 500 feet do covil parecem anormalmente esqueléticas e às vezes se movem como se estivessem vivas.",
+      "Creeping Fog": "Uma névoa rastejante se agarra ao chão em um raio de 500 feet do covil do vampiro. A névoa ocasionalmente assume formas sinistras, como garras agarrando e serpentes contorcidas."
     }
   },
   "lich": {
@@ -113,6 +144,18 @@
       "Paralyzing Touch (Costs 2 Actions)": "O lich usa seu Toque Paralisante.",
       "Frightening Gaze (Costs 2 Actions)": "O lich fixa seu olhar em uma criatura que pode ver a até 3 m dele. O alvo deve ser bem-sucedido em um teste de resistência de Sabedoria CD 18 contra esta magia ou ficará amedrontado por 1 minuto. O alvo amedrontado pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesmo em um êxito. Se o teste de resistência de um alvo tiver êxito ou o efeito terminar para ele, o alvo ficará imune ao olhar do lich pelas próximas 24 horas.",
       "Disrupt Life (Costs 3 Actions)": "Cada criatura não-morta-viva a até 6 m do lich deve realizar um teste de resistência de Constituição CD 18 contra esta magia, sofrendo 21 (6d6) de dano necrótico em uma falha, ou metade desse dano em um êxito."
+    },
+    "lair_actions": {
+      "_intro": "Na contagem de iniciativa 20 (perdendo empates de iniciativa), o lich pode realizar uma ação de covil para causar um dos seguintes efeitos; o lich não pode usar o mesmo efeito duas rodadas seguidas:",
+      "Death Emanation": "O lich rola um d8 e recupera um espaço de magia daquele nível ou inferior. Se ele não tiver espaços de magia gastos daquele nível ou inferior, nada acontece.",
+      "Spirit Drain": "O lich tem como alvo uma criatura que ele possa ver a até 30 ft. dele. Um cordão crepitante de energia negativa conecta o lich ao alvo. Sempre que o lich sofrer dano, o alvo deve realizar um teste de resistência de Constituição CD 18. Em uma falha, o lich sofre metade do dano (arredondado para baixo), e o alvo sofre o dano restante. Essa conexão dura até a contagem de iniciativa 20 na próxima rodada ou até que o lich ou o alvo não esteja mais no covil do lich.",
+      "Undead Summon": "O lich invoca os espíritos de criaturas que morreram em seu covil. Essas aparições se materializam e atacam uma criatura que o lich possa ver a até 60 ft. dele. O alvo deve ser bem-sucedido em um teste de resistência de Constituição CD 18, sofrendo 52 (15d6) de dano necrótico em uma falha, ou metade desse dano em um sucesso. As aparições então desaparecem."
+    },
+    "regional_effects": {
+      "_intro": "O covil de um lich pode ter qualquer um ou todos os seguintes efeitos mágicos ativos:\n\nSe o lich for destruído mas sua filactéria permanecer, esses efeitos persistem até que a filactéria também seja destruída.",
+      "Undead Corruption": "Criaturas a até 1 milha do covil do lich que morrem se tornam esqueletos ou zumbis mortos-vivos (à escolha do lich) sob o controle do lich após 1d10 dias.",
+      "Intelligence Network": "O lich pode realizar ações para projetar sua percepção em um raio de 5 milhas ao redor de seu covil. O lich não pode ser surpreendido enquanto possuir essa percepção.",
+      "Planar Shift": "Se uma criatura aliada ao lich for reduzida a 0 pontos de vida dentro do covil, essa criatura automaticamente se estabiliza e recupera 1 ponto de vida em 1d4 horas."
     }
   },
   "troll": {
@@ -777,7 +820,13 @@
       "Teleport (Costs 2 Actions)": "A esfinge se teletransporta magicamente, junto com qualquer equipamento que esteja vestindo ou carregando, até 120 feet para um espaço desocupado que ela possa ver.",
       "Cast a Spell (Costs 3 Actions)": "A esfinge conjura uma magia de sua lista de magias preparadas, usando um espaço de magia normalmente."
     },
-    "lair_actions": {},
+    "lair_actions": {
+      "_intro": "Na contagem de iniciativa 20 (perdendo empates de iniciativa), a esfinge pode realizar uma ação de covil para causar um dos seguintes efeitos mágicos; a esfinge não pode usar um efeito novamente até terminar um descanso curto ou longo:",
+      "Time Reroll": "O fluxo do tempo é alterado de forma que cada criatura no covil deve rolar iniciativa novamente. A esfinge pode escolher não rolar novamente.",
+      "Age Shift": "Os efeitos do tempo são alterados de forma que cada criatura no covil deve ser bem-sucedida em um teste de resistência de Constituição DC 15 ou envelhecer ou rejuvenescer 1d20 anos (à escolha da esfinge), mas nunca ficando mais jovem que 1 ano de idade. Uma magia greater restoration pode restaurar a idade de uma criatura ao normal.",
+      "Time Warp": "O fluxo do tempo dentro do covil é alterado de forma que tudo dentro dele avança ou retrocede até 10 anos (à escolha da esfinge). Apenas a esfinge tem consciência imediata da mudança no tempo. Uma magia wish pode retornar o conjurador e até sete outras criaturas designadas pelo conjurador ao seu tempo normal.",
+      "Plane Shift": "A esfinge transporta a si mesma e até sete outras criaturas que ela possa ver dentro de seu covil para outro plano de existência. Uma vez fora de seu covil, a esfinge não pode usar ações de covil, mas pode retornar ao seu covil como uma ação bônus em seu turno, levando até sete criaturas consigo."
+    },
     "regional_effects": {}
   },
   "animated-armor": {
@@ -2710,7 +2759,13 @@
       "Teleport (Costs 2 Actions)": "A esfinge se teleporta magicamente, junto com qualquer equipamento que esteja vestindo ou carregando, até 120 feet para um espaço desocupado que ela possa ver.",
       "Cast a Spell (Costs 3 Actions)": "A esfinge conjura uma magia de sua lista de magias preparadas, usando um espaço de magia normalmente."
     },
-    "lair_actions": {},
+    "lair_actions": {
+      "_intro": "Na contagem de iniciativa 20 (perdendo empates de iniciativa), a esfinge pode realizar uma ação de covil para causar um dos seguintes efeitos mágicos; a esfinge não pode usar um efeito novamente até terminar um descanso curto ou longo:",
+      "Time Reroll": "O fluxo do tempo é alterado de forma que toda criatura no covil deve rolar iniciativa novamente. A esfinge pode escolher não rolar novamente.",
+      "Age Shift": "Os efeitos do tempo são alterados de forma que toda criatura no covil deve ser bem-sucedida em um teste de resistência de Constituição CD 15 ou envelhecer ou rejuvenescer 1d20 anos (à escolha da esfinge), mas nunca ficando mais jovem que 1 ano de idade. Uma magia greater restoration pode restaurar a idade de uma criatura ao normal.",
+      "Time Warp": "O fluxo do tempo dentro do covil é alterado de forma que tudo dentro dele avança ou retrocede até 10 anos (à escolha da esfinge). Apenas a esfinge percebe imediatamente a mudança no tempo. Uma magia wish pode retornar o conjurador e até sete outras criaturas designadas pelo conjurador ao seu tempo normal.",
+      "Plane Shift": "A esfinge transporta a si mesma e até sete outras criaturas que ela possa ver dentro de seu covil para outro plano de existência. Uma vez fora de seu covil, a esfinge não pode usar ações de covil, mas pode retornar ao seu covil como uma ação bônus em seu turno, levando até sete criaturas consigo."
+    },
     "regional_effects": {}
   },
   "half-red-dragon-veteran": {
@@ -3399,8 +3454,18 @@
       "Channel Negative Energy (Costs 2 Actions)": "O senhor múmia libera magicamente energia negativa. Criaturas a até 60 feet do senhor múmia, incluindo aquelas atrás de barreiras e ao redor de cantos, não podem recuperar pontos de vida até o final do próximo turno do senhor múmia.",
       "Whirlwind of Sand (Costs 2 Actions)": "O senhor múmia se transforma magicamente em um redemoinho de areia, se move até 60 feet e reverte à sua forma normal. Enquanto estiver na forma de redemoinho, o senhor múmia é imune a todo dano, e não pode ser agarrado, petrificado, derrubado, contido ou atordoado. Equipamentos vestidos ou carregados pelo senhor múmia permanecem em sua posse."
     },
-    "lair_actions": {},
-    "regional_effects": {}
+    "lair_actions": {
+      "_intro": "Na contagem de iniciativa 20 (perdendo empates de iniciativa), o mummy lord realiza uma ação de covil para causar um dos seguintes efeitos; o mummy lord não pode usar o mesmo efeito duas rodadas seguidas:",
+      "Undead Awareness": "Cada criatura morta-viva no covil pode identificar a localização exata de cada criatura viva em até 120 feet dela até a contagem de iniciativa 20 na próxima rodada.",
+      "Turn Resistance": "Cada morto-vivo no covil tem vantagem em testes de resistência contra efeitos que expulsam mortos-vivos até a contagem de iniciativa 20 na próxima rodada.",
+      "Spell Disruption": "Até a contagem de iniciativa 20 na próxima rodada, qualquer criatura não morta-viva que tente conjurar uma magia de 4º nível ou inferior no covil do mummy lord é tomada por dor. A criatura pode escolher outra ação, mas se tentar conjurar a magia, deve fazer um teste de resistência de Constituição CD 16. Em uma falha, sofre 1d6 de dano necrótico por nível da magia, e a magia não tem efeito e é desperdiçada."
+    },
+    "regional_effects": {
+      "_intro": "O templo ou tumba de um mummy lord é distorcido de qualquer uma das seguintes maneiras pela presença sombria da criatura:\n\nSe o mummy lord for destruído, esses efeitos regionais terminam imediatamente.",
+      "Food Decay": "Comida apodrece instantaneamente e água evapora instantaneamente quando trazidas ao covil. Outras bebidas não mágicas são estragadas — vinho se torna vinagre, por exemplo.",
+      "Divination Interference": "Magias de adivinhação conjuradas dentro do covil por criaturas que não sejam o mummy lord têm 25 por cento de chance de fornecer resultados enganosos, conforme determinado pelo Mestre. Se uma magia de adivinhação já tiver chance de falhar ou se tornar não confiável quando conjurada múltiplas vezes, essa chance aumenta em 25 por cento.",
+      "Treasure Curse": "Uma criatura que pegar tesouros do covil é amaldiçoada até que o tesouro seja devolvido. O alvo amaldiçoado tem desvantagem em todos os testes de resistência. A maldição dura até ser removida por uma magia remove curse ou outra magia."
+    }
   },
   "nalfeshnee": {
     "name": "Nalfeshnee",
@@ -8761,5 +8826,2391 @@
     "legendary_actions": {},
     "lair_actions": {},
     "regional_effects": {}
+  },
+  "skeletal-pillar": {
+    "name": "Pilar Esquelético",
+    "special_abilities": {},
+    "actions": {
+      "Slam": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano de concussão.",
+      "Reabsorb Skeleton": "O pilar esquelético se move 5 feet até o espaço de um esqueleto que ele criou e o destrói, recebendo 12 (2d8 + 3) pontos de vida temporários."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "monster-slayer-ranger": {
+    "name": "Patrulheiro Caçador de Monstros",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "primeval-guardian-ranger": {
+    "name": "Patrulheiro Guardião Primevo",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bodysnatcher-parasite": {
+    "name": "Parasita Ladrão de Corpos",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O parasita faz um ataque de mordida e usa seu Drenar Vontade.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +2 para acertar, alcance 5 ft., um alvo. Acerto: 5 (2d4) de dano perfurante.",
+      "Drain Will": "O parasita tenta drenar a vontade de uma criatura viva à qual está preso que tenha Inteligência 3 ou superior. O alvo deve ser bem-sucedido em um teste de resistência de Sabedoria CD 12 contra essa magia ou sofrer 22 (5d8) de dano por veneno. Também em uma falha, role 3d6: se o total igualar ou exceder o valor de Sabedoria do alvo, esse valor é reduzido a 0. O alvo fica incapacitado até recuperar pelo menos um ponto de Sabedoria.",
+      "Take Host": "O parasita inicia uma disputa de Sabedoria com uma criatura viva incapacitada a até 5 feet dele. Se vencer a disputa, o parasita entra no alvo pelo ouvido, boca ou nariz e assume o controle do corpo do alvo. Enquanto estiver dentro de uma criatura, o parasita tem cobertura total contra ataques e outros efeitos originados fora de seu hospedeiro. O parasita mantém seus valores de Inteligência, Sabedoria e Carisma, assim como sua telepatia. Se os valores de Força, Destreza ou Constituição da criatura forem inferiores a 18, eles se tornam 18. Ele sabe tudo que a criatura sabia, incluindo magias e idiomas. Se o corpo do hospedeiro cair a 0 pontos de vida, o parasita morre. Uma magia protection from evil and good conjurada no corpo expulsa o parasita para um espaço a até 5 feet dele. O corpo então morre, a menos que sua Sabedoria seja restaurada dentro de 1 rodada."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "stone-strix": {
+    "name": "Estrige de Pedra",
+    "special_abilities": {
+      "Flyby": "A estrige não provoca ataques de oportunidade quando voa para fora do alcance de um inimigo.",
+      "Keen Hearing and Sight": "A estrige tem vantagem em testes de Sabedoria (Percepção) que dependam de audição ou visão.",
+      "Petrifying Gaze": "Quando uma criatura que pode ver os olhos da estrige começa seu turno a até 30 feet dela, a estrige pode forçá-la a fazer um teste de resistência de Constituição CD 15, desde que a estrige não esteja incapacitada e possa ver a criatura. Uma criatura que falhar no teste começa a se transformar em pedra e fica impedida. A criatura impedida deve repetir o teste de resistência no final de seu próximo turno, ficando petrificada em uma falha ou encerrando o efeito em um sucesso. A petrificação dura até que a criatura seja libertada pela magia greater restoration ou outra magia. A menos que esteja surpresa, uma criatura pode desviar o olhar para evitar o teste de resistência no início de seu turno. Se a criatura fizer isso, ela não pode ver a estrige até o início de seu próximo turno, quando pode desviar o olhar novamente. Se a criatura olhar para a estrige nesse meio tempo, ela deve imediatamente fazer o teste. Se a estrige vir a si mesma refletida em uma superfície polida a até 30 feet dela e em uma área de luz plena, a estrige é afetada por seu próprio olhar."
+    },
+    "actions": {
+      "Multiattack": "A estrige faz dois ataques: um com seu bico e um com suas garras.",
+      "Beak": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 22 (4d8 + 4) de dano perfurante.",
+      "Talons": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 18 (4d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "armor-plated-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante Blindado",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "carnivorous-flying-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante Voador Carnívoro",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "giant-space-hamster": {
+    "name": "Hamster Espacial Gigante",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "great-horned-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante com Chifres",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "invisible-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante Invisível",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "miniature-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante Miniatura",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sabre-toothed-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante Dentes-de-Sabre",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "tyrannohamsterus-rex": {
+    "name": "Tyrannohamsterus Rex",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "woolly-rupert-giant-space-hamster-of-ill-omen": {
+    "name": "Rupert Lanoso, Hamster Espacial Gigante do Mau Agouro",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "yellow-musk-giant-space-hamster": {
+    "name": "Hamster Espacial Gigante de Almíscar Amarelo",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cinder-beast": {
+    "name": "Besta das Cinzas",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "metal-head-flameskull": {
+    "name": "Crânio Flamejante Metaleiro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O crânio flamejante faz três ataques de raio de fogo.",
+      "Fire Ray": "Ataque Mágico à Distância: +5 para acertar, alcance 30 ft., um alvo. Acerto: 10 (3d6) de dano de fogo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "metal-head-mummy-lord": {
+    "name": "Senhor das Múmias Metaleiro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O senhor das múmias pode usar seu Olhar Aterrorizante e faz um ataque com seu punho apodrecido.",
+      "Rotting Fist": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 14 (3d6 + 4) de dano de concussão mais 21 (6d6) de dano necrótico. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Constituição DC 16 ou será amaldiçoado com podridão de múmia. O alvo amaldiçoado não pode recuperar pontos de vida, e seu máximo de pontos de vida diminui em 10 (3d6) a cada 24 horas que passam. Se a maldição reduzir o máximo de pontos de vida do alvo a 0, o alvo morre e seu corpo se transforma em pó. A maldição dura até ser removida pela magia remove curse ou outra magia.",
+      "Wall of Death (1/Day)": "O senhor das múmias forma magicamente uma parede etérea de mãos agarradoras em uma superfície sólida que ele possa ver a até 60 feet dele. A parede tem 5 feet de espessura, e até 30 feet de comprimento e 10 feet de altura, ou pode ser uma parede circular de até 10 feet de diâmetro, 5 feet de altura e 5 feet de espessura. Quando a parede aparece, cada criatura dentro de sua área deve ser bem-sucedida em um teste de resistência de Destreza DC 16, ou sofre 21 (6d6) de dano necrótico e é amaldiçoada com podridão de múmia. O alvo amaldiçoado não pode recuperar pontos de vida, e seu máximo de pontos de vida diminui em 10 (3d6) a cada 24 horas que passam. Se a maldição reduzir o máximo de pontos de vida do alvo a 0, o alvo morre e seu corpo se transforma em pó. A maldição dura até ser removida pela magia remove curse ou outra magia. Uma criatura sofre o mesmo dano quando entra na parede pela primeira vez em um turno ou termina seu turno lá. No final de cada turno do senhor das múmias, 2 (1d4) múmias são invocadas em espaços desocupados a até 5 feet da parede. A parede dura 1 minuto, ou até o senhor das múmias ficar incapacitado ou morrer.",
+      "Dreadful Glare": "O senhor das múmias mira em uma criatura que ele possa ver a até 60 feet dele. Se o alvo puder ver o senhor das múmias, ele deve ser bem-sucedido em um teste de resistência de Sabedoria DC 16 contra essa magia ou ficará Amedrontado até o final do próximo turno da múmia. Se o alvo falhar no teste de resistência por 5 ou mais, ele também fica paralisado pela mesma duração. Um alvo que for bem-sucedido no teste de resistência fica imune ao Olhar Aterrorizante de todas as múmias e senhores das múmias pelas próximas 24 horas."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Attack": "O senhor das múmias faz um Ataque com seu punho apodrecido ou usa seu Olhar Aterrorizante.",
+      "Blinding Dust": "Poeira e areia cegantes rodopiam magicamente ao redor do senhor das múmias. Cada criatura a até 5 feet do senhor das múmias deve ser bem-sucedida em um teste de resistência de Constituição DC 16 ou ficará Cega até o final do próximo turno da criatura.",
+      "Blasphemous Word (Costs 2 Actions)": "O senhor das múmias profere uma palavra blasfema. Cada criatura não-morta-viva a até 10 feet do senhor das múmias que possa ouvir a enunciação mágica deve ser bem-sucedida em um teste de resistência de Constituição DC 16 ou ficará Atordoada até o final do próximo turno do senhor das múmias.",
+      "Channel Negative Energy (Costs 2 Actions)": "O senhor das múmias libera magicamente energia negativa. Criaturas a até 60 feet do senhor das múmias, incluindo aquelas atrás de barreiras e ao redor de cantos, não podem recuperar pontos de vida até o final do próximo turno do senhor das múmias.",
+      "Whirlwind of Sand (Costs 2 Actions)": "O senhor das múmias se transforma magicamente em um redemoinho de areia, move-se até 60 feet e reverte à sua forma normal. Enquanto estiver na forma de redemoinho, o senhor das múmias é imune a todo dano e não pode ser Agarrado, Petrificado, derrubado, Contido ou Atordoado. Equipamentos vestidos ou carregados pelo senhor das múmias permanecem em sua posse."
+    },
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "metal-head-revenant": {
+    "name": "Revenant Cabeça-de-Metal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O revenant faz dois ataques de punho.",
+      "Fist": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano de concussão. Se o alvo for uma criatura contra a qual o revenant jurou vingança, o alvo sofre 14 (4d6) de dano de concussão extra. Em vez de causar dano, o revenant pode agarrar o alvo (CD de escape 14), desde que o alvo seja Grande ou menor.",
+      "Screaming for Revenge (Recharge 5-6)": "O revenant pode emitir um grito uivante que ensurdece e causa dano aos que estão próximos. Todas as criaturas em até 30 feet devem fazer um teste de resistência de Constituição CD 15, sofrendo 36 (8d8) de dano de trovão e ficando permanentemente surdas em caso de falha. Em caso de sucesso, a criatura sofre metade do dano e não fica surda. Uma criatura contra a qual o revenant jurou vingança faz o teste de resistência com desvantagem.",
+      "Vengeful Glare": "O revenant escolhe uma criatura que ele possa ver a até 30 feet de si e contra a qual jurou vingança. O alvo deve fazer um teste de resistência de Sabedoria CD 15. Em caso de falha, o alvo fica paralisado até que o revenant cause dano a ele, ou até o final do próximo turno do revenant. Quando a paralisia termina, o alvo fica amedrontado pelo revenant por 1 minuto. O alvo amedrontado pode repetir o teste de resistência no final de cada um de seus turnos, com desvantagem se puder ver o revenant, encerrando a condição de amedrontado em si mesmo em caso de sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "metal-head-skeleton": {
+    "name": "Esqueleto Cabeça-de-Metal",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Shortbow": "Ataque à Distância com Arma: +4 para acertar, alcance 80/320 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "metal-head-zombie": {
+    "name": "Zumbi Cabeça-de-Metal",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano de concussão.",
+      "Metal Claw": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano de concussão. Se o alvo for Médio ou menor, ele fica agarrado (CD de escape 12)."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "lantern-archon": {
+    "name": "Arconte Lanterna",
+    "special_abilities": {},
+    "actions": {
+      "Light Ray": "Ataque Mágico à Distância: +4 para acertar, alcance 30 ft., um alvo. Acerto: 11 (2d10) de dano radiante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "meganisoptera": {
+    "name": "Meganisóptera",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A meganisóptera faz dois ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "mastermind-rogue": {
+    "name": "Ladino Mentor",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ladino faz dois ataques com sua rapieira e um com sua adaga, ou dois com seu arco longo.",
+      "Dagger": "Ataque Corpo a Corpo ou à Distância com Arma: +8 para acertar, alcance 5 ft. ou distância 20/60 ft., um alvo. Acerto: 6 (1d4 + 4) de dano perfurante.",
+      "Rapier": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 8 (1d8 + 4) de dano cortante.",
+      "Longbow": "Ataque à Distância com Arma: +5 para acertar, distância 80/320 ft., um alvo. Acerto: 8 (1d8 + 4) de dano perfurante.",
+      "Shapechanger": "O ladino pode se transformar em qualquer humanoide Médio que tenha visto, ou voltar à sua forma verdadeira. No entanto, seu equipamento não muda com ele. Se o ladino morrer, ele reverte à sua aparência natural."
+    },
+    "reactions": {
+      "Misdirection": "O ladino pode às vezes fazer com que outra criatura sofra um ataque destinado a ele. Quando é alvo de um ataque enquanto uma criatura a até 5 feet dele está lhe concedendo cobertura contra esse ataque, o ladino pode usar sua reação para fazer o ataque atingir essa criatura em vez dele.",
+      "Uncanny Dodge": "O ladino reduz pela metade o dano que recebe de um ataque que o acerta. O ladino precisa ser capaz de ver o atacante."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "scout-rogue": {
+    "name": "Ladino Batedor",
+    "special_abilities": {},
+    "actions": {
+      "Javelin": "Ataque à Distância com Arma: +5 para acertar, distância 30/120 ft., um alvo. Acerto: 6 (1d6 + 3) de dano perfurante.",
+      "Scimitar": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano cortante."
+    },
+    "reactions": {
+      "Skirmisher": "O ladino é difícil de encurralar durante um combate. O ladino pode se mover até metade de seu deslocamento quando um inimigo termina seu turno a até 5 feet dele. Esse movimento não provoca ataques de oportunidade.",
+      "Stone's Endurance (Recharges after a Short or Long Rest)": "O ladino pode se concentrar para ocasionalmente ignorar ferimentos. Quando o ladino recebe dano, ele pode reduzir o dano em 8 (1d12 + 2)."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "inquisitive-rogue": {
+    "name": "Ladino Inquisitivo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ladino faz três ataques com sua espada curta ou dois com seu arco longo.",
+      "Longbow": "Ataque à Distância com Arma: +6 para acertar, distância 150/600 ft., um alvo. Acerto: 7 (1d8 + 3) de dano perfurante.",
+      "Shortsword": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano cortante.",
+      "Insightful Fighting": "O ladino pode decifrar as táticas de um oponente e desenvolver uma contra-estratégia. O ladino faz um teste de Sabedoria (Intuição) contra uma criatura que ele possa ver e que não esteja incapacitada, resistido pelo teste de Carisma (Enganação) do alvo. Se for bem-sucedido, o ladino pode usar Ataque Furtivo contra essa criatura mesmo que não tenha vantagem contra ela ou que nenhum inimigo do alvo esteja a até 5 feet dele. O ladino pode usar Ataque Furtivo dessa forma mesmo que tenha desvantagem contra o alvo. Esse benefício dura 1 minuto."
+    },
+    "reactions": {
+      "Uncanny Dodge": "O ladino reduz pela metade o dano que recebe de um ataque que o acerta. O ladino precisa ser capaz de ver o atacante."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "fire-giant-jailer": {
+    "name": "Gigante de Fogo Carcereiro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O gigante faz um ataque de corrente pesada e dois ataques de martelo de guerra. O gigante pode usar cadeia de comando no lugar de um ataque de martelo de guerra."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "stone-eyed-cyclops": {
+    "name": "Ciclope de Olho Pétreo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ciclope faz três ataques de porrete grande. O ciclope pode usar raio petrificante no lugar de um ataque de porrete grande.",
+      "Greatclub": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 10 ft., um alvo. Acerto: 19 (3d8 + 6) de dano de concussão.",
+      "Rock": "Ataque à Distância com Arma: +9 para acertar, distância 30/120 ft., um alvo. Acerto: 28 (4d10 + 6) de dano de concussão.",
+      "Petrifying Beam (Recharge 5-6)": "O ciclope dispara um raio petrificante em uma linha de 30 feet de comprimento e 5 feet de largura. Cada criatura nessa linha deve ser bem-sucedida em um teste de resistência de Constituição DC 16. Em uma falha, o alvo começa a se transformar em pedra e fica impedido. O alvo impedido deve repetir o teste de resistência no final de seu próximo turno. Em um sucesso, o efeito termina sobre o alvo. Em uma falha, o alvo fica petrificado até ser libertado pela magia greater restoration ou outra magia."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "megalodon": {
+    "name": "Megalodon",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O megalodon faz três ataques: dois com sua mordida e um com sua investida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +12 para acertar, alcance 5 ft., um alvo. Acerto: 32 (4d12 + 6) de dano perfurante. Se o alvo for uma criatura Grande ou menor, ele é engolido. Enquanto engolida, a criatura fica cega e contida, tem cobertura total contra ataques e outros efeitos de fora do megalodon, e sofre 13 (3d8) de dano ácido no início de cada turno do megalodon. &nbsp;&nbsp; Se o megalodon sofrer 40 de dano ou mais em um único turno de uma criatura dentro dele, o megalodon deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgitar todas as criaturas engolidas, que saem caídas em um espaço a até 5 feet da cabeça do megalodon. Se o megalodon morrer, uma criatura engolida não está mais contida por ele e pode escapar do cadáver usando 15 feet de movimento, saindo caída. &nbsp;&nbsp; O megalodon pode engolir até seis criaturas de uma vez.",
+      "Ram": "Ataque Corpo a Corpo com Arma: +12 para acertar, alcance 5 ft., um alvo. Acerto: 25 (3d12 + 6) de dano de concussão. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Constituição CD 20 ou ficará atordoado até o final de seu próximo turno."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "were-shark": {
+    "name": "Tubarão-Licantropo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack (Humanoid or Hybrid Form Only)": "O tubarão-licantropo faz três ataques, dos quais apenas um pode ser uma mordida.",
+      "Bite (Shark or Hybrid Form Only)": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 15 (2d10 + 4) de dano perfurante. Se o alvo for um humanoide, ele deve ser bem-sucedido em um teste de resistência de Constituição CD 15 ou será amaldiçoado com a licantropia de tubarão-licantropo.",
+      "Sharktooth Sword (Humanoid or Hybrid Form Only)": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 10 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sorcerer-phoenix": {
+    "name": "Feiticeiro, Fênix",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sorcerer-sea": {
+    "name": "Feiticeiro, Mar",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sorcerer-stone": {
+    "name": "Feiticeiro, Pedra",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ghost-shark": {
+    "name": "Tubarão Fantasma",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O tubarão faz dois ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 20 (4d8 + 2) de dano necrótico.",
+      "Etherealness": "O tubarão entra no Plano Etéreo a partir do Plano Material, ou vice-versa. Ele é visível no Plano Material enquanto está na Fronteira Etérea, e vice-versa, mas não pode afetar nem ser afetado por nada no outro plano. Quando o tubarão entra no Plano Material, ele pode fazer um ataque de mordida como ação bônus."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sharkbear": {
+    "name": "Urso-Tubarão",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O urso-tubarão faz três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 13 (2d8 + 4) de dano perfurante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "am-bush": {
+    "name": "Arbusto Emboscador",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O arbusto emboscador faz dois ataques de cipó constritor.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante. Se o alvo for uma criatura Média ou menor, ele é ingerido. Enquanto ingerida, a criatura está cega e impedida, tem cobertura total contra ataques e outros efeitos de fora do arbusto emboscador, e sofre 5 (2d4) de dano ácido no início de cada turno do arbusto emboscador. &nbsp;&nbsp; Se o arbusto emboscador sofrer 10 de dano ou mais em um único turno de uma criatura dentro dele, ou 15 de dano de fogo de qualquer fonte em um único turno, o arbusto emboscador deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final desse turno ou regurgitar a criatura, que cai prostrada em um espaço a até 5 feet do arbusto emboscador. Se o arbusto emboscador morrer, uma criatura ingerida não está mais impedida e pode escapar do cadáver usando 15 feet de movimento, saindo prostrada. &nbsp;&nbsp; O arbusto emboscador pode ingerir apenas uma criatura por vez.",
+      "Constrictor Vine": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 30 ft., um alvo. Acerto: 4 (1d4 + 2) de dano cortante. Se o alvo for uma criatura Média ou menor, ele é agarrado (CD de escape 12). Até que esse agarrão termine, o alvo está impedido e é movido 10 feet em direção ao arbusto emboscador no final de cada um de seus turnos. &nbsp;&nbsp; O arbusto emboscador tem quatro cipós constritores. Cada cipó constritor pode agarrar uma criatura, mas não pode atacar enquanto estiver agarrando."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "plaguecaster-cultist": {
+    "name": "Cultista Lançador de Pragas",
+    "special_abilities": {},
+    "actions": {
+      "Scythe": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano cortante.",
+      "Plague of Locusts (Recharge 6)": "O cultista conjura insect plague, sem necessidade de componentes materiais."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "warlock-raven-queen": {
+    "name": "Bruxo da Rainha Corvo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O bruxo faz dois ataques com seu eldritch blast ou sua adaga.",
+      "Eldritch Blast": "Ataque Mágico à Distância: +5 para acertar, alcance 300 ft., um alvo. Acerto: 9 (1d10 + 3) de dano de força. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Força CD 13 ou ser empurrado 10 feet para longe do bruxo em linha reta.",
+      "Dagger": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante."
+    },
+    "reactions": {
+      "Stone's Endurance (Recharges after a Short or Long Rest)": "O bruxo pode se concentrar para ocasionalmente ignorar ferimentos. Quando o bruxo sofre dano, ele pode reduzir o dano em 8 (1d12 + 2)."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "warlock-hexblade": {
+    "name": "Bruxo, Lâmina Maldita",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "warlock-seeker": {
+    "name": "Bruxo, Buscador",
+    "special_abilities": {},
+    "actions": {
+      "Dagger": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante.",
+      "Call to the Wave (Recharges after a Long Rest)": "O bruxo pode conjurar a magia create or destroy water como uma magia de 2º nível."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hook-mountain-ogre": {
+    "name": "Ogro da Montanha do Gancho",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ogro faz dois ataques com seu gancho. Se ambos os ataques acertarem o mesmo alvo, ele pode usar Dilacerar como uma ação bônus.",
+      "Hook": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 10 ft., um alvo. Acerto: 17 (3d8 + 4) de dano perfurante.",
+      "Rend": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 5 ft., um alvo. Acerto: 31 (5d10 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "spirit-dragon": {
+    "name": "Dragão Espiritual",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O dragão faz três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +13 para acertar, alcance 10 ft., um alvo. Acerto: 18 (2d10 + 7) de dano perfurante mais 9 (2d8) de dano.",
+      "Claw": "Ataque com Arma Corpo a Corpo: +13 para acertar, alcance 5 ft., um alvo. Acerto: 14 (2d6 + 7) de dano cortante mais 9 (2d8) de dano.",
+      "Tail": "Ataque com Arma Corpo a Corpo: +13 para acertar, alcance 15 ft., um alvo. Acerto: 16 (2d8 + 7) de dano cortante mais 9 (2d8) de dano.",
+      "Etherealness": "O dragão entra no Plano Etéreo a partir do Plano Material, ou vice-versa. Ele é visível no Plano Material enquanto está na Borda Etérea, e vice-versa, mas não pode afetar nem ser afetado por nada no outro plano.",
+      "Spirit Nova (Recharge 6)": "O dragão emite uma explosão de poder celestial em um raio de 30 ft. ao seu redor. Escolha a opção apropriada abaixo:",
+      "Divine Nova (Good Dragon Only)": "Cada criatura do"
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hellephant": {
+    "name": "Elefante Infernal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O elefante infernal faz dois ataques de chifrada.",
+      "Gore": "Ataque com Arma Corpo a Corpo: +12 para acertar, alcance 5 ft., um alvo. Acerto: 30 (4d10 + 8) de dano perfurante, e o alvo deve ser bem-sucedido em um teste de resistência de Constituição DC 13 ou ficará envenenado por 1 minuto. Enquanto envenenado dessa forma, o alvo não pode recuperar pontos de vida. O alvo pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesmo em um sucesso.",
+      "Stomp": "Ataque com Arma Corpo a Corpo: +12 para acertar, alcance 5 ft., um alvo. Acerto: 34 (4d12 + 8) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "training-golem": {
+    "name": "Golem de Treinamento",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz três ataques com espada longa.",
+      "Longsword": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 10 ft., um alvo. Acerto: 7 (1d8 + 3) de dano cortante, ou 8 (1d10 + 3) de dano cortante se empunhada com duas mãos."
+    },
+    "reactions": {
+      "Parry": "O golem adiciona 3 à sua CA contra um ataque corpo a corpo que o acertaria. Para isso, o golem deve ver o atacante e estar empunhando uma arma corpo a corpo."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "wizard-lore-mastery": {
+    "name": "Mago, Maestria do Conhecimento",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "wizard-theurgy": {
+    "name": "Mago, Teurgia",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "wizard-war-magic": {
+    "name": "Mago, Magia de Guerra",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "swamp-drake": {
+    "name": "Dragonete do Pântano",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O dragonete faz dois ataques: um com sua mordida e um com seu cuspe ácido.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano perfurante.",
+      "Acid Spit": "Ataque com Arma à Distância: +3 para acertar, alcance 30/60 ft., um alvo. Acerto: 8 (2d6 + 1) de dano ácido."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "mockingbook": {
+    "name": "Livro Zombeteiro",
+    "special_abilities": {},
+    "actions": {
+      "Slam": "Ataque Corpo a Corpo com Arma: +1 para acertar, alcance 5 ft., um alvo. Acerto: 2 (1d6 - 1) de dano de concussão.",
+      "Copy Spell (Recharge 5-6)": "O livro zombeteiro imita uma magia com componente verbal que ele ouviu ser conjurada na última rodada, incluindo uma que ele tenha anulado com contramágica. O livro zombeteiro conjura a magia no nível mais baixo possível, sem necessidade de componentes materiais."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "corgeagle": {
+    "name": "Corguia",
+    "special_abilities": {},
+    "actions": {
+      "Talons": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "vinebeast": {
+    "name": "Fera das Vinhas",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d8 + 3) de dano perfurante. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Força DC 13 ou será derrubado."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ivylash-zombie": {
+    "name": "Zumbi de Hera",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +2 para acertar, alcance 5 ft., um alvo. Acerto: 7 (2d6) de dano perfurante.",
+      "Ivylash": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 15 ft., um alvo. Acerto: 4 (1d4 + 2) de dano cortante mais 3 (1d6) de dano de veneno. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Constituição DC 13 ou ficará envenenado até o final do próximo turno do zumbi."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sandstorm-elemental": {
+    "name": "Elemental da Tempestade de Areia",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O elemental faz três ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +11 para acertar, alcance 5 ft., um alvo. Acerto: 19 (2d12 + 6) de dano cortante mais 13 (2d12) de dano de concussão.",
+      "Sandstorm (Recharge 5-6)": "O elemental e a área ao seu redor se tornam uma massa giratória de areia e detritos. Cada criatura dentro do espaço do elemental ou a 30 feet dele deve fazer um teste de resistência de Destreza DC 17, sofrendo 45 (10d8) de dano cortante em uma falha, ou metade desse dano em um sucesso. Uma criatura que falhar nesse teste de resistência por 5 ou mais fica permanentemente cega."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "black-sheep": {
+    "name": "Ovelha Negra",
+    "special_abilities": {},
+    "actions": {
+      "Gnaw": "Ataque Corpo a Corpo com Arma: +2 para acertar, alcance 5 ft., um alvo. Acerto: 2 (1d4) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hellbat": {
+    "name": "Morcego Infernal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O morcego infernal faz dois ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., uma criatura. Acerto: 10 (2d6 + 3) de dano perfurante, e o morcego infernal recupera 3 (1d6) pontos de vida."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ice-elemental": {
+    "name": "Elemental de Gelo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O elemental faz dois ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 16 (2d10 + 5) de dano de concussão mais 11 (2d10) de dano de frio, e o alvo deve ser bem-sucedido em um teste de resistência de Constituição CD 14 ou ficará impedido até o final de seu próximo turno.",
+      "Sleetstorm (Recharge 5-6)": "Chuva congelante e granizo caem sobre o elemental e a área ao seu redor. Cada criatura dentro do espaço do elemental ou a 30 feet dele deve fazer um teste de resistência de Destreza CD 14, sofrendo 18 (4d8) de dano de concussão e 21 (6d6) de dano de frio em uma falha, ou metade desse dano em um sucesso. &nbsp;&nbsp; Além disso, o chão na área fica coberto de gelo escorregadio, tornando-o terreno difícil. Quando uma criatura entra na área pela primeira vez em um turno ou começa seu turno nela, deve fazer um teste de resistência de Destreza CD 14. Em uma falha, ela cai prostrada. Se uma criatura estiver se concentrando na área, deve fazer um teste de resistência de Constituição CD 14. Em uma falha, ela perde a concentração."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "greatmaw-troll": {
+    "name": "Troll Boca-Grande",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O troll faz quatro ataques: dois com sua mordida e dois com suas garras.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 24 (3d12 + 5) de dano perfurante, e se for uma criatura Grande ou menor, ela fica agarrada (CD de escape 17). Até que esse agarrão termine, o alvo fica impedido, e o troll não pode usar seu ataque de mordida em outro alvo.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d6 + 5) de dano cortante.",
+      "Swallow": "O troll faz um ataque de mordida contra uma criatura que esteja agarrando. Se o ataque acertar, o alvo é engolido e o agarrão termina. A criatura engolida fica cega e impedida, tem cobertura total contra ataques e outros efeitos de fora do troll, e sofre 10 (3d6) de dano ácido no início de cada turno do troll. &nbsp;&nbsp; O estômago do troll pode conter uma criatura por vez. Se o troll sofrer 20 de dano ou mais em um único turno de uma criatura dentro dele, o troll deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgitará a criatura engolida, que cai prostrada em um espaço a até 10 feet do troll. Se o troll morrer, a criatura engolida não fica mais impedida por ele e pode escapar do cadáver usando 10 feet de movimento, saindo prostrada."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "aquamancer": {
+    "name": "Aquamante",
+    "special_abilities": {},
+    "actions": {
+      "Quarterstaff": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., um alvo. Acerto: 3 (1d6) de dano de concussão, ou 4 (1d8) de dano de concussão se empunhado com duas mãos.",
+      "Dessicate (Recharge 6)": "O aquamante tenta drenar a água de uma criatura. Uma criatura a até 30 feet do aquamante deve ser bem-sucedida em um teste de resistência de Constituição CD 15 ou sofrerá 45 (10d8) de dano necrótico. Constructos e Mortos-vivos são imunes a esse dano. &nbsp;&nbsp; Criaturas vegetais e elementais baseados em água fazem o teste de resistência com desvantagem e sofrem o dano máximo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "vine-bramble": {
+    "name": "Sarça Rastejante",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A sarça rastejante faz três ataques: um com sua mordida e dois com suas vinhas.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano perfurante.",
+      "Vines": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 40 ft., um alvo. Acerto: 10 (1d10 + 4) de dano de concussão. Se o alvo for Médio ou menor, ele fica agarrado (CD 15 para escapar). Até que essa condição de agarrar termine, o alvo fica impedido e é puxado 10 feet em direção à sarça rastejante no início de cada um de seus turnos. A sarça possui duas vinhas constritoras. Cada vinha constritora pode agarrar uma criatura.",
+      "Seeds of Reanimation (1/day)": "Todos os cadáveres de bestas Médias ou menores a até 5 feet da sarça rastejante são reanimados como bestas-de-vinha sob o controle da sarça, a menos que a besta seja restaurada à vida ou seu corpo seja destruído. A sarça não pode ter mais do que quatro bestas-de-vinha sob seu controle ao mesmo tempo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "blue-glaucus": {
+    "name": "Glauco Azul",
+    "special_abilities": {},
+    "actions": {
+      "Sting": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., uma criatura. Acerto: 1 de dano perfurante, e o alvo deve realizar um teste de resistência de Constituição CD 10, sofrendo 4 (1d8) de dano de veneno em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "blue-glaucus-swarm": {
+    "name": "Enxame de Glaucos Azuis",
+    "special_abilities": {},
+    "actions": {
+      "Sting": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., uma criatura. Acerto: 14 (4d6) de dano perfurante, ou 7 (2d6) de dano perfurante se o enxame estiver com metade de seus pontos de vida ou menos. O alvo deve realizar um teste de resistência de Constituição CD 10, sofrendo 36 (8d8) de dano de veneno em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bonefist-troll": {
+    "name": "Troll Punho de Osso",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O troll faz três ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 14 (2d8 + 5) de dano de concussão.",
+      "Trollfall": "O troll pode abrir mão de sua própria segurança ao usar Salto de Impulso e se transformar em um projétil. O troll usa Salto de Impulso para saltar até um espaço a até 60 feet dele, e cada criatura a até 5 feet desse espaço deve realizar um teste de resistência de Destreza CD 17. &nbsp;&nbsp; Em um sucesso, a criatura pode escolher se mover 5 feet para fora da área de efeito. Uma criatura que escolher não se mover ou que ainda estiver na área de efeito após se mover sofre as consequências de uma falha no teste. &nbsp;&nbsp; O troll e cada criatura que falhou em seu teste sofrem 6 (1d12) de dano de concussão para cada 10 feet que o troll percorreu durante seu salto. &nbsp;&nbsp; O troll cai no chão (prone), e qualquer criatura em seu espaço também é derrubada."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "clockwork-mouse": {
+    "name": "Rato Mecânico",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +1 para acertar, alcance 5 ft., um alvo. Acerto: 1 (1d4 - 1) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "kuo-toa-mariner": {
+    "name": "Kuo-Toa Marinheiro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O kuo-toa faz dois ataques.",
+      "Gutting Knife": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano cortante.",
+      "Harpoon": "Ataque Corpo a Corpo ou à Distância com Arma: +4 para acertar, alcance 5 ft. ou distância 25/50 ft., um alvo. Acerto: 5 (1d6 + 2) de dano perfurante, ou 6 (1d8 + 2) de dano perfurante quando usado com duas mãos para fazer um ataque corpo a corpo. Se o kuo-toa conseguir um acerto crítico ou reduzir um alvo a 0 pontos de vida, o alvo é empalado e preso ao kuo-toa. Qualquer criatura pode usar uma ação para remover o arpão do alvo com um teste bem-sucedido de DC 13 Sabedoria (Medicina). Uma falha ainda remove o arpão, mas causa 10 (3d6) de dano enquanto as farpas rasgam a ferida. &nbsp; Além disso, se o kuo-toa ou o alvo tentar se mover além de 50 feet do outro, deve primeiro vencer um teste de Força contra o outro."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "mote-of-lightning": {
+    "name": "Partícula de Relâmpago",
+    "special_abilities": {},
+    "actions": {
+      "Shock": "Ataque à Distância com Arma: +4 para acertar, alcance 15 ft., um alvo. Acerto: 6 (1d8 + 2) de dano elétrico, e se o alvo for uma criatura Grande ou menor, deve ser bem-sucedido em um teste de resistência de DC 11 Constituição ou ficará atordoado até o final de seu próximo turno."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "dolgrim": {
+    "name": "Dolgrim",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O dolgrim faz dois ataques: um com sua estrela da manhã e um com sua besta leve.",
+      "Morningstar": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano contundente.",
+      "Light Crossbow": "Ataque à Distância com Arma: +4 para acertar, distância 80/320 ft., um alvo. Acerto: 6 (1d8 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "booze-ooze": {
+    "name": "Gosma Alcoólica",
+    "special_abilities": {},
+    "actions": {
+      "Pseudopod": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d6 + 4) de dano contundente mais 22 (5d8) de dano ácido."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "kobold-flamescale": {
+    "name": "Kobold Escama de Chamas",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O kobold faz dois ataques corpo a corpo.",
+      "Flamefist": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano contundente mais 3 (1d6) de dano de fogo.",
+      "Fire Within (Recharge 6)": "O kobold sofre 13 (3d8) de dano de fogo e conjura Aganazzar's scorcher sem nenhum componente. Sua habilidade de conjuração é Sabedoria (CD de resistência a magia 13)."
+    },
+    "reactions": {
+      "Deflect Missile": "Em resposta a ser atingido por um ataque à distância com arma, o kobold desvia o projétil. O dano que ele sofre do ataque é reduzido em 8 (1d10 + 3). Se o dano for reduzido a 0, o kobold captura o projétil se for pequeno o suficiente para segurar com uma mão e o kobold tiver uma mão livre. Ele pode fazer um ataque de deflexão como parte da mesma reação.",
+      "Deflect": "Ataque à Distância com Arma: +6 para acertar, distância 20/60 ft., um alvo. Acerto: 6 (1d6 + 3) de dano."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cadaver-fly-trap": {
+    "name": "Armadilha-de-Moscas Cadavérica",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O cadáver faz dois ataques: um com sua garra e um com sua armadilha-de-moscas.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano cortante.",
+      "Fly-Trap": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 10 ft., uma criatura. Acerto: 5 (1d4 + 3) de dano perfurante mais 5 (2d4) de dano ácido. Se o alvo for Pequeno ou menor, ele deve ser bem-sucedido em um teste de resistência de Destreza CD 10 ou será engolido. Enquanto engolida, a criatura está cega e impedida, possui cobertura total contra ataques e outros efeitos de fora do cadáver, e sofre 15 (6d4) de dano ácido no início de cada turno do cadáver. Se o cadáver sofrer 20 ou mais de dano em um único turno de uma criatura dentro dele, o cadáver deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgitar a criatura, que cai prostrada em um espaço a até 5 feet do cadáver. Se o cadáver morrer, uma criatura engolida não está mais impedida por ele e pode escapar do corpo usando 5 feet de movimento, saindo prostrada. O cadáver só pode engolir uma criatura por vez e não pode usar armadilha-de-moscas enquanto uma criatura estiver engolida."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "frog-dragon": {
+    "name": "Dragão-Sapo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O dragão pode usar sua Aura de Decomposição. Ele então faz três ataques, um com sua língua e dois com suas patas.",
+      "Aura of Decay": "Cada criatura à escolha do dragão que esteja a até 120 feet do dragão e ciente de sua presença deve ser bem-sucedida em um teste de resistência de Constituição CD 14 ou ficará envenenada por 1 minuto. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito em um sucesso. Se o teste de resistência de uma criatura for bem-sucedido ou o efeito terminar para ela, a criatura fica imune à Aura de Decomposição do dragão pelas próximas 24 horas.",
+      "Tongue": "O dragão tem como alvo uma criatura Média ou menor que ele possa ver a até 30 feet dele. O alvo deve fazer um teste de resistência de Força CD 18. Em uma falha, o alvo é puxado para um espaço desocupado a até 5 feet do dragão, e o dragão pode fazer um ataque de mordida contra ele como uma ação bônus.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +11 para acertar, alcance 5 ft., um alvo. Acerto: 26 (4d10 + 6) de dano perfurante, e o alvo é engolido se for uma criatura Média ou menor. Uma criatura engolida está cega e impedida, possui cobertura total contra ataques e outros efeitos de fora do dragão, e sofre 14 (4d6) de dano ácido no início de cada turno do dragão. <br> &nbsp;&nbsp;O estômago do dragão pode comportar até três criaturas por vez. Se o dragão sofrer 25 de dano ou mais em um único turno de uma criatura dentro dele, o dragão deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgitar todas as criaturas engolidas, cada uma caindo prostrada em um espaço a até 10 feet do dragão. Se o dragão morrer, uma criatura engolida não está mais impedida por ele e pode escapar do corpo usando 10 feet de movimento, saindo prostrada.",
+      "Sticky Foot": "Ataque Corpo a Corpo com Arma: +11 para acertar, alcance 5 ft., um alvo. Acerto: 15 (2d6 + 6) de dano contundente, e o alvo deve fazer um teste de resistência de Constituição CD 19 para evitar ficar grudado. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito em um sucesso. Uma criatura grudada está impedida até ser bem-sucedida em um teste de resistência ou o dragão encerrar a condição.",
+      "Belch (Recharge 5-6)": "O bullywug arrota gás venenoso em um cone de 60 feet. Cada criatura nessa área deve fazer um teste de resistência de Constituição CD 20, sofrendo 56 (16d6) de dano de veneno em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Detect": "O dragão faz um teste de Sabedoria (Percepção).",
+      "Sticky Foot Attack": "O dragão faz um ataque de Pata Grudenta."
+    },
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "dandy-lion": {
+    "name": "Leão-Dente-de-Leão",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d8 + 3) de dano contundente.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano cortante.",
+      "Blowball (Recharge 6)": "O leão dá uma sacudida digna de sua cauda e libera uma nuvem densa de sementes flutuantes em um cubo de 10 feet originando-se dele. Cada criatura na área quando a nuvem aparece ou que entra na área pela primeira vez em um turno deve ser bem-sucedida em um teste de resistência de Constituição CD 11 ou começa a espirrar descontroladamente. Enquanto espirra dessa forma, a criatura está cega e incapacitada. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesma em um sucesso. A nuvem dura 3 (1d4 + 1) rodadas, ou até que um vento de velocidade moderada ou maior (pelo menos 10 milhas por hora) a disperse."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "tortle-elder": {
+    "name": "Ancião Tortle",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O tortle faz dois ataques corpo a corpo.",
+      "Claws": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d4 + 3) de dano cortante.",
+      "Quarterstaff": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano contundente, ou 7 (1d8 + 3) de dano contundente se usado com duas mãos.",
+      "Elemental Attunement": "O tortle se concentra para controlar brevemente as forças elementais próximas, causando um dos seguintes efeitos:"
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "shield-golem": {
+    "name": "Golem de Escudo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques de golpe de escudo.",
+      "Shield Slam": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 15 (2d10 + 4) de dano contundente."
+    },
+    "reactions": {
+      "Shieldwall": "O golem interpõe seus escudos entre si mesmo e a fonte de um efeito que permite um teste de resistência de Destreza, não sofrendo dano do efeito."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "treant-hurler": {
+    "name": "Ent Arremessador",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ent faz dois ataques de pancada.",
+      "Throw Anything": "O ent arremessa uma criatura ou objeto que esteja agarrando no momento. &nbsp;&nbsp; Se o alvo for uma criatura, o ent faz um teste de Força contestado pelo teste de Força ou Destreza do alvo. Se o ent vencer a disputa, ele arremessa o alvo até 150 feet em qualquer direção, incluindo para cima. Se o alvo então entrar em contato com uma superfície dura ou objeto pesado, ele cai caído e sofre 3 (1d6) de dano de concussão para cada 10 feet que foi arremessado. &nbsp;&nbsp; Se o alvo for um objeto, o ent o arremessa até 150 feet em qualquer direção. Ele pode usar o objeto como uma arma de arremesso, atacando uma criatura ou objeto no caminho do objeto (+12 para acertar) e causando 3 (1d6) de dano para cada 10 feet que o objeto se moveu."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "scrap-metal-golem": {
+    "name": "Golem de Sucata Metálica",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 5ft., um alvo. Acerto: 19 (3d8 + 6) de dano de concussão.",
+      "Scrap Storm": "O golem libera sua sucata metálica, que se torna uma massa giratória de destroços de metal. Cada criatura no espaço do golem ou a 30 feet dele deve fazer um teste de resistência de Destreza DC 18, sofrendo 45 (10d8) de dano cortante em uma falha, ou metade desse dano em um sucesso. Uma criatura que falhar neste teste de resistência por 5 ou mais fica caída. Até o próximo turno do golem, sua CA é reduzida em 5.",
+      "Unnatural Magnetism": "O golem atrai um objeto ferromagnético desobstruído a até 15 feet dele. Se o objeto não estiver sendo vestido ou carregado, a atração o puxa para dentro do corpo do golem, concedendo ao golem 11 (2d10) pontos de vida para cada objeto. Se o objeto estiver sendo carregado por uma criatura, a criatura pode fazer um teste de resistência de Força DC 22 para evitar perder o objeto. Se o objeto estiver sendo vestido por uma criatura, a criatura pode fazer um teste de resistência de Força DC 18 para evitar ser puxada em direção ao golem. Um objeto perdido para o golem pode ser recuperado quando ele estiver morto ou incapacitado."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "helmet-crab": {
+    "name": "Caranguejo-Elmo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O caranguejo faz dois ataques de garra.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d8 + 3) de dano cortante mais 5 (2d4) de dano ácido.",
+      "Corroding Claw (Recharge 6)": "O caranguejo corrói um objeto metálico ferroso não mágico que possa tocar. Se o objeto não estiver sendo vestido ou carregado, o toque destrói um cubo de 1 foot dele. Se o objeto estiver sendo vestido ou carregado por uma criatura, a criatura pode fazer um teste de resistência de Destreza DC 12 para evitar o toque do caranguejo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "shield-bug": {
+    "name": "Percevejo-Escudo",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d8 + 1) de dano perfurante.",
+      "Foul Discharge (Recharge 6)": "O inseto dispara um cone de 10-foot de líquido amarelo e nauseante. Cada criatura na área deve fazer um teste de resistência de Constituição DC 12 contra veneno. Em uma falha, a criatura gasta sua ação no próximo turno vomitando e cambaleando. Criaturas que não precisam respirar ou são imunes a veneno automaticamente passam neste teste de resistência."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "graveyard-guardian": {
+    "name": "Guardião do Cemitério",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O guardião faz dois ataques de mordida e usa sua habilidade de latido se possível.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 15 (3d8 + 2) de dano necrótico, e o alvo deve fazer um"
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "dust-wight": {
+    "name": "Corpo Seco de Poeira",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O wight faz dois ataques de toque desagregador.",
+      "Crumbling Touch": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 25 (4d8 + 6) de dano necrótico. O alvo deve ser bem-sucedido em um teste de resistência de Constituição DC 14 ou seu máximo de pontos de vida é reduzido em uma quantidade igual ao dano recebido. Essa redução dura até o alvo completar um descanso longo. O alvo morre se esse efeito reduzir seu máximo de pontos de vida a 0.",
+      "Petrifying Cloud (Recharge 6)": "O wight lança as partículas de poeira que giram ao redor de seu corpo em um cone de 15-foot. Cada criatura nessa área deve ser bem-sucedida em um teste de resistência de Constituição DC 14. Em uma falha, o alvo começa a ser encapsulado em pedra e fica impedido. O alvo impedido deve repetir o teste de resistência no final de seu próximo turno. Em um sucesso, o efeito termina sobre o alvo. Em uma falha, o alvo fica petrificado até ser libertado pelas magias greater restoration, stone shape ou move earth, ou outra magia."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "wrackspawn": {
+    "name": "Cria da Agonia",
+    "special_abilities": {},
+    "actions": {
+      "Bonespear": "Ataque Corpo a Corpo ou à Distância com Arma: +5 para acertar, alcance 5 ft. ou distância 20/60 ft., um alvo. Acerto: 7 (1d8 + 3) de dano perfurante, e o alvo deve ser bem-sucedido em um teste de resistência de Constituição DC 13 ou sofre 10 (3d6) de dano necrótico e fica envenenado até o final de seu próximo turno enquanto é tomado por uma dor excruciante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d4 + 3) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "armoured-battle-griffon": {
+    "name": "Grifo de Batalha Blindado",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O grifo faz dois ataques: um com seu bico e um com suas garras.",
+      "Beak": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 8 (1d8 + 4) de dano perfurante.",
+      "Claws": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bugbear-thug": {
+    "name": "Bugbear Capanga",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "tormentor": {
+    "name": "Atormentador",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O atormentador faz quatro ataques de garra. Alternativamente, ele faz dois ataques com seu cajado de almas.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante.",
+      "Soulstaff": "Ataque à Distância com Magia: +6 para acertar, distância 120 ft., um alvo. Acerto: 21 (3d12 + 2) de dano necrótico, e o alvo não pode recuperar pontos de vida até o início do próximo turno do atormentador.",
+      "Molten Beam (Recharge 5-6)": "O atormentador expele lava de sua caixa torácica derretida em uma linha de 30-foot com 5 feet de largura. Cada criatura nessa linha deve fazer um teste de resistência de Destreza DC 14, sofrendo 35 (10d6) de dano de fogo em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ettin-favoured-of-demogorgon": {
+    "name": "Ettin Favorecido de Demogorgon",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ettin faz quatro ataques: dois com seu machado de batalha e dois com seu bastão curto.",
+      "Battleaxe": "Ataque com Arma Corpo a Corpo: +9 para acertar, alcance 5 ft., um alvo. Acerto: 21 (3d10 + 5) de dano cortante.",
+      "Shortstaff": "Ataque com Arma Corpo a Corpo: +9 para acertar, alcance 5 ft., um alvo. Acerto: 15 (3d6 + 5) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "terracotta-dryad": {
+    "name": "Dríade de Terracota",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "mossipede": {
+    "name": "Musgópede",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O musgópede faz dois ataques de mordida.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d4 + 3) de dano perfurante, e o alvo deve ser bem-sucedido em um teste de resistência de Sabedoria DC 13, ou não pode usar reações até o final de seu próximo turno. Em seu turno, o alvo usa sua ação para fazer um ataque corpo a corpo ou à distância contra uma criatura determinada aleatoriamente que não seja o musgópede. Se o alvo não puder atacar, ele não faz nada em seu turno."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "necrodancer": {
+    "name": "Necrodançarino",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O necrodançarino faz um ataque de rapieira e conjura vicious mockery.",
+      "Rapier": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 5 ft., um alvo. Acerto: 8 (1d8 + 3) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hellbug-skitterling": {
+    "name": "Inferninseto Rastejante",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O inferninseto faz dois ataques de mordida.",
+      "Bite": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d8 + 3) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hellbug-warrior": {
+    "name": "Guerreiro Infernal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O hellbug faz três ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 15 (2d10 + 4) de dano perfurante. Se o alvo for uma criatura Grande ou menor, fica agarrado (CD 15 para escapar). Até que esse agarrão termine, o hellbug pode morder apenas a criatura agarrada e tem vantagem nas jogadas de ataque para fazê-lo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "valkyrie": {
+    "name": "Valquíria",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A valquíria faz dois ataques corpo a corpo.",
+      "Greatsword": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 10 (2d6 + 3) de dano cortante mais 9 (2d8) de dano radiante.",
+      "Healing Touch (2/Day)": "A valquíria toca outra criatura. O alvo recupera magicamente 13 (2d8 + 4) pontos de vida e é libertado de qualquer maldição, doença, veneno, cegueira ou surdez.",
+      "Valkyrie's Blessing (Recharge 6)": "A valquíria abençoa uma criatura à sua escolha a até 30 feet dela. O alvo ganha 9 (2d8) pontos de vida temporários e tem vantagem nas jogadas de ataque até o final de seu próximo turno."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hellbug-archer": {
+    "name": "Arqueiro Infernal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O hellbug faz dois ataques. Ele pode usar Cuspir no lugar de qualquer ataque corpo a corpo.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano perfurante.",
+      "Spit": "O hellbug expele uma bola combustível de muco que explode em um ponto que ele possa ver a até 60 feet dele. Cada criatura em uma esfera de 5 feet de raio centrada nesse ponto deve fazer um teste de resistência de Destreza CD 15. Em uma falha, o alvo sofre 14 (4d6) de dano de fogo e, se for Grande ou menor, é derrubado. Em um sucesso, o alvo sofre metade do dano de fogo, mas não é derrubado."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hellbug-hellion": {
+    "name": "Hellion Infernal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O hellbug faz três ataques corpo a corpo e usa Investida Esmagadora.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 16 (2d10 + 5) de dano perfurante, e o alvo é engolido se for uma criatura Média ou menor. Uma criatura engolida fica cega e impedida, tem cobertura total contra ataques e outros efeitos fora do hellbug, e sofre 10 (3d6) de dano ácido no início de cada turno do hellbug. &nbsp;&nbsp; O esôfago do hellbug pode conter até duas criaturas por vez. Se o hellbug sofrer 20 de dano ou mais em um único turno de uma criatura dentro dele, o hellbug deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgitar todas as criaturas engolidas, cada uma caindo no chão em um espaço a até 10 feet do hellbug. Se o hellbug morrer, uma criatura engolida não está mais impedida por ele e pode escapar do cadáver usando 10 feet de movimento, saindo caída no chão.",
+      "Stomp": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 21 (3d10 + 5) de dano de concussão.",
+      "Crushing Charge": "O hellbug se move até 30 feet em linha reta e pode se mover através do espaço de qualquer criatura menor que Enorme. A primeira vez que ele entrar no espaço de uma criatura durante esse movimento, ele faz um ataque de pisotear contra essa criatura. Se o ataque acertar, o alvo também deve ser bem-sucedido em um teste de resistência de Força CD 17 ou ser derrubado. Se uma criatura falhar no teste por 5 ou mais, ela também sofre 18 (3d6 + 5) de dano de concussão, ou 29 (6d6 + 5) de dano de concussão se já estiver caída no chão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "avolakia": {
+    "name": "Avolakia",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A avolakia faz cinco ataques: um com sua mordida e quatro com suas garras.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano perfurante mais 14 (4d6) de dano de veneno.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 10 ft., um alvo. Acerto: 6 (1d4 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "stamen": {
+    "name": "Estame",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O estame faz três ataques corpo a corpo.",
+      "Unarmed Strike": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d8 + 3) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "runehound": {
+    "name": "Cão Rúnico",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O cão rúnico faz dois ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 10 ft., um alvo. Acerto: 11 (2d6 + 4) de dano perfurante.",
+      "Vile Spew (Recharge 5-6)": "O cão rúnico cospe ácido em um cone de 15 feet. Cada criatura nessa área deve fazer um teste de resistência de Destreza DC 13, recebendo 21 (6d6) de dano ácido em uma falha, ou metade do dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "myconid-portobello": {
+    "name": "Miconídeo Portobello",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O miconídeo faz dois ataques de punho.",
+      "Fist": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 7 (2d4 + 2) de dano de concussão mais 7 (3d4) de dano de veneno.",
+      "Rapport Spores": "Um raio de 30 feet de esporos se estende a partir do miconídeo. Esses esporos podem contornar cantos e afetam apenas criaturas com Inteligência 2 ou superior que não sejam mortos-vivos, constructos ou elementais. Criaturas afetadas podem se comunicar telepaticamente umas com as outras enquanto estiverem a até 30 feet entre si. O efeito dura 1 hora."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "fog-dog": {
+    "name": "Cão da Névoa",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O cão da névoa faz dois ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d8 + 3) de dano perfurante. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Força DC 14 ou será derrubado."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bile-demon": {
+    "name": "Demônio da Bile",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O demônio faz dois ataques corpo a corpo.",
+      "Morningstar": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d8 + 3) de dano perfurante.",
+      "Bile Missile (Recharge 5-6)": "O demônio cospe bile volátil em um ponto a até 60 feet. Cada criatura em um raio de 10 feet deve fazer um teste de resistência de Destreza DC 15. Um alvo recebe 16 (3d10) de dano ácido em uma falha, ou metade do dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cult-initiate": {
+    "name": "Iniciado do Culto",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O cultista faz dois ataques corpo a corpo.",
+      "Dagger": "Ataque com Arma Corpo a Corpo ou à Distância: +4 para acertar, alcance 5 ft. ou distância 20/60 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cult-apothecary": {
+    "name": "Boticário do Culto",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "dark-mistress": {
+    "name": "Senhora Sombria",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A senhora faz três ataques corpo a corpo.",
+      "Claw": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 5 ft., um alvo. Acerto: 13 (2d8 + 4) de dano cortante.",
+      "Whip": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 10 ft., um alvo. Acerto: 11 (3d4 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cult-orator": {
+    "name": "Orador do Culto",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "humongous-marshmallow-golem": {
+    "name": "Golem de Marshmallow Descomunal",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz três ataques de pancada.",
+      "Slam": "Ataque com Arma Corpo a Corpo: +15 para acertar, alcance 5 ft., um alvo. Acerto: 28 (3d12 + 9) de dano de concussão. Cada criatura a até 10 feet do alvo deve fazer um teste de resistência de Destreza CD 23. Em uma falha, a criatura sofre 9 (2d8) de dano de concussão e fica derrubada. Se o solo nessa área for terra solta ou pedra, ele se torna terreno difícil até ser limpo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "marshmallow-golem": {
+    "name": "Golem de Marshmallow",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz três ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +11 para acertar, alcance 5 ft., um alvo. Acerto: 20 (2d12 + 7) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "skuz": {
+    "name": "Skuz",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "gremlin": {
+    "name": "Gremlin",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O gremlin faz 2 ataques de garra.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 7 (2d4 + 2) de dano cortante.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d8 + 2) de dano perfurante e o gremlin recupera pontos de vida iguais à metade do dano causado (arredondado para cima).",
+      "Improvised Trap (Recharge 5-6)": "O gremlin monta uma armadilha improvisada com materiais do ambiente. Cada criatura em um cubo de 10 feet originando-se do gremlin deve realizar um teste de resistência de Destreza CD 12. Em uma falha, a criatura sofre 9 (2d8) de dano de concussão e fica derrubada. Em um sucesso, a criatura sofre metade do dano e não fica derrubada."
+    },
+    "reactions": {
+      "Rule 2": "Quando o gremlin sofre dano de frio, ele produz um novo gremlin em um espaço a até 5 feet dele. O novo gremlin possui pontos de vida iguais aos do gremlin original."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "kelxie": {
+    "name": "Kelxie",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "fenrir": {
+    "name": "Fenrir",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "Na forma gigante, o fenrir faz dois ataques de porrete grande ou dois ataques de pedra. Na forma híbrida, ele faz dois ataques, um com sua mordida e um com suas garras. Na forma de lobo, ele faz dois ataques de mordida.",
+      "Bite (Wolf or Hybrid Form Only)": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 10ft., um alvo. Acerto: 22 (3d10 + 6) de dano perfurante. Se o alvo for um gigante ou humanoide, ele deve ser bem-sucedido em um teste de resistência de Constituição CD 15 ou será amaldiçoado com licantropia de fenrir.",
+      "Claw (Hybrid Form Only)": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 10ft., um alvo. Acerto: 24 (4d8 + 6) de dano cortante.",
+      "Greatclub. (Giant Form Only)": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 10ft., um alvo. Acerto: 24 (3d8 + 6) de dano de concussão.",
+      "Rock (Giant Form Only)": "Ataque à Distância com Arma: +10 para acertar, distância 60/240 ft., um alvo. Acerto: 22 (2d10 + 6) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sand-witch": {
+    "name": "Bruxa das Areias",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A bruxa faz três ataques de chicote de areia.",
+      "Sand Whip": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 10 ft., um alvo. Acerto: 4 (1d4 + 2) de dano cortante mais 9 (2d8) de dano de fogo."
+    },
+    "reactions": {
+      "Sand Form (1/Day)": "Quando a bruxa sofre dano, ela assume uma forma de areia. Enquanto estiver nessa forma, a bruxa tem resistência a dano não mágico (incluindo o dano que a ativou, se aplicável), e vantagem em testes de resistência de Força, Destreza e Constituição. A bruxa pode se mover por um espaço tão estreito quanto 1 polegada de largura sem se espremer. Enquanto estiver nessa forma, a bruxa não pode falar, manipular objetos, atacar ou conjurar magias. Essa forma dura 1 minuto, ou até a bruxa dispensá-la como uma ação bônus. Se a bruxa estiver em terreno desértico, ela fica oculta e requer um teste de Sabedoria (Percepção) CD 20 para ser localizada."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "penumbra-of-spirits": {
+    "name": "Penumbra de Espíritos",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O enxame faz dois ataques corpo a corpo.",
+      "Withering Touch": "Ataque Corpo a Corpo com Magia: +6 para acertar, alcance 5 ft., uma criatura. Acerto: 24 (6d6 + 3) de dano necrótico, ou 13 (3d6 + 3) de dano necrótico se o enxame estiver com metade dos seus pontos de vida ou menos.",
+      "Etherealness": "O enxame entra no Plano Etéreo a partir do Plano Material, ou vice-versa. O enxame é visível no Plano Material enquanto estiver na Borda Etérea, e vice-versa, porém não pode afetar nem ser afetado por nada no outro plano.",
+      "Life Drain (Recharge 4-6)": "Cada criatura a até 5 ft. do enxame deve ser bem-sucedida em um teste de resistência de Constituição CD 14 ou sofrer 17 (4d6 + 3) de dano necrótico, ou 10 (2d6 +3) de dano necrótico se o enxame estiver com metade dos seus pontos de vida ou menos. Uma criatura que sofrer dano dessa forma tem seu máximo de pontos de vida reduzido em uma quantidade igual ao dano sofrido. Essa redução dura até a criatura completar um descanso longo. O alvo morre se esse efeito reduzir seu máximo de pontos de vida a 0."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "mason": {
+    "name": "Pedreiro",
+    "special_abilities": {},
+    "actions": {
+      "Warhammer": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d8 + 3) de dano de concussão, ou 8 (1d10 + 3) de dano de concussão se usado com duas mãos."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "grootslang": {
+    "name": "Grootslang",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O grootslang faz quatro ataques: um com sua chifrada, dois com seu pisoteio e um com constrição ou golpe de cauda.",
+      "Gore": "Ataque Corpo a Corpo com Arma: +17 para acertar, alcance 20 ft., um alvo. Acerto: 32 (5d8 + 10) de dano perfurante.",
+      "Constrict": "Ataque Corpo a Corpo com Arma: +17 para acertar, alcance 20 ft., um alvo. Acerto: 20 (3d6 + 10) de dano de concussão. O alvo fica agarrado (CD de escape 25) se o grootslang não estiver já constringindo uma criatura, e o alvo fica impedido até o agarrão terminar. Enquanto agarra o alvo, o grootslang tem vantagem em jogadas de ataque contra ele e não pode usar este ataque contra outros alvos. Quando o grootslang se move, qualquer alvo que esteja agarrando se move com ele.",
+      "Stomp": "Ataque Corpo a Corpo com Arma: +17 para acertar, alcance 20 ft., um alvo. Acerto: 20 (3d6 + 10) de dano cortante.",
+      "Tail Slap": "Ataque Corpo a Corpo com Arma: +17 para acertar, alcance 20 ft., um alvo. Acerto: 20 (3d6 + 10) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Detect": "O grootslang faz um teste de Sabedoria (Percepção).",
+      "Tail Slap": "O grootslang faz um ataque de golpe de cauda.",
+      "Rolling Death Cradle (Costs 2 Actions)": "O grootslang se contorce violentamente, esmagando quaisquer criaturas próximas. Cada criatura a até 20 ft. do grootslang deve ser bem-sucedida em um teste de resistência de Destreza CD 25 ou sofrer 18 (2d8 + 10) de dano de concussão e ficar derrubada. Uma criatura agarrada pelo grootslang automaticamente sofre um acerto crítico. O grootslang pode terminar seu movimento a uma distância de até metade do seu deslocamento."
+    },
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cleavergaunt": {
+    "name": "Cleavergaunt",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O cleavergaunt faz quatro ataques de cutelo.",
+      "Cleaver": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 10 ft., um alvo. Acerto: 18 (2d12 + 5) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "quickling-bounder": {
+    "name": "Quickling Saltador",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O quickling faz quatro ataques com adaga.",
+      "Dagger": "Ataque com Arma Corpo a Corpo: +10 para acertar, alcance 5 ft., um alvo. Acerto: 9 (1d4 + 7) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bonewing-landskimmer": {
+    "name": "Planador de Asas Ósseas",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "herbalist": {
+    "name": "Herbalista",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "shepherd-of-the-veil": {
+    "name": "Pastor do Véu",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O pastor faz dois ataques com foice.",
+      "Scythe": "Ataque com Arma Corpo a Corpo: +10 para acertar, alcance 10 ft., um alvo. Acerto: 22 (5d6 + 5) de dano cortante mais 18 (4d8) de dano radiante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "geriviar": {
+    "name": "Geriviar",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O geriviar faz quatro ataques de pancada. O gigante pode usar Nódulos Explosivos no lugar de dois ataques de pancada.",
+      "Slam": "Ataque com Arma Corpo a Corpo: +14 para acertar, alcance 10 ft., um alvo. Acerto: 30 (4d10 + 8) de dano de concussão.",
+      "Rock": "Ataque com Arma à Distância: +14 para acertar, alcance 60/240 ft., um alvo. Acerto: 41 (6d10 + 8) de dano de concussão.",
+      "Exploding Nodules (Recharge 5-6)": "O corpo do geriviar é coberto por nódulos explosivos esféricos e espinhosos. O geriviar pode remover e arremessar dois desses nódulos em pontos que ele possa ver a até 120 feet. Cada criatura em uma esfera de 20-foot de raio centrada nesses pontos deve fazer um teste de resistência de Destreza DC 20. A esfera se espalha ao redor de cantos. Uma criatura sofre 24 (7d6) de dano de fogo em uma falha, ou metade desse dano em um sucesso. &nbsp;&nbsp; Esta ação não pode recarregar se o geriviar não regenerar no início de seu turno.",
+      "Sprint": "Usando todos os seis membros, o deslocamento do geriviar aumenta para 100 feet e ele ganha o benefício da ação de Disparada até o final de seu turno."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "stitched-zombeast": {
+    "name": "Zombesta Remendada",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A zombesta faz quatro ataques: um com sua mordida, um com suas presas, um com suas garras e um com seu ferrão.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d6 + 5) de dano perfurante.",
+      "Tusks": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d6 + 5) de dano perfurante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d6 + 5) de dano cortante.",
+      "Sting": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 10 ft., um alvo. Acerto: 11 (1d12 + 5) de dano perfurante e o alvo deve realizar um teste de resistência de Constituição CD 17, sofrendo 22 (4d10) de dano por veneno em caso de falha, ou metade desse dano em caso de sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "feral-gibberer": {
+    "name": "Balbuciador Feral",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 8 (2d4 + 3) de dano perfurante."
+    },
+    "reactions": {
+      "Counterattack": "Quando o balbuciador é atingido por um ataque corpo a corpo, ele pode realizar um ataque de mordida contra uma criatura a até 5 feet dele."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "avatar-of-the-fire-mask": {
+    "name": "Avatar da Máscara de Fogo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O avatar faz três ataques com sua espada longa ou seis ataques com seu ignitar. Ele pode usar ignitar duas vezes no lugar de um ataque com espada longa.",
+      "Longsword": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d8 + 3) de dano cortante, ou 14 (2d10 + 3) se empunhada com as duas mãos.",
+      "Ignite": "Ataque à Distância com Magia: +5 para acertar, alcance 30 ft., um alvo. Acerto: 7 (2d6) de dano por fogo, e o alvo deve ter sucesso em um teste de resistência de Destreza CD 14 ou começa a queimar. &nbsp;&nbsp; Um alvo em chamas emite luz plena em um raio de 10 feet e luz fraca por mais 10 feet adicionais. No final de cada um de seus turnos, o alvo repete o teste de resistência. Ele sofre 7 (2d6) de dano por fogo em caso de falha, e as chamas se apagam em caso de sucesso. Essas chamas mágicas não podem ser extintas por meios não mágicos."
+    },
+    "reactions": {
+      "Igniting Rebuke": "Quando uma criatura a até 30 feet do avatar o atinge com um ataque, o avatar pode realizar um ataque de ignitar contra essa criatura."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "animated-trap": {
+    "name": "Armadilha Animada",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "giant-tardigrade": {
+    "name": "Tardígrado Gigante",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O tardígrado faz dois ataques de garra.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 13 (2d8 + 4) de dano cortante, e o alvo fica agarrado.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., uma criatura Grande ou menor agarrada pelo tardígrado. Acerto: 23 (3d12 + 4) de dano perfurante, e o alvo é engolido e a condição de agarrado termina. Enquanto engolida, a criatura está cega e impedida, possui cobertura total contra ataques e outros efeitos de fora do tardígrado, e sofre 19 (3d12) de dano por ácido no início de cada turno do tardígrado. &nbsp;&nbsp; Se o tardígrado sofrer 15 de dano ou mais em um único turno de uma criatura dentro dele, o tardígrado deve ter sucesso em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgita a criatura, que cai caída em um espaço a até 5 feet do tardígrado. Se o tardígrado morrer, uma criatura ingerida não está mais impedida por ele e pode escapar do cadáver usando 15 feet de movimento, saindo caída. &nbsp;&nbsp; O tardígrado pode ingerir uma criatura Grande, ou até duas criaturas Médias ou menores por vez."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cookie-monster": {
+    "name": "Monstro dos Biscoitos",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O monstro dos biscoitos faz seis ataques de mordida e pode agarrar a criatura como uma ação bônus.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "drop-bear": {
+    "name": "Urso-das-Alturas",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O urso-das-alturas faz dois ataques: um ataque com sua queda e um com sua mordida.",
+      "Drop": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5ft., um alvo. Acerto: 4 (1d6 + 1) de dano de concussão. O urso-das-alturas deve cair pelo menos 15 feet antes do ataque. Se o alvo é Médio ou menor e o urso-das-alturas tem vantagem na jogada de ataque, a criatura alvo deve ser bem-sucedida em um teste de Constituição CD 13 ou ficará atordoada até o final do próximo turno do urso-das-alturas.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5ft., um alvo. Acerto: 4 (1d6 + 1) de dano de concussão.",
+      "Claws": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5ft., um alvo. Acerto: 8 (2d6 + 1) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ningen": {
+    "name": "Ningen",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ningen faz três ataques de garras.",
+      "Claws": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 15ft., um alvo. Acerto: 25 (4d10 + 3) de dano cortante.",
+      "Psychic Blast (Recharge 4-6)": "O ningen emite magicamente energia psíquica em um cone de 60-foot. Cada criatura nessa área deve ser bem-sucedida em um teste de resistência de Inteligência CD 18 ou sofrer 27 (5d8 + 5) de dano psíquico e ficar atordoada por 1 minuto. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesma em caso de sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "blue-scream-of-death": {
+    "name": "Grito Azul da Morte",
+    "special_abilities": {},
+    "actions": {
+      "Corrupting Touch": "Ataque Corpo a Corpo com Magia: +6 para acertar, alcance 5ft., um alvo. Acerto: 13 (3d6 + 3) de dano necrótico mais 7 (2d6) de dano de frio.",
+      "Horrifying Visage": "Cada criatura não-morta-viva em até 60 feet do grito azul da morte que possa vê-la deve ser bem-sucedida em um teste de resistência de Sabedoria CD 15 ou ficará amedrontada por 1 minuto. Um alvo amedrontado pode repetir o teste de resistência no final de cada um de seus turnos, com desvantagem se o grito azul da morte estiver em sua linha de visão, encerrando o efeito sobre si mesmo em caso de sucesso. Se o teste de resistência de um alvo for bem-sucedido ou o efeito terminar para ele, o alvo fica imune à Aparência Terrível do grito azul da morte pelas próximas 24 horas.",
+      "Death Scream (1/day)": "O grito azul da morte emite um grito de gelar os ossos, desde que ela não esteja sob luz solar. Este grito não tem efeito em constructos e mortos-vivos. Todas as outras criaturas em até 30 feet dela que possam ouvi-la devem fazer um teste de resistência de Constituição CD 15. Em caso de sucesso, a criatura sofre 14 (4d6) de dano de frio. Em caso de falha, a criatura magicamente começa a se transformar em gelo e fica impedida. Ela deve repetir o teste de resistência no final de seu próximo turno. Em caso de sucesso, o efeito termina. Em caso de falha, a criatura fica congelada por completo até ser libertada pela magia greater restoration ou outra magia."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "akupara": {
+    "name": "Akupara",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "Akupara faz um ataque de mordida e dois ataques de pisoteio.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +18 para acertar, alcance 10ft., um alvo. Acerto: 26 (3d10 + 10) de dano perfurante e o alvo fica agarrado (CD de escape 20). Até o agarrão terminar, o alvo está impedido e o akupara não pode morder outro alvo.",
+      "Stomp": "Ataque Corpo a Corpo com Arma: +18 para acertar, alcance 15ft., dois alvos em até 15 ft. Acerto: 17 (2d6 + 10) de dano de concussão e o alvo deve ser bem-sucedido em um teste de resistência de Força CD 26 ou ficará caído.",
+      "Swallow": "Akupara faz um ataque de mordida contra uma criatura Enorme ou menor que esteja agarrando. Se o ataque acertar, o alvo sofre 26 (3d10 + 10) de dano perfurante, é engolido e o agarrão termina. Uma criatura engolida está cega e impedida, mas tem cobertura total contra ataques e efeitos fora de Akupara. Uma criatura engolida sofre 28 (8d6) de dano ácido no início de cada turno de Akupara. Akupara pode ter qualquer número de criaturas engolidas ao mesmo tempo. Se Akupara sofrer 40 de dano ou mais em um único turno de uma criatura dentro dele, Akupara deve ser bem-sucedido em um teste de resistência de Constituição CD 20 no final daquele turno ou regurgitará todas as criaturas engolidas, que caem no chão em um espaço em até 10 feet da cabeça de Akupara. Se Akupara morrer, as criaturas engolidas não estão mais impedidas e podem escapar usando 30 feet de movimento, saindo caídas."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "illiphant": {
+    "name": "Ilifante",
+    "special_abilities": {},
+    "actions": {
+      "Gore": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 19 (3d8 + 6) de dano perfurante.",
+      "Stomp": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 22 (3d10 + 6) de dano de concussão.",
+      "Tentacles": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 10 ft., uma criatura. Acerto: 13 (2d10 + 2) de dano psíquico. Se o alvo for Grande ou menor, ele fica agarrado (CD de escape 16) e deve ser bem-sucedido em um teste de resistência de Inteligência CD 13 ou ficará atordoado até o agarrão terminar.",
+      "Extract Brain": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um humanoide incapacitado agarrado pelo ilifante. Acerto: 39 (6d10 + 6) de dano perfurante. Se esse dano reduzir o alvo a 0 pontos de vida, o ilifante mata o alvo extraindo e devorando seu cérebro."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cadaver-collector": {
+    "name": "Coletor de Cadáveres",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O coletor faz três ataques de pancada. O coletor pode usar Empalar no lugar de dois ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +11 para acertar, alcance 5 ft., um alvo. Acerto: 17 (2d10 + 6) de dano de concussão. Se o alvo for uma criatura Média ou menor, ele fica agarrado (CD de escape 19). O coletor tem duas mãos, cada uma podendo agarrar apenas um alvo.",
+      "Impale": "O coletor faz um ataque de pancada contra cada criatura Média ou menor que esteja agarrando. Se o ataque acertar, a criatura sofre o dano da pancada e fica empalada, e o agarrão termina. Enquanto empalada, a criatura fica caída e impedida, e sofre 28 (4d10 + 6) de dano perfurante no final de cada turno do coletor."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "two-headed-brainstealer-dragon": {
+    "name": "Dragão Rouba-Cérebros de Duas Cabeças",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O dragão faz quatro ataques: dois com suas garras e dois com seus tentáculos.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +13 para acertar, alcance 10 ft., um alvo. Acerto: 17 (3d6 + 7) de dano cortante.",
+      "Tail": "Ataque Corpo a Corpo com Arma: +13 para acertar, alcance 15 ft., um alvo. Acerto: 23 (3d10 + 7) de dano de concussão.",
+      "Tentacles": "Ataque Corpo a Corpo com Arma: +13 para acertar, alcance 15 ft., uma criatura. Acerto: 27 (4d10 + 5) de dano psíquico. Se o alvo for Enorme ou menor, ele fica agarrado (CD de escape 21) e deve ser bem-sucedido em um teste de resistência de Inteligência CD 19 ou ficará atordoado até o agarrão terminar.",
+      "Extract Brain": "Ataque Corpo a Corpo com Arma: +13 para acertar, alcance 15 ft., cada humanoide incapacitado agarrado pelo dragão. Acerto: 62 (10d10 + 7) de dano perfurante. Se esse dano reduzir o alvo a 0 pontos de vida, o dragão mata o alvo extraindo e devorando seu cérebro.",
+      "Mind Blast (Recharge 5-6)": "O dragão emite magicamente energia psíquica em um cone de 60 feet. Cada criatura nessa área deve ser bem-sucedida em um teste de resistência de Inteligência CD 19 ou sofre 50 (10d8 + 5) de dano psíquico e fica atordoada por 1 minuto. Uma criatura pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito sobre si mesma em caso de sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {
+      "Detect": "O dragão faz um teste de Sabedoria (Percepção).",
+      "Tail Attack": "O dragão faz um ataque de cauda.",
+      "Extract Brain (Costs 3 Actions)": "O dragão faz um ataque de extrair cérebro."
+    },
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "myconid-shrieker": {
+    "name": "Miconídeo Gritador",
+    "special_abilities": {},
+    "actions": {
+      "Fist": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., um alvo. Acerto: 6 (2d4 + 1) de dano de concussão mais 5 (2d4) de dano de veneno.",
+      "Shriek": "O miconídeo emite um grito agudo, desde que não esteja sob luz solar. Esse grito não tem efeito sobre constructos e mortos-vivos. Todas as outras criaturas a até 30 feet do miconídeo que possam ouvi-lo devem fazer um teste de resistência de Constituição CD 13. Uma criatura sofre 7 (2d6) de dano trovejante em uma falha, ou metade desse dano em um sucesso. Se a falha for por 5 ou mais, o alvo também fica permanentemente surdo.",
+      "Rapport Spores": "Um raio de 30 feet de esporos se estende a partir do miconídeo. Esses esporos podem contornar cantos e afetam apenas criaturas com Inteligência 2 ou superior que não sejam mortos-vivos, constructos ou elementais. Criaturas afetadas podem se comunicar telepaticamente umas com as outras enquanto estiverem a até 30 feet entre si. O efeito dura 1 hora."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "kobold-holethrower": {
+    "name": "Kobold Arremessa-Buracos",
+    "special_abilities": {},
+    "actions": {
+      "Dagger": "Ataque Corpo a Corpo ou à Distância com Arma: +4 para acertar, alcance 5 ft. ou distância 20/60 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante.",
+      "Quarterstaff": "Ataque Corpo a Corpo com Arma: +0 para acertar, alcance 5 ft., um alvo. Acerto: 1 (1d6 - 2) de dano de concussão, ou 2 (1d8 - 2) de dano de concussão se empunhado com duas mãos.",
+      "Create Hole (Recharge 6)": "O kobold cria instantaneamente um buraco no chão em um ponto que ele possa ver a até 30 feet dele. Essa habilidade tem 50% de chance de falha quando usada em uma área contendo material trabalhado, como paralelepípedos, e falha automaticamente quando usada em uma área contendo material manufaturado, como vidro. O buraco tem um raio de 5 feet e até 20 feet de profundidade, e cada criatura nessa área quando o buraco aparece deve fazer um teste de resistência de Destreza CD 13. &nbsp;&nbsp; Em um sucesso, a criatura pode escolher se mover 5 feet para trás ou para o lado do buraco. Uma criatura que escolher não se mover sofre as consequências de uma falha no teste de resistência. &nbsp;&nbsp; Em uma falha, a criatura cai no buraco, fica caída e sofre 5 (2d4) de dano perfurante por detritos pontiagudos, além do dano de uma queda normal. &nbsp;&nbsp; O buraco permanece por 3 (1d6) rodadas, ao fim das quais o chão do buraco se descomprime e sobe de volta ao nível do solo, carregando qualquer criatura ainda no buraco de forma segura junto consigo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ventrunculus": {
+    "name": "Ventrúnculo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O ventrúnculo faz dois ataques de mordida.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 10 (2d6 + 3) de dano perfurante, e o alvo fica agarrado (CD de escape 13) se for uma criatura Enorme ou menor.",
+      "Swallow": "O ventrúnculo faz um ataque de mordida contra uma criatura que esteja agarrando. Se o ataque acertar, o alvo é engolido e a condição de agarrado termina. A criatura engolida fica cega e impedida, e possui cobertura total contra ataques e outros efeitos de fora do ventrúnculo. No início de cada turno do ventrúnculo, cada criatura engolida deve ser bem-sucedida em um teste de resistência de Sabedoria CD 13 ou cai inconsciente. Enquanto inconsciente, a criatura não precisa respirar, comer ou beber, e não envelhece. Magias de adivinhação não conseguem localizar ou perceber o alvo. &nbsp;&nbsp; Enquanto o ventrúnculo não estiver incapacitado, ele pode regurgitar criaturas engolidas a qualquer momento (sem ação necessária) em espaços a até 5 feet dele. As criaturas saem caídas. Se o ventrúnculo morrer, ele também regurgita as criaturas engolidas. Criaturas inconscientes recuperam a consciência quando regurgitadas."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "gnoll-filth-flinger": {
+    "name": "Gnoll Lança-Imundície",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O gnoll faz dois ataques: um com sua mordida e um com seu bordão.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante.",
+      "Quarterstaff": "Ataque Corpo a Corpo com Arma: +1 para acertar, alcance 5 ft., um alvo. Acerto: 2 (1d6 - 1) de dano contundente, ou 3 (1d8 - 1) de dano contundente se usado com duas mãos."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "orc-horderaiser": {
+    "name": "Orc Levanta-Horda",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O orc faz três ataques corpo a corpo.",
+      "Bladed Gauntlet": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano cortante.",
+      "Quarterstaff": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano contundente, ou 6 (1d8 + 2) de dano contundente se usado com duas mãos.",
+      "Army of Darkness (Recharge 5-6)": "Cada criatura morta-viva escolhida pelo orc a até 30 feet dele pode usar sua reação para se mover até metade de seu deslocamento e fazer um ataque com arma.",
+      "Empower Undead (Recharge 5-6)": "Cada morto-vivo a até 30 feet do orc recupera 23 (4d8 + 5) pontos de vida e tem vantagem em jogadas de ataque e testes de resistência até o final de seu próximo turno."
+    },
+    "reactions": {
+      "Redirect Attack": "Quando uma criatura que o orc pode ver o escolhe como alvo de um ataque, o orc escolhe um morto-vivo sob seu comando a até 5 feet dele. O orc e a criatura morta-viva trocam de lugar, e o morto-vivo escolhido se torna o alvo."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "gnoll-berserker": {
+    "name": "Gnoll Berserker",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "walking-hive": {
+    "name": "Colmeia Ambulante",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A colmeia ambulante faz dois ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 10 ft., um alvo. Acerto: 12 (2d8 + 3) de dano contundente.",
+      "Release Swarm": "A colmeia ambulante libera até 2 enxames de besouros, insetos ou vespas. Os enxames aparecem em espaços desocupados a até 5 feet da colmeia ambulante, agem como aliados da colmeia ambulante e obedecem seus comandos falados. &nbsp;&nbsp; Os enxames permanecem por 1 hora, ou até que ele ou a colmeia ambulante morra."
+    },
+    "reactions": {
+      "Defend the Hive": "Quando a colmeia ambulante é atingida por um ataque, ela pode alertar enxames próximos. Cada enxame a até 60 feet da colmeia ambulante que possa ouvi-la pode usar sua reação para se mover até metade de seu deslocamento e fazer um ataque corpo a corpo com arma contra o atacante."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ornemental": {
+    "name": "Ornamental",
+    "special_abilities": {},
+    "actions": {
+      "Slam": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 8 (2d4 + 3) de dano de concussão mais 2 (1d4) de dano de frio."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hum-bug": {
+    "name": "Zumbinseto",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O zumbinseto faz três ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 16 (2d10 + 5) de dano de concussão mais 7 (2d6) de dano de trovão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "tinsel-constrictor": {
+    "name": "Constritora de Enfeites",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 16 (2d10 + 5) de dano perfurante.",
+      "Puncturing Wrap": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., uma criatura. Acerto: 13 (2d8 + 4) de dano perfurante, e o alvo fica agarrado (CD 16 para escapar). Até que esse agarrão termine, a criatura está impedida, e a constritora não pode envolver outro alvo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "grinch": {
+    "name": "Grinch",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O grinch faz cinco ataques corpo a corpo com arma.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 12 (2d6 + 5) de dano cortante."
+    },
+    "reactions": {
+      "Grasping Riposte": "Quando uma criatura erra um ataque corpo a corpo contra o grinch, o grinch pode fazer um ataque de garra contra essa criatura. Se o ataque acertar, a criatura deve ser bem-sucedida em um teste de resistência de Força ou Destreza CD 17 (à escolha da criatura) ou o grinch pode tomar um item à escolha do grinch que a criatura esteja segurando."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "workshop-elves": {
+    "name": "Elfos da Oficina",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O elfo faz dois ataques desarmados.",
+      "Unarmed Strike": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d4 + 4) de dano de concussão.",
+      "Delightful Visage": "Cada criatura a até 60 feet do elfo que possa vê-lo deve ser bem-sucedida em um teste de resistência de Carisma CD 13 ou ser afetada como se pela magia calm emotions."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "santacap": {
+    "name": "Santacap",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O santacap faz três ataques com machado perverso. Se dois ataques com machado perverso atingirem o mesmo alvo, ele pode usar seu ataque de saco contra esse alvo.",
+      "Wicked Axe": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 18 (2d12 + 5) de dano cortante.",
+      "Sack": "O santacap balança seu saco em direção a uma criatura que ele possa alcançar. A criatura deve ser bem-sucedida em um teste de resistência de Destreza CD 16 ou será capturada. A criatura capturada fica cega e impedida, e tem cobertura total contra ataques e outros efeitos fora do saco. O saco comporta uma criatura Grande por vez.",
+      "Ironbound Pursuit": "O santacap se move até seu deslocamento em direção a uma criatura que possa ver e chuta com suas botas de ferro. O alvo deve ser bem-sucedido em um teste de resistência de Destreza CD 16 ou sofre 21 (3d10 + 5) de dano de concussão e fica caído."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "giant-three-banded-armadillo": {
+    "name": "Tatu-Bola Gigante",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O tatu faz dois ataques de garra.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d8 + 2) de dano cortante. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Constituição CD 11 ou ter seu deslocamento reduzido pela metade até terminar um descanso longo ou receber cura mágica.",
+      "Roll Up": "Até o início de seu próximo turno, o tatu recebe um bônus de +5 na CA, fica imune à condição caído, seu deslocamento aumenta em 30 feet e ele ignora terreno difícil."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "fer-de-lance": {
+    "name": "Jararaca-da-Mata",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 8 (1d8 + 4) de dano perfurante mais 18 (4d8) de dano de veneno. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Constituição CD 14 ou ficará envenenado por 1 semana. Enquanto envenenada dessa forma, a criatura não pode se beneficiar de descansos curtos e sofre 36 (8d8) de dano de veneno a cada dia ao amanhecer. &nbsp;&nbsp; Se a criatura não for curada desse veneno em 1 semana, a área da mordida necrosa completamente, o deslocamento da criatura é reduzido pela metade, e a criatura morrerá em 2 (1d4) dias a menos que seja alvo de greater restoration, regenerate ou wish."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hadozee-deckhand": {
+    "name": "Hadozee Marinheiro",
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "avatar-of-the-earth-mask": {
+    "name": "Avatar da Máscara da Terra",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O avatar faz seis ataques de vínculo. Ele pode usar murchar duas vezes no lugar de três ataques de vínculo.",
+      "Wither": "Ataque Corpo a Corpo com Magia: +6 para acertar, alcance 5 ft., uma criatura ou planta. Acerto: 12 (2d8 + 3) de dano necrótico. &nbsp;&nbsp; Se o alvo for uma criatura planta ou planta mágica, este ataque causa dano máximo a ele. &nbsp;&nbsp; Se o alvo for uma planta não mágica que não seja uma criatura, ela murcha e morre.",
+      "Nurture (Recharge 4-6)": "O avatar toca outra criatura voluntária. O avatar e a criatura tocada recuperam 21 (4d8 + 3) pontos de vida."
+    },
+    "reactions": {
+      "Binding Rebuke": "Quando uma criatura a até 30 feet do avatar o atingir com um ataque, o avatar faz um ataque de vínculo contra essa criatura."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "drunkard": {
+    "name": "Bêbado",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O bêbado faz dois ataques desarmados.",
+      "Unarmed Strike": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d4 + 4) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "spelleater-slime": {
+    "name": "Gosma Devoradora de Magias",
+    "special_abilities": {},
+    "actions": {
+      "Pseudopod": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano de concussão mais 18 (4d8) de dano ácido.",
+      "Siphon": "A gosma tenta drenar a magia de um item mágico que ela possa alcançar a até 5 feet dela. Se o item estiver sendo vestido ou carregado por uma criatura, essa criatura pode fazer um teste de resistência de Destreza CD 13, prevenindo o efeito em caso de sucesso. Caso contrário, o item mágico perde 1 carga, se possuir alguma, e suas propriedades mágicas são suprimidas até o final do próximo turno da gosma. &nbsp;&nbsp; Se deixada sem impedimentos, a gosma pode destruir completamente um item mágico usando constantemente sua habilidade de Sifonar durante um descanso curto."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "ironwood-golem": {
+    "name": "Golem de Madeira de Ferro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +9 para acertar, alcance 5 ft., um alvo. Acerto: 16 (2d10 + 5) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "smog-elemental": {
+    "name": "Elemental de Fumaça Tóxica",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O elemental faz dois ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 14 (2d8 + 5) de dano de concussão mais 4 (1d8) de dano de veneno.",
+      "Acid Rain (Recharge 6)": "Chuva ácida cai sobre o elemental e a área ao seu redor. Cada criatura dentro do espaço do elemental ou a até 30 feet dele deve fazer um teste de resistência de Destreza CD 13, sofrendo 18 (4d8) de dano ácido em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "peregriffon": {
+    "name": "Peregrifo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O peregrifo faz três ataques: um com seu bico e dois com suas garras.",
+      "Beak": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 8 (1d8 + 4) de dano perfurante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "scarlet-macgriffon": {
+    "name": "Macgrifo Escarlate",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O macgrifo escarlate faz dois ataques: um com seu bico e um com suas garras.",
+      "Beak": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d4 + 3) de dano perfurante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 8 (2d4 + 3) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "potriffon": {
+    "name": "Potrifo",
+    "special_abilities": {},
+    "actions": {
+      "Beak": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "royal-jelly": {
+    "name": "Geleia Real",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A geleia faz dois ataques de pseudópode.",
+      "Pseudopod": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 13 (2d8 + 4) de dano de concussão mais 21 (6d6) de dano ácido.",
+      "Engulf (Inflated and Normal Form Only)": "A geleia se move até seu deslocamento. Ao fazer isso, ela pode entrar nos espaços de criaturas Médias ou menores. Sempre que a geleia entra no espaço de uma criatura, a criatura deve fazer um teste de resistência de Destreza DC 16. &nbsp;&nbsp; Em um sucesso, a criatura pode escolher ser empurrada 5 feet para trás ou para o lado da geleia. Uma criatura que escolher não ser empurrada sofre as consequências de uma falha no teste de resistência. &nbsp;&nbsp; Em uma falha, a geleia entra no espaço da criatura, e a criatura sofre 31 (9d6) de dano ácido e é engolfada. A criatura engolfada não pode respirar, está contida e sofre 31 (9d6) de dano ácido no início de cada turno da geleia. Quando a geleia se move, a criatura engolfada se move com ela. &nbsp;&nbsp; Uma criatura engolfada pode tentar escapar usando uma ação para fazer um teste de Força DC 16. Em um sucesso, a criatura escapa e entra em um espaço de sua escolha a até 5 feet da geleia. &nbsp;&nbsp; Todas as criaturas engolfadas são ejetadas em espaços a até 5 feet da geleia se ela entrar na forma condensada."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "elasmotherium": {
+    "name": "Elasmotherium",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O elasmotherium faz dois ataques: um com seu chifre e um com sua pisada.",
+      "Horn": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 10 ft., um alvo. Acerto: 20 (2d12 + 7) de dano perfurante.",
+      "Stomp": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 5 ft., um alvo. Acerto: 23 (3d10 + 7) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "firbolg-shroomspeaker": {
+    "name": "Firbolg Porta-Voz dos Cogumelos",
+    "special_abilities": {},
+    "actions": {
+      "Quarterstaff": "Ataque Corpo a Corpo com Arma: +3 para acertar (+8 para acertar com shillelagh), alcance 5 ft., um alvo. Acerto: 2 (1d6 - 1) de dano de concussão, 3 (1d8 - 1) de dano de concussão se empunhado com duas mãos, ou 8 (1d8 + 4) de dano de concussão com shillelagh.",
+      "Symbiotic Entity (2/Day)": "O druida canaliza magia em seus esporos, despertando-os. Ele ganha 36 pontos de vida temporários, o dano de sua habilidade Halo de Esporos dobra, e seus ataques corpo a corpo com arma causam 3 (1d6) de dano de veneno extra em qualquer alvo que acertem. Esses benefícios duram 10 minutos."
+    },
+    "reactions": {
+      "Halo of Spores": "O druida lança esporos tóxicos em uma criatura que ele possa ver a até 10 feet. Os esporos causam 9 (2d8) de dano de veneno. Se esse dano matar uma criatura, no final do turno do druida ela se ergue como um zumbi sob o controle do druida com 1 ponto de vida. Ela obedece comandos mentais, e a única ação que pode realizar é a ação de Ataque, fazendo um ataque corpo a corpo. Ela permanece animada por 1 hora, após o que colapsa e morre."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "kobold-pathmaker": {
+    "name": "Kobold Desbravador",
+    "special_abilities": {},
+    "actions": {
+      "Dagger": "Ataque Corpo a Corpo ou à Distância com Arma: +5 para acertar, alcance 5 ft. ou distância 20/60 ft., um alvo. Acerto: 5 (1d4 + 3) de dano perfurante.",
+      "Explosive Rune": "Ataque à Distância com Arma: +5 para acertar, distância 30/90 ft., um alvo. Acerto: 12 (2d8 + 3) de dano de fogo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bite-coin": {
+    "name": "Moeda Mordedora",
+    "special_abilities": {},
+    "actions": {
+      "Bite": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d6 + 1) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "bite-coin-swarm": {
+    "name": "Enxame de Moedas Mordedoras",
+    "special_abilities": {},
+    "actions": {
+      "Bites": "Ataque Corpo a Corpo com Arma: +3 para acertar, alcance 0 ft., um alvo no espaço do enxame. Acerto: 15 (4d6 + 1) de dano perfurante, ou 8 (2d6 + 1) de dano perfurante se o enxame estiver com metade ou menos de seus pontos de vida."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "owlbear-cublet": {
+    "name": "Filhote de Urso-Coruja",
+    "special_abilities": {},
+    "actions": {
+      "Beak": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d4 + 3) de dano perfurante.",
+      "Claws": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 6 (1d6 + 3) de dano cortante."
+    },
+    "reactions": {
+      "Training": "Quando o urso-coruja vê sua mamãe realizar um ataque, o urso-coruja faz um ataque de bico contra o mesmo alvo."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "boar-crocodile": {
+    "name": "Javali-Crocodilo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O crocodilo faz três ataques: um com suas garras e dois com sua cauda.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 27 (4d10 + 5) de dano perfurante. Se o alvo for uma criatura Média ou menor, ele fica agarrado (CD 16 para escapar). Até que esse agarrão termine, o alvo está impedido, e o crocodilo não pode morder outro alvo.",
+      "Claws": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 23 (4d8 + 5) de dano cortante.",
+      "Tail": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 10 ft., um alvo que não esteja agarrado pelo crocodilo. Acerto: 14 (2d8 + 5) de dano de concussão. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Força CD 16 ou ficará derrubado."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "valravn": {
+    "name": "Valravn",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O valravn faz quatro ataques de lâmina sombria.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., uma criatura que esteja agarrada pelo valravn, incapacitada ou contida. Acerto: 12 (2d8 + 3) de dano perfurante mais 22 (5d8) de dano necrótico. O máximo de pontos de vida do alvo é reduzido em um valor igual ao dano necrótico recebido, e o valravn recupera pontos de vida iguais a esse valor. A redução dura até o alvo completar um descanso longo. O alvo morre se esse efeito reduzir seu máximo de pontos de vida a 0.",
+      "Shadow Blade": "Ataque Corpo a Corpo ou à Distância com Arma: +7 para acertar, alcance 5 ft. ou distância 20/60 ft, um alvo. Acerto: 12 (2d8 + 3) de dano psíquico. Se o alvo for uma criatura, ele deve ser bem-sucedido em um teste de resistência de Constituição DC 14 ou ficará atordoado até o final do próximo turno do valravn. Se o teste de resistência da criatura for bem-sucedido ou o efeito terminar sobre ela, a criatura fica imune a esse atordoamento pelas próximas 24 horas."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "orc-akhitar": {
+    "name": "Orc Akhitar",
+    "special_abilities": {},
+    "actions": {
+      "Javelin": "Ataque Corpo a Corpo ou à Distância com Arma: +5 para acertar, alcance 5 ft. ou distância 30/120 ft., um alvo. Acerto: 6 (1d6 + 3) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "akhlut": {
+    "name": "Akhlut",
+    "special_abilities": {},
+    "actions": {
+      "Javelin": "Ataque Corpo a Corpo ou à Distância com Arma: +5 para acertar, alcance 5 ft. ou distância 30/120 ft., um alvo. Acerto: 6 (1d6 + 3) de dano perfurante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "cheating-dungeon-master": {
+    "name": "Mestre Trapaceiro",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O mestre faz dois ataques.",
+      "DM's Fist": "Ataque Corpo a Corpo com Arma: +10 para acertar, alcance 100 ft., um alvo. Acerto: 26 (2d20 + 5) de dano de concussão, perfurante ou cortante (escolha do mestre).",
+      "Rockfall": "Cada criatura à escolha do mestre dentro de 100 feet dele recebe 3 (1d6) de dano de concussão e deve ser bem-sucedida em um teste de resistência de Constituição DC 17 ou será reduzida a 0 pontos de vida. Se o teste de resistência da criatura for bem-sucedido, a criatura fica imune à Queda de Rochas do mestre pelas próximas 24 horas."
+    },
+    "reactions": {
+      "I Make the Rules": "Quando o mestre recebe dano, ele pode ganhar resistência a esse tipo de dano (incluindo o dano que o ativou) até o início de seu próximo turno."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sea-rex": {
+    "name": "Rex Marinho",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O rex marinho faz dois ataques, um com sua mordida e um com sua cauda.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 9 (1d10 + 4) de dano perfurante. Se o alvo for uma criatura Miúda, ele fica agarrado (DC de escape 14). Até esse agarrão terminar, o alvo está contido, e o rex marinho não pode morder outro alvo.",
+      "Tail": "Ataque Corpo a Corpo com Arma: +6 para acertar, alcance 5 ft., um alvo. Acerto: 8 (1d8 + 4) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "capitribus": {
+    "name": "Capitribus",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O capitribus faz três ataques de pancada.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +11 para acertar, alcance 10 ft., um alvo. Acerto: 24 (4d8 + 6) de dano de concussão.",
+      "Rock": "Ataque à Distância com Arma: +11 para acertar, alcance 60/240 ft., um alvo. Acerto: 33 (5d10 + 6) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "gnoll-witherwitch": {
+    "name": "Gnoll Bruxa Ressequida",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "A bruxa ressequida faz três ataques: um com sua mordida e dois com seu cajado-mandíbula. A bruxa ressequida pode conjurar uma magia no lugar de quaisquer dois ataques.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +4 para acertar, alcance 5 ft., um alvo. Acerto: 4 (1d4 + 2) de dano perfurante.",
+      "Jawstaff": "Ataque Corpo a Corpo com Arma: +1 para acertar, alcance 5 ft., um alvo. Acerto: 2 (1d6 - 1) de dano perfurante, ou 3 (1d8 - 1) de dano perfurante se usado com duas mãos."
+    },
+    "reactions": {
+      "Vengeful Spell": "Em resposta a um gnoll ser reduzido a 0 pontos de vida a até 60 feet da bruxa ressequida, a bruxa ressequida conjura um truque."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "snull": {
+    "name": "Snull",
+    "special_abilities": {},
+    "actions": {
+      "Headbutt": "Ataque Corpo a Corpo com Arma: +2 para acertar, alcance 5 ft., um alvo. Acerto: 1 (1d4 + 1) de dano de concussão mais 9 (2d8) de dano necrótico.",
+      "Withdraw": "O snull se recolhe dentro de seu crânio. Até que ele emerja, ele ganha um bônus de +4 na CA e tem vantagem em testes de Destreza (Furtividade). Enquanto estiver dentro de seu crânio, seu deslocamento é 0 e não pode aumentar, ele tem desvantagem em testes de resistência de Destreza, não pode realizar reações, e a única ação que pode realizar é uma ação bônus para emergir."
+    },
+    "reactions": {
+      "Sliding Retreat": "Em resposta a receber dano, o snull se move até metade de seu deslocamento, sem provocar ataques de oportunidade."
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "the-dreidrill": {
+    "name": "O Dreidrill",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O troll faz três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d6 + 4) de dano perfurante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "initiative-troll": {
+    "name": "Troll da Iniciativa",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O troll faz três ataques: um com sua mordida e dois com suas garras.",
+      "Bite": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 7 (1d6 + 4) de dano perfurante.",
+      "Claw": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 5 ft., um alvo. Acerto: 11 (2d6 + 4) de dano cortante."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "hair-golem": {
+    "name": "Golem de Cabelo",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques.",
+      "Hair Tentacle": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 15 (3d6 + 5) de dano de concussão, e o alvo fica agarrado (CD 16 para escapar). Até que esse agarrão termine, o alvo está impedido. O golem de cabelo pode formar seis tentáculos de cabelo, cada um dos quais pode agarrar um alvo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "latkenku": {
+    "name": "Latkenku",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques.",
+      "Hair Tentacle": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 5 ft., um alvo. Acerto: 15 (3d6 + 5) de dano de concussão, e o alvo fica agarrado (CD 16 para escapar). Até que esse agarrão termine, o alvo está impedido. O golem de cabelo pode formar seis tentáculos de cabelo, cada um dos quais pode agarrar um alvo."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "coal-golem": {
+    "name": "Golem de Carvão",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques de pancada ou um ataque de pancada e usa sua habilidade de fornalha.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 10 ft., um alvo. Acerto: 11 (2d6 + 4) de dano perfurante mais 7 (2d6) de dano de fogo.",
+      "Furnace (Recharge 4-6)": "O golem abre sua fornalha, exalando cinzas ardentes e os gritos de almas aprisionadas em um cone de 15-foot. Cada criatura nessa área deve fazer um teste de resistência de Destreza CD 18, sofrendo 14 (4d6) de dano de fogo e 14 (4d6) de dano psíquico em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sufganiyooze": {
+    "name": "Sufganiyooze",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O golem faz dois ataques de pancada ou um ataque de pancada e usa sua habilidade de fornalha.",
+      "Slam": "Ataque Corpo a Corpo com Arma: +8 para acertar, alcance 10 ft., um alvo. Acerto: 11 (2d6 + 4) de dano perfurante mais 7 (2d6) de dano de fogo.",
+      "Furnace (Recharge 4-6)": "O golem abre sua fornalha, exalando cinzas ardentes e os gritos de almas aprisionadas em um cone de 15-foot. Cada criatura nessa área deve fazer um teste de resistência de Destreza CD 18, sofrendo 14 (4d6) de dano de fogo e 14 (4d6) de dano psíquico em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "sickener-beholder": {
+    "name": "Beholder Nauseante",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O beholder faz oito ataques de pedúnculo.",
+      "Stalk": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 10 ft., um alvo. Acerto: 9 (1d12 + 3) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "the-headless-holofrenes": {
+    "name": "O Holofrenes Sem Cabeça",
+    "special_abilities": {},
+    "actions": {
+      "Multiattack": "O observador faz oito ataques de pedúnculo.",
+      "Stalk": "Ataque Corpo a Corpo com Arma: +7 para acertar, alcance 10 ft., um alvo. Acerto: 9 (1d12 + 3) de dano de concussão."
+    },
+    "reactions": {},
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "gelt-golem": {
+    "name": "Golem de Moedas",
+    "special_abilities": {},
+    "actions": {
+      "Slam": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano de concussão.",
+      "Projectile Vomit": "Ataque à Distância com Arma: +5 para acertar, alcance 20/60 ft., um alvo. Acerto: 12 (3d6 + 2) de dano ácido.",
+      "Acid Reflux (Recharge 6)": "O zumbi expele uma bolha de ácido que respinga em um ponto que ele possa ver a até 60 feet dele. Cada criatura em uma esfera de 15-foot de raio centrada naquele ponto deve realizar um teste de resistência de Destreza CD 13. Uma criatura sofre 21 (6d6) de dano ácido em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {
+      "Acid Reflex": "Em resposta a sofrer dano, ácido pressurizado sai da ferida. Cada criatura a até 10"
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "acid-spitting-zombie": {
+    "name": "Zumbi Cuspidor de Ácido",
+    "special_abilities": {},
+    "actions": {
+      "Slam": "Ataque Corpo a Corpo com Arma: +5 para acertar, alcance 5 ft., um alvo. Acerto: 5 (1d6 + 2) de dano de concussão.",
+      "Projectile Vomit": "Ataque à Distância com Arma: +5 para acertar, alcance 20/60 ft., um alvo. Acerto: 12 (3d6 + 2) de dano ácido.",
+      "Acid Reflux (Recharge 6)": "O zumbi expele uma bolha de ácido que respinga em um ponto que ele possa ver a até 60 feet dele. Cada criatura em uma esfera de 15-foot de raio centrada naquele ponto deve realizar um teste de resistência de Destreza CD 13. Uma criatura sofre 21 (6d6) de dano ácido em uma falha, ou metade desse dano em um sucesso."
+    },
+    "reactions": {
+      "Acid Reflex": "Em resposta a sofrer dano, ácido pressurizado sai da ferida. Cada criatura a até 10"
+    },
+    "legendary_actions": {},
+    "lair_actions": {},
+    "regional_effects": {}
+  },
+  "beholder": {
+    "lair_actions": {
+      "_intro": "Quando luta dentro de seu covil, um beholder pode invocar a magia ambiente para realizar ações de covil. Na contagem de iniciativa 20 (perdendo empates de iniciativa), o beholder pode realizar uma ação de covil para causar um dos efeitos a seguir. O beholder não pode repetir um efeito até que todos tenham sido usados, e não pode usar o mesmo efeito em duas rodadas consecutivas.",
+      "Slimy Ground": "Uma área quadrada de 50 feet de terreno a até 120 feet do beholder se torna viscosa; essa área é terreno difícil até a contagem de iniciativa 20 na próxima rodada.",
+      "Grasping Appendages": "Paredes a até 120 feet do beholder brotam apêndices agarradores até a contagem de iniciativa 20 na rodada após a próxima. Cada criatura à escolha do beholder que iniciar seu turno a até 10 feet de tal parede deve ser bem-sucedida em um teste de resistência de Destreza DC 15 ou ficará agarrada. Escapar requer um teste bem-sucedido de Força (Athletics) ou Destreza (Acrobatics) DC 15.",
+      "Wandering Eye": "Um olho se abre em uma superfície sólida a até 60 feet do beholder. Um raio ocular aleatório do beholder dispara desse olho contra um alvo à escolha do beholder que ele possa ver. O olho então se fecha e desaparece."
+    },
+    "regional_effects": {
+      "_intro": "Uma região contendo o covil de um beholder é distorcida pela presença antinatural da criatura, o que cria um ou mais dos seguintes efeitos:\n\nSe o beholder morrer, esses efeitos desaparecem ao longo de 1d10 dias.",
+      "Paranoia": "Criaturas a até 1 mile do covil do beholder às vezes sentem como se estivessem sendo observadas quando não estão.",
+      "Reality Warps": "Quando o beholder dorme, pequenas distorções na realidade ocorrem a até 1 mile de seu covil e então desaparecem 24 horas depois. Marcas nas paredes de cavernas podem mudar sutilmente, uma bugiganga sinistra pode aparecer onde nenhuma existia antes, uma gosma inofensiva pode revestir uma estátua, e assim por diante. Esses efeitos se aplicam apenas a superfícies naturais e a objetos não mágicos que não estejam em posse de ninguém."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "death-tyrant": {
+    "lair_actions": {
+      "_intro": "Ao lutar dentro de seu covil, um beholder pode invocar a magia ambiente para realizar ações de covil. Na contagem de iniciativa 20 (perdendo empates de iniciativa), o beholder pode realizar uma ação de covil para causar um dos seguintes efeitos. O beholder não pode repetir um efeito até que todos tenham sido usados, e não pode usar o mesmo efeito em duas rodadas consecutivas.",
+      "Slimy Ground": "Uma área quadrada de 50 feet de chão a até 120 feet do beholder se torna viscosa; essa área é terreno difícil até a contagem de iniciativa 20 na próxima rodada.",
+      "Grasping Appendages": "Paredes a até 120 feet do beholder brotam apêndices agarradores até a contagem de iniciativa 20 na rodada seguinte à próxima. Cada criatura à escolha do beholder que iniciar seu turno a até 10 feet de tal parede deve ser bem-sucedida em um saving throw de Destreza DC 15 ou ficará agarrada. Escapar requer um teste bem-sucedido de Força (Athletics) ou Destreza (Acrobatics) DC 15.",
+      "Wandering Eye": "Um olho se abre em uma superfície sólida a até 60 feet do beholder. Um raio ocular aleatório do beholder dispara desse olho contra um alvo à escolha do beholder que ele possa ver. O olho então se fecha e desaparece."
+    },
+    "regional_effects": {
+      "_intro": "Uma região contendo o covil de um beholder é distorcida pela presença antinatural da criatura, o que cria um ou mais dos seguintes efeitos:\n\nSe o beholder morrer, esses efeitos desaparecem ao longo de 1d10 dias.",
+      "Paranoia": "Criaturas a até 1 mile do covil do beholder às vezes sentem como se estivessem sendo observadas quando não estão.",
+      "Reality Warps": "Quando o beholder dorme, pequenas distorções na realidade ocorrem a até 1 mile de seu covil e desaparecem 24 horas depois. Marcas nas paredes de cavernas podem mudar sutilmente, uma bugiganga sinistra pode aparecer onde antes não havia nada, uma gosma inofensiva pode revestir uma estátua, e assim por diante. Esses efeitos se aplicam apenas a superfícies naturais e a objetos não mágicos que não estejam em posse de ninguém."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "vampire-infernalist": {
+    "regional_effects": {
+      "_intro": "A região ao redor do covil de um vampiro é distorcida pela presença antinatural da criatura, criando qualquer um dos seguintes efeitos:\n\nSe o vampiro for destruído, esses efeitos terminam após 2d6 dias.",
+      "Vermin Surge": "Há um aumento perceptível nas populações de morcegos, ratos e lobos na região.",
+      "Withered Plants": "Plantas a até 500 feet do covil murcham, e seus caules e galhos se tornam retorcidos e espinhosos.",
+      "Living Shadows": "Sombras projetadas a até 500 feet do covil parecem anormalmente magras e às vezes se movem como se estivessem vivas.",
+      "Creeping Fog": "Uma névoa rastejante se agarra ao chão a até 500 feet do covil do vampiro. A névoa ocasionalmente assume formas sinistras, como garras agarradoras e serpentes contorcidas."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "vampire-neonate": {
+    "regional_effects": {
+      "_intro": "A região ao redor do covil de um vampiro é distorcida pela presença sobrenatural da criatura, criando qualquer um dos seguintes efeitos:\n\nSe o vampiro for destruído, esses efeitos terminam após 2d6 dias.",
+      "Vermin Surge": "Há um aumento perceptível nas populações de morcegos, ratos e lobos na região.",
+      "Withered Plants": "Plantas a até 500 feet do covil murcham, e seus caules e galhos se tornam retorcidos e espinhosos.",
+      "Living Shadows": "Sombras projetadas a até 500 feet do covil parecem anormalmente esqueléticas e às vezes se movem como se estivessem vivas.",
+      "Creeping Fog": "Uma névoa rastejante se agarra ao chão a até 500 feet do covil do vampiro. A névoa ocasionalmente assume formas sinistras, como garras agarradoras e serpentes contorcidas."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "vampire-spellcaster": {
+    "regional_effects": {
+      "_intro": "A região ao redor do covil de um vampiro é distorcida pela presença antinatural da criatura, criando qualquer um dos seguintes efeitos:\n\nSe o vampiro for destruído, esses efeitos terminam após 2d6 dias.",
+      "Vermin Surge": "Há um aumento notável nas populações de morcegos, ratos e lobos na região.",
+      "Withered Plants": "Plantas a até 500 feet do covil murcham, e seus caules e galhos se tornam retorcidos e espinhosos.",
+      "Living Shadows": "Sombras projetadas a até 500 feet do covil parecem anormalmente esqueléticas e às vezes se movem como se estivessem vivas.",
+      "Creeping Fog": "Uma névoa rastejante se agarra ao chão a até 500 feet do covil do vampiro. A névoa ocasionalmente assume formas sinistras, como garras agarradoras e serpentes contorcidas."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "vampire-warden": {
+    "regional_effects": {
+      "_intro": "A região ao redor do covil de um vampiro é distorcida pela presença antinatural da criatura, criando qualquer um dos seguintes efeitos:\n\nSe o vampiro for destruído, esses efeitos terminam após 2d6 dias.",
+      "Vermin Surge": "Há um aumento perceptível nas populações de morcegos, ratos e lobos na região.",
+      "Withered Plants": "Plantas a até 500 feet do covil murcham, e seus caules e galhos se tornam retorcidos e espinhosos.",
+      "Living Shadows": "Sombras projetadas a até 500 feet do covil parecem anormalmente esqueléticas e às vezes se movem como se estivessem vivas.",
+      "Creeping Fog": "Uma névoa rastejante se agarra ao chão a até 500 feet do covil do vampiro. A névoa ocasionalmente assume formas sinistras, como garras agarradoras e serpentes contorcidas."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
+  },
+  "vampire-warrior": {
+    "regional_effects": {
+      "_intro": "A região ao redor do covil de um vampiro é distorcida pela presença antinatural da criatura, criando qualquer um dos seguintes efeitos:\n\nSe o vampiro for destruído, esses efeitos terminam após 2d6 dias.",
+      "Vermin Surge": "Há um aumento perceptível nas populações de morcegos, ratos e lobos na região.",
+      "Withered Plants": "Plantas em até 500 feet do covil murcham, e seus caules e galhos se tornam retorcidos e espinhosos.",
+      "Living Shadows": "Sombras projetadas em até 500 feet do covil parecem anormalmente esqueléticas e às vezes se movem como se estivessem vivas.",
+      "Creeping Fog": "Uma névoa rastejante se agarra ao chão em até 500 feet do covil do vampiro. A névoa ocasionalmente assume formas sinistras, como garras agarradoras e serpentes contorcidas."
+    },
+    "special_abilities": {},
+    "actions": {},
+    "reactions": {},
+    "legendary_actions": {}
   }
 }
