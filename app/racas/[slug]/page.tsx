@@ -21,26 +21,26 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const race = getRaceData(slug);
-  if (!race) return { title: "Raca Nao Encontrada" };
+  if (!race) return { title: "Raça Não Encontrada" };
 
   const bonuses = race.abilityBonuses
     .map((b) => `${b.ability} ${b.bonus}`)
     .join(", ");
-  const title = `${race.namePt} — Raca D&D 5e | Pocket DM`;
-  const description = `${race.namePt} (${race.nameEn}): ${bonuses}. ${race.size === "Small" ? "Pequeno" : "Medio"}, ${race.speed} ft${race.darkvision ? `, Visao no Escuro ${race.darkvision} ft` : ""}. ${race.traits.map((t) => t.namePt).join(", ")}.`;
+  const title = `${race.namePt} — Raça D&D 5e`;
+  const description = `${race.namePt} (${race.nameEn}): ${bonuses}. ${race.size === "Small" ? "Pequeno" : "Médio"}, ${race.speed} ft${race.darkvision ? `, Visão no Escuro ${race.darkvision} ft` : ""}. ${race.traits.map((t) => t.namePt).join(", ")}.`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Pocket DM`,
       description,
       type: "article",
       url: `https://www.pocketdm.com.br/racas/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | Pocket DM`,
       description,
     },
     alternates: {
@@ -58,9 +58,9 @@ function RaceJsonLd({ race }: { race: NonNullable<ReturnType<typeof getRaceData>
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    name: `${race.namePt} — Raca D&D 5e`,
-    headline: `${race.namePt} — Raca D&D 5e`,
-    description: `${race.namePt} (${race.nameEn}), raca ${race.size === "Small" ? "Pequena" : "Media"} com ${race.abilityBonuses.map((b) => `${b.ability} ${b.bonus}`).join(", ")}. Velocidade ${race.speed} ft.`,
+    name: `${race.namePt} — Raça D&D 5e`,
+    headline: `${race.namePt} — Raça D&D 5e`,
+    description: `${race.namePt} (${race.nameEn}), raça ${race.size === "Small" ? "Pequena" : "Média"} com ${race.abilityBonuses.map((b) => `${b.ability} ${b.bonus}`).join(", ")}. Velocidade ${race.speed} ft.`,
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
@@ -96,7 +96,7 @@ export default async function RacaDetailPage({
         <PublicNav
           locale="pt-BR"
           breadcrumbs={[
-            { label: "Racas", href: "/racas" },
+            { label: "Raças", href: "/racas" },
             { label: race.namePt },
           ]}
         />
@@ -104,7 +104,7 @@ export default async function RacaDetailPage({
         <main className="mx-auto max-w-4xl px-4 py-8">
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
-            Pagina disponivel em{" "}
+            Página disponível em{" "}
             <Link
               href={`/races/${slug}`}
               className="text-[#D4A853] hover:underline"
@@ -122,7 +122,7 @@ export default async function RacaDetailPage({
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
-            Conteudo SRD utilizado sob{" "}
+            Conteúdo SRD utilizado sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-300"
@@ -131,7 +131,7 @@ export default async function RacaDetailPage({
             >
               Creative Commons Attribution 4.0
             </a>
-            . D&amp;D e Dungeons &amp; Dragons sao marcas registradas da Wizards
+            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
             of the Coast.
           </p>
           <p className="mt-1">

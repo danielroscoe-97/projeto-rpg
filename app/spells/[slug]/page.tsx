@@ -5,6 +5,7 @@ import {
   getSpellBySlug,
   getSrdSpells,
   toSlug,
+  toSpellSlugPt,
 } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellCard } from "@/components/public/PublicSpellCard";
@@ -30,16 +31,22 @@ export async function generateMetadata({
   if (!spell) return { title: "Spell Not Found" };
 
   const levelStr = spell.level === 0 ? "Cantrip" : `Level ${spell.level}`;
-  const title = `${spell.name} — D&D 5e Spell | Pocket DM`;
+  const title = `${spell.name} — D&D 5e Spell`;
   const desc = spell.description ? spell.description.slice(0, 150) : "";
   const description = `${spell.name}, ${levelStr} ${spell.school}. ${spell.casting_time}, ${spell.range}.${desc ? ` ${desc}...` : ""}`;
 
   return {
     title,
     description,
-    openGraph: { title, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}` },
-    twitter: { card: "summary_large_image", title, description },
-    alternates: { canonical: `https://www.pocketdm.com.br/spells/${slug}` },
+    openGraph: { title: `${title} | Pocket DM`, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}` },
+    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
+    alternates: {
+      canonical: `https://www.pocketdm.com.br/spells/${slug}`,
+      languages: {
+        en: `https://www.pocketdm.com.br/spells/${slug}`,
+        "pt-BR": `https://www.pocketdm.com.br/magias/${toSpellSlugPt(slug)}`,
+      },
+    },
   };
 }
 

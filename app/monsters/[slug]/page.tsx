@@ -5,6 +5,7 @@ import {
   getMonsterBySlug,
   getSrdMonsters,
   toSlug,
+  toMonsterSlugPt,
 } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicMonsterStatBlock } from "@/components/public/PublicMonsterStatBlock";
@@ -30,25 +31,30 @@ export async function generateMetadata({
   const monster = getMonsterBySlug(slug);
   if (!monster) return { title: "Monster Not Found" };
 
-  const title = `${monster.name} — D&D 5e Stat Block | Pocket DM`;
+  const title = `${monster.name} — D&D 5e Stat Block`;
   const description = `${monster.name}, ${monster.size} ${monster.type}, CR ${monster.cr}. AC ${monster.armor_class}, HP ${monster.hit_points}. Full stat block with interactive dice roller.`;
+  const ptSlug = toMonsterSlugPt(slug);
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Pocket DM`,
       description,
       type: "article",
       url: `https://www.pocketdm.com.br/monsters/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | Pocket DM`,
       description,
     },
     alternates: {
       canonical: `https://www.pocketdm.com.br/monsters/${slug}`,
+      languages: {
+        en: `https://www.pocketdm.com.br/monsters/${slug}`,
+        "pt-BR": `https://www.pocketdm.com.br/monstros/${ptSlug}`,
+      },
     },
   };
 }

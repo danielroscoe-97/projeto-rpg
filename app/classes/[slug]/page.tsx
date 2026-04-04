@@ -25,7 +25,7 @@ export async function generateMetadata({
   const cls = classes.find((c) => c.id === slug);
   if (!cls) return { title: "Class Not Found" };
 
-  const title = `${cls.name} — D&D 5e Class | Pocket DM`;
+  const title = `${cls.name} — D&D 5e Class`;
   const description = `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}. SRD Subclass: ${cls.srd_subclass}.`;
 
   return {
@@ -41,14 +41,14 @@ export async function generateMetadata({
       "SRD class",
     ],
     openGraph: {
-      title,
+      title: `${title} | Pocket DM`,
       description,
       type: "article",
       url: `https://www.pocketdm.com.br/classes/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | Pocket DM`,
       description,
     },
     alternates: {

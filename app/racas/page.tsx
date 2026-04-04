@@ -6,29 +6,29 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Racas D&D 5e — Especies de Personagem Jogador",
+  title: "Raças D&D 5e — Espécies de Personagem Jogador",
   description:
-    "Todas as 9 racas SRD do D&D 5e: Anao, Elfo, Halfling, Humano, Draconato, Gnomo, Meio-Elfo, Meio-Orc e Tiefling. Atributos, tracos raciais e sub-racas.",
+    "Todas as 9 raças SRD do D&D 5e: Anão, Elfo, Halfling, Humano, Draconato, Gnomo, Meio-Elfo, Meio-Orc e Tiefling. Atributos, traços raciais e sub-raças.",
   keywords: [
-    "racas D&D 5e",
-    "racas de personagem D&D",
-    "racas SRD 5e",
-    "anao elfo halfling",
-    "especies D&D 5e",
-    "racas jogaveis D&D",
+    "raças D&D 5e",
+    "raças de personagem D&D",
+    "raças SRD 5e",
+    "anão elfo halfling",
+    "espécies D&D 5e",
+    "raças jogáveis D&D",
   ],
   openGraph: {
-    title: "Racas D&D 5e — Especies de Personagem Jogador",
+    title: "Raças D&D 5e — Espécies de Personagem Jogador",
     description:
-      "Referencia completa das 9 racas SRD do D&D 5a Edicao com atributos e tracos.",
+      "Referência completa das 9 raças SRD do D&D 5ª Edição com atributos e traços.",
     type: "website",
     url: "https://www.pocketdm.com.br/racas",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Racas D&D 5e — Especies de Personagem Jogador",
+    title: "Raças D&D 5e — Espécies de Personagem Jogador",
     description:
-      "Referencia completa das 9 racas SRD do D&D 5a Edicao.",
+      "Referência completa das 9 raças SRD do D&D 5ª Edição.",
   },
   alternates: {
     canonical: "https://www.pocketdm.com.br/racas",
@@ -43,7 +43,7 @@ export const revalidate = 86400;
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 const RACE_NAMES_PT = [
-  "Anao",
+  "Anão",
   "Elfo",
   "Halfling",
   "Humano",
@@ -70,9 +70,9 @@ function RacesJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Racas D&D 5e",
+    name: "Raças D&D 5e",
     description:
-      "Todas as racas de personagem jogavel no SRD do D&D 5a Edicao",
+      "Todas as raças de personagem jogável no SRD do D&D 5ª Edição",
     numberOfItems: RACE_NAMES_PT.length,
     itemListElement: RACE_NAMES_PT.map((name, i) => ({
       "@type": "ListItem",
@@ -104,12 +104,12 @@ export default function RacasPage() {
       <RacesJsonLd />
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
-        <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Racas" }]} />
+        <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Raças" }]} />
 
         <main className="mx-auto max-w-6xl px-4 py-8">
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
-            Pagina disponivel em{" "}
+            Página disponível em{" "}
             <Link
               href="/races"
               className="text-[#D4A853] hover:underline"
@@ -121,13 +121,13 @@ export default function RacasPage() {
           <PublicRacesIndex locale="pt-BR" />
 
           <div className="mt-12">
-            <PublicCTA entityName="Racas D&D 5e" locale="pt-BR" />
+            <PublicCTA entityName="Raças D&D 5e" locale="pt-BR" />
           </div>
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
-            Conteudo SRD utilizado sob{" "}
+            Conteúdo SRD utilizado sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-300"
@@ -136,7 +136,7 @@ export default function RacasPage() {
             >
               Creative Commons Attribution 4.0
             </a>
-            . D&amp;D e Dungeons &amp; Dragons sao marcas registradas da Wizards
+            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
             of the Coast.
           </p>
           <p className="mt-1">

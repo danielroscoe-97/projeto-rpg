@@ -35,19 +35,19 @@ export async function generateMetadata({
 
   const enSlug = toSlug(spell.name);
   const levelStr = spell.level === 0 ? "Truque" : `Nível ${spell.level}`;
-  const title = `${spell.name} — Magia D&D 5e | Pocket DM`;
+  const title = `${spell.name} — Magia D&D 5e`;
   const description = `${spell.name}, ${levelStr} de ${spell.school}. ${spell.casting_time}, alcance ${spell.range}.${spell.description ? ` ${spell.description.slice(0, 120)}...` : ""}`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Pocket DM`,
       description,
       type: "article",
       url: `https://www.pocketdm.com.br/magias/${slug}`,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
     alternates: {
       canonical: `https://www.pocketdm.com.br/magias/${slug}`,
       languages: {

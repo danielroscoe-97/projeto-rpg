@@ -37,19 +37,20 @@ export async function generateMetadata({
   if (!monster) return { title: "Monstro Não Encontrado" };
 
   const enSlug = toSlug(monster.name);
-  const title = `${monster.name} — Ficha D&D 5e | Pocket DM`;
-  const description = `${monster.name}, ${monster.size} ${monster.type}, CR ${monster.cr}. CA ${monster.armor_class}, PV ${monster.hit_points}. Ficha completa com rolador de dados interativo.`;
+  const ptName = (monsterNamesPt as Record<string, { name?: string }>)[enSlug]?.name ?? monster.name;
+  const title = `${ptName} — Ficha D&D 5e`;
+  const description = `${ptName}, ${monster.size} ${monster.type}, CR ${monster.cr}. CA ${monster.armor_class}, PV ${monster.hit_points}. Ficha completa com rolador de dados interativo.`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Pocket DM`,
       description,
       type: "article",
       url: `https://www.pocketdm.com.br/monstros/${slug}`,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
     alternates: {
       canonical: `https://www.pocketdm.com.br/monstros/${slug}`,
       languages: {
@@ -61,13 +62,13 @@ export async function generateMetadata({
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
-function MonsterJsonLd({ monster }: { monster: NonNullable<ReturnType<typeof getMonsterBySlugPt>> }) {
+function MonsterJsonLd({ monster, ptName }: { monster: NonNullable<ReturnType<typeof getMonsterBySlugPt>>; ptName: string }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    name: `${monster.name} — Ficha D&D 5e`,
-    headline: `${monster.name} — Ficha D&D 5e`,
-    description: `${monster.name}, ${monster.size} ${monster.type}, CR ${monster.cr}.`,
+    name: `${ptName} — Ficha D&D 5e`,
+    headline: `${ptName} — Ficha D&D 5e`,
+    description: `${ptName}, ${monster.size} ${monster.type}, CR ${monster.cr}.`,
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
     inLanguage: "pt-BR",
@@ -110,7 +111,7 @@ export default async function MonstroPage({
 
   return (
     <>
-      <MonsterJsonLd monster={monster} />
+      <MonsterJsonLd monster={monster} ptName={ptName} />
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav

@@ -6,21 +6,21 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Tipos de Dano D&D 5e — Referencia Completa",
+  title: "Tipos de Dano D&D 5e — Referência Completa",
   description:
-    "Referencia completa dos 13 tipos de dano do D&D 5e: acido, contundente, frio, fogo, forca, relampago, necrotico, perfurante, veneno, psiquico, radiante, cortante e trovao. Resistencias, imunidades e fontes comuns.",
+    "Referência completa dos 13 tipos de dano do D&D 5e: ácido, contundente, frio, fogo, força, relâmpago, necrótico, perfurante, veneno, psíquico, radiante, cortante e trovão. Resistências, imunidades e fontes comuns.",
   openGraph: {
-    title: "Tipos de Dano D&D 5e — Referencia Completa",
+    title: "Tipos de Dano D&D 5e — Referência Completa",
     description:
-      "Todos os 13 tipos de dano do D&D 5e com resistencias, imunidades e fontes comuns.",
+      "Todos os 13 tipos de dano do D&D 5e com resistências, imunidades e fontes comuns.",
     type: "website",
     url: "https://www.pocketdm.com.br/tipos-de-dano",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tipos de Dano D&D 5e — Referencia Completa",
+    title: "Tipos de Dano D&D 5e — Referência Completa",
     description:
-      "Todos os 13 tipos de dano do D&D 5e com resistencias, imunidades e fontes comuns.",
+      "Todos os 13 tipos de dano do D&D 5e com resistências, imunidades e fontes comuns.",
   },
   alternates: {
     canonical: "https://www.pocketdm.com.br/tipos-de-dano",
@@ -35,19 +35,19 @@ export const revalidate = 86400;
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 const DAMAGE_TYPE_NAMES_PT = [
-  "Acido",
+  "Ácido",
   "Contundente",
   "Frio",
   "Fogo",
-  "Forca",
-  "Relampago",
-  "Necrotico",
+  "Força",
+  "Relâmpago",
+  "Necrótico",
   "Perfurante",
   "Veneno",
-  "Psiquico",
+  "Psíquico",
   "Radiante",
   "Cortante",
-  "Trovao",
+  "Trovão",
 ];
 
 function DamageTypesJsonLd() {
@@ -56,7 +56,7 @@ function DamageTypesJsonLd() {
     "@type": "ItemList",
     name: "Tipos de Dano D&D 5e",
     description:
-      "Todos os 13 tipos de dano de Dungeons & Dragons 5a Edicao",
+      "Todos os 13 tipos de dano de Dungeons & Dragons 5ª Edição",
     numberOfItems: DAMAGE_TYPE_NAMES_PT.length,
     itemListElement: DAMAGE_TYPE_NAMES_PT.map((name, i) => ({
       "@type": "ListItem",
@@ -95,7 +95,7 @@ export default function TiposDeDanoPage() {
         <main className="mx-auto max-w-5xl px-4 py-8">
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
-            Pagina disponivel em{" "}
+            Página disponível em{" "}
             <Link
               href="/damage-types"
               className="text-[#D4A853] hover:underline"
@@ -113,7 +113,7 @@ export default function TiposDeDanoPage() {
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
-            Conteudo SRD utilizado sob{" "}
+            Conteúdo SRD utilizado sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-300"
@@ -122,7 +122,7 @@ export default function TiposDeDanoPage() {
             >
               Creative Commons Attribution 4.0
             </a>
-            . D&amp;D e Dungeons &amp; Dragons sao marcas registradas da Wizards
+            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
             of the Coast.
           </p>
           <p className="mt-1">

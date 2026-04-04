@@ -26,21 +26,21 @@ export async function generateMetadata({
   const bonuses = race.abilityBonuses
     .map((b) => `${b.ability} ${b.bonus}`)
     .join(", ");
-  const title = `${race.nameEn} — D&D 5e Race | Pocket DM`;
+  const title = `${race.nameEn} — D&D 5e Race`;
   const description = `${race.nameEn}: ${bonuses}. ${race.size}, ${race.speed} ft speed${race.darkvision ? `, Darkvision ${race.darkvision} ft` : ""}. ${race.traits.map((t) => t.nameEn).join(", ")}.`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Pocket DM`,
       description,
       type: "article",
       url: `https://www.pocketdm.com.br/races/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | Pocket DM`,
       description,
     },
     alternates: {
@@ -107,7 +107,7 @@ export default async function RaceDetailPage({
               href={`/racas/${slug}`}
               className="text-[#D4A853] hover:underline"
             >
-              Portugues
+              Português
             </Link>
           </p>
 

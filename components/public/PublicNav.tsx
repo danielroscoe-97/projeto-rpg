@@ -72,9 +72,9 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
 
   return (
     <nav className="border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40 shadow-[0_1px_0_rgba(212,168,83,0.06)]">
-      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
         {/* Left: logo + breadcrumbs */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0 overflow-hidden">
           <Link
             href="/"
             className="flex items-center gap-2 group shrink-0"
@@ -85,17 +85,17 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
             </span>
           </Link>
           {breadcrumbs?.map((crumb, i) => (
-            <span key={i} className="flex items-center gap-3">
-              <span className="text-gray-700">/</span>
+            <span key={i} className="flex items-center gap-3 min-w-0">
+              <span className="text-gray-700 shrink-0">/</span>
               {crumb.href ? (
                 <Link
                   href={crumb.href}
-                  className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+                  className="text-gray-400 hover:text-gray-200 text-sm transition-colors whitespace-nowrap"
                 >
                   {crumb.label}
                 </Link>
               ) : (
-                <span className="text-gray-300 text-sm truncate max-w-[180px]">
+                <span className="text-gray-300 text-sm truncate max-w-[200px]">
                   {crumb.label}
                 </span>
               )}
@@ -104,7 +104,7 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
         </div>
 
         {/* Center: nav links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-6 shrink-0">
           <Link
             href={l.monstersHref}
             className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
@@ -144,7 +144,7 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
         </div>
 
         {/* Right: CTA */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 shrink-0">
           <Link
             href="/try"
             className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-[#D4A853] px-3 py-1.5 text-white text-sm font-semibold hover:bg-[#D4A853]/90 transition-colors"

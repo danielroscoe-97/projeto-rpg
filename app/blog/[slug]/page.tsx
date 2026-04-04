@@ -28,8 +28,10 @@ export async function generateMetadata({
   const post = getPostBySlug(slug);
   if (!post) return {};
 
+  const pageTitle = post.ogTitle.replace(/ \| Pocket DM$/, "");
+
   return {
-    title: post.ogTitle,
+    title: pageTitle,
     description: post.description,
     keywords: post.keywords,
     alternates: {
@@ -261,7 +263,7 @@ export default async function BlogPostPage({
                   href="/try"
                   className="bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200 text-sm"
                 >
-                  Testar Gratis
+                  Testar Grátis
                 </Link>
                 <Link
                   href="/blog"

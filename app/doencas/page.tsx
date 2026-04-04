@@ -7,21 +7,21 @@ import Link from "next/link";
 
 // -- Metadata -----------------------------------------------------------------
 export const metadata: Metadata = {
-  title: "Doencas D&D 5e — Referencia",
+  title: "Doenças D&D 5e — Referência",
   description:
-    "Referencia completa de doencas do D&D 5e: Febre da Gargalhada, Praga do Esgoto, Podridao da Visao e mais. Compare regras 2014 vs 2024.",
+    "Referência completa de doenças do D&D 5e: Febre da Gargalhada, Praga do Esgoto, Podridão da Visão e mais. Compare regras 2014 vs 2024.",
   openGraph: {
-    title: "Doencas D&D 5e — Referencia",
+    title: "Doenças D&D 5e — Referência",
     description:
-      "Referencia completa de todas as doencas do D&D 5e com comparacao 2014/2024.",
+      "Referência completa de todas as doenças do D&D 5e com comparação 2014/2024.",
     type: "website",
     url: "https://www.pocketdm.com.br/doencas",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Doencas D&D 5e — Referencia",
+    title: "Doenças D&D 5e — Referência",
     description:
-      "Referencia completa de todas as doencas do D&D 5e com comparacao 2014/2024.",
+      "Referência completa de todas as doenças do D&D 5e com comparação 2014/2024.",
   },
   alternates: {
     canonical: "https://www.pocketdm.com.br/doencas",
@@ -47,9 +47,9 @@ function DiseasesJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Doencas D&D 5e",
+    name: "Doenças D&D 5e",
     description:
-      "Doencas, pragas e aflicoes de Dungeons & Dragons 5a Edicao",
+      "Doenças, pragas e aflições de Dungeons & Dragons 5ª Edição",
     numberOfItems: diseases.length,
     itemListElement: diseases.map((c, i) => ({
       "@type": "ListItem",
@@ -91,13 +91,13 @@ export default function DoencasPage() {
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav
           locale="pt-BR"
-          breadcrumbs={[{ label: "Doencas" }]}
+          breadcrumbs={[{ label: "Doenças" }]}
         />
 
         <main className="mx-auto max-w-5xl px-4 py-8">
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
-            Pagina disponivel em{" "}
+            Página disponível em{" "}
             <Link
               href="/diseases"
               className="text-[#D4A853] hover:underline"
@@ -109,13 +109,13 @@ export default function DoencasPage() {
           <PublicDiseasesGrid diseases={diseases} locale="pt-BR" />
 
           <div className="mt-12">
-            <PublicCTA entityName="Doencas D&D 5e" locale="pt-BR" />
+            <PublicCTA entityName="Doenças D&D 5e" locale="pt-BR" />
           </div>
         </main>
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
-            Conteudo SRD utilizado sob{" "}
+            Conteúdo SRD utilizado sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-300"
@@ -124,7 +124,7 @@ export default function DoencasPage() {
             >
               Creative Commons Attribution 4.0
             </a>
-            . D&amp;D e Dungeons &amp; Dragons sao marcas registradas da Wizards
+            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
             of the Coast.
           </p>
           <p className="mt-1">

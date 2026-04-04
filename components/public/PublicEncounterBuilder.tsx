@@ -1,6 +1,11 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import {
+  calculateDifficulty,
+  crToXP,
+  type FormulaVersion,
+} from "@/lib/utils/cr-calculator";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface MonsterOption {
@@ -27,70 +32,7 @@ interface PublicEncounterBuilderProps {
   locale?: "en" | "pt-BR";
 }
 
-// ── XP Thresholds (SRD 5.1, CC-BY-4.0) ───────────────────────────
-// These thresholds are from the SRD and are public domain
-const XP_THRESHOLDS: Record<number, { easy: number; medium: number; hard: number; deadly: number }> = {
-  1: { easy: 25, medium: 50, hard: 75, deadly: 100 },
-  2: { easy: 50, medium: 100, hard: 150, deadly: 200 },
-  3: { easy: 75, medium: 150, hard: 225, deadly: 400 },
-  4: { easy: 125, medium: 250, hard: 375, deadly: 500 },
-  5: { easy: 250, medium: 500, hard: 750, deadly: 1100 },
-  6: { easy: 300, medium: 600, hard: 900, deadly: 1400 },
-  7: { easy: 350, medium: 750, hard: 1100, deadly: 1700 },
-  8: { easy: 450, medium: 900, hard: 1400, deadly: 2100 },
-  9: { easy: 550, medium: 1100, hard: 1600, deadly: 2400 },
-  10: { easy: 600, medium: 1200, hard: 1900, deadly: 2800 },
-  11: { easy: 800, medium: 1600, hard: 2400, deadly: 3600 },
-  12: { easy: 1000, medium: 2000, hard: 3000, deadly: 4500 },
-  13: { easy: 1100, medium: 2200, hard: 3400, deadly: 5100 },
-  14: { easy: 1250, medium: 2500, hard: 3800, deadly: 5700 },
-  15: { easy: 1400, medium: 2800, hard: 4300, deadly: 6400 },
-  16: { easy: 1600, medium: 3200, hard: 4800, deadly: 7200 },
-  17: { easy: 2000, medium: 3900, hard: 5900, deadly: 8800 },
-  18: { easy: 2100, medium: 4200, hard: 6300, deadly: 9500 },
-  19: { easy: 2400, medium: 4900, hard: 7300, deadly: 10900 },
-  20: { easy: 2800, medium: 5700, hard: 8500, deadly: 12700 },
-};
-
-// CR → XP mapping (SRD)
-const CR_XP: Record<string, number> = {
-  "0": 10, "1/8": 25, "1/4": 50, "1/2": 100,
-  "1": 200, "2": 450, "3": 700, "4": 1100, "5": 1800,
-  "6": 2300, "7": 2900, "8": 3900, "9": 5000, "10": 5900,
-  "11": 7200, "12": 8400, "13": 10000, "14": 11500, "15": 13000,
-  "16": 15000, "17": 18000, "18": 20000, "19": 22000, "20": 25000,
-  "21": 33000, "22": 41000, "23": 50000, "24": 62000, "25": 75000,
-  "26": 90000, "27": 105000, "28": 120000, "29": 135000, "30": 155000,
-};
-
-function getXPForCR(cr: string | number): number {
-  return CR_XP[String(cr)] ?? 0;
-}
-
-// Encounter multiplier based on number of monsters (SRD)
-function getMultiplier(monsterCount: number, partySize: number): number {
-  // Adjust thresholds for party size
-  let effectiveCount = monsterCount;
-  if (partySize < 3) effectiveCount = Math.max(1, monsterCount + 1);
-  else if (partySize > 5) effectiveCount = Math.max(1, monsterCount - 1);
-
-  if (effectiveCount <= 1) return 1;
-  if (effectiveCount === 2) return 1.5;
-  if (effectiveCount <= 6) return 2;
-  if (effectiveCount <= 10) return 2.5;
-  if (effectiveCount <= 14) return 3;
-  return 4;
-}
-
 type Difficulty = "trivial" | "easy" | "medium" | "hard" | "deadly";
-
-function getDifficulty(adjustedXP: number, thresholds: { easy: number; medium: number; hard: number; deadly: number }): Difficulty {
-  if (adjustedXP >= thresholds.deadly) return "deadly";
-  if (adjustedXP >= thresholds.hard) return "hard";
-  if (adjustedXP >= thresholds.medium) return "medium";
-  if (adjustedXP >= thresholds.easy) return "easy";
-  return "trivial";
-}
 
 const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   trivial: "text-gray-400 bg-gray-500/10 border-gray-600",
@@ -125,6 +67,11 @@ const LABELS = {
     remove: "Remove",
     clear: "Clear All",
     monsterCount: "monsters",
+    formula: "Formula",
+    dmg2014: "DMG 2014",
+    dmg2024: "DMG 2024",
+    totalCR: "Total CR",
+    crBudget: "CR Budget",
   },
   "pt-BR": {
     title: "Calculadora de Encontro D&D 5e",
@@ -150,6 +97,11 @@ const LABELS = {
     remove: "Remover",
     clear: "Limpar Tudo",
     monsterCount: "monstros",
+    formula: "Fórmula",
+    dmg2014: "DMG 2014",
+    dmg2024: "DMG 2024",
+    totalCR: "CR Total",
+    crBudget: "Budget de CR",
   },
 } as const;
 
@@ -161,6 +113,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
   const [encounter, setEncounter] = useState<EncounterMonster[]>([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [formulaVersion, setFormulaVersion] = useState<FormulaVersion>("2014");
 
   // Search results
   const searchResults = useMemo(() => {
@@ -171,36 +124,43 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
       .slice(0, 15);
   }, [search, monsters]);
 
-  // Party thresholds
-  const thresholds = useMemo(() => {
-    const t = XP_THRESHOLDS[partyLevel] ?? XP_THRESHOLDS[1];
-    return {
-      easy: t.easy * partySize,
-      medium: t.medium * partySize,
-      hard: t.hard * partySize,
-      deadly: t.deadly * partySize,
-    };
-  }, [partySize, partyLevel]);
-
-  // Encounter calculations
-  const { totalXP, totalCount, adjustedXP, difficulty, multiplier } = useMemo(() => {
-    if (encounter.length === 0) {
-      return { totalXP: 0, totalCount: 0, adjustedXP: 0, difficulty: "trivial" as Difficulty, multiplier: 1 };
-    }
-
-    let xp = 0;
+  // Encounter calculations using shared cr-calculator
+  const { totalXP, totalCount, adjustedXP, difficulty, thresholds } = useMemo(() => {
     let count = 0;
+    const monstersFlat: { cr: string }[] = [];
     for (const m of encounter) {
-      xp += getXPForCR(m.cr) * m.count;
       count += m.count;
+      for (let i = 0; i < m.count; i++) {
+        monstersFlat.push({ cr: String(m.cr) });
+      }
     }
 
-    const mult = getMultiplier(count, partySize);
-    const adj = Math.round(xp * mult);
-    const diff = getDifficulty(adj, thresholds);
+    if (monstersFlat.length === 0) {
+      return {
+        totalXP: 0,
+        totalCount: 0,
+        adjustedXP: 0,
+        difficulty: "trivial" as Difficulty,
+        thresholds: { easy: 0, medium: 0, hard: 0, deadly: 0 },
+      };
+    }
 
-    return { totalXP: xp, totalCount: count, adjustedXP: adj, difficulty: diff, multiplier: mult };
-  }, [encounter, partySize, thresholds]);
+    const result = calculateDifficulty(formulaVersion, partyLevel, partySize, monstersFlat);
+    const xp = monstersFlat.reduce((sum, m) => sum + crToXP(m.cr), 0);
+
+    return {
+      totalXP: xp,
+      totalCount: count,
+      adjustedXP: result.totalValue,
+      difficulty: (result.difficulty === "easy" && result.totalValue < result.thresholds[0] ? "trivial" : result.difficulty) as Difficulty,
+      thresholds: {
+        easy: result.thresholds[0],
+        medium: result.thresholds[1],
+        hard: result.thresholds[2],
+        deadly: result.thresholds[3],
+      },
+    };
+  }, [encounter, partySize, partyLevel, formulaVersion]);
 
   const addMonster = useCallback((monster: MonsterOption) => {
     setEncounter((prev) => {
@@ -234,11 +194,36 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">
-          {L.title}
-        </h1>
-        <p className="text-gray-400 mt-1">{L.subtitle}</p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">
+            {L.title}
+          </h1>
+          <p className="text-gray-400 mt-1">{L.subtitle}</p>
+        </div>
+        {/* 2014/2024 Toggle */}
+        <div className="flex items-center gap-1 bg-gray-900/50 rounded-lg p-1 border border-gray-800 shrink-0">
+          <button
+            onClick={() => setFormulaVersion("2014")}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+              formulaVersion === "2014"
+                ? "bg-[#D4A853]/20 text-[#D4A853] border border-[#D4A853]/30"
+                : "text-gray-500 hover:text-gray-300 border border-transparent"
+            }`}
+          >
+            {L.dmg2014}
+          </button>
+          <button
+            onClick={() => setFormulaVersion("2024")}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+              formulaVersion === "2024"
+                ? "bg-[#D4A853]/20 text-[#D4A853] border border-[#D4A853]/30"
+                : "text-gray-500 hover:text-gray-300 border border-transparent"
+            }`}
+          >
+            {L.dmg2024}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -405,7 +390,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500">
-                        {(getXPForCR(m.cr) * m.count).toLocaleString()} XP
+                        {(crToXP(String(m.cr)) * m.count).toLocaleString()} XP
                       </span>
                       <button
                         onClick={() => removeMonster(m.id)}
@@ -433,20 +418,31 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
               </p>
             </div>
 
-            {/* XP breakdown */}
+            {/* XP / CR breakdown */}
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">{L.totalXP}</span>
-                <span className="text-[#F5F0E8] font-mono">{totalXP.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">{L.multiplier}</span>
-                <span className="text-[#F5F0E8] font-mono">×{multiplier}</span>
-              </div>
-              <div className="flex justify-between border-t border-gray-800 pt-2">
-                <span className="text-[#D4A853] font-semibold">{L.adjustedXP}</span>
-                <span className="text-[#D4A853] font-bold font-mono">{adjustedXP.toLocaleString()}</span>
-              </div>
+              {formulaVersion === "2014" ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">{L.totalXP}</span>
+                    <span className="text-[#F5F0E8] font-mono">{totalXP.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-gray-800 pt-2">
+                    <span className="text-[#D4A853] font-semibold">{L.adjustedXP}</span>
+                    <span className="text-[#D4A853] font-bold font-mono">{adjustedXP.toLocaleString()}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">{L.totalXP}</span>
+                    <span className="text-[#F5F0E8] font-mono">{totalXP.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-gray-800 pt-2">
+                    <span className="text-[#D4A853] font-semibold">{L.totalCR}</span>
+                    <span className="text-[#D4A853] font-bold font-mono">{adjustedXP}</span>
+                  </div>
+                </>
+              )}
               {encounter.length > 0 && partySize > 0 && (
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">{L.perPlayer}</span>

@@ -8,11 +8,11 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Atributos D&D 5e \u2014 Calculadora de Modificador",
   description:
-    "Referencia completa dos seis atributos do D&D 5e: Forca, Destreza, Constituicao, Inteligencia, Sabedoria e Carisma. Calculadora interativa de modificador com tabela completa.",
+    "Referência completa dos seis atributos do D&D 5e: Força, Destreza, Constituição, Inteligência, Sabedoria e Carisma. Calculadora interativa de modificador com tabela completa.",
   openGraph: {
     title: "Atributos D&D 5e \u2014 Calculadora de Modificador",
     description:
-      "Todos os seis atributos explicados com calculadora interativa de modificador, pericias associadas, testes de resistencia e usos comuns.",
+      "Todos os seis atributos explicados com calculadora interativa de modificador, perícias associadas, testes de resistência e usos comuns.",
     type: "website",
     url: "https://www.pocketdm.com.br/atributos",
   },
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Atributos D&D 5e \u2014 Calculadora de Modificador",
     description:
-      "Todos os seis atributos explicados com calculadora interativa de modificador, pericias associadas, testes de resistencia e usos comuns.",
+      "Todos os seis atributos explicados com calculadora interativa de modificador, perícias associadas, testes de resistência e usos comuns.",
   },
   alternates: {
     canonical: "https://www.pocketdm.com.br/atributos",
@@ -36,10 +36,10 @@ export const revalidate = 86400;
 // ── JSON-LD ────────────────────────────────────────────────────────
 function AtributosJsonLd() {
   const atributos = [
-    "Forca",
+    "Força",
     "Destreza",
-    "Constituicao",
-    "Inteligencia",
+    "Constituição",
+    "Inteligência",
     "Sabedoria",
     "Carisma",
   ];
@@ -49,7 +49,7 @@ function AtributosJsonLd() {
     "@type": "ItemList",
     name: "Atributos D&D 5e",
     description:
-      "Os seis atributos de Dungeons & Dragons 5a Edicao",
+      "Os seis atributos de Dungeons & Dragons 5ª Edição",
     numberOfItems: atributos.length,
     itemListElement: atributos.map((name, i) => ({
       "@type": "ListItem",
@@ -88,7 +88,7 @@ export default function AtributosPage() {
         <main className="mx-auto max-w-5xl px-4 py-8">
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
-            Pagina disponivel em{" "}
+            Página disponível em{" "}
             <Link
               href="/ability-scores"
               className="text-[#D4A853] hover:underline"
@@ -106,7 +106,7 @@ export default function AtributosPage() {
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
-            Conteudo SRD utilizado sob{" "}
+            Conteúdo SRD utilizado sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-300"
@@ -115,7 +115,7 @@ export default function AtributosPage() {
             >
               Creative Commons Attribution 4.0
             </a>
-            . D&amp;D e Dungeons &amp; Dragons sao marcas registradas da Wizards
+            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
             of the Coast.
           </p>
           <p className="mt-1">

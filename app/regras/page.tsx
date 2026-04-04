@@ -6,21 +6,21 @@ import Link from "next/link";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Regras D&D 5e — Combate, Descanso, Conjuracao",
+  title: "Regras D&D 5e — Combate, Descanso, Conjuração",
   description:
-    "Referencia completa de regras D&D 5e: fluxo de combate, jogadas de ataque, dano & cura, cobertura, descanso, condicoes e basico de conjuracao. Conteudo gratuito do SRD 5.1.",
+    "Referência completa de regras D&D 5e: fluxo de combate, jogadas de ataque, dano & cura, cobertura, descanso, condições e básico de conjuração. Conteúdo gratuito do SRD 5.1.",
   openGraph: {
-    title: "Regras D&D 5e — Combate, Descanso, Conjuracao",
+    title: "Regras D&D 5e — Combate, Descanso, Conjuração",
     description:
-      "Referencia completa de regras D&D 5e com diagramas visuais, rastreador de testes contra a morte interativo e guia de cobertura. Conteudo gratuito do SRD 5.1.",
+      "Referência completa de regras D&D 5e com diagramas visuais, rastreador de testes contra a morte interativo e guia de cobertura. Conteúdo gratuito do SRD 5.1.",
     type: "website",
     url: "https://www.pocketdm.com.br/regras",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Regras D&D 5e — Combate, Descanso, Conjuracao",
+    title: "Regras D&D 5e — Combate, Descanso, Conjuração",
     description:
-      "Referencia completa de regras D&D 5e com diagramas visuais e ferramentas interativas. Conteudo gratuito do SRD 5.1.",
+      "Referência completa de regras D&D 5e com diagramas visuais e ferramentas interativas. Conteúdo gratuito do SRD 5.1.",
   },
   alternates: {
     canonical: "https://www.pocketdm.com.br/regras",
@@ -38,31 +38,31 @@ function RulesJsonLd() {
   const faqs = [
     {
       q: "Como funciona o fluxo de combate no D&D 5e?",
-      a: "No inicio do combate, cada participante faz um teste de Destreza (iniciativa) para determinar a ordem dos turnos. No seu turno, voce pode mover ate sua velocidade, realizar uma acao (Atacar, Conjurar uma Magia, Disparada, Esquivar, Desengajar, Ajudar, Esconder-se, Preparar, Procurar ou Usar um Objeto), uma acao bonus se disponivel, e uma interacao com objetos gratuita. Voce tambem tem uma reacao por rodada.",
+      a: "No início do combate, cada participante faz um teste de Destreza (iniciativa) para determinar a ordem dos turnos. No seu turno, você pode mover até sua velocidade, realizar uma ação (Atacar, Conjurar uma Magia, Disparada, Esquivar, Desengajar, Ajudar, Esconder-se, Preparar, Procurar ou Usar um Objeto), uma ação bônus se disponível, e uma interação com objetos gratuita. Você também tem uma reação por rodada.",
     },
     {
       q: "Como funcionam as jogadas de ataque no D&D 5e?",
-      a: "Jogue um d20, adicione seu modificador de habilidade e bonus de proficiencia. Se o total for igual ou superior a Classe de Armadura (CA) do alvo, o ataque acerta. Um 20 natural e um acerto critico (dobra os dados de dano), e um 1 natural e uma falha automatica.",
+      a: "Jogue um d20, adicione seu modificador de habilidade e bônus de proficiência. Se o total for igual ou superior à Classe de Armadura (CA) do alvo, o ataque acerta. Um 20 natural é um acerto crítico (dobra os dados de dano), e um 1 natural é uma falha automática.",
     },
     {
       q: "Como funcionam os testes contra a morte no D&D 5e?",
-      a: "Quando voce cai a 0 PV, jogue um d20 no inicio de cada turno sem modificadores. 10 ou mais e um sucesso, 9 ou menos e uma falha. Tres sucessos estabilizam voce, tres falhas significam morte. Um 20 natural significa que voce recupera 1 PV. Um 1 natural conta como duas falhas. Morte instantanea ocorre se o dano restante for igual ou superior ao maximo de PV.",
+      a: "Quando você cai a 0 PV, jogue um d20 no início de cada turno sem modificadores. 10 ou mais é um sucesso, 9 ou menos é uma falha. Três sucessos estabilizam você, três falhas significam morte. Um 20 natural significa que você recupera 1 PV. Um 1 natural conta como duas falhas. Morte instantânea ocorre se o dano restante for igual ou superior ao máximo de PV.",
     },
     {
       q: "Quais tipos de cobertura existem no D&D 5e?",
-      a: "Meia cobertura fornece +2 a CA e testes de DEX (muro baixo, mobilia, outra criatura). Tres quartos de cobertura fornece +5 a CA e testes de DEX (portcullis, seteira). Cobertura total significa que voce nao pode ser alvo direto de ataques ou magias.",
+      a: "Meia cobertura fornece +2 à CA e testes de DEX (muro baixo, mobília, outra criatura). Três quartos de cobertura fornece +5 à CA e testes de DEX (portcullis, seteira). Cobertura total significa que você não pode ser alvo direto de ataques ou magias.",
     },
     {
-      q: "Qual a diferenca entre descanso curto e descanso longo no D&D 5e?",
-      a: "Um descanso curto dura 1 ou mais horas onde voce pode gastar Dados de Vida para recuperar PV (jogue dado + modificador de CON por dado gasto). Um descanso longo dura 8 ou mais horas (6 de sono + 2 de atividade leve) onde voce recupera todos os PV, recupera Dados de Vida gastos (ate metade do total) e restaura espacos de magia. Voce so pode se beneficiar de um descanso longo por 24 horas.",
+      q: "Qual a diferença entre descanso curto e descanso longo no D&D 5e?",
+      a: "Um descanso curto dura 1 ou mais horas onde você pode gastar Dados de Vida para recuperar PV (jogue dado + modificador de CON por dado gasto). Um descanso longo dura 8 ou mais horas (6 de sono + 2 de atividade leve) onde você recupera todos os PV, recupera Dados de Vida gastos (até metade do total) e restaura espaços de magia. Você só pode se beneficiar de um descanso longo por 24 horas.",
     },
     {
-      q: "Como funciona a concentracao em magias no D&D 5e?",
-      a: "Voce so pode se concentrar em uma magia por vez. Quando toma dano enquanto concentrado, faca um teste de CON (CD e 10 ou metade do dano, o que for maior). Falha significa que a magia termina. Ser incapacitado ou morto tambem encerra a concentracao.",
+      q: "Como funciona a concentração em magias no D&D 5e?",
+      a: "Você só pode se concentrar em uma magia por vez. Quando toma dano enquanto concentrado, faça um teste de CON (CD é 10 ou metade do dano, o que for maior). Falha significa que a magia termina. Ser incapacitado ou morto também encerra a concentração.",
     },
     {
-      q: "O que sao componentes de magia no D&D 5e?",
-      a: "Magias podem requerer componentes Verbais (V) (falar palavras), Somaticos (S) (gestos com uma mao livre), ou Materiais (M) (itens especificos, que podem ser substituidos por um foco arcano ou bolsa de componentes).",
+      q: "O que são componentes de magia no D&D 5e?",
+      a: "Magias podem requerer componentes Verbais (V) (falar palavras), Somáticos (S) (gestos com uma mão livre), ou Materiais (M) (itens específicos, que podem ser substituídos por um foco arcano ou bolsa de componentes).",
     },
   ];
 
@@ -71,7 +71,7 @@ function RulesJsonLd() {
     "@type": "FAQPage",
     name: "Regras D&D 5e",
     description:
-      "Referencia completa de regras de Dungeons & Dragons 5a Edicao, cobrindo combate, ataques, dano, cobertura, descanso, condicoes e conjuracao.",
+      "Referência completa de regras de Dungeons & Dragons 5ª Edição, cobrindo combate, ataques, dano, cobertura, descanso, condições e conjuração.",
     mainEntity: faqs.map((f) => ({
       "@type": "Question",
       name: f.q,
@@ -112,7 +112,7 @@ export default function RegrasPage() {
         <main className="mx-auto max-w-5xl px-4 py-8">
           {/* Language toggle */}
           <p className="text-xs text-gray-500 mb-4">
-            Pagina disponivel em{" "}
+            Página disponível em{" "}
             <Link
               href="/rules"
               className="text-[#D4A853] hover:underline"
@@ -130,7 +130,7 @@ export default function RegrasPage() {
 
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
-            Conteudo SRD utilizado sob{" "}
+            Conteúdo SRD utilizado sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-300"
@@ -139,7 +139,7 @@ export default function RegrasPage() {
             >
               Creative Commons Attribution 4.0
             </a>
-            . D&amp;D e Dungeons &amp; Dragons sao marcas registradas da Wizards
+            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
             of the Coast.
           </p>
           <p className="mt-1">
