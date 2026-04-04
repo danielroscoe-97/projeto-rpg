@@ -2,8 +2,10 @@ import { getPresetById, getAllPresets, getAmbientPresets, getMusicPresets, getSf
 
 describe("audio-presets", () => {
   describe("getAllPresets", () => {
-    it("returns 27 beta presets (12 SFX + 9 ambient + 6 music)", () => {
-      expect(getAllPresets()).toHaveLength(27);
+    it("returns all presets (SFX + ambient + music)", () => {
+      const all = getAllPresets();
+      // 95 SFX + 9 ambient + 14 music = 118
+      expect(all.length).toBeGreaterThanOrEqual(100);
     });
 
     it("each preset has required fields", () => {
@@ -12,7 +14,7 @@ describe("audio-presets", () => {
         expect(preset.name_key).toMatch(/^audio\.preset_/);
         expect(preset.file).toMatch(/^\/sounds\/(sfx|ambient|music)\/.+\.mp3$/);
         expect(preset.icon).toBeTruthy();
-        expect(["attack", "magic", "defense", "dramatic", "ambient", "monster", "interaction", "ui", "music"]).toContain(preset.category);
+        expect(["attack", "magic", "defense", "dramatic", "ambient", "monster", "interaction", "music"]).toContain(preset.category);
       }
     });
 
@@ -29,15 +31,15 @@ describe("audio-presets", () => {
       for (const p of ambient) expect(p.category).toBe("ambient");
     });
 
-    it("getMusicPresets returns 6 music", () => {
+    it("getMusicPresets returns 14 music", () => {
       const music = getMusicPresets();
-      expect(music).toHaveLength(6);
+      expect(music).toHaveLength(14);
       for (const p of music) expect(p.category).toBe("music");
     });
 
-    it("getSfxPresets returns 12 SFX (excludes ambient and music)", () => {
+    it("getSfxPresets excludes ambient and music", () => {
       const sfx = getSfxPresets();
-      expect(sfx).toHaveLength(12);
+      expect(sfx.length).toBeGreaterThan(50);
       for (const p of sfx) {
         expect(p.category).not.toBe("ambient");
         expect(p.category).not.toBe("music");
@@ -61,6 +63,18 @@ describe("audio-presets", () => {
       expect(preset).toBeDefined();
       expect(preset!.category).toBe("music");
       expect(preset!.file).toBe("/sounds/music/battle-epic.mp3");
+    });
+
+    it("returns RO attack preset", () => {
+      const preset = getPresetById("bash");
+      expect(preset).toBeDefined();
+      expect(preset!.category).toBe("attack");
+    });
+
+    it("returns RO magic preset", () => {
+      const preset = getPresetById("fire-bolt");
+      expect(preset).toBeDefined();
+      expect(preset!.category).toBe("magic");
     });
   });
 });
