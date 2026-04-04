@@ -1329,6 +1329,10 @@
     "recap_stat_crits": "Crits",
     "recap_stat_fumbles": "Fumbles",
     "recap_stat_avg_turn": "Avg/Turn",
+    "recap_trend_faster": "{pct}% faster than last combat",
+    "recap_trend_slower": "{pct}% slower than last combat",
+    "timer_pause": "Pause timer",
+    "timer_resume": "Resume timer",
 
     "poll_title": "How was the difficulty?",
     "poll_very_easy": "Very Easy",

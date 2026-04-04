@@ -23,9 +23,11 @@ interface CombatRecapProps {
   campaignId?: string;
   /** Encounter ID for linking new reports */
   encounterId?: string;
+  /** CTA-11: Previous encounter duration in ms for trend comparison */
+  previousDurationMs?: number | null;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(report.awards.length > 0 ? "awards" : "details");
 
@@ -128,7 +130,7 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
                 <RecapNarratives narratives={report.narratives} />
 
                 {/* Summary + Rankings */}
-                <RecapSummary summary={report.summary} rankings={report.rankings} />
+                <RecapSummary summary={report.summary} rankings={report.rankings} previousDurationMs={previousDurationMs} />
 
                 {/* Actions */}
                 <RecapActions

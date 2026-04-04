@@ -1329,6 +1329,10 @@
     "recap_stat_crits": "Crits",
     "recap_stat_fumbles": "Fumbles",
     "recap_stat_avg_turn": "Média/Turno",
+    "recap_trend_faster": "{pct}% mais rápido que o último combate",
+    "recap_trend_slower": "{pct}% mais lento que o último combate",
+    "timer_pause": "Pausar timer",
+    "timer_resume": "Retomar timer",
 
     "poll_title": "Como foi a dificuldade?",
     "poll_very_easy": "Muito Fácil",

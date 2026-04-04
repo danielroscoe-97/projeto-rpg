@@ -4,20 +4,22 @@ import { useState, useEffect } from "react";
 
 interface TurnTimerProps {
   startTime: number;
+  isPaused?: boolean;
 }
 
-export function TurnTimer({ startTime }: TurnTimerProps) {
+export function TurnTimer({ startTime, isPaused = false }: TurnTimerProps) {
   const [elapsed, setElapsed] = useState(() =>
     Math.max(0, Math.floor((Date.now() - startTime) / 1000))
   );
 
   useEffect(() => {
+    if (isPaused) return;
     setElapsed(Math.max(0, Math.floor((Date.now() - startTime) / 1000)));
     const interval = setInterval(() => {
       setElapsed(Math.max(0, Math.floor((Date.now() - startTime) / 1000)));
     }, 1000);
     return () => clearInterval(interval);
-  }, [startTime]);
+  }, [startTime, isPaused]);
 
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;

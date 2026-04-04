@@ -92,6 +92,10 @@ export interface EncounterState {
   turnTimeSnapshots: Record<number, Record<string, number>>;
   /** Names of combatants removed mid-combat (ID → name), so their turn time isn't lost from stats. */
   removedCombatantNames: Record<string, string>;
+  /** CTA-12: Whether combat timer is paused (e.g., pizza break). */
+  isPaused: boolean;
+  /** CTA-12: Timestamp (ms) when pause started — used to shift timestamps on resume. */
+  pausedAt: number | null;
 }
 
 export interface CombatActions {
@@ -161,6 +165,8 @@ export interface CombatActions {
   incrementLegendaryAction: (id: string) => void;
   /** Set legendary actions used to an exact count (0 to total). */
   setLegendaryActionsUsed: (id: string, count: number) => void;
+  /** CTA-12: Toggle combat timer pause. On pause: freeze timers. On resume: shift timestamps forward by pause duration. */
+  toggleTimerPause: () => void;
 }
 
 // --- CP.1.1: Parsed Monster Action Types ---

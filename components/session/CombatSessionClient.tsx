@@ -49,7 +49,7 @@ import { StickyTurnHeader } from "@/components/combat/StickyTurnHeader";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
-import { Users, ScrollText } from "lucide-react";
+import { Users, ScrollText, Pause, Play } from "lucide-react";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
@@ -120,6 +120,7 @@ export function CombatSessionClient({
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
   const [combatReport, setCombatReport] = useState<CombatReport | null>(null);
   const [reportShareUrl, setReportShareUrl] = useState<string | null>(null);
+  const [previousDurationMs, setPreviousDurationMs] = useState<number | null>(null);
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
@@ -150,6 +151,7 @@ export function CombatSessionClient({
   const encounter_name = useCombatStore((s) => s.encounter_name);
   const combatStartedAt = useCombatStore((s) => s.combatStartedAt);
   const turnStartedAt = useCombatStore((s) => s.turnStartedAt);
+  const isPaused = useCombatStore((s) => s.isPaused);
 
   const {
     turnPending,
@@ -229,6 +231,25 @@ export function CombatSessionClient({
         .then((res) => res.ok ? res.json() : null)
         .then((data) => { if (data?.url) setReportShareUrl(data.url); })
         .catch(() => { /* non-fatal */ });
+
+      // CTA-11: Fetch previous encounter duration for trend comparison (fire-and-forget)
+      if (campaignId) {
+        (async () => {
+          try {
+            const sb = createClient();
+            const { data } = await sb
+              .from("encounters")
+              .select("duration_seconds, session_id!inner(campaign_id)")
+              .eq("session_id.campaign_id", campaignId)
+              .not("duration_seconds", "is", null)
+              .neq("id", encIdForSnapshot ?? "")
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            if (data?.duration_seconds) setPreviousDurationMs(data.duration_seconds * 1000);
+          } catch { /* non-fatal */ }
+        })();
+      }
 
       setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
       setShowActionLog(false); // Close action log to avoid overlapping with recap
@@ -1104,16 +1125,43 @@ export function CombatSessionClient({
   return (
     <div className="w-full max-w-6xl mx-auto px-2" data-testid="active-combat">
       <div className="sticky top-[72px] z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <h2 className="text-foreground font-semibold">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <h2 className="text-foreground font-semibold whitespace-nowrap">
             {encounter_name && <span className="mr-2">{encounter_name}</span>}
             {t("round")} <span className="font-mono text-gold">{round_number}</span>
           </h2>
-          {combatStartedAt && <CombatTimer startTime={combatStartedAt} />}
-          {turnStartedAt && <TurnTimer startTime={turnStartedAt} />}
+          {combatStartedAt && <CombatTimer startTime={combatStartedAt} isPaused={isPaused} />}
+          {turnStartedAt && <TurnTimer startTime={turnStartedAt} isPaused={isPaused} />}
+          {combatStartedAt && (
+            <button
+              type="button"
+              onClick={() => useCombatStore.getState().toggleTimerPause()}
+              className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md transition-colors ${
+                isPaused
+                  ? "text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
+                  : "text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.04]"
+              }`}
+              aria-label={isPaused ? t("timer_resume") : t("timer_pause")}
+              data-testid="timer-pause-btn"
+            >
+              {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+            </button>
+          )}
         </div>
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <button
+          type="button"
+          onClick={handleAdvanceTurn}
+          disabled={turnPending}
+          className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap inline-flex items-center gap-2"
+          aria-label="Advance to next turn"
+          data-testid="next-turn-btn"
+        >
+          {turnPending ? t("next_turn_saving") : t("next_turn")}
+          <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
+        </button>
+      </div>
+      <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
           </span>
@@ -1144,17 +1192,6 @@ export function CombatSessionClient({
             data-testid="add-combatant-btn"
           >
             {t("add_mid_combat")}
-          </button>
-          <button
-            type="button"
-            onClick={handleAdvanceTurn}
-            disabled={turnPending}
-            className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-            aria-label="Advance to next turn"
-            data-testid="next-turn-btn"
-          >
-            {turnPending ? t("next_turn_saving") : t("next_turn")}
-            <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
           </button>
           <DmAtmospherePanel
             onBroadcast={(event, payload) => broadcastEvent(sessionId ?? "", { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)}
@@ -1196,7 +1233,6 @@ export function CombatSessionClient({
           >
             <kbd className="text-[11px] font-mono px-1.5 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">?</kbd>
           </button>
-        </div>
       </div>
 
       <JoinRequestBanner
@@ -1374,6 +1410,7 @@ export function CombatSessionClient({
             existingShareUrl={reportShareUrl}
             campaignId={campaignId ?? undefined}
             encounterId={useCombatStore.getState().encounter_id ?? undefined}
+            previousDurationMs={previousDurationMs}
           />
         )}
       </AnimatePresence>

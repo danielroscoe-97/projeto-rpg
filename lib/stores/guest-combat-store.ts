@@ -105,6 +105,8 @@ interface GuestCombatState {
   turnCountById: Record<string, number>;
   isExpired: boolean;
   expandedGroups: Record<string, boolean>;
+  isPaused: boolean;
+  pausedAt: number | null;
 }
 
 interface GuestCombatActions {
@@ -136,6 +138,7 @@ interface GuestCombatActions {
   resetForNewSession: () => void;
   hydrateCombatants: (combatants: Combatant[]) => void;
   checkExpiry: () => boolean;
+  toggleTimerPause: () => void;
 }
 
 type GuestCombatStore = GuestCombatState & GuestCombatActions;
@@ -152,6 +155,8 @@ const initialState: GuestCombatState = {
   turnCountById: {},
   isExpired: false,
   expandedGroups: {},
+  isPaused: false,
+  pausedAt: null,
 };
 
 export const useGuestCombatStore = create<GuestCombatStore>()(
@@ -504,6 +509,20 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       },
 
       hydrateCombatants: (combatants) => set({ combatants }),
+
+      toggleTimerPause: () =>
+        set((state) => {
+          if (state.isPaused && state.pausedAt) {
+            const pausedMs = Date.now() - state.pausedAt;
+            return {
+              isPaused: false,
+              pausedAt: null,
+              combatStartTime: state.combatStartTime ? state.combatStartTime + pausedMs : null,
+              turnStartedAt: state.turnStartedAt ? state.turnStartedAt + pausedMs : null,
+            };
+          }
+          return { isPaused: true, pausedAt: Date.now() };
+        }),
     };
     },
     {

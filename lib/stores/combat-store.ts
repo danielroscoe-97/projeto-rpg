@@ -38,6 +38,8 @@ const initialState: EncounterState = {
   turnTimeAccumulated: {},
   turnTimeSnapshots: {},
   removedCombatantNames: {},
+  isPaused: false,
+  pausedAt: null,
 };
 
 export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, get) => ({
@@ -119,8 +121,8 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
 
   startCombat: () => {
     const now = Date.now();
-    try { localStorage.setItem("combat-timers", JSON.stringify({ combatStartedAt: now, turnStartedAt: now, turnTimeAccumulated: {} })); } catch { /* storage unavailable */ }
-    set({ is_active: true, current_turn_index: 0, combatStartedAt: now, turnStartedAt: now, turnTimeAccumulated: {} });
+    try { localStorage.setItem("combat-timers", JSON.stringify({ combatStartedAt: now, turnStartedAt: now, turnTimeAccumulated: {}, isPaused: false, pausedAt: null })); } catch { /* storage unavailable */ }
+    set({ is_active: true, current_turn_index: 0, combatStartedAt: now, turnStartedAt: now, turnTimeAccumulated: {}, isPaused: false, pausedAt: null });
   },
 
   hydrateCombatants: (combatants) => {
@@ -142,6 +144,10 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           combatStartedAt = parsed.combatStartedAt ?? null;
           turnStartedAt = parsed.turnStartedAt ?? null;
           turnTimeAccumulated = parsed.turnTimeAccumulated ?? {};
+          // CTA-12: restore pause state
+          if (parsed.isPaused) {
+            set({ isPaused: true, pausedAt: parsed.pausedAt ?? null });
+          }
         }
       } catch { /* ignore */ }
     }
@@ -536,6 +542,23 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           : c
       ),
     })),
+
+  // CTA-12: Toggle pause — freeze timers on pause, shift timestamps forward on resume
+  toggleTimerPause: () =>
+    set((state) => {
+      if (state.isPaused && state.pausedAt) {
+        // Resume: shift timestamps forward by paused duration so elapsed doesn't include break
+        const pausedMs = Date.now() - state.pausedAt;
+        const newCombatStartedAt = state.combatStartedAt ? state.combatStartedAt + pausedMs : null;
+        const newTurnStartedAt = state.turnStartedAt ? state.turnStartedAt + pausedMs : null;
+        try { localStorage.setItem("combat-timers", JSON.stringify({ combatStartedAt: newCombatStartedAt, turnStartedAt: newTurnStartedAt, turnTimeAccumulated: state.turnTimeAccumulated, isPaused: false, pausedAt: null })); } catch { /* */ }
+        return { isPaused: false, pausedAt: null, combatStartedAt: newCombatStartedAt, turnStartedAt: newTurnStartedAt };
+      }
+      // Pause: freeze
+      const now = Date.now();
+      try { const raw = localStorage.getItem("combat-timers"); const parsed = raw ? JSON.parse(raw) : {}; localStorage.setItem("combat-timers", JSON.stringify({ ...parsed, isPaused: true, pausedAt: now })); } catch { /* */ }
+      return { isPaused: true, pausedAt: now };
+    }),
 })));
 
 // Auto-persist combat state to localStorage on changes.

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
 import { withRateLimit } from "@/lib/rate-limit";
+import { sendCampaignInviteEmail } from "@/lib/notifications/campaign-invite";
 
 const MAX_INVITES_PER_DAY = 20;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,10 +73,18 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
 
     if (insertError) throw insertError;
 
-    // TODO: Trigger Novu campaign-invite workflow here
-    // For now, return the invite link for the DM to share manually
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
     const inviteLink = `${baseUrl}/auth/sign-up?invite=${token}&campaign=${campaignId}`;
+
+    // F-44: Send branded email invite via Novu (fail-open — invite link still works if Novu unavailable)
+    const { data: dmUser } = await supabase.from("users").select("display_name").eq("id", user.id).maybeSingle();
+    sendCampaignInviteEmail({
+      email,
+      dmName: dmUser?.display_name || user.email || "Dungeon Master",
+      campaignName: campaign.name,
+      inviteLink,
+      inviteToken: token,
+    }).catch(() => { /* fail-open: email is best-effort */ });
 
     return NextResponse.json({
       data: {

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Clock, Repeat, Swords, HeartCrack, Skull, Target, Dice5, Timer } from "lucide-react";
+import { Clock, Repeat, Swords, HeartCrack, Skull, Target, Dice5, Timer, TrendingDown, TrendingUp } from "lucide-react";
 import type { CombatReportSummary } from "@/lib/types/combat-report";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { formatDuration } from "@/lib/utils/combat-stats";
@@ -18,11 +18,18 @@ const BAR_COLORS = ["bg-gold", "bg-gray-400", "bg-amber-600"];
 interface RecapSummaryProps {
   summary: CombatReportSummary;
   rankings: CombatantStats[];
+  /** CTA-11: Previous encounter duration in ms for trend comparison */
+  previousDurationMs?: number | null;
 }
 
-export function RecapSummary({ summary, rankings }: RecapSummaryProps) {
+export function RecapSummary({ summary, rankings, previousDurationMs }: RecapSummaryProps) {
   const t = useTranslations("combat");
   const maxDamage = rankings.length > 0 ? rankings[0].totalDamageDealt : 1;
+
+  // CTA-11: Calculate trend vs previous encounter
+  const trend = previousDurationMs && previousDurationMs > 0 && summary.totalDuration > 0
+    ? Math.round(((summary.totalDuration - previousDurationMs) / previousDurationMs) * 100)
+    : null;
 
   const statItems = [
     { icon: Clock, label: t("recap_stat_duration"), value: formatDuration(summary.totalDuration), show: summary.totalDuration > 0 },
@@ -56,6 +63,20 @@ export function RecapSummary({ summary, rankings }: RecapSummaryProps) {
             </div>
           );
         })}
+        {trend !== null && Math.abs(trend) >= 5 && (
+          <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 border ${
+            trend < 0
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+              : "bg-amber-500/10 border-amber-500/20 text-amber-400"
+          }`}>
+            {trend < 0 ? <TrendingDown className="size-3.5" /> : <TrendingUp className="size-3.5" />}
+            <span className="text-xs font-medium">
+              {trend < 0
+                ? t("recap_trend_faster", { pct: Math.abs(trend) })
+                : t("recap_trend_slower", { pct: trend })}
+            </span>
+          </div>
+        )}
       </motion.div>
 
       {/* Damage ranking */}

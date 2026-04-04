@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText, Pause, Play } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
 import { useGuestCombatStore, getGuestNumberedName, saveGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
@@ -930,6 +930,7 @@ export function GuestCombatClient() {
 
   // Turn timer — now sourced from the store (accumulates on advanceTurn)
   const turnStartedAt = useGuestCombatStore((s) => s.turnStartedAt);
+  const isPaused = useGuestCombatStore((s) => s.isPaused);
 
   // Wrap advanceTurn to push undo entry first (Story 1.1)
   const handleAdvanceTurn = useCallback(() => {
@@ -1483,15 +1484,41 @@ export function GuestCombatClient() {
     <>
       <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat" data-tour-id="tour-complete">
         <div className="sticky top-[72px] z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-foreground font-semibold">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <h2 className="text-foreground font-semibold whitespace-nowrap">
               {t("round")} <span className="font-mono text-gold">{roundNumber}</span>
             </h2>
-            {combatStartTime && <CombatTimer startTime={combatStartTime} />}
-            {turnStartedAt && <TurnTimer startTime={turnStartedAt} />}
+            {combatStartTime && <CombatTimer startTime={combatStartTime} isPaused={isPaused} />}
+            {turnStartedAt && <TurnTimer startTime={turnStartedAt} isPaused={isPaused} />}
+            {combatStartTime && (
+              <button
+                type="button"
+                onClick={() => useGuestCombatStore.getState().toggleTimerPause()}
+                className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md transition-colors ${
+                  isPaused
+                    ? "text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
+                    : "text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.04]"
+                }`}
+                aria-label={isPaused ? t("timer_resume") : t("timer_pause")}
+                data-testid="timer-pause-btn"
+              >
+                {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+              </button>
+            )}
           </div>
-          <div className="flex items-center gap-3 flex-wrap" data-tour-id="combat-controls">
+          <button
+            type="button"
+            onClick={handleAdvanceTurn}
+            className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] shrink-0 whitespace-nowrap"
+            aria-label="Advance to next turn"
+            data-testid="next-turn-btn"
+            data-tour-id="next-turn"
+          >
+            {t("next_turn")}
+          </button>
+        </div>
+        <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide" data-tour-id="combat-controls">
             {/* Action log toggle */}
             <button
               type="button"
@@ -1591,17 +1618,6 @@ export function GuestCombatClient() {
               <Undo2 className="w-4 h-4" aria-hidden="true" />
             </button>
 
-            <button
-              type="button"
-              onClick={handleAdvanceTurn}
-              className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
-              aria-label="Advance to next turn"
-              data-testid="next-turn-btn"
-              data-tour-id="next-turn"
-            >
-              {t("next_turn")}
-            </button>
-          </div>
         </div>
         {/* Sticky turn indicator row */}
         {phase === "combat" && (
