@@ -15,6 +15,19 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  /* Fade-out hint on right edge for horizontally scrollable containers.
+     Apply to a PARENT wrapper (position:relative) around the scrollable element. */
+  .scroll-fade-hint::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 32px;
+    background: linear-gradient(to right, transparent, var(--background));
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 /* Smooth scroll + offset for fixed navbar */

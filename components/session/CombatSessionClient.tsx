@@ -1164,6 +1164,7 @@ export function CombatSessionClient({
           <kbd className="hidden md:inline text-[10px] font-mono px-1 py-0.5 bg-black/20 rounded">Space</kbd>
         </button>
       </div>
+      <div className="relative scroll-fade-hint">
       <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
@@ -1236,6 +1237,7 @@ export function CombatSessionClient({
           >
             <kbd className="text-[11px] font-mono px-1.5 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">?</kbd>
           </button>
+      </div>
       </div>
 
       <JoinRequestBanner

@@ -707,7 +707,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onSetDefeated?.(combatant.id, false)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600/50 border border-emerald-500/30"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-500/80 text-emerald-100 hover:bg-emerald-500 border border-emerald-400/70"
                 aria-label={t("revive_aria")}
                 data-testid={`revive-btn-${combatant.id}`}
               >

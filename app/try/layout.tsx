@@ -8,7 +8,7 @@ import { TourProvider } from "@/components/tour/TourProvider";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 
 export default async function TryLayout({ children }: { children: React.ReactNode }) {
-  const t = await getTranslations("common");
+  const t = await getTranslations("nav");
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar
