@@ -1,4 +1,10 @@
 import type { CombatLogEntry } from "@/lib/stores/combat-log-store";
+import type { Combatant } from "@/lib/types/combat";
+import type {
+  CombatReport,
+  CombatReportAward,
+  CombatReportNarrative,
+} from "@/lib/types/combat-report";
 
 export interface CombatantStats {
   name: string;
@@ -194,6 +200,7 @@ export function getTimeAwards(stats: CombatantStats[]): {
 
 /**
  * Generate a shareable text summary of combat results.
+ * @deprecated Use formatRecapShareText() for the expanded version with awards + narratives.
  */
 export function formatShareText(
   stats: CombatantStats[],
@@ -235,6 +242,393 @@ export function formatShareText(
     const avg = formatDuration(slowpoke.totalTurnTime / slowpoke.turnCount);
     lines.push(`Slowpoke: ${slowpoke.name} (avg ${avg}/turn)`);
   }
+
+  return lines.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Combat Report Builder
+// ---------------------------------------------------------------------------
+
+/**
+ * Detect epic narrative moments from combat log entries + combatant state.
+ * Returns max 3 narratives, sorted by priority.
+ */
+export function detectNarratives(
+  entries: CombatLogEntry[],
+  combatants: Combatant[],
+  t: (key: string, values?: Record<string, string | number>) => string,
+): CombatReportNarrative[] {
+  const narratives: CombatReportNarrative[] = [];
+
+  // --- Clutch Save: death save with nat20 ---
+  for (const e of entries) {
+    if (e.type === "save" && e.details?.isNat20 && e.actorName) {
+      narratives.push({
+        type: "clutch_save",
+        text: t("recap_narrative_clutch_save", { name: e.actorName }),
+        round: e.round,
+        actors: [e.actorName],
+      });
+    }
+  }
+
+  // --- Near Death: PC survived at <= 10% HP ---
+  for (const c of combatants) {
+    if (c.is_player && !c.is_defeated && c.max_hp > 0 && c.current_hp > 0) {
+      const ratio = c.current_hp / c.max_hp;
+      if (ratio <= 0.1) {
+        narratives.push({
+          type: "near_death",
+          text: t("recap_narrative_near_death", { name: c.name, hp: c.current_hp }),
+          round: 0, // can't pinpoint exact round from final state
+          actors: [c.name],
+        });
+      }
+    }
+  }
+
+  // --- One-shot: a single damage entry in the defeat round killed the target ---
+  const defeatEntries = entries.filter((e) => e.type === "defeat" && e.targetName);
+  for (const defeat of defeatEntries) {
+    // Collect ALL damage entries to this target in the same round
+    const roundDamageHits = entries.filter(
+      (e) => e.type === "damage" && e.targetName === defeat.targetName && e.round === defeat.round && (e.details?.damageAmount ?? 0) > 0,
+    );
+    // Only count as one-shot if exactly one damage entry killed it
+    if (roundDamageHits.length === 1) {
+      const hit = roundDamageHits[0];
+      const dmg = hit.details?.damageAmount ?? 0;
+      if (hit.actorName) {
+        const dmgType = hit.details?.damageType;
+        narratives.push({
+          type: "one_shot",
+          text: dmgType
+            ? t("recap_narrative_one_shot_typed", { actor: hit.actorName, target: defeat.targetName!, damage: dmg, type: dmgType })
+            : t("recap_narrative_one_shot", { actor: hit.actorName, target: defeat.targetName!, damage: dmg }),
+          round: defeat.round,
+          actors: [hit.actorName, defeat.targetName!],
+        });
+      }
+    }
+  }
+
+  // --- Epic Comeback: highest PC damage round came after a PC fell ---
+  const pcDefeats = entries.filter(
+    (e) => e.type === "defeat" && e.targetName && combatants.some((c) => c.name === e.targetName && c.is_player),
+  );
+  if (pcDefeats.length > 0) {
+    const firstPcDownRound = Math.min(...pcDefeats.map((e) => e.round));
+    // Compute PC damage per round AFTER the first PC fell
+    const pcNames = new Set(combatants.filter((c) => c.is_player).map((c) => c.name));
+    const dmgPerRound = new Map<number, number>();
+    for (const e of entries) {
+      if (e.type === "damage" && e.actorName && pcNames.has(e.actorName) && e.round > firstPcDownRound) {
+        dmgPerRound.set(e.round, (dmgPerRound.get(e.round) ?? 0) + (e.details?.damageAmount ?? 0));
+      }
+    }
+    if (dmgPerRound.size > 0) {
+      let bestRound = 0;
+      let bestDmg = 0;
+      for (const [round, dmg] of dmgPerRound) {
+        if (dmg > bestDmg) { bestDmg = dmg; bestRound = round; }
+      }
+      if (bestDmg > 0) {
+        const fallenPc = pcDefeats.find((e) => e.round === firstPcDownRound)?.targetName ?? "";
+        narratives.push({
+          type: "epic_comeback",
+          text: t("recap_narrative_epic_comeback", { name: fallenPc, round: bestRound, damage: bestDmg }),
+          round: bestRound,
+          actors: [fallenPc],
+        });
+      }
+    }
+  }
+
+  // Priority: clutch_save > near_death > one_shot > epic_comeback
+  const priorityOrder: Record<string, number> = { clutch_save: 0, near_death: 1, one_shot: 2, epic_comeback: 3 };
+  narratives.sort((a, b) => (priorityOrder[a.type] ?? 9) - (priorityOrder[b.type] ?? 9));
+
+  return narratives.slice(0, 3);
+}
+
+/**
+ * Build awards list from computed stats.
+ */
+export function buildAwards(
+  stats: CombatantStats[],
+  t: (key: string, values?: Record<string, string | number>) => string,
+): CombatReportAward[] {
+  const awards: CombatReportAward[] = [];
+
+  // MVP — most damage dealt
+  const mvp = stats.length > 0 && stats[0].totalDamageDealt > 0 ? stats[0] : null;
+  if (mvp) {
+    awards.push({
+      type: "mvp",
+      combatantName: mvp.name,
+      value: mvp.totalDamageDealt,
+      displayValue: t("recap_award_value_damage", { value: mvp.totalDamageDealt }),
+    });
+  }
+
+  // Assassin — most knockouts
+  const assassin = getTopForStat(stats, "knockouts");
+  if (assassin) {
+    awards.push({
+      type: "assassin",
+      combatantName: assassin.name,
+      value: assassin.knockouts,
+      displayValue: t("recap_award_value_kills", { value: assassin.knockouts }),
+    });
+  }
+
+  // Tank — most damage received
+  const tank = getTopForStat(stats, "totalDamageReceived");
+  if (tank) {
+    awards.push({
+      type: "tank",
+      combatantName: tank.name,
+      value: tank.totalDamageReceived,
+      displayValue: t("recap_award_value_received", { value: tank.totalDamageReceived }),
+    });
+  }
+
+  // Healer — most healing
+  const healer = getTopForStat(stats, "totalHealing");
+  if (healer) {
+    awards.push({
+      type: "healer",
+      combatantName: healer.name,
+      value: healer.totalHealing,
+      displayValue: t("recap_award_value_healed", { value: healer.totalHealing }),
+    });
+  }
+
+  // Crit King — most critical hits
+  const critKing = getTopForStat(stats, "criticalHits");
+  if (critKing) {
+    awards.push({
+      type: "crit_king",
+      combatantName: critKing.name,
+      value: critKing.criticalHits,
+      displayValue: t("recap_award_value_crits", { value: critKing.criticalHits }),
+    });
+  }
+
+  // Unlucky — most critical fails
+  const unlucky = getTopForStat(stats, "criticalFails");
+  if (unlucky) {
+    awards.push({
+      type: "unlucky",
+      combatantName: unlucky.name,
+      value: unlucky.criticalFails,
+      displayValue: t("recap_award_value_fumbles", { value: unlucky.criticalFails }),
+    });
+  }
+
+  // Speedster & Slowpoke
+  const { speedster, slowpoke } = getTimeAwards(stats);
+  if (speedster) {
+    const avg = speedster.totalTurnTime / speedster.turnCount;
+    awards.push({
+      type: "speedster",
+      combatantName: speedster.name,
+      value: avg,
+      displayValue: t("recap_award_value_avg_turn", { time: formatDuration(avg) }),
+    });
+  }
+  if (slowpoke) {
+    const avg = slowpoke.totalTurnTime / slowpoke.turnCount;
+    awards.push({
+      type: "slowpoke",
+      combatantName: slowpoke.name,
+      value: avg,
+      displayValue: t("recap_award_value_avg_turn", { time: formatDuration(avg) }),
+    });
+  }
+
+  return awards;
+}
+
+/**
+ * Build a complete CombatReport from raw combat data.
+ * This is the single entry point that feeds the CombatRecap UI, share text, and persistence.
+ */
+export function buildCombatReport(opts: {
+  entries: CombatLogEntry[];
+  combatants: Combatant[];
+  turnTimeAccumulated: Record<string, number>;
+  idToName: Record<string, string>;
+  encounterName: string;
+  combatDuration: number;
+  roundNumber: number;
+  t: (key: string, values?: Record<string, string | number>) => string;
+}): CombatReport {
+  const { entries, combatants, turnTimeAccumulated, idToName, encounterName, combatDuration, roundNumber, t } = opts;
+
+  // Rankings (reuses existing logic)
+  const rankings = computeCombatStats(entries, turnTimeAccumulated, idToName);
+
+  // Awards
+  const awards = buildAwards(rankings, t);
+
+  // Narratives
+  const narratives = detectNarratives(entries, combatants, t);
+
+  // Summary
+  const pcs = combatants.filter((c) => c.is_player);
+  const monsters = combatants.filter((c) => !c.is_player && !c.is_lair_action);
+
+  const totalDamage = rankings.reduce((sum, s) => sum + s.totalDamageDealt, 0);
+  const totalCrits = rankings.reduce((sum, s) => sum + s.criticalHits, 0);
+  const totalFumbles = rankings.reduce((sum, s) => sum + s.criticalFails, 0);
+  const totalTurnTime = rankings.reduce((sum, s) => sum + s.totalTurnTime, 0);
+  const totalTurnCount = rankings.reduce((sum, s) => sum + s.turnCount, 0);
+
+  const summary = {
+    totalDuration: combatDuration,
+    totalRounds: roundNumber,
+    totalDamage,
+    pcsDown: pcs.filter((c) => c.is_defeated).length,
+    monstersDefeated: monsters.filter((c) => c.is_defeated).length,
+    totalCrits,
+    totalFumbles,
+    avgTurnTime: totalTurnCount > 0 ? totalTurnTime / totalTurnCount : 0,
+    matchup: `${pcs.length} vs ${monsters.length}`,
+  };
+
+  return {
+    awards,
+    narratives,
+    summary,
+    rankings,
+    encounterName,
+    timestamp: Date.now(),
+  };
+}
+
+/**
+ * Build a CombatReport from pre-computed CombatantStats (for guest mode without log entries).
+ * Awards and summary are computed from stats; narratives require combatant state for near_death detection.
+ */
+export function buildCombatReportFromStats(opts: {
+  stats: CombatantStats[];
+  combatants: Combatant[];
+  encounterName: string;
+  combatDuration: number;
+  roundNumber: number;
+  t: (key: string, values?: Record<string, string | number>) => string;
+}): CombatReport {
+  const { stats, combatants, encounterName, combatDuration, roundNumber, t } = opts;
+
+  const awards = buildAwards(stats, t);
+
+  // Guest mode: limited narratives (no log entries for clutch_save/one_shot)
+  // Only detect near_death from combatant final state
+  const narratives: CombatReportNarrative[] = [];
+  for (const c of combatants) {
+    if (c.is_player && !c.is_defeated && c.max_hp > 0 && c.current_hp > 0 && c.current_hp / c.max_hp <= 0.1) {
+      narratives.push({
+        type: "near_death",
+        text: t("recap_narrative_near_death", { name: c.name, hp: c.current_hp }),
+        round: 0,
+        actors: [c.name],
+      });
+    }
+  }
+
+  const pcs = combatants.filter((c) => c.is_player);
+  const monsters = combatants.filter((c) => !c.is_player && !c.is_lair_action);
+  const totalDamage = stats.reduce((sum, s) => sum + s.totalDamageDealt, 0);
+  const totalTurnTime = stats.reduce((sum, s) => sum + s.totalTurnTime, 0);
+  const totalTurnCount = stats.reduce((sum, s) => sum + s.turnCount, 0);
+
+  return {
+    awards,
+    narratives: narratives.slice(0, 3),
+    summary: {
+      totalDuration: combatDuration,
+      totalRounds: roundNumber,
+      totalDamage,
+      pcsDown: pcs.filter((c) => c.is_defeated).length,
+      monstersDefeated: monsters.filter((c) => c.is_defeated).length,
+      totalCrits: stats.reduce((sum, s) => sum + s.criticalHits, 0),
+      totalFumbles: stats.reduce((sum, s) => sum + s.criticalFails, 0),
+      avgTurnTime: totalTurnCount > 0 ? totalTurnTime / totalTurnCount : 0,
+      matchup: `${pcs.length} vs ${monsters.length}`,
+    },
+    rankings: stats,
+    encounterName,
+    timestamp: Date.now(),
+  };
+}
+
+/**
+ * Generate an expanded shareable text from a CombatReport (Spotify Wrapped style with emojis).
+ */
+export function formatRecapShareText(report: CombatReport): string {
+  const { awards, narratives, summary, encounterName } = report;
+  const lines: string[] = [];
+
+  lines.push("\u2694\ufe0f Pocket DM \u2014 Combat Recap");
+  lines.push("\u2501".repeat(28));
+  lines.push(
+    `\ud83d\udde1\ufe0f ${summary.matchup} | \u23f1\ufe0f ${summary.totalRounds} rounds | \ud83d\udd50 ${formatDuration(summary.totalDuration)}`,
+  );
+  if (encounterName) {
+    lines.push(`\ud83d\udcdc ${encounterName}`);
+  }
+  lines.push("");
+
+  // Awards
+  const awardEmojis: Record<string, string> = {
+    mvp: "\ud83c\udfc6",
+    assassin: "\ud83d\udc80",
+    tank: "\ud83d\udee1\ufe0f",
+    healer: "\ud83d\udc9a",
+    crit_king: "\ud83c\udfaf",
+    unlucky: "\ud83d\ude2c",
+    speedster: "\u26a1",
+    slowpoke: "\ud83d\udc22",
+  };
+  const awardLabels: Record<string, string> = {
+    mvp: "MVP",
+    assassin: "Assassin",
+    tank: "Tank",
+    healer: "Healer",
+    crit_king: "Crit King",
+    unlucky: "Unlucky",
+    speedster: "Speedster",
+    slowpoke: "Slowpoke",
+  };
+
+  for (const award of awards) {
+    const emoji = awardEmojis[award.type] ?? "\u2b50";
+    const label = awardLabels[award.type] ?? award.type;
+    lines.push(`${emoji} ${label}: ${award.combatantName} \u2014 ${award.displayValue}`);
+  }
+
+  // Narratives
+  if (narratives.length > 0) {
+    lines.push("");
+    lines.push("\ud83d\udcd6 Epic moments:");
+    for (const n of narratives) {
+      lines.push(`\u2022 ${n.text}`);
+    }
+  }
+
+  // Footer stats
+  lines.push("");
+  const footerParts: string[] = [];
+  if (summary.pcsDown > 0) footerParts.push(`\ud83d\udc94 ${summary.pcsDown} PCs down`);
+  if (summary.monstersDefeated > 0) footerParts.push(`\ud83d\udc80 ${summary.monstersDefeated} monsters slain`);
+  if (footerParts.length > 0) lines.push(footerParts.join(" | "));
+  if (summary.totalCrits > 0 || summary.totalFumbles > 0) {
+    lines.push(`\ud83c\udfb2 ${summary.totalCrits} crits | ${summary.totalFumbles} fumbles`);
+  }
+  lines.push("\u2501".repeat(28));
+  lines.push("\ud83d\udd17 pocketdm.app/try");
 
   return lines.join("\n");
 }

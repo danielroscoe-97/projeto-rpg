@@ -47,7 +47,7 @@ interface PlayerInput {
   spell_save_dc: number | null;
 }
 
-type WizardStep = "welcome" | "choose" | 1 | 2 | 3 | 4 | "done";
+type WizardStep = "welcome" | "choose" | "express" | 1 | 2 | 3 | 4 | "done";
 
 interface WizardState {
   step: WizardStep;
@@ -327,29 +327,31 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
     });
   }
 
-  // ── Step 4 submit ─────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (state.isSubmitting) return;
-    setState((s) => ({ ...s, isSubmitting: true, error: null }));
+  // ── Shared campaign+session creation ────────────────────────────
+  async function createCampaignWithSession(opts: {
+    campaignName: string;
+    encounterName: string;
+    players: PlayerInput[];
+  }): Promise<string> {
     const supabase = createClient();
-    const campaignName = state.campaignName.trim();
-    const encounterName = state.encounterName.trim();
+    const { campaignName, encounterName, players } = opts;
 
-    try {
-      // 1. Create Campaign — delete any orphaned campaign first (retry-safe)
-      await supabase.from("campaigns").delete().eq("owner_id", userId);
-      const { data: campaign, error: campaignErr } = await supabase
-        .from("campaigns")
-        .insert({ owner_id: userId, name: campaignName })
-        .select("id")
-        .single();
-      if (campaignErr || !campaign) {
-        captureError(campaignErr, { component: "OnboardingWizard", action: "createCampaign", category: "database" });
-        throw new Error(t("error_campaign"));
-      }
+    // 1. Create Campaign — delete any orphaned campaign first (retry-safe)
+    await supabase.from("campaigns").delete().eq("owner_id", userId);
+    const { data: campaign, error: campaignErr } = await supabase
+      .from("campaigns")
+      .insert({ owner_id: userId, name: campaignName })
+      .select("id")
+      .single();
+    if (campaignErr || !campaign) {
+      captureError(campaignErr, { component: "OnboardingWizard", action: "createCampaign", category: "database" });
+      throw new Error(t("error_campaign"));
+    }
 
-      // 2. Insert PlayerCharacters
-      const characters = state.players.map((p) => ({
+    // 2. Insert PlayerCharacters
+    const validPlayers = players.filter((p) => p.name.trim());
+    if (validPlayers.length > 0) {
+      const characters = validPlayers.map((p) => ({
         campaign_id: campaign.id,
         name: p.name.trim(),
         max_hp: p.max_hp || 10,
@@ -362,50 +364,65 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
         captureError(pcErr, { component: "OnboardingWizard", action: "insertPlayers", category: "database" });
         throw new Error(t("error_players"));
       }
+    }
 
-      // 3. Create Session
-      const { data: session, error: sessionErr } = await supabase
-        .from("sessions")
-        .insert({
-          campaign_id: campaign.id,
-          owner_id: userId,
-          name: `${campaignName} - Session 1`,
-          ruleset_version: "2014" as const,
-        })
-        .select("id")
-        .single();
-      if (sessionErr || !session) {
-        captureError(sessionErr, { component: "OnboardingWizard", action: "createSession", category: "database" });
-        throw new Error(t("error_session"));
-      }
+    // 3. Create Session
+    const { data: session, error: sessionErr } = await supabase
+      .from("sessions")
+      .insert({
+        campaign_id: campaign.id,
+        owner_id: userId,
+        name: `${campaignName} - Session 1`,
+        ruleset_version: "2014" as const,
+      })
+      .select("id")
+      .single();
+    if (sessionErr || !session) {
+      captureError(sessionErr, { component: "OnboardingWizard", action: "createSession", category: "database" });
+      throw new Error(t("error_session"));
+    }
 
-      // 4. Create Encounter
-      const { error: encErr } = await supabase.from("encounters").insert({
-        session_id: session.id,
-        name: encounterName,
-        is_active: true,
+    // 4. Create Encounter
+    const { error: encErr } = await supabase.from("encounters").insert({
+      session_id: session.id,
+      name: encounterName,
+      is_active: true,
+    });
+    if (encErr) {
+      captureError(encErr, { component: "OnboardingWizard", action: "createEncounter", category: "database" });
+      throw new Error(t("error_encounter"));
+    }
+
+    // 5. Generate Session Token
+    const token = crypto.randomUUID();
+    const { error: tokenErr } = await supabase
+      .from("session_tokens")
+      .insert({ session_id: session.id, token, is_active: true });
+    if (tokenErr) {
+      captureError(tokenErr, { component: "OnboardingWizard", action: "createToken", category: "database" });
+      throw new Error(t("error_link"));
+    }
+
+    // 6. Mark wizard_completed
+    await supabase
+      .from("user_onboarding")
+      .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
+
+    return token;
+  }
+
+  // ── Step 4 submit ─────────────────────────────────────────────────
+  async function handleSubmit() {
+    if (state.isSubmitting) return;
+    setState((s) => ({ ...s, isSubmitting: true, error: null }));
+
+    try {
+      const token = await createCampaignWithSession({
+        campaignName: state.campaignName.trim(),
+        encounterName: state.encounterName.trim(),
+        players: state.players,
       });
-      if (encErr) {
-        captureError(encErr, { component: "OnboardingWizard", action: "createEncounter", category: "database" });
-        throw new Error(t("error_encounter"));
-      }
 
-      // 5. Generate Session Token
-      const token = crypto.randomUUID();
-      const { error: tokenErr } = await supabase
-        .from("session_tokens")
-        .insert({ session_id: session.id, token, is_active: true });
-      if (tokenErr) {
-        captureError(tokenErr, { component: "OnboardingWizard", action: "createToken", category: "database" });
-        throw new Error(t("error_link"));
-      }
-
-      // 6. Mark wizard_completed (upsert garante que funciona mesmo se row não existe)
-      await supabase
-        .from("user_onboarding")
-        .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
-
-      // Clear sessionStorage
       try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
 
       setState((s) => ({
@@ -439,7 +456,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
         guestPreview={guestPreview}
         onContinue={() => {
           if (effectiveSource === "guest_combat") {
-            setState((s) => ({ ...s, step: 1 }));
+            setState((s) => ({ ...s, step: "express" }));
           } else {
             setState((s) => ({ ...s, step: "choose" }));
           }
@@ -481,7 +498,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
                   .from("user_onboarding")
                   .upsert({ user_id: userId, wizard_completed: true }, { onConflict: "user_id" });
               } catch { /* best-effort */ }
-              router.push("/app/session/new");
+              // Redirect to dashboard so the tour runs first, then session/new
+              router.push("/app/dashboard?from=wizard&next=session");
             }}
             className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 cursor-pointer"
           >
@@ -535,6 +553,128 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
           </button>
         </div>
       </div>
+    );
+  }
+
+  // ── Express Step (1-screen onboarding for guest_combat) ─────────
+  if (state.step === "express" && effectiveSource === "guest_combat") {
+    const pcCount = state.players.filter((p) => p.name.trim()).length;
+    const defaultEncounterName = t("express_encounter_default");
+
+    async function handleExpressSubmit() {
+      if (state.isSubmitting) return;
+      const trimmedCampaign = state.campaignName.trim();
+      if (!trimmedCampaign) {
+        setState((s) => ({ ...s, error: t("campaign_name_required"), fieldErrors: new Set(["campaign-name"]) }));
+        return;
+      }
+      const encName = state.encounterName.trim() || defaultEncounterName;
+      setState((s) => ({ ...s, encounterName: encName, isSubmitting: true, error: null }));
+
+      try {
+        const token = await createCampaignWithSession({
+          campaignName: trimmedCampaign,
+          encounterName: encName,
+          players: state.players,
+        });
+
+        try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
+
+        setState((s) => ({
+          ...s,
+          sessionLink: `${window.location.origin}/join/${token}`,
+          step: "done",
+          isSubmitting: false,
+          showCelebration: true,
+        }));
+      } catch (err) {
+        const message = err instanceof Error ? err.message : t("error_generic");
+        setState((s) => ({ ...s, error: message, isSubmitting: false }));
+      }
+    }
+
+    return (
+      <Card className="max-w-lg w-full" data-testid="onboarding-express">
+        <CardHeader>
+          <Image
+            src="/art/icons/carta.png"
+            alt=""
+            width={48}
+            height={48}
+            className="pixel-art mx-auto mb-2 opacity-70"
+            aria-hidden="true"
+            unoptimized
+          />
+          <CardTitle className="text-center">{t("express_title")}</CardTitle>
+          <CardDescription className="text-center">{t("express_description")}</CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {/* Campaign name */}
+          <div className="space-y-2">
+            <Label htmlFor="express-campaign">{t("campaign_name_label")}</Label>
+            <Input
+              id="express-campaign"
+              value={state.campaignName}
+              onChange={(e) => handleCampaignNameChange(e.target.value)}
+              placeholder={t("campaign_name_guest_default")}
+              maxLength={50}
+              autoFocus
+              className={state.fieldErrors.has("campaign-name") ? "border-red-500" : ""}
+            />
+          </div>
+
+          {/* Players preview (read-only) */}
+          {pcCount > 0 && (
+            <div className="space-y-2">
+              <Label>{t("express_players_label", { count: pcCount })}</Label>
+              <div className="flex flex-wrap gap-2">
+                {state.players.filter((p) => p.name.trim()).map((p) => (
+                  <span
+                    key={p._id}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] px-3 py-1 text-sm text-foreground"
+                  >
+                    {p.name}
+                    {p.max_hp > 0 && (
+                      <span className="text-xs text-muted-foreground">HP {p.max_hp}</span>
+                    )}
+                  </span>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setState((s) => ({ ...s, step: 2 as WizardStep }))}
+                className="text-xs text-gold hover:underline"
+              >
+                {t("express_edit_players")}
+              </button>
+            </div>
+          )}
+
+          {state.error && (
+            <p className="text-sm text-red-400">{state.error}</p>
+          )}
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-2">
+          <Button
+            onClick={handleExpressSubmit}
+            disabled={state.isSubmitting}
+            className="w-full"
+            data-testid="express-submit-btn"
+          >
+            {state.isSubmitting && <Loader2 className="size-4 mr-2 animate-spin" />}
+            {t("express_submit")}
+          </Button>
+          <button
+            type="button"
+            onClick={() => setState((s) => ({ ...s, step: 1 as WizardStep }))}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            {t("express_customize")}
+          </button>
+        </CardFooter>
+      </Card>
     );
   }
 
