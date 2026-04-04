@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 
@@ -73,6 +73,7 @@ interface PublicMonsterGridProps {
     clearAll?: string;
     of?: string;
     monsters?: string;
+    filters?: string;
   };
 }
 
@@ -85,10 +86,22 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
     clearAll = "Clear all filters",
     of = "of",
     monsters: monstersLabel = "monsters",
+    filters: filtersLabel = "Filters",
   } = labels;
   const [query, setQuery] = useState("");
   const [crFilter, setCrFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const [filtersHeight, setFiltersHeight] = useState(0);
+
+  useEffect(() => {
+    if (filtersRef.current) {
+      setFiltersHeight(filtersRef.current.scrollHeight);
+    }
+  }, [filtersOpen]);
+
+  const activeFilterCount = (crFilter ? 1 : 0) + (typeFilter ? 1 : 0);
 
   const filtered = useMemo(() => {
     let result = monsters;
@@ -159,46 +172,78 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
           />
         </div>
 
-        {/* CR chips */}
-        <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">{crLabel}</span>
-          {CR_RANGES.map((r) => (
-            <button
-              key={r.label}
-              type="button"
-              onClick={() => setCrFilter(crFilter === r.label ? null : r.label)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                crFilter === r.label
-                  ? "bg-[#D4A853] text-gray-950 shadow-sm"
-                  : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
+        {/* Filter toggle */}
+        <button
+          type="button"
+          onClick={() => setFiltersOpen(!filtersOpen)}
+          className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          <svg
+            className={`w-4 h-4 transition-transform duration-200 ${filtersOpen ? "rotate-90" : ""}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
+          </svg>
+          {filtersLabel}
+          {activeFilterCount > 0 && (
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#D4A853] text-gray-950 text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+
+        {/* Collapsible CR + Type chips */}
+        <div
+          ref={filtersRef}
+          className="overflow-hidden transition-all duration-200 ease-in-out"
+          style={{ maxHeight: filtersOpen ? filtersHeight : 0, opacity: filtersOpen ? 1 : 0 }}
+        >
+          <div className="space-y-3 pt-1">
+            {/* CR chips */}
+            <div className="flex flex-wrap gap-1.5 items-center">
+              <span className="text-xs text-gray-500 font-medium mr-1">{crLabel}</span>
+              {CR_RANGES.map((r) => (
+                <button
+                  key={r.label}
+                  type="button"
+                  onClick={() => setCrFilter(crFilter === r.label ? null : r.label)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                    crFilter === r.label
+                      ? "bg-[#D4A853] text-gray-950 shadow-sm"
+                      : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Type chips */}
+            <div className="flex flex-wrap gap-1.5 items-center">
+              <span className="text-xs text-gray-500 font-medium mr-1">{typeLabel}</span>
+              {CREATURE_TYPES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTypeFilter(typeFilter === t ? null : t)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
+                    typeFilter === t
+                      ? "bg-[#D4A853] text-gray-950 shadow-sm"
+                      : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
+                  }`}
+                >
+                  <span className="text-[10px]">{TYPE_EMOJI[t.toLowerCase()] ?? ""}</span>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Type chips */}
-        <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-gray-500 font-medium mr-1">{typeLabel}</span>
-          {CREATURE_TYPES.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTypeFilter(typeFilter === t ? null : t)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
-                typeFilter === t
-                  ? "bg-[#D4A853] text-gray-950 shadow-sm"
-                  : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
-              }`}
-            >
-              <span className="text-[10px]">{TYPE_EMOJI[t.toLowerCase()] ?? ""}</span>
-              {t}
-            </button>
-          ))}
-        </div>
-
-        {/* Result count */}
+        {/* Result count — always visible */}
         <div className="text-xs text-gray-500">
           {hasFilters
             ? `${filtered.length} ${of} ${monsters.length} ${monstersLabel}`

@@ -84,6 +84,7 @@ export default function MonstrosIndexPage() {
             clearAll: "Limpar filtros",
             of: "de",
             monsters: "monstros",
+            filters: "Filtros",
           }}
         />
 
