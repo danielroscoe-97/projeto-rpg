@@ -157,70 +157,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
     });
   }, [preloadedPlayers, addCombatant]);
 
-  // Sprint 2: Auto-load preset creatures (runs once on mount when preset is provided)
-  const hasPreloadedPreset = useRef(false);
-  useEffect(() => {
-    if (hasPreloadedPreset.current || !preloadedPreset || preloadedPreset.creatures.length === 0) return;
-    hasPreloadedPreset.current = true;
-
-    // Map source → RulesetVersion for SRD monster lookups
-    const sourceToVersion = (source: string): RulesetVersion =>
-      source === "srd-2024" ? "2024" : "2014";
-
-    for (const creature of preloadedPreset.creatures) {
-      // Try to resolve full SRD monster for HP/AC/DEX/initiative rolling
-      const srdMonster = creature.monster_slug
-        ? getMonsterById(creature.monster_slug, sourceToVersion(creature.source))
-        : undefined;
-
-      if (srdMonster) {
-        // Use the full monster add path (with initiative rolling, display names, etc.)
-        if (creature.quantity > 1) {
-          handleSelectMonsterGroup(srdMonster, creature.quantity);
-        } else {
-          handleSelectMonster(srdMonster);
-        }
-      } else {
-        // Manual/unresolved creature — add with basic info from preset
-        for (let i = 0; i < creature.quantity; i++) {
-          const all = [...useCombatStore.getState().combatants];
-          const numberedName = getNumberedName(creature.name, all);
-          const displayName = getDefaultDisplayName(null, all);
-          addCombatant({
-            name: numberedName,
-            current_hp: 0,
-            max_hp: 0,
-            temp_hp: 0,
-            ac: 0,
-            spell_save_dc: null,
-            initiative: null,
-            initiative_order: null,
-            conditions: [],
-            ruleset_version: sourceToVersion(creature.source),
-            is_defeated: false,
-            is_hidden: false,
-            is_player: false,
-            monster_id: creature.monster_slug,
-            token_url: null,
-            creature_type: null,
-            display_name: displayName,
-            monster_group_id: null,
-            group_order: null,
-            dm_notes: "",
-            player_notes: "",
-            player_character_id: null,
-            combatant_role: null,
-            legendary_actions_total: null,
-            legendary_actions_used: 0,
-          });
-        }
-      }
-    }
-
-    // Set formula version to match preset
-    setRulesetVersion(preloadedPreset.formula_version as RulesetVersion);
-  }, [preloadedPreset, handleSelectMonster, handleSelectMonsterGroup, addCombatant]);
-
   // Create session on-demand when DM wants to share before combat starts
   const handlePrepareShare = useCallback(async () => {
     if (isCreatingSession || effectiveSessionId) return;
@@ -407,6 +343,65 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
     },
     [handleSelectMonster, handleSelectMonsterGroup]
   );
+
+  // Sprint 2: Auto-load preset creatures (runs once on mount when preset is provided)
+  const hasPreloadedPreset = useRef(false);
+  useEffect(() => {
+    if (hasPreloadedPreset.current || !preloadedPreset || preloadedPreset.creatures.length === 0) return;
+    hasPreloadedPreset.current = true;
+
+    const sourceToVersion = (source: string): RulesetVersion =>
+      source === "srd-2024" ? "2024" : "2014";
+
+    for (const creature of preloadedPreset.creatures) {
+      const srdMonster = creature.monster_slug
+        ? getMonsterById(creature.monster_slug, sourceToVersion(creature.source))
+        : undefined;
+
+      if (srdMonster) {
+        if (creature.quantity > 1) {
+          handleSelectMonsterGroup(srdMonster, creature.quantity);
+        } else {
+          handleSelectMonster(srdMonster);
+        }
+      } else {
+        for (let i = 0; i < creature.quantity; i++) {
+          const all = [...useCombatStore.getState().combatants];
+          const numberedName = getNumberedName(creature.name, all);
+          const displayName = getDefaultDisplayName(null, all);
+          addCombatant({
+            name: numberedName,
+            current_hp: 0,
+            max_hp: 0,
+            temp_hp: 0,
+            ac: 0,
+            spell_save_dc: null,
+            initiative: null,
+            initiative_order: null,
+            conditions: [],
+            ruleset_version: sourceToVersion(creature.source),
+            is_defeated: false,
+            is_hidden: false,
+            is_player: false,
+            monster_id: creature.monster_slug,
+            token_url: null,
+            creature_type: null,
+            display_name: displayName,
+            monster_group_id: null,
+            group_order: null,
+            dm_notes: "",
+            player_notes: "",
+            player_character_id: null,
+            combatant_role: null,
+            legendary_actions_total: null,
+            legendary_actions_used: 0,
+          });
+        }
+      }
+    }
+
+    setRulesetVersion(preloadedPreset.formula_version as RulesetVersion);
+  }, [preloadedPreset, handleSelectMonster, handleSelectMonsterGroup, addCombatant]);
 
   // Trigger golden glow on the add row after monster selection
   const handleMonsterAdded = useCallback(() => {
