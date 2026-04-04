@@ -303,6 +303,7 @@ export default async function MethodologyPage() {
               votes_label: t("spell_vote_count"),
               voted_label: t("spell_vote_voted"),
               vote_bar_label: t("spell_vote_bar_label"),
+              all_voted: t("spell_vote_all_voted"),
             }}
           />
         </div>

@@ -9,13 +9,17 @@ type SpellVote = (typeof VALID_VOTES)[number];
 const MAX_SPELL_NAME_LENGTH = 100;
 
 /**
- * GET /api/methodology/spell-vote — Top 20 voted spells with tier stats.
+ * GET /api/methodology/spell-vote — Spell tier vote stats.
+ * Optional ?spell=name param for single-spell lookup. Without param returns top 20.
  * Public. Cached 5 minutes.
  */
-const getHandler: Parameters<typeof withRateLimit>[0] = async function GET() {
+const getHandler: Parameters<typeof withRateLimit>[0] = async function GET(request: NextRequest) {
   try {
+    const spellParam = request.nextUrl.searchParams.get("spell");
     const supabase = await createClient();
-    const { data, error } = await supabase.rpc("get_spell_tier_stats");
+    const { data, error } = await supabase.rpc("get_spell_tier_stats",
+      spellParam ? { p_spell_name: spellParam.toLowerCase() } : {}
+    );
 
     if (error) throw error;
 
@@ -39,7 +43,7 @@ export const GET = withRateLimit(getHandler, { max: 30, window: "1 m" });
 /**
  * POST /api/methodology/spell-vote — Submit a spell tier vote.
  * Requires authentication.
- * Body: { spell_name: string, vote: "under_tiered" | "correct" | "over_tiered" }
+ * Body: { spell_name: string, vote: "S" | "A" | "B" | "C" | "D" | "E" }
  */
 const postHandler: Parameters<typeof withRateLimit>[0] = async function POST(request: NextRequest) {
   try {

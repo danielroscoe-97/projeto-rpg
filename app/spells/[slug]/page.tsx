@@ -54,8 +54,8 @@ export async function generateMetadata({
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
-function SpellJsonLd({ spell }: { spell: NonNullable<ReturnType<typeof getSpellBySlug>> }) {
-  const jsonLd = {
+function SpellJsonLd({ spell, slug }: { spell: NonNullable<ReturnType<typeof getSpellBySlug>>; slug: string }) {
+  const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
     name: `${spell.name} — D&D 5e Spell`,
@@ -64,11 +64,28 @@ function SpellJsonLd({ spell }: { spell: NonNullable<ReturnType<typeof getSpellB
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
   };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.pocketdm.com.br" },
+      { "@type": "ListItem", position: 2, name: "Spells", item: "https://www.pocketdm.com.br/spells" },
+      { "@type": "ListItem", position: 3, name: spell.name, item: `https://www.pocketdm.com.br/spells/${slug}` },
+    ],
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+    </>
   );
 }
 
@@ -104,7 +121,7 @@ export default async function SpellPage({
 
   return (
     <>
-      <SpellJsonLd spell={spell} />
+      <SpellJsonLd spell={spell} slug={slug} />
 
       <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
         <PublicNav

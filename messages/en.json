@@ -2744,6 +2744,7 @@
     "spell_vote_count": "votes",
     "spell_vote_voted": "Your vote",
     "spell_vote_bar_label": "Vote distribution",
+    "spell_vote_all_voted": "You've voted on all featured spells! Thank you.",
     "similar_title": "Preview: Similar Encounters",
     "similar_subtitle": "See how the community rated encounters like yours",
     "similar_party_size": "Party size",

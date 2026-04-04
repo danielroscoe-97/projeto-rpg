@@ -43,6 +43,7 @@ interface SpellTierVotingProps {
     votes_label: string;
     voted_label: string;
     vote_bar_label: string;
+    all_voted: string;
   };
   isLoggedIn: boolean;
 }
@@ -81,12 +82,16 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
   const [pendingVote, setPendingVote] = useState<SpellTier | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Hydrate from localStorage
+  // Hydrate from localStorage — validate values are valid tiers
   useEffect(() => {
-    const cast = getVotesCast();
-    setVotedSpells(cast);
+    const raw = getVotesCast();
+    const validated: Record<string, SpellTier> = {};
+    for (const [key, val] of Object.entries(raw)) {
+      if (TIERS.includes(val as SpellTier)) validated[key] = val as SpellTier;
+    }
+    setVotedSpells(validated);
     // Pick first unvoted spell
-    const unvoted = FEATURED_SPELLS.filter((s) => !cast[s.toLowerCase()]);
+    const unvoted = FEATURED_SPELLS.filter((s) => !validated[s.toLowerCase()]);
     if (unvoted.length > 0) {
       setCurrentSpell(unvoted[Math.floor(Math.random() * unvoted.length)]);
     }
@@ -105,6 +110,7 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
   const normalizedCurrent = currentSpell.toLowerCase();
   const currentStats = allStats.find((s) => s.spell_name === normalizedCurrent);
   const hasVotedThisSpell = votedSpells[normalizedCurrent] !== undefined;
+  const allVoted = FEATURED_SPELLS.every((s) => votedSpells[s.toLowerCase()] !== undefined);
 
   const advanceToNextSpell = useCallback(
     (justVoted: string, updatedVoted: Record<string, SpellTier>) => {
@@ -265,8 +271,13 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
         </div>
       )}
 
-      {/* Login prompt */}
-      {!isLoggedIn && (
+      {/* All voted message */}
+      {isLoggedIn && allVoted && hasVotedThisSpell && (
+        <p className="text-xs text-gold/50 text-center py-1">{t.all_voted}</p>
+      )}
+
+      {/* Login prompt — hide if user has cached votes */}
+      {!isLoggedIn && !hasVotedThisSpell && (
         <div className="text-center">
           <Link
             href="/auth/sign-up"

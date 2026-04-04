@@ -80,7 +80,7 @@ export function SpellTierVotingMini({ spellName, isLoggedIn, translations: t }: 
       setConfirmedVote(existing);
     }
 
-    fetch("/api/methodology/spell-vote")
+    fetch(`/api/methodology/spell-vote?spell=${encodeURIComponent(normalizedName)}`)
       .then((r) => r.json())
       .then((data: SpellVoteStats[]) => {
         if (!Array.isArray(data)) return;
@@ -209,7 +209,7 @@ export function SpellTierVotingMini({ spellName, isLoggedIn, translations: t }: 
         <div className="space-y-2">
           <div className="flex gap-1.5">
             {TIERS.map((tier) => {
-              const isSelected = isEditing ? pendingVote === tier : pendingVote === tier;
+              const isSelected = pendingVote === tier;
               const colors = TIER_COLORS[tier];
               return (
                 <button
@@ -251,8 +251,8 @@ export function SpellTierVotingMini({ spellName, isLoggedIn, translations: t }: 
         </div>
       )}
 
-      {/* Login prompt */}
-      {!isLoggedIn && (
+      {/* Login prompt — hide if user already has a cached vote */}
+      {!isLoggedIn && !hasVoted && (
         <Link
           href="/auth/sign-up"
           className="inline-flex items-center text-xs text-gold/70 hover:text-gold transition-colors"
