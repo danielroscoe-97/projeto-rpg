@@ -20,6 +20,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
 
+import { Maximize2, Minimize2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { nodeIdToKey } from "@/lib/utils/mind-map-layout";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
@@ -149,14 +150,14 @@ const MINIMAP_COLORS: Record<string, string> = {
 };
 
 const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string }> = [
-  { key: "npc", color: "border-purple-400/40 text-purple-400/60", activeColor: "border-purple-400 bg-purple-400/20 text-purple-300" },
-  { key: "note", color: "border-blue-400/40 text-blue-400/60", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
-  { key: "player", color: "border-emerald-400/40 text-emerald-400/60", activeColor: "border-emerald-400 bg-emerald-400/20 text-emerald-300" },
-  { key: "session", color: "border-red-400/40 text-red-400/60", activeColor: "border-red-400 bg-red-400/20 text-red-300" },
-  { key: "quest", color: "border-yellow-400/40 text-yellow-400/60", activeColor: "border-yellow-400 bg-yellow-400/20 text-yellow-300" },
-  { key: "bag", color: "border-orange-400/40 text-orange-400/60", activeColor: "border-orange-400 bg-orange-400/20 text-orange-300" },
-  { key: "location", color: "border-cyan-400/40 text-cyan-400/60", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
-  { key: "faction", color: "border-rose-400/40 text-rose-400/60", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
+  { key: "npc", color: "border-purple-400/20 text-purple-400/50 line-through", activeColor: "border-purple-400 bg-purple-400/20 text-purple-300" },
+  { key: "note", color: "border-blue-400/20 text-blue-400/50 line-through", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
+  { key: "player", color: "border-emerald-400/20 text-emerald-400/50 line-through", activeColor: "border-emerald-400 bg-emerald-400/20 text-emerald-300" },
+  { key: "session", color: "border-red-400/20 text-red-400/50 line-through", activeColor: "border-red-400 bg-red-400/20 text-red-300" },
+  { key: "quest", color: "border-yellow-400/20 text-yellow-400/50 line-through", activeColor: "border-yellow-400 bg-yellow-400/20 text-yellow-300" },
+  { key: "bag", color: "border-orange-400/20 text-orange-400/50 line-through", activeColor: "border-orange-400 bg-orange-400/20 text-orange-300" },
+  { key: "location", color: "border-cyan-400/20 text-cyan-400/50 line-through", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
+  { key: "faction", color: "border-rose-400/20 text-rose-400/50 line-through", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
 ];
 
 const LAYOUT_MODES: LayoutMode[] = ["hierarchical", "force", "radial"];
@@ -345,6 +346,15 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
 
   /* ---- Layout mode ---- */
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("hierarchical");
+  const [fullscreen, setFullscreen] = useState(false);
+
+  // Lock body scroll when fullscreen
+  useEffect(() => {
+    if (fullscreen) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
+    }
+  }, [fullscreen]);
 
   /* ---- Collapsible groups ---- */
   const [collapsedGroups, setCollapsedGroups] = useState<Set<NodeFilter>>(new Set());
@@ -554,17 +564,23 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     setTooltipPos(null);
   }, [closeContextMenu]);
 
-  /* ---- ESC handler ---- */
+  /* ---- ESC handler (layered dismissal) ---- */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setConnectingFromNode(null);
-        setContextMenu(null);
+        // Dismiss topmost overlay first, then fullscreen last
+        if (contextMenu) {
+          setContextMenu(null);
+        } else if (connectingFromNode) {
+          setConnectingFromNode(null);
+        } else {
+          setFullscreen(false); // idempotent — safe even if not fullscreen
+        }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [contextMenu, connectingFromNode]);
 
   /* ---- Apply filters + collapsed groups + layout ---- */
   useEffect(() => {
@@ -1498,7 +1514,10 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         </div>
       )}
 
-      <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border bg-surface-overlay">
+      <div className={fullscreen
+        ? "fixed inset-0 z-50 bg-surface-overlay overflow-hidden"
+        : "h-[500px] w-full rounded-lg overflow-hidden border border-border bg-surface-overlay"
+      }>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -1529,6 +1548,14 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             showInteractive={false}
             className="!bg-surface-overlay !border-border !shadow-lg [&>button]:!bg-surface-overlay [&>button]:!border-border [&>button]:!text-muted-foreground [&>button:hover]:!bg-card"
           />
+          <button
+            type="button"
+            onClick={() => setFullscreen((f) => !f)}
+            className="absolute top-2 right-2 z-10 p-1.5 rounded-md bg-surface-overlay/90 border border-border text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
+            title={fullscreen ? t("exit_fullscreen") : t("fullscreen")}
+          >
+            {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
           <MiniMap
             nodeColor={minimapNodeColor}
             maskColor="rgba(0, 0, 0, 0.7)"

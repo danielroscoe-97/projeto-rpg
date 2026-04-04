@@ -552,6 +552,23 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
             </span>
           </button>
         </div>
+
+        {/* Player Path — "I received an invite" */}
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              const supabase = createClient();
+              await supabase
+                .from("user_onboarding")
+                .upsert({ user_id: userId, source: "fresh", wizard_completed: true, dashboard_tour_completed: true }, { onConflict: "user_id" });
+            } catch { /* best-effort */ }
+            router.push("/app/dashboard");
+          }}
+          className="mt-4 w-full text-center py-3 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg border border-transparent hover:border-border"
+        >
+          {t("choose_player_path")}
+        </button>
       </div>
     );
   }

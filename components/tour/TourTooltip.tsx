@@ -18,6 +18,8 @@ interface TourTooltipProps {
   onComplete: () => void;
   /** Brief shake animation when an action is blocked */
   shake?: boolean;
+  /** Translation namespace — defaults to "tour" */
+  translationNamespace?: string;
 }
 
 type Position = "top" | "bottom" | "left" | "right";
@@ -161,8 +163,9 @@ export function TourTooltip({
   onSkip,
   onComplete,
   shake,
+  translationNamespace = "tour",
 }: TourTooltipProps) {
-  const t = useTranslations("tour");
+  const t = useTranslations(translationNamespace);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const isLastStep = stepIndex === totalSteps - 1;
   const isCompleteStep = step.phase === "complete";
@@ -203,9 +206,11 @@ export function TourTooltip({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  const titleKey = step.titleKey.replace(/^tour\./, "");
-  const descKey = step.descriptionKey.replace(/^tour\./, "");
-  const extraDescKey = step.extraDescriptionKey?.replace(/^tour\./, "");
+  const nsWithDot = `${translationNamespace}.`;
+  const stripNs = (key: string) => key.startsWith(nsWithDot) ? key.slice(nsWithDot.length) : key;
+  const titleKey = stripNs(step.titleKey);
+  const descKey = stripNs(step.descriptionKey);
+  const extraDescKey = step.extraDescriptionKey ? stripNs(step.extraDescriptionKey) : undefined;
 
   // Fallback: if target element doesn't exist, render as modal
   const renderAsModal = isModal || (!targetRect);

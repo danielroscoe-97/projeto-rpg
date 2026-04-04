@@ -212,7 +212,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
           </TabsList>
 
           {/* ── Via Link ── */}
-          <TabsContent value="link" className="mt-4 space-y-4">
+          <TabsContent value="link" className="mt-4 space-y-4 flex-none">
             {linkLoading ? (
               <p className="text-sm text-muted-foreground text-center py-4">Gerando link...</p>
             ) : linkError ? (
@@ -276,7 +276,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
           </TabsContent>
 
           {/* ── Via E-mail ── */}
-          <TabsContent value="email" className="mt-4 space-y-4">
+          <TabsContent value="email" className="mt-4 space-y-4 flex-none">
             <form onSubmit={handleSubmit} className="flex gap-2">
               <Input
                 type="email"

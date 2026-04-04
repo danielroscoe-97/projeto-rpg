@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2, MoreVertical, Swords, FileText, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
@@ -107,6 +108,8 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
       ]);
       setNewName("");
       setShowCreate(false);
+      toast.success(t("campaigns_created"));
+      router.push(`/app/campaigns/${data.id}`);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t("campaigns_create_error")

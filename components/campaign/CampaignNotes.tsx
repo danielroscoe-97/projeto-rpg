@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye, Users,
+  Plus, Trash2, ChevronDown, ChevronRight, Lock, Eye, Users, Settings2,
   FileText, BookOpen, MapPin, UserCircle, Scroll, EyeOff, Lightbulb,
 } from "lucide-react";
 import type { NoteType } from "@/lib/types/mind-map";
@@ -82,6 +82,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   const [playerNotesExpanded, setPlayerNotesExpanded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<Record<string, SaveStatus>>({});
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [optionsOpenIds, setOptionsOpenIds] = useState<Set<string>>(new Set());
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
 
@@ -259,7 +260,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   }, []);
 
   const saveNote = useCallback(
-    async (id: string, fields: { title?: string; content?: string }) => {
+    async (id: string, fields: { title?: string; content?: string; note_type?: string }) => {
       setSaveStatus((prev) => ({ ...prev, [id]: "saving" }));
 
       try {
@@ -290,7 +291,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   );
 
   const debouncedSave = useCallback(
-    (id: string, fields: { title?: string; content?: string }) => {
+    (id: string, fields: { title?: string; content?: string; note_type?: string }) => {
       if (debounceTimers.current[id]) {
         clearTimeout(debounceTimers.current[id]);
       }
@@ -544,6 +545,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
           {filteredNotes.map((note) => {
             const isExpanded = expandedIds.has(note.id);
             const status = saveStatus[note.id] ?? "idle";
+            const optionsOpen = optionsOpenIds.has(note.id);
 
             return (
               <div
@@ -611,7 +613,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                   </div>
                   {/* Save indicator */}
                   {status !== "idle" && (
-                    <span className="text-xs text-muted-foreground shrink-0">
+                    <span className={`text-xs shrink-0 transition-colors ${status === "saving" ? "text-amber-400" : "text-emerald-400"}`}>
                       {status === "saving" ? t("saving") : t("saved")}
                     </span>
                   )}
@@ -667,112 +669,132 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       data-testid={`note-content-${note.id}`}
                     />
 
-                    {/* NPC tag selector */}
-                    {isOwner && campaignNpcs.length > 0 && (
-                      <div className="space-y-1">
-                        <p className="text-xs font-medium text-muted-foreground">
-                          {tLinks("related_npcs")}
-                        </p>
-                        <NpcTagSelector
-                          availableNpcs={campaignNpcs}
-                          linkedNpcIds={linksByNote.get(note.id) ?? []}
-                          onLink={(npcId) => handleLinkNpc(note.id, npcId)}
-                          onUnlink={(npcId) => handleUnlinkNpc(note.id, npcId)}
-                        />
-                      </div>
-                    )}
+                    {/* More options toggle */}
+                    <button
+                      type="button"
+                      onClick={() => setOptionsOpenIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(note.id)) next.delete(note.id);
+                        else next.add(note.id);
+                        return next;
+                      })}
+                      className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors py-1"
+                    >
+                      <Settings2 className="w-3 h-3" />
+                      {optionsOpen ? t("less_options") : t("more_options")}
+                      <ChevronDown className={`w-3 h-3 transition-transform ${optionsOpen ? "rotate-180" : ""}`} />
+                    </button>
 
-                    {/* Linked NPC chips (read-only for non-owners) */}
-                    {!isOwner && (linksByNote.get(note.id) ?? []).length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-xs font-medium text-muted-foreground mr-1">
-                          {tLinks("related_npcs")}:
-                        </span>
-                        {(linksByNote.get(note.id) ?? []).map((npcId) => {
-                          const npc = npcMap.get(npcId);
-                          if (!npc) return null;
-                          return (
-                            <span
-                              key={npcId}
-                              className="inline-flex items-center bg-purple-400/10 text-purple-400 rounded-full px-2 py-0.5 text-xs"
-                            >
-                              {npc.name}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Controls row */}
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-4">
-                        {/* Shared toggle */}
-                        {isOwner && (
-                          <label className="flex items-center gap-2 text-xs cursor-pointer">
-                            <Switch
-                              checked={note.is_shared}
-                              onCheckedChange={(checked) =>
-                                handleToggleShared(note.id, checked)
-                              }
-                              data-testid={`note-shared-toggle-${note.id}`}
+                    {optionsOpen && (
+                      <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                        {/* NPC tag selector */}
+                        {isOwner && campaignNpcs.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {tLinks("related_npcs")}
+                            </p>
+                            <NpcTagSelector
+                              availableNpcs={campaignNpcs}
+                              linkedNpcIds={linksByNote.get(note.id) ?? []}
+                              onLink={(npcId) => handleLinkNpc(note.id, npcId)}
+                              onUnlink={(npcId) => handleUnlinkNpc(note.id, npcId)}
                             />
-                            <span className={note.is_shared ? "text-emerald-400" : "text-muted-foreground"}>
-                              {note.is_shared ? t("shared") : t("private")}
-                            </span>
-                            <span className="text-muted-foreground/50">
-                              {note.is_shared ? t("shared_hint") : t("private_hint")}
-                            </span>
-                          </label>
+                          </div>
                         )}
 
-                        {/* Folder selector */}
-                        {isOwner && folders.length > 0 && (
-                          <select
-                            value={note.folder_id ?? ""}
-                            onChange={(e) =>
-                              handleMoveToFolder(
-                                note.id,
-                                e.target.value || null,
-                              )
-                            }
-                            className="text-xs bg-surface-tertiary border border-input rounded px-2 py-1 text-foreground"
-                            data-testid={`note-folder-select-${note.id}`}
-                          >
-                            <option value="">{t("unfiled")}</option>
-                            {folders.map((f) => (
-                              <option key={f.id} value={f.id}>
-                                {f.name}
-                              </option>
-                            ))}
-                          </select>
+                        {/* Linked NPC chips (read-only for non-owners) */}
+                        {!isOwner && (linksByNote.get(note.id) ?? []).length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-xs font-medium text-muted-foreground mr-1">
+                              {tLinks("related_npcs")}:
+                            </span>
+                            {(linksByNote.get(note.id) ?? []).map((npcId) => {
+                              const npc = npcMap.get(npcId);
+                              if (!npc) return null;
+                              return (
+                                <span
+                                  key={npcId}
+                                  className="inline-flex items-center bg-purple-400/10 text-purple-400 rounded-full px-2 py-0.5 text-xs"
+                                >
+                                  {npc.name}
+                                </span>
+                              );
+                            })}
+                          </div>
                         )}
 
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(note.updated_at).toLocaleDateString(
-                            undefined,
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
+                        {/* Controls row */}
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-4">
+                            {/* Shared toggle */}
+                            {isOwner && (
+                              <label className="flex items-center gap-2 text-xs cursor-pointer">
+                                <Switch
+                                  checked={note.is_shared}
+                                  onCheckedChange={(checked) =>
+                                    handleToggleShared(note.id, checked)
+                                  }
+                                  data-testid={`note-shared-toggle-${note.id}`}
+                                />
+                                <span className={note.is_shared ? "text-emerald-400" : "text-muted-foreground"}>
+                                  {note.is_shared ? t("shared") : t("private")}
+                                </span>
+                                <span className="text-muted-foreground/50">
+                                  {note.is_shared ? t("shared_hint") : t("private_hint")}
+                                </span>
+                              </label>
+                            )}
+
+                            {/* Folder selector */}
+                            {isOwner && folders.length > 0 && (
+                              <select
+                                value={note.folder_id ?? ""}
+                                onChange={(e) =>
+                                  handleMoveToFolder(
+                                    note.id,
+                                    e.target.value || null,
+                                  )
+                                }
+                                className="text-xs bg-surface-tertiary border border-input rounded px-2 py-1 text-foreground"
+                                data-testid={`note-folder-select-${note.id}`}
+                              >
+                                <option value="">{t("unfiled")}</option>
+                                {folders.map((f) => (
+                                  <option key={f.id} value={f.id}>
+                                    {f.name}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(note.updated_at).toLocaleDateString(
+                                undefined,
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
+                            </span>
+                          </div>
+
+                          {isOwner && (
+                            <Button
+                              variant="destructiveSubtle"
+                              size="sm"
+                              onClick={() => setDeleteTarget(note.id)}
+                              className="gap-1.5"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              {t("delete_note")}
+                            </Button>
                           )}
-                        </span>
+                        </div>
                       </div>
-
-                      {isOwner && (
-                        <Button
-                          variant="destructiveSubtle"
-                          size="sm"
-                          onClick={() => setDeleteTarget(note.id)}
-                          className="gap-1.5"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          {t("delete_note")}
-                        </Button>
-                      )}
-                    </div>
+                    )}
                   </div>
                 )}
               </div>

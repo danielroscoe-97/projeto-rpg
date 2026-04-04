@@ -122,8 +122,8 @@ export function DashboardTourProvider({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Mark tour completed in DB when done or skipped, then handle redirect
-  async function persistTourCompleted() {
+  // Mark tour completed in DB when done or skipped, then optionally redirect
+  async function persistTourCompleted(shouldRedirect = false) {
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -135,9 +135,8 @@ export function DashboardTourProvider({
     } catch {
       // best-effort
     }
-    // Quick Combat path: redirect to session/new after tour
-    // Read ?next at redirect time (not mount time) to avoid stale memoized value
-    if (typeof window !== "undefined") {
+    // Quick Combat path: redirect to session/new only on tour completion (not skip)
+    if (shouldRedirect && typeof window !== "undefined") {
       const next = new URLSearchParams(window.location.search).get("next");
       if (next === "session") {
         router.push("/app/session/new");
@@ -212,7 +211,7 @@ export function DashboardTourProvider({
 
   const handleComplete = useCallback(() => {
     completeTour();
-    persistTourCompleted();
+    persistTourCompleted(true);
     trackEvent("onboarding:tour_completed", {
       source: source ?? "unknown",
       steps_viewed: currentStep + 1,
@@ -242,6 +241,7 @@ export function DashboardTourProvider({
         onBack={handleBack}
         onSkip={handleSkip}
         onComplete={handleComplete}
+        translationNamespace="dashboard_tour"
       />
     </>
   );

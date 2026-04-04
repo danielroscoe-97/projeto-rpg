@@ -99,8 +99,8 @@ describe("NpcForm", () => {
     const user = userEvent.setup();
     render(<NpcForm {...defaultProps} />);
     const toggle = screen.getByTestId("npc-visible-toggle");
-    expect(toggle).toHaveAttribute("aria-checked", "false");
-    await user.click(toggle);
     expect(toggle).toHaveAttribute("aria-checked", "true");
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-checked", "false");
   });
 });

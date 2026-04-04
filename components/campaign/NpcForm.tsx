@@ -33,7 +33,7 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
   const [cr, setCr] = useState(npc?.stats.cr ?? "");
   const [notes, setNotes] = useState(npc?.stats.notes ?? "");
   const [avatarUrl, setAvatarUrl] = useState(npc?.avatar_url ?? "");
-  const [visibleToPlayers, setVisibleToPlayers] = useState(npc?.is_visible_to_players ?? false);
+  const [visibleToPlayers, setVisibleToPlayers] = useState(npc?.is_visible_to_players ?? true);
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);

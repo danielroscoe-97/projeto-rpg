@@ -52,7 +52,7 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
         {/* Name + visibility badge */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-foreground truncate">
+            <h3 className="text-sm font-semibold text-foreground line-clamp-2 break-words">
               {npc.name}
             </h3>
             <button
