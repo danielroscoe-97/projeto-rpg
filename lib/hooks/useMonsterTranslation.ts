@@ -54,16 +54,21 @@ export interface UseMonsterTranslationReturn {
   getDesc: (section: "special_abilities" | "actions" | "reactions" | "legendary_actions" | "lair_actions" | "regional_effects", name: string, fallback: string) => string;
 }
 
-export function useMonsterTranslation(slug: string): UseMonsterTranslationReturn {
-  const [translated, setTranslated] = useState(false);
+export function useMonsterTranslation(slug: string, locale?: "en" | "pt-BR"): UseMonsterTranslationReturn {
+  // Page locale determines the initial state:
+  // - PT pages default to translated (PT-BR)
+  // - EN pages default to untranslated (English)
+  // The global preference only applies when no locale is given
+  const isPtRoute = locale === "pt-BR";
+  const [translated, setTranslated] = useState(isPtRoute);
   const [globalPtBR, setGlobalPtBRState] = useState(false);
   const [data, setData] = useState<TranslationData | null>(null);
 
-  // Read global preference on mount — sets default for all pages
+  // Read global preference on mount — only used on PT pages
+  // EN pages ALWAYS start in English regardless of global preference
   useEffect(() => {
     const global = readGlobalPreference();
     setGlobalPtBRState(global);
-    setTranslated(global);
   }, []);
 
   // Load JSON lazily when translation is first activated

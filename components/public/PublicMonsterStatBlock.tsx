@@ -84,8 +84,7 @@ interface PublicMonsterStatBlockProps {
 }
 
 export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: PublicMonsterStatBlockProps) {
-  const { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc } = useMonsterTranslation(slug);
-  // Everything is English RAW by default; PT-BR only when user clicks "Traduzir ficha"
+  const { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc } = useMonsterTranslation(slug, locale);
   const L = STAT_LABELS[translated ? "pt-BR" : "en"];
   const t = translated;
 
@@ -129,23 +128,30 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
 
   return (
     <article className="stat-card-5e stat-card-5e-inline !max-w-none">
-      {/* Language toggle — fixed layout to prevent button from shifting on toggle */}
-      {locale === "pt-BR" && slug && (
+      {/* Language toggle — available on both EN and PT pages */}
+      {slug && (
         <div className="flex items-center gap-2 text-xs text-[var(--5e-text-muted)] mb-3">
           <span className="shrink-0">
             {translated ? (
-              <>Ficha em <span className="text-[var(--5e-accent-gold)]">PT-BR</span></>
+              locale === "pt-BR"
+                ? <>Ficha em <span className="text-[var(--5e-accent-gold)]">PT-BR</span></>
+                : <>Showing <span className="text-[var(--5e-accent-gold)]">PT-BR</span> translation</>
             ) : (
-              <>Ficha em inglês (RAW)</>
+              locale === "pt-BR"
+                ? <>Ficha em inglês (RAW)</>
+                : <>Stat block in <span className="text-[var(--5e-accent-gold)]">English</span></>
             )}
           </span>
           <button
             onClick={toggle}
             className="shrink-0 px-2 py-0.5 rounded border border-[var(--5e-accent-gold)]/30 text-[var(--5e-accent-gold)] hover:bg-[var(--5e-accent-gold)]/10 transition-colors"
           >
-            {translated ? "Ver em inglês" : "Traduzir"}
+            {translated
+              ? (locale === "pt-BR" ? "Ver em inglês" : "View in English")
+              : (locale === "pt-BR" ? "Traduzir" : "View in PT-BR")
+            }
           </button>
-          {!translated && !globalPtBR && (
+          {!translated && !globalPtBR && locale === "pt-BR" && (
             <button
               onClick={setGlobalPtBR}
               className="shrink-0 text-[var(--5e-text-muted)] underline hover:text-[var(--5e-text)] transition-colors"
