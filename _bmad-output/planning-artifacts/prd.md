@@ -23,8 +23,8 @@ workflowType: 'prd'
 
 projeto-rpg is a greenfield web application delivering a unified in-session combat
 companion for D&D 5e groups who play in person or hybrid. The product targets
-Dungeon Masters running weekly or bi-weekly sessions at a physical table, where
-the DM operates from a laptop and players reference spells and rules on mobile.
+Game Masters running weekly or bi-weekly sessions at a physical table, where
+the GM operates from a laptop and players reference spells and rules on mobile.
 The core problem: no existing tool combines initiative tracking, monster stat blocks,
 player stats, and a rules oracle in a single interface — forcing DMs to juggle 3–5
 disconnected tabs during every combat. projeto-rpg eliminates that context-switching

@@ -19,15 +19,17 @@
 
 "Master your table" funciona em três níveis:
 
-1. **DM = Master** — você é o Dungeon Master
+1. **DM = Dungeon Manager** — você gerencia a dungeon, o combate, a sessão
 2. **Domine sua mesa** — controle total do combate
 3. **Sua mesa, sua ferramenta** — presencial, não virtual
+
+> **Nota legal:** O termo "Dungeon Master" é trademark da Wizards of the Coast. O "DM" em Pocket DM significa **Dungeon Manager** — somos uma ferramenta de gestão que ajuda Game Masters (mestres) a gerenciar suas sessões.
 
 ---
 
 ## 2. Logo — Crown d20
 
-O logo do Pocket DM é uma **coroa de 3 pontas flutuando acima de um d20 (icosaedro)**. A coroa é um elemento SEPARADO que paira sobre o dado. A coroa reforça o "Master" (Dungeon Master), e o d20 é o símbolo universal de D&D.
+O logo do Pocket DM é uma **coroa de 3 pontas flutuando acima de um d20 (icosaedro)**. A coroa é um elemento SEPARADO que paira sobre o dado. A coroa reforça o "Master" (gestão, domínio da mesa), e o d20 é o símbolo universal de RPG.
 
 **NÃO é um escudo. NÃO é integrado ao dado.** É uma coroa flutuante sobre um d20.
 

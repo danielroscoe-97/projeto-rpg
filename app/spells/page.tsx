@@ -7,7 +7,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "D&D 5e Spell Compendium — SRD Spell List",
   description:
-    "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Filter by level, school, and class. Free to use.",
+    "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Filter by level, school, and class. Free spell reference for game masters and players.",
   keywords: [
     "D&D 5e spells",
     "dnd spell list",

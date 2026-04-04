@@ -29,7 +29,7 @@ const FAQ_CATEGORIES = [
     items: [
       {
         q: "O que é o Pocket DM?",
-        a: "Pocket DM é um rastreador de combate (combat tracker) gratuito para D&D 5e, projetado para mesas presenciais de RPG. O mestre gerencia iniciativa, HP, condições e turnos na tela enquanto cada jogador acompanha em tempo real no próprio celular — sem instalar nada.",
+        a: "Pocket DM é um Pocket Dungeon Manager — um rastreador de combate (combat tracker) gratuito para D&D 5e, projetado para mesas presenciais de RPG. O mestre (Game Master) gerencia iniciativa, HP, condições e turnos na tela enquanto cada jogador acompanha em tempo real no próprio celular — sem instalar nada.",
       },
       {
         q: "O Pocket DM é gratuito?",

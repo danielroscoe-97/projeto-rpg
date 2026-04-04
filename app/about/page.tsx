@@ -137,10 +137,10 @@ export default function AboutPage() {
             </div>
 
             <p className="text-lg text-foreground/90 mb-4 leading-relaxed max-w-2xl">
-              <strong>Pocket DM é o rastreador de combate gratuito para D&D 5e</strong>,
-              projetado especificamente para mesas presenciais de RPG. O mestre gerencia
-              iniciativa, HP, condições e turnos na tela — e cada jogador acompanha em
-              tempo real no próprio celular, sem instalar nada.
+              <strong>Pocket DM — seu Pocket Dungeon Manager</strong> — é o rastreador de combate
+              gratuito para D&D 5e, projetado especificamente para mesas presenciais de RPG.
+              O mestre (Game Master) gerencia iniciativa, HP, condições e turnos na tela — e
+              cada jogador acompanha em tempo real no próprio celular, sem instalar nada.
             </p>
 
             {/* Decorative divider */}
@@ -164,10 +164,11 @@ export default function AboutPage() {
                 O que é o Pocket DM?
               </h2>
               <p className="text-foreground/75 leading-relaxed">
-                Pocket DM é uma ferramenta web (PWA) que resolve o problema mais comum
-                de mestres de D&D 5e: gerenciar combate sem perder o ritmo da sessão.
-                Em vez de fichas de papel, planilhas ou apps complexos, o Pocket DM
-                oferece uma interface simples e rápida que funciona direto no navegador.
+                Pocket DM é um <strong className="text-foreground/90">Dungeon Manager</strong> — uma
+                ferramenta web (PWA) que ajuda Game Masters (mestres) a gerenciar combates,
+                iniciativa e turnos sem perder o ritmo da sessão. Em vez de fichas de papel,
+                planilhas ou apps complexos, o Pocket DM oferece uma interface simples e
+                rápida que funciona direto no navegador.
               </p>
               <p className="mt-3 text-foreground/75 leading-relaxed">
                 Com o <strong className="text-foreground/90">bestiário SRD completo</strong> e monstros do{" "}

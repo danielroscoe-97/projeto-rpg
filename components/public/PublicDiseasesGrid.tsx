@@ -21,7 +21,7 @@ interface PublicDiseasesGridProps {
 // -- Source labels -------------------------------------------------------------
 const SOURCE_LABELS: Record<string, string> = {
   PHB: "Player's Handbook",
-  DMG: "Dungeon Master's Guide",
+  DMG: "DMG",
   XDMG: "2024 DMG",
   ToA: "Tomb of Annihilation",
   IDRotF: "Icewind Dale",

@@ -70,7 +70,7 @@ const dmMember: CampaignMemberWithUser = {
   role: "dm",
   joined_at: "2026-01-01T00:00:00Z",
   status: "active",
-  display_name: "Dungeon Master",
+  display_name: "Game Master",
   email: "dm@test.com",
   character_name: null,
 };
@@ -149,7 +149,7 @@ describe("MemberCard", () => {
 
   it("renders initials from display name", () => {
     render(<MemberCard member={dmMember} isOwner={false} />);
-    // "Dungeon Master" => "DM"
-    expect(screen.getByText("DM")).toBeInTheDocument();
+    // "Game Master" => "GM"
+    expect(screen.getByText("GM")).toBeInTheDocument();
   });
 });
