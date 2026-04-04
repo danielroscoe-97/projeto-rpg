@@ -22,7 +22,9 @@ import {
 
 test.describe("J5 — Compartilhamento Organico", () => {
   // Player join flow involves DM setup + realtime broadcast + late-join approval.
-  test.setTimeout(90_000);
+  // J5.3 involves TWO sequential player joins (each with toast approval), so
+  // the total time can easily exceed 90s in production.
+  test.setTimeout(150_000);
 
   test("J5.3 — Dois players podem usar o mesmo link de join", async ({
     browser,
@@ -53,7 +55,7 @@ test.describe("J5 — Compartilhamento Organico", () => {
     });
 
     await expect(p1Page.locator('[data-testid="player-view"]')).toBeVisible({
-      timeout: 15_000,
+      timeout: 30_000,
     });
 
     // ── Player 2: Mage joins same link ──
@@ -68,7 +70,7 @@ test.describe("J5 — Compartilhamento Organico", () => {
     });
 
     await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible({
-      timeout: 15_000,
+      timeout: 30_000,
     });
 
     // Both players should see player-view simultaneously
@@ -79,7 +81,7 @@ test.describe("J5 — Compartilhamento Organico", () => {
     const dmCombatants = dmPage.locator(
       '[data-testid="initiative-list"] [data-testid^="combatant-row-"]'
     );
-    await expect(dmCombatants).toHaveCount(3, { timeout: 15_000 });
+    await expect(dmCombatants).toHaveCount(3, { timeout: 30_000 });
 
     await dmContext.close();
     await p1Context.close();
@@ -124,7 +126,7 @@ test.describe("J5 — Compartilhamento Organico", () => {
     // Player should see the current state of combat
     await expect(
       playerPage.locator('[data-testid="player-view"]')
-    ).toBeVisible({ timeout: 15_000 });
+    ).toBeVisible({ timeout: 30_000 });
 
     // Combat should show all combatants including existing ones
     const playerContent = await playerPage.textContent("body");

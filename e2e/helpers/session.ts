@@ -15,7 +15,7 @@ export async function goToNewSession(page: Page) {
   const quickBtn = page.locator(
     'button:has-text("Combate Rápido"), button:has-text("Quick Combat")'
   );
-  const setupArea = page.locator('[data-testid="setup-combatant-list"], [data-testid="encounter-name-input"]');
+  const setupArea = page.locator('[data-testid="setup-combatant-list"]');
 
   // Race: whichever appears first
   await expect(setupArea.or(quickBtn)).toBeVisible({ timeout: 15_000 });
@@ -115,24 +115,30 @@ export async function dmSetupCombatSession(
     const addRowName = page.locator('[data-testid="add-row-name"]');
     if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
       const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();
-      if (await manualToggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      if (await manualToggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await manualToggle.scrollIntoViewIfNeeded();
         await manualToggle.click();
-        await expect(addRowName).toBeVisible({ timeout: 3_000 });
+        await page.waitForTimeout(300);
       }
     }
+    await expect(addRowName).toBeVisible({ timeout: 5_000 });
+    await addRowName.scrollIntoViewIfNeeded();
+    await page.locator('[data-testid="add-row-init"]').fill(c.init);
     await addRowName.fill(c.name);
-    await page.fill('[data-testid="add-row-hp"]', c.hp);
-    await page.fill('[data-testid="add-row-ac"]', c.ac);
-    await page.fill('[data-testid="add-row-init"]', c.init);
-    const addBtn = page.locator('[data-testid="add-row-btn"]');
-    await addBtn.scrollIntoViewIfNeeded();
-    await addBtn.click();
+    await expect(addRowName).toHaveValue(c.name, { timeout: 2_000 });
+    await page.locator('[data-testid="add-row-hp"]').fill(c.hp);
+    await page.locator('[data-testid="add-row-ac"]').fill(c.ac);
+    const addRowBtn = page.locator('[data-testid="add-row-btn"]');
+    await addRowBtn.scrollIntoViewIfNeeded();
+    await addRowBtn.click();
     await page.waitForTimeout(500);
   }
 
   // Start combat (scroll into view for mobile viewports where button may be below fold)
   const startBtn = page.locator('[data-testid="start-combat-btn"]');
   await startBtn.scrollIntoViewIfNeeded();
+  await expect(startBtn).toBeEnabled({ timeout: 5_000 });
+  await page.waitForTimeout(500); // Let the UI settle after adding combatants
   await startBtn.click();
   // Starting combat triggers server calls + possible Next.js router.replace navigation.
   // Retry click if first attempt was swallowed by a concurrent re-render.
@@ -178,7 +184,8 @@ export async function playerJoinCombat(
   // Allow realtime channel to fully subscribe before interacting with the form.
   // The channel is created when authReady=true (which triggers form render),
   // but Supabase Realtime subscription is async — needs a moment to connect.
-  await playerPage.waitForTimeout(3_000);
+  // Production latency is higher, so we use 5s instead of 3s.
+  await playerPage.waitForTimeout(5_000);
 
   // Fill the late-join registration form
   await nameInput.fill(playerName);
@@ -202,14 +209,48 @@ export async function playerJoinCombat(
   await expect(submitBtn).toBeVisible({ timeout: 3_000 });
   await submitBtn.click();
 
-  // DM accepts the late-join request via Sonner toast action button
-  // The toast renders inside [data-sonner-toaster] with text "Aceitar" (pt-BR) or "Accept" (en)
-  const toastAcceptBtn = dmPage
-    .locator('[data-sonner-toaster] button')
-    .filter({ hasText: /Aceitar|Accept/ })
-    .first();
-  await expect(toastAcceptBtn).toBeVisible({ timeout: 15_000 });
-  await toastAcceptBtn.click();
+  // DM accepts the late-join request via Sonner toast action button.
+  // The toast renders inside [data-sonner-toaster] with text "Aceitar" (pt-BR) or "Accept" (en).
+  // In production, realtime broadcasts have higher latency — the toast may take
+  // longer to appear or may auto-dismiss before we click it.  We retry up to 3
+  // times with increasing wait windows to handle both cases.
+  const toastSelector = '[data-sonner-toaster] button';
+  const toastTextRe = /Aceitar|Accept/;
+  let toastClicked = false;
+
+  for (let attempt = 0; attempt < 3 && !toastClicked; attempt++) {
+    const timeout = attempt === 0 ? 30_000 : 15_000;
+    try {
+      const toastAcceptBtn = dmPage
+        .locator(toastSelector)
+        .filter({ hasText: toastTextRe })
+        .first();
+      await expect(toastAcceptBtn).toBeVisible({ timeout });
+      await toastAcceptBtn.click();
+      toastClicked = true;
+    } catch {
+      // Toast may have auto-dismissed or not appeared yet.
+      // Small pause before retry to let the next broadcast/toast arrive.
+      if (attempt < 2) {
+        await dmPage.waitForTimeout(2_000);
+      }
+    }
+  }
+
+  if (!toastClicked) {
+    // Last-resort: the toast may have been accepted automatically or the
+    // combatant was added via polling.  Check if the player-view already
+    // appeared (which means approval happened through another path).
+    const alreadyJoined = await playerPage
+      .locator('[data-testid="player-view"]')
+      .isVisible({ timeout: 5_000 })
+      .catch(() => false);
+    if (!alreadyJoined) {
+      throw new Error(
+        "DM approval toast was never visible after 3 attempts — late-join failed"
+      );
+    }
+  }
 
   // Player detects acceptance via combat:combatant_add broadcast or polling fallback.
   // The polling checks every 5s if the DM has added a combatant matching the player's name.

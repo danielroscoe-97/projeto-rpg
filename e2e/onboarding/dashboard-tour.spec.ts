@@ -45,12 +45,36 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
     });
     if (!ok) return false;
 
+    // Allow DB write to propagate — production Supabase may use read replicas
+    // that lag a few hundred ms behind the primary.
+    await page.waitForTimeout(2_000);
+
     await page.goto("/app/dashboard?from=wizard");
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(1_000);
 
     const dashContent = page.locator('[data-tour-id="dash-overview"]');
-    return await dashContent.isVisible({ timeout: 10_000 }).catch(() => false);
+    const visible = await dashContent.isVisible({ timeout: 15_000 }).catch(() => false);
+    if (!visible) return false;
+
+    // Wait for the dashboard overview content to hydrate so the tour
+    // provider's content-readiness poll can detect it.
+    const quickActions = page.locator('[data-tour-id="dash-quick-actions"]');
+    await quickActions.waitFor({ state: "attached", timeout: 15_000 }).catch(() => {});
+
+    // The tour auto-start delay is 800ms (from=wizard) + up to 8s polling.
+    // Give it a reasonable window to appear before considering a retry.
+    const tooltip = page.locator('[data-testid="tour-tooltip"]');
+    const tourStarted = await tooltip.isVisible({ timeout: 15_000 }).catch(() => false);
+    if (!tourStarted) {
+      // Tour didn't auto-start — most likely the server rendered with
+      // shouldAutoStart=false due to DB replication lag. Reload to give
+      // the server-side layout another chance to read the updated DB.
+      await page.reload();
+      await page.waitForLoadState("domcontentloaded");
+      await quickActions.waitFor({ state: "attached", timeout: 15_000 }).catch(() => {});
+    }
+
+    return true;
   }
 
   test("Dashboard tour auto-starts after wizard completion", async ({ page }) => {
@@ -60,8 +84,11 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
       return;
     }
 
+    // The tour provider waits 800ms (from=wizard) then polls up to 8s
+    // for the content element. In production this can take longer due to
+    // network latency + SSR hydration, so give it a generous timeout.
     const tooltip = page.locator('[data-testid="tour-tooltip"]');
-    await expect(tooltip).toBeVisible({ timeout: 15_000 });
+    await expect(tooltip).toBeVisible({ timeout: 30_000 });
   });
 
   test("Dashboard tour can be skipped", async ({ page }) => {
@@ -72,11 +99,12 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
     }
 
     const tooltip = page.locator('[data-testid="tour-tooltip"]');
-    await expect(tooltip).toBeVisible({ timeout: 15_000 });
+    await expect(tooltip).toBeVisible({ timeout: 30_000 });
 
-    await page.locator('[data-testid="tour-skip"]').click();
-    await page.waitForTimeout(1_000);
-    await expect(tooltip).not.toBeVisible({ timeout: 5_000 });
+    const skipBtn = page.locator('[data-testid="tour-skip"]');
+    await expect(skipBtn).toBeVisible({ timeout: 5_000 });
+    await skipBtn.click();
+    await expect(tooltip).not.toBeVisible({ timeout: 10_000 });
 
     const isCompleted = await page.evaluate(() => {
       const stored = localStorage.getItem("dashboard-tour-v1");
@@ -105,11 +133,21 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
       return;
     }
 
+    // Wait for DB replication before navigating
+    await page.waitForTimeout(3_000);
     await page.goto("/app/dashboard");
     await page.waitForLoadState("domcontentloaded");
 
+    // Dismiss wizard modal if it shows (DB replication delay)
+    const wizardModal = page.locator('[data-testid="onboarding-wizard"], [role="dialog"]:has-text("CENTRAL")');
+    if (await wizardModal.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      // Wizard still showing despite resetOnboarding — reload after a delay
+      await page.waitForTimeout(3_000);
+      await page.reload({ waitUntil: "domcontentloaded" });
+    }
+
     const dashContent = page.locator('[data-tour-id="dash-overview"]');
-    const onDashboard = await dashContent.isVisible({ timeout: 10_000 }).catch(() => false);
+    const onDashboard = await dashContent.isVisible({ timeout: 15_000 }).catch(() => false);
     if (!onDashboard) {
       test.skip(true, "Not on dashboard");
       return;
@@ -118,7 +156,7 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
     await page.waitForTimeout(2_000);
 
     const helpBtn = page.locator('[data-testid="dashboard-tour-help-btn"]');
-    await expect(helpBtn).toBeVisible({ timeout: 10_000 });
+    await expect(helpBtn).toBeVisible({ timeout: 15_000 });
 
     await helpBtn.click();
     await page.waitForTimeout(500);
@@ -146,11 +184,20 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
       return;
     }
 
+    // Wait for DB replication before navigating
+    await page.waitForTimeout(3_000);
     await page.goto("/app/dashboard");
     await page.waitForLoadState("domcontentloaded");
 
+    // Dismiss wizard modal if it shows (DB replication delay)
+    const wizardModal = page.locator('[data-testid="onboarding-wizard"], [role="dialog"]:has-text("CENTRAL")');
+    if (await wizardModal.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await page.waitForTimeout(3_000);
+      await page.reload({ waitUntil: "domcontentloaded" });
+    }
+
     const dashContent = page.locator('[data-tour-id="dash-overview"]');
-    const onDashboard = await dashContent.isVisible({ timeout: 10_000 }).catch(() => false);
+    const onDashboard = await dashContent.isVisible({ timeout: 15_000 }).catch(() => false);
     if (!onDashboard) {
       test.skip(true, "Not on dashboard");
       return;
@@ -159,7 +206,7 @@ test.describe("P1 — Dashboard Tour (Logged-In Onboarding)", () => {
     await page.waitForTimeout(2_000);
 
     const helpBtn = page.locator('[data-testid="dashboard-tour-help-btn"]');
-    await expect(helpBtn).toBeVisible({ timeout: 10_000 });
+    await expect(helpBtn).toBeVisible({ timeout: 15_000 });
 
     await helpBtn.click();
     await page.waitForTimeout(500);

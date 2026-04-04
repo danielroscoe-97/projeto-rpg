@@ -14,6 +14,54 @@ import { loginAs } from "../helpers/auth";
 import { goToNewSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
+/**
+ * Ensure the manual-add form is open and scrolled into view.
+ * On mobile viewports the Manual toggle button and the form itself
+ * can be below the fold, so we scroll before clicking/asserting.
+ */
+async function ensureManualFormVisible(page: import("@playwright/test").Page) {
+  const addRow = page.locator('[data-testid="add-row"]');
+  const nameInput = page.locator('[data-testid="add-row-name"]');
+
+  // If the form is already visible, just scroll it into the viewport
+  if (await nameInput.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await addRow.scrollIntoViewIfNeeded();
+    return;
+  }
+
+  // Form is collapsed — find the Manual toggle, scroll to it, and click
+  const manualToggle = page
+    .locator("button")
+    .filter({ hasText: /Manual/i })
+    .first();
+  if (await manualToggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await manualToggle.scrollIntoViewIfNeeded();
+    await manualToggle.click();
+    await page.waitForTimeout(300);
+  }
+
+  // After opening, scroll the form into view for mobile viewports
+  await addRow.scrollIntoViewIfNeeded();
+  await expect(nameInput).toBeVisible({ timeout: 5_000 });
+}
+
+/** Add a combatant via the manual add row, re-opening form if needed */
+async function addCombatant(
+  page: import("@playwright/test").Page,
+  c: { name: string; hp: string; ac: string; init: string }
+) {
+  await ensureManualFormVisible(page);
+
+  const nameInput = page.locator('[data-testid="add-row-name"]');
+  await page.locator('[data-testid="add-row-init"]').fill(c.init);
+  await nameInput.fill(c.name);
+  await expect(nameInput).toHaveValue(c.name, { timeout: 2_000 });
+  await page.locator('[data-testid="add-row-hp"]').fill(c.hp);
+  await page.locator('[data-testid="add-row-ac"]').fill(c.ac);
+  await page.click('[data-testid="add-row-btn"]');
+  await page.waitForTimeout(500);
+}
+
 test.describe("J1 — Primeiro Combate (DM)", () => {
   test.beforeEach(async ({ page }) => {
     await loginAs(page, DM_PRIMARY);
@@ -24,38 +72,28 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
   }) => {
     await goToNewSession(page);
 
-    // Set encounter name
-    await page.fill(
-      '[data-testid="encounter-name-input"]',
-      "J1 Emboscada Goblin"
-    );
+    // Encounter name is auto-generated
 
     // Add combatant 1: Paladino
-    await page.fill('[data-testid="add-row-name"]', "Paladino");
-    await page.fill('[data-testid="add-row-hp"]', "45");
-    await page.fill('[data-testid="add-row-ac"]', "18");
-    await page.fill('[data-testid="add-row-init"]', "15");
-    await page.click('[data-testid="add-row-btn"]');
+    await addCombatant(page, { name: "Paladino", hp: "45", ac: "18", init: "15" });
     await expect(
       page.locator('[data-testid^="setup-row-"]').first()
     ).toBeVisible({ timeout: 5_000 });
 
     // Add combatant 2: Goblin
-    await page.fill('[data-testid="add-row-name"]', "Goblin");
-    await page.fill('[data-testid="add-row-hp"]', "7");
-    await page.fill('[data-testid="add-row-ac"]', "15");
-    await page.fill('[data-testid="add-row-init"]', "12");
-    await page.click('[data-testid="add-row-btn"]');
+    await addCombatant(page, { name: "Goblin", hp: "7", ac: "15", init: "12" });
     await expect(page.locator('[data-testid^="setup-row-"]')).toHaveCount(2, {
       timeout: 5_000,
     });
 
     // Start combat
-    await page.click('[data-testid="start-combat-btn"]');
+    const startBtn = page.locator('[data-testid="start-combat-btn"]');
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
 
     // Verify active combat
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
-      timeout: 10_000,
+      timeout: 20_000,
     });
     await expect(page.locator('[data-testid="initiative-list"]')).toBeVisible();
     await expect(page.locator('[data-testid="next-turn-btn"]')).toBeVisible();
@@ -74,7 +112,10 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
   test("J1.3 — Quick Combat bypasses campaign picker", async ({ page }) => {
     await goToNewSession(page);
 
-    // Setup screen must be visible without selecting a campaign
+    // Setup screen must be visible without selecting a campaign.
+    // On mobile viewports the manual form or its toggle may be below the fold,
+    // so we explicitly open and scroll it into view before asserting.
+    await ensureManualFormVisible(page);
     await expect(page.locator('[data-testid="add-row"]')).toBeVisible();
   });
 
@@ -85,6 +126,7 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
 
     // Try to start combat with 0 combatants
     const startBtn = page.locator('[data-testid="start-combat-btn"]');
+    await startBtn.scrollIntoViewIfNeeded();
 
     // Button should be disabled or click should show error
     const isDisabled = await startBtn.isDisabled().catch(() => false);
@@ -99,10 +141,10 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
         .isVisible({ timeout: 2_000 })
         .catch(() => false);
 
-      // If combat started with 0 combatants, it's a bug — but don't fail hard,
-      // just verify the guard exists at some level
       if (!isActive) {
-        // Good — setup screen still showing
+        // Good — setup screen still showing.
+        // On mobile viewports the add-row form may need scrolling into view.
+        await ensureManualFormVisible(page);
         await expect(page.locator('[data-testid="add-row"]')).toBeVisible();
       }
     } else {
@@ -116,28 +158,16 @@ test.describe("J1 — Primeiro Combate (DM)", () => {
   }) => {
     await goToNewSession(page);
 
-    await page.fill('[data-testid="encounter-name-input"]', "J1.6 Persist");
-
     // Add 2 combatants and start combat (creates session in Supabase)
-    await page.fill('[data-testid="add-row-name"]', "Hero Persist");
-    await page.fill('[data-testid="add-row-hp"]', "99");
-    await page.fill('[data-testid="add-row-ac"]', "20");
-    await page.fill('[data-testid="add-row-init"]', "20");
-    await page.click('[data-testid="add-row-btn"]');
+    await addCombatant(page, { name: "Hero Persist", hp: "99", ac: "20", init: "20" });
+    await addCombatant(page, { name: "Goblin Persist", hp: "7", ac: "15", init: "10" });
 
-    await page.fill('[data-testid="add-row-name"]', "Goblin Persist");
-    await page.fill('[data-testid="add-row-hp"]', "7");
-    await page.fill('[data-testid="add-row-ac"]', "15");
-    await page.fill('[data-testid="add-row-init"]', "10");
-    await page.click('[data-testid="add-row-btn"]');
-
-    await page.click('[data-testid="start-combat-btn"]');
+    const startBtn = page.locator('[data-testid="start-combat-btn"]');
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
-      timeout: 10_000,
+      timeout: 20_000,
     });
-
-    // Capture session URL
-    const sessionUrl = page.url();
 
     // Hard refresh
     await page.reload({ waitUntil: "domcontentloaded" });

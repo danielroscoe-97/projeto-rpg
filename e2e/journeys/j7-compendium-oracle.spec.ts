@@ -14,6 +14,28 @@ import { loginAs } from "../helpers/auth";
 import { goToNewSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
+async function addCombatant(
+  page: import("@playwright/test").Page,
+  c: { name: string; hp: string; ac: string; init: string }
+) {
+  const nameInput = page.locator('[data-testid="add-row-name"]');
+  if (!(await nameInput.isVisible({ timeout: 1_000 }).catch(() => false))) {
+    const manualToggle = page.locator("button").filter({ hasText: /Manual/i }).first();
+    if (await manualToggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await manualToggle.click();
+      await page.waitForTimeout(300);
+    }
+  }
+  await expect(nameInput).toBeVisible({ timeout: 5_000 });
+  await page.locator('[data-testid="add-row-init"]').fill(c.init);
+  await nameInput.fill(c.name);
+  await expect(nameInput).toHaveValue(c.name, { timeout: 2_000 });
+  await page.locator('[data-testid="add-row-hp"]').fill(c.hp);
+  await page.locator('[data-testid="add-row-ac"]').fill(c.ac);
+  await page.click('[data-testid="add-row-btn"]');
+  await page.waitForTimeout(500);
+}
+
 test.describe("J7 — Compendium + Oracle", () => {
   test.beforeEach(async ({ page }) => {
     await loginAs(page, DM_PRIMARY);
@@ -140,25 +162,17 @@ test.describe("J7 — Compendium + Oracle", () => {
     // Fast track — go to session and start combat
     await goToNewSession(page);
 
-    await page.fill(
-      '[data-testid="encounter-name-input"]',
-      "Oracle Test Combat"
-    );
-
-    // Add 2 combatants quickly
+    // Add 2 combatants quickly (encounter name is auto-generated)
     for (const c of [
       { name: "A", hp: "30", ac: "14", init: "15" },
       { name: "B", hp: "20", ac: "12", init: "8" },
     ]) {
-      await page.fill('[data-testid="add-row-name"]', c.name);
-      await page.fill('[data-testid="add-row-hp"]', c.hp);
-      await page.fill('[data-testid="add-row-ac"]', c.ac);
-      await page.fill('[data-testid="add-row-init"]', c.init);
-      await page.click('[data-testid="add-row-btn"]');
-      await page.waitForTimeout(500);
+      await addCombatant(page, c);
     }
 
-    await page.click('[data-testid="start-combat-btn"]');
+    const startBtn = page.locator('[data-testid="start-combat-btn"]');
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
       timeout: 10_000,
     });

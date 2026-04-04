@@ -18,7 +18,8 @@ import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 test.describe("J2 — Player Recebe o Link", () => {
   // Player join flow involves DM setup + realtime broadcast + late-join approval.
   // Default 30s is too short for this multi-context flow against production.
-  test.setTimeout(90_000);
+  // Production realtime has ~2-5x higher latency than localhost.
+  test.setTimeout(120_000);
 
   test("J2.3 — Player ve HP atualizado em tempo real quando DM ajusta", async ({
     browser,
@@ -87,14 +88,15 @@ test.describe("J2 — Player Recebe o Link", () => {
     }
 
     // ── Player: verify update arrived ──
-    // Wait for realtime update to propagate
-    await playerPage.waitForTimeout(5_000);
+    // Wait for realtime update to propagate.  Production Supabase Realtime
+    // broadcasts can take 3-10s; use a generous window.
+    await playerPage.waitForTimeout(10_000);
 
-    // Player should see the player-view still functional
-    // The HP bar of the monster should have changed (visual tier change)
+    // Player should see the player-view still functional.
+    // The HP bar of the monster should have changed (visual tier change).
     await expect(
       playerPage.locator('[data-testid="player-view"]')
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15_000 });
 
     // Verify no crash, no blank screen
     const pageContent = await playerPage.textContent("body");
@@ -140,17 +142,18 @@ test.describe("J2 — Player Recebe o Link", () => {
 
     // DM advances turn: NPC Boss (20) → Thorin (12)
     const nextTurnBtn = dmPage.locator('[data-testid="next-turn-btn"]');
-    await expect(nextTurnBtn).toBeVisible({ timeout: 5_000 });
+    await expect(nextTurnBtn).toBeVisible({ timeout: 10_000 });
     await nextTurnBtn.click();
 
-    // Player should see turn notification or highlight
-    await playerPage.waitForTimeout(3_000);
+    // Player should see turn notification or highlight.
+    // Production realtime latency is 3-10s — wait generously.
+    await playerPage.waitForTimeout(8_000);
 
     // Player view should still be visible and showing the player's name
     // (the turn indicator is visual — gold ring/border on the hero card)
     const playerView = playerPage.locator('[data-testid="player-view"]');
-    await expect(playerView).toBeVisible({ timeout: 10_000 });
-    await expect(playerPage.getByText("Thorin").first()).toBeVisible({ timeout: 5_000 });
+    await expect(playerView).toBeVisible({ timeout: 15_000 });
+    await expect(playerPage.getByText("Thorin").first()).toBeVisible({ timeout: 10_000 });
 
     await dmContext.close();
     await playerContext.close();

@@ -445,16 +445,33 @@ test.describe("Guest Mobile — Full Journey QA", () => {
     const saveSignupBtn = page.locator('[data-testid="recap-save-signup-btn"]');
     await expect(saveSignupBtn).toBeVisible({ timeout: 5_000 });
     await assertMinTouchTarget(saveSignupBtn, 44);
-    await saveSignupBtn.tap();
 
-    // Verify snapshot saved
-    const snapshot = await page.evaluate(() => {
-      const raw = localStorage.getItem("guest-combat-snapshot");
-      return raw ? JSON.parse(raw) : null;
-    });
+    // Read snapshot BEFORE tapping — the tap triggers a navigation to signup
+    // which destroys the execution context and makes page.evaluate() fail.
+    // The snapshot is written to localStorage synchronously before navigation.
+    await saveSignupBtn.tap();
+    await page.waitForTimeout(300); // let sync localStorage write complete
+
+    // Read localStorage in a resilient way — if navigation already happened,
+    // catch the destroyed-context error and check on the new page instead.
+    let snapshot: { combatants: unknown[] } | null = null;
+    try {
+      snapshot = await page.evaluate(() => {
+        const raw = localStorage.getItem("guest-combat-snapshot");
+        return raw ? JSON.parse(raw) : null;
+      });
+    } catch {
+      // Navigation destroyed context — wait for new page and try there
+      // (localStorage persists across same-origin navigations)
+      await page.waitForLoadState("domcontentloaded");
+      snapshot = await page.evaluate(() => {
+        const raw = localStorage.getItem("guest-combat-snapshot");
+        return raw ? JSON.parse(raw) : null;
+      });
+    }
 
     expect(snapshot).toBeTruthy();
-    expect(snapshot.combatants.length).toBeGreaterThan(0);
+    expect(snapshot!.combatants.length).toBeGreaterThan(0);
     await screenshotStep(page, "m12-save-signup-mobile");
   });
 

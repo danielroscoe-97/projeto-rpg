@@ -114,25 +114,36 @@ test.describe("J14 — i18n pt-BR", () => {
     await loginAs(page, DM_PRIMARY);
     await goToNewSession(page);
 
-    await page.fill(
-      '[data-testid="encounter-name-input"]',
-      "J14 i18n Conditions"
-    );
+    // Encounter name is auto-generated
 
-    // Add combatant
-    await page.fill('[data-testid="add-row-name"]', "Goblin i18n");
-    await page.fill('[data-testid="add-row-hp"]', "20");
-    await page.fill('[data-testid="add-row-ac"]', "15");
-    await page.fill('[data-testid="add-row-init"]', "12");
+    // Add combatant — re-open manual form if needed
+    const nameInput = page.locator('[data-testid="add-row-name"]');
+    await expect(nameInput).toBeVisible({ timeout: 10_000 });
+    await page.locator('[data-testid="add-row-init"]').fill("12");
+    await nameInput.fill("Goblin i18n");
+    await page.locator('[data-testid="add-row-hp"]').fill("20");
+    await page.locator('[data-testid="add-row-ac"]').fill("15");
     await page.click('[data-testid="add-row-btn"]');
+    await page.waitForTimeout(500);
 
-    await page.fill('[data-testid="add-row-name"]', "Hero i18n");
-    await page.fill('[data-testid="add-row-hp"]', "40");
-    await page.fill('[data-testid="add-row-ac"]', "16");
-    await page.fill('[data-testid="add-row-init"]', "18");
+    // Re-open manual form for second combatant
+    if (!(await nameInput.isVisible({ timeout: 1_000 }).catch(() => false))) {
+      const manualToggle = page.locator("button").filter({ hasText: /Manual/i }).first();
+      if (await manualToggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await manualToggle.click();
+        await page.waitForTimeout(300);
+      }
+    }
+    await page.locator('[data-testid="add-row-init"]').fill("18");
+    await nameInput.fill("Hero i18n");
+    await page.locator('[data-testid="add-row-hp"]').fill("40");
+    await page.locator('[data-testid="add-row-ac"]').fill("16");
     await page.click('[data-testid="add-row-btn"]');
+    await page.waitForTimeout(500);
 
-    await page.click('[data-testid="start-combat-btn"]');
+    const startBtn = page.locator('[data-testid="start-combat-btn"]');
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
       timeout: 10_000,
     });

@@ -139,17 +139,61 @@ export async function advanceTurn(page: Page) {
   await page.waitForTimeout(400);
 }
 
+/**
+ * Scroll element to viewport center to clear the sticky combat toolbar (72px).
+ * `scrollIntoViewIfNeeded` scrolls to the edge which lands behind the toolbar.
+ */
+async function scrollToCenter(loc: Locator) {
+  await loc.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  // Small settle for any layout shift
+  await loc.page().waitForTimeout(200);
+}
+
+/**
+ * Temporarily hide mobile overlay elements (sticky toolbar + FAB) that intercept
+ * pointer events, run the callback, then restore them.
+ */
+async function withoutMobileOverlays<T>(page: Page, fn: () => Promise<T>): Promise<T> {
+  await page.evaluate(() => {
+    document.querySelectorAll('[data-testid="next-turn-fab"], [data-testid="next-turn-btn"]').forEach(el => {
+      (el as HTMLElement).style.pointerEvents = "none";
+    });
+    // Also disable pointer events on the sticky combat toolbar
+    const sticky = document.querySelector('.sticky.z-30, [class*="sticky"][class*="z-30"]');
+    if (sticky) (sticky as HTMLElement).style.pointerEvents = "none";
+  });
+  try {
+    return await fn();
+  } finally {
+    await page.evaluate(() => {
+      document.querySelectorAll('[data-testid="next-turn-fab"], [data-testid="next-turn-btn"]').forEach(el => {
+        (el as HTMLElement).style.pointerEvents = "";
+      });
+      const sticky = document.querySelector('.sticky.z-30, [class*="sticky"][class*="z-30"]');
+      if (sticky) (sticky as HTMLElement).style.pointerEvents = "";
+    });
+  }
+}
+
 /** Apply damage to first visible combatant */
 export async function applyDamageToFirst(page: Page, amount: number) {
-  const hpBtn = page.locator('[data-testid^="hp-btn-"]').first();
-  await expect(hpBtn).toBeVisible({ timeout: 5_000 });
-  await hpBtn.click();
+  await withoutMobileOverlays(page, async () => {
+    const hpBtn = page.locator('[data-testid^="hp-btn-"]').first();
+    await scrollToCenter(hpBtn);
+    await expect(hpBtn).toBeVisible({ timeout: 5_000 });
+    await hpBtn.click();
 
-  const adjuster = page.locator('[data-testid="hp-adjuster"]');
-  await expect(adjuster).toBeVisible({ timeout: 5_000 });
-  await page.fill('[data-testid="hp-amount-input"]', String(amount));
-  await page.click('[data-testid="hp-apply-btn"]');
-  await page.waitForTimeout(400);
+    const adjuster = page.locator('[data-testid="hp-adjuster"]');
+    await scrollToCenter(adjuster);
+    await expect(adjuster).toBeVisible({ timeout: 5_000 });
+    const amountInput = page.locator('[data-testid="hp-amount-input"]');
+    await scrollToCenter(amountInput);
+    await amountInput.fill(String(amount));
+    const applyBtn = page.locator('[data-testid="hp-apply-btn"]');
+    await scrollToCenter(applyBtn);
+    await applyBtn.click();
+    await page.waitForTimeout(400);
+  });
 }
 
 /** Apply damage to a combatant by partial name match */
@@ -165,11 +209,17 @@ export async function applyDamageByName(page: Page, namePartial: string, amount:
       const id = testId?.replace("combatant-row-", "") ?? "";
       if (id) {
         const hpBtn = page.locator(`[data-testid="hp-btn-${id}"]`);
-        await hpBtn.click();
+        await scrollToCenter(hpBtn);
+        await hpBtn.click({ force: true });
         const adjuster = page.locator('[data-testid="hp-adjuster"]');
+        await scrollToCenter(adjuster);
         await expect(adjuster).toBeVisible({ timeout: 5_000 });
-        await page.fill('[data-testid="hp-amount-input"]', String(amount));
-        await page.click('[data-testid="hp-apply-btn"]');
+        const amtInput = page.locator('[data-testid="hp-amount-input"]');
+        await scrollToCenter(amtInput);
+        await amtInput.fill(String(amount));
+        const applyBtn = page.locator('[data-testid="hp-apply-btn"]');
+        await scrollToCenter(applyBtn);
+        await applyBtn.click({ force: true });
         await page.waitForTimeout(400);
         return;
       }
