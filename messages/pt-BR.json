@@ -1210,7 +1210,7 @@
     "death_saves_stabilized": "Estabilizado!",
     "death_saves_dead": "Morto",
     "advance_turn": "Próximo Turno (Espaço)",
-    "sticky_your_turn": "Turno de {name}!",
+    "sticky_pc_turn": "Turno de {name}!",
     "sticky_next": "Próximo: {name}",
     "collapse_stat_block": "Recolher bloco de estatísticas",
     "expand_stat_block": "Expandir bloco de estatísticas",

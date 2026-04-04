@@ -20,6 +20,7 @@ export async function createStandaloneCharacterAction(data: CharacterData) {
 
   const service = createServiceClient();
 
+  const maxHp = Math.max(1, data.maxHp ?? 10);
   const { error } = await service
     .from("player_characters")
     .insert({
@@ -29,13 +30,16 @@ export async function createStandaloneCharacterAction(data: CharacterData) {
       race: data.race?.trim() || null,
       class: data.characterClass?.trim() || null,
       level: data.level || null,
-      max_hp: data.maxHp ?? 10,
-      current_hp: data.maxHp ?? 10,
+      max_hp: maxHp,
+      current_hp: maxHp,
       ac: data.ac ?? 10,
       spell_save_dc: data.spellSaveDc || null,
     });
 
-  if (error) throw new Error("Erro ao criar personagem");
+  if (error) {
+    console.error("[createStandaloneCharacter]", error.message, error.code);
+    throw new Error("Erro ao criar personagem");
+  }
 
   revalidatePath("/app/dashboard/characters");
 }

@@ -272,7 +272,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onAdvanceTurn?.(); }}
-              className="text-gold shrink-0 text-sm leading-none select-none cursor-pointer hover:scale-125 transition-transform"
+              className="text-gold shrink-0 text-sm leading-none select-none cursor-pointer hover:scale-125 transition-transform min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={t("advance_turn")}
               title={t("advance_turn")}
               data-testid="current-turn-indicator"
@@ -317,7 +317,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); openInlineEdit("initiative", combatant.initiative !== null ? String(combatant.initiative) : ""); }}
-                className="flex-shrink-0 px-1.5 py-0.5 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors"
+                className="flex-shrink-0 px-2 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors min-h-[44px] inline-flex items-center"
                 title={t("edit_initiative_title")}
                 data-testid={`initiative-badge-${combatant.id}`}
               >
@@ -426,7 +426,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
-                className={`text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                className={`text-muted-foreground min-h-[44px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
                 title={showActions ? t("edit_current_hp_title") : undefined}
                 data-testid={`current-hp-btn-${combatant.id}`}
               >
@@ -459,7 +459,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => { if (showActions) openInlineEdit("max", String(combatant.max_hp)); }}
-                className={`text-muted-foreground/60 ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                className={`text-muted-foreground/60 min-h-[44px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
                 title={showActions ? t("edit_max_hp_title") : undefined}
                 data-testid={`max-hp-btn-${combatant.id}`}
               >

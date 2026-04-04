@@ -677,8 +677,10 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   }, [allNodes, allEdges, filters, collapsedGroups, layoutMode, setNodes, setEdges, t]);
 
   /* ---- Data loading ---- */
+  const [loadError, setLoadError] = useState<string | null>(null);
   const loadData = useCallback(
     async (isInitial = false) => {
+      try {
       const supabase = createClient();
 
       const [
@@ -1087,6 +1089,12 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       setAllNodes(newNodes);
       setAllEdges(newEdges);
       if (isInitial) setLoading(false);
+      setLoadError(null);
+      } catch (err) {
+        console.error("[CampaignMindMap] loadData failed:", err);
+        if (isInitial) setLoading(false);
+        setLoadError(t("mind_map_load_error"));
+      }
     },
     [campaignId, campaignName, t, tNotes, tLocations, tFactions]
   );
@@ -1461,6 +1469,21 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     return (
       <div className="flex items-center justify-center h-[400px] text-muted-foreground text-sm">
         {t("loading")}
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 h-[400px] text-muted-foreground text-sm">
+        <p>{loadError}</p>
+        <button
+          type="button"
+          onClick={() => loadData(true)}
+          className="px-4 py-2 text-xs font-medium rounded border border-border hover:bg-white/[0.06] transition-colors"
+        >
+          {t("retry")}
+        </button>
       </div>
     );
   }

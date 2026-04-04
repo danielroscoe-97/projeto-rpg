@@ -1210,7 +1210,7 @@
     "death_saves_stabilized": "Stabilized!",
     "death_saves_dead": "Dead",
     "advance_turn": "Next Turn (Space)",
-    "sticky_your_turn": "{name}'s turn!",
+    "sticky_pc_turn": "{name}'s turn!",
     "sticky_next": "Next: {name}",
     "collapse_stat_block": "Collapse stat block",
     "expand_stat_block": "Expand stat block",

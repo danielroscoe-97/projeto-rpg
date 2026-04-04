@@ -45,6 +45,7 @@ import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
 import { createClient } from "@/lib/supabase/client";
 import { CombatTimer } from "@/components/combat/CombatTimer";
+import { StickyTurnHeader } from "@/components/combat/StickyTurnHeader";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
@@ -1278,6 +1279,13 @@ export function CombatSessionClient({
           />
         </SheetContent>
       </Sheet>
+      {/* Sticky turn indicator */}
+      <StickyTurnHeader
+        currentCombatantName={combatants[current_turn_index]?.name ?? t("dm_turn_label")}
+        isPcTurn={combatants[current_turn_index]?.is_player ?? false}
+        nextCombatantName={combatants[(current_turn_index + 1) % combatants.length]?.name}
+        roundNumber={round_number}
+      />
       </div>{/* end sticky controls */}
 
       <div className="mt-4">

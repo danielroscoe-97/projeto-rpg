@@ -4,7 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 
 export const metadata: Metadata = {
-  title: "Sobre o Pocket DM — Combat Tracker Gratuito para D&D 5e",
+  title: "Sobre — Combat Tracker Gratuito para D&D 5e",
   description:
     "O Pocket DM é um rastreador de combate gratuito para D&D 5e, projetado para mesas presenciais. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores. Criado no Brasil.",
   alternates: {

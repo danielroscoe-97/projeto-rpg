@@ -5,7 +5,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 
 export const metadata: Metadata = {
-  title: "Blog — Pocket DM | Dicas para Mestres de D&D 5e",
+  title: "Blog — Dicas para Mestres de D&D 5e",
   description:
     "Dicas, guias e tutoriais para mestres e jogadores de D&D 5e. Combat tracker, condições, ferramentas, e como agilizar suas sessões de RPG presencial.",
   keywords: [

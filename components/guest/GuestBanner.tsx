@@ -11,14 +11,16 @@ const SESSION_LIMIT_MS = 60 * 60 * 1000; // 60 minutes
 
 export function GuestBanner() {
   const t = useTranslations("guest");
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [minutesLeft, setMinutesLeft] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     try {
       const wasDismissed = localStorage.getItem(DISMISSED_KEY) === "true";
-      if (!wasDismissed) setDismissed(false);
+      if (wasDismissed) setDismissed(true);
 
       // Track session start time
       let startTime = localStorage.getItem(SESSION_START_KEY);
@@ -57,7 +59,8 @@ export function GuestBanner() {
   const isUrgent = minutesLeft !== null && minutesLeft <= 10;
   const showBanner = !dismissed || isUrgent;
 
-  if (!showBanner) return null;
+  // SSR: render nothing; client: show banner by default, hide only if previously dismissed
+  if (!mounted || !showBanner) return null;
 
   return (
     <div

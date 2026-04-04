@@ -13,6 +13,7 @@ import { CombatantRow } from "@/components/combat/CombatantRow";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
+import { StickyTurnHeader } from "@/components/combat/StickyTurnHeader";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatRecap } from "@/components/combat/CombatRecap";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
@@ -776,8 +777,8 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         ) : (
           <span />
         )}
-        <div className="flex items-center gap-4">
-          <p className="text-muted-foreground text-xs">
+        <div className="flex items-center flex-wrap gap-2 sm:gap-4">
+          <p className="text-muted-foreground text-xs hidden sm:block">
             {combatants.length > 0
               ? t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })
               : ""}
@@ -811,7 +812,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
             type="button"
             onClick={handleStartCombat}
             disabled={combatants.length === 0}
-            className="px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+            className="px-3 sm:px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             data-testid="start-combat-btn"
             data-tour-id="start-combat"
           >
@@ -1575,28 +1576,12 @@ export function GuestCombatClient() {
         </div>
         {/* Sticky turn indicator row */}
         {phase === "combat" && (
-          <div className="flex items-center gap-2 py-1.5 border-t border-border/30" data-testid="dm-sticky-turn-indicator">
-            <span className="text-gold text-sm leading-none select-none" aria-hidden="true">▶</span>
-            <span className="text-foreground text-sm font-medium truncate max-w-[200px]">
-              {combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
-            </span>
-            {combatants[currentTurnIndex] && (
-              combatants[currentTurnIndex].is_player ? (
-                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
-                  {t("player_tag")}
-                </span>
-              ) : (
-                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20">
-                  {t("monster_tag")}
-                </span>
-              )
-            )}
-            {combatants[currentTurnIndex + 1] && (
-              <span className="text-muted-foreground text-xs ml-auto truncate max-w-[160px]">
-                {t("next_label")}: {combatants[currentTurnIndex + 1].name}
-              </span>
-            )}
-          </div>
+          <StickyTurnHeader
+            currentCombatantName={combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
+            isPcTurn={combatants[currentTurnIndex]?.is_player ?? false}
+            nextCombatantName={combatants[(currentTurnIndex + 1) % combatants.length]?.name}
+            roundNumber={roundNumber}
+          />
         )}
         </div>{/* end sticky controls */}
 

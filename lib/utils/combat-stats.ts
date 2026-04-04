@@ -535,6 +535,17 @@ export function buildAwards(
   return awards;
 }
 
+/** Classify combatants into PCs vs monsters and format the matchup string. */
+function computeMatchup(combatants: Combatant[]) {
+  const isPC = (c: Combatant) => c.is_player || c.combatant_role === "player";
+  const pcs = combatants.filter(isPC);
+  const monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
+  const matchup = pcs.length > 0
+    ? `${pcs.length} vs ${monsters.length}`
+    : `${combatants.filter((c) => !c.is_lair_action).length} combatants`;
+  return { pcs, monsters, matchup };
+}
+
 /**
  * Build a complete CombatReport from raw combat data.
  * This is the single entry point that feeds the CombatRecap UI, share text, and persistence.
@@ -561,10 +572,7 @@ export function buildCombatReport(opts: {
   // Narratives
   const narratives = detectNarratives(entries, combatants, t);
 
-  // Summary — include combatant_role "player" as PCs (manual add sets is_player=false but role="player")
-  const isPC = (c: Combatant) => c.is_player || c.combatant_role === "player";
-  const pcs = combatants.filter(isPC);
-  const monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
+  const { pcs, monsters, matchup } = computeMatchup(combatants);
 
   const totalDamage = rankings.reduce((sum, s) => sum + s.totalDamageDealt, 0);
   const totalCrits = rankings.reduce((sum, s) => sum + s.criticalHits, 0);
@@ -590,7 +598,7 @@ export function buildCombatReport(opts: {
     totalCrits,
     totalFumbles,
     avgTurnTime: totalTurnCount > 0 ? totalTurnTime / totalTurnCount : 0,
-    matchup: `${pcs.length} vs ${monsters.length}`,
+    matchup,
     damageByType: Object.keys(damageByType).length > 0 ? damageByType : undefined,
     damageBySource: Object.keys(damageBySource).length > 0 ? damageBySource : undefined,
     resistanceUsage: Object.keys(resistanceUsage).length > 0 ? resistanceUsage : undefined,
@@ -639,9 +647,7 @@ export function buildCombatReportFromStats(opts: {
     }
   }
 
-  const isPC = (c: Combatant) => c.is_player || c.combatant_role === "player";
-  const pcs = combatants.filter(isPC);
-  const monsters = combatants.filter((c) => !isPC(c) && !c.is_lair_action);
+  const { pcs, monsters, matchup } = computeMatchup(combatants);
   const totalDamage = stats.reduce((sum, s) => sum + s.totalDamageDealt, 0);
   const totalTurnTime = stats.reduce((sum, s) => sum + s.totalTurnTime, 0);
   const totalTurnCount = stats.reduce((sum, s) => sum + s.turnCount, 0);
@@ -663,7 +669,7 @@ export function buildCombatReportFromStats(opts: {
       totalCrits: stats.reduce((sum, s) => sum + s.criticalHits, 0),
       totalFumbles: stats.reduce((sum, s) => sum + s.criticalFails, 0),
       avgTurnTime: totalTurnCount > 0 ? totalTurnTime / totalTurnCount : 0,
-      matchup: `${pcs.length} vs ${monsters.length}`,
+      matchup,
       timePerRound,
     },
     rankings: stats,

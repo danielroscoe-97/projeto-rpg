@@ -122,7 +122,7 @@ function D20Icon({ className, style }: { className?: string; style?: React.CSSPr
 
 
 export const metadata = {
-  title: "Pocket DM — Rastreador de Combate D&D 5e Grátis | Combat Tracker",
+  title: { absolute: "Pocket DM — Rastreador de Combate D&D 5e Grátis | Combat Tracker" },
   description:
     "Rastreador de combate e iniciativa para D&D 5e — grátis e sem cadastro. Gerencie HP, condições, turnos e magias em tempo real no celular dos seus jogadores. O melhor app para mestre de RPG presencial. Free D&D 5e combat tracker for in-person play.",
   alternates: { canonical: "/" },
