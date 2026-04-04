@@ -34,7 +34,7 @@ const LABELS = {
     dmTips: "Dicas",
     ctaHeadline: (name?: string) =>
       name ? `Pronto pra rolar iniciativa com ${name}?` : "O que é o Pocket DM?",
-    ctaSub: "Rastreador gratuito · D&D 5e · sem cadastro",
+    ctaSub: "Combat Tracker gratuito · D&D 5e · sem cadastro",
     ctaBtn: "Iniciar Combate →",
   },
 } as const;

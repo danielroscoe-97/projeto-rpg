@@ -11,6 +11,12 @@ const LABELS = {
     monstersHref: "/monsters",
     spells: "Spells",
     spellsHref: "/spells",
+    conditions: "Conditions",
+    conditionsHref: "/conditions",
+    dice: "Dice",
+    diceHref: "/dice",
+    rules: "Rules",
+    rulesHref: "/rules",
     combat: "Combat Tracker",
     tryFree: "Try Free",
     signUp: "Sign Up",
@@ -20,6 +26,12 @@ const LABELS = {
     monstersHref: "/monstros",
     spells: "Magias",
     spellsHref: "/magias",
+    conditions: "Condições",
+    conditionsHref: "/condicoes",
+    dice: "Dados",
+    diceHref: "/dados",
+    rules: "Regras",
+    rulesHref: "/regras",
     combat: "Rastreador de Combate",
     tryFree: "Testar Grátis",
     signUp: "Cadastrar",
@@ -104,6 +116,24 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
             className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
           >
             {l.spells}
+          </Link>
+          <Link
+            href={l.conditionsHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.conditions}
+          </Link>
+          <Link
+            href={l.diceHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.dice}
+          </Link>
+          <Link
+            href={l.rulesHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.rules}
           </Link>
           <Link
             href="/try"

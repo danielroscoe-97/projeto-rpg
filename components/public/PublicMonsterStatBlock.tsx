@@ -167,9 +167,16 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           isMonsterADay={!!monster.monster_a_day_url}
         />
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-[var(--5e-text)] font-[family-name:var(--font-cinzel)] leading-tight">
-            {getName(monster.name)}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-[var(--5e-text)] font-[family-name:var(--font-cinzel)] leading-tight">
+              {getName(monster.name)}
+            </h1>
+            {monster.ruleset_version && (
+              <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none border border-[var(--5e-accent-gold)]/20 text-[var(--5e-accent-gold)]/70 bg-[var(--5e-accent-gold)]/5">
+                {monster.ruleset_version}
+              </span>
+            )}
+          </div>
           <p className="text-[var(--5e-text-muted)] text-sm italic">
             {sizeStr} {typeStr}
             {alignmentStr ? `, ${alignmentStr}` : ""}
