@@ -154,7 +154,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cool/[0.05] rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative max-w-3xl mx-auto text-center space-y-3">
+      <div className="relative max-w-3xl mx-auto text-center space-y-4">
         {/* Crown d20 Logo */}
         <div className="animate-fade-in flex flex-col items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -190,7 +190,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col items-center gap-3 pt-1 animate-fade-in-up w-full max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
+        <div className="flex flex-col items-center gap-3 pt-2 animate-fade-in-up w-full max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
           {/* Primary escape-hatch — elongated, full width, gold-accented */}
           <Link
             href="/try"
