@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-24
-last_updated: 2026-04-04  # Methodology Community Page epic added (METH-0 through METH-3)
+last_updated: 2026-04-04  # METH-4 added (quality tiers, spell voting, similar encounters, code review patches)
 project: projeto-rpg
 
 project_key: NOKEY
@@ -316,3 +316,13 @@ development_status:
   meth-3-1-researcher-badge-and-personal-counter: done          # ResearcherBadge in dashboard
   meth-3-2-spell-tiers-teaser-banner: done                      # Teaser on /methodology page
   meth-epic-3-retrospective: optional
+
+  # METH Sprint 4: Quality Tiers, Spell Voting, Similar Encounters (2026-04-04)
+  meth-epic-4: done
+  meth-4-1-quality-tiers-gold-silver-bronze: done               # Exclusive tiers in stats RPC + QualityTierBreakdown
+  meth-4-2-spell-tier-voting: done                              # spell_tier_votes table + API + SpellTierVoting component
+  meth-4-3-similar-encounter-preview: done                      # get_similar_encounters RPC + API + SimilarEncounterPreview
+  meth-4-4-rpc-contribution-optimization: done                  # get_user_methodology_contribution replaces 2 queries
+  meth-4-5-exclude-test-accounts: done                          # Migration 095 — 10 seed accounts
+  meth-4-6-code-review-patches: done                            # Migration 097 — 7 patches from 3-layer adversarial review
+  meth-epic-4-retrospective: optional
