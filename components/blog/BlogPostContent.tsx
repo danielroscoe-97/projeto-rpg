@@ -3810,37 +3810,77 @@ export function BlogPost13() {
         </Li>
       </Ul>
 
-      <H2>A História de Capa Barsavi</H2>
+      <H2>Quem Foi Capa Barsavi</H2>
+
+      {/* Character Portrait — transparent PNG with gold glow */}
+      <div className="my-10 flex justify-center">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gold/[0.06] rounded-full blur-[80px] scale-75" />
+          <Image
+            src="/art/blog/capa-barsavi-portrait.png"
+            alt="Capa Barsavi — Order Cleric / Divine Soul Sorcerer"
+            width={960}
+            height={960}
+            className="relative w-[260px] sm:w-[320px] h-auto drop-shadow-[0_0_40px_rgba(212,168,83,0.25)]"
+            unoptimized
+          />
+        </div>
+      </div>
 
       <P>
-        Capa Barsavi nasceu como filho bastardo de um clérigo renomado e uma
-        aventureira meio-elfa de sangue drow que desapareceu logo após seu
-        nascimento. Criado sob rigor acadêmico e disciplina religiosa, estudou
-        teologia desde cedo e foi devotado a um deus da ordem e da justiça —
-        embora sua natureza cética sempre tenha contrastado com essa devoção.
-        &ldquo;Capa&rdquo; vem da tradição de nomear filhos bastardos com
-        termos que evocam proteção; &ldquo;Barsavi&rdquo; homenageia uma
-        figura lendária conhecida como &ldquo;O Guardião Sábio&rdquo;.
+        Um meio-elfo de linhagem drow que caminha entre dois mundos: o da f&eacute;
+        e o do poder inato. Capa Barsavi nasceu em uma grande metr&oacute;pole costeira,
+        longe dos olhares da nobreza. Filho bastardo de{" "}
+        <strong>Auri Raelistor</strong>, um respeitado cl&eacute;rigo e nobre devoto de
+        um deus da justi&ccedil;a, e de <strong>Lyna</strong>, uma aventureira
+        meio-elfa drow que desapareceu logo ap&oacute;s o nascimento do filho.
+        &ldquo;Capa&rdquo; vem da tradi&ccedil;&atilde;o de nomear filhos bastardos com termos que
+        evocam prote&ccedil;&atilde;o; &ldquo;Barsavi&rdquo; homenageia uma figura lend&aacute;ria
+        conhecida como &ldquo;O Guardi&atilde;o S&aacute;bio&rdquo;.
       </P>
       <P>
-        Após a desaparição misteriosa de seu pai durante uma expedição, Capa
-        enfrentou uma crise de fé que despertou poderes que ele não compreendia
-        — herança do sangue celestial de sua mãe, uma linhagem tocada por
-        forças divinas. Carregando bênçãos clericais e poder arcano ao mesmo
-        tempo, partiu em busca de respostas sobre o destino de seu pai e sobre
-        sua própria natureza.
+        Embora bastardo, Capa nunca foi abandonado. Seu pai garantiu que ele
+        tivesse acesso &agrave;s melhores institui&ccedil;&otilde;es de ensino: escolas clericais,
+        academias de filosofia, fortalezas-biblioteca lend&aacute;rias e centros
+        religiosos de todo o continente. Foi nesse per&iacute;odo que desenvolveu
+        habilidades em ret&oacute;rica, diplomacia, teologia e magia divina &mdash; e
+        conheceu uma duquesa influente, ap&oacute;s impression&aacute;-la com um discurso
+        sobre a &eacute;tica da paz em tempos de guerra.
       </P>
       <P>
-        Sua jornada o levou a terras sombrias sob o domínio de um vampiro, onde
-        Capa e seus companheiros enfrentaram horrores que testaram não apenas
-        suas habilidades, mas sua fé e seus ideais. Observador, erudito e
-        eternamente cético, ele encontrou ali algo que nunca esperava: pessoas
-        pelas quais valia a pena lutar. Capa se tornou a fundação do grupo — o
-        suporte silencioso que mantinha todos de pé quando tudo parecia perdido.
+        Tudo mudou quando seu pai partiu em uma expedi&ccedil;&atilde;o rumo a mares
+        distantes e nunca retornou. Nenhum corpo. Nenhuma pista. Nenhuma
+        resposta. Se o deus que servia representava justi&ccedil;a e ordem, por que
+        permitiu tal sil&ecirc;ncio? Esse questionamento n&atilde;o destruiu sua f&eacute; &mdash; mas
+        a transformou em algo mais pragm&aacute;tico: ele acredita na justi&ccedil;a e na
+        ordem, mas n&atilde;o depende cegamente delas.
+      </P>
+      <P>
+        Foi ent&atilde;o que poderes que n&atilde;o vinham de estudo nem de ora&ccedil;&atilde;o
+        come&ccedil;aram a se manifestar. Um s&aacute;bio em uma antiga fortaleza-biblioteca
+        revelou a verdade: sua m&atilde;e, Lyna, possu&iacute;a linhagem descendente de um
+        ser celestial tocado por uma deusa da magia. Esse sangue despertou
+        dentro de Capa, tornando-o portador de duas fontes de poder &mdash; a
+        disciplina da f&eacute; clerical e o poder inato de seu sangue divino.
+      </P>
+      <P>
+        Ao aceitar o convite da duquesa para um encontro diplom&aacute;tico, Capa
+        iniciou a jornada que o levaria &agrave;s n&eacute;voas de uma terra amaldi&ccedil;oada sob
+        o dom&iacute;nio de um vampiro ancestral. Em apenas <strong>19 dias</strong>,
+        enfrentou horrores sobrenaturais, viu aldeias destru&iacute;das, ficou cara a
+        cara com o senhor das n&eacute;voas &mdash; e morreu <strong>duas vezes</strong>.
+        E voltou duas vezes.
+      </P>
+      <P>
+        Entre seus companheiros &mdash; Amum Titus, Skid, S&oacute;crates, Auditore e
+        Lauren Nailo &mdash; Capa se tornou o elo que mantinha o grupo unido.
+        Estrategista em combate, curandeiro, voz de comando em momentos
+        cr&iacute;ticos, defensor dos mais vulner&aacute;veis. Ele n&atilde;o buscava protagonismo.
+        Mas quando tudo come&ccedil;ava a ruir, todos olhavam para ele.
       </P>
       <P>
         No final, Capa Barsavi morreu pelo seu grupo. A engrenagem parou para
-        que a máquina sobrevivesse. Uma fundação que cumpriu sua promessa.
+        que a m&aacute;quina sobrevivesse. Uma funda&ccedil;&atilde;o que cumpriu sua promessa.
       </P>
 
       <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 my-6 text-center">
@@ -4284,32 +4324,73 @@ export function BlogPost14() {
         </Li>
       </Ul>
 
-      <H2>The Story of Capa Barsavi</H2>
+      <H2>Who Was Capa Barsavi</H2>
+
+      {/* Character Portrait — transparent PNG with gold glow */}
+      <div className="my-10 flex justify-center">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gold/[0.06] rounded-full blur-[80px] scale-75" />
+          <Image
+            src="/art/blog/capa-barsavi-portrait.png"
+            alt="Capa Barsavi — Order Cleric / Divine Soul Sorcerer"
+            width={960}
+            height={960}
+            className="relative w-[260px] sm:w-[320px] h-auto drop-shadow-[0_0_40px_rgba(212,168,83,0.25)]"
+            unoptimized
+          />
+        </div>
+      </div>
 
       <P>
-        Capa Barsavi was born as the illegitimate son of a renowned cleric and a
-        half-elf adventurer of drow heritage who vanished shortly after his
-        birth. Raised under strict academic discipline and religious devotion, he
-        studied theology from a young age and served a god of order and justice
-        — though his skeptical nature always clashed with that devotion.
-        &ldquo;Capa&rdquo; comes from a tradition of naming illegitimate
-        children with terms evoking protection; &ldquo;Barsavi&rdquo; honors a
-        legendary figure known as &ldquo;The Wise Guardian.&rdquo;
+        A half-elf of drow lineage who walks between two worlds: faith and
+        innate power. Capa Barsavi was born in a great coastal city, far from
+        the eyes of nobility. The illegitimate son of{" "}
+        <strong>Auri Raelistor</strong>, a respected cleric and noble devoted to
+        a god of justice, and <strong>Lyna</strong>, a half-elf drow adventurer
+        who vanished shortly after his birth. &ldquo;Capa&rdquo; comes from a
+        tradition of naming illegitimate children with terms evoking protection;
+        &ldquo;Barsavi&rdquo; honors a legendary figure known as &ldquo;The
+        Wise Guardian.&rdquo;
       </P>
       <P>
-        After the mysterious disappearance of his father during an expedition,
-        Capa faced a crisis of faith that awakened powers he didn&apos;t
-        understand — a celestial bloodline inherited from his mother, touched by
-        divine forces. Carrying both clerical blessings and arcane power, he set
-        out to find answers about his father&apos;s fate and his own nature.
+        Though illegitimate, Capa was never abandoned. His father ensured he had
+        access to the finest institutions: clerical schools, philosophy
+        academies, legendary fortress-libraries, and religious centers across
+        the continent. During those years he developed skills in rhetoric,
+        diplomacy, theology, and divine magic &mdash; and met an influential
+        duchess, after impressing her with a speech on the ethics of peace in
+        times of war.
       </P>
       <P>
-        His journey led him to dark lands under the dominion of a vampire, where
-        Capa and his companions faced horrors that tested not just their
-        abilities, but their faith and ideals. Observant, scholarly, and
-        eternally skeptical, he found there something he never expected: people
-        worth fighting for. Capa became the foundation of the group — the
-        silent support who kept everyone standing when all seemed lost.
+        Everything changed when his father departed on an expedition to distant
+        seas and never returned. No body. No clues. No answers. If the god he
+        served stood for justice and order, why allow such silence? This
+        questioning didn&apos;t destroy his faith &mdash; it transformed it into
+        something more pragmatic: he believes in justice and order, but no
+        longer depends on them blindly.
+      </P>
+      <P>
+        Then powers that came from neither study nor prayer began to manifest. A
+        sage in an ancient fortress-library revealed the truth: his mother, Lyna,
+        carried a bloodline descended from a celestial being touched by a goddess
+        of magic. That blood awakened within Capa, making him the bearer of two
+        sources of power &mdash; the discipline of clerical faith and the innate
+        force of his divine heritage.
+      </P>
+      <P>
+        After accepting the duchess&apos;s invitation to a diplomatic meeting,
+        Capa began the journey that would lead him into the mists of a cursed
+        land ruled by an ancient vampire. In just{" "}
+        <strong>19 days</strong>, he faced supernatural horrors, watched
+        villages burn, stood face to face with the lord of the mists &mdash; and
+        died <strong>twice</strong>. And came back twice.
+      </P>
+      <P>
+        Among his companions &mdash; Amum Titus, Skid, Socrates, Auditore, and
+        Lauren Nailo &mdash; Capa became the link that held the group together.
+        Combat strategist, healer, voice of command in critical moments,
+        defender of the vulnerable. He never sought the spotlight. But when
+        everything started to crumble, everyone looked to him.
       </P>
       <P>
         In the end, Capa Barsavi died for his party. The gear stopped so the
