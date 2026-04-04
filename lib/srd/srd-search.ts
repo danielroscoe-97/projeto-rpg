@@ -20,7 +20,8 @@ const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
     { name: "type", weight: 0.3 },
     { name: "cr", weight: 0.2 },
   ],
-  threshold: 0.3,
+  threshold: 0.35,
+  ignoreLocation: true,
   includeScore: true,
   minMatchCharLength: 2,
 };

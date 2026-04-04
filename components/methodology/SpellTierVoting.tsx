@@ -118,7 +118,7 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
       const res = await fetch("/api/methodology/spell-vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ spell_name: currentSpell, vote }),
+        body: JSON.stringify({ spell_name: currentSpell.toLowerCase(), vote }),
       });
 
       if (!res.ok) throw new Error("vote failed");

@@ -2748,6 +2748,14 @@
     "similar_creature_count": "Number of creatures",
     "similar_result": "similar encounters rated difficulty {difficulty}/5",
     "similar_no_data": "Not enough data yet — keep contributing!",
-    "similar_loading": "Searching..."
+    "similar_loading": "Searching...",
+    "mini_vote_title": "Is this spell at the right level?",
+    "mini_vote_under": "Should be higher",
+    "mini_vote_correct": "Correct level",
+    "mini_vote_over": "Should be lower",
+    "mini_vote_thanks": "Vote recorded!",
+    "mini_vote_error": "Could not record your vote. Try again.",
+    "mini_vote_login": "Log in to vote",
+    "mini_vote_count": "votes"
   }
 }

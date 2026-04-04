@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 
 const SPELL_LEVELS = [
@@ -87,6 +87,7 @@ interface SpellEntry {
   ruleset_version?: string;
   casting_time?: string;
   range?: string;
+  components?: string;
   duration?: string;
   description?: string;
 }
@@ -185,6 +186,17 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
   const levelKeys = Array.from(byLevel.keys()).sort((a, b) => a - b);
   const hasFilters = !!(query || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
   const hasChipFilters = !!(levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
+
+  // Smart hover positioning — flip popover above when near bottom of viewport
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [flipUp, setFlipUp] = useState(false);
+
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>, id: string) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setFlipUp(rect.bottom > window.innerHeight * 0.55);
+    setHoveredId(id);
+  }, []);
+  const handleMouseLeave = useCallback(() => setHoveredId(null), []);
 
   function clearAllFilters() {
     setQuery(""); setLevelFilter(null); setSchoolFilter(null);
@@ -338,8 +350,16 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
             {levelHeading(level)}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {byLevel.get(level)!.map((s) => (
-              <div key={s.name} className="relative group/spell">
+            {byLevel.get(level)!.map((s) => {
+              const spellId = `${s.slug ?? toSlug(s.name)}-${s.ruleset_version ?? ""}`;
+              const isHovered = hoveredId === spellId;
+              return (
+              <div
+                key={s.name}
+                className="relative"
+                onMouseEnter={(e) => s.description ? handleMouseEnter(e, spellId) : undefined}
+                onMouseLeave={handleMouseLeave}
+              >
                 <Link href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
                   className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
                 >
@@ -361,9 +381,9 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                     </span>
                   </div>
                 </Link>
-                {/* Hover card — desktop only */}
+                {/* Hover card — desktop only, smart positioning */}
                 {s.description && (
-                  <div className="hidden lg:block absolute left-0 top-full mt-1 z-50 w-72 rounded-lg border border-[#D4A853]/20 bg-gray-900 shadow-xl shadow-black/40 p-3 opacity-0 pointer-events-none group-hover/spell:opacity-100 group-hover/spell:pointer-events-auto transition-opacity duration-150">
+                  <div className={`hidden lg:block absolute left-0 z-50 w-96 rounded-lg border border-[#D4A853]/20 bg-gray-900 shadow-xl shadow-black/40 p-4 transition-opacity duration-150 ${isHovered ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} ${flipUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-sm font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">{s.name}</span>
                       <span className={`text-xs ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>{schoolDisplay(s.school)}</span>
@@ -372,10 +392,15 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                       {s.casting_time && <span>{isPt ? "Tempo" : "Cast"}: {s.casting_time}</span>}
                       {s.range && <span>{isPt ? "Alcance" : "Range"}: {s.range}</span>}
                       {s.duration && <span>{isPt ? "Duração" : "Duration"}: {s.duration}</span>}
+                      {s.components && <span>{isPt ? "Componentes" : "Components"}: {s.components}</span>}
                     </div>
-                    <p className="text-xs text-gray-300 line-clamp-4">{s.description}{s.description.length >= 200 ? "…" : ""}</p>
+                    <div className="text-xs text-gray-300 space-y-1.5 max-h-[45vh] overflow-y-auto pr-1">
+                      {s.description.split("\n").filter(Boolean).map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
                     {s.classes.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
+                      <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-white/[0.06]">
                         {s.classes.map((c) => (
                           <span key={c} className="text-[10px] bg-white/[0.06] text-gray-400 rounded px-1.5 py-0.5">{classDisplay(c)}</span>
                         ))}
@@ -384,7 +409,8 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       ))}

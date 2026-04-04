@@ -76,7 +76,7 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function POST(req
     }
 
     const { data, error } = await supabase.rpc("upsert_spell_tier_vote", {
-      p_spell_name: spell_name.trim(),
+      p_spell_name: spell_name.trim().toLowerCase(),
       p_vote: vote,
     });
 

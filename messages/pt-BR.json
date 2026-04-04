@@ -2748,6 +2748,14 @@
     "similar_creature_count": "Quantidade de criaturas",
     "similar_result": "encontros similares avaliaram dificuldade {difficulty}/5",
     "similar_no_data": "Ainda não temos dados suficientes — continue contribuindo!",
-    "similar_loading": "Buscando..."
+    "similar_loading": "Buscando...",
+    "mini_vote_title": "Essa magia está no nível certo?",
+    "mini_vote_under": "Deveria ser mais alto",
+    "mini_vote_correct": "Nível correto",
+    "mini_vote_over": "Deveria ser mais baixo",
+    "mini_vote_thanks": "Voto registrado!",
+    "mini_vote_error": "Erro ao votar. Tente novamente.",
+    "mini_vote_login": "Faça login para votar",
+    "mini_vote_count": "votos"
   }
 }

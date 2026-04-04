@@ -11,6 +11,9 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellCard } from "@/components/public/PublicSpellCard";
 import { PublicSpellSearch } from "@/components/public/PublicSpellSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
+import { SpellTierVotingMini } from "@/components/methodology/SpellTierVotingMini";
+import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { getSpellTier } from "@/lib/srd/spell-tiers";
 
 // ── Static generation ──────────────────────────────────────────────
@@ -80,6 +83,14 @@ export default async function SpellPage({
   if (!spell) notFound();
 
   const tier = getSpellTier(slug);
+  const t = await getTranslations("methodology");
+
+  let isLoggedIn = false;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    isLoggedIn = !!user && !user.is_anonymous;
+  } catch {}
 
   // Minimal data for the search bar
   const allSpells = getSrdSpells().map((s) => ({
@@ -109,6 +120,22 @@ export default async function SpellPage({
 
           {/* Spell card with dice rollers */}
           <PublicSpellCard spell={spell} tier={tier} />
+
+          {/* Community tier voting */}
+          <SpellTierVotingMini
+            spellName={spell.name}
+            isLoggedIn={isLoggedIn}
+            translations={{
+              title: t("mini_vote_title"),
+              under_tiered: t("mini_vote_under"),
+              correct: t("mini_vote_correct"),
+              over_tiered: t("mini_vote_over"),
+              vote_thanks: t("mini_vote_thanks"),
+              vote_error: t("mini_vote_error"),
+              login_to_vote: t("mini_vote_login"),
+              votes_label: t("mini_vote_count"),
+            }}
+          />
 
           {/* Two-box CTA */}
           <PublicCTA entityName={spell.name} />
