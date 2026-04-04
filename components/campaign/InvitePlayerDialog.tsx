@@ -43,6 +43,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [linkActive, setLinkActive] = useState(true);
   const [linkLoading, setLinkLoading] = useState(false);
+  const [linkError, setLinkError] = useState(false);
   const [confirmRenew, setConfirmRenew] = useState(false);
 
   // ----- Via Email state -----
@@ -53,28 +54,27 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
   const buildLink = (code: string) =>
     `${window.location.origin}/join-campaign/${code}`;
 
-  // Load join link on dialog open (default tab is "link") or on tab switch
-  useEffect(() => {
-    if (open) loadJoinLink();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
   const loadJoinLink = useCallback(async () => {
-    if (linkCode) return; // already loaded
     setLinkLoading(true);
+    setLinkError(false);
     try {
       const res = await fetch(`/api/campaign/${campaignId}/join-link`);
-      if (res.ok) {
-        const { data } = await res.json();
-        setLinkCode(data.code);
-        setLinkActive(data.is_active);
-      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { data } = await res.json();
+      setLinkCode(data.code);
+      setLinkActive(data.is_active);
     } catch (err) {
+      setLinkError(true);
       captureError(err, { component: "InvitePlayerDialog", action: "loadJoinLink", category: "network" });
     } finally {
       setLinkLoading(false);
     }
-  }, [campaignId, linkCode]);
+  }, [campaignId]);
+
+  // Load join link on dialog open (default tab is "link")
+  useEffect(() => {
+    if (open && !linkCode) loadJoinLink();
+  }, [open, linkCode, loadJoinLink]);
 
   const handleCopy = useCallback(() => {
     if (!linkCode) return;
@@ -199,7 +199,7 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
           <DialogTitle>{t("invite_title")}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="link" onValueChange={(v) => { if (v === "link") loadJoinLink(); }}>
+        <Tabs defaultValue="link" onValueChange={(v) => { if (v === "link" && !linkCode) loadJoinLink(); }}>
           <TabsList className="w-full">
             <TabsTrigger value="link" className="flex-1 gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" />
@@ -215,6 +215,15 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
           <TabsContent value="link" className="mt-4 space-y-4">
             {linkLoading ? (
               <p className="text-sm text-muted-foreground text-center py-4">Gerando link...</p>
+            ) : linkError ? (
+              <div className="text-center py-4 space-y-3">
+                <AlertCircle className="w-5 h-5 text-destructive mx-auto" />
+                <p className="text-sm text-muted-foreground">Não foi possível gerar o link de convite.</p>
+                <Button type="button" variant="outline" size="sm" onClick={loadJoinLink} className="gap-1.5">
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Tentar novamente
+                </Button>
+              </div>
             ) : linkCode ? (
               <>
                 {/* URL display + copy */}

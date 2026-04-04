@@ -21,6 +21,7 @@ import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
 
 import { createClient } from "@/lib/supabase/client";
+import { nodeIdToKey } from "@/lib/utils/mind-map-layout";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 import type { CampaignNote } from "@/lib/types/database";
 import type {
@@ -308,14 +309,6 @@ function applyRadialLayout(nodes: MindMapNode[], _edges: Edge[]): MindMapNode[] 
     ...n,
     position: positions.get(n.id) ?? { x: 0, y: 0 },
   }));
-}
-
-/* ---------- Layout persistence helper ---------- */
-
-function nodeIdToKey(nodeId: string): string {
-  const idx = nodeId.indexOf("-");
-  if (idx === -1) return nodeId;
-  return nodeId.substring(0, idx) + ":" + nodeId.substring(idx + 1);
 }
 
 /* ---------- Component ---------- */
