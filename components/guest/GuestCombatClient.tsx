@@ -811,10 +811,11 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           <button
             type="button"
             onClick={handleStartCombat}
-            disabled={combatants.length === 0}
+            disabled={combatants.length < 2}
             className="px-3 sm:px-5 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             data-testid="start-combat-btn"
             data-tour-id="start-combat"
+            title={combatants.length < 2 ? t("min_combatants_hint") : undefined}
           >
             {t("start_combat")}
           </button>
@@ -1340,11 +1341,31 @@ export function GuestCombatClient() {
         if (mode === "damage") {
           const effective = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
           applyDamage(id, amount);
-          if (target) useGuestCombatStats.getState().trackDamage(actorName, target.name, effective);
+          if (target) {
+            useGuestCombatStats.getState().trackDamage(actorName, target.name, effective);
+            useCombatLogStore.getState().addEntry({
+              round: store.roundNumber,
+              type: "damage",
+              actorName,
+              targetName: target.name,
+              description: `${target.name} takes ${effective} damage`,
+              details: { damageAmount: effective },
+            });
+          }
         } else if (mode === "heal") {
           const effective = target ? Math.min(amount, target.max_hp - target.current_hp) : amount;
           applyHealing(id, amount);
-          useGuestCombatStats.getState().trackHealing(actorName, effective);
+          if (target) {
+            useGuestCombatStats.getState().trackHealing(actorName, effective);
+            useCombatLogStore.getState().addEntry({
+              round: store.roundNumber,
+              type: "heal",
+              actorName,
+              targetName: target.name,
+              description: `${target.name} heals ${effective} HP`,
+              details: { damageAmount: effective },
+            });
+          }
         } else {
           setTempHp(id, amount);
         }

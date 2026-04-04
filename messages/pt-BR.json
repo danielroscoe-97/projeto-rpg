@@ -754,6 +754,7 @@
     "create_npc": "Criar NPC",
     "invite_player": "Convidar Jogador",
     "presets": "Presets",
+    "more": "Mais",
     "nav_label": "Navegação do dashboard"
   },
   "characters_page": {
@@ -999,6 +1000,7 @@
     "combatants_count_plural": "{count} combatentes",
     "starting": "Iniciando…",
     "start_combat": "Iniciar Combate →",
+    "min_combatants_hint": "Adicione pelo menos 2 combatentes",
     "share_session": "Compartilhar com Jogadores",
     "share_session_error": "Erro ao preparar sessão para compartilhamento. Tente novamente.",
     "hp_amount_aria": "Quantidade de {mode}",

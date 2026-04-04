@@ -754,6 +754,7 @@
     "create_npc": "Create NPC",
     "invite_player": "Invite Player",
     "presets": "Presets",
+    "more": "More",
     "nav_label": "Dashboard navigation"
   },
   "characters_page": {
@@ -997,6 +998,7 @@
     "combatants_count_plural": "{count} combatants",
     "starting": "Starting…",
     "start_combat": "Start Combat →",
+    "min_combatants_hint": "Add at least 2 combatants",
     "share_session": "Share with Players",
     "share_session_error": "Failed to prepare session for sharing. Try again.",
     "hp_amount_aria": "{mode} amount",
