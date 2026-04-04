@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Heart, Sparkles, Package, ScrollText, Map, ChevronLeft } from "lucide-react";
+import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft } from "lucide-react";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
 import { ResourceTrackerList } from "./ResourceTrackerList";
@@ -13,10 +13,11 @@ import { SpellListSection } from "./SpellListSection";
 import { BagOfHolding } from "./BagOfHolding";
 import { PlayerNotesSection } from "./PlayerNotesSection";
 import { PlayerQuestBoard } from "./PlayerQuestBoard";
+import { PlayerMindMap } from "./PlayerMindMap";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 
-type Tab = "sheet" | "resources" | "inventory" | "notes" | "quests";
+type Tab = "map" | "sheet" | "resources" | "inventory" | "notes" | "quests";
 
 interface PlayerHqShellProps {
   characterId: string;
@@ -32,7 +33,7 @@ export function PlayerHqShell({
   userId,
 }: PlayerHqShellProps) {
   const t = useTranslations("player_hq");
-  const [activeTab, setActiveTab] = useState<Tab>("sheet");
+  const [activeTab, setActiveTab] = useState<Tab>("map");
 
   const {
     character,
@@ -91,11 +92,23 @@ export function PlayerHqShell({
       </div>
 
       {/* Tab bar */}
-      <div className="flex border-b border-border">
+      <div className="flex border-b border-border overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setActiveTab("map")}
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+            activeTab === "map"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Network className="w-4 h-4" />
+          {t("tabs.map")}
+        </button>
         <button
           type="button"
           onClick={() => setActiveTab("sheet")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "sheet"
               ? "border-amber-400 text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -107,7 +120,7 @@ export function PlayerHqShell({
         <button
           type="button"
           onClick={() => setActiveTab("resources")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "resources"
               ? "border-amber-400 text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -119,7 +132,7 @@ export function PlayerHqShell({
         <button
           type="button"
           onClick={() => setActiveTab("inventory")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "inventory"
               ? "border-amber-400 text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -131,7 +144,7 @@ export function PlayerHqShell({
         <button
           type="button"
           onClick={() => setActiveTab("notes")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "notes"
               ? "border-amber-400 text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -143,7 +156,7 @@ export function PlayerHqShell({
         <button
           type="button"
           onClick={() => setActiveTab("quests")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "quests"
               ? "border-amber-400 text-amber-400"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -155,6 +168,15 @@ export function PlayerHqShell({
       </div>
 
       {/* Tab content */}
+      {activeTab === "map" && (
+        <PlayerMindMap
+          campaignId={campaignId}
+          campaignName={campaignName}
+          characterId={characterId}
+          userId={userId}
+        />
+      )}
+
       {activeTab === "sheet" && (
         <div className="space-y-4">
           <CharacterStatusPanel

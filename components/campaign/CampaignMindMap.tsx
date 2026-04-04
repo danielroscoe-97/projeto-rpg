@@ -23,7 +23,13 @@ import dagre from "@dagrejs/dagre";
 import { createClient } from "@/lib/supabase/client";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 import type { CampaignNote } from "@/lib/types/database";
-import type { NoteType, MindMapEdge, EdgeRelationship, CampaignLocation, CampaignFaction, MindMapNodeLayout } from "@/lib/types/mind-map";
+import type {
+  NoteType,
+  MindMapEdge,
+  EdgeRelationship,
+  CampaignLocation,
+  CampaignFaction,
+} from "@/lib/types/mind-map";
 
 const RELATIONSHIP_OPTIONS: Array<{ value: EdgeRelationship; label: string }> = [
   { value: "linked_to", label: "linked_to" },
@@ -39,6 +45,7 @@ const RELATIONSHIP_OPTIONS: Array<{ value: EdgeRelationship; label: string }> = 
   { value: "guards", label: "guards" },
   { value: "owns", label: "owns" },
 ];
+
 import { CampaignNode, type CampaignNodeData } from "./nodes/CampaignNode";
 import { NpcNode, type NpcNodeData } from "./nodes/NpcNode";
 import { NoteNode, type NoteNodeData } from "./nodes/NoteNode";
@@ -48,6 +55,7 @@ import { QuestNode, type QuestNodeData } from "./nodes/QuestNode";
 import { BagNode, type BagNodeData } from "./nodes/BagNode";
 import { LocationNode, type LocationNodeData } from "./nodes/LocationNode";
 import { FactionNode, type FactionNodeData } from "./nodes/FactionNode";
+import { GroupNode, type GroupNodeData } from "./nodes/GroupNode";
 
 /* ---------- Types ---------- */
 
@@ -65,11 +73,26 @@ type MindMapNodeData =
   | QuestNodeData
   | BagNodeData
   | LocationNodeData
-  | FactionNodeData;
+  | FactionNodeData
+  | GroupNodeData;
 
 type MindMapNode = Node<MindMapNodeData>;
 
 type NodeFilter = "npc" | "note" | "player" | "session" | "quest" | "bag" | "location" | "faction";
+
+type LayoutMode = "hierarchical" | "force" | "radial";
+
+interface ContextMenuState {
+  x: number;
+  y: number;
+  type: "node" | "edge";
+  nodeId?: string;
+  nodeType?: string;
+  nodeLabel?: string;
+  edgeId?: string;
+  edgeDbId?: string;
+  edgeRelationship?: EdgeRelationship;
+}
 
 /* ---------- Node types map ---------- */
 
@@ -83,6 +106,7 @@ const nodeTypes: NodeTypes = {
   bag: BagNode,
   location: LocationNode,
   faction: FactionNode,
+  group: GroupNode,
 };
 
 /* ---------- Constants ---------- */
@@ -120,6 +144,7 @@ const MINIMAP_COLORS: Record<string, string> = {
   bag: "#f97316",
   location: "#22d3ee",
   faction: "#fb7185",
+  group: "#6b7280",
 };
 
 const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string }> = [
@@ -132,6 +157,10 @@ const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string
   { key: "location", color: "border-cyan-400/40 text-cyan-400/60", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
   { key: "faction", color: "border-rose-400/40 text-rose-400/60", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
 ];
+
+const LAYOUT_MODES: LayoutMode[] = ["hierarchical", "force", "radial"];
+
+const TOOLTIP_DELAY_MS = 300;
 
 /* ---------- Dagre layout ---------- */
 
@@ -154,7 +183,6 @@ function applyDagreLayout(
   dagre.layout(g);
 
   return nodes.map((node) => {
-    // Use saved position if available, otherwise use Dagre layout
     const saved = savedPositions?.get(node.id);
     if (saved) {
       return { ...node, position: { x: saved.x, y: saved.y } };
@@ -170,10 +198,112 @@ function applyDagreLayout(
   });
 }
 
+/* ---------- Force-directed layout ---------- */
+
+function applyForceLayout(nodes: MindMapNode[], edges: Edge[]): MindMapNode[] {
+  if (nodes.length === 0) return nodes;
+
+  const positions = new Map<string, { x: number; y: number }>();
+  const r = Math.max(200, nodes.length * 25);
+  nodes.forEach((n, i) => {
+    if (n.id === "campaign") {
+      positions.set(n.id, { x: 0, y: 0 });
+    } else {
+      const angle = (i / nodes.length) * 2 * Math.PI;
+      positions.set(n.id, { x: r * Math.cos(angle), y: r * Math.sin(angle) });
+    }
+  });
+
+  const edgePairs = edges.map((e) => ({ s: e.source, t: e.target }));
+  const REPULSION = 6000;
+  const ATTRACTION = 0.008;
+  const DAMPING = 0.85;
+  const ITERATIONS = 80;
+
+  for (let iter = 0; iter < ITERATIONS; iter++) {
+    for (const n1 of nodes) {
+      if (n1.id === "campaign") continue;
+      const p1 = positions.get(n1.id)!;
+      let fx = 0;
+      let fy = 0;
+
+      for (const n2 of nodes) {
+        if (n1.id === n2.id) continue;
+        const p2 = positions.get(n2.id)!;
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+        const force = REPULSION / (dist * dist);
+        fx += (dx / dist) * force;
+        fy += (dy / dist) * force;
+      }
+
+      for (const ep of edgePairs) {
+        let other: string | null = null;
+        if (ep.s === n1.id) other = ep.t;
+        else if (ep.t === n1.id) other = ep.s;
+        if (!other) continue;
+        const p2 = positions.get(other);
+        if (!p2) continue;
+        fx += (p2.x - p1.x) * ATTRACTION;
+        fy += (p2.y - p1.y) * ATTRACTION;
+      }
+
+      p1.x += fx * DAMPING;
+      p1.y += fy * DAMPING;
+    }
+  }
+
+  return nodes.map((n) => ({
+    ...n,
+    position: positions.get(n.id) ?? { x: 0, y: 0 },
+  }));
+}
+
+/* ---------- Radial layout ---------- */
+
+function applyRadialLayout(nodes: MindMapNode[], _edges: Edge[]): MindMapNode[] {
+  if (nodes.length === 0) return nodes;
+
+  const typeOrder: string[] = [
+    "session", "quest", "npc", "note", "player", "location", "faction", "bag", "group",
+  ];
+  const nodesByType = new Map<string, MindMapNode[]>();
+
+  for (const node of nodes) {
+    const type = node.type ?? "unknown";
+    if (type === "campaign") continue;
+    if (!nodesByType.has(type)) nodesByType.set(type, []);
+    nodesByType.get(type)!.push(node);
+  }
+
+  const positions = new Map<string, { x: number; y: number }>();
+  positions.set("campaign", { x: 0, y: 0 });
+
+  let ringIndex = 0;
+  for (const type of typeOrder) {
+    const typeNodes = nodesByType.get(type);
+    if (!typeNodes || typeNodes.length === 0) continue;
+    ringIndex++;
+    const radius = ringIndex * 220;
+    typeNodes.forEach((n, i) => {
+      const angle = (i / typeNodes.length) * 2 * Math.PI - Math.PI / 2;
+      positions.set(n.id, {
+        x: radius * Math.cos(angle),
+        y: radius * Math.sin(angle),
+      });
+    });
+  }
+
+  return nodes.map((n) => ({
+    ...n,
+    position: positions.get(n.id) ?? { x: 0, y: 0 },
+  }));
+}
+
 /* ---------- Layout persistence helper ---------- */
 
 function nodeIdToKey(nodeId: string): string {
-  // 'npc-<uuid>' → 'npc:<uuid>', 'campaign' → 'campaign', 'bag-holding' → 'bag:holding'
   const idx = nodeId.indexOf("-");
   if (idx === -1) return nodeId;
   return nodeId.substring(0, idx) + ":" + nodeId.substring(idx + 1);
@@ -191,6 +321,8 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   const tNotes = useTranslations("notes");
   const tLocations = useTranslations("locations");
   const tFactions = useTranslations("factions");
+
+  /* ---- Core state ---- */
   const [allNodes, setAllNodes] = useState<MindMapNode[]>([]);
   const [allEdges, setAllEdges] = useState<Edge[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>([]);
@@ -209,17 +341,70 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   const savedPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /* ---- Layout mode ---- */
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("hierarchical");
+
+  /* ---- Collapsible groups ---- */
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<NodeFilter>>(new Set());
+
+  /* ---- Tooltip state ---- */
+  const [hoveredNode, setHoveredNode] = useState<MindMapNode | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ---- Context menu ---- */
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+
+  /* ---- Connecting mode ---- */
+  const [connectingFromNode, setConnectingFromNode] = useState<string | null>(null);
+
+  /* ---- Drag-to-connect ---- */
+  const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
+  const [selectedRelationship, setSelectedRelationship] = useState<EdgeRelationship>("linked_to");
+  const [editingEdge, setEditingEdge] = useState<{
+    edgeId: string;
+    dbId: string;
+  } | null>(null);
+
+  /* ---- Realtime debounce ---- */
+  const refetchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   /* ---- Toggle filter ---- */
   const toggleFilter = useCallback((key: NodeFilter) => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
+
+  /* ---- Toggle group collapse ---- */
+  const toggleGroup = useCallback(
+    (key: NodeFilter) => {
+      setCollapsedGroups((prev) => {
+        const next = new Set(prev);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+
+        const isCollapsed = next.has(key);
+        const supabase = createClient();
+        supabase
+          .from("campaign_mind_map_layout")
+          .upsert(
+            { campaign_id: campaignId, node_key: `group:${key}`, x: 0, y: 0, is_collapsed: isCollapsed },
+            { onConflict: "campaign_id,node_key" }
+          )
+          .then(({ error }) => {
+            if (error) console.warn("[MindMap] Collapse save failed:", error.message);
+          });
+
+        return next;
+      });
+    },
+    [campaignId]
+  );
 
   /* ---- Save layout (debounced) ---- */
   const saveLayout = useCallback(
     (nodeId: string, x: number, y: number) => {
       savedPositionsRef.current.set(nodeId, { x, y });
 
-      // Debounce DB writes
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(async () => {
         const supabase = createClient();
@@ -232,7 +417,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           })
         );
 
-        // Upsert all changed positions — best-effort, silent fail
         const { error } = await supabase
           .from("campaign_mind_map_layout")
           .upsert(entries, { onConflict: "campaign_id,node_key" });
@@ -245,10 +429,11 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     [campaignId]
   );
 
-  // Cleanup save timer on unmount
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+      if (refetchTimerRef.current) clearTimeout(refetchTimerRef.current);
     };
   }, []);
 
@@ -256,8 +441,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   const handleNodesChange = useCallback(
     (changes: NodeChange<MindMapNode>[]) => {
       onNodesChange(changes);
-
-      // Track position changes from drag
       for (const change of changes) {
         if (change.type === "position" && change.position && !change.dragging) {
           saveLayout(change.id, change.position.x, change.position.y);
@@ -267,40 +450,215 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     [onNodesChange, saveLayout]
   );
 
-  /* ---- Apply filters to nodes/edges ---- */
+  /* ---- Tooltip handlers ---- */
+  const handleNodeMouseEnter: NodeMouseHandler<MindMapNode> = useCallback((_event, node) => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = setTimeout(() => {
+      setHoveredNode(node);
+      setTooltipPos({ x: _event.clientX, y: _event.clientY });
+    }, TOOLTIP_DELAY_MS);
+  }, []);
+
+  const handleNodeMouseLeave: NodeMouseHandler<MindMapNode> = useCallback(() => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    setHoveredNode(null);
+    setTooltipPos(null);
+  }, []);
+
+  /* ---- Context menu handlers ---- */
+  const handleNodeContextMenu: NodeMouseHandler<MindMapNode> = useCallback((event, node) => {
+    event.preventDefault();
+    setContextMenu({
+      x: event.clientX,
+      y: event.clientY,
+      type: "node",
+      nodeId: node.id,
+      nodeType: node.type,
+      nodeLabel: (node.data as { label?: string }).label ?? "",
+    });
+  }, []);
+
+  const handleEdgeContextMenu = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.preventDefault();
+    if (!edge.id.startsWith("edge-")) return;
+    const dbId = edge.id.replace("edge-", "");
+    const relationship = (edge.label as string)?.replace(/ /g, "_") as EdgeRelationship | undefined;
+    setContextMenu({
+      x: event.clientX,
+      y: event.clientY,
+      type: "edge",
+      edgeId: edge.id,
+      edgeDbId: dbId,
+      edgeRelationship: relationship,
+    });
+  }, []);
+
+  const closeContextMenu = useCallback(() => setContextMenu(null), []);
+
+  /* ---- Context menu actions ---- */
+  const handleViewDetails = useCallback(() => {
+    if (!contextMenu?.nodeType) return;
+    const sectionMap: Record<string, string> = {
+      npc: "section_npcs",
+      note: "section_notes",
+      player: "section_players",
+      session: "section_encounters",
+      quest: "section_quests",
+      location: "section_locations",
+      faction: "section_factions",
+    };
+    const sectionId = sectionMap[contextMenu.nodeType];
+    if (sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    closeContextMenu();
+  }, [contextMenu, closeContextMenu]);
+
+  const handleConnectTo = useCallback(() => {
+    if (contextMenu?.nodeId) setConnectingFromNode(contextMenu.nodeId);
+    closeContextMenu();
+  }, [contextMenu, closeContextMenu]);
+
+  const handleCollapseGroup = useCallback(() => {
+    if (contextMenu?.nodeType) toggleGroup(contextMenu.nodeType as NodeFilter);
+    closeContextMenu();
+  }, [contextMenu, toggleGroup, closeContextMenu]);
+
+  const handleRemoveConnection = useCallback(async () => {
+    if (!contextMenu?.edgeDbId || !contextMenu?.edgeId) return;
+    const capturedMenu = contextMenu;
+    closeContextMenu();
+    const supabase = createClient();
+    await supabase.from("campaign_mind_map_edges").delete().eq("id", capturedMenu.edgeDbId);
+    setAllEdges((prev) => prev.filter((e) => e.id !== capturedMenu.edgeId));
+  }, [contextMenu, closeContextMenu]);
+
+  const handleChangeRelationship = useCallback(() => {
+    if (!contextMenu?.edgeId || !contextMenu?.edgeDbId) return;
+    setEditingEdge({ edgeId: contextMenu.edgeId, dbId: contextMenu.edgeDbId });
+    setSelectedRelationship(contextMenu.edgeRelationship ?? "linked_to");
+    closeContextMenu();
+  }, [contextMenu, closeContextMenu]);
+
+  /* ---- Pane click ---- */
+  const handlePaneClick = useCallback(() => {
+    closeContextMenu();
+    setConnectingFromNode(null);
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    setHoveredNode(null);
+    setTooltipPos(null);
+  }, [closeContextMenu]);
+
+  /* ---- ESC handler ---- */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setConnectingFromNode(null);
+        setContextMenu(null);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  /* ---- Apply filters + collapsed groups + layout ---- */
   useEffect(() => {
     const visibleNodeIds = new Set<string>();
 
-    const filteredNodes = allNodes.filter((node) => {
+    const typeCounts = new Map<NodeFilter, number>();
+    for (const node of allNodes) {
+      if (node.type && node.type !== "campaign") {
+        typeCounts.set(
+          node.type as NodeFilter,
+          (typeCounts.get(node.type as NodeFilter) ?? 0) + 1
+        );
+      }
+    }
+
+    const filteredNodes: MindMapNode[] = [];
+
+    for (const node of allNodes) {
       if (node.type === "campaign") {
         visibleNodeIds.add(node.id);
-        return true;
+        filteredNodes.push(node);
+        continue;
       }
+
       const nodeType = node.type as NodeFilter;
-      if (filters[nodeType] !== false) {
-        visibleNodeIds.add(node.id);
-        return true;
+      if (filters[nodeType] === false) continue;
+      if (collapsedGroups.has(nodeType)) continue;
+
+      visibleNodeIds.add(node.id);
+      filteredNodes.push(node);
+    }
+
+    // Add group nodes for collapsed types
+    for (const groupType of collapsedGroups) {
+      if (filters[groupType] === false) continue;
+      const count = typeCounts.get(groupType) ?? 0;
+      if (count === 0) continue;
+
+      const groupNodeId = `group-${groupType}`;
+      visibleNodeIds.add(groupNodeId);
+      filteredNodes.push({
+        id: groupNodeId,
+        type: "group",
+        position: { x: 0, y: 0 },
+        data: { label: t(`filter_${groupType}`), count, groupType },
+        draggable: true,
+      });
+    }
+
+    // Build edges: redirect to group nodes when collapsed
+    const filteredEdges: Edge[] = [];
+    const addedGroupEdges = new Set<string>();
+
+    for (const edge of allEdges) {
+      const sourceVisible = visibleNodeIds.has(edge.source);
+      const targetVisible = visibleNodeIds.has(edge.target);
+
+      if (sourceVisible && targetVisible) {
+        filteredEdges.push(edge);
+        continue;
       }
-      return false;
-    });
 
-    const filteredEdges = allEdges.filter(
-      (edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
-    );
+      if (sourceVisible && !targetVisible) {
+        const targetType = edge.target.split("-")[0] as NodeFilter;
+        if (collapsedGroups.has(targetType)) {
+          const groupNodeId = `group-${targetType}`;
+          const groupEdgeId = `${edge.source}-${groupNodeId}`;
+          if (!addedGroupEdges.has(groupEdgeId) && visibleNodeIds.has(groupNodeId)) {
+            addedGroupEdges.add(groupEdgeId);
+            filteredEdges.push({
+              id: groupEdgeId,
+              source: edge.source,
+              target: groupNodeId,
+              style: CAMPAIGN_EDGE_STYLE,
+            });
+          }
+        }
+      }
+    }
 
-    const laidOut =
-      filteredNodes.length > 0
-        ? applyDagreLayout(filteredNodes, filteredEdges, savedPositionsRef.current)
-        : [];
+    let laidOut: MindMapNode[];
+    if (filteredNodes.length === 0) {
+      laidOut = [];
+    } else if (layoutMode === "force") {
+      laidOut = applyForceLayout(filteredNodes, filteredEdges);
+    } else if (layoutMode === "radial") {
+      laidOut = applyRadialLayout(filteredNodes, filteredEdges);
+    } else {
+      laidOut = applyDagreLayout(filteredNodes, filteredEdges, savedPositionsRef.current);
+    }
+
     setNodes(laidOut);
     setEdges(filteredEdges);
-  }, [allNodes, allEdges, filters, setNodes, setEdges]);
+  }, [allNodes, allEdges, filters, collapsedGroups, layoutMode, setNodes, setEdges, t]);
 
-  /* ---- Fetch all data ---- */
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
+  /* ---- Data loading ---- */
+  const loadData = useCallback(
+    async (isInitial = false) => {
       const supabase = createClient();
 
       const [
@@ -368,11 +726,9 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           .eq("campaign_id", campaignId),
         supabase
           .from("campaign_mind_map_layout")
-          .select("node_key, x, y")
+          .select("node_key, x, y, is_collapsed")
           .eq("campaign_id", campaignId),
       ]);
-
-      if (cancelled) return;
 
       const npcs = (npcsRes.data ?? []) as Array<
         Pick<CampaignNpc, "id" | "name" | "stats" | "avatar_url" | "is_visible_to_players"> & {
@@ -412,18 +768,28 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         node_key: string;
         x: number;
         y: number;
+        is_collapsed?: boolean;
       }>;
 
-      // Build saved positions map from DB
+      // Build saved positions + collapsed groups from DB
       const posMap = new Map<string, { x: number; y: number }>();
+      const initialCollapsed = new Set<NodeFilter>();
       for (const lp of layoutData) {
-        // Convert 'npc:<uuid>' back to 'npc-<uuid>'
-        const nodeId = lp.node_key.replace(":", "-");
-        posMap.set(nodeId, { x: lp.x, y: lp.y });
+        if (lp.node_key.startsWith("group:")) {
+          const groupType = lp.node_key.replace("group:", "") as NodeFilter;
+          if (lp.is_collapsed) initialCollapsed.add(groupType);
+        } else {
+          const nodeId = lp.node_key.replace(":", "-");
+          posMap.set(nodeId, { x: lp.x, y: lp.y });
+        }
       }
       savedPositionsRef.current = posMap;
 
-      // Fetch character names for player members
+      if (isInitial && initialCollapsed.size > 0) {
+        setCollapsedGroups(initialCollapsed);
+      }
+
+      // Fetch character names
       const playerUserIds = membersRaw
         .filter((m) => m.role === "player")
         .map((m) => m.user_id);
@@ -443,13 +809,10 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         }
       }
 
-      if (cancelled) return;
-
       /* ---- Build nodes ---- */
       const newNodes: MindMapNode[] = [];
       const newEdges: Edge[] = [];
 
-      // Campaign central node
       newNodes.push({
         id: "campaign",
         type: "campaign",
@@ -458,7 +821,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         draggable: true,
       });
 
-      // NPC nodes
       for (const npc of npcs) {
         const nodeId = `npc-${npc.id}`;
         newNodes.push({
@@ -483,7 +845,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Note nodes
       for (const note of notes) {
         const nodeId = `note-${note.id}`;
         const nt = note.note_type ?? "general";
@@ -508,7 +869,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Player member nodes (use "player-" prefix to match EdgeEntityType)
       for (const member of membersRaw) {
         const nodeId = `player-${member.id}`;
         const displayName =
@@ -532,7 +892,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Session nodes
       for (const session of sessions) {
         const nodeId = `session-${session.id}`;
         newNodes.push({
@@ -544,6 +903,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             isActive: session.is_active,
             sessionId: session.id,
             statusLabel: session.is_active ? t("session_active") : t("session_ended"),
+            encounterCount: session.encounters?.length ?? 0,
           },
           draggable: true,
         });
@@ -555,7 +915,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Encounter nodes (sub-nodes of sessions)
       for (const session of sessions) {
         for (const enc of session.encounters ?? []) {
           const encNodeId = `session-enc-${enc.id}`;
@@ -580,7 +939,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         }
       }
 
-      // Quest nodes
       for (const quest of quests) {
         const nodeId = `quest-${quest.id}`;
         newNodes.push({
@@ -602,7 +960,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Bag of Holding node
       if (bagItems.length > 0) {
         const bagNodeId = "bag-holding";
         newNodes.push({
@@ -613,6 +970,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             label: t("bag_node"),
             itemCount: bagItems.length,
             itemsLabel: bagItems.length === 1 ? t("bag_item") : t("bag_items"),
+            itemNames: bagItems.slice(0, 5).map((i) => i.item_name),
           },
           draggable: true,
         });
@@ -624,7 +982,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Location nodes
       for (const loc of locations) {
         const nodeId = `location-${loc.id}`;
         newNodes.push({
@@ -648,7 +1005,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Faction nodes
       for (const fac of factions) {
         const nodeId = `faction-${fac.id}`;
         newNodes.push({
@@ -671,7 +1027,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         });
       }
 
-      // Cross-links: Note ↔ NPC (legacy)
+      // Cross-links: Note <-> NPC (legacy)
       const nodeIdSet = new Set(newNodes.map((n) => n.id));
       for (const link of links) {
         const noteNodeId = `note-${link.note_id}`;
@@ -710,46 +1066,151 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
 
       setAllNodes(newNodes);
       setAllEdges(newEdges);
-      setLoading(false);
-    }
+      if (isInitial) setLoading(false);
+    },
+    [campaignId, campaignName, t, tNotes, tLocations, tFactions]
+  );
 
-    load();
+  /* ---- Create linked note (context menu action) ---- */
+  const handleCreateLinkedNote = useCallback(async () => {
+    if (!contextMenu?.nodeId) return;
+    const capturedMenu = contextMenu;
+    closeContextMenu();
+
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const nodeId = capturedMenu.nodeId!;
+    const idx = nodeId.indexOf("-");
+    const sourceType = idx === -1 ? nodeId : nodeId.substring(0, idx);
+    const sourceId = idx === -1 ? nodeId : nodeId.substring(idx + 1);
+
+    const { data: note, error } = await supabase
+      .from("campaign_notes")
+      .insert({
+        campaign_id: campaignId,
+        title: `Note — ${capturedMenu.nodeLabel ?? sourceType}`,
+        body: "",
+        is_shared: false,
+        created_by: user.id,
+      })
+      .select("id")
+      .single();
+
+    if (error || !note) return;
+
+    await supabase.from("campaign_mind_map_edges").insert({
+      campaign_id: campaignId,
+      source_type: sourceType,
+      source_id: sourceId,
+      target_type: "note",
+      target_id: note.id,
+      relationship: "linked_to" as EdgeRelationship,
+      created_by: user.id,
+    });
+
+    loadData();
+  }, [contextMenu, campaignId, closeContextMenu, loadData]);
+
+  /* ---- Initial data fetch ---- */
+  useEffect(() => {
+    let cancelled = false;
+    loadData(true).then(() => {
+      if (cancelled) return;
+    });
     return () => {
       cancelled = true;
     };
-  }, [campaignId, campaignName, t, tNotes, tLocations, tFactions]);
+  }, [loadData]);
+
+  /* ---- Realtime subscription ---- */
+  useEffect(() => {
+    const supabase = createClient();
+
+    const debouncedRefetch = () => {
+      if (refetchTimerRef.current) clearTimeout(refetchTimerRef.current);
+      refetchTimerRef.current = setTimeout(() => {
+        loadData(false);
+      }, 2000);
+    };
+
+    const tables = [
+      "campaign_npcs",
+      "campaign_notes",
+      "campaign_quests",
+      "campaign_locations",
+      "campaign_factions",
+      "campaign_mind_map_edges",
+      "party_inventory_items",
+    ];
+
+    let channel = supabase.channel(`mindmap:${campaignId}`);
+    for (const table of tables) {
+      channel = channel.on(
+        "postgres_changes" as never,
+        { event: "*", schema: "public", table, filter: `campaign_id=eq.${campaignId}` },
+        debouncedRefetch
+      );
+    }
+    channel.subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [campaignId, loadData]);
 
   /* ---- Node click handler ---- */
-  const onNodeClick: NodeMouseHandler<MindMapNode> = useCallback((_event, node) => {
-    const sectionMap: Record<string, string> = {
-      npc: "section_npcs",
-      note: "section_notes",
-      player: "section_players",
-      session: "section_encounters",
-      quest: "section_quests",
-      location: "section_locations",
-      faction: "section_factions",
-    };
-    const nodeType = node.type ?? "";
-    const sectionId = sectionMap[nodeType];
-    if (sectionId) {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
+  const handleNodeClick: NodeMouseHandler<MindMapNode> = useCallback(
+    (_event, node) => {
+      if (connectingFromNode) {
+        if (node.id !== connectingFromNode) {
+          setPendingConnection({
+            source: connectingFromNode,
+            target: node.id,
+            sourceHandle: null,
+            targetHandle: null,
+          });
+          setSelectedRelationship("linked_to");
+        }
+        setConnectingFromNode(null);
+        return;
       }
-    }
-  }, []);
 
-  /* ---- Minimap color function ---- */
+      if (node.type === "group") {
+        const groupData = node.data as GroupNodeData;
+        toggleGroup(groupData.groupType as NodeFilter);
+        return;
+      }
+
+      const sectionMap: Record<string, string> = {
+        npc: "section_npcs",
+        note: "section_notes",
+        player: "section_players",
+        session: "section_encounters",
+        quest: "section_quests",
+        location: "section_locations",
+        faction: "section_factions",
+      };
+      const nodeType = node.type ?? "";
+      const sectionId = sectionMap[nodeType];
+      if (sectionId) {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    },
+    [connectingFromNode, toggleGroup]
+  );
+
+  /* ---- Minimap color ---- */
   const minimapNodeColor = useCallback(
     (node: MindMapNode) => MINIMAP_COLORS[node.type ?? ""] ?? "#6b7280",
     []
   );
 
   /* ---- Drag-to-connect ---- */
-  const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
-  const [selectedRelationship, setSelectedRelationship] = useState<EdgeRelationship>("linked_to");
-
   const onConnect = useCallback((connection: Connection) => {
     if (connection.source && connection.target && connection.source !== connection.target) {
       setPendingConnection(connection);
@@ -758,23 +1219,52 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
   }, []);
 
   const confirmConnection = useCallback(async () => {
+    if (editingEdge) {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("campaign_mind_map_edges")
+        .update({ relationship: selectedRelationship })
+        .eq("id", editingEdge.dbId);
+
+      if (!error) {
+        setAllEdges((prev) =>
+          prev.map((e) => {
+            if (e.id !== editingEdge.edgeId) return e;
+            return {
+              ...e,
+              label: selectedRelationship.replace(/_/g, " "),
+              style: {
+                stroke: EDGE_COLORS[selectedRelationship] ?? "#6b7280",
+                strokeWidth: 1,
+                opacity: 0.5,
+              },
+              animated: selectedRelationship !== "linked_to",
+            };
+          })
+        );
+      }
+      setEditingEdge(null);
+      return;
+    }
+
     if (!pendingConnection?.source || !pendingConnection?.target) return;
 
     const sourceId = pendingConnection.source;
     const targetId = pendingConnection.target;
 
-    // Extract type and uuid from node IDs (e.g., 'npc-<uuid>' → type='npc', id='<uuid>')
-    const parseNodeId = (nodeId: string) => {
-      const idx = nodeId.indexOf("-");
-      if (idx === -1) return { type: nodeId, id: nodeId };
-      return { type: nodeId.substring(0, idx), id: nodeId.substring(idx + 1) };
+    const parseNodeId = (nid: string) => {
+      const idx = nid.indexOf("-");
+      if (idx === -1) return { type: nid, id: nid };
+      return { type: nid.substring(0, idx), id: nid.substring(idx + 1) };
     };
 
     const source = parseNodeId(sourceId);
     const target = parseNodeId(targetId);
 
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data, error } = await supabase
@@ -792,7 +1282,6 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       .single();
 
     if (!error && data) {
-      // Add the edge visually
       const newEdge: Edge = {
         id: `edge-${data.id}`,
         source: sourceId,
@@ -810,7 +1299,128 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     }
 
     setPendingConnection(null);
-  }, [pendingConnection, selectedRelationship, campaignId, setAllEdges]);
+  }, [pendingConnection, editingEdge, selectedRelationship, campaignId, setAllEdges]);
+
+  const cancelDialog = useCallback(() => {
+    setPendingConnection(null);
+    setEditingEdge(null);
+  }, []);
+
+  /* ---- Tooltip content renderer ---- */
+  const renderTooltipContent = useCallback(
+    (node: MindMapNode) => {
+      const d = node.data as Record<string, unknown>;
+      switch (node.type) {
+        case "npc": {
+          const isAlive = d.isAlive !== false;
+          const isHidden = d.isHidden === true;
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-purple-300">{d.label as string}</p>
+              <div className="flex gap-2">
+                {d.hp != null && (
+                  <span className="text-red-300">
+                    {t("tooltip_hp")} {d.hp as number}
+                  </span>
+                )}
+                {d.ac != null && (
+                  <span className="text-blue-300">
+                    {t("tooltip_ac")} {d.ac as number}
+                  </span>
+                )}
+              </div>
+              <p className={isAlive ? "text-emerald-300" : "text-red-400"}>
+                {isAlive ? t("tooltip_alive") : t("tooltip_dead")}
+              </p>
+              {isHidden && (
+                <p className="text-yellow-300/70 text-[10px]">{t("tooltip_hidden_npc")}</p>
+              )}
+            </div>
+          );
+        }
+        case "note":
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-blue-300">{d.label as string}</p>
+              {d.noteTypeLabel && (
+                <p className="text-muted-foreground">{d.noteTypeLabel as string}</p>
+              )}
+              <p className={d.isShared ? "text-blue-300" : "text-gray-400"}>
+                {d.isShared ? t("tooltip_shared") : t("tooltip_private")}
+              </p>
+            </div>
+          );
+        case "player":
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-emerald-300">{d.label as string}</p>
+              {d.characterName && (
+                <p className="text-emerald-300/60">{d.characterName as string}</p>
+              )}
+            </div>
+          );
+        case "session":
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-red-300">{d.label as string}</p>
+              <p className={d.isActive ? "text-red-300" : "text-gray-400"}>
+                {d.statusLabel as string}
+              </p>
+              {(d.encounterCount as number) > 0 && (
+                <p className="text-muted-foreground">
+                  {t("tooltip_encounters", { count: d.encounterCount as number })}
+                </p>
+              )}
+            </div>
+          );
+        case "quest":
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-yellow-300">{d.label as string}</p>
+              <p className="text-muted-foreground capitalize">{d.status as string}</p>
+            </div>
+          );
+        case "location":
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-cyan-300">{d.label as string}</p>
+              <p className="text-muted-foreground">{d.locationTypeLabel as string}</p>
+              <p className={d.isDiscovered ? "text-cyan-300" : "text-yellow-300/70"}>
+                {d.isDiscovered ? t("tooltip_discovered") : t("tooltip_undiscovered")}
+              </p>
+            </div>
+          );
+        case "faction":
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-rose-300">{d.label as string}</p>
+              <p className="text-muted-foreground">{d.alignmentLabel as string}</p>
+            </div>
+          );
+        case "bag": {
+          const itemNames = (d.itemNames as string[]) ?? [];
+          return (
+            <div className="space-y-1">
+              <p className="font-semibold text-orange-300">{d.label as string}</p>
+              <p className="text-muted-foreground">
+                {t("tooltip_items_preview", { count: d.itemCount as number })}
+              </p>
+              {itemNames.length > 0 && (
+                <ul className="text-orange-300/70 text-[10px] list-disc pl-3">
+                  {itemNames.map((name, i) => (
+                    <li key={i}>{name}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        }
+        default:
+          return <p className="text-muted-foreground">{d.label as string}</p>;
+      }
+    },
+    [t]
+  );
 
   /* ---- Memoized default viewport ---- */
   const defaultViewport = useMemo(() => ({ x: 0, y: 0, zoom: 0.8 }), []);
@@ -823,10 +1433,29 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     );
   }
 
+  const showDialog = pendingConnection || editingEdge;
+
   return (
     <div className="space-y-2">
-      {/* Filter bar */}
-      <div className="flex flex-wrap gap-1.5">
+      {/* Top bar: layout modes + filter chips */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex gap-1 border-r border-border pr-2.5 mr-1">
+          {LAYOUT_MODES.map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setLayoutMode(mode)}
+              className={`px-2 py-1 rounded text-[11px] font-medium transition-all ${
+                layoutMode === mode
+                  ? "bg-amber-400/20 border border-amber-400 text-amber-300"
+                  : "border border-border text-muted-foreground hover:border-muted-foreground/50"
+              }`}
+            >
+              {t(`layout_${mode}`)}
+            </button>
+          ))}
+        </div>
+
         {FILTER_CONFIG.map(({ key, color, activeColor }) => (
           <button
             key={key}
@@ -834,22 +1463,38 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             onClick={() => toggleFilter(key)}
             className={`px-2.5 py-1 rounded-full border text-[11px] font-medium transition-all ${
               filters[key] ? activeColor : color
-            }`}
+            } ${collapsedGroups.has(key) ? "ring-1 ring-white/20" : ""}`}
           >
             {t(`filter_${key}`)}
+            {collapsedGroups.has(key) && (
+              <span className="ml-1 text-[9px] opacity-60">
+                ({allNodes.filter((n) => n.type === key).length})
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Map */}
+      {connectingFromNode && (
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs">
+          <span className="animate-pulse">&#9679;</span>
+          <span>Click a node to connect, or press Esc to cancel</span>
+        </div>
+      )}
+
       <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border bg-surface-overlay">
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
-          onNodeClick={onNodeClick}
+          onNodeClick={handleNodeClick}
           onConnect={onConnect}
+          onNodeMouseEnter={handleNodeMouseEnter}
+          onNodeMouseLeave={handleNodeMouseLeave}
+          onNodeContextMenu={handleNodeContextMenu}
+          onEdgeContextMenu={handleEdgeContextMenu}
+          onPaneClick={handlePaneClick}
           nodeTypes={nodeTypes}
           defaultViewport={defaultViewport}
           fitView
@@ -878,8 +1523,80 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
         </ReactFlow>
       </div>
 
-      {/* Connection relationship dialog */}
-      {pendingConnection && (
+      {hoveredNode && tooltipPos && (
+        <div
+          className="fixed z-[60] pointer-events-none max-w-[220px] rounded-lg border border-border bg-surface-overlay/95 backdrop-blur-sm shadow-xl px-3 py-2 text-xs"
+          style={{ left: tooltipPos.x + 14, top: tooltipPos.y - 10 }}
+        >
+          {renderTooltipContent(hoveredNode)}
+        </div>
+      )}
+
+      {contextMenu && (
+        <>
+          <div className="fixed inset-0 z-[55]" onClick={closeContextMenu} />
+          <div
+            className="fixed z-[60] min-w-[180px] rounded-lg border border-border bg-surface-overlay shadow-xl py-1"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+          >
+            {contextMenu.type === "node" &&
+              contextMenu.nodeType !== "campaign" &&
+              contextMenu.nodeType !== "group" && (
+                <>
+                  <button
+                    type="button"
+                    className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-card transition-colors"
+                    onClick={handleViewDetails}
+                  >
+                    {t("ctx_view_details")}
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-card transition-colors"
+                    onClick={handleCreateLinkedNote}
+                  >
+                    {t("ctx_create_linked_note")}
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-card transition-colors"
+                    onClick={handleConnectTo}
+                  >
+                    {t("ctx_connect_to")}
+                  </button>
+                  <div className="my-1 border-t border-border" />
+                  <button
+                    type="button"
+                    className="w-full px-3 py-1.5 text-left text-xs text-muted-foreground hover:bg-card transition-colors"
+                    onClick={handleCollapseGroup}
+                  >
+                    {t(`filter_${contextMenu.nodeType}`)} &#9654; collapse
+                  </button>
+                </>
+              )}
+            {contextMenu.type === "edge" && (
+              <>
+                <button
+                  type="button"
+                  className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-card transition-colors"
+                  onClick={handleChangeRelationship}
+                >
+                  {t("ctx_change_relationship")}
+                </button>
+                <button
+                  type="button"
+                  className="w-full px-3 py-1.5 text-left text-xs text-red-400 hover:bg-card transition-colors"
+                  onClick={handleRemoveConnection}
+                >
+                  {t("ctx_remove_connection")}
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
+
+      {showDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-surface-overlay border border-border rounded-xl p-5 shadow-2xl w-[320px] space-y-4">
             <h3 className="text-sm font-semibold text-foreground">
@@ -904,7 +1621,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             <div className="flex gap-2 justify-end">
               <button
                 type="button"
-                onClick={() => setPendingConnection(null)}
+                onClick={cancelDialog}
                 className="px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:bg-card"
               >
                 {t("connect_cancel")}

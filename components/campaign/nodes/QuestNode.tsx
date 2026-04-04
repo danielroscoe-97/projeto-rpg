@@ -8,6 +8,7 @@ export interface QuestNodeData {
   label: string;
   status: "available" | "active" | "completed";
   questId: string;
+  isHidden?: boolean;
   [key: string]: unknown;
 }
 
@@ -24,30 +25,37 @@ const statusConfig = {
 function QuestNodeComponent({ data }: QuestNodeProps) {
   const config = statusConfig[data.status];
   const isCompleted = data.status === "completed";
+  const isHidden = data.isHidden === true;
 
   return (
     <div
-      className={`px-4 py-3 rounded-lg border border-yellow-400/60 bg-surface-overlay shadow-md min-w-[120px] ${
-        isCompleted ? "opacity-60" : ""
+      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] ${
+        isHidden
+          ? "border-yellow-400/30 border-dashed opacity-50"
+          : isCompleted
+            ? "border-yellow-400/60 opacity-60"
+            : "border-yellow-400/60"
       }`}
     >
       <Handle type="target" position={Position.Top} className="!bg-yellow-400 !w-2 !h-2" />
       <div className="flex items-center gap-2">
-        <Target className="h-4 w-4 text-yellow-400 flex-shrink-0" />
+        <Target className={`h-4 w-4 flex-shrink-0 ${isHidden ? "text-yellow-400/50" : "text-yellow-400"}`} />
         <span
-          className={`text-yellow-400 font-semibold text-xs truncate max-w-[120px] ${
-            isCompleted ? "line-through" : ""
+          className={`font-semibold text-xs truncate max-w-[120px] ${
+            isHidden ? "text-yellow-400/50 italic" : isCompleted ? "text-yellow-400 line-through" : "text-yellow-400"
           }`}
         >
-          {data.label}
+          {isHidden ? "???" : data.label}
         </span>
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${config.bg} ${config.text} ${
-            "pulse" in config && config.pulse ? "animate-pulse" : ""
-          }`}
-        >
-          {config.badge}
-        </span>
+        {!isHidden && (
+          <span
+            className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${config.bg} ${config.text} ${
+              "pulse" in config && config.pulse ? "animate-pulse" : ""
+            }`}
+          >
+            {config.badge}
+          </span>
+        )}
       </div>
       <Handle type="source" position={Position.Bottom} className="!bg-yellow-400 !w-2 !h-2" />
     </div>

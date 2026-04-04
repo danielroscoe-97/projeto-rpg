@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
-import { Circle, Target, CheckCircle2, Trash2, ChevronDown, Plus } from "lucide-react";
+import { Circle, Target, CheckCircle2, Trash2, ChevronDown, Plus, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -55,7 +55,7 @@ const STATUS_ICON_CLASS: Record<QuestStatus, string> = {
 interface QuestCardProps {
   quest: CampaignQuest;
   isEditable: boolean;
-  onUpdate: (id: string, data: Partial<{ title: string; description: string; status: QuestStatus }>) => void;
+  onUpdate: (id: string, data: Partial<{ title: string; description: string; status: QuestStatus; is_visible_to_players: boolean }>) => void;
   onDelete: (id: string) => void;
 }
 
@@ -107,7 +107,9 @@ function QuestCard({ quest, isEditable, onUpdate, onDelete }: QuestCardProps) {
   return (
     <>
       <div
-        className={`border rounded-lg p-3 transition-colors cursor-pointer ${STATUS_BORDER[quest.status]}`}
+        className={`border rounded-lg p-3 transition-colors cursor-pointer ${STATUS_BORDER[quest.status]} ${
+          quest.is_visible_to_players === false ? "opacity-50" : ""
+        }`}
         onClick={() => setExpanded((v) => !v)}
         role="button"
         tabIndex={0}
@@ -116,6 +118,23 @@ function QuestCard({ quest, isEditable, onUpdate, onDelete }: QuestCardProps) {
       >
         <div className="flex items-center gap-2">
           <Icon className={`h-4 w-4 flex-shrink-0 ${STATUS_ICON_CLASS[quest.status]}`} />
+          {isEditable && (
+            <button
+              type="button"
+              className="flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate(quest.id, { is_visible_to_players: !quest.is_visible_to_players });
+              }}
+              title={quest.is_visible_to_players ? t("visibility_show") : t("visibility_hide")}
+            >
+              {quest.is_visible_to_players ? (
+                <Eye className="h-3.5 w-3.5 text-cyan-400" />
+              ) : (
+                <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+            </button>
+          )}
           <span className="font-medium text-sm flex-1 truncate">{quest.title}</span>
           {isEditable && expanded && (
             <div
@@ -266,7 +285,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
   const completedQuests = quests.filter((q) => q.status === "completed");
 
   const handleUpdate = useCallback(
-    (id: string, data: Partial<{ title: string; description: string; status: QuestStatus }>) => {
+    (id: string, data: Partial<{ title: string; description: string; status: QuestStatus; is_visible_to_players: boolean }>) => {
       updateQuest(id, data);
     },
     [updateQuest]

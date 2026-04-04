@@ -211,7 +211,9 @@
       "delete_confirm": "Remove this quest?",
       "delete_button": "Remove",
       "cancel": "Cancel",
-      "description_placeholder": "Add description..."
+      "description_placeholder": "Add description...",
+      "visibility_show": "Visible to players",
+      "visibility_hide": "Hidden from players"
     },
     "rate_this_encounter": "Rate",
     "your_vote": "Your vote",
@@ -496,7 +498,37 @@
       "resources": "Resources",
       "inventory": "Inventory",
       "notes": "Notes",
-      "quests": "Quests"
+      "quests": "Quests",
+      "map": "Map"
+    },
+    "npc_drawer": {
+      "relationship": "Relationship",
+      "rel_ally": "Ally",
+      "rel_neutral": "Neutral",
+      "rel_enemy": "Enemy",
+      "rel_unknown": "Unknown",
+      "your_notes": "Your Notes",
+      "notes_placeholder": "What do you know about this NPC?"
+    },
+    "quest_drawer": {
+      "description": "Description",
+      "your_notes": "Your Notes",
+      "notes_placeholder": "Your notes about this quest...",
+      "status_available": "Available",
+      "status_active": "Active",
+      "status_completed": "Completed",
+      "favorite": "Favorite",
+      "unfavorite": "Unfavorite"
+    },
+    "location_drawer": {
+      "discovered_hint": "You have visited this location.",
+      "undiscovered": "This location has not been discovered yet."
+    },
+    "faction_drawer": {
+      "alignment": "Alignment"
+    },
+    "session_drawer": {
+      "hint": "Session from your campaign."
     },
     "sheet": {
       "hp_label": "HP",
@@ -2404,6 +2436,7 @@
     "filter_bag": "Bag",
     "filter_location": "Locations",
     "filter_faction": "Factions",
+    "empty_filters": "No nodes match your filters.",
     "connect_title": "What's the relationship?",
     "connect_cancel": "Cancel",
     "connect_confirm": "Connect",

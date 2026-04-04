@@ -53,7 +53,7 @@ export function useCampaignQuests(campaignId: string) {
   );
 
   const updateQuest = useCallback(
-    async (id: string, updates: Partial<{ title: string; description: string; status: QuestStatus }>) => {
+    async (id: string, updates: Partial<{ title: string; description: string; status: QuestStatus; is_visible_to_players: boolean }>) => {
       const supabase = createClient();
       await supabase.from("campaign_quests").update(updates).eq("id", id);
       await fetchQuests();

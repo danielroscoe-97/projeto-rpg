@@ -10,6 +10,7 @@ export interface FactionNodeData {
   alignment: FactionAlignment;
   alignmentLabel: string;
   factionId: string;
+  isHidden?: boolean;
   [key: string]: unknown;
 }
 
@@ -37,21 +38,36 @@ const alignmentStyles: Record<FactionAlignment, { border: string; text: string; 
 
 function FactionNodeComponent({ data }: FactionNodeProps) {
   const style = alignmentStyles[data.alignment];
+  const isHidden = data.isHidden === true;
 
   return (
-    <div className={`px-4 py-3 rounded-lg border ${style.border} bg-surface-overlay shadow-md min-w-[120px]`}>
+    <div
+      className={`px-4 py-3 rounded-lg border bg-surface-overlay shadow-md min-w-[120px] ${
+        isHidden ? "border-rose-400/30 border-dashed opacity-50" : style.border
+      }`}
+    >
       <Handle type="target" position={Position.Top} className="!bg-rose-400 !w-2 !h-2" />
       <div className="flex items-center gap-2">
-        <Flag className="h-4 w-4 text-rose-400 flex-shrink-0" />
-        <span className={`${style.text} font-semibold text-xs truncate max-w-[120px]`}>
-          {data.label}
+        {isHidden ? (
+          <span className="text-rose-400/50 font-bold text-sm">?</span>
+        ) : (
+          <Flag className="h-4 w-4 text-rose-400 flex-shrink-0" />
+        )}
+        <span
+          className={`font-semibold text-xs truncate max-w-[120px] ${
+            isHidden ? "text-rose-400/50 italic" : style.text
+          }`}
+        >
+          {isHidden ? "???" : data.label}
         </span>
       </div>
-      <div className="mt-1.5">
-        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${style.badge}`}>
-          {data.alignmentLabel}
-        </span>
-      </div>
+      {!isHidden && (
+        <div className="mt-1.5">
+          <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${style.badge}`}>
+            {data.alignmentLabel}
+          </span>
+        </div>
+      )}
       <Handle type="source" position={Position.Bottom} className="!bg-rose-400 !w-2 !h-2" />
     </div>
   );

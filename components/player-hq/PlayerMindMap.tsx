@@ -1,0 +1,302 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import {
+  ReactFlow,
+  Controls,
+  MiniMap,
+  Background,
+  BackgroundVariant,
+  useNodesState,
+  useEdgesState,
+  type Node,
+  type Edge,
+  type NodeMouseHandler,
+  type NodeTypes,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+
+import { usePlayerMindMap, type PlayerMindMapNode } from "@/lib/hooks/usePlayerMindMap";
+
+import { CampaignNode } from "@/components/campaign/nodes/CampaignNode";
+import { NpcNode } from "@/components/campaign/nodes/NpcNode";
+import { NoteNode } from "@/components/campaign/nodes/NoteNode";
+import { PlayerNode } from "@/components/campaign/nodes/PlayerNode";
+import { SessionNode } from "@/components/campaign/nodes/SessionNode";
+import { QuestNode } from "@/components/campaign/nodes/QuestNode";
+import { BagNode } from "@/components/campaign/nodes/BagNode";
+import { LocationNode } from "@/components/campaign/nodes/LocationNode";
+import { FactionNode } from "@/components/campaign/nodes/FactionNode";
+import { PlayerNpcDrawer } from "./drawers/PlayerNpcDrawer";
+import { PlayerQuestDrawer } from "./drawers/PlayerQuestDrawer";
+import { PlayerLocationDrawer } from "./drawers/PlayerLocationDrawer";
+import { PlayerFactionDrawer } from "./drawers/PlayerFactionDrawer";
+import { PlayerSessionDrawer } from "./drawers/PlayerSessionDrawer";
+
+/* ---------- Node types map ---------- */
+
+const nodeTypes: NodeTypes = {
+  campaign: CampaignNode,
+  npc: NpcNode,
+  note: NoteNode,
+  player: PlayerNode,
+  session: SessionNode,
+  quest: QuestNode,
+  bag: BagNode,
+  location: LocationNode,
+  faction: FactionNode,
+};
+
+/* ---------- Constants ---------- */
+
+type NodeFilter = "npc" | "note" | "player" | "session" | "quest" | "bag" | "location" | "faction";
+
+const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string }> = [
+  { key: "npc", color: "border-purple-400/40 text-purple-400/60", activeColor: "border-purple-400 bg-purple-400/20 text-purple-300" },
+  { key: "note", color: "border-blue-400/40 text-blue-400/60", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
+  { key: "player", color: "border-emerald-400/40 text-emerald-400/60", activeColor: "border-emerald-400 bg-emerald-400/20 text-emerald-300" },
+  { key: "session", color: "border-red-400/40 text-red-400/60", activeColor: "border-red-400 bg-red-400/20 text-red-300" },
+  { key: "quest", color: "border-yellow-400/40 text-yellow-400/60", activeColor: "border-yellow-400 bg-yellow-400/20 text-yellow-300" },
+  { key: "bag", color: "border-orange-400/40 text-orange-400/60", activeColor: "border-orange-400 bg-orange-400/20 text-orange-300" },
+  { key: "location", color: "border-cyan-400/40 text-cyan-400/60", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
+  { key: "faction", color: "border-rose-400/40 text-rose-400/60", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
+];
+
+const MINIMAP_COLORS: Record<string, string> = {
+  campaign: "#f59e0b",
+  npc: "#a78bfa",
+  note: "#60a5fa",
+  player: "#34d399",
+  session: "#ef4444",
+  quest: "#eab308",
+  bag: "#f97316",
+  location: "#22d3ee",
+  faction: "#fb7185",
+};
+
+/* ---------- Drawer state ---------- */
+
+interface DrawerState {
+  type: "npc" | "quest" | "location" | "faction" | "session" | null;
+  nodeId: string;
+  data: Record<string, unknown>;
+}
+
+/* ---------- Component ---------- */
+
+interface PlayerMindMapProps {
+  campaignId: string;
+  campaignName: string;
+  characterId: string;
+  userId: string;
+}
+
+export function PlayerMindMap({ campaignId, campaignName, characterId, userId }: PlayerMindMapProps) {
+  const t = useTranslations("mindmap");
+  const {
+    nodes: allNodes,
+    edges: allEdges,
+    loading,
+    error,
+  } = usePlayerMindMap(campaignId, campaignName);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<PlayerMindMapNode>([]);
+  const [edges, setEdges] = useEdgesState<Edge>([]);
+  const [filters, setFilters] = useState<Record<NodeFilter, boolean>>({
+    npc: true,
+    note: true,
+    player: true,
+    session: true,
+    quest: true,
+    bag: true,
+    location: true,
+    faction: true,
+  });
+  const [drawer, setDrawer] = useState<DrawerState>({ type: null, nodeId: "", data: {} });
+
+  /* ---- Toggle filter ---- */
+  const toggleFilter = useCallback((key: NodeFilter) => {
+    setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  /* ---- Apply filters ---- */
+  useEffect(() => {
+    const visibleNodeIds = new Set<string>();
+
+    const filteredNodes = allNodes.filter((node) => {
+      if (node.type === "campaign") {
+        visibleNodeIds.add(node.id);
+        return true;
+      }
+      const nodeType = node.type as NodeFilter;
+      if (filters[nodeType] !== false) {
+        visibleNodeIds.add(node.id);
+        return true;
+      }
+      return false;
+    });
+
+    const filteredEdges = allEdges.filter(
+      (edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
+    );
+
+    setNodes(filteredNodes);
+    setEdges(filteredEdges);
+  }, [allNodes, allEdges, filters, setNodes, setEdges]);
+
+  /* ---- Node click → open drawer ---- */
+  const onNodeClick: NodeMouseHandler<PlayerMindMapNode> = useCallback((_event, node) => {
+    const nodeType = node.type as string;
+    const drawerTypes = ["npc", "quest", "location", "faction", "session"];
+    if (drawerTypes.includes(nodeType)) {
+      setDrawer({
+        type: nodeType as DrawerState["type"],
+        nodeId: node.id,
+        data: node.data as Record<string, unknown>,
+      });
+    }
+  }, []);
+
+  /* ---- Close drawer ---- */
+  const closeDrawer = useCallback(() => {
+    setDrawer({ type: null, nodeId: "", data: {} });
+  }, []);
+
+  /* ---- Minimap color ---- */
+  const minimapNodeColor = useCallback(
+    (node: PlayerMindMapNode) => MINIMAP_COLORS[node.type ?? ""] ?? "#6b7280",
+    []
+  );
+
+  const defaultViewport = useMemo(() => ({ x: 0, y: 0, zoom: 0.8 }), []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[400px] text-muted-foreground text-sm">
+        {t("loading")}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[400px] text-red-400 text-sm">
+        {error}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {/* Filter bar */}
+      <div className="flex flex-wrap gap-1.5">
+        {FILTER_CONFIG.map(({ key, color, activeColor }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => toggleFilter(key)}
+            className={`px-2.5 py-1 rounded-full border text-[11px] font-medium transition-all ${
+              filters[key] ? activeColor : color
+            }`}
+            aria-pressed={filters[key]}
+          >
+            {t(`filter_${key}`)}
+          </button>
+        ))}
+      </div>
+
+      {/* Empty state when all filters off */}
+      {nodes.length <= 1 && !loading && (
+        <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+          {t("empty_filters")}
+        </div>
+      )}
+
+      {/* Mind Map */}
+      <div className="h-[calc(100vh-280px)] min-h-[400px] w-full rounded-lg overflow-hidden border border-border bg-surface-overlay">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onNodeClick={onNodeClick}
+          nodeTypes={nodeTypes}
+          defaultViewport={defaultViewport}
+          fitView
+          fitViewOptions={{ padding: 0.3 }}
+          minZoom={0.3}
+          maxZoom={2}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          nodesFocusable={false}
+          edgesFocusable={false}
+          elementsSelectable={true}
+          deleteKeyCode={null}
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={20}
+            size={1}
+            color="#ffffff10"
+          />
+          <Controls
+            showInteractive={false}
+            className="!bg-surface-overlay !border-border !shadow-lg [&>button]:!bg-surface-overlay [&>button]:!border-border [&>button]:!text-muted-foreground [&>button:hover]:!bg-card"
+          />
+          <MiniMap
+            nodeColor={minimapNodeColor}
+            maskColor="rgba(0, 0, 0, 0.7)"
+            className="!bg-surface-deep !border-border"
+            pannable
+            zoomable
+          />
+        </ReactFlow>
+      </div>
+
+      {/* Drawers */}
+      {drawer.type === "npc" && (
+        <PlayerNpcDrawer
+          npcId={(drawer.data.npcId as string) ?? ""}
+          npcName={(drawer.data.label as string) ?? ""}
+          characterId={characterId}
+          campaignId={campaignId}
+          onClose={closeDrawer}
+        />
+      )}
+      {drawer.type === "quest" && (
+        <PlayerQuestDrawer
+          questId={(drawer.data.questId as string) ?? ""}
+          questTitle={(drawer.data.label as string) ?? ""}
+          questStatus={(drawer.data.status as string) ?? ""}
+          userId={userId}
+          campaignId={campaignId}
+          onClose={closeDrawer}
+        />
+      )}
+      {drawer.type === "location" && (
+        <PlayerLocationDrawer
+          locationName={(drawer.data.label as string) ?? ""}
+          locationType={(drawer.data.locationTypeLabel as string) ?? ""}
+          isDiscovered={(drawer.data.isDiscovered as boolean) ?? false}
+          onClose={closeDrawer}
+        />
+      )}
+      {drawer.type === "faction" && (
+        <PlayerFactionDrawer
+          factionName={(drawer.data.label as string) ?? ""}
+          alignment={(drawer.data.alignmentLabel as string) ?? ""}
+          onClose={closeDrawer}
+        />
+      )}
+      {drawer.type === "session" && (
+        <PlayerSessionDrawer
+          sessionName={(drawer.data.label as string) ?? ""}
+          isActive={(drawer.data.isActive as boolean) ?? false}
+          statusLabel={(drawer.data.statusLabel as string) ?? ""}
+          onClose={closeDrawer}
+        />
+      )}
+    </div>
+  );
+}

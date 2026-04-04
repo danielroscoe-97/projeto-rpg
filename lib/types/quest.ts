@@ -6,6 +6,7 @@ export interface CampaignQuest {
   title: string;
   description: string;
   status: QuestStatus;
+  is_visible_to_players: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
