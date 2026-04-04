@@ -230,7 +230,7 @@ export function usePlayerMindMap(campaignId: string, campaignName: string) {
           data: {
             label: t("bag_node"),
             itemCount: data.bag_items.length,
-            itemsLabel: data.bag_items.length === 1 ? t("bag_item") : t("bag_items"),
+            itemsLabel: t("bag_item_count", { count: data.bag_items.length }),
           },
           draggable: false,
         });

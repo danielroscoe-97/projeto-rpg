@@ -27,7 +27,7 @@ function BagNodeComponent({ data }: BagNodeProps) {
       </div>
       <div className="mt-1.5">
         <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-900/40 text-orange-300">
-          {data.itemCount} {data.itemsLabel}
+          {data.itemsLabel}
         </span>
       </div>
       <Handle type="source" position={Position.Bottom} className="!bg-orange-400 !w-2 !h-2" />

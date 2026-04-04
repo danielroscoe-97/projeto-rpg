@@ -202,14 +202,24 @@ function applyDagreLayout(
 
 /* ---------- Force-directed layout ---------- */
 
-function applyForceLayout(nodes: MindMapNode[], edges: Edge[]): MindMapNode[] {
+function applyForceLayout(
+  nodes: MindMapNode[],
+  edges: Edge[],
+  savedPositions?: Map<string, { x: number; y: number }>
+): MindMapNode[] {
   if (nodes.length === 0) return nodes;
 
+  const pinned = new Set<string>();
   const positions = new Map<string, { x: number; y: number }>();
   const r = Math.max(200, nodes.length * 25);
   nodes.forEach((n, i) => {
-    if (n.id === "campaign") {
+    const saved = savedPositions?.get(n.id);
+    if (saved) {
+      positions.set(n.id, { x: saved.x, y: saved.y });
+      pinned.add(n.id);
+    } else if (n.id === "campaign") {
       positions.set(n.id, { x: 0, y: 0 });
+      pinned.add(n.id);
     } else {
       const angle = (i / nodes.length) * 2 * Math.PI;
       positions.set(n.id, { x: r * Math.cos(angle), y: r * Math.sin(angle) });
@@ -227,7 +237,7 @@ function applyForceLayout(nodes: MindMapNode[], edges: Edge[]): MindMapNode[] {
     let maxDelta = 0;
 
     for (const n1 of nodes) {
-      if (n1.id === "campaign") continue;
+      if (pinned.has(n1.id)) continue;
       const p1 = positions.get(n1.id)!;
       let fx = 0;
       let fy = 0;
@@ -273,7 +283,11 @@ function applyForceLayout(nodes: MindMapNode[], edges: Edge[]): MindMapNode[] {
 
 /* ---------- Radial layout ---------- */
 
-function applyRadialLayout(nodes: MindMapNode[], _edges: Edge[]): MindMapNode[] {
+function applyRadialLayout(
+  nodes: MindMapNode[],
+  _edges: Edge[],
+  savedPositions?: Map<string, { x: number; y: number }>
+): MindMapNode[] {
   if (nodes.length === 0) return nodes;
 
   const typeOrder: string[] = [
@@ -306,10 +320,11 @@ function applyRadialLayout(nodes: MindMapNode[], _edges: Edge[]): MindMapNode[] 
     });
   }
 
-  return nodes.map((n) => ({
-    ...n,
-    position: positions.get(n.id) ?? { x: 0, y: 0 },
-  }));
+  return nodes.map((n) => {
+    const saved = savedPositions?.get(n.id);
+    if (saved) return { ...n, position: { x: saved.x, y: saved.y } };
+    return { ...n, position: positions.get(n.id) ?? { x: 0, y: 0 } };
+  });
 }
 
 /* ---------- Component ---------- */
@@ -664,14 +679,15 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
     }
 
     let laidOut: MindMapNode[];
+    const saved = savedPositionsRef.current;
     if (filteredNodes.length === 0) {
       laidOut = [];
     } else if (layoutMode === "force") {
-      laidOut = applyForceLayout(filteredNodes, filteredEdges);
+      laidOut = applyForceLayout(filteredNodes, filteredEdges, saved);
     } else if (layoutMode === "radial") {
-      laidOut = applyRadialLayout(filteredNodes, filteredEdges);
+      laidOut = applyRadialLayout(filteredNodes, filteredEdges, saved);
     } else {
-      laidOut = applyDagreLayout(filteredNodes, filteredEdges, savedPositionsRef.current);
+      laidOut = applyDagreLayout(filteredNodes, filteredEdges, saved);
     }
 
     setNodes(laidOut);
@@ -993,7 +1009,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
           data: {
             label: t("bag_node"),
             itemCount: bagItems.length,
-            itemsLabel: bagItems.length === 1 ? t("bag_item") : t("bag_items"),
+            itemsLabel: t("bag_item_count", { count: bagItems.length }),
             itemNames: bagItems.slice(0, 5).map((i) => i.item_name),
           },
           draggable: true,
@@ -1404,7 +1420,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
               </p>
               {(d.encounterCount as number) > 0 && (
                 <p className="text-muted-foreground">
-                  {t("tooltip_encounters", { count: d.encounterCount as number })}
+                  {t("tooltip_encounters", { count: (d.encounterCount as number) ?? 0 })}
                 </p>
               )}
             </div>
@@ -1439,7 +1455,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             <div className="space-y-1">
               <p className="font-semibold text-orange-300">{d.label as string}</p>
               <p className="text-muted-foreground">
-                {t("tooltip_items_preview", { count: d.itemCount as number })}
+                {t("tooltip_items_preview", { count: (d.itemCount as number) ?? 0 })}
               </p>
               {itemNames.length > 0 && (
                 <ul className="text-orange-300/70 text-[10px] list-disc pl-3">
