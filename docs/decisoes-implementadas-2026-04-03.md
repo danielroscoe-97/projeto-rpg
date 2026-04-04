@@ -143,6 +143,30 @@
 
 ---
 
+## 8. Mobile Bug Blitz — 5 Bugs Criticos Demo-Blocking
+
+**Commit:** `8f7f17a` fix(mobile+recap): resolve 5 critical demo-blocking bugs + code review fixes
+**Data:** 2026-04-04
+**Tipo:** Bug Fix / Mobile / UX
+
+**Por que:** QA Tier 1 (2026-04-04) identificou 5 bugs criticos que bloqueavam o demo nos bares de RPG em BH (maio 2026). Todos no mobile (390x844) e no Combat Recap.
+
+**O que foi feito:**
+- BUG-C1: `displayToReal` map defensivo em `combat-stats.ts` com collision safety
+- BUG-C2: `computeMatchup` fallback por `monster_id` quando PCs nao detectados
+- BUG-C3: Gaps/padding mobile reduzidos, `flex-wrap gap-y-2`, `p-3 sm:p-6`
+- BUG-C4: `min-h-[44px] inline-flex items-center` em todos os botoes de combate (7 arquivos)
+- BUG-C5: GuestBanner responsive gaps para wrapping em 390px
+
+**Code review adversarial aplicado:** 1 CRITICAL (NPC/summon misclassification), 1 HIGH (name collision), 2 MEDIUM (duplicate classes, mid-combat 32px) corrigidos antes do merge.
+
+**Arquivos:** `combat-stats.ts`, `CombatantRow.tsx`, `HpAdjuster.tsx`, `EncounterSetup.tsx`, `GuestCombatClient.tsx`, `GuestBanner.tsx`, `app/try/layout.tsx`
+
+**Parity:** Guest + Auth verificados (Combat Parity Rule).
+
+---
+
 > **Criado:** 2026-04-03
+> **Atualizado:** 2026-04-04 (item 8 adicionado)
 > **Revisado por:** Dani_ + BMAD Party Mode (John, Mary, Winston, Bob, Quinn)
 > **Proxima revisao:** Pre-beta test sessao #2
