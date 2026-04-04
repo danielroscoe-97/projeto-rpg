@@ -247,6 +247,90 @@ export function formatShareText(
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Extended Analytics (F1: new data aggregation)
+// ---------------------------------------------------------------------------
+
+/** Aggregate damage by damage type (e.g. "Fire": 45, "Slashing": 120). */
+export function computeDamageByType(entries: CombatLogEntry[]): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const e of entries) {
+    if (e.type === "damage" && e.details?.damageAmount && e.details.damageType) {
+      result[e.details.damageType] = (result[e.details.damageType] ?? 0) + e.details.damageAmount;
+    }
+  }
+  return result;
+}
+
+/** Aggregate damage by attack source type (melee/ranged/spell). */
+export function computeDamageBySource(entries: CombatLogEntry[]): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const e of entries) {
+    if (e.type === "damage" && e.details?.damageAmount && e.details.attackType) {
+      result[e.details.attackType] = (result[e.details.attackType] ?? 0) + e.details.damageAmount;
+    }
+  }
+  return result;
+}
+
+/** Count how many times each damage modifier was applied (resistant/immune/vulnerable). */
+export function computeResistanceUsage(entries: CombatLogEntry[]): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const e of entries) {
+    const mod = e.details?.damageModifier;
+    if (e.type === "damage" && mod && mod !== "normal") {
+      result[mod] = (result[mod] ?? 0) + 1;
+    }
+  }
+  return result;
+}
+
+/** Compute healing vs damage received per round to assess heal efficiency. */
+export function computeHealEfficiency(entries: CombatLogEntry[]): {
+  totalHealing: number;
+  totalDamageReceived: number;
+  ratio: number;
+} {
+  let totalHealing = 0;
+  let totalDamageReceived = 0;
+  for (const e of entries) {
+    if (e.type === "heal" && e.details?.damageAmount) {
+      totalHealing += e.details.damageAmount;
+    }
+    if (e.type === "damage" && e.details?.damageAmount) {
+      totalDamageReceived += e.details.damageAmount;
+    }
+  }
+  return {
+    totalHealing,
+    totalDamageReceived,
+    ratio: totalDamageReceived > 0 ? totalHealing / totalDamageReceived : 0,
+  };
+}
+
+/**
+ * Compute per-round time from turnTimeSnapshots (diffs between consecutive snapshots).
+ * Returns round → total ms spent in that round.
+ */
+export function computeTurnTimePerRound(
+  snapshots: Record<number, Record<string, number>>,
+): Record<number, number> {
+  const rounds = Object.keys(snapshots).map(Number).sort((a, b) => a - b);
+  const result: Record<number, number> = {};
+
+  for (let i = 0; i < rounds.length; i++) {
+    const round = rounds[i];
+    const currentTotal = Object.values(snapshots[round]).reduce((a, b) => a + b, 0);
+    const prevTotal = i > 0
+      ? Object.values(snapshots[rounds[i - 1]]).reduce((a, b) => a + b, 0)
+      : 0;
+    result[round] = currentTotal - prevTotal;
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Combat Report Builder
 // ---------------------------------------------------------------------------
 
@@ -459,13 +543,14 @@ export function buildCombatReport(opts: {
   entries: CombatLogEntry[];
   combatants: Combatant[];
   turnTimeAccumulated: Record<string, number>;
+  turnTimeSnapshots?: Record<number, Record<string, number>>;
   idToName: Record<string, string>;
   encounterName: string;
   combatDuration: number;
   roundNumber: number;
   t: (key: string, values?: Record<string, string | number>) => string;
 }): CombatReport {
-  const { entries, combatants, turnTimeAccumulated, idToName, encounterName, combatDuration, roundNumber, t } = opts;
+  const { entries, combatants, turnTimeAccumulated, turnTimeSnapshots, idToName, encounterName, combatDuration, roundNumber, t } = opts;
 
   // Rankings (reuses existing logic)
   const rankings = computeCombatStats(entries, turnTimeAccumulated, idToName);
@@ -486,6 +571,15 @@ export function buildCombatReport(opts: {
   const totalTurnTime = rankings.reduce((sum, s) => sum + s.totalTurnTime, 0);
   const totalTurnCount = rankings.reduce((sum, s) => sum + s.turnCount, 0);
 
+  // Extended analytics (F1)
+  const damageByType = computeDamageByType(entries);
+  const damageBySource = computeDamageBySource(entries);
+  const resistanceUsage = computeResistanceUsage(entries);
+  const healEff = computeHealEfficiency(entries);
+  const timePerRound = turnTimeSnapshots && Object.keys(turnTimeSnapshots).length > 0
+    ? computeTurnTimePerRound(turnTimeSnapshots)
+    : undefined;
+
   const summary = {
     totalDuration: combatDuration,
     totalRounds: roundNumber,
@@ -496,6 +590,11 @@ export function buildCombatReport(opts: {
     totalFumbles,
     avgTurnTime: totalTurnCount > 0 ? totalTurnTime / totalTurnCount : 0,
     matchup: `${pcs.length} vs ${monsters.length}`,
+    damageByType: Object.keys(damageByType).length > 0 ? damageByType : undefined,
+    damageBySource: Object.keys(damageBySource).length > 0 ? damageBySource : undefined,
+    resistanceUsage: Object.keys(resistanceUsage).length > 0 ? resistanceUsage : undefined,
+    healEfficiency: healEff.ratio > 0 ? healEff.ratio : undefined,
+    timePerRound,
   };
 
   return {
@@ -518,9 +617,10 @@ export function buildCombatReportFromStats(opts: {
   encounterName: string;
   combatDuration: number;
   roundNumber: number;
+  turnTimeSnapshots?: Record<number, Record<string, number>>;
   t: (key: string, values?: Record<string, string | number>) => string;
 }): CombatReport {
-  const { stats, combatants, encounterName, combatDuration, roundNumber, t } = opts;
+  const { stats, combatants, encounterName, combatDuration, roundNumber, turnTimeSnapshots, t } = opts;
 
   const awards = buildAwards(stats, t);
 
@@ -544,6 +644,11 @@ export function buildCombatReportFromStats(opts: {
   const totalTurnTime = stats.reduce((sum, s) => sum + s.totalTurnTime, 0);
   const totalTurnCount = stats.reduce((sum, s) => sum + s.turnCount, 0);
 
+  // Per-round time analytics (F1 parity)
+  const timePerRound = turnTimeSnapshots && Object.keys(turnTimeSnapshots).length > 0
+    ? computeTurnTimePerRound(turnTimeSnapshots)
+    : undefined;
+
   return {
     awards,
     narratives: narratives.slice(0, 3),
@@ -557,6 +662,7 @@ export function buildCombatReportFromStats(opts: {
       totalFumbles: stats.reduce((sum, s) => sum + s.criticalFails, 0),
       avgTurnTime: totalTurnCount > 0 ? totalTurnTime / totalTurnCount : 0,
       matchup: `${pcs.length} vs ${monsters.length}`,
+      timePerRound,
     },
     rankings: stats,
     encounterName,

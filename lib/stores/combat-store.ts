@@ -36,6 +36,7 @@ const initialState: EncounterState = {
   combatStartedAt: null,
   turnStartedAt: null,
   turnTimeAccumulated: {},
+  turnTimeSnapshots: {},
   removedCombatantNames: {},
 };
 
@@ -190,12 +191,18 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       const finalCombatants = roundBumped
         ? sorted.map((c) => c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c)
         : sorted;
+      // Snapshot turn times at round boundary for per-round analytics
+      const snapshots = roundBumped
+        ? { ...state.turnTimeSnapshots, [round_number]: { ...accumulated } }
+        : state.turnTimeSnapshots;
+
       return {
         combatants: finalCombatants,
-        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants, previousTurnTimeAccumulated: state.turnTimeAccumulated, previousTurnStartedAt: state.turnStartedAt }),
+        undoStack: pushUndo(state.undoStack, { type: "turn", previousTurnIndex: current_turn_index, previousRound: round_number, previousCombatants: combatants, previousTurnTimeAccumulated: state.turnTimeAccumulated, previousTurnTimeSnapshots: state.turnTimeSnapshots, previousTurnStartedAt: state.turnStartedAt }),
         current_turn_index: next,
         round_number: roundBumped ? round_number + 1 : round_number,
         turnTimeAccumulated: accumulated,
+        turnTimeSnapshots: snapshots,
         turnStartedAt: (() => { const now = Date.now(); try { const saved = JSON.parse(localStorage.getItem("combat-timers") ?? "{}"); localStorage.setItem("combat-timers", JSON.stringify({ ...saved, turnStartedAt: now, turnTimeAccumulated: accumulated })); } catch { /* ignore */ } return now; })(),
       };
     }),
@@ -422,6 +429,7 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
           current_turn_index: Math.min(entry.previousTurnIndex, entry.previousCombatants.length - 1),
           round_number: entry.previousRound,
           turnTimeAccumulated: restoredTime,
+          turnTimeSnapshots: entry.previousTurnTimeSnapshots ?? state.turnTimeSnapshots,
           turnStartedAt: freshTurnStart,
         });
         // P2-B: Remove the phantom "turn" log entry added by handleAdvanceTurn

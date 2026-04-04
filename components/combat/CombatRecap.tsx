@@ -17,9 +17,15 @@ interface CombatRecapProps {
   onClose: () => void;
   /** Guest-only: save snapshot and redirect to signup */
   onSaveAndSignup?: () => void;
+  /** Pre-existing share URL from auto-save (avoids creating duplicate report) */
+  existingShareUrl?: string | null;
+  /** Campaign ID for linking new reports */
+  campaignId?: string;
+  /** Encounter ID for linking new reports */
+  encounterId?: string;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(report.awards.length > 0 ? "awards" : "details");
 
@@ -118,7 +124,14 @@ export function CombatRecap({ report, onClose, onSaveAndSignup }: CombatRecapPro
                 <RecapSummary summary={report.summary} rankings={report.rankings} />
 
                 {/* Actions */}
-                <RecapActions report={report} onNewCombat={onClose} onSaveAndSignup={onSaveAndSignup} />
+                <RecapActions
+                  report={report}
+                  onNewCombat={onClose}
+                  onSaveAndSignup={onSaveAndSignup}
+                  existingShareUrl={existingShareUrl}
+                  campaignId={campaignId}
+                  encounterId={encounterId}
+                />
               </motion.div>
             )}
           </AnimatePresence>

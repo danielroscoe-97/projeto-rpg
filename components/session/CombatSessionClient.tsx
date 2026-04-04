@@ -100,6 +100,7 @@ export function CombatSessionClient({
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
   const [combatReport, setCombatReport] = useState<CombatReport | null>(null);
+  const [reportShareUrl, setReportShareUrl] = useState<string | null>(null);
   const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
@@ -115,6 +116,7 @@ export function CombatSessionClient({
     logEntries: import("@/lib/stores/combat-log-store").CombatLogEntry[];
     combatantsSnapshot: Combatant[];
     turnTimeAccumulated: Record<string, number>;
+    turnTimeSnapshots: Record<number, Record<string, number>>;
     idToName: Record<string, string>;
   } | null>(null);
   // C.15: Post-combat state machine (leaderboard → poll → result)
@@ -162,6 +164,7 @@ export function CombatSessionClient({
         entries: pending.logEntries,
         combatants: pending.combatantsSnapshot,
         turnTimeAccumulated: pending.turnTimeAccumulated,
+        turnTimeSnapshots: pending.turnTimeSnapshots,
         idToName: pending.idToName,
         encounterName: finalName,
         combatDuration: pending.combatDuration,
@@ -169,6 +172,22 @@ export function CombatSessionClient({
         t,
       });
       setCombatReport(report);
+
+      // F4: Auto-persist combat report — capture URL for share link dedup
+      const encId = useCombatStore.getState().encounter_id;
+      fetch("/api/combat-reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          report,
+          campaignId: campaignId ?? undefined,
+          encounterId: encId ?? undefined,
+        }),
+      })
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => { if (data?.url) setReportShareUrl(data.url); })
+        .catch(() => { /* non-fatal */ });
+
       setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
       setPollVotes(new Map()); // Reset votes for new encounter
       const sid = getSessionId();
@@ -223,7 +242,7 @@ export function CombatSessionClient({
     const suggestedName = existingName || generateEncounterName(state.combatants);
 
     setPendingEncounterName(suggestedName);
-    setPendingStats({ stats, rounds, combatDuration, logEntries, combatantsSnapshot: [...state.combatants], turnTimeAccumulated: finalAccumulated, idToName });
+    setPendingStats({ stats, rounds, combatDuration, logEntries, combatantsSnapshot: [...state.combatants], turnTimeAccumulated: finalAccumulated, turnTimeSnapshots: { ...state.turnTimeSnapshots }, idToName });
     setNameModalOpen(true);
   }, []);
 
@@ -248,6 +267,7 @@ export function CombatSessionClient({
     setPostCombatPhase(null);
     setPollVotes(new Map());
     setCombatReport(null);
+    setReportShareUrl(null);
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
 
@@ -1277,6 +1297,9 @@ export function CombatSessionClient({
             report={combatReport}
             // UX.08 — DM skips poll (biased as encounter creator), goes straight to result
             onClose={() => setPostCombatPhase("result")}
+            existingShareUrl={reportShareUrl}
+            campaignId={campaignId ?? undefined}
+            encounterId={useCombatStore.getState().encounter_id ?? undefined}
           />
         )}
       </AnimatePresence>

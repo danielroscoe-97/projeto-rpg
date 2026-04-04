@@ -99,6 +99,8 @@ interface GuestCombatState {
   combatStartTime: number | null;
   turnStartedAt: number | null;
   turnTimeAccumulated: Record<string, number>;
+  /** Snapshot of turnTimeAccumulated at each round boundary (round → ID → ms). */
+  turnTimeSnapshots: Record<number, Record<string, number>>;
   /** Turn count per combatant (ID → count). Incremented on advanceTurn. */
   turnCountById: Record<string, number>;
   isExpired: boolean;
@@ -146,6 +148,7 @@ const initialState: GuestCombatState = {
   combatStartTime: null,
   turnStartedAt: null,
   turnTimeAccumulated: {},
+  turnTimeSnapshots: {},
   turnCountById: {},
   isExpired: false,
   expandedGroups: {},
@@ -332,11 +335,17 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           const nextId = finalCombatants[next]?.id;
           const updatedTurnCount = { ...state.turnCountById };
           if (nextId) updatedTurnCount[nextId] = (updatedTurnCount[nextId] ?? 0) + 1;
+          // Snapshot turn times at round boundary for per-round analytics
+          const snapshots = roundBumped
+            ? { ...state.turnTimeSnapshots, [roundNumber]: { ...accumulated } }
+            : state.turnTimeSnapshots;
+
           return {
             combatants: finalCombatants,
             currentTurnIndex: next,
             roundNumber: roundBumped ? roundNumber + 1 : roundNumber,
             turnTimeAccumulated: accumulated,
+            turnTimeSnapshots: snapshots,
             turnCountById: updatedTurnCount,
             turnStartedAt: Date.now(),
           };

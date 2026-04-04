@@ -52,6 +52,16 @@ export interface CombatReportSummary {
   avgTurnTime: number;
   /** "4 vs 3" format */
   matchup: string;
+  /** Damage breakdown by type (e.g. { Fire: 45, Slashing: 120 }). Omitted if empty. */
+  damageByType?: Record<string, number>;
+  /** Damage breakdown by source (melee/ranged/spell). Omitted if empty. */
+  damageBySource?: Record<string, number>;
+  /** Count of resistance/immunity/vulnerability applications. */
+  resistanceUsage?: Record<string, number>;
+  /** Heal efficiency ratio (totalHealing / totalDamageReceived). */
+  healEfficiency?: number;
+  /** Time per round in ms (round number → ms). Omitted if no snapshots. */
+  timePerRound?: Record<number, number>;
 }
 
 // --- Full Report ---

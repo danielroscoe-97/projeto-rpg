@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Swords, Zap, ChevronRight } from "lucide-react";
 
 import { InvitePlayersBanner } from "@/components/dashboard/InvitePlayersBanner";
+import { StreakBadge } from "@/components/dashboard/StreakBadge";
 import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import { CampaignCard } from "@/components/dashboard/CampaignCard";
@@ -81,6 +82,7 @@ interface DashboardOverviewProps {
     combats_empty_title: string;
     combats_empty_cta: string;
   };
+  streakWeeks?: number;
 }
 
 export function DashboardOverview({
@@ -91,6 +93,7 @@ export function DashboardOverview({
   memberships,
   pendingInvites,
   translations: t,
+  streakWeeks = 0,
 }: DashboardOverviewProps) {
   const { activeView, initialized, loadRole } = useRoleStore();
 
@@ -117,7 +120,10 @@ export function DashboardOverview({
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4" data-testid="dashboard-overview">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold text-foreground">{t.title}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-semibold text-foreground">{t.title}</h1>
+            <StreakBadge weeks={streakWeeks} />
+          </div>
           <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
         </div>
         {hasDmCampaigns && (

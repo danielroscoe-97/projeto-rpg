@@ -32,6 +32,8 @@ import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant, CombatantRole } from "@/lib/types/combat";
 import { hasLairActions, hasLairActionEntry, createLairActionCombatant } from "@/lib/utils/lair-action";
 import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
+import { STARTER_ENCOUNTER } from "@/lib/data/starter-encounters";
+import { getMonsterById } from "@/lib/srd/srd-search";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
@@ -94,6 +96,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
   const [addRowGlow, setAddRowGlow] = useState(false);
   const [invalidInitIds, setInvalidInitIds] = useState<Set<string>>(new Set());
   const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
+  const [presetDismissed, setPresetDismissed] = useState(false);
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
   const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -121,6 +124,87 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
     lastSelectedMonster.current = null;
     setShowClearConfirm(false);
   }, [resetCombat]);
+
+  const handleLoadPreset = useCallback(() => {
+    // Add players
+    for (const p of STARTER_ENCOUNTER.players) {
+      addCombatant({
+        name: p.name,
+        current_hp: p.hp,
+        max_hp: p.hp,
+        temp_hp: 0,
+        ac: p.ac,
+        spell_save_dc: null,
+        initiative: null,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: null,
+        is_defeated: false,
+        is_hidden: false,
+        is_player: true,
+        monster_id: null,
+        token_url: null,
+        creature_type: null,
+        display_name: null,
+        monster_group_id: null,
+        group_order: null,
+        dm_notes: "",
+        player_notes: "",
+        player_character_id: null,
+        combatant_role: "player",
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
+      });
+    }
+
+    // Add monsters from SRD
+    for (const m of STARTER_ENCOUNTER.monsters) {
+      const monster = getMonsterById(m.monsterId, m.ruleset);
+      if (!monster) continue;
+      for (let i = 0; i < m.count; i++) {
+        const currentCombatants = useGuestCombatStore.getState().combatants;
+        const numberedName = getGuestNumberedName(monster.name, currentCombatants);
+        const existingNames = currentCombatants
+          .filter((c) => !c.is_player && c.display_name)
+          .map((c) => c.display_name!);
+        const displayName = generateCreatureName(monster.type, existingNames);
+        const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+
+        addCombatant({
+          name: numberedName,
+          current_hp: monster.hit_points,
+          max_hp: monster.hit_points,
+          temp_hp: 0,
+          ac: monster.armor_class,
+          spell_save_dc: null,
+          initiative: rollResult.total,
+          initiative_breakdown: { roll: rollResult.rolls[0], modifier: rollResult.modifier },
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: monster.ruleset_version,
+          is_defeated: false,
+          is_hidden: false,
+          is_player: false,
+          monster_id: monster.id,
+          token_url: monster.token_url ?? null,
+          creature_type: monster.type ?? null,
+          display_name: displayName,
+          monster_group_id: null,
+          group_order: null,
+          dm_notes: "",
+          player_notes: "",
+          player_character_id: null,
+          combatant_role: null,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
+        });
+      }
+    }
+
+    // Auto-roll player initiatives
+    handleRollAll();
+    setPresetDismissed(true);
+  }, [addCombatant, handleRollAll]);
 
   // Bug #2: Clear stale validation error when combatants change (e.g. initiative filled)
   useEffect(() => {
@@ -514,6 +598,39 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         <RulesetSelector value={rulesetVersion} onChange={setRulesetVersion} />
         <EncounterGeneratorDialog rulesetVersion={rulesetVersion} onUseEncounter={handleGeneratedEncounter} />
       </div>
+
+      {/* Starter Encounter Preset Banner */}
+      {combatants.length === 0 && !presetDismissed && (
+        <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                {tg("preset_banner_title")}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {tg("preset_banner_description")}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleLoadPreset}
+                className="px-4 py-2 rounded-lg bg-gold text-black text-sm font-bold hover:bg-gold/90 transition-colors min-h-[40px]"
+                data-testid="preset-load-btn"
+              >
+                {tg("preset_banner_load")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPresetDismissed(true)}
+                className="px-3 py-2 rounded-lg bg-white/5 text-muted-foreground text-sm hover:text-foreground hover:bg-white/10 transition-colors min-h-[40px]"
+              >
+                {tg("preset_banner_skip")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SRD Monster Search */}
       <div data-tour-id="monster-search">
@@ -1246,6 +1363,7 @@ export function GuestCombatClient() {
         encounterName: tg("try_encounter_name"),
         combatDuration: duration,
         roundNumber: guestStore.roundNumber,
+        turnTimeSnapshots: guestStore.turnTimeSnapshots,
         t,
       });
       setGuestCombatReport(report);

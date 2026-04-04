@@ -61,7 +61,7 @@ export type UndoEntry =
   | { type: "hp"; combatantId: string; previousHp: number; previousTempHp: number; action: "damage" | "heal" | "temp" }
   | { type: "condition"; combatantId: string; condition: string; wasAdded: boolean; previousDurations?: Record<string, number> }
   | { type: "defeated"; combatantId: string; wasDefeated: boolean; previousHp: number; previousDeathSaves?: { successes: number; failures: number } }
-  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[]; previousTurnTimeAccumulated: Record<string, number>; previousTurnStartedAt: number | null; previousTurnCountById?: Record<string, number> }
+  | { type: "turn"; previousTurnIndex: number; previousRound: number; previousCombatants: Combatant[]; previousTurnTimeAccumulated: Record<string, number>; previousTurnTimeSnapshots?: Record<number, Record<string, number>>; previousTurnStartedAt: number | null; previousTurnCountById?: Record<string, number> }
   | { type: "hidden"; combatantId: string; wasHidden: boolean };
 
 /** @deprecated Use UndoEntry instead. Kept for backwards compatibility. */
@@ -88,6 +88,8 @@ export interface EncounterState {
   turnStartedAt: number | null;
   /** Accumulated turn time per combatant (ID → total ms). Client-side only. */
   turnTimeAccumulated: Record<string, number>;
+  /** Snapshot of turnTimeAccumulated at each round boundary (round → ID → ms). For per-round analytics. */
+  turnTimeSnapshots: Record<number, Record<string, number>>;
   /** Names of combatants removed mid-combat (ID → name), so their turn time isn't lost from stats. */
   removedCombatantNames: Record<string, string>;
 }

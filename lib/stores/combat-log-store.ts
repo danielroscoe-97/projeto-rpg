@@ -13,6 +13,8 @@ export interface CombatLogEntry {
     damageAmount?: number;
     damageType?: string;
     damageModifier?: string;
+    /** Source type of the attack/damage (melee, ranged, spell). Populated from parsed monster actions. */
+    attackType?: "melee" | "ranged" | "spell";
     rollResult?: number;
     rollMode?: string;
     isNat1?: boolean;
