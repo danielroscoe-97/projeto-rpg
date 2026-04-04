@@ -33,7 +33,7 @@ export default async function DashboardRouteLayout({
     const [{ data: onboarding }, dmAccess] = await Promise.all([
       supabase
         .from("user_onboarding")
-        .select("dashboard_tour_completed, source")
+        .select("wizard_completed, dashboard_tour_completed, source")
         .eq("user_id", user.id)
         .maybeSingle(),
       unstable_cache(
@@ -72,7 +72,9 @@ export default async function DashboardRouteLayout({
       )(user.id),
     ]);
 
-    showDashboardTour = onboarding ? !onboarding.dashboard_tour_completed : false;
+    showDashboardTour = onboarding
+      ? (onboarding.wizard_completed && !onboarding.dashboard_tour_completed)
+      : false;
     tourSource = onboarding?.source;
     hasDmAccess = dmAccess;
   }

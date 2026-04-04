@@ -7,8 +7,8 @@ import { createClient } from "@/lib/supabase/server";
  * Only available in development/test environments.
  */
 export async function POST(request: Request) {
-  // Block in production
-  if (process.env.NODE_ENV === "production" && !process.env.E2E_ENABLED) {
+  // Block in production (E2E_ENABLED must be exactly "true" to allow)
+  if (process.env.NODE_ENV === "production" && process.env.E2E_ENABLED !== "true") {
     return NextResponse.json({ error: "Not available" }, { status: 403 });
   }
 

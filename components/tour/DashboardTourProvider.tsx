@@ -56,12 +56,6 @@ export function DashboardTourProvider({
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Check if we need to redirect after tour (Quick Combat path)
-  const postTourRedirect = useMemo(() => {
-    if (typeof window === "undefined") return null;
-    return new URLSearchParams(window.location.search).get("next");
-  }, []);
-
   const effectiveSteps = useMemo(
     () => DASHBOARD_TOUR_STEPS.map(resolveStep),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,8 +136,12 @@ export function DashboardTourProvider({
       // best-effort
     }
     // Quick Combat path: redirect to session/new after tour
-    if (postTourRedirect === "session") {
-      router.push("/app/session/new");
+    // Read ?next at redirect time (not mount time) to avoid stale memoized value
+    if (typeof window !== "undefined") {
+      const next = new URLSearchParams(window.location.search).get("next");
+      if (next === "session") {
+        router.push("/app/session/new");
+      }
     }
   }
 
@@ -188,15 +186,7 @@ export function DashboardTourProvider({
     };
   }, [isActive, currentStep, updateTargetRect]);
 
-  // ESC to skip
-  useEffect(() => {
-    if (!isActive) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleSkip();
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [isActive]); // eslint-disable-line react-hooks/exhaustive-deps
+  // ESC to skip is handled by TourTooltip — no duplicate listener here
 
   const handleNext = useCallback(() => {
     const next = currentStep + 1;

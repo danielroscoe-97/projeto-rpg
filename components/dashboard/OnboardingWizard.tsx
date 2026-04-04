@@ -496,7 +496,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
                 const supabase = createClient();
                 await supabase
                   .from("user_onboarding")
-                  .upsert({ user_id: userId, wizard_completed: true }, { onConflict: "user_id" });
+                  .upsert({ user_id: userId, wizard_completed: true, dashboard_tour_completed: false }, { onConflict: "user_id" });
               } catch { /* best-effort */ }
               // Redirect to dashboard so the tour runs first, then session/new
               router.push("/app/dashboard?from=wizard&next=session");
