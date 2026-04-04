@@ -154,7 +154,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cool/[0.05] rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative max-w-3xl mx-auto text-center space-y-5">
+      <div className="relative max-w-3xl mx-auto text-center space-y-3">
         {/* Crown d20 Logo */}
         <div className="animate-fade-in flex flex-col items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -190,7 +190,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col items-center gap-3 pt-4 animate-fade-in-up w-full max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
+        <div className="flex flex-col items-center gap-3 pt-1 animate-fade-in-up w-full max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
           {/* Primary escape-hatch — elongated, full width, gold-accented */}
           <Link
             href="/try"
@@ -232,7 +232,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         </div>
 
         {/* Stats strip */}
-        <div className="flex items-center justify-center gap-0 pt-2 animate-fade-in" style={{ animationDelay: "0.35s" }}>
+        <div className="flex items-center justify-center gap-0 pt-1 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           {[
             { value: 1200, label: "monstros", sub: "SRD + Monster a Day" },
             { value: 750, label: "magias", sub: "SRD 2014 & 2024" },
