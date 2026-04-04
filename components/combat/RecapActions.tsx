@@ -51,14 +51,23 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
       // Reuse existing URL from auto-save if available, otherwise create new
       let url = existingShareUrl;
       if (!url) {
-        const res = await fetch("/api/combat-reports", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ report, campaignId, encounterId }),
-        });
-        if (!res.ok) throw new Error("Failed to create link");
-        const data = await res.json();
-        url = data.url;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15_000);
+        try {
+          const res = await fetch("/api/combat-reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ report, campaignId, encounterId }),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          if (!res.ok) throw new Error("Failed to create link");
+          const data = await res.json();
+          url = data.url;
+        } catch (err) {
+          clearTimeout(timeout);
+          throw err;
+        }
       }
 
       if (typeof navigator !== "undefined" && navigator.share) {
@@ -68,8 +77,13 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
         } catch { /* fall through to clipboard */ }
       }
 
-      await navigator.clipboard.writeText(url!);
-      toast.success(t("recap_link_copied"));
+      try {
+        await navigator.clipboard.writeText(url!);
+        toast.success(t("recap_link_copied"));
+      } catch {
+        // Clipboard blocked — show URL in toast so user can copy manually
+        toast.success(url!, { duration: 8000 });
+      }
     } catch {
       toast.error(t("recap_link_error"));
     } finally {

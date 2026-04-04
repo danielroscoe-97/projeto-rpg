@@ -202,6 +202,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
               setShowCreate(true);
               setEditingId(null);
               setEditName("");
+              setNewName("");
               setError(null);
             }}
           >
@@ -271,6 +272,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
               setShowCreate(true);
               setEditingId(null);
               setEditName("");
+              setNewName("");
               setError(null);
             }}
           >
@@ -353,7 +355,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                     </h3>
                     <p className="text-muted-foreground text-xs mt-0.5">
                       {campaign.player_count}{" "}
-                      {campaign.player_count !== 1 ? t("campaigns_players_plural") : t("campaigns_players_singular")}
+                      {Number(campaign.player_count) !== 1 ? t("campaigns_players_plural") : t("campaigns_players_singular")}
                     </p>
 
                     {/* Quick actions */}

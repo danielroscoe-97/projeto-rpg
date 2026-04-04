@@ -24,6 +24,7 @@ import type { CombatReport } from "@/lib/types/combat-report";
 import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { GuestExpiryModal } from "@/components/guest/GuestExpiryModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
@@ -35,6 +36,7 @@ import { hasLairActions, hasLairActionEntry, createLairActionCombatant } from "@
 import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
 import { STARTER_ENCOUNTER } from "@/lib/data/starter-encounters";
 import { getMonsterById } from "@/lib/srd/srd-search";
+import { useSrdStore } from "@/lib/stores/srd-store";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
 import type { HpMode } from "@/components/combat/HpAdjuster";
 import type { UpsellTrigger } from "@/components/guest/GuestUpsellModal";
@@ -126,7 +128,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
     setShowClearConfirm(false);
   }, [resetCombat]);
 
-  const handleLoadPreset = useCallback(() => {
+  const handleLoadPreset = useCallback(async () => {
     // Add players
     for (const p of STARTER_ENCOUNTER.players) {
       addCombatant({
@@ -156,6 +158,15 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         legendary_actions_total: null,
         legendary_actions_used: 0,
       });
+    }
+
+    // Ensure required SRD versions are loaded before looking up monsters
+    const requiredVersions = new Set(STARTER_ENCOUNTER.monsters.map(m => m.ruleset));
+    const { loadedVersions, loadVersionOnDemand } = useSrdStore.getState();
+    for (const version of requiredVersions) {
+      if (!loadedVersions.has(version)) {
+        await loadVersionOnDemand(version);
+      }
     }
 
     // Add monsters from SRD
@@ -1589,15 +1600,18 @@ export function GuestCombatClient() {
         )}
         </div>{/* end sticky controls */}
 
-        {showAddForm && (
-          <div className="space-y-3 p-3 bg-white/[0.04] rounded-md border border-border" data-testid="mid-combat-add-panel">
+        <Sheet open={showAddForm} onOpenChange={(open) => { if (!open) setShowAddForm(false); }}>
+          <SheetContent side="bottom" data-testid="mid-combat-add-panel">
+            <SheetHeader>
+              <SheetTitle>{t("add_combatant_title")}</SheetTitle>
+            </SheetHeader>
             <MonsterSearchPanel
               rulesetVersion={midCombatRuleset}
               onSelectMonster={handleMidCombatSelectMonster}
               onSelectMonsterGroup={handleMidCombatSelectMonsterGroup}
             />
             <div
-              className="flex flex-wrap items-center gap-1.5 md:grid md:gap-x-1.5 md:items-center bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5"
+              className="flex flex-wrap items-center gap-1.5 md:grid md:gap-x-1.5 md:items-center bg-card/50 border border-dashed border-border rounded-md px-2 py-1.5 mt-3"
               style={{ gridTemplateColumns: "64px 1fr 64px 56px 1fr 170px" }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleMidCombatAddFromRow(); } }}
               data-testid="mid-combat-add-row"
@@ -1612,11 +1626,8 @@ export function GuestCombatClient() {
                 <button type="button" onClick={handleMidCombatAddFromRow} className="flex-1 py-1.5 px-3 bg-emerald-600 text-white text-sm font-medium rounded hover:bg-emerald-500 transition-colors min-h-[32px] text-center" data-testid="mid-add-row-btn">{t("setup_add")}</button>
               </div>
             </div>
-            <div className="flex justify-end">
-              <button type="button" onClick={() => setShowAddForm(false)} className="px-3 py-1 text-muted-foreground hover:text-foreground/80 text-xs min-h-[32px]">{tCommon("close")}</button>
-            </div>
-          </div>
-        )}
+          </SheetContent>
+        </Sheet>
 
         <div
           role="list"

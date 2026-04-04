@@ -20,8 +20,20 @@ interface CombatHistoryCardProps {
   };
 }
 
+/** Guard against duplicated encounter names (e.g. "First EncounterFirst Encounter") */
+function deduplicateName(name: string): string {
+  if (!name) return name;
+  const len = name.length;
+  if (len % 2 === 0) {
+    const half = name.slice(0, len / 2);
+    if (half === name.slice(len / 2)) return half;
+  }
+  return name;
+}
+
 export function CombatHistoryCard({ combat, translations: t }: CombatHistoryCardProps) {
   const timeAgo = formatRelativeTime(combat.updated_at);
+  const displayName = deduplicateName(combat.encounter_name);
 
   return (
     <Link
@@ -36,7 +48,7 @@ export function CombatHistoryCard({ combat, translations: t }: CombatHistoryCard
             aria-hidden="true"
           />
           <span className="text-sm font-medium text-foreground truncate group-hover:text-amber-400 transition-colors">
-            {combat.encounter_name}
+            {displayName}
           </span>
         </div>
         {combat.is_active && (
