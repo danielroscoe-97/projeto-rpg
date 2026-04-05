@@ -10,7 +10,7 @@ export function ContributionAxes() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Combat difficulty — ACTIVE */}
-        <div className="group rounded-xl border border-gold/20 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 hover:border-gold/35 hover:shadow-[0_4px_24px_rgba(212,168,83,0.1)] hover:-translate-y-0.5 transition-all duration-300">
+        <div className="group rounded-xl border border-gold/20 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 hover:border-gold/35 hover:shadow-[0_4px_24px_rgba(212,168,83,0.1)] hover:-translate-y-0.5 transition-all duration-300 cursor-default">
           <div className="flex items-start justify-between mb-4">
             <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center group-hover:bg-gold/20 group-hover:shadow-[0_0_20px_rgba(212,168,83,0.2)] transition-all duration-300">
               <svg
@@ -47,18 +47,15 @@ export function ContributionAxes() {
           </p>
         </div>
 
-        {/* Spell tiers — COMING SOON */}
-        <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.015] p-6 overflow-hidden">
-          {/* Subtle lock overlay */}
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-transparent to-background/30 pointer-events-none"
-            aria-hidden="true"
-          />
-
+        {/* Spell tiers — ACTIVE */}
+        <a
+          href="/methodology/spell-tiers"
+          className="group rounded-xl border border-gold/20 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 hover:border-gold/35 hover:shadow-[0_4px_24px_rgba(212,168,83,0.1)] hover:-translate-y-0.5 transition-all duration-300"
+        >
           <div className="flex items-start justify-between mb-4">
-            <div className="w-10 h-10 rounded-lg bg-white/[0.05] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center group-hover:bg-gold/20 group-hover:shadow-[0_0_20px_rgba(212,168,83,0.2)] transition-all duration-300">
               <svg
-                className="w-5 h-5 text-foreground/30"
+                className="w-5 h-5 text-gold"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 stroke="currentColor"
@@ -68,15 +65,18 @@ export function ContributionAxes() {
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
             </div>
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground/30 bg-white/[0.05] px-2.5 py-1 rounded-full border border-white/[0.06]">
-              🔜 Em breve
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full border border-green-400/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
+              Ativo
             </span>
           </div>
-          <h3 className="font-display text-foreground/40 text-base mb-2">Tier de Magias</h3>
-          <p className="text-foreground/25 text-sm leading-relaxed">
+          <h3 className="font-display text-foreground/90 text-base mb-2 group-hover:text-gold transition-colors duration-300">
+            Tier de Magias
+          </h3>
+          <p className="text-foreground/50 text-sm leading-relaxed">
             Fireball é tier S? Vote e descubra junto com a comunidade o ranking real de cada magia.
           </p>
-        </div>
+        </a>
       </div>
     </div>
   );

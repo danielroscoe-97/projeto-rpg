@@ -44,6 +44,7 @@ interface SpellTierVotingProps {
     voted_label: string;
     vote_bar_label: string;
     all_voted: string;
+    see_ranking: string;
   };
   isLoggedIn: boolean;
 }
@@ -298,6 +299,16 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
           </Link>
         </div>
       )}
+
+      {/* Link to full ranking */}
+      <div className="text-center pt-1">
+        <Link
+          href="/methodology/spell-tiers"
+          className="text-[11px] text-foreground/30 hover:text-gold/60 transition-colors duration-200"
+        >
+          {t.see_ranking}
+        </Link>
+      </div>
     </div>
   );
 }

@@ -387,6 +387,7 @@ export default async function MethodologyPage() {
               voted_label: t("spell_vote_voted"),
               vote_bar_label: t("spell_vote_bar_label"),
               all_voted: t("spell_vote_all_voted"),
+              see_ranking: t("spell_vote_see_ranking"),
             }}
           />
         </div>
