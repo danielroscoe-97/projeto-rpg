@@ -1,3 +1,5 @@
+import { BronzeBadge, SilverBadge, GoldBadge, SpecialBadge } from "./TitleBadges";
+
 interface ContribData {
   total_combats: number;
   rated_combats: number;
@@ -5,7 +7,7 @@ interface ContribData {
 }
 
 interface TitleDef {
-  emoji: string;
+  badge: React.ComponentType<{ className?: string }>;
   name: string;
   criterion: string;
   colorClass: string;
@@ -17,7 +19,7 @@ interface TitleDef {
 
 const TITLES: TitleDef[] = [
   {
-    emoji: "🥉",
+    badge: BronzeBadge,
     name: "Explorador",
     criterion: "1 combate contribuído",
     colorClass: "text-amber-500",
@@ -27,7 +29,7 @@ const TITLES: TitleDef[] = [
     isReached: (c) => (c?.total_combats ?? 0) >= 1,
   },
   {
-    emoji: "🥈",
+    badge: SilverBadge,
     name: "Caçador de Dados",
     criterion: "10 combates com rating do DM",
     colorClass: "text-slate-300",
@@ -37,7 +39,7 @@ const TITLES: TitleDef[] = [
     isReached: (c) => (c?.rated_combats ?? 0) >= 10,
   },
   {
-    emoji: "🥇",
+    badge: GoldBadge,
     name: "Pesquisador Pocket DM",
     criterion: "50 combates com rating",
     colorClass: "text-gold",
@@ -47,7 +49,7 @@ const TITLES: TitleDef[] = [
     isReached: (c) => (c?.rated_combats ?? 0) >= 50,
   },
   {
-    emoji: "⚗️",
+    badge: SpecialBadge,
     name: "Arquiteto do Meta",
     // NOTE: Spec requires 100+ combats AND 20+ spell votes, but spell voting not yet active
     criterion: "100+ combates com rating",
@@ -88,6 +90,7 @@ export function TitleProgressionDisplay({ contrib }: Props) {
           const isCurrent = index === currentTitleIndex;
           const isLoggedInContext = contrib !== undefined;
           const isFuture = isLoggedInContext && !isReached;
+          const Badge = title.badge;
 
           return (
             <div
@@ -102,10 +105,8 @@ export function TitleProgressionDisplay({ contrib }: Props) {
                   : "border-white/[0.06] bg-white/[0.015]"
               }`}
             >
-              <div className="flex items-start gap-3">
-                <span className="text-3xl shrink-0 leading-none mt-0.5" aria-hidden="true">
-                  {title.emoji}
-                </span>
+              <div className="flex items-start gap-3.5">
+                <Badge className="w-10 h-10 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h3

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
+import { BronzeBadge, SilverBadge, GoldBadge, SpecialBadge } from "@/components/methodology/TitleBadges";
 
 interface ContribData {
   total_combats: number;
@@ -19,7 +20,7 @@ interface Props {
 }
 
 interface TitleInfo {
-  emoji: string;
+  badge: React.ComponentType<{ className?: string }>;
   name: string;
   colorClass: string;
   glowClass: string;
@@ -32,28 +33,28 @@ function getCurrentTitle(contrib: ContribData | undefined): TitleInfo | null {
   // but spell voting is not yet active ("Em breve"). Using rated_combats only until then.
   if (rated_combats >= 100)
     return {
-      emoji: "⚗️",
+      badge: SpecialBadge,
       name: "Arquiteto do Meta",
       colorClass: "text-purple-400",
       glowClass: "shadow-[0_0_24px_rgba(168,85,247,0.25)]",
     };
   if (rated_combats >= 50)
     return {
-      emoji: "🥇",
+      badge: GoldBadge,
       name: "Pesquisador Pocket DM",
       colorClass: "text-gold",
       glowClass: "shadow-[0_0_24px_rgba(212,168,83,0.25)]",
     };
   if (rated_combats >= 10)
     return {
-      emoji: "🥈",
+      badge: SilverBadge,
       name: "Caçador de Dados",
       colorClass: "text-slate-300",
       glowClass: "shadow-[0_0_16px_rgba(148,163,184,0.2)]",
     };
   if (total_combats >= 1)
     return {
-      emoji: "🥉",
+      badge: BronzeBadge,
       name: "Explorador",
       colorClass: "text-amber-500",
       glowClass: "shadow-[0_0_16px_rgba(245,158,11,0.2)]",
@@ -131,11 +132,9 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
             {title ? (
               <div className="flex flex-col items-center gap-3">
                 <div
-                  className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gold/[0.08] border border-gold/20 ${title.glowClass}`}
+                  className={`inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gold/[0.08] border border-gold/20 ${title.glowClass}`}
                 >
-                  <span className="text-2xl" aria-hidden="true">
-                    {title.emoji}
-                  </span>
+                  <title.badge className="w-8 h-8" />
                   <span className={`font-display text-base font-bold ${title.colorClass}`}>
                     {title.name}
                   </span>
