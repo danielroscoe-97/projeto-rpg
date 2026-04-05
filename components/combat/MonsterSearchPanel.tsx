@@ -350,7 +350,7 @@ export function MonsterSearchPanel({
     <div className="space-y-1">
       {/* Label + filter toggle + manual add */}
       <div className="flex items-center justify-between gap-2">
-        <label className="text-foreground/80 text-xs font-medium block">
+        <label className="text-foreground text-sm font-semibold block">
           {t("search_monsters")}
         </label>
         <div className="flex items-center gap-2">
@@ -398,7 +398,8 @@ export function MonsterSearchPanel({
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder ?? t("search_monsters_placeholder")}
-          className="w-full bg-card border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 focus:border-gold/60 transition-colors"
+          className="w-full bg-card border border-gold/30 rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 focus:border-gold/60 transition-colors"
+          autoFocus
           data-testid="srd-search-input"
           aria-autocomplete="list"
           aria-controls="monster-search-results"
@@ -701,7 +702,6 @@ export function MonsterSearchPanel({
               onChange={(e) => setManualName(e.target.value)}
               placeholder={t("add_name_placeholder")}
               className="col-span-4 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
-              autoFocus
               onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
               data-testid="add-row-name"
             />
