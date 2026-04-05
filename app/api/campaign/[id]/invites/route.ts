@@ -84,7 +84,12 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
       campaignName: campaign.name,
       inviteLink,
       inviteToken: token,
-    }).catch(() => { /* fail-open: email is best-effort */ });
+    }).then((sent) => {
+      if (!sent) console.warn("[invites] email NOT sent for", email);
+    }).catch((err) => {
+      console.error("[invites] email send failed:", err);
+      captureError(err, { component: "CampaignInvitesAPI", action: "sendEmail", category: "network", extra: { email } });
+    });
 
     return NextResponse.json({
       data: {

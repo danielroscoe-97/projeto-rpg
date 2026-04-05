@@ -17,12 +17,14 @@ const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "Pocket DM <noreply@pocketdm
 export async function sendCampaignInviteEmail(payload: CampaignInvitePayload): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
+    console.error("[campaign-invite] RESEND_API_KEY is not set!");
     captureWarning("RESEND_API_KEY not set — email invites disabled (link-only mode)", {
       component: "notifications/campaign-invite",
       category: "network",
     });
     return false;
   }
+  console.log("[campaign-invite] Sending to", payload.email, "from", FROM_EMAIL);
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
