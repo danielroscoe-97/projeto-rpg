@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>Pocket DM — Reel Vertical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold: #D4A853;
+  --gold-light: #E8C87A;
+  --gold-dark: #B8903D;
+  --bg-deep: #0A0A0F;
+  --bg-surface: #13131E;
+  --bg-elevated: #1A1A28;
+  --bg-tertiary: #222234;
+  --text-primary: #E8E6E0;
+  --text-secondary: #9896A0;
+  --text-tertiary: #5C5A65;
+  --hp-green: #22C55E;
+  --hp-yellow: #EAB308;
+  --hp-red: #EF4444;
+  --condition-blue: #3B82F6;
+}
+
+html, body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ===== SCENE SYSTEM ===== */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.scene.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== AMBIENT PARTICLES ===== */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: float-up 8s infinite;
+}
+@keyframes float-up {
+  0% { opacity: 0; transform: translateY(100vh) scale(0.5); }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.15; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1.2); }
+}
+
+/* ===== VIGNETTE ===== */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.cinzel { font-family: 'Cinzel', serif; }
+.jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.gold-text { color: var(--gold); }
+.gold-gradient {
+  background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-60px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideLeft { from { opacity: 0; transform: translateX(80px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideRight { from { opacity: 0; transform: translateX(-80px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulseGold { 0%, 100% { box-shadow: 0 0 20px rgba(212,168,83,0.3); } 50% { box-shadow: 0 0 40px rgba(212,168,83,0.6); } }
+@keyframes typewriter { from { width: 0; } to { width: 100%; } }
+@keyframes blink { 0%, 100% { border-color: var(--gold); } 50% { border-color: transparent; } }
+@keyframes glowPulse { 0%, 100% { filter: drop-shadow(0 0 8px rgba(212,168,83,0.4)); } 50% { filter: drop-shadow(0 0 20px rgba(212,168,83,0.8)); } }
+@keyframes hpDrain { from { width: 100%; } to { width: 35%; } }
+@keyframes hpDrainColor { from { background: var(--hp-green); } to { background: var(--hp-yellow); } }
+@keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@keyframes borderGlow { 0%, 100% { border-color: rgba(212,168,83,0.2); } 50% { border-color: rgba(212,168,83,0.7); } }
+
+/* ===== SCENE 1: HOOK ===== */
+#scene1 .hook-text {
+  font-size: 40px;
+  font-weight: 700;
+  text-align: center;
+  max-width: 900px;
+  line-height: 1.3;
+  padding: 0 40px;
+  animation: slideUp 0.6s ease-out 0.2s both;
+}
+#scene1 .hook-sub {
+  font-size: 20px;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  text-align: center;
+  padding: 0 40px;
+  animation: slideUp 0.6s ease-out 0.6s both;
+}
+#scene1 .pain-icons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 48px;
+  margin-top: 50px;
+  padding: 0 40px;
+  animation: fadeIn 0.4s ease-out 1s both;
+}
+#scene1 .pain-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+}
+#scene1 .pain-item:nth-child(1) { animation: slideUp 0.3s ease-out 1.1s both; }
+#scene1 .pain-item:nth-child(2) { animation: slideUp 0.3s ease-out 1.3s both; }
+#scene1 .pain-item:nth-child(3) { animation: slideUp 0.3s ease-out 1.5s both; }
+#scene1 .pain-item:nth-child(4) { animation: slideUp 0.3s ease-out 1.7s both; }
+#scene1 .pain-icon {
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--text-tertiary);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: var(--text-tertiary);
+}
+#scene1 .pain-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 120px;
+}
+#scene1 .cross-line {
+  position: absolute;
+  width: 0;
+  height: 3px;
+  background: var(--hp-red);
+  top: 50%;
+  left: -10px;
+  transform: rotate(-10deg);
+  animation: crossGrow 0.4s ease-out 2s both;
+}
+@keyframes crossGrow { to { width: calc(100% + 20px); } }
+
+/* ===== SCENE 2: LOGO REVEAL ===== */
+#scene2 .logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin-top: -120px;
+  text-align: center;
+}
+#scene2 .logo-svg {
+  width: 240px;
+  height: auto;
+  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  filter: drop-shadow(0 0 30px rgba(212,168,83,0.3));
+}
+#scene2 .logo-svg.glow {
+  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both, glowPulse 2s ease-in-out 0.8s infinite;
+}
+#scene2 .brand-name {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: 10px;
+  animation: fadeIn 0.5s ease-out 0.5s both;
+}
+#scene2 .tagline {
+  font-size: 24px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-secondary);
+  animation: fadeIn 0.5s ease-out 0.9s both;
+}
+#scene2 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 100px;
+  font-size: 15px;
+  color: var(--gold);
+  margin-top: 16px;
+  animation: slideUp 0.5s ease-out 1.3s both;
+}
+#scene2 .badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--hp-green);
+  border-radius: 50%;
+  animation: pulseGold 2s infinite 3.5s;
+}
+
+/* ===== SCENE 3: SEARCH DEMO ===== */
+#scene3 { padding: 60px 40px; align-items: flex-start; }
+#scene3 .scene-title {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.4s ease-out 0.15s both;
+  margin-bottom: 8px;
+}
+#scene3 .scene-heading {
+  font-size: 36px;
+  font-weight: 700;
+  animation: slideUp 0.5s ease-out 0.3s both;
+  margin-bottom: 36px;
+}
+#scene3 .app-frame {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  border: 1px solid rgba(212,168,83,0.15);
+  overflow: hidden;
+  animation: scaleIn 0.5s ease-out 0.5s both;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+#scene3 .app-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+#scene3 .app-logo-text {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+#scene3 .app-content { padding: 20px; }
+#scene3 .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+}
+#scene3 .search-bar svg { color: var(--text-tertiary); flex-shrink: 0; }
+#scene3 .search-typing {
+  font-size: 16px;
+  color: var(--text-primary);
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--gold);
+  animation: typewriter 0.8s steps(14) 0.7s both, blink 0.8s infinite 0.7s;
+  width: 0;
+}
+#scene3 .monster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#scene3 .monster-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  opacity: 0;
+}
+#scene3 .monster-row:nth-child(1) { animation: slideLeft 0.3s ease-out 1.6s both; }
+#scene3 .monster-row:nth-child(2) { animation: slideLeft 0.3s ease-out 1.8s both; }
+#scene3 .monster-row.highlight {
+  border-color: rgba(212,168,83,0.4);
+  animation: slideLeft 0.3s ease-out 1.6s both, borderGlow 2s ease-in-out 2.2s infinite;
+}
+#scene3 .monster-token {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--gold-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold);
+}
+#scene3 .monster-info { flex: 1; }
+#scene3 .monster-name { font-size: 15px; font-weight: 600; }
+#scene3 .monster-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+#scene3 .monster-cr {
+  font-size: 13px;
+  color: var(--gold);
+  padding: 4px 10px;
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 6px;
+}
+#scene3 .stat-badge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  margin-top: 28px;
+  opacity: 0;
+  animation: slideUp 0.4s ease-out 2.8s both;
+  justify-content: center;
+}
+#scene3 .stat-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+#scene3 .stat-badge-item span { color: var(--gold); font-size: 24px; font-weight: 800; }
+
+/* ===== SCENE 4: COMBAT DEMO ===== */
+#scene4 { padding: 60px 40px; align-items: flex-start; }
+#scene4 .scene-title {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.4s ease-out 0.15s both;
+  margin-bottom: 8px;
+}
+#scene4 .scene-heading {
+  font-size: 36px;
+  font-weight: 700;
+  animation: slideUp 0.5s ease-out 0.3s both;
+  margin-bottom: 30px;
+}
+#scene4 .combat-frame {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  border: 1px solid rgba(212,168,83,0.15);
+  overflow: hidden;
+  animation: scaleIn 0.5s ease-out 0.5s both;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  padding: 20px;
+}
+#scene4 .round-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  animation: fadeIn 0.4s ease-out 0.6s both;
+}
+#scene4 .round-badge {
+  background: var(--gold);
+  color: var(--bg-deep);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+#scene4 .combatant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#scene4 .combatant {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  opacity: 0;
+  position: relative;
+}
+#scene4 .combatant:nth-child(1) { animation: slideRight 0.3s ease-out 0.6s both; }
+#scene4 .combatant:nth-child(2) { animation: slideRight 0.3s ease-out 0.75s both; }
+#scene4 .combatant:nth-child(3) { animation: slideRight 0.3s ease-out 0.9s both; }
+#scene4 .combatant.active-turn {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(212,168,83,0.2);
+}
+#scene4 .combatant.active-turn .turn-arrow {
+  display: block;
+}
+#scene4 .turn-arrow {
+  display: none;
+  color: var(--gold);
+  font-size: 18px;
+  animation: pulseGold 1.5s infinite;
+}
+#scene4 .init-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+#scene4 .combatant-token {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+.token-monster { background: #2D1B1B; border: 2px solid #7F1D1D; color: #FCA5A5; }
+.token-player { background: #1B2D1B; border: 2px solid #166534; color: #86EFAC; }
+#scene4 .combatant-info { flex: 1; }
+#scene4 .combatant-name { font-size: 15px; font-weight: 600; }
+#scene4 .combatant-type { font-size: 11px; color: var(--text-secondary); }
+#scene4 .hp-bar-container {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#scene4 .hp-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+#scene4 .hp-bar-bg {
+  width: 100%;
+  height: 7px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+#scene4 .hp-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-out, background 1s ease-out;
+}
+.hp-full { width: 100%; background: var(--hp-green); }
+.hp-moderate { background: var(--hp-yellow); }
+.hp-low { background: var(--hp-red); }
+#scene4 .hp-bar-fill.drain {
+  animation: hpDrain 0.8s ease-out 1.8s both;
+}
+#scene4 .condition-badges {
+  display: flex;
+  gap: 5px;
+}
+#scene4 .condition-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  opacity: 0;
+}
+.cond-poison { background: rgba(34,197,94,0.15); color: #22C55E; border: 1px solid rgba(34,197,94,0.3); }
+.cond-prone { background: rgba(234,179,8,0.15); color: #EAB308; border: 1px solid rgba(234,179,8,0.3); }
+.cond-conc { background: rgba(59,130,246,0.15); color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
+#scene4 .condition-badge.pop {
+  animation: scaleIn 0.3s ease-out 2.2s both;
+}
+#scene4 .condition-badge.pop2 {
+  animation: scaleIn 0.3s ease-out 2.5s both;
+}
+#scene4 .keyboard-hint {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  margin-top: 28px;
+  opacity: 0;
+  animation: slideUp 0.4s ease-out 3s both;
+  width: 100%;
+}
+#scene4 .key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+#scene4 .key kbd {
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+}
+
+/* ===== SCENE 5: PLAYER VIEW (REAL PHOTOS) ===== */
+#scene5 { padding: 60px 40px; }
+#scene5 .scene-title {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 8px;
+  align-self: flex-start;
+}
+#scene5 .scene-heading {
+  font-size: 36px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 36px;
+  align-self: flex-start;
+}
+#scene5 .split-view {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+  width: 100%;
+}
+#scene5 .photo-frame {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid rgba(212,168,83,0.2);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  aspect-ratio: 16/10;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+#scene5 .photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#scene5 .photo-frame.left { animation: slideUp 0.5s ease-out 0.3s both; }
+#scene5 .photo-frame.right { animation: slideUp 0.5s ease-out 0.5s both; }
+#scene5 .photo-label {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 100px;
+  border: 1px solid rgba(212,168,83,0.3);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+#scene5 .zero-friction {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 24px;
+  margin-top: 24px;
+  opacity: 0;
+  animation: slideUp 0.5s ease-out 1.2s both;
+}
+#scene5 .friction-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+#scene5 .friction-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22C55E;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* ===== SCENE 6: FEATURES GRID ===== */
+#scene6 { padding: 60px 40px; }
+#scene6 .scene-title {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 8px;
+}
+#scene6 .scene-heading {
+  font-size: 36px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 40px;
+}
+#scene6 .features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+#scene6 .feature-card {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212,168,83,0.1);
+  border-radius: 16px;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  opacity: 0;
+  transition: border-color 0.3s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+  cursor: default;
+}
+#scene6 .feature-card:hover {
+  border-color: rgba(212,168,83,0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(212,168,83,0.08), 0 4px 12px rgba(0,0,0,0.3);
+}
+#scene6 .feature-card:nth-child(1) { animation: scaleIn 0.3s ease-out 0.4s both; }
+#scene6 .feature-card:nth-child(2) { animation: scaleIn 0.3s ease-out 0.5s both; }
+#scene6 .feature-card:nth-child(3) { animation: scaleIn 0.3s ease-out 0.6s both; }
+#scene6 .feature-card:nth-child(4) { animation: scaleIn 0.3s ease-out 0.7s both; }
+#scene6 .feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s, background 0.3s;
+}
+#scene6 .feature-card:hover .feature-icon {
+  transform: scale(1.15) rotate(-8deg);
+  box-shadow: 0 0 20px currentColor;
+}
+/* Unique hover animations per card */
+#scene6 .feature-card:nth-child(1):hover .feature-icon { animation: iconPulseRotate 0.6s ease-out forwards; }
+#scene6 .feature-card:nth-child(2):hover .feature-icon { animation: iconFlipY 0.5s ease-out forwards; }
+#scene6 .feature-card:nth-child(3):hover .feature-icon { animation: iconHeartbeat 0.6s ease-out forwards; }
+#scene6 .feature-card:nth-child(4):hover .feature-icon { animation: iconWobble 0.5s ease-out forwards; }
+@keyframes iconPulseRotate {
+  0% { transform: scale(1) rotate(0); }
+  40% { transform: scale(1.3) rotate(-15deg); }
+  100% { transform: scale(1.15) rotate(-8deg); }
+}
+@keyframes iconFlipY {
+  0% { transform: scale(1) rotateY(0); }
+  50% { transform: scale(1.1) rotateY(180deg); }
+  100% { transform: scale(1.15) rotateY(360deg) rotate(-8deg); }
+}
+@keyframes iconHeartbeat {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.35); }
+  30% { transform: scale(1.05); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1.15) rotate(-8deg); }
+}
+@keyframes iconWobble {
+  0% { transform: scale(1) rotate(0); }
+  20% { transform: scale(1.1) rotate(14deg); }
+  40% { transform: scale(1.15) rotate(-12deg); }
+  60% { transform: scale(1.15) rotate(8deg); }
+  80% { transform: scale(1.15) rotate(-4deg); }
+  100% { transform: scale(1.15) rotate(-8deg); }
+}
+#scene6 .feature-title {
+  font-size: 18px;
+  font-weight: 700;
+  transition: color 0.3s;
+}
+#scene6 .feature-card:hover .feature-title { color: var(--gold); }
+.fi-gold { background: rgba(212,168,83,0.15); color: var(--gold); }
+.fi-green { background: rgba(34,197,94,0.15); color: #22C55E; }
+.fi-blue { background: rgba(59,130,246,0.15); color: #3B82F6; }
+.fi-purple { background: rgba(168,85,247,0.15); color: #A855F7; }
+.fi-red { background: rgba(239,68,68,0.15); color: #EF4444; }
+.fi-cyan { background: rgba(6,182,212,0.15); color: #06B6D4; }
+/* Hover glow per color */
+#scene6 .feature-card:hover .fi-gold { background: rgba(212,168,83,0.25); box-shadow: 0 0 24px rgba(212,168,83,0.3); }
+#scene6 .feature-card:hover .fi-green { background: rgba(34,197,94,0.25); box-shadow: 0 0 24px rgba(34,197,94,0.3); }
+#scene6 .feature-card:hover .fi-blue { background: rgba(59,130,246,0.25); box-shadow: 0 0 24px rgba(59,130,246,0.3); }
+#scene6 .feature-card:hover .fi-purple { background: rgba(168,85,247,0.25); box-shadow: 0 0 24px rgba(168,85,247,0.3); }
+#scene6 .feature-card:hover .fi-red { background: rgba(239,68,68,0.25); box-shadow: 0 0 24px rgba(239,68,68,0.3); }
+#scene6 .feature-card:hover .fi-cyan { background: rgba(6,182,212,0.25); box-shadow: 0 0 24px rgba(6,182,212,0.3); }
+#scene6 .feature-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+/* ===== SCENE INDIE: PROJETO BRASILEIRO + METODOLOGIA ===== */
+#sceneIndie { padding: 60px 40px; }
+#sceneIndie .indie-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: center;
+  width: 100%;
+}
+#sceneIndie .indie-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  text-align: center;
+}
+#sceneIndie .indie-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 100px;
+  font-size: 14px;
+  color: #22C55E;
+  width: fit-content;
+  animation: fadeIn 0.4s ease-out 0.3s both;
+}
+#sceneIndie .indie-title {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.15;
+  animation: slideUp 0.5s ease-out 0.5s both;
+}
+#sceneIndie .indie-desc {
+  font-size: 17px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 900px;
+  animation: slideUp 0.5s ease-out 0.8s both;
+}
+#sceneIndie .indie-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+#sceneIndie .method-card {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  opacity: 0;
+}
+#sceneIndie .method-card:nth-child(1) { animation: slideUp 0.4s ease-out 1s both; }
+#sceneIndie .method-card:nth-child(2) { animation: slideUp 0.4s ease-out 1.3s both; }
+#sceneIndie .method-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+#sceneIndie .method-info { flex: 1; }
+#sceneIndie .method-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+#sceneIndie .method-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+/* ===== SCENE 7: COMPARISON ===== */
+#scene7 { padding: 60px 40px; }
+#scene7 .scene-title {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+  margin-bottom: 8px;
+}
+#scene7 .scene-heading {
+  font-size: 34px;
+  font-weight: 700;
+  animation: slideUp 0.8s ease-out 0.5s both;
+  margin-bottom: 40px;
+  text-align: center;
+}
+#scene7 .comparison {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+#scene7 .comp-card {
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  opacity: 0;
+  border: 2px solid transparent;
+}
+#scene7 .comp-card:nth-child(1) { animation: slideUp 0.3s ease-out 0.4s both; }
+#scene7 .comp-card:nth-child(2) { animation: slideUp 0.3s ease-out 0.6s both; }
+#scene7 .comp-card:nth-child(3) { animation: slideUp 0.3s ease-out 0.8s both; }
+#scene7 .comp-card.winner {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px rgba(212,168,83,0.15);
+  animation: slideUp 0.3s ease-out 1.1s both, pulseGold 2s ease-in-out 1.5s infinite;
+}
+#scene7 .comp-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.comp-red { background: rgba(239,68,68,0.15); color: #EF4444; }
+.comp-yellow { background: rgba(234,179,8,0.15); color: #EAB308; }
+.comp-green { background: rgba(34,197,94,0.15); color: #22C55E; }
+.comp-gold { background: rgba(212,168,83,0.2); color: var(--gold); }
+#scene7 .comp-name { font-size: 20px; font-weight: 700; }
+#scene7 .comp-problems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+#scene7 .comp-problems .pro { color: #22C55E; }
+#scene7 .comp-problems .con { color: #EF4444; }
+
+/* ===== SCENE 8: CTA ===== */
+#scene8 {
+  background: radial-gradient(ellipse at center, rgba(212,168,83,0.08) 0%, transparent 70%);
+}
+#scene8 .cta-logo {
+  width: 160px;
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  filter: drop-shadow(0 0 40px rgba(212,168,83,0.4));
+}
+#scene8 .cta-logo.glow {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both, glowPulse 2s ease-in-out 0.6s infinite;
+}
+#scene8 .cta-title {
+  font-size: 42px;
+  font-weight: 800;
+  margin-top: 32px;
+  animation: slideUp 0.5s ease-out 0.4s both;
+}
+#scene8 .cta-sub {
+  font-size: 20px;
+  color: var(--text-secondary);
+  margin-top: 14px;
+  text-align: center;
+  padding: 0 40px;
+  animation: slideUp 0.5s ease-out 0.7s both;
+}
+#scene8 .cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  padding: 18px 44px;
+  background: linear-gradient(135deg, #D4A853 0%, #B8903D 100%);
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--bg-deep);
+  letter-spacing: 1px;
+  animation: slideUp 0.5s ease-out 1s both, pulseGold 2s ease-in-out 1.5s infinite;
+  box-shadow: 0 8px 30px rgba(212,168,83,0.3);
+}
+#scene8 .cta-url {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  letter-spacing: 3px;
+  animation: fadeIn 0.5s ease-out 1.3s both;
+}
+#scene8 .cta-free {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--text-tertiary);
+  animation: fadeIn 0.5s ease-out 1.6s both;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+  z-index: 100;
+  transition: width 0.3s linear;
+  box-shadow: 0 0 10px rgba(212,168,83,0.5);
+}
+
+/* ===== SCENE COUNTER ===== */
+.scene-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  z-index: 100;
+  font-family: 'JetBrains Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Vignette -->
+<div class="vignette"></div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<!-- Scene Counter -->
+<div class="scene-counter" id="sceneCounter">1 / 9</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 1: HOOK (0:00 - 0:07) -->
+<!-- ============================================================ -->
+<div class="scene active" id="scene1">
+  <div class="hook-text cinzel gold-gradient">
+    Cansado de gerenciar combate no papel?
+  </div>
+  <div class="hook-sub jakarta">
+    Initiative, HP, conditions, stat blocks... tudo ao mesmo tempo.
+  </div>
+  <div class="pain-icons">
+    <div class="pain-item" style="position:relative">
+      <div class="pain-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div class="pain-label">Fichas de papel</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="pain-label">Ferramentas complexas</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="pain-label">Combate lento</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+      </div>
+      <div class="pain-label">Sem sync com players</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 2: LOGO REVEAL (0:07 - 0:12) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene2">
+  <div class="logo-container">
+    <svg class="logo-svg glow" viewBox="0 0 512 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E8C87A"/>
+          <stop offset="50%" stop-color="#D4A853"/>
+          <stop offset="100%" stop-color="#B8903D"/>
+        </linearGradient>
+        <linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDCF82"/>
+          <stop offset="50%" stop-color="#D4A853"/>
+          <stop offset="100%" stop-color="#B89040"/>
+        </linearGradient>
+      </defs>
+      <g transform="translate(6, 10) scale(0.98)">
+        <g stroke="url(#lg1)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+          <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="11"/>
+          <polygon points="256,194 176,326 336,326" stroke-width="7" opacity="0.55"/>
+          <line x1="256" y1="110" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="256" y1="110" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="256" y1="410" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="256" y1="410" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+          <line x1="133" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+          <line x1="379" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+          <line x1="133" y1="185" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+          <line x1="379" y1="185" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+          <line x1="133" y1="335" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+          <line x1="379" y1="335" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+        </g>
+        <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
+          fill="url(#lg2)" stroke="url(#lg1)" stroke-width="2" stroke-linejoin="round"/>
+      </g>
+    </svg>
+    <div class="brand-name cinzel gold-gradient">POCKET DM</div>
+    <div class="tagline jakarta">Master your table.</div>
+    <div class="badge jakarta">
+      <span class="badge-dot"></span>
+      Combat Tracker Gratuito para D&D 5e
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 3: SEARCH DEMO (0:12 - 0:22) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene3">
+  <div class="scene-title cinzel">Passo 1</div>
+  <div class="scene-heading cinzel">Busque qualquer monstro SRD</div>
+  <div class="app-frame">
+    <div class="app-navbar">
+      <div class="app-logo-text cinzel gold-text">POCKET DM</div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <span style="color:var(--text-secondary);font-size:13px">Novo Encontro</span>
+        <span style="background:var(--gold);color:var(--bg-deep);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:600">Criar Grátis</span>
+      </div>
+    </div>
+    <div class="app-content">
+      <div class="search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <div class="search-typing mono">Adult Red Dragon</div>
+      </div>
+      <div class="monster-list">
+        <div class="monster-row highlight">
+          <div class="monster-token"><img src="assets/adult-red-dragon.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></div>
+          <div class="monster-info">
+            <div class="monster-name">Adult Red Dragon</div>
+            <div class="monster-meta">Huge Dragon, Chaotic Evil — SRD 2014</div>
+          </div>
+          <div class="monster-cr mono">CR 17</div>
+        </div>
+        <div class="monster-row">
+          <div class="monster-token"><img src="assets/adult-blue-dragon.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></div>
+          <div class="monster-info">
+            <div class="monster-name">Adult Blue Dragon</div>
+            <div class="monster-meta">Huge Dragon, Lawful Evil — SRD 2014</div>
+          </div>
+          <div class="monster-cr mono">CR 16</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stat-badge">
+    <div class="stat-badge-item jakarta"><span>1.100+</span> monstros</div>
+    <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
+    <div class="stat-badge-item jakarta"><span>604</span> magias</div>
+    <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
+    <div class="stat-badge-item jakarta"><span>2014</span> + <span>2024</span></div>
+    <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
+    <div class="stat-badge-item jakarta">Bilíngue <span style="font-size:14px">EN + PT-BR</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 4: COMBAT (0:22 - 0:36) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene4">
+  <div class="scene-title cinzel">Passo 2</div>
+  <div class="scene-heading cinzel">Gerencie combate em tempo real</div>
+  <div class="combat-frame">
+    <div class="round-indicator">
+      <span class="round-badge">RODADA 3</span>
+      <span id="turnName">Turno do Goblin Boss</span>
+      <span style="margin-left:auto;color:var(--gold);font-size:13px">7 combatentes</span>
+    </div>
+    <div class="combatant-list">
+      <div class="combatant active-turn" id="combGoblinBoss">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">18</div>
+        <div class="combatant-token token-monster"><img src="assets/goblin-boss.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></div>
+        <div class="combatant-info">
+          <div class="combatant-name">Goblin Boss</div>
+          <div class="combatant-type">Small Humanoid</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" id="gbHpText" style="color:var(--gold)">21 / 21</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full" id="gbHpBar"></div></div>
+        </div>
+        <div class="condition-badges"></div>
+      </div>
+      <div class="combatant" id="combRagnar">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">16</div>
+        <div class="combatant-token token-player"><img src="assets/knight.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></div>
+        <div class="combatant-info">
+          <div class="combatant-name">Ragnar</div>
+          <div class="combatant-type">Jogador - Bárbaro Lv 5</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-yellow)">32 / 55</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-moderate" style="width:58%"></div></div>
+        </div>
+        <div class="condition-badges">
+          <span class="condition-badge cond-poison pop">Envenenado</span>
+        </div>
+      </div>
+      <div class="combatant">
+        <div class="turn-arrow">&#9654;</div>
+        <div class="init-badge">14</div>
+        <div class="combatant-token token-player"><img src="assets/mage.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></div>
+        <div class="combatant-info">
+          <div class="combatant-name">Lyra</div>
+          <div class="combatant-type">Jogadora - Maga Lv 5</div>
+        </div>
+        <div class="hp-bar-container">
+          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-green)">28 / 32</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full" style="width:87%"></div></div>
+        </div>
+        <div class="condition-badges">
+          <span class="condition-badge cond-conc pop2">Concentrando</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Phone notification overlay — centered at bottom for vertical -->
+  <div id="phoneNotif" style="display:none;position:absolute;bottom:220px;left:50%;transform:translateX(-50%);z-index:50;">
+    <div style="width:360px;background:#1C1C1E;border-radius:20px;padding:16px 18px;box-shadow:0 8px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.1);animation:slideUp 0.4s ease-out both;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#D4A853,#B8903D);display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0F" stroke-width="2.5"><path d="M5 3l3.057-3L12 4.286 15.943 0 19 3l-7 14L5 3z"/></svg>
+        </div>
+        <span style="font-size:13px;font-weight:600;color:#8E8E93;">POCKET DM</span>
+        <span style="font-size:12px;color:#636366;margin-left:auto;">agora</span>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:3px;">Seu turno, Ragnar!</div>
+      <div style="font-size:13px;color:#8E8E93;">Rodada 3 — você está Envenenado</div>
+    </div>
+  </div>
+
+  <div class="keyboard-hint">
+    <div class="key"><kbd>Space</kbd> Próximo turno</div>
+    <div class="key"><kbd>D</kbd> Aplicar dano</div>
+    <div class="key"><kbd>H</kbd> Curar</div>
+    <div class="key"><kbd>C</kbd> Condições</div>
+    <div class="key" style="grid-column: span 2; justify-content: center;"><kbd>&#8593;&#8595;</kbd> Navegar</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 5: PLAYER VIEW — REAL PHOTOS (0:36 - 0:46) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene5">
+  <div class="scene-title cinzel">Passo 3</div>
+  <div class="scene-heading cinzel">Jogadores acompanham no celular</div>
+  <div class="split-view">
+    <div class="photo-frame left">
+      <!-- DM at laptop - Real session photo -->
+      <img src="assets/session-dm-laptop.jpg" alt="DM gerenciando combate no laptop"
+           onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;flex-direction:column;align-items:center;gap:16px;color:var(--text-secondary)\' ><svg width=\'60\' height=\'60\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><path d=\'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z\'/></svg><span style=\'font-size:16px\'>Coloque session-dm-laptop.jpg em /video/assets/</span></div>'">
+      <div class="photo-label">DM no Laptop</div>
+    </div>
+    <div class="photo-frame right">
+      <!-- Player on phone - Real session photo -->
+      <img src="assets/session-player-phone.jpg" alt="Player acompanhando no celular"
+           onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;flex-direction:column;align-items:center;gap:16px;color:var(--text-secondary)\'><svg width=\'60\' height=\'60\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'5\' y=\'2\' width=\'14\' height=\'20\' rx=\'2\' ry=\'2\'/><line x1=\'12\' y1=\'18\' x2=\'12.01\' y2=\'18\'/></svg><span style=\'font-size:16px\'>Coloque session-player-phone.jpg em /video/assets/</span></div>'">
+      <div class="photo-label">Player no Celular</div>
+    </div>
+  </div>
+  <div class="zero-friction">
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Sem instalar app
+    </div>
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Sem criar conta
+    </div>
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Sem fazer login
+    </div>
+    <div class="friction-item">
+      <div class="friction-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      Tempo real via QR
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 6: FEATURES (0:46 - 0:54) -->
+<!-- ============================================================ -->
+<div class="scene" id="scene6">
+  <div class="scene-heading cinzel" style="margin-bottom:8px">E mais...</div>
+  <div class="scene-title cinzel" style="font-size:22px;margin-bottom:36px;text-align:center;width:100%">Tudo que um mestre precisa</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon fi-gold">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="15" r="3"/></svg>
+      </div>
+      <div class="feature-title">Soundboard</div>
+      <div class="feature-desc">Música ambiente e efeitos sonoros integrados. Taverna, floresta, combate.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      </div>
+      <div class="feature-title">Compêndio SRD</div>
+      <div class="feature-desc">1.100+ monstros e 604 magias com stats completos. 2014 + 2024 lado a lado.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-red">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </div>
+      <div class="feature-title">Death Saves</div>
+      <div class="feature-desc">Salvaguardas contra morte completas, com regras SRD integradas. Único no mercado.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-cyan">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="feature-title">Bilíngue</div>
+      <div class="feature-desc">Único combat tracker com interface nativa em português. EN + PT-BR completo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE INDIE: PROJETO BRASILEIRO + METODOLOGIA -->
+<!-- ============================================================ -->
+<div class="scene" id="sceneIndie">
+  <div class="indie-layout">
+    <div class="indie-left">
+      <div class="indie-badge jakarta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        Projeto indie 100% brasileiro
+      </div>
+      <div class="indie-title cinzel gold-gradient">
+        Feito por mestres,<br>para mestres.
+      </div>
+      <div class="indie-desc jakarta">
+        O Pocket DM é um projeto independente criado por um DM brasileiro que queria uma ferramenta simples, bonita e gratuita para usar na própria mesa. Sem investidor, sem comitê, sem burocracia.
+      </div>
+      <div class="pipers-love jakarta" style="display:flex;align-items:center;gap:12px;font-size:18px;color:var(--text-secondary);opacity:0;animation:fadeIn 0.6s ease-out 1.2s both;margin-top:4px;">
+        <span>Feito com</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#D4A853" stroke="none"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span>pelos <strong style="color:var(--gold);font-size:20px;letter-spacing:1px">Pipers</strong></span>
+      </div>
+    </div>
+    <div class="indie-right">
+      <div class="method-card" style="flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="method-icon fi-gold">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div class="method-info">
+            <div class="method-title">Metodologia Pocket DM</div>
+            <div class="method-desc">Cálculo de dificuldade baseado em dados reais. Cada sessão alimenta o modelo.</div>
+          </div>
+        </div>
+        <div class="goal-bar-wrap" style="width:100%;opacity:0;animation:fadeIn 0.4s ease-out 1.6s both;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--text-secondary);">Meta: 5.000 combates registrados</span>
+            <span id="goalCounter" class="mono" style="font-size:16px;font-weight:700;color:var(--gold);">0</span>
+          </div>
+          <div style="width:100%;height:10px;background:var(--bg-tertiary);border-radius:6px;overflow:hidden;">
+            <div id="goalBar" style="width:0%;height:100%;border-radius:6px;background:linear-gradient(90deg,#B8903D,#D4A853,#E8C87A);box-shadow:0 0 12px rgba(212,168,83,0.5);transition:none;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-icon fi-green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <div class="method-info">
+          <div class="method-title">Comunidade no centro</div>
+          <div class="method-desc">DMs e jogadores votam a dificuldade real do encontro. Dupla perspectiva que nenhum concorrente tem.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 7: COMPARISON -->
+<!-- ============================================================ -->
+<div class="scene" id="scene7">
+  <div class="scene-title cinzel">Por que Pocket DM?</div>
+  <div class="scene-heading cinzel">Simples como papel.<br>Poderoso como digital.</div>
+  <div class="comparison">
+    <div class="comp-card">
+      <div class="comp-icon comp-red">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+      </div>
+      <div class="comp-name">VTTs</div>
+      <div class="comp-problems">
+        <div class="con">Complexos demais</div>
+        <div class="con">Feitos pra mesa online</div>
+        <div class="con">30+ min de setup</div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon comp-yellow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <div class="comp-name">D&D Beyond</div>
+      <div class="comp-problems">
+        <div class="con">Tracker ainda fraco</div>
+        <div class="con">Exige comprar livros</div>
+        <div class="con">Em reconstrução</div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon comp-yellow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div class="comp-name">Papel</div>
+      <div class="comp-problems">
+        <div class="con">Lento e desorganizado</div>
+        <div class="con">Players não veem nada</div>
+        <div class="con">Sem histórico</div>
+      </div>
+    </div>
+    <div class="comp-card winner">
+      <div class="comp-icon comp-gold" style="width:56px;height:56px;background:none;">
+        <svg width="48" height="48" viewBox="0 0 512 420" fill="none">
+          <g transform="translate(6, 10) scale(0.98)">
+            <g stroke="#D4A853" fill="none" stroke-linejoin="round" stroke-linecap="round">
+              <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="11"/>
+              <polygon points="256,194 176,326 336,326" stroke-width="7" opacity="0.55"/>
+              <line x1="256" y1="110" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+              <line x1="256" y1="110" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+              <line x1="256" y1="410" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+              <line x1="256" y1="410" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+            </g>
+            <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
+              fill="#D4A853" stroke="#D4A853" stroke-width="2" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="comp-name gold-text" style="font-size:22px">Pocket DM</div>
+      <div class="comp-problems">
+        <div class="pro">Setup em 3 minutos</div>
+        <div class="pro">Players no celular</div>
+        <div class="pro">100% gratuito</div>
+        <div class="pro">Feito pra mesa presencial</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCENE 8: CTA -->
+<!-- ============================================================ -->
+<div class="scene" id="scene8">
+  <svg class="cta-logo glow" viewBox="0 0 512 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="lg3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#E8C87A"/>
+        <stop offset="50%" stop-color="#D4A853"/>
+        <stop offset="100%" stop-color="#B8903D"/>
+      </linearGradient>
+      <linearGradient id="lg4" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#EDCF82"/>
+        <stop offset="50%" stop-color="#D4A853"/>
+        <stop offset="100%" stop-color="#B89040"/>
+      </linearGradient>
+    </defs>
+    <g transform="translate(6, 10) scale(0.98)">
+      <g stroke="url(#lg3)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="11"/>
+        <polygon points="256,194 176,326 336,326" stroke-width="7" opacity="0.55"/>
+        <line x1="256" y1="110" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="256" y1="110" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="256" y1="410" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="256" y1="410" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+        <line x1="133" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+        <line x1="379" y1="185" x2="256" y2="194" stroke-width="5" opacity="0.35"/>
+        <line x1="133" y1="185" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+        <line x1="379" y1="185" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+        <line x1="133" y1="335" x2="176" y2="326" stroke-width="5" opacity="0.35"/>
+        <line x1="379" y1="335" x2="336" y2="326" stroke-width="5" opacity="0.35"/>
+      </g>
+      <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
+        fill="url(#lg4)" stroke="url(#lg3)" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+  </svg>
+  <div class="cta-title cinzel gold-gradient">Teste agora</div>
+  <div class="cta-sub jakarta">Grátis. Sem cadastro. Sem instalar nada.</div>
+  <div class="cta-button cinzel">Começar Agora &rarr;</div>
+  <div class="cta-url mono gold-text">pocketdm.com.br</div>
+  <div class="cta-free jakarta">Combat Tracker gratuito para D&D 5e</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT: Auto-play scene controller -->
+<!-- ============================================================ -->
+<script>
+// Scene timings in milliseconds
+const SCENES = [
+  { id: 'scene1', duration: 7000 },       // Hook: 7s
+  { id: 'scene2', duration: 5000 },       // Logo: 5s
+  { id: 'scene3', duration: 10000 },      // Search: 10s
+  { id: 'scene4', duration: 14000 },      // Combat: 14s
+  { id: 'scene5', duration: 10000 },      // Player View: 10s
+  { id: 'scene6', duration: 8000 },       // Features: 8s
+  { id: 'sceneIndie', duration: 12000 },  // Indie + Metodologia: 12s
+  { id: 'scene7', duration: 8000 },       // Comparison: 8s
+  { id: 'scene8', duration: 8000 },       // CTA: 8s
+];
+
+const TOTAL_DURATION = SCENES.reduce((sum, s) => sum + s.duration, 0);
+let currentScene = 0;
+let startTime = Date.now();
+let sceneStartTime = startTime;
+
+// Generate ambient particles
+const particleContainer = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.animationDelay = Math.random() * 8 + 's';
+  p.style.animationDuration = (6 + Math.random() * 6) + 's';
+  p.style.width = (2 + Math.random() * 3) + 'px';
+  p.style.height = p.style.width;
+  particleContainer.appendChild(p);
+}
+
+let combatTurnAnimated = false;
+function animateCombatTurn() {
+  if (combatTurnAnimated) return;
+  combatTurnAnimated = true;
+  setTimeout(() => {
+    const gb = document.getElementById('combGoblinBoss');
+    const ragnar = document.getElementById('combRagnar');
+    const gbBar = document.getElementById('gbHpBar');
+    const gbText = document.getElementById('gbHpText');
+    if (!gb || !ragnar) return;
+    // 1. Drain Goblin Boss HP (took damage from Ragnar)
+    if (gbBar) {
+      gbBar.style.transition = 'width 0.8s ease-out, background 0.8s ease-out';
+      gbBar.style.width = '52%';
+      gbBar.style.background = 'var(--hp-yellow)';
+    }
+    if (gbText) {
+      gbText.style.color = 'var(--hp-yellow)';
+      gbText.textContent = '11 / 21';
+    }
+    // 2. After HP drain, switch turn
+    setTimeout(() => {
+      gb.classList.remove('active-turn');
+      gb.style.borderColor = 'transparent';
+      gb.style.boxShadow = 'none';
+      ragnar.classList.add('active-turn');
+      ragnar.style.borderColor = 'var(--gold)';
+      ragnar.style.boxShadow = '0 0 15px rgba(212,168,83,0.2)';
+      ragnar.querySelector('.turn-arrow').style.display = 'block';
+      gb.querySelector('.turn-arrow').style.display = 'none';
+      // Update turn name text
+      const turnName = document.getElementById('turnName');
+      if (turnName) turnName.textContent = 'Turno de Ragnar';
+      // Show phone notification
+      const notif = document.getElementById('phoneNotif');
+      if (notif) {
+        notif.style.display = 'block';
+        // Hide after 3s
+        setTimeout(() => { notif.style.display = 'none'; }, 3500);
+      }
+    }, 1200);
+  }, 4000);
+}
+
+let goalAnimated = false;
+function animateGoalBar() {
+  if (goalAnimated) return;
+  goalAnimated = true;
+  const bar = document.getElementById('goalBar');
+  const counter = document.getElementById('goalCounter');
+  if (!bar || !counter) return;
+  const target = 127;
+  const goalMax = 5000;
+  const duration = 5000;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3); // easeOutCubic
+    const val = Math.round(ease * target);
+    counter.textContent = val.toLocaleString('pt-BR');
+    bar.style.width = ((val / goalMax) * 100) + '%';
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  // delay to sync with card animation
+  setTimeout(() => requestAnimationFrame(tick), 1800);
+}
+
+function showScene(index) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  const scene = document.getElementById(SCENES[index].id);
+  if (scene) {
+    scene.classList.add('active');
+    scene.style.display = 'none';
+    scene.offsetHeight;
+    scene.style.display = '';
+  }
+  document.getElementById('sceneCounter').textContent = `${index + 1} / ${SCENES.length}`;
+  // Trigger goal bar animation on indie scene
+  if (SCENES[index].id === 'sceneIndie') {
+    goalAnimated = false;
+    animateGoalBar();
+  }
+  // Trigger combat turn change on scene4
+  if (SCENES[index].id === 'scene4') {
+    combatTurnAnimated = false;
+    animateCombatTurn();
+  }
+}
+
+function updateProgress() {
+  const elapsed = Date.now() - startTime;
+  const pct = Math.min((elapsed / TOTAL_DURATION) * 100, 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function nextScene() {
+  currentScene++;
+  if (currentScene >= SCENES.length) {
+    // Loop or stop
+    return;
+  }
+  sceneStartTime = Date.now();
+  showScene(currentScene);
+  setTimeout(nextScene, SCENES[currentScene].duration);
+}
+
+// Start auto-play
+showScene(0);
+setTimeout(nextScene, SCENES[0].duration);
+setInterval(updateProgress, 100);
+
+// Manual controls (keyboard)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    if (currentScene < SCENES.length - 1) {
+      currentScene++;
+      showScene(currentScene);
+    }
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (currentScene > 0) {
+      currentScene--;
+      showScene(currentScene);
+    }
+  }
+  if (e.key === 'r' || e.key === 'R') {
+    // Restart
+    currentScene = 0;
+    startTime = Date.now();
+    showScene(0);
+  }
+});
+</script>
+
+</body>
+</html>

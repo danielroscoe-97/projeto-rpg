@@ -156,7 +156,11 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   // P6: If userRole is null (never set), force "role" step even if there's a savedStep
   const [initialStep] = useState<WizardStep>(() => {
     const ss = readSessionStorage();
-    if (ss?.step && ss.step !== "done") return ss.step as WizardStep;
+    if (ss?.step && ss.step !== "done") {
+      // P6: sessionStorage also must not bypass role step for users with no role
+      if (!userRole && ss.step !== "role") return "role";
+      return ss.step as WizardStep;
+    }
     if (savedStep) {
       // savedStep comes from DB as string — convert numeric strings to numbers
       const num = Number(savedStep);

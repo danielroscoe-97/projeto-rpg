@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket DM — Jornadas de Usuário</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4A853;
+    --gold-light: #E8C87A;
+    --bg-deep: #0A0A0F;
+    --bg-surface: #13131E;
+    --bg-elevated: #1A1A28;
+    --bg-card: #1E1E2E;
+    --text-primary: #E8E6E0;
+    --text-secondary: #9896A0;
+    --red: #EF4444;
+    --orange: #F97316;
+    --green: #22C55E;
+    --blue: #3B82F6;
+    --purple: #A855F7;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--bg-surface);
+    border-bottom: 1px solid rgba(212,168,83,0.2);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header .logo {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  header .subtitle {
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .nav {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 12px;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .nav a:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+
+  .section {
+    margin-bottom: 64px;
+  }
+
+  .section-header {
+    margin-bottom: 24px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+  }
+
+  .tag-overview { background: rgba(212,168,83,0.15); color: var(--gold); }
+  .tag-dm { background: rgba(168,85,247,0.15); color: #A855F7; }
+  .tag-player { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .tag-critical { background: rgba(239,68,68,0.15); color: var(--red); }
+  .tag-new { background: rgba(34,197,94,0.15); color: var(--green); }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    max-width: 760px;
+  }
+
+  .diagram-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 32px;
+    overflow-x: auto;
+  }
+
+  .diagram-card .mermaid {
+    min-width: 600px;
+  }
+
+  .gaps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .gap-card {
+    background: var(--bg-elevated);
+    border-radius: 8px;
+    padding: 16px;
+    border-left: 3px solid;
+  }
+
+  .gap-critical { border-color: var(--red); }
+  .gap-high { border-color: var(--orange); }
+  .gap-medium { border-color: #EAB308; }
+
+  .gap-card .gap-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .gap-critical .gap-label { color: var(--red); }
+  .gap-high .gap-label { color: var(--orange); }
+  .gap-medium .gap-label { color: #EAB308; }
+
+  .gap-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+  }
+
+  .gap-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .uc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 13px;
+  }
+
+  .uc-table th {
+    text-align: left;
+    padding: 10px 16px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .uc-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: top;
+  }
+
+  .uc-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+
+  .badge-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-warn { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .badge-broken { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-new { background: rgba(168,85,247,0.15); color: var(--purple); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin: 40px 0;
+  }
+
+  h2.top {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .top-desc {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 40px;
+    max-width: 700px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">⚔️ Pocket DM</div>
+    <div class="subtitle">User Journey — Mapeamento Completo v1.1 · 2026-04-05</div>
+  </div>
+  <nav class="nav">
+    <a href="#overview">Visão Geral</a>
+    <a href="#dm-onboarding">Onboarding DM</a>
+    <a href="#player-combat">Jogador via Combate</a>
+    <a href="#player-invite">Jogador via Invite</a>
+    <a href="#gaps">Gaps Críticos</a>
+    <a href="#fixes-applied">Fixes Aplicados</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <h2 class="top">Jornadas de Usuário — Pocket DM</h2>
+  <p class="top-desc">Mapeamento completo de todos os cenários de entrada, onboarding e uso recorrente para Mestres e Jogadores. Inclui análise de gaps críticos no fluxo atual.</p>
+
+  <!-- USE CASES TABLE -->
+  <div class="section" id="uc-table">
+    <div class="section-header">
+      <span class="section-tag tag-overview">Inventário Completo</span>
+      <h2 class="section-title">Use Cases Identificados</h2>
+      <p class="section-desc">11 use cases mapeados, com status do estado atual e nível de risco de churn. Última atualização: 2026-04-05 (v1.1 — 7 fixes de playtest aplicados).</p>
+    </div>
+
+    <table class="uc-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Persona</th>
+          <th>Cenário</th>
+          <th>Entry Point</th>
+          <th>Status Atual</th>
+          <th>Risco</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>UC-01</code></td>
+          <td>DM/Curioso</td>
+          <td>Guest testa combate → converte para conta</td>
+          <td><code>/try</code></td>
+          <td><span class="badge badge-ok">✓ Funcional</span></td>
+          <td><span class="badge badge-warn">Médio</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-02</code></td>
+          <td>DM</td>
+          <td>Primeiro acesso — cria campanha do zero</td>
+          <td><code>/auth/sign-up</code></td>
+          <td><span class="badge badge-warn">⚠ Incompleto</span></td>
+          <td><span class="badge badge-warn">Alto</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-03</code></td>
+          <td>DM</td>
+          <td>Retorna — retoma sessão ativa</td>
+          <td><code>/auth/login</code></td>
+          <td><span class="badge badge-ok">✓ Funcional</span></td>
+          <td><span class="badge badge-ok">Baixo</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-04</code></td>
+          <td>DM</td>
+          <td>Nova sessão em campanha existente</td>
+          <td><code>/app/dashboard</code></td>
+          <td><span class="badge badge-ok">✓ Funcional</span></td>
+          <td><span class="badge badge-ok">Baixo</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-05</code></td>
+          <td>Jogador</td>
+          <td>Convite autenticado — primeira vez</td>
+          <td><code>/invite/[token]</code></td>
+          <td><span class="badge badge-broken">✗ Quebrado</span></td>
+          <td><span class="badge badge-broken">Crítico</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-06</code></td>
+          <td>Jogador</td>
+          <td>Retorna — acessa sessão ativa da campanha</td>
+          <td><code>/auth/login</code></td>
+          <td><span class="badge badge-warn">⚠ Frágil</span></td>
+          <td><span class="badge badge-warn">Alto</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-07</code></td>
+          <td>Jogador</td>
+          <td>Entra em combate anônimo via link de sessão</td>
+          <td><code>/join/[token]</code></td>
+          <td><span class="badge badge-ok">✓ Funcional</span> <span class="badge badge-new">+7 fixes</span></td>
+          <td><span class="badge badge-ok">Baixo</span></td>
+        </tr>
+        <tr style="background: rgba(168,85,247,0.04);">
+          <td><code>UC-08</code></td>
+          <td>Jogador</td>
+          <td><strong>Combate anônimo → recap → join campanha</strong></td>
+          <td><code>/join/[token]</code></td>
+          <td><span class="badge badge-new">★ Novo UC</span></td>
+          <td><span class="badge badge-broken">Crítico</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-09</code></td>
+          <td>DM</td>
+          <td>Convida jogador por email após onboarding</td>
+          <td><code>/app/dashboard</code></td>
+          <td><span class="badge badge-ok">✓ Funcional</span></td>
+          <td><span class="badge badge-ok">Baixo</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-10</code></td>
+          <td>Jogador</td>
+          <td>Aceita invite pendente pelo dashboard</td>
+          <td><code>/app/dashboard</code></td>
+          <td><span class="badge badge-warn">⚠ Incompleto</span></td>
+          <td><span class="badge badge-warn">Alto</span></td>
+        </tr>
+        <tr>
+          <td><code>UC-11</code></td>
+          <td>DM/Jogador</td>
+          <td>Entra via código de campanha</td>
+          <td><code>/join-campaign/[code]</code></td>
+          <td><span class="badge badge-ok">✓ Funcional</span></td>
+          <td><span class="badge badge-ok">Baixo</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DIAGRAM 1: OVERVIEW -->
+  <div class="section" id="overview">
+    <div class="section-header">
+      <span class="section-tag tag-overview">Diagrama 1</span>
+      <h2 class="section-title">Mapa Geral de Jornadas</h2>
+      <p class="section-desc">Todos os pontos de entrada, bifurcações por persona e caminhos até a ativação completa no app.</p>
+    </div>
+    <div class="diagram-card">
+      <div class="mermaid">
+flowchart TD
+    LAND["🌐 Landing Page\npocketdm.com.br"]
+
+    LAND --> UC01["UC-01\n/try — Combate Guest"]
+    LAND --> UC02["UC-02\nSign Up como DM"]
+    LAND --> UC03_E["UC-03\nLogin — DM Retorno"]
+    LAND --> UC05["UC-05\n/invite/token"]
+    LAND --> UC07["UC-07\n/join/token"]
+    LAND --> UC11["UC-11\n/join-campaign/code"]
+
+    UC01 --> GUEST_COMBAT["Combate Guest\n(sem conta)"]
+    GUEST_COMBAT --> GUEST_RECAP["CombatRecap\n(onSaveAndSignup)"]
+    GUEST_RECAP -->|"Quer salvar"| SIGNUP_DM
+    GUEST_RECAP -->|"Não agora"| END_GUEST["❌ Abandona"]
+
+    UC02 --> SIGNUP_DM["📝 Sign Up\n+ Email Confirm"]
+    SIGNUP_DM --> ONBOARD["Onboarding Wizard DM\n/app/onboarding"]
+    ONBOARD --> WELCOME["Step: welcome"]
+    WELCOME --> CHOOSE{"Express ou\nDetalhado?"}
+    CHOOSE -->|"Express"| EXPRESS["Step: express\ntudo em 1 form"]
+    CHOOSE -->|"Detalhado"| S1["Step 1\nNome da Campanha"]
+    S1 --> S2["Step 2\nAdicionar Jogadores\n⚠️ pede HP+AC agora"]
+    S2 --> S3["Step 3\nNome do Encontro"]
+    S3 --> DONE_WIZ
+    EXPRESS --> DONE_WIZ["Step: done\nLink de Sessão Gerado"]
+    DONE_WIZ --> DM_DASH["✅ Dashboard DM\n(campanha ativa)"]
+
+    UC03_E --> LOGIN["Login"]
+    LOGIN --> DM_DASH
+
+    UC05 --> INV_PREVIEW["Preview do Convite\n'X te convidou para Y'"]
+    INV_PREVIEW --> INV_AUTH["Auth\n🔴 Token perdido hoje!"]
+    INV_AUTH --> INV_BROKEN["❌ Dashboard vazio\n'Waiting for invite'"]
+    INV_AUTH -.->|"FIX: preservar token"| INV_OK["✅ Join Campaign auto\nDashboard Player"]
+
+    UC07 --> JOIN_FORM["Form: nome do personagem"]
+    JOIN_FORM --> ANON_AUTH["signInAnonymously"]
+    ANON_AUTH --> ANON_COMBAT["Combate como\njogador anônimo"]
+    ANON_COMBAT --> ANON_RECAP["CombatRecap"]
+    ANON_RECAP --> HAS_CAMP{Sessão tem\ncampaign_id?}
+    HAS_CAMP -->|"Sim"| CTA_JOIN["★ UC-08 NOVO\nCTA: Entrar na Campanha"]
+    HAS_CAMP -->|"Não"| CTA_SAVE["CTA: Salvar personagem\n→ Sign Up"]
+    CTA_JOIN --> PLAYER_SIGNUP["Sign Up / OAuth\n(contexto preservado)"]
+    CTA_SAVE --> PLAYER_SIGNUP
+    PLAYER_SIGNUP --> PLAYER_DASH["✅ Dashboard Player\n(campanha + personagem)"]
+
+    UC11 --> AUTH_CODE["Auth\n→ Join Campaign by code"]
+    AUTH_CODE --> PLAYER_DASH
+
+    DM_DASH --> UC04["UC-04\nNova Sessão\n/app/session/new"]
+    DM_DASH --> UC09["UC-09\nConvidar Jogador\nby email"]
+    PLAYER_DASH --> UC06["UC-06\nAcessa Sessão Ativa\n(retorno)"]
+
+    style INV_BROKEN fill:#3D1515,stroke:#EF4444,color:#FCA5A5
+    style CTA_JOIN fill:#1A2E1A,stroke:#22C55E,color:#86EFAC
+    style DONE_WIZ fill:#1E1E35,stroke:#A855F7,color:#D8B4FE
+    style DM_DASH fill:#1E2A1E,stroke:#22C55E,color:#86EFAC
+    style PLAYER_DASH fill:#1E2A1E,stroke:#22C55E,color:#86EFAC
+    style S2 fill:#2D1F0A,stroke:#F97316,color:#FED7AA
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DIAGRAM 2: DM ONBOARDING -->
+  <div class="section" id="dm-onboarding">
+    <div class="section-header">
+      <span class="section-tag tag-dm">Diagrama 2 — Mestre</span>
+      <h2 class="section-title">Onboarding do Mestre — Fluxo Detalhado</h2>
+      <p class="section-desc">Desde o sign-up até a primeira sessão criada. Inclui estado atual e propostas de melhoria.</p>
+    </div>
+    <div class="diagram-card">
+      <div class="mermaid">
+flowchart TD
+    A["POST /auth/sign-up\nou OAuth Google"] --> B["Email de Confirmação\n📧 link de magic link"]
+    B --> C["Callback PKCE\n/auth/callback"]
+    C --> D["GET /app/dashboard"]
+    D --> E{"wizardDone?\nOR campaigns > 0?\nOR memberships > 0?"}
+    E -->|"Sim"| DASH_NORMAL["✅ Dashboard Normal\n(usuário ativado)"]
+    E -->|"Não"| F["Redirect /app/onboarding"]
+
+    F --> G["OnboardingWizard\nSource: fresh / guest_combat"]
+    G --> H["Step: welcome\nWelcomeScreen\n(contexto do source)"]
+
+    H --> I{"Tem dados\ndo guest?"}
+    I -->|"Sim — source=guest_combat"| J["Pré-popula jogadores\ndo combate guest"]
+    I -->|"Não"| K["Form em branco"]
+    J --> L["Step: choose\n'Express ou Detalhado?'"]
+    K --> L
+
+    L -->|"Express"| M["Step: express\nTudo em 1 formulário\ncampanha + jogadores básicos"]
+    L -->|"Detalhado"| N["Step 1\n📛 Nome da Campanha\n(obrigatório, máx 50 chars)"]
+
+    N --> O["Step 2\n👥 Adicionar Jogadores\nnome + HP + AC + Spell Save DC\n⚠️ ATUAL: exige HP/AC agora\n💡 IDEAL: email opcional, skip"]
+    O --> P["Step 3\n⚔️ Nome do Encontro\n(default: First Encounter)"]
+    P --> Q["Submit:\ncreateOnboardingSetup API"]
+    M --> Q
+
+    Q --> R["Cria no Supabase:\ncampaign + player_characters\n+ session + encounter"]
+    R --> S["Step: done\n🎉 Link de Sessão Gerado!\nsessionLink copiável"]
+    S --> T["mark wizard_completed = true\nno user_onboarding"]
+    T --> DASH_NORMAL
+
+    DASH_NORMAL --> DASH_CONTENT["Dashboard com:\n• Campanha criada\n• Combate ativo (resume)\n• Quick actions\n⚠️ SEM tour/tooltips hoje"]
+
+    subgraph GAPS ["⚠️ Gaps Identificados"]
+        direction LR
+        G1["Step 2 pede HP/AC\nmas DM pode não\nter isso ainda"]
+        G2["Sem skip ou 'convidar\npor email depois'"]
+        G3["/onboarding/role existe\nmas não está no fluxo\nprincipal do wizard"]
+        G4["Sem tour do dashboard\nao concluir onboarding"]
+    end
+
+    style Q fill:#1A2A1A,stroke:#22C55E
+    style S fill:#1E1E35,stroke:#A855F7,color:#D8B4FE
+    style O fill:#2D1F0A,stroke:#F97316,color:#FED7AA
+    style GAPS fill:#1A1520,stroke:#5C5A65
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DIAGRAM 3: PLAYER VIA COMBAT (NEW UC-08) -->
+  <div class="section" id="player-combat">
+    <div class="section-header">
+      <span class="section-tag tag-new">★ Diagrama 3 — NOVO UC-08</span>
+      <h2 class="section-title">Jogador Anônimo via Combate → Join Campanha</h2>
+      <p class="section-desc">O jogador entra em combate via link de sessão sem conta, joga o encontro inteiro, e no recap recebe o convite para entrar na campanha. Caminho de conversão mais natural e orgânico.</p>
+    </div>
+    <div class="diagram-card">
+      <div class="mermaid">
+sequenceDiagram
+    participant P as 🧙 Jogador
+    participant BR as Browser
+    participant NX as Next.js
+    participant SB as Supabase
+    participant DM as 🎲 Mestre
+
+    Note over DM,P: DM compartilha link de sessão
+    DM->>P: WhatsApp/Discord: pocketdm.com.br/join/abc123
+
+    P->>BR: Clica no link
+    BR->>NX: GET /join/[token]
+    NX->>SB: Valida session_token (is_active=true)
+    SB-->>NX: token + session (name, campaign_id)
+    NX-->>BR: PlayerJoinClient — Form de entrada
+
+    BR-->>P: Tela: "Qual é o nome do seu personagem?"
+    P->>BR: Digita nome + clica Entrar
+    BR->>SB: signInAnonymously()
+    SB-->>BR: anon session criada
+    BR->>SB: Registra token com player_name
+    SB-->>BR: token ativo, combatant criado
+
+    Note over P,DM: 🎲 COMBATE ACONTECE
+    Note over P,DM: Rodadas, ataques, condições, HP...
+
+    DM->>SB: end_encounter (is_active=false)
+    SB-->>BR: realtime: encounter ended
+    BR-->>P: CombatRecap abre
+
+    Note over BR,P: Recap mostra awards, narrativa, stats
+
+    alt session.campaign_id != null
+        BR-->>P: CTA: "Quer continuar na campanha de [DM]?"
+        Note right of BR: Salva em localStorage:<br/>pendingCampaignJoin = { campaign_id, player_name }
+        P->>BR: Clica "Entrar na Campanha"
+        BR->>BR: localStorage.set pendingCampaignJoin
+        BR->>NX: Redirect /auth/sign-up?context=campaign_join
+        BR-->>P: Tela de Sign Up
+        Note right of BR: Opção OAuth (Google) para zero fricção
+        P->>BR: Cria conta (Google OAuth ou email)
+        BR->>SB: createUser
+        SB-->>BR: auth session
+        BR->>BR: Lê pendingCampaignJoin do localStorage
+        BR->>SB: insert campaign_members (user_id, campaign_id)
+        SB-->>BR: member criado com status=active
+        BR->>NX: Redirect /app/dashboard
+        BR-->>P: Dashboard Player ativado!
+        Note right of P: Campanha visível, personagem salvo
+    else session sem campaign_id (sessão solo DM)
+        BR-->>P: CTA: "Salvar personagem e criar conta"
+        P->>BR: Clica "Criar Conta"
+        BR->>NX: Redirect /auth/sign-up
+        BR-->>P: Sign Up normal (UC-01 pattern)
+    end
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DIAGRAM 4: PLAYER VIA INVITE (UC-05 FIXED) -->
+  <div class="section" id="player-invite">
+    <div class="section-header">
+      <span class="section-tag tag-critical">Diagrama 4 — UC-05 Corrigido</span>
+      <h2 class="section-title">Jogador via /invite/[token] — Token Survival</h2>
+      <p class="section-desc">O bug mais crítico do onboarding atual: o token do invite é perdido no meio do fluxo de autenticação. Aqui o fluxo atual vs. o corrigido.</p>
+    </div>
+    <div class="diagram-card">
+      <div class="mermaid">
+sequenceDiagram
+    participant P as 🧙 Jogador
+    participant BR as Browser
+    participant NX as Next.js
+    participant SB as Supabase
+    participant DM as 🎲 Mestre
+
+    Note over DM,P: DM envia convite por email ou WhatsApp
+    DM->>P: Link: pocketdm.com.br/invite/xyz789
+
+    P->>BR: Clica no link
+    BR->>NX: GET /invite/[token]
+    NX->>SB: Valida invite token
+    SB-->>NX: token_data (DM name, campaign name)
+    NX-->>BR: Preview UI
+
+    BR-->>P: "🎲 [Mestre X] te convidou para [Campanha Y]"
+    Note right of BR: Mostra DM name e campaign name<br/>para criar contexto antes do auth
+
+    P->>BR: Clica "Aceitar Convite"
+
+    rect rgb(40, 15, 15)
+        Note over BR,SB: ❌ FLUXO ATUAL — Token Perdido
+        BR->>NX: Redirect /auth/login (token esquecido!)
+        P->>BR: Faz login ou cria conta
+        BR->>SB: createUser
+        SB-->>BR: session
+        BR->>NX: Redirect /app/dashboard (não /invite/token!)
+        BR-->>P: Dashboard vazio — "Waiting for invite"
+    end
+
+    rect rgb(10, 30, 15)
+        Note over BR,SB: ✅ FLUXO CORRIGIDO — Token Preservado
+        BR->>BR: localStorage.set pendingInvite = token
+        BR->>NX: Redirect /auth/sign-up?redirect=/invite/xyz789
+        P->>BR: Cria conta (Google OAuth preferencial)
+        BR->>SB: createUser
+        SB-->>BR: auth callback → /invite/xyz789
+        BR->>BR: Confirma token do localStorage
+        BR->>SB: acceptInvite(token) — insert campaign_members
+        SB-->>BR: member criado status=active
+        BR->>NX: Redirect /app/dashboard
+        BR-->>P: Dashboard Player com campanha ativa!
+    end
+
+    Note over P,DM: Jogador está na campanha e<br/>pode entrar na próxima sessão
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DIAGRAM 5: PLAYER RETURN FLOW -->
+  <div class="section" id="player-return">
+    <div class="section-header">
+      <span class="section-tag tag-player">Diagrama 5 — UC-06</span>
+      <h2 class="section-title">Jogador Retorna — Acessa Sessão Ativa</h2>
+      <p class="section-desc">Fluxo do jogador que já tem conta e campanha, voltando para uma sessão em andamento.</p>
+    </div>
+    <div class="diagram-card">
+      <div class="mermaid">
+flowchart TD
+    A["Login /auth/login"] --> B["GET /app/dashboard"]
+    B --> C{"userRole?"}
+
+    C -->|"player"| D["Dashboard Player View"]
+    C -->|"dm ou both"| E["Dashboard DM View"]
+
+    D --> F{"pendingInvites?"}
+    F -->|"Sim"| G["🔔 Notificação de convite\n'X te convidou para Y'"]
+    G --> H["Aceitar Convite\n→ join campaign_members"]
+    H --> I["Dashboard atualizado\ncom nova campanha"]
+
+    F -->|"Não"| J{"tem memberships?"}
+    J -->|"Não"| K["⚠️ Estado atual:\n'Waiting for invite'\nSem CTA clara"]
+    J -->|"Sim"| L["Lista de campanhas\nque o player participa"]
+
+    L --> M{"Tem sessão ativa\nna campanha?"}
+    M -->|"Sim"| N["🟢 Badge: Sessão Ativa\nCTA: Entrar na Sessão"]
+    M -->|"Não"| O["Campanha sem sessão\nAguardando mestre"]
+
+    N --> P["GET /join/[session_token]\n(auto-join se já tem personagem)"]
+    P --> Q{"prefilledCharacters?"}
+    Q -->|"Sim"| R["Auto-join direto\nsem form de nome"]
+    Q -->|"Não"| S["Form de personagem\n(primeira vez na sessão)"]
+    R --> COMBAT["✅ Entra no combate\nvisualização do jogador"]
+    S --> COMBAT
+
+    E --> T["Dashboard DM\nCampanhas + Quick Actions"]
+
+    style K fill:#2D1515,stroke:#EF4444,color:#FCA5A5
+    style N fill:#1A2E1A,stroke:#22C55E,color:#86EFAC
+    style COMBAT fill:#1E1E35,stroke:#A855F7,color:#D8B4FE
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- GAPS CRÍTICOS -->
+  <div class="section" id="gaps">
+    <div class="section-header">
+      <span class="section-tag tag-critical">Análise</span>
+      <h2 class="section-title">Gaps Críticos — Priorização</h2>
+      <p class="section-desc">Os 6 gaps mais impactantes identificados na análise dos fluxos, ordenados por risco de churn.</p>
+    </div>
+
+    <div class="gaps-grid">
+      <div class="gap-card gap-critical">
+        <div class="gap-label">🔴 Crítico — UC-05</div>
+        <h4>Token do Invite Perdido no Auth</h4>
+        <p>Jogador clica em /invite/[token], é redirecionado para login, e o token não sobrevive ao fluxo de auth. Cai no dashboard vazio sem entender o que fazer.</p>
+      </div>
+
+      <div class="gap-card gap-critical">
+        <div class="gap-label">🔴 Crítico — UC-08 (Novo)</div>
+        <h4>Recap sem CTA de Join Campanha</h4>
+        <p>Jogador anônimo termina combate no recap, mas não existe CTA para entrar na campanha. O maior momento de conversão orgânica do app está inexplorado.</p>
+      </div>
+
+      <div class="gap-card gap-high">
+        <div class="gap-label">🟠 Alto — UC-02</div>
+        <h4>Onboarding Pede HP/AC Prematuro</h4>
+        <p>Step 2 do wizard pede HP e AC dos jogadores, mas o mestre muitas vezes ainda não tem esses dados. Precisa de opção de "convidar por email" e skip.</p>
+      </div>
+
+      <div class="gap-card gap-high">
+        <div class="gap-label">🟠 Alto — UC-06</div>
+        <h4>Jogador sem Campanha = Tela Morta</h4>
+        <p>"Waiting for invite" não tem CTA. O jogador que cria conta antes de receber um convite fica parado sem saber o que fazer. Precisa de onboarding próprio para jogadores.</p>
+      </div>
+
+      <div class="gap-card gap-medium">
+        <div class="gap-label">🟡 Médio — UC-02</div>
+        <h4>Role Selection Desconectada</h4>
+        <p>A página /app/onboarding/role com RoleSelectionCards existe no código mas não está integrada no fluxo principal do wizard. O usuário não é perguntado sobre seu role de forma clara.</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ Resolvido — Pós-Onboarding</div>
+        <h4>Tour do Dashboard — Implementado</h4>
+        <p>DashboardTourProvider implementado com 7 steps (welcome, sidebar, quick actions, campanhas, combates, soundboard, complete). Detecta role DM/player e filtra steps irrelevantes. Persiste conclusão no DB.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIXES APLICADOS — PLAYTEST SPRINT -->
+  <div class="section" id="fixes-applied">
+    <div class="section-header">
+      <span class="section-tag tag-new">✅ Aplicado — 2026-04-05</span>
+      <h2 class="section-title">Correções de Playtest — Sprint UC-07 / UC-08</h2>
+      <p class="section-desc">7 bugs corrigidos no fluxo do jogador anônimo (UC-07) após sessão de playtest. Todos commitados em <code>a0839e0</code> e <code>05b81dc</code>.</p>
+    </div>
+
+    <div class="gaps-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B1 — UC-07 / spells</div>
+        <h4>Popup de magias carregava infinito</h4>
+        <p><code>SrdInitializer</code> não era montado na rota <code>/join/[token]</code>, apenas no layout autenticado. Adicionado na page.tsx do join.</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B2 — UC-07 / i18n</div>
+        <h4>conditions.blessed aparecia como chave bruta</h4>
+        <p>6 condições benéficas (<code>blessed</code>, <code>flying</code>, <code>haste</code>, <code>heroism</code>, <code>inspired</code>, <code>raging</code>) não tinham tradução. Adicionadas em EN + PT-BR.</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B3 — UC-07 / state</div>
+        <h4>Condições sumiam após ~30s</h4>
+        <p>Polling <code>fetchFullState</code> sobrescrevia estado broadcast. Corrigido com <code>conditionOptimisticRef</code> (guard 5s após mudança broadcast).</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B4 — DM / z-index</div>
+        <h4>Botão fechar do log bloqueado pela navbar</h4>
+        <p>Navbar <code>z-50</code> sobrepunha o painel do log (também <code>z-50</code>). Painel elevado para <code>z-[60]</code>.</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B5 — DM+Player / UI</div>
+        <h4>Indicador de criatura crítica muito agressivo</h4>
+        <p><code>animate-pulse</code> (50% variação, 2s) substituído por <code>animate-critical-glow</code> (18% variação, 3.5s). Guard <code>prefers-reduced-motion</code> adicionado.</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B6 — UC-07 / UC-08 recap</div>
+        <h4>Combat Recap não aparecia para jogadores</h4>
+        <p>DM só broadcastava <code>session:combat_stats</code>. Adicionado broadcast de <code>session:combat_recap</code> com o <code>CombatReport</code> completo (awards + narrativas + display_name anti-metagaming).</p>
+      </div>
+
+      <div class="gap-card" style="border-color: var(--green);">
+        <div class="gap-label" style="color: var(--green);">✅ B7 — UC-07 / death saves</div>
+        <h4>Death saves sumiam após polling</h4>
+        <p>Campo <code>death_saves</code> ausente no SELECT da API de estado. Guard otimista comparava contra <code>undefined</code> → sempre falhava. Adicionado ao SELECT e à interface <code>RawCombatantRow</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ROADMAP DE FIXES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag tag-new">Próximos Passos</span>
+      <h2 class="section-title">Roadmap de Fixes Sugeridos</h2>
+      <p class="section-desc">Ordenado por impacto vs. esforço.</p>
+    </div>
+
+    <div class="diagram-card">
+      <div class="mermaid">
+flowchart LR
+    subgraph P1 ["🔴 Prioridade 1 — Quick Wins (Alto Impacto, Baixo Esforço)"]
+        direction TB
+        A1["UC-05: Token Survival no Auth\nImpacto: Crítico | Esforço: 1-2h\nTodo jogador convidado perde o contexto"]
+        A2["UC-08: CTA Join Campanha no Recap\nImpacto: Crítico | Esforço: 2-3h\nMaior momento de conversão orgânica"]
+        A3["Skip Step 2 Wizard\nImpacto: Alto | Esforço: 1h\nDM pode não ter HP/AC dos jogadores ainda"]
+        A4["Player Empty State CTA\nImpacto: Alto | Esforço: 1h\nJogador sem campanha fica perdido"]
+    end
+
+    subgraph P2 ["🟠 Prioridade 2 — Estratégicos (Alto Impacto, Médio Esforço)"]
+        direction TB
+        B1["OAuth Google no Sign Up\nImpacto: Alto | Esforço: 3-4h\nReduz fricção do onboarding drasticamente"]
+        B2["Invite por Email no Wizard\nImpacto: Alto | Esforço: 3h\nMestre convida sem precisar saber HP/AC"]
+    end
+
+    subgraph P3 ["🟡 Prioridade 3 — Melhorias UX (Médio Impacto)"]
+        direction TB
+        C1["Role Selection integrada ao Wizard\nImpacto: Médio | Esforço: 2h\nPágina existe mas não está no fluxo"]
+        C2["✅ Tour do Dashboard pós-Onboarding\nIMPLEMENTADO — DashboardTourProvider\n7 steps, role-aware, persiste no DB"]
+    end
+
+    P1 --> P2 --> P3
+
+    style P1 fill:#1A0A0A,stroke:#EF4444
+    style P2 fill:#1A1206,stroke:#F97316
+    style P3 fill:#1A1A06,stroke:#EAB308
+    style A1 fill:#2D1010,stroke:#EF4444,color:#FCA5A5
+    style A2 fill:#2D1010,stroke:#EF4444,color:#FCA5A5
+    style A3 fill:#1F1505,stroke:#F97316,color:#FED7AA
+    style A4 fill:#1F1505,stroke:#F97316,color:#FED7AA
+    style B1 fill:#1A2010,stroke:#22C55E,color:#86EFAC
+    style B2 fill:#1A2010,stroke:#22C55E,color:#86EFAC
+    style C1 fill:#1A1A2A,stroke:#A855F7,color:#D8B4FE
+    style C2 fill:#1A1A2A,stroke:#A855F7,color:#D8B4FE
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1E1E35',
+      primaryTextColor: '#E8E6E0',
+      primaryBorderColor: '#D4A853',
+      lineColor: '#9896A0',
+      secondaryColor: '#13131E',
+      tertiaryColor: '#1A1A28',
+      background: '#0A0A0F',
+      mainBkg: '#13131E',
+      nodeBorder: '#D4A853',
+      clusterBkg: '#1A1A28',
+      titleColor: '#D4A853',
+      edgeLabelBackground: '#1A1A28',
+      actorBkg: '#1E1E35',
+      actorBorder: '#D4A853',
+      actorTextColor: '#E8E6E0',
+      actorLineColor: '#9896A0',
+      signalColor: '#D4A853',
+      signalTextColor: '#E8E6E0',
+      labelBoxBkgColor: '#1A1A28',
+      labelBoxBorderColor: '#D4A853',
+      labelTextColor: '#E8E6E0',
+      loopTextColor: '#E8E6E0',
+      noteBorderColor: '#D4A853',
+      noteBkgColor: '#1E1E35',
+      noteTextColor: '#E8E6E0',
+      activationBorderColor: '#D4A853',
+      activationBkgColor: '#1E1E35',
+      sequenceNumberColor: '#0A0A0F',
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+    },
+    sequence: {
+      actorMargin: 60,
+      messageMargin: 35,
+      mirrorActors: false,
+      bottomMarginAdj: 10,
+    },
+  });
+</script>
+</body>
+</html>

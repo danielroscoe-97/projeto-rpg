@@ -95,9 +95,12 @@ export function DashboardTourProvider({
       && new URLSearchParams(window.location.search).get("from") === "wizard";
     const effectiveDelay = fromWizard ? 800 : delayMs;
 
-    // Use the quick-actions element as a proxy for "page content is ready".
+    // Use a page-content element as a proxy for "page content is ready".
     // It lives inside DashboardOverview (the actual page), not the layout shell.
-    const CONTENT_READY_SELECTOR = '[data-tour-id="dash-quick-actions"]';
+    // Player tour targets a different element because dash-quick-actions is DM-only.
+    const CONTENT_READY_SELECTOR = isPlayerFirstCampaign
+      ? '[data-tour-id="dash-player-campaigns"]'
+      : '[data-tour-id="dash-quick-actions"]';
     const MAX_EXTRA_WAIT_MS = 8000;
 
     let pollInterval: ReturnType<typeof setInterval> | null = null;
