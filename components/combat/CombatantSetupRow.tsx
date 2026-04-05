@@ -311,7 +311,7 @@ export function CombatantSetupRow({
 
       {/* Actions — responsive width */}
       <div className="flex-shrink-0 flex items-center justify-end gap-1 ml-auto md:ml-0 md:w-auto">
-        {combatant.is_player && (
+        {combatant.is_player && !(!combatant.monster_id && combatant.combatant_role && onRoleChange) && (
           <span className="text-[10px] text-blue-400/70 uppercase tracking-wider flex-shrink-0 px-1.5 py-0.5 border border-blue-400/20 rounded">
             {t("setup_player_badge")}
           </span>
