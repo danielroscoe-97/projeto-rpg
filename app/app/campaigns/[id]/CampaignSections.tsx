@@ -25,6 +25,13 @@ interface MonsterOption {
   source?: string;
 }
 
+interface SectionCounts {
+  npcs: number;
+  locations: number;
+  factions: number;
+  notes: number;
+}
+
 interface Props {
   campaignId: string;
   campaignName: string;
@@ -33,6 +40,7 @@ interface Props {
   userId: string;
   initialMembers?: CampaignMemberWithUser[];
   srdMonsters?: MonsterOption[];
+  sectionCounts?: SectionCounts;
 }
 
 /** Inline error boundary to prevent one broken section from crashing the entire campaign page. */
@@ -121,6 +129,7 @@ export function CampaignSections({
   userId,
   initialMembers,
   srdMonsters,
+  sectionCounts,
 }: Props) {
   const t = useTranslations("campaign");
   const tBuilder = useTranslations("encounter_builder");
@@ -174,11 +183,11 @@ export function CampaignSections({
           </Section>
         )}
 
-        <Section id="section_npcs" icon={UserCircle} title={t("section_npcs")} defaultOpen={false} tier={2}>
+        <Section id="section_npcs" icon={UserCircle} title={t("section_npcs")} defaultOpen={false} tier={2} count={sectionCounts?.npcs}>
           <NpcList campaignId={campaignId} />
         </Section>
 
-        <Section id="section_notes" icon={FileText} title={t("section_notes")} defaultOpen={false} tier={2}>
+        <Section id="section_notes" icon={FileText} title={t("section_notes")} defaultOpen={false} tier={2} count={sectionCounts?.notes}>
           <CampaignNotes campaignId={campaignId} />
         </Section>
 
@@ -202,11 +211,11 @@ export function CampaignSections({
           <QuestBoard campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section id="section_locations" icon={MapPin} title={t("section_locations")} defaultOpen={false} tier={2}>
+        <Section id="section_locations" icon={MapPin} title={t("section_locations")} defaultOpen={false} tier={2} count={sectionCounts?.locations}>
           <LocationList campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section id="section_factions" icon={Flag} title={t("section_factions")} defaultOpen={false} tier={2}>
+        <Section id="section_factions" icon={Flag} title={t("section_factions")} defaultOpen={false} tier={2} count={sectionCounts?.factions}>
           <FactionList campaignId={campaignId} isEditable={isOwner} />
         </Section>
 

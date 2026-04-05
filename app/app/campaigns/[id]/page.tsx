@@ -7,6 +7,7 @@ import { CampaignStatsBar } from '@/components/campaign/CampaignStatsBar'
 import { aggregateCampaignStats } from '@/lib/utils/campaign-stats'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
 import { CombatLaunchSheet } from '@/components/campaign/CombatLaunchSheet'
+import { CampaignQuickActions } from '@/components/campaign/CampaignQuickActions'
 import { Swords } from 'lucide-react'
 import { getCampaignMembership, getCampaignMembers } from '@/lib/supabase/campaign-membership'
 import { getSrdMonsters, toSlug } from '@/lib/srd/srd-data-server'
@@ -201,6 +202,10 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     { data: dmSessions },
     { data: dmActiveSession },
     initialMembers,
+    { count: npcCount },
+    { count: locationCount },
+    { count: factionCount },
+    { count: noteCount },
   ] = await Promise.all([
     supabase
       .from('player_characters')
@@ -221,12 +226,28 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       .eq('campaign_id', id),
     supabase
       .from('sessions')
-      .select('id')
+      .select('id, name')
       .eq('campaign_id', id)
       .eq('is_active', true)
       .limit(1)
       .maybeSingle(),
     getCampaignMembers(id),
+    supabase
+      .from('campaign_npcs')
+      .select('*', { count: 'exact', head: true })
+      .eq('campaign_id', id),
+    supabase
+      .from('campaign_locations')
+      .select('*', { count: 'exact', head: true })
+      .eq('campaign_id', id),
+    supabase
+      .from('campaign_factions')
+      .select('*', { count: 'exact', head: true })
+      .eq('campaign_id', id),
+    supabase
+      .from('campaign_notes')
+      .select('*', { count: 'exact', head: true })
+      .eq('campaign_id', id),
   ])
 
   // Get player emails for combat notifications
@@ -299,6 +320,27 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
             </CombatLaunchSheet>
           </div>
         </div>
+
+        {/* Active Session Banner */}
+        {dmActiveSession && (
+          <CombatLaunchSheet
+            campaignId={campaign.id}
+            campaignName={campaign.name}
+            playerEmails={playerEmails}
+            activeSessionId={dmActiveSession.id}
+          >
+            <button
+              type="button"
+              className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-400 hover:bg-amber-500/25 transition-colors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              {t("active_session_banner")}: &quot;{dmActiveSession.name ?? t("session_fallback")}&quot; · {t("new_combat_button")}
+            </button>
+          </CombatLaunchSheet>
+        )}
+
+        {/* Quick Actions Row */}
+        <CampaignQuickActions campaignId={campaign.id} />
       </div>
 
       {/* Campaign Stats (F5) — only shows if >= 2 reports */}
@@ -312,6 +354,12 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         isOwner={isOwner}
         userId={user.id}
         initialMembers={initialMembers}
+        sectionCounts={{
+          npcs: npcCount ?? 0,
+          locations: locationCount ?? 0,
+          factions: factionCount ?? 0,
+          notes: noteCount ?? 0,
+        }}
         srdMonsters={isOwner ? getSrdMonsters().map((m) => ({
           name: m.name,
           cr: m.cr,
