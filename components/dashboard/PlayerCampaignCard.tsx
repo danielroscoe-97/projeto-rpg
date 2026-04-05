@@ -14,6 +14,8 @@ interface PlayerCampaignCardProps {
     playersPlural: string;
     dmLabel: string;
     levelAbbrev?: string;
+    sessionLive?: string;
+    sessionJoin?: string;
   };
 }
 
@@ -63,9 +65,9 @@ export function PlayerCampaignCard({
       <div className="relative h-full flex flex-col justify-end p-4">
         {/* Active session badge (top right) */}
         {hasActiveSession && (
-          <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-500/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
+          <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/20 backdrop-blur-sm px-2 py-0.5 rounded-full border border-emerald-500/30">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            {t.activeSession}
+            {t.sessionLive ?? t.activeSession}
           </span>
         )}
 
@@ -133,6 +135,13 @@ export function PlayerCampaignCard({
               )}
             </div>
           </div>
+        )}
+
+        {/* JO-10: Join session CTA — shown when session is active */}
+        {hasActiveSession && t.sessionJoin && (
+          <span className="mt-2 block w-full text-center text-xs font-semibold py-1.5 px-3 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 group-hover:bg-emerald-500/30 transition-colors">
+            {t.sessionJoin}
+          </span>
         )}
 
         {/* Footer */}

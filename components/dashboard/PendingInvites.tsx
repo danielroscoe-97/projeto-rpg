@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Check, X, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   acceptInviteAction,
@@ -12,6 +13,8 @@ import type { CampaignInviteWithDetails } from "@/lib/types/campaign-membership"
 
 interface PendingInvitesProps {
   initialInvites: CampaignInviteWithDetails[];
+  /** When true, renders with prominent gold styling (player with no campaigns) */
+  highlighted?: boolean;
   translations: {
     title: string;
     invitedBy: string;
@@ -25,6 +28,7 @@ interface PendingInvitesProps {
 
 export function PendingInvites({
   initialInvites,
+  highlighted = false,
   translations: t,
 }: PendingInvitesProps) {
   const router = useRouter();
@@ -87,13 +91,20 @@ export function PendingInvites({
       )}
 
       <div className="space-y-2">
-        {invites.map((invite) => {
+        {invites.map((invite, i) => {
           const isProcessing = processingId === invite.id;
 
           return (
-            <div
+            <motion.div
               key={invite.id}
-              className="bg-card border border-border rounded-lg p-3 flex flex-col sm:flex-row sm:items-center gap-3"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: i * 0.05, ease: "easeOut" }}
+              className={`rounded-lg p-3 flex flex-col sm:flex-row sm:items-center gap-3 ${
+                highlighted
+                  ? "bg-gold/[0.06] border border-gold/30"
+                  : "bg-card border border-border"
+              }`}
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
@@ -129,7 +140,7 @@ export function PendingInvites({
                   {t.decline}
                 </Button>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

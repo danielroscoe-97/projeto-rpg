@@ -19,6 +19,8 @@ interface DashboardTourProviderProps {
   source?: string;
   /** Whether the user has DM access — filters DM-only tour steps */
   hasDmAccess?: boolean;
+  /** Whether this is the player's first campaign tour (JO-12) */
+  isPlayerFirstCampaign?: boolean;
 }
 
 function isMobileViewport(): boolean {
@@ -45,6 +47,7 @@ export function DashboardTourProvider({
   delayMs = 1200,
   source,
   hasDmAccess = false,
+  isPlayerFirstCampaign = false,
 }: DashboardTourProviderProps) {
   const router = useRouter();
   const {
@@ -59,12 +62,19 @@ export function DashboardTourProvider({
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  const effectiveSteps = useMemo(
-    () => DASHBOARD_TOUR_STEPS
-      .filter((step) => step.audience === "all" || (step.audience === "dm" && hasDmAccess))
-      .map(resolveStep),
+  const effectiveSteps = useMemo(() => {
+    let steps = DASHBOARD_TOUR_STEPS;
+    if (isPlayerFirstCampaign) {
+      // Player first-campaign tour: only show "player" audience steps
+      steps = steps.filter((step) => step.audience === "player");
+    } else {
+      // DM / general tour: show "all" + "dm" (if hasDmAccess)
+      steps = steps.filter((step) => step.audience === "all" || (step.audience === "dm" && hasDmAccess));
+    }
+    return steps.map(resolveStep);
+  },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mounted, hasDmAccess]
+    [mounted, hasDmAccess, isPlayerFirstCampaign]
   );
 
   // Auto-start tour — wait for both the delay AND the page content to be in the DOM.

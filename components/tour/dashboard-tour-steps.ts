@@ -8,8 +8,8 @@ export interface DashboardTourStepConfig extends TourStepConfig {
   /** Selector to use on mobile (viewport < 1024px) — e.g. bottom nav vs sidebar */
   mobileSelector?: string;
   mobilePosition?: "top" | "bottom";
-  /** Which roles see this step. "all" = everyone, "dm" = DM only */
-  audience: "all" | "dm";
+  /** Which roles see this step. "all" = everyone, "dm" = DM only, "player" = player first-campaign tour */
+  audience: "all" | "dm" | "player";
 }
 
 export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
@@ -95,5 +95,43 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     phase: "complete",
     modal: true,
     audience: "all",
+  },
+
+  // ── Player first-campaign tour (3 steps) ───────────────────────────────────
+  // Step P1 — Their campaign card
+  {
+    id: "player-campaign",
+    targetSelector: '[data-tour-id="dash-player-campaigns"]',
+    titleKey: "dashboard_tour.player_campaign_title",
+    descriptionKey: "dashboard_tour.player_campaign_desc",
+    type: "info",
+    position: "bottom",
+    phase: "setup",
+    audience: "player",
+  },
+  // Step P2 — Compendium nav item
+  {
+    id: "player-compendium",
+    targetSelector: '[data-tour-id="dash-nav-compendium"]',
+    mobileSelector: '[data-tour-id="dash-bottom-nav"]',
+    titleKey: "dashboard_tour.player_compendium_title",
+    descriptionKey: "dashboard_tour.player_compendium_desc",
+    type: "info",
+    position: "right",
+    mobilePosition: "top",
+    phase: "setup",
+    audience: "player",
+  },
+  // Step P3 — Ready to join (modal)
+  {
+    id: "player-join",
+    targetSelector: '[data-tour-id="dash-player-campaigns"]',
+    titleKey: "dashboard_tour.player_join_title",
+    descriptionKey: "dashboard_tour.player_join_desc",
+    type: "info",
+    position: "bottom",
+    phase: "complete",
+    modal: true,
+    audience: "player",
   },
 ];

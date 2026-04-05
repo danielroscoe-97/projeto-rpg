@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Swords, Zap, ChevronRight } from "lucide-react";
+import { Swords, Zap, ChevronRight, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { toast } from "sonner";
 import { joinCampaignDirectAction } from "@/app/app/dashboard/actions";
@@ -99,6 +100,16 @@ interface DashboardOverviewProps {
     methodology_researcher_subtitle: string;
     campaign_joined_success: string;
     methodology_researcher_link: string;
+    // JO-09: Player empty state
+    player_empty_title: string;
+    player_empty_desc: string;
+    player_empty_code_placeholder: string;
+    player_empty_code_submit: string;
+    player_empty_explore: string;
+    player_empty_try: string;
+    // JO-10: Active session
+    session_live: string;
+    session_join: string;
   };
   streakWeeks?: number;
   hasUsedCombat?: boolean;
@@ -117,6 +128,7 @@ export function DashboardOverview({
 }: DashboardOverviewProps) {
   const router = useRouter();
   const { activeView, initialized, loadRole } = useRoleStore();
+  const [playerCode, setPlayerCode] = useState("");
 
   useEffect(() => {
     loadRole();
@@ -177,6 +189,25 @@ export function DashboardOverview({
 
   const isDmFirst = effectiveView === "dm";
   const isDmRole = userRole !== "player";
+  // JO-11: player with no campaigns + pending invites → show invites at absolute top
+  const isPlayerWaitingForCampaign = !isDmRole && !hasPlayerCampaigns;
+  const showInvitesAtTop = isPlayerWaitingForCampaign && pendingInvites.length > 0;
+
+  const pendingInvitesBlock = (
+    <PendingInvites
+      initialInvites={pendingInvites}
+      highlighted={showInvitesAtTop}
+      translations={{
+        title: t.pending_invites,
+        invitedBy: t.invited_by,
+        accept: t.accept_invite,
+        decline: t.decline_invite,
+        acceptError: t.invite_accept_error,
+        declineError: t.invite_decline_error,
+        acceptedRedirect: t.invite_accepted_redirect,
+      }}
+    />
+  );
 
   return (
     <>
@@ -186,6 +217,18 @@ export function DashboardOverview({
           toastMessage={t.methodology_milestone_toast}
           linkText={t.methodology_milestone_link}
         />
+      )}
+
+      {/* JO-11: Pending invites at top for player with no campaigns */}
+      {showInvitesAtTop && (
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          {pendingInvitesBlock}
+        </motion.div>
       )}
 
       {/* Header */}
@@ -212,21 +255,10 @@ export function DashboardOverview({
         )}
       </div>
 
-      {/* Pending Invites */}
-      {pendingInvites.length > 0 && (
+      {/* Pending Invites — standard position (player with campaigns, or DM) */}
+      {!showInvitesAtTop && pendingInvites.length > 0 && (
         <div className="mb-6">
-          <PendingInvites
-            initialInvites={pendingInvites}
-            translations={{
-              title: t.pending_invites,
-              invitedBy: t.invited_by,
-              accept: t.accept_invite,
-              decline: t.decline_invite,
-              acceptError: t.invite_accept_error,
-              declineError: t.invite_decline_error,
-              acceptedRedirect: t.invite_accepted_redirect,
-            }}
-          />
+          {pendingInvitesBlock}
         </div>
       )}
 
@@ -325,23 +357,49 @@ export function DashboardOverview({
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-3 py-12 text-center" data-testid="player-empty-state">
+          <div className="flex flex-col items-center gap-4 py-10 text-center" data-testid="player-empty-state">
             <Image
               src="/art/icons/pet-cat.png"
               alt=""
-              width={64}
-              height={64}
-              className="pixel-art opacity-40 float-gentle"
+              width={96}
+              height={96}
+              className="pixel-art opacity-50 float-gentle"
               aria-hidden="true"
               unoptimized
             />
-            <p className="text-muted-foreground text-sm font-medium">
-              {t.waiting_for_invite}
-            </p>
-            <p className="text-muted-foreground/60 text-xs">{t.waiting_for_invite_desc}</p>
-            <Button variant="gold" className="mt-2 min-h-[44px]" asChild>
-              <Link href="/app/session/new">{t.try_quick_combat}</Link>
-            </Button>
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-foreground">{t.player_empty_title}</h2>
+              <p className="text-muted-foreground text-sm max-w-xs">{t.player_empty_desc}</p>
+            </div>
+            {/* Campaign code input */}
+            <form
+              className="flex gap-2 w-full max-w-xs"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const code = playerCode.trim();
+                if (code) router.push(`/join-campaign/${code}`);
+              }}
+            >
+              <input
+                type="text"
+                value={playerCode}
+                onChange={(e) => setPlayerCode(e.target.value)}
+                placeholder={t.player_empty_code_placeholder}
+                className="flex-1 min-h-[44px] px-3 text-sm bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/50 focus:border-gold/50"
+              />
+              <Button type="submit" variant="gold" className="min-h-[44px] px-4 shrink-0">
+                {t.player_empty_code_submit}
+              </Button>
+            </form>
+            {/* Secondary links */}
+            <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground/60 mt-1">
+              <Link href="/app/compendium" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1">
+                {t.player_empty_explore} <ArrowRight className="w-3 h-3" />
+              </Link>
+              <Link href="/try" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1">
+                {t.player_empty_try} <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
           </div>
         )
       )}
@@ -483,14 +541,17 @@ function OverviewPlayerSection({
   playerMemberships: UserMembership[];
   t: DashboardOverviewProps["translations"];
 }) {
+  // JO-10: sort campaigns with active sessions first
+  const sorted = [...playerMemberships].sort((a, b) => b.active_sessions - a.active_sessions);
+
   return (
-    <div className="mb-8 space-y-3" data-testid="player-campaigns">
+    <div className="mb-8 space-y-3" data-testid="player-campaigns" data-tour-id="dash-player-campaigns">
       <h2 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
         <span aria-hidden="true">🎭</span>
         {t.player_tables_title}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {playerMemberships.slice(0, 4).map((m) => (
+        {sorted.slice(0, 4).map((m) => (
           <PlayerCampaignCard
             key={m.campaign_id}
             membership={m}
@@ -500,6 +561,8 @@ function OverviewPlayerSection({
               playersSingular: t.campaigns_players_singular,
               playersPlural: t.campaigns_players_plural,
               dmLabel: t.dm_label,
+              sessionLive: t.session_live,
+              sessionJoin: t.session_join,
             }}
           />
         ))}

@@ -27,11 +27,12 @@ export default async function DashboardRouteLayout({
   // Check if dashboard tour should be shown + DM access for sidebar presets
   const { data: { user } } = await supabase.auth.getUser();
   let showDashboardTour = false;
+  let isPlayerFirstCampaign = false;
   let tourSource: string | undefined;
   let hasDmAccess = false;
 
   if (user) {
-    const [{ data: onboarding }, dmAccess] = await Promise.all([
+    const [{ data: onboarding }, dmAccess, { count: playerMembershipCount }] = await Promise.all([
       supabase
         .from("user_onboarding")
         .select("wizard_completed, dashboard_tour_completed, source")
@@ -71,6 +72,12 @@ export default async function DashboardRouteLayout({
         [`dm-access-sidebar-${user.id}`],
         { revalidate: 60 }
       )(user.id),
+      supabase
+        .from("campaign_members")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("role", "player")
+        .eq("status", "active"),
     ]);
 
     showDashboardTour = onboarding
@@ -78,6 +85,13 @@ export default async function DashboardRouteLayout({
       : false;
     tourSource = onboarding?.source;
     hasDmAccess = dmAccess;
+
+    // JO-12: Player first-campaign tour — triggers for pure players on their first membership
+    isPlayerFirstCampaign = (
+      !hasDmAccess &&
+      (playerMembershipCount ?? 0) === 1 &&
+      !(onboarding?.dashboard_tour_completed ?? false)
+    );
   }
 
   return (
@@ -85,6 +99,7 @@ export default async function DashboardRouteLayout({
       translations={translations}
       hasDmAccess={hasDmAccess}
       showDashboardTour={showDashboardTour}
+      isPlayerFirstCampaign={isPlayerFirstCampaign}
       tourSource={tourSource}
     >
       {children}

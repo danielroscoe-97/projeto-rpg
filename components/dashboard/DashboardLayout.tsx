@@ -22,6 +22,7 @@ interface DashboardLayoutProps {
   };
   hasDmAccess?: boolean;
   showDashboardTour?: boolean;
+  isPlayerFirstCampaign?: boolean;
   tourDelayMs?: number;
   tourSource?: string;
 }
@@ -31,6 +32,7 @@ export function DashboardLayout({
   translations,
   hasDmAccess = false,
   showDashboardTour = false,
+  isPlayerFirstCampaign = false,
   tourDelayMs = 1200,
   tourSource,
 }: DashboardLayoutProps) {
@@ -44,10 +46,11 @@ export function DashboardLayout({
         {children}
       </div>
       <DashboardTourProvider
-        shouldAutoStart={showDashboardTour}
+        shouldAutoStart={showDashboardTour || isPlayerFirstCampaign}
         delayMs={tourDelayMs}
         source={tourSource}
         hasDmAccess={hasDmAccess}
+        isPlayerFirstCampaign={isPlayerFirstCampaign}
       />
       <DashboardTourHelpButton />
     </div>

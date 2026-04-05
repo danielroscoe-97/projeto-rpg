@@ -133,7 +133,7 @@ export function SignUpForm({
     <div className={cn("flex flex-col", className)} {...props}>
       {/* JO-03: Contextual banner when coming from invite/join/combat */}
       {signupContextType !== "generic" && (
-        <div className="mb-4 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 flex items-center gap-3">
+        <div data-testid="signup-context-banner" className="mb-4 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 flex items-center gap-3">
           <div className="flex-shrink-0 text-gold">
             {signupContextType === "invite" ? (
               <Swords className="w-5 h-5" />

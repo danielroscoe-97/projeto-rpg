@@ -169,6 +169,16 @@ export default async function DashboardPage() {
     methodology_researcher_subtitle: tm("researcher_subtitle"),
     methodology_researcher_link: tm("researcher_link"),
     campaign_joined_success: t("campaign_joined_success"),
+    // JO-09: Player empty state
+    player_empty_title: t("player_empty_title"),
+    player_empty_desc: t("player_empty_desc"),
+    player_empty_code_placeholder: t("player_empty_code_placeholder"),
+    player_empty_code_submit: t("player_empty_code_submit"),
+    player_empty_explore: t("player_empty_explore"),
+    player_empty_try: t("player_empty_try"),
+    // JO-10: Active session
+    session_live: t("session_live"),
+    session_join: t("session_join"),
   };
 
   // F6: Streak counter
