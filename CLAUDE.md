@@ -233,28 +233,48 @@ O SRD 5.1 (Systems Reference Document) é licenciado sob **CC-BY-4.0** pela Wiza
 | Monster-a-Day (MAD, 357) | CC (parceria r/monsteraday) | Permitido |
 | Qualquer outro livro WotC | Copyright WotC | **PROIBIDO em público** |
 
-## Mecanismo de Proteção
+## Arquitetura de Dados SRD (Dual-Mode)
 
-- `public/srd/srd-monster-whitelist.json` — lista de slugs de monstros SRD permitidos
-- `public/srd/srd-spell-whitelist.json` — lista de slugs de magias SRD permitidos
-- `lib/srd/srd-data-server.ts` — filtra por whitelist antes de expor qualquer conteúdo
-- Os JSONs base (`monsters-2014.json`, `monsters-2024.json`, `spells-*.json`) contêm conteúdo misto — o filtro é a única barreira
+| Local | Conteúdo | Acesso |
+|-------|----------|--------|
+| `data/srd/` | Dados COMPLETOS (SRD + não-SRD) + traduções PT-BR + whitelists | Server-only, auth-gated via `/api/srd/full/` |
+| `public/srd/` | Dados FILTRADOS (SRD-only) | Público, estático, seguro |
+
+### Fluxo de dados
+
+1. `scripts/generate-srd-bundles.ts` → exporta do Supabase para `data/srd/`
+2. `scripts/filter-srd-public.ts` → aplica whitelists, gera versões SRD-only em `public/srd/`
+3. `lib/srd/srd-mode.ts` → controla se o client busca de `/srd/` (guest) ou `/api/srd/full/` (auth)
+4. `lib/srd/srd-data-server.ts` → lê de `data/srd/`, aplica whitelist para SSG
+
+### Arquivos protegidos (NUNCA em public/)
+
+- `monster-descriptions-pt.json` — traduções PT-BR (IP próprio)
+- `spell-descriptions-pt.json` — traduções PT-BR (IP próprio)
+- `monster-names-pt.json`, `spell-names-pt.json` — slug maps
+- `monster-lore.json`, `monster-lore-pt.json` — lore narrativo
+- `srd-*-whitelist.json` — whitelists de filtragem
+- Versões COMPLETAS de `monsters-*.json`, `spells-*.json`, `items.json`
 
 ## Anti-Patterns — PROIBIDO
 
 ```
+// ❌ NUNCA colocar dados completos (não-SRD) em public/
+// ❌ NUNCA colocar traduções PT-BR em public/
 // ❌ NUNCA remover ou bypassar os filtros de whitelist
 // ❌ NUNCA adicionar conteúdo não-SRD aos whitelists
 // ❌ NUNCA expor getSrdMonsters() sem filtro de whitelist ativo
-// ❌ NUNCA regenerar JSONs base sem verificar que o filtro continua funcional
 // ❌ NUNCA usar fonte (VGM, MPMM, MTF, FTD, etc.) em páginas públicas
+// ❌ NUNCA servir conteúdo completo sem auth check (/api/srd/full/ exige login)
+// ✅ SEMPRE rodar filter-srd-public.ts após alterar dados em data/srd/
 // ✅ SEMPRE verificar build após alterar srd-data-server.ts
 // ✅ SEMPRE manter whitelists derivados do SRD 5.1 oficial
 ```
 
 ## Ao Alterar Conteúdo SRD
 
-1. Verificar que `srd-monster-whitelist.json` e `srd-spell-whitelist.json` existem
-2. Verificar que `getSrdMonsters()` e `getSrdSpells()` filtram por whitelist
-3. Contar resultados — monsters ~1122 (419 SRD + 346 SRD 2024 + 357 MAD), spells ~604
+1. Editar/gerar dados em `data/srd/`
+2. Rodar `npx tsx scripts/filter-srd-public.ts` para atualizar `public/srd/`
+3. Verificar contagem: monsters ~1122 (419 SRD + 346 SRD 2024 + 357 MAD), spells ~604
 4. Se os números subirem significativamente, investigar se conteúdo não-SRD vazou
+5. Verificar build com `tsc --noEmit`

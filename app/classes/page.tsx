@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicClassesIndex } from "@/components/public/PublicClassesIndex";
 import { PublicCTA } from "@/components/public/PublicCTA";
-import classesData from "@/public/srd/classes-srd.json";
+import classesData from "@/data/srd/classes-srd.json";
 import type { SrdClass } from "@/lib/types/srd-class";
 
 // ── Metadata ───────────────────────────────────────────────────────

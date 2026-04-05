@@ -30,6 +30,23 @@ export default async function AppLayout({
     redirect("/auth/login");
   }
 
+  // Check beta tester access (content_whitelist or admin)
+  const [whitelistRes, adminRes] = await Promise.all([
+    supabase
+      .from("content_whitelist")
+      .select("id")
+      .eq("user_id", user.id)
+      .is("revoked_at", null)
+      .maybeSingle(),
+    supabase
+      .from("users")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single(),
+  ]);
+  const isBetaTester =
+    !!whitelistRes.data || (!adminRes.error && !!adminRes.data?.is_admin);
+
   // Header = action bar only. Navigation lives in the sidebar.
   // Only Compendium stays here (not duplicated in sidebar).
   const navLinks = [
@@ -98,7 +115,7 @@ export default async function AppLayout({
         links={navLinks}
         rightSlot={<><NotificationBell userId={user.id} /><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
       />
-      <SrdInitializer />
+      <SrdInitializer fullData={isBetaTester} />
       <ConnectionStatus />
       <ErrorBoundary name="Oracle">
         <FloatingCardContainer />

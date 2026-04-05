@@ -197,14 +197,17 @@ Chaves novas em `messages/pt-BR/campaign.json` e `messages/en/campaign.json`:
 
 ---
 
-## Critérios de Aceite
+## Critérios de Aceite — Fases 1–3
 
 - [ ] DM vê quick actions (Convidar, Novo Encontro, Nova Nota) no topo sem scroll
 - [ ] Sessão ativa aparece como banner dourado se existir
 - [ ] Tier 1 sections visualmente mais proeminentes que Tier 2/3
 - [ ] Seções Tier 2 mostram badge de contagem (ou "Vazio")
-- [ ] Campanha nova (0 jogadores, 0 sessões) mostra onboarding de 3 passos
-- [ ] Onboarding desaparece após completar os 3 passos
 - [ ] Nenhum componente interno de seção foi modificado
 - [ ] Build passa sem erros de TypeScript
 - [ ] Funciona em mobile (responsive)
+
+## Critérios de Aceite — Fase 4 (Onboarding)
+
+- [ ] Campanha nova (0 jogadores, 0 sessões) mostra onboarding de 3 passos
+- [ ] Onboarding desaparece após completar os 3 passos

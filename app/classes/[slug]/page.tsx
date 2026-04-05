@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicClassDetail } from "@/components/public/PublicClassDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
-import classesData from "@/public/srd/classes-srd.json";
+import classesData from "@/data/srd/classes-srd.json";
 import type { SrdClass } from "@/lib/types/srd-class";
 
 const classes = classesData as SrdClass[];

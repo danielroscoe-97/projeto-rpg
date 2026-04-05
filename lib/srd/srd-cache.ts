@@ -1,6 +1,7 @@
 import { openDB } from "idb";
 import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
+import { cacheSuffix } from "./srd-mode";
 
 const DB_NAME = "srd-cache";
 // Bumped to 7: added feats object store
@@ -52,7 +53,7 @@ export async function getCachedMonsters(
 ): Promise<SrdMonster[] | null> {
   try {
     const db = await getDb();
-    const result = await db.get("monsters", version);
+    const result = await db.get("monsters", `${version}${cacheSuffix()}`);
     return result ?? null;
   } catch {
     return null;
@@ -65,7 +66,7 @@ export async function setCachedMonsters(
 ): Promise<void> {
   try {
     const db = await getDb();
-    await db.put("monsters", data, version);
+    await db.put("monsters", data, `${version}${cacheSuffix()}`);
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }
@@ -76,7 +77,7 @@ export async function getCachedSpells(
 ): Promise<SrdSpell[] | null> {
   try {
     const db = await getDb();
-    const result = await db.get("spells", version);
+    const result = await db.get("spells", `${version}${cacheSuffix()}`);
     return result ?? null;
   } catch {
     return null;
@@ -89,7 +90,7 @@ export async function setCachedSpells(
 ): Promise<void> {
   try {
     const db = await getDb();
-    await db.put("spells", data, version);
+    await db.put("spells", data, `${version}${cacheSuffix()}`);
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }

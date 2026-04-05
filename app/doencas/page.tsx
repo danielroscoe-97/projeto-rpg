@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicDiseasesGrid } from "@/components/public/PublicDiseasesGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
-import conditionsData from "@/public/srd/conditions.json";
+import conditionsData from "@/data/srd/conditions.json";
 import Link from "next/link";
 
 // -- Metadata -----------------------------------------------------------------

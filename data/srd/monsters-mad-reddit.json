@@ -1,0 +1,353 @@
+[
+  {
+    "id": "mad-165-avolakia",
+    "name": "Avolakia",
+    "cr": "10",
+    "type": "aberration",
+    "hit_points": 178,
+    "armor_class": 18,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Medium",
+    "alignment": "neutral evil",
+    "hp_formula": "21d10 + 63",
+    "speed": {
+      "walk": "20 ft."
+    },
+    "str": 19,
+    "dex": 16,
+    "con": 17,
+    "int": 16,
+    "wis": 21,
+    "cha": 22,
+    "saving_throws": null,
+    "skills": {
+      "intimidation": 10
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": "fire; bludgeoning, piercing, and slashing from nonmagical weapons",
+    "damage_immunities": "cold, poison",
+    "condition_immunities": "Poisoned, Paralyzed",
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "Avolokian, Common, Undercommon",
+    "xp": 5900,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The avolakia makes five attacks: one with its bite and four with its claws."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) piercing damage plus 14 (4d6) poison damage."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +8 to hit, reach 10 ft., one target. Hit: 6 (1d4 + 4) slashing damage."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/766vv8/day_165_avolakia/",
+    "monster_a_day_author": "1d6Adventurers",
+    "monster_a_day_day_id": "A165",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-39-behemoth-cyst",
+    "name": "Behemoth Cyst",
+    "cr": "16",
+    "type": "aberration",
+    "hit_points": 136,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "13d10 + 65",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 22,
+    "dex": 10,
+    "con": 20,
+    "int": 10,
+    "wis": 2,
+    "cha": 2,
+    "saving_throws": null,
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": "bludgeoning, piercing, and slashing damage from nonmagical weapons",
+    "damage_immunities": "necrotic, poison",
+    "condition_immunities": "frightened, poisoned",
+    "senses": "blindsight 60 ft., passive Perception 12",
+    "languages": "understands common and all languages it knew in life but can't speak",
+    "xp": 15000,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The behemoth cyst makes two claw attacks."
+      },
+      {
+        "name": "Claw",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 5ft., one target. Hit: 15 (2d8 + 6) slashing damage plus 9 (2d8) necrotic damage."
+      },
+      {
+        "name": "Tentacle Barrage (Recharge 6)",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 10ft., all creatures within range. Hit: 19 (3d8 + 6) piercing damage plus 13 (3d8) necrotic damage."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/66jv6w/day_39_behemoth_cyst/",
+    "monster_a_day_author": "1d6Adventurers",
+    "monster_a_day_day_id": "A39",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad--boogie-man",
+    "name": "Boogie Man",
+    "cr": "11",
+    "type": "aberration",
+    "hit_points": 220,
+    "armor_class": 17,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Large",
+    "alignment": "chaotic evil",
+    "hp_formula": "21d10 + 105",
+    "speed": {
+      "walk": "30 ft."
+    },
+    "str": 20,
+    "dex": 14,
+    "con": 20,
+    "int": 10,
+    "wis": 15,
+    "cha": 17,
+    "saving_throws": null,
+    "skills": {
+      "performance": 7
+    },
+    "damage_vulnerabilities": "fire, slashing",
+    "damage_resistances": null,
+    "damage_immunities": "necrotic",
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 12",
+    "languages": "Deep Speech, Undercommon",
+    "xp": 7200,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The boogie man makes three slam attacks"
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 12 (2d6 + 5) bludgeoning damage plus 7 (2d6) necrotic damage."
+      },
+      {
+        "name": "Spew Insects (Recharge 5-6)",
+        "desc": "The boogie man unleashes a 20-foot cone of swarming insects from its bag-like body. Each creature in that area must make a DC 17 Constitution saving throw, taking 54 (12d8) poison damage on a failed save, or half as much damage on a successful one. A creature that fails this saving throw by 5 or more is blinded until the end of its next turn. &nbsp;&nbsp; Additionally, the insects form 2 (1d4) swarms of insects in the area and act as an ally of the boogie man. They remain for 1 minute, until they or the boogie man die, or until the boogie man pulls the insects back into its body as an action."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Tear in Fabric",
+        "desc": "When the boogie man takes slashing damage, it can release a swarm of insects. The swarm of insects form in a space adjacent to the boogie man and act as an ally of the boogie man. They remain for 1 minute, until they or the boogie man die, or until the boogie man pulls the insects back into its body as an action."
+      }
+    ],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/1d6Adventurers/comments/79wizc/this_is_halloween_with_a_bonus_boogie_man/",
+    "monster_a_day_author": "1d6Adventurers",
+    "monster_a_day_day_id": "Bonus",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-140-dolgrim",
+    "name": "Dolgrim",
+    "cr": "1",
+    "type": "aberration",
+    "hit_points": 44,
+    "armor_class": 15,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Small",
+    "alignment": "chaotic evil",
+    "hp_formula": "8d6 + 16",
+    "speed": {
+      "walk": "25 ft."
+    },
+    "str": 15,
+    "dex": 14,
+    "con": 14,
+    "int": 10,
+    "wis": 10,
+    "cha": 8,
+    "saving_throws": null,
+    "skills": {
+      "athletics": 4,
+      "perception": 2,
+      "stealth": 4
+    },
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "darkvision 60 ft., passive Perception 12",
+    "languages": "Common, Goblin",
+    "xp": 200,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dolgrim makes two attacks: one with its morningstar and one with its light crossbow."
+      },
+      {
+        "name": "Morningstar",
+        "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) bludgeoning damage."
+      },
+      {
+        "name": "Light Crossbow",
+        "desc": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 6 (1d8 + 2) piercing damage."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/6ywne4/day_140_dolgrim/",
+    "monster_a_day_author": "1d6Adventurers",
+    "monster_a_day_day_id": "A140",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-10-excremental",
+    "name": "Excremental",
+    "cr": "8",
+    "type": "aberration",
+    "hit_points": 148,
+    "armor_class": 13,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "neutral evil",
+    "hp_formula": "13d12 + 52",
+    "speed": {
+      "walk": "25 ft."
+    },
+    "str": 25,
+    "dex": 10,
+    "con": 20,
+    "int": 10,
+    "wis": 10,
+    "cha": 10,
+    "saving_throws": null,
+    "skills": {
+      "perception": 4
+    },
+    "damage_vulnerabilities": "radiant",
+    "damage_resistances": "bludgeoning, piercing, and slashing damage from nonmagical weapons",
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 14",
+    "languages": "Common",
+    "xp": 3900,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The excremental makes two slam attacks."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Weapon Attack: +10 to hit, reach 5ft., one target. Hit: 14 (2d6 + 7) bludgeoning damage plus 7 (2d6) poison damage."
+      },
+      {
+        "name": "Lob Excrement (Recharge 6)",
+        "desc": "The excremental throws a chunk of itself at a point it can see within 50 feet. Each creature in a 20-foot-radius sphere centered on that point must make a DC 16 dexterity saving throw. A target takes 28 (8d6) poison damage on a failed save, or half as much damage on a successful one. The projectile also emanates the excremental's Stench trait until the end of the excremental's next turn."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/5yo9ur/day_10_excremental/",
+    "monster_a_day_author": "1d6Adventurers",
+    "monster_a_day_day_id": "A10",
+    "monster_a_day_notes": null
+  },
+  {
+    "id": "mad-201-illiphant",
+    "name": "Illiphant",
+    "cr": "6",
+    "type": "aberration",
+    "hit_points": 131,
+    "armor_class": 14,
+    "ruleset_version": "2014",
+    "source": "MAD",
+    "is_srd": false,
+    "token_url": null,
+    "fallback_token_url": null,
+    "size": "Huge",
+    "alignment": "lawful evil",
+    "hp_formula": "14d12 + 42",
+    "speed": {
+      "walk": "40 ft."
+    },
+    "str": 22,
+    "dex": 9,
+    "con": 17,
+    "int": 14,
+    "wis": 11,
+    "cha": 6,
+    "saving_throws": {
+      "int": 5
+    },
+    "skills": null,
+    "damage_vulnerabilities": null,
+    "damage_resistances": null,
+    "damage_immunities": null,
+    "condition_immunities": null,
+    "senses": "passive Perception 10",
+    "languages": "Deep Speech, Undercommon, telepathy 120 ft.",
+    "xp": 2300,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Gore",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 19 (3d8 + 6) piercing damage."
+      },
+      {
+        "name": "Stomp",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 22 (3d10 + 6) bludgeoning damamge."
+      },
+      {
+        "name": "Tentacles",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 10 ft., one creature. Hit: 13 (2d10 + 2) psychic damage. If the target is Large or smaller, it is grappled (escape DC 16) and must succeed on a DC 13 Intelligence saving throw or be stunned until the grapple ends."
+      },
+      {
+        "name": "Extract Brain",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 5 ft., one incapacitated humanoid grappled by the illiphant. Hit: 39 (6d10 + 6) piercing damage. If this damage reduces the target to 0 hit points, the illiphant kills the target by extracting and devouring its brain."
+      }
+    ],
+    "reactions": [],
+    "legendary_actions": [],
+    "monster_a_day_url": "https://www.reddit.com/r/monsteraday/comments/7hjyrw/day_201_illiphant/",
+    "monster_a_day_author": "1d6Adventurers",
+    "monster_a_day_day_id": "A201",
+    "monster_a_day_notes": null
+  }
+]

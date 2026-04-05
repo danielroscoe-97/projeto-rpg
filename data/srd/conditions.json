@@ -1,0 +1,578 @@
+[
+  {
+    "id": "disease-arcane-blight",
+    "name": "Arcane Blight",
+    "description": "Any humanoid that spends 12 hours in the necropolis must succeed on a DC 15 Constitution saving throw or contract an arcane blight. This magical disease transforms the humanoid into a nothic, but only after the victim experiences hallucinations and feelings of isolation and paranoia. Other symptoms include clammy skin, hair loss, and myopia (nearsightedness).\nA player character infected with the arcane blight gains the following flaw: \"I don't trust anyone.\" This flaw, which supersedes any conflicting flaw, is fed by delusions that are difficult for the character to distinguish from reality. Common delusions include the belief that that allies are conspiring to steal the victim's riches or otherwise turn against the victim.\nWhenever it finishes a long rest, an infected humanoid must repeat the saving throw. On a successful save, the DC for future saves against the arcane blight drops by 1d6. If the saving throw DC drops to 0, the creature overcomes the arcane blight and becomes immune to the effect of further exposure. A creature that fails three of these saving throws transforms into a nothic under the DM's control. Only a wish spell or divine intervention can undo this transformation.\nA greater restoration spell or similar magic ends the infection on the target, removing the flaw and all other symptoms, but this magic doesn't protect the target against further exposure.",
+    "source": "IDRotF",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "blinded",
+    "name": "Blinded",
+    "description": "A blinded creature can't see and automatically fails any ability check that requires sight. Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "blinded-2024",
+    "name": "Blinded",
+    "description": "While you have the Blinded condition, you experience the following effects.\nCan't See. You can't see and automatically fail any ability check that requires sight.\nAttacks Affected. Attack rolls against you have Advantage, and your attack rolls have Disadvantage.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-blinding-sickness",
+    "name": "Blinding Sickness",
+    "description": "Pain grips the creature's mind, and its eyes turn milky white. The creature has disadvantage on Wisdom checks and Wisdom saving throws and is blinded.\nThis disease can be inflicted with the contagion spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "status-bloodied-2024",
+    "name": "Bloodied",
+    "description": "A creature is Bloodied while it has half its Hit Points or fewer remaining.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "status",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-blue-mist-fever",
+    "name": "Blue Mist Fever",
+    "description": "A magical mist creeps through the jungles of Chult. Contact with this thin, blue, odorless mist can infect giants and humanoids with blue mist fever. A dispel magic spell destroys the mist in a 20-foot square starting at a point chosen by the caster within the spell's range. An encounter with this mist typically covers 1d6 such areas (400-2,400 square feet).\nA giant or humanoid that comes into contact with the mist must succeed on a DC 13 Constitution saving throw or become infected with blue mist fever. An infected creature begins seeing vivid hallucinations of blue monkeys 1d6 hours after failing the save, and the hallucinations last until the disease ends on the creature. A creature can repeat the saving throw every 24 hours, ending the effect on itself on a success.",
+    "source": "ToA",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-bluerot",
+    "name": "Bluerot",
+    "description": "This disease targets humanoids. While afflicted with bluerot, a victim grows grotesque blue boils on their face and back. This disease is carried by undead (including the drowned ones in Tammeraut's Fate), and victims most often acquire it through wounds caused by infected creatures. The disease's boils manifest in 1d4 hours, causing the victim's Constitution and Charisma scores to decrease by 1d4 each, to a minimum of 3. This is quickly followed by a fever and tingling in the extremities. An infected creature is vulnerable to radiant damage and gains the ability to breathe underwater.\nAt the end of each long rest, an infected creature makes a DC 12 Constitution saving throw. On a success, the victim regains 1 point of Constitution and 1 point of Charisma lost to the disease. If the infected creature regains all the points lost to the disease, it is cured. Other effects that raise the victim's ability scores do not cure the disease. On a failed saving throw, the victim takes 18 (4d8) necrotic damage as the boils burst and spread. A creature reduced to 0 hit points by this damage cannot regain hit points until the disease is cured, though it can be stabilized as normal.",
+    "source": "GoS",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-cackle-fever",
+    "name": "Cackle Fever",
+    "description": "This disease targets humanoids, although gnomes are strangely immune. While in the grips of this disease, victims frequently succumb to fits of mad laughter, giving the disease its common name and its morbid nickname: \"the shrieks.\"\nSymptoms manifest 1d4 hours after infection and include fever and disorientation. The infected creature gains one level of exhaustion that can't be removed until the disease is cured.\nAny event that causes the infected creature great stress—including entering combat, taking damage, experiencing fear, or having a nightmare—forces the creature to make a DC 13 Constitution saving throw.\nOn a failed save, the creature takes 5 (1d10) psychic damage and becomes incapacitated with mad laughter for 1 minute. The creature can repeat the saving throw at the end of each of its turns, ending the mad laughter and the incapacitated condition on a success. Any humanoid creature that starts its turn within 10 feet of an infected creature in the throes of mad laughter must succeed on a DC 10 Constitution saving throw or also become infected with the disease. Once a creature succeeds on this save, it is immune to the mad laughter of that particular infected creature for 24 hours.\nAt the end of each long rest, an infected creature can make a DC 13 Constitution saving throw. On a successful save, the DC for this save and for the save to avoid an attack of mad laughter drops by 1d6. When the saving throw DC drops to 0, the creature recovers from the disease. A creature that fails three of these saving throws gains a randomly determined form of Madness.",
+    "source": "DMG",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-cackle-fever-2024",
+    "name": "Cackle Fever",
+    "description": "Cheaply made potions and elixirs are sometimes tainted by Cackle Fever, which affects Humanoids only (gnomes are strangely immune). A creature suffers the following effects 1d4 days after infection:\nThe creature gains 1 Exhaustion level, which lasts until the contagion ends on the creature. While the creature has the Exhaustion condition, the creature makes a DC 13 Constitution saving throw each time it takes damage other than Psychic damage. On a failed save, the creature takes 5 (1d10) Psychic damage and has the Incapacitated condition as it laughs uncontrollably. At the end of each of its turns, the creature repeats the save, ending the effect on itself on a success. After 1 minute, it succeeds automatically.\nFighting the Contagion. At the end of each Long Rest, an infected creature makes a DC 13 Constitution saving throw. After the creature succeeds on three of these saves, the contagion ends on it, and the creature is immune to Cackle Fever for 1 year.\nSpreading the Contagion. Any Humanoid (other than a gnome) that starts its turn within a 10-foot Emanation [Area of Effect] originating from a creature infected with Cackle Fever must succeed on a DC 10 Constitution saving throw or also become infected with the contagion. On a successful save, the Humanoid can't catch the contagion from that particular infected creature for the next 24 hours.",
+    "source": "XDMG",
+    "ruleset_version": "2024",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "charmed",
+    "name": "Charmed",
+    "description": "A charmed creature can't attack the charmer or target the charmer with harmful abilities or magical effects. The charmer has advantage on any ability check to interact socially with the creature.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "charmed-2024",
+    "name": "Charmed",
+    "description": "While you have the Charmed condition, you experience the following effects.\nCan't Harm the Charmer. You can't attack the charmer or target the charmer with damaging abilities or Magical Effect.\nSocial Advantage. The charmer has Advantage on any ability check to interact with you socially.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "status-concentration",
+    "name": "Concentration",
+    "description": "Some spells require you to maintain concentration in order to keep their magic active. If you lose concentration, such a spell ends.\nIf a spell must be maintained with concentration, that fact appears in its Duration entry, and the spell specifies how long you can concentrate on it. You can end concentration at any time (no action required).\nNormal activity, such as moving and attacking, doesn't interfere with concentration. The following factors can break concentration:\nCasting another spell that requires concentration: You lose concentration on a spell if you cast another spell that requires concentration. You can't concentrate on two spells at once. Taking damage: Whenever you take damage while you are concentration on a spell, you must make a Constitution saving throw to maintain your concentration. The DC equals 10 or half the damage you take, whichever number is higher. If you take damage from multiple sources, such as an arrow and a dragon's breath, you make a separate saving throw for each source of damage. Being incapacitated or killed: You lose concentration on a spell if you are incapacitated or if you die.\nThe DM might also decide that certain environmental phenomena, such as a wave crashing over you while you're on a storm-tossed ship, require you to succeed on a DC 10 Constitution saving throw to maintain concentration on a spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "status",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "status-concentration-2024",
+    "name": "Concentration",
+    "description": "Some spells and other effects require Concentration to remain active, as specified in their descriptions. If the effect's creator loses Concentration, the effect ends. If the effect has a maximum duration, the effect's description specifies how long the creator can concentrate on it: up to 1 minute, 1 hour, or some other duration. The creator can end Concentration at any time (no action required). The following factors break Concentration.\nAnother Concentration Effect. You lose Concentration on an effect the moment you start casting a spell that requires Concentration or activate another effect that requires Concentration.\nDamage. If you take damage, you must succeed on a Constitution Saving Throw to maintain Concentration. The DC equals 10 or half the damage taken (round down), whichever number is higher, up to a maximum DC of 30.\nIncapacitated or Dead. Your Concentration ends if you have the Incapacitated condition or you die.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "status",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "deafened",
+    "name": "Deafened",
+    "description": "A deafened creature can't hear and automatically fails any ability check that requires hearing.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "deafened-2024",
+    "name": "Deafened",
+    "description": "While you have the Deafened condition, you experience the following effect.\nCan't Hear. You can't hear and automatically fail any ability check that requires hearing.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "exhaustion",
+    "name": "Exhaustion",
+    "description": "Some special abilities and environmental hazards, such as starvation and the long-term effects of freezing or scorching temperatures, can lead to a special condition called exhaustion. Exhaustion is measured in six levels. An effect can give a creature one or more levels of exhaustion, as specified in the effect's description.\nIf an already exhausted creature suffers another effect that causes exhaustion, its current level of exhaustion increases by the amount specified in the effect's description.\nA creature suffers the effect of its current level of exhaustion as well as all lower levels. For example, a creature suffering level 2 exhaustion has its speed halved and has disadvantage on ability checks.\nAn effect that removes exhaustion reduces its level as specified in the effect's description, with all exhaustion effects ending if a creature's exhaustion level is reduced below 1.\nFinishing a long rest reduces a creature's exhaustion level by 1, provided that the creature has also ingested some food and drink. Also, being raised from the dead reduces a creature's exhaustion level by 1.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "exhaustion-2024",
+    "name": "Exhaustion",
+    "description": "While you have the Exhaustion condition, you experience the following effects.\nExhaustion Levels. This condition is cumulative. Each time you receive it, you gain 1 Exhaustion level. You die if your Exhaustion level is 6.\nD20 Tests Affected. When you make a D20 Test the roll is reduced by 2 times your Exhaustion level.\nSpeed Reduced. Your Speed is reduced by a number of feet equal to 5 times your Exhaustion level.\nRemoving Exhaustion Levels. Finishing a Long Rest removes 1 of your Exhaustion levels. When your Exhaustion level reaches 0, the condition ends.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-filth-fever",
+    "name": "Filth Fever",
+    "description": "A raging fever sweeps through the creature's body. The creature has disadvantage on Strength checks, Strength saving throws, and attack rolls that use Strength.\nThis disease can be inflicted with the contagion spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-flesh-rot",
+    "name": "Flesh Rot",
+    "description": "The creature's flesh decays. The creature has disadvantage on Charisma checks and vulnerability to all damage.\nThis disease can be inflicted with the contagion spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "frightened",
+    "name": "Frightened",
+    "description": "A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight. The creature can't willingly move closer to the source of its fear.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "frightened-2024",
+    "name": "Frightened",
+    "description": "While you have the Frightened condition, you experience the following effects.\nAbility Checks and Attacks Affected. You have Disadvantage on ability checks and attack rolls while the source of fear is within line of sight.\nCan't Approach. You can't willingly move closer to the source of fear.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-frigid-woe",
+    "name": "Frigid Woe",
+    "description": "Frigid woe is a special disease developed by Aeor's mages that cannot be cured by conventional treatment or magic. The only way a creature infected with the disease can be cured is by finding and drinking the manufactured antidote, a milky liquid stored in gold vials found in Eiselcross's ruins. This disease was created to slow down the forces of the gods and get around the healing power of their clerics and angels.\nThe disease is transmitted by breathing in blue spores that Aeor's mages created long ago. When a creature comes into contact with these spores, it must succeed on a DC 11 Constitution saving throw or become infected with frigid woe. It takes 1d4 days for the symptoms to manifest in an infected creature. These symptoms include fatigue, chills, and visible blue veins that appear on the creature's body. The infected creature's speed is reduced by 5 feet as long as it remains infected. Every 10 days after symptoms appear, an infected creature must succeed on a DC 11 Constitution saving throw, or its speed is reduced by another 5 feet. If a creature's speed is reduced to 0 as a result of this disease, the creature dies and its body turns into a statue made of ice.\nA creature can drink the antidote as an action, ending all symptoms and effects of the disease instantly.",
+    "source": "EGW",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-ghoul-gut",
+    "name": "Ghoul Gut",
+    "description": "Water polluted with ghoul parts carries ghoul gut. A creature drinking this tainted water must succeed on a DC 12 Constitution saving throw or contract the disease. Symptoms strike when a victim starts a long rest or next becomes excited, as during combat. A victim suffers severe cramps, and their bowels make sounds like two ghouls fighting. When the symptoms first strike, the victim takes 5 (2d4) necrotic damage. In addition, a diseased victim regains no hit points or Hit Dice from nonmagical sources, including resting or spending Hit Dice. A victim who finishes a long rest can attempt a DC 12 Constitution saving throw. On a successful save, the victim shakes off the disease. Failure deals the character another 5 (2d4) necrotic damage.\nA character who succeeds on a DC 15 Wisdom (Medicine) check can also remove the disease from another creature. Doing so requires the character making the check to care for the sick individual during a long rest. The caregiver gains no benefit from that rest.",
+    "source": "OoW",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-grackle-lung",
+    "name": "Grackle-Lung",
+    "description": "The constant smog in Gracklstugh causes grackle-lung in living, breathing creatures, resulting in persistent, wracking coughs and the spewing of thick, black phlegm. Whenever a living, breathing creature finishes a long rest in Gracklstugh, it must make a DC 11 Constitution saving throw. On each failed save, the creature gains one level of exhaustion as its airways become increasingly clogged. A creature that reaches level 6 exhaustion dies, as normal.\nA creature with one or more levels of exhaustion brought on by grackle-lung must succeed on a Constitution check to take the Dash action. If the check fails, the action cannot be attempted. If the creature attempts to cast a spell with a verbal component, it must succeed on a Constitution check or be unable to complete the spell, causing the spell to fail with no effect. The DC for each check is 10 + the creature's current exhaustion level.\nIf a creature's exhaustion level drops below 1, it no longer suffers the effects of grackle-lung and becomes immune to it for the next week. Duergar and derro are inured to grackle-lung, making Constitution checks against it with advantage. Any spell or effect that cures disease also cures grackle-lung, effectively removing all levels of exhaustion brought on by the affliction.",
+    "source": "OotA",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "grappled",
+    "name": "Grappled",
+    "description": "A grappled creature's speed becomes 0, and it can't benefit from any bonus to its speed. The condition ends if the grappler is incapacitated. The condition also ends if an effect removes the grappled creature from the reach of the grappler or grappling effect, such as when a creature is hurled away by the thunderwave spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "grappled-2024",
+    "name": "Grappled",
+    "description": "While you have the Grappled condition, you experience the following effects.\nSpeed 0. Your Speed is 0 and can't increase.\nAttacks Affected. You have Disadvantage on attack rolls against any target other than the grappler.\nMovable. The grappler can drag or carry you when it moves, but every foot of movement costs it 1 extra foot unless you are Tiny or two or more sizes smaller than it.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "incapacitated",
+    "name": "Incapacitated",
+    "description": "An incapacitated creature can't take actions or reactions.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "incapacitated-2024",
+    "name": "Incapacitated",
+    "description": "While you have the Incapacitated condition, you experience the following effects.\nInactive. You can't take any Action, Bonus Action, or Reaction.\nNo Concentration. Your Concentration is broken.\nSpeechless. You can't speak.\nSurprised. If you're Incapacitated when you roll Initiative, you have Disadvantage on the roll.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "invisible",
+    "name": "Invisible",
+    "description": "An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature's location can be detected by any noise it makes or any tracks it leaves. Attack rolls against the creature have disadvantage, and the creature's attack rolls have advantage.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "invisible-2024",
+    "name": "Invisible",
+    "description": "While you have the Invisible condition, you experience the following effects.\nSurprise. If you're Invisible when you roll Initiative, you have Advantage on the roll.\nConcealed. You aren't affected by any effect that requires its target to be seen unless the effect's creator can somehow see you. Any equipment you are wearing or carrying is also concealed.\nAttacks Affected. Attack rolls against you have Disadvantage, and your attack rolls have Advantage. If a creature can somehow see you, you don't gain this benefit against that creature.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-lichen-plague",
+    "name": "Lichen Plague",
+    "description": "A Beast, Giant, Humanoid, or Monstrosity that comes into contact with bile lichen spores is at risk of contracting a horrible disease as the lichen takes root on its body and grows into its brain. A creature suffers the following effects 1d4 days after infection:\nThe contagion first appears as a patch of green-yellow lichen no larger than 1 square inch on a random area of the body. When it finishes a Long Rest, the infected creature must succeed on a DC 14 Constitution saving throw or gain 1 Exhaustion level as the lichen spreads toward the creature's head. This Exhaustion level lasts until the contagion ends on the creature. A Humanoid that dies while infected with Lichen Plague rises immediately as a Zombie under the DM's control.\nFighting the Contagion. When it finishes a Long Rest, an infected creature makes a DC 14 Constitution saving throw. If the creature succeeds on three of these saving throws, the contagion ends on the creature and the creature is immune to Lichen Plague forever. The successful saves don't need to be consecutive.\nSpreading the Contagion. Any Beast, Giant, Humanoid, or Monstrosity that makes skin contact with the lichen on an infected creature must succeed on a DC 14 Constitution saving throw or be infected with Lichen Plague. On a successful save, the creature can't catch Lichen Plague for the next 24 hours.",
+    "source": "FRAiF",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-mindfire",
+    "name": "Mindfire",
+    "description": "The creature's mind becomes feverish. The creature has disadvantage on Intelligence checks and Intelligence saving throws, and the creature behaves as if under the effects of the confusion spell during combat.\nThis disease can be inflicted with the contagion spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-mudpox",
+    "name": "Mudpox",
+    "description": "Contact with dead oozes from the Underdark mixed with snowmelt and mud has been making people sick. Any Beast or Humanoid that touches mud contaminated by Mudpox must succeed on a DC 12 Constitution saving throw or become infected, suffering the following effect:\nDaily at dawn, the creature must succeed on a DC 12 Constitution saving throw or vomit up the food it ate the previous day, gaining 1 Exhaustion level. If the creature succeeds on this saving throw three consecutive times, the contagion ends.\nFighting the Contagion. A Heal or Lesser Restoration spell ends the contagion immediately.\nSpreading the Contagion. Any Humanoid that makes skin contact with a creature infected with Mudpox must succeed on a DC 12 Constitution saving throw or also become infected with the contagion. If the creature succeeds on this save, it can't catch the contagion from that particular infected creature for the next 24 hours.",
+    "source": "FRAiF",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "paralyzed",
+    "name": "Paralyzed",
+    "description": "A paralyzed creature is incapacitated and can't move or speak. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "paralyzed-2024",
+    "name": "Paralyzed",
+    "description": "While you have the Paralyzed condition, you experience the following effects.\nIncapacitated. You have the Incapacitated condition.\nSpeed 0. Your Speed is 0 and can't increase.\nSaving Throws Affected. You automatically fail Strength and Dexterity Saving Throw.\nAttacks Affected. Attack rolls against you have Advantage.\nAutomatic Critical Hits. Any attack roll that hits you is a Critical Hit if the attacker is within 5 feet of you.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "petrified",
+    "name": "Petrified",
+    "description": "A petrified creature is transformed, along with any nonmagical object it is wearing or carrying, into a solid inanimate substance (usually stone). Its weight increases by a factor of ten, and it ceases aging. The creature is incapacitated, can't move or speak, and is unaware of its surroundings. Attack rolls against the creature have advantage. The creature automatically fails Strength and Dexterity saving throws. The creature has resistance to all damage. The creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "petrified-2024",
+    "name": "Petrified",
+    "description": "While you have the Petrified condition, you experience the following effects.\nTurned to Inanimate Substance. You are transformed, along with any nonmagical objects you are wearing and carrying, into a solid inanimate substance (usually stone). Your weight increases by a factor of ten, and you cease aging.\nIncapacitated. You have the Incapacitated condition.\nSpeed 0. Your Speed is 0 and can't increase.\nAttacks Affected. Attack rolls against you have Advantage.\nSaving Throws Affected. You automatically fail Strength and Dexterity Saving Throw.\nResist Damage. You have Resistance to all damage.\nPoison Immunity. You have Immunity to the Poisoned condition.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "poisoned",
+    "name": "Poisoned",
+    "description": "A poisoned creature has disadvantage on attack rolls and ability checks.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "poisoned-2024",
+    "name": "Poisoned",
+    "description": "While you have the Poisoned condition, you experience the following effect.\nAbility Checks and Attacks Affected. You have Disadvantage on attack rolls and ability checks.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "prone",
+    "name": "Prone",
+    "description": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition. The creature has disadvantage on attack rolls. An attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the attack roll has disadvantage.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "prone-2024",
+    "name": "Prone",
+    "description": "While you have the Prone condition, you experience the following effects.\nRestricted Movement. Your only movement options are to Crawling or to spend an amount of movement equal to half your Speed (round down) to right yourself and thereby end the condition. If your Speed is 0, you can't right yourself.\nAttacks Affected. You have Disadvantage on attack rolls. An attack roll against you has Advantage if the attacker is within 5 feet of you. Otherwise, that attack roll has Disadvantage.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-redface",
+    "name": "Redface",
+    "description": "The effects of redface are identical to those of sight rot (see \"Diseases\" in chapter 8 of the Dungeon Master's Guide), but it's caused by pollutants in the air rather than contaminated drinking water, making it difficult to avoid.",
+    "source": "GoS",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "restrained",
+    "name": "Restrained",
+    "description": "A restrained creature's speed becomes 0, and it can't benefit from any bonus to its speed. Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage. The creature has disadvantage on Dexterity saving throws.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "restrained-2024",
+    "name": "Restrained",
+    "description": "While you have the Restrained condition, you experience the following effects.\nSpeed 0. Your Speed is 0 and can't increase.\nAttacks Affected. Attack rolls against you have Advantage, and your attack rolls have Disadvantage.\nSaving Throws Affected. You have Disadvantage on Dexterity Saving Throw.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-saprophytic-plague",
+    "name": "Saprophytic Plague",
+    "description": "Xanthoria's research into lichdom and her creation of a living phylactery led to the emergence of the plague spreading across the Sword Coast. Any beast or humanoid that comes within 10 feet of a creature infected by the saprophytic plague must succeed on a DC 20 Constitution saving throw or become infected as well. On a successful save, a creature is immune to the plague for 24 hours, and any creature that is immune to disease succeeds on the save automatically.\nAfter a failed save, a creature experiences the first symptoms—body aches, nausea, slurred speech, and uncontrollable drooling—1d4 hours later and gains 1 level of exhaustion. Every 24 hours thereafter, the creature automatically gains another level of exhaustion. Any creature killed by the saprophytic plague transforms into a lifeless magenta ooze.\nA creature infected by the saprophytic plague for at least 24 hours behaves like a zombie and seems barely aware of its surroundings, as fungal growths sprout from its head, body, and limbs. It feels an overriding urge to be around groups of uninfected creatures so that it can spread the contagion. This is the time when infected humanoids begin speaking the word \"Xanthoria\" over and over, with no understanding of what the word means. This behavior is the result of a mycelial network of spores that forms a tenuous connection between Xanthoria and humanoids that become infected by the plague.\nFoodstuffs that are exposed to the plague's spores decay or go sour within 2d12 hours, leaving behind a lurid magenta mass of oozing fungi. Eating infected food requires a saving throw as above.\nAny magic that cures a disease can rid a creature of the saprophytic plague. Casting purify food and drink destroys the infection in foodstuffs.",
+    "source": "CM",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-seizure",
+    "name": "Seizure",
+    "description": "The creature is overcome with shaking. The creature has disadvantage on Dexterity checks, Dexterity saving throws, and attack rolls that use Dexterity.\nThis disease can be inflicted with the contagion spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-sewer-plague",
+    "name": "Sewer Plague",
+    "description": "Sewer plague is a generic term for a broad category of illnesses that incubate in sewers, refuse heaps, and stagnant swamps, and which are sometimes transmitted by creatures that dwell in those areas, such as rats and otyughs.\nWhen a humanoid creature is bitten by a creature that carries the disease, or when it comes into contact with filth or offal contaminated by the disease, the creature must succeed on a DC 11 Constitution saving throw or become infected.\nIt takes 1d4 days for sewer plague's symptoms to manifest in an infected creature. Symptoms include fatigue and cramps. The infected creature suffers one level of exhaustion, and it regains only half the normal number of hit points from spending Hit Dice and no hit points from finishing a long rest.\nAt the end of each long rest, an infected creature must make a DC 11 Constitution saving throw. On a failed save, the character gains one level of exhaustion.\nOn a successful save, the character's exhaustion level decreases by one level. If a successful saving throw reduces the infected creature's level of exhaustion below 1, the creature recovers from the disease.",
+    "source": "DMG",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-sewer-plague-2024",
+    "name": "Sewer Plague",
+    "description": "Fouled potions and alchemical waste can give rise to Sewer Plague, which incubates in sewers and refuse heaps and is sometimes transmitted by creatures that dwell in such areas, including otyughs and rats. Any Humanoid that is wounded by a creature that carries the contagion or that comes into contact with contaminated filth or offal must succeed on a DC 11 Constitution saving throw or become infected with Sewer Plague. A creature suffers the following effects 1d4 days after infection:\nThe creature gains 1 Exhaustion level. While the creature has any Exhaustion levels, it regains only half the normal number of Hit Points from spending Hit Point Dice. While the creature has any Exhaustion levels, finishing a Long Rest neither restores lost Hit Points nor reduces the creature's Exhaustion level.\nFighting the Contagion. Daily at dawn, an infected creature makes a DC 11 Constitution saving throw. On a failed save, the creature gains 1 Exhaustion level as its fatigue worsens. On a successful save, the creature's Exhaustion level decreases by 1. If the creature's Exhaustion level is reduced to 0, the contagion ends on the creature.",
+    "source": "XDMG",
+    "ruleset_version": "2024",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-shaking-plague",
+    "name": "Shaking Plague",
+    "description": "Magical experiments gone awry gave rise to Shaking Plague, which affects Humanoids. A creature suffers the following effects 1d4 days after infection:\nThe creature gains 1 Exhaustion level. While the creature has any Exhaustion levels, finishing a Long Rest doesn't reduce the creature's Exhaustion level. While the creature has any Exhaustion levels, its skin is covered in pus-filled boils. While the creature has any Exhaustion levels, magic-dampening tremors afflict it. The creature has Disadvantage on Dexterity checks and saving throws, and whenever the creature casts a spell with a Somatic component, it must succeed on a DC 11 Constitution saving throw, or the spell dissipates with no effect and the action, Bonus Action, or Reaction used to cast it is wasted. If that spell was cast with a spell slot, that slot isn't expended.\nFighting the Contagion. Daily at dawn, an infected creature makes a DC 11 Constitution saving throw. On a failed save, the creature gains 1 Exhaustion level as its fatigue worsens. On a successful save, the creature's Exhaustion level decreases by 1. If the creature's Exhaustion level is reduced to 0, the contagion ends on the creature.\nSpreading the Contagion. Any Humanoid that makes skin contact with a creature infected with Shaking Plague must succeed on a DC 11 Constitution saving throw or also become infected with the contagion. On a successful save, the Humanoid can't catch the contagion from that particular infected creature for the next 24 hours.",
+    "source": "FRAiF",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-shivering-sickness",
+    "name": "Shivering Sickness",
+    "description": "Insects native to the jungles and marshes of Chult carry this disease, shivering sickness. The easiest protection against it is a coating of insect-repelling salve on all exposed skin (for the cost of insect repellent, see \"Buying a Special Item\".\nA giant or humanoid that takes damage from Swarm of Insects or from giant centipede, giant scorpion, or giant wasp is exposed to the disease at the end of the encounter. Those who haven't applied insect repellent since their previous long rest are exposed to the disease when they finish a long rest.\nA giant or humanoid exposed to the disease must succeed on a DC 11 Constitution saving throw or become infected. A creature with natural armor has advantage on the saving throw. It takes 2d6 hours for symptoms to manifest in an infected creature. Symptoms include blurred vision, disorientation, and a sudden drop in body temperature that causes uncontrollable shivering and chattering of the teeth.\nOnce symptoms begin, the infected creature regains only half the normal number of hit points from spending Hit Dice and no hit points from a long rest. The infected creature also has disadvantage on ability checks and attack rolls. At the end of a long rest, an infected creature repeats the saving throw, shaking off the disease on a successful save.",
+    "source": "ToA",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-sight-rot",
+    "name": "Sight Rot",
+    "description": "This painful infection causes bleeding from the eyes and eventually blinds the victim.\nA beast or humanoid that drinks water tainted by sight rot must succeed on a DC 15 Constitution saving throw or become infected. One day after infection, the creature's vision starts to become blurry. The creature takes a -1 penalty to attack rolls and ability checks that rely on sight. At the end of each long rest after the symptoms appear, the penalty worsens by 1. When it reaches -5, the victim is blinded until its sight is restored by magic such as lesser restoration or heal.\nSight rot can be cured using a rare flower called Eyebright, which grows in some swamps. Given an hour, a character who has proficiency with an herbalism kit can turn the flower into one dose of ointment. Applied to the eyes before a long rest, one dose of it prevents the disease from worsening after that rest. After three doses, the ointment cures the disease entirely.",
+    "source": "DMG",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-sight-rot-2024",
+    "name": "Sight Rot",
+    "description": "Any Beast or Humanoid that drinks water tainted by Sight Rot must succeed on a DC 15 Constitution saving throw or have the Blinded condition until the contagion ends.\nFighting the Contagion. Magic such as a Heal or Lesser Restoration spell ends the contagion immediately. A character who is proficient with an Herbalism Kit can use it to create one dose of nonmagical ointment, which takes 1 hour. When applied to the eyes of a creature suffering from Sight Rot, the ointment suppresses the contagion on that creature for 24 hours. If the contagion is suppressed in this way for a total of 72 hours (requiring three doses and applications of the ointment), the contagion ends on the creature.\nSpreading the Contagion. Any Humanoid that makes skin contact with a creature infected with Sight Rot must succeed on a DC 15 Constitution saving throw or also become infected with the contagion. On a successful save, the Humanoid can't catch the contagion from that particular infected creature for the next 24 hours.",
+    "source": "XDMG",
+    "ruleset_version": "2024",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-slimy-doom",
+    "name": "Slimy Doom",
+    "description": "The creature begins to bleed uncontrollably. The creature has disadvantage on Constitution checks and Constitution saving throws. In addition, whenever the creature takes damage, it is stunned until the end of its next turn.\nThis disease can be inflicted with the contagion spell.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-spider-eggs",
+    "name": "Spider Eggs",
+    "description": "If the party is defeated, stabilized characters awaken after 1d4 hours to find themselves cocooned in sticky webs and suspended 10 feet off the floor, with spider eggs implanted in their bodies. A cocooned character is restrained and can use its action to try to escape by making a successful DC 15 Strength check.\nSpider eggs implanted in a host hatch in 2d12 hours, killing the host as the baby spiders chew their way out. This infestation functions like a disease. A lesser restoration spell or similar magic cast upon the host kills the spider eggs, ending the threat.",
+    "source": "WDMM",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "stunned",
+    "name": "Stunned",
+    "description": "A stunned creature is incapacitated, can't move, and can speak only falteringly. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "stunned-2024",
+    "name": "Stunned",
+    "description": "While you have the Stunned condition, you experience the following effects.\nIncapacitated. You have the Incapacitated condition.\nSaving Throws Affected. You automatically fail Strength and Dexterity Saving Throw.\nAttacks Affected. Attack rolls against you have Advantage.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-super-tetanus",
+    "name": "Super-Tetanus",
+    "description": "A creature that contracts the disease of super-tetanus is wracked with pain as its heart races and its muscles spasm hard enough to break its bones. The creature takes 11 (2d10) damage at the start of each of its turns. If a victim is not cured by other means, it can repeat the saving throw at the end of every minute after becoming exposed, ending the effect on itself with a successful save.",
+    "source": "TftYP",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "status-surprised",
+    "name": "Surprised",
+    "description": "A band of adventurers sneaks up on a bandit camp, springing from the trees to attack them. A gelatinous cube glides down a dungeon passage, unnoticed by the adventurers until the cube engulfs one of them. In these situations, one side of the battle gains surprise over the other.\nThe DM determines who might be surprised. If neither side tries to be stealthy, they automatically notice each other. Otherwise, the DM compares the Dexterity (Stealth) checks of anyone hiding with the passive Wisdom (Perception) score of each creature on the opposing side. Any character or monster that doesn't notice a threat is surprised at the start of the encounter.\nIf you're surprised, you can't move or take an action on your first turn of the combat, and you can't take a reaction until that turn ends. A member of a group can be surprised even if the other members aren't.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "status",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "status-surprised-2024",
+    "name": "Surprised",
+    "description": "If a creature is caught unawares by the start of combat, that creature is surprised, which causes it to have Disadvantage on its Initiative roll.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "status",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-the-gnawing-plague",
+    "name": "The Gnawing Plague",
+    "description": "The Gnawing Plague, also known as \"the Gnaws,\" is known in every corner of Richemulot.\nTransmission. The Gnaws is spread when a creature is bitten by a rat, giant rat, swarm of rats, or wererat that carries the disease, or by coming into physical contact with an infected creature.\nInfection. Creatures exposed to the disease must succeed on a DC 10 Constitution saving throw or become infected. The DC of this saving throw can increase depending on the severity of the plague's spread (see \"Cycle of the Plague\" below).\nSymptoms. It takes 1d2 days for the Gnawing Plague's symptoms to manifest in an infected creature. The infected creature then gains 1 level of exhaustion, regains only half the normal number of hit points from spending Hit Dice, and regains no hit points from finishing a long rest.\nThe plague's symptoms include buboes, fatigue, splotchy rashes, sweats, and shaking, particularly facial tremors. Locals liken these twitches to the sniffing of rats. Sufferers often have scraps of leather placed in their mouths to prevent their teeth from clattering, though they inevitably gnaw through these scraps.\nRecovery. At the end of each long rest, an infected creature must make a DC 10 Constitution saving throw. On a failed save, the creature gains 1 level of exhaustion. On a successful save, the creature's exhaustion level decreases by 1. If a successful saving throw reduces the infected creature's level of exhaustion below 1, the creature recovers from the disease.\nImmunity. All forms of rats and wererats are immune to the Gnawing Plague.",
+    "source": "VRGR",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-the-rusting",
+    "name": "The Rusting",
+    "description": "The Rusting manifests as a thin, iron coating that grows over a victim's body. When exposed to moisture, this iron skin corrodes into a rust-colored plaque. As the Rusting covers the victim, the victim eventually transforms into a type of creature known as a Rusted (see chapter 9).\nAny creature that is wounded by a Rusted creature or spends 1 hour in an area where the Rusting has manifested makes a DC 10 Constitution saving throw. Constructs and Undead automatically succeed on this save. On a failed save, the creature is afflicted by the Rusting and suffers the following effects:\nThe creature gains 1 Exhaustion level and is cursed. While the creature is cursed, finishing a Long Rest doesn't reduce the creature's Exhaustion level. The creature's Speed is reduced by 5 feet. When a cursed creature's Exhaustion level reaches 6, it doesn't die. Instead, the creature transforms into a Rusted version of its former self; its creature type becomes Construct, and it gains Immunity to Poison damage and the Exhaustion, Petrified, and Poisoned conditions. The curse then ends for that creature.\nFighting the Contagion. Daily at dawn, an afflicted creature makes a DC 10 Constitution saving throw. On a failed save, the creature gains 1 Exhaustion level as more iron coats its skin. On a successful save, the creature's Exhaustion level decreases by 1. If the creature's Exhaustion level is reduced to 0, the contagion ends on the creature.\nRemoving the curse immediately ends the contagion for a creature.",
+    "source": "FRAiF",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "disease-throat-leeches",
+    "name": "Throat Leeches",
+    "description": "Minuscule parasites known as throat leeches infect the water in Chult's forests, swamps, and rivers. Any giant or humanoid that swallows tainted water must succeed on a DC 12 Constitution saving throw or be infested with throat leeches. Immediate symptoms include throat inflammation and shortness of breath. After 1d6 hours, the infected character gains 1 level of exhaustion that can't be removed (except as described below) until the disease is cured. At the end of each long rest, the infected creature must repeat the saving throw. On a failed save, the creature's exhaustion increases by 1 level; on a successful save, the creature's exhaustion decreases by 1 level. If a successful saving throw reduces the infected creature's level of exhaustion below 1, the creature recovers from the disease.\nExplorers can avoid contracting throat leeches by drinking only rainwater or water that's been boiled or magically purified.",
+    "source": "ToA",
+    "ruleset_version": "2014",
+    "category": "disease",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "unconscious",
+    "name": "Unconscious",
+    "description": "An unconscious creature is incapacitated, can't move or speak, and is unaware of its surroundings. The creature drops whatever it's holding and falls prone. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.",
+    "source": "PHB",
+    "ruleset_version": "2014",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  },
+  {
+    "id": "unconscious-2024",
+    "name": "Unconscious",
+    "description": "While you have the Unconscious condition, you experience the following effects.\nInert. You have the Incapacitated and Prone conditions, and you drop whatever you're holding. When this condition ends, you remain Prone.\nSpeed 0. Your Speed is 0 and can't increase.\nAttacks Affected. Attack rolls against you have Advantage.\nSaving Throws Affected. You automatically fail Strength and Dexterity Saving Throw.\nAutomatic Critical Hits. Any attack roll that hits you is a Critical Hit if the attacker is within 5 feet of you.\nUnaware. You're unaware of your surroundings.",
+    "source": "XPHB",
+    "ruleset_version": "2024",
+    "category": "condition",
+    "created_at": "2026-03-26T00:00:00Z"
+  }
+]

@@ -27,6 +27,8 @@ interface Invite {
 
 interface InvitePlayerDialogProps {
   campaignId: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const STATUS_ICONS: Record<string, React.ReactNode> = {
@@ -35,9 +37,14 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
   expired: <AlertCircle className="w-3.5 h-3.5 text-muted-foreground" />,
 };
 
-export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
+export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenChange }: InvitePlayerDialogProps) {
   const t = useTranslations("campaign");
-  const [open, setOpen] = useState(false);
+  const [_open, _setOpen] = useState(false);
+  const open = controlledOpen ?? _open;
+  const setOpen = (next: boolean) => {
+    if (controlledOpen === undefined) _setOpen(next);
+    onOpenChange?.(next);
+  };
 
   // ----- Via Link state -----
   const [linkCode, setLinkCode] = useState<string | null>(null);
@@ -188,12 +195,14 @@ export function InvitePlayerDialog({ campaignId }: InvitePlayerDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => { setOpen(nextOpen); if (!nextOpen) setEmail(""); }}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Mail className="w-4 h-4" />
-          {t("invite_button")}
-        </Button>
-      </DialogTrigger>
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Mail className="w-4 h-4" />
+            {t("invite_button")}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("invite_title")}</DialogTitle>

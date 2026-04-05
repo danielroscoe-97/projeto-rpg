@@ -1,4 +1,5 @@
 import type { RulesetVersion } from "@/lib/types/database";
+import { srdDataUrl } from "./srd-mode";
 
 export interface MonsterAction {
   name: string;
@@ -194,7 +195,7 @@ export function loadMonsters(
 ): Promise<SrdMonster[]> {
   const cached = monsterCache.get(version);
   if (cached) return cached;
-  const promise = fetch(`/srd/monsters-${version}.json`).then((res) => {
+  const promise = fetch(srdDataUrl(`monsters-${version}.json`)).then((res) => {
     if (!res.ok) {
       monsterCache.delete(version);
       throw new Error(`Failed to load SRD monsters (${version}): ${res.status}`);
@@ -211,7 +212,7 @@ let madMonsterCache: Promise<SrdMonster[]> | null = null;
  *  Returns empty array if file is missing (non-critical). */
 export function loadMadMonsters(): Promise<SrdMonster[]> {
   if (madMonsterCache) return madMonsterCache;
-  madMonsterCache = fetch("/srd/monsters-mad.json")
+  madMonsterCache = fetch(srdDataUrl("monsters-mad.json"))
     .then((res) => {
       if (!res.ok) {
         madMonsterCache = null;
@@ -231,7 +232,7 @@ export function loadMadMonsters(): Promise<SrdMonster[]> {
 export async function loadSpells(
   version: RulesetVersion
 ): Promise<SrdSpell[]> {
-  const res = await fetch(`/srd/spells-${version}.json`);
+  const res = await fetch(srdDataUrl(`spells-${version}.json`));
   if (!res.ok) {
     throw new Error(`Failed to load SRD spells (${version}): ${res.status}`);
   }
@@ -241,7 +242,7 @@ export async function loadSpells(
 /** Fetches the SRD conditions bundle (version-agnostic).
  *  Results are cached by the browser via the standard fetch cache. */
 export async function loadConditions(): Promise<SrdCondition[]> {
-  const res = await fetch(`/srd/conditions.json`);
+  const res = await fetch(srdDataUrl("conditions.json"));
   if (!res.ok) {
     throw new Error(`Failed to load SRD conditions: ${res.status}`);
   }
@@ -254,7 +255,7 @@ export function loadFeats(): Promise<SrdFeat[]> {
   const key = "all";
   const cached = featCache.get(key);
   if (cached) return cached;
-  const promise = fetch("/srd/feats.json").then((res) => {
+  const promise = fetch(srdDataUrl("feats.json")).then((res) => {
     if (!res.ok) {
       featCache.delete(key);
       throw new Error(`Failed to load SRD feats: ${res.status}`);
@@ -274,7 +275,7 @@ export function loadItems(): Promise<SrdItem[]> {
   const key = "all";
   const cached = itemCache.get(key);
   if (cached) return cached;
-  const promise = fetch(`/srd/items.json`).then((res) => {
+  const promise = fetch(srdDataUrl("items.json")).then((res) => {
     if (!res.ok) {
       itemCache.delete(key);
       throw new Error(`Failed to load SRD items: ${res.status}`);

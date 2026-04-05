@@ -14,9 +14,11 @@ import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { ImportContentModal } from "@/components/import/ImportContentModal";
 import { getImportedSources } from "@/lib/import/import-cache";
 import type { RulesetVersion } from "@/lib/types/database";
+import { isFullDataMode } from "@/lib/srd/srd-mode";
 import type { CombatantRole } from "@/lib/types/combat";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
-import { User, UserCircle, Sparkles, Skull } from "lucide-react";
+import { User, UserCircle, Sparkles, Skull, Lock } from "lucide-react";
+import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
@@ -162,9 +164,9 @@ export function MonsterSearchPanel({
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const sourceManuallyChanged = useRef(false);
 
-  // Auto-switch to "complete" for admin/beta testers once access loads
+  // Auto-switch to "complete" for admin/beta testers once access loads (auth only)
   useEffect(() => {
-    if (extendedActive && !sourceManuallyChanged.current) {
+    if (extendedActive && !sourceManuallyChanged.current && isFullDataMode()) {
       setSourceFilter("complete");
     }
   }, [extendedActive]);
@@ -455,20 +457,33 @@ export function MonsterSearchPanel({
               {tCompendium("filter_source")}
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {(["all", "srd", "complete", "mad"] as const).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => { sourceManuallyChanged.current = true; setSourceFilter(s); }}
-                  className={`px-2 py-0.5 text-[11px] rounded-md font-medium transition-all border ${
-                    sourceFilter === s
-                      ? "bg-gold/20 text-gold border-gold/40"
-                      : "bg-white/[0.04] text-muted-foreground border-white/[0.06] hover:bg-white/[0.08]"
-                  }`}
-                >
-                  {tCompendium(`filter_source_${s}`)}
-                </button>
-              ))}
+              {(["all", "srd", "complete", "mad"] as const).map((s) => {
+                const isLocked = s === "complete" && !extendedActive;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => {
+                      if (isLocked) {
+                        toast.info(tCompendium("complete_beta_only"));
+                        return;
+                      }
+                      sourceManuallyChanged.current = true;
+                      setSourceFilter(s);
+                    }}
+                    className={`px-2 py-0.5 text-[11px] rounded-md font-medium transition-all border inline-flex items-center gap-1 ${
+                      isLocked
+                        ? "bg-white/[0.02] text-muted-foreground/40 border-white/[0.04] cursor-not-allowed"
+                        : sourceFilter === s
+                          ? "bg-gold/20 text-gold border-gold/40"
+                          : "bg-white/[0.04] text-muted-foreground border-white/[0.06] hover:bg-white/[0.08]"
+                    }`}
+                  >
+                    {isLocked && <Lock className="w-3 h-3" />}
+                    {tCompendium(`filter_source_${s}`)}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

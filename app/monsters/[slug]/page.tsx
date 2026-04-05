@@ -12,7 +12,7 @@ import { PublicMonsterStatBlock } from "@/components/public/PublicMonsterStatBlo
 import { PublicMonsterSearch } from "@/components/public/PublicMonsterSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
-import monsterLore from "@/public/srd/monster-lore.json";
+import monsterLore from "@/data/srd/monster-lore.json";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {

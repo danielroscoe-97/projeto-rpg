@@ -6,9 +6,9 @@ import { CampaignSections } from './CampaignSections'
 import { CampaignStatsBar } from '@/components/campaign/CampaignStatsBar'
 import { aggregateCampaignStats } from '@/lib/utils/campaign-stats'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
-import { CombatLaunchSheet } from '@/components/campaign/CombatLaunchSheet'
 import { CampaignQuickActions } from '@/components/campaign/CampaignQuickActions'
-import { Swords } from 'lucide-react'
+import { CampaignCombatTriggers } from '@/components/campaign/CampaignCombatTriggers'
+import { CampaignOnboarding } from '@/components/campaign/CampaignOnboarding'
 import { getCampaignMembership, getCampaignMembers } from '@/lib/supabase/campaign-membership'
 import { getSrdMonsters, toSlug } from '@/lib/srd/srd-data-server'
 
@@ -206,6 +206,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     { count: locationCount },
     { count: factionCount },
     { count: noteCount },
+    { count: questCount },
   ] = await Promise.all([
     supabase
       .from('player_characters')
@@ -246,6 +247,10 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       .eq('campaign_id', id),
     supabase
       .from('campaign_notes')
+      .select('*', { count: 'exact', head: true })
+      .eq('campaign_id', id),
+    supabase
+      .from('campaign_quests')
       .select('*', { count: 'exact', head: true })
       .eq('campaign_id', id),
   ])
@@ -291,53 +296,18 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
             </Link>
             <h1 className="text-2xl font-semibold text-foreground mt-1">{campaign.name}</h1>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
-              <span className="text-amber-400 text-sm font-semibold">{playerCount ?? 0}</span>
-              <span className="text-muted-foreground text-xs">{t("summary_players", { count: playerCount ?? 0 })}</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
-              <span className="text-amber-400 text-sm font-semibold">{sessionCount ?? 0}</span>
-              <span className="text-muted-foreground text-xs">{t("summary_sessions", { count: sessionCount ?? 0 })}</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
-              <span className="text-amber-400 text-sm font-semibold">{finishedEncounterCount}</span>
-              <span className="text-muted-foreground text-xs">{t("summary_encounters", { count: finishedEncounterCount })}</span>
-            </div>
-            <CombatLaunchSheet
-              campaignId={campaign.id}
-              campaignName={campaign.name}
-              playerEmails={playerEmails}
-              activeSessionId={dmActiveSession?.id ?? null}
-            >
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gold text-surface-primary hover:brightness-110 transition-all min-h-[44px]"
-              >
-                <Swords className="w-4 h-4" />
-                {t("new_combat_button")}
-              </button>
-            </CombatLaunchSheet>
-          </div>
-        </div>
-
-        {/* Active Session Banner */}
-        {dmActiveSession && (
-          <CombatLaunchSheet
+          {/* Stats + Novo Combate + Active Session Banner — single sheet instance */}
+          <CampaignCombatTriggers
             campaignId={campaign.id}
             campaignName={campaign.name}
             playerEmails={playerEmails}
-            activeSessionId={dmActiveSession.id}
-          >
-            <button
-              type="button"
-              className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-400 hover:bg-amber-500/25 transition-colors"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              {t("active_session_banner")}: &quot;{dmActiveSession.name ?? t("session_fallback")}&quot; · {t("new_combat_button")}
-            </button>
-          </CombatLaunchSheet>
-        )}
+            activeSessionId={dmActiveSession?.id ?? null}
+            activeSessionName={dmActiveSession?.name ?? null}
+            playerCount={playerCount ?? 0}
+            sessionCount={sessionCount ?? 0}
+            encounterCount={finishedEncounterCount}
+          />
+        </div>
 
         {/* Quick Actions Row */}
         <CampaignQuickActions campaignId={campaign.id} />
@@ -345,6 +315,21 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
 
       {/* Campaign Stats (F5) — only shows if >= 2 reports */}
       <CampaignStatsBar stats={campaignStats} />
+
+      {/* Onboarding — new campaigns with no players/sessions */}
+      {(playerCount ?? 0) === 0 && (sessionCount ?? 0) === 0 && (
+        <CampaignOnboarding
+          campaignId={campaign.id}
+          campaignName={campaign.name}
+          playerEmails={playerEmails}
+          activeSessionId={dmActiveSession?.id ?? null}
+          steps={{
+            players: (playerCount ?? 0) > 0,
+            session: (sessionCount ?? 0) > 0,
+            quest: (questCount ?? 0) > 0,
+          }}
+        />
+      )}
 
       {/* 2-Column Sections */}
       <CampaignSections

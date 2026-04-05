@@ -12,9 +12,9 @@ import { PublicMonsterStatBlock } from "@/components/public/PublicMonsterStatBlo
 import { PublicMonsterSearch } from "@/components/public/PublicMonsterSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
-import monsterLore from "@/public/srd/monster-lore.json";
-import monsterLorePt from "@/public/srd/monster-lore-pt.json";
-import monsterNamesPt from "@/public/srd/monster-descriptions-pt.json";
+import monsterLore from "@/data/srd/monster-lore.json";
+import monsterLorePt from "@/data/srd/monster-lore-pt.json";
+import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import Link from "next/link";
 
 // ── Static generation ──────────────────────────────────────────────

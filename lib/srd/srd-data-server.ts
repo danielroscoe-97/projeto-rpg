@@ -9,7 +9,7 @@ let spellPtMap: Record<string, string> | null = null;
 function getMonsterPtMap(): Record<string, string> {
   if (monsterPtMap) return monsterPtMap;
   try {
-    monsterPtMap = JSON.parse(readFileSync(join(process.cwd(), "public/srd/monster-names-pt.json"), "utf-8"));
+    monsterPtMap = JSON.parse(readFileSync(join(process.cwd(), "data/srd/monster-names-pt.json"), "utf-8"));
   } catch {
     monsterPtMap = {};
   }
@@ -19,7 +19,7 @@ function getMonsterPtMap(): Record<string, string> {
 function getSpellPtMap(): Record<string, string> {
   if (spellPtMap) return spellPtMap;
   try {
-    spellPtMap = JSON.parse(readFileSync(join(process.cwd(), "public/srd/spell-names-pt.json"), "utf-8"));
+    spellPtMap = JSON.parse(readFileSync(join(process.cwd(), "data/srd/spell-names-pt.json"), "utf-8"));
   } catch {
     spellPtMap = {};
   }
@@ -60,7 +60,7 @@ let spellDescPtMap: Record<string, { name_pt: string; description: string; highe
 function getSpellDescPtMap() {
   if (spellDescPtMap) return spellDescPtMap;
   try {
-    spellDescPtMap = JSON.parse(readFileSync(join(process.cwd(), "public/srd/spell-descriptions-pt.json"), "utf-8"));
+    spellDescPtMap = JSON.parse(readFileSync(join(process.cwd(), "data/srd/spell-descriptions-pt.json"), "utf-8"));
   } catch {
     spellDescPtMap = {};
   }
@@ -82,7 +82,7 @@ export function getSpellHigherLevelsPt(enSlug: string): string | undefined {
   return getSpellDescPtMap()[enSlug]?.higher_levels ?? undefined;
 }
 
-const SRD_DIR = join(process.cwd(), "public", "srd");
+const SRD_DIR = join(process.cwd(), "data", "srd");
 
 // ── SRD whitelists (slug-based) ─────────────────────────────────
 // Only monsters/spells in these whitelists are exposed on public pages.

@@ -1,0 +1,767 @@
+{
+  "aboleth": {
+    "overview": "The aboleth is one of the oldest creatures in existence, predating even the gods. These alien fish-like aberrations remember everything they have ever seen or experienced — and they have been watching since before the world had a name.",
+    "combat": [
+      "Uses Enslave to mentally dominate creatures and create a personal army before the fight even begins.",
+      "Its Mucous Cloud transforms anyone it touches — victims must stay wet or begin to suffocate.",
+      "Will retreat to deep water if threatened, drawing pursuers into its element."
+    ],
+    "world": [
+      "Lives in sunless underwater ruins or subterranean lakes, surrounded by enslaved servants.",
+      "Possesses racial memory stretching back to before the dawn of civilization — it remembers things no living being should know.",
+      "Despises the gods and views most surface creatures as livestock or pests."
+    ],
+    "dmTips": [
+      "Use the aboleth as a long-game villain — it has been orchestrating events for decades before the players arrive.",
+      "Best for parties of level 8–14 who enjoy psychological horror and mystery."
+    ]
+  },
+  "adult-red-dragon": {
+    "overview": "The adult red dragon is a creature of pure ego, greed, and destruction. It is among the most feared beings in any world — a fire-breathing mountain of scales that views all wealth as rightfully its own and all creatures as either servants or prey.",
+    "combat": [
+      "Opens combat with Fire Breath (18d6 fire) to devastate clusters of enemies before closing in.",
+      "Uses Frightful Presence to shake the party's resolve, potentially paralyzing weaker members.",
+      "Prefers high ground and aerial positioning — it is always the apex predator in any encounter."
+    ],
+    "world": [
+      "Claims enormous territories centered on its volcanic lair, demanding tribute from all who live within.",
+      "Hoards treasure compulsively — not for wealth, but as proof of its dominance over others.",
+      "Lives for centuries, meaning it has centuries of grudges, schemes, and enemies."
+    ],
+    "dmTips": [
+      "Ideal for a climactic encounter at levels 13–17. Consider giving it a name and history the players uncover before the fight.",
+      "A red dragon that talks before attacking creates far more memorable encounters than one that just attacks."
+    ]
+  },
+  "ancient-red-dragon": {
+    "overview": "The ancient red dragon is a living apocalypse — a creature so old and so powerful that entire kingdoms have fallen simply to appease it. Few beings in the multiverse can match its combination of raw power, cunning, and bottomless arrogance.",
+    "combat": [
+      "Fire Breath deals 26d6 fire damage in a 90-foot cone — one breath can devastate an entire party.",
+      "Legendary Actions allow it to act three times outside its turn, making it extraordinarily mobile and dangerous.",
+      "Will use its Lair Actions (lava plumes, magma eruptions) to control the battlefield if fought in its domain."
+    ],
+    "world": [
+      "Treats mountains as furniture and forests as kindling — its passage reshapes the landscape.",
+      "The oldest ancient reds may have personal histories with gods, devils, and other immortal beings.",
+      "Its hoard is legendary in its own right — worth more than some nations' entire economies."
+    ],
+    "dmTips": [
+      "Reserved for the highest-level parties (17–20). This is a campaign-defining encounter.",
+      "Give it Lair Actions and Regional Effects: areas near its lair should be scarred, volcanic, and ash-covered."
+    ]
+  },
+  "goblin": {
+    "overview": "Goblins are small, cunning humanoids found in nearly every wilderness on the material plane. Often dismissed as pests, they are surprisingly dangerous in numbers and excel at ambushes, traps, and hit-and-run tactics.",
+    "combat": [
+      "Nimble Escape lets them Disengage or Hide as a bonus action — they never stay in one place long enough to be easy targets.",
+      "Packs swarm and surround larger enemies, using numbers to compensate for individual weakness.",
+      "Will retreat and regroup rather than fight to the death if seriously outnumbered."
+    ],
+    "world": [
+      "Form loose tribal societies under a Goblin Boss or Hobgoblin warlord.",
+      "Found in forests, caves, ruins, and city sewers — anywhere they can hide and scavenge.",
+      "Often serve as the foot soldiers of more powerful creatures like bugbears, hobgoblins, or even dragons."
+    ],
+    "dmTips": [
+      "Great for introducing new players to combat at level 1–3.",
+      "Use terrain — goblins are most dangerous when they have high ground, chokepoints, and darkness."
+    ]
+  },
+  "tarrasque": {
+    "overview": "The tarrasque is the ultimate engine of destruction — a near-invincible behemoth that exists solely to consume. When it wakes, civilizations fall. Legends say only one exists in the world at any time, and that it cannot be permanently slain by mortal means.",
+    "combat": [
+      "Reflective Carapace reflects ranged spells back at the caster — magical bombardment is not an option.",
+      "Its Bite attack can swallow creatures whole, digesting them each turn inside its stomach.",
+      "Three Legendary Actions and immunity to most conditions make it nearly impossible to hinder."
+    ],
+    "world": [
+      "Sleeps for decades or centuries between rampages, buried deep underground.",
+      "Has no society, no motives, no alliances — it is a force of nature, not a sentient threat.",
+      "Historical records describe regions it has passed through as completely devoid of life for years afterward."
+    ],
+    "dmTips": [
+      "This is an endgame encounter for level 20 parties with wish and other reality-altering capabilities.",
+      "Consider making the encounter about surviving and escaping rather than defeating it — that's often more interesting."
+    ]
+  },
+  "lich": {
+    "overview": "A lich is a wizard who refused to accept death. Through dark rituals and the creation of a soul-containing phylactery, they have transcended mortality — trading life for near-immortality and unimaginable magical power.",
+    "combat": [
+      "Legendary Resistance (3/day) allows it to succeed on any saving throw — countering its weaknesses with sheer will.",
+      "Its legendary spells can reshape an encounter from afar: Power Word Kill, Time Stop, Disintegrate.",
+      "Paralyzing Touch allows it to lock down melee fighters who get close while it maintains distance."
+    ],
+    "world": [
+      "Hides its phylactery in a remote, heavily trapped location — destroying the lich without it causes only temporary death.",
+      "Often spends centuries pursuing magical research, having long since ceased to care about mortal affairs.",
+      "May control undead armies, rival the power of demigods, and have influence stretching across nations."
+    ],
+    "dmTips": [
+      "Best used as a recurring villain over many sessions rather than a single encounter.",
+      "The hunt for the phylactery is often more interesting than the fight itself."
+    ]
+  },
+  "vampire": {
+    "overview": "Vampires are undead predators that combine supernatural power with aristocratic cunning. They are patient, manipulative, and utterly ruthless — capable of infiltrating high society just as effectively as they are at hunting in the dark.",
+    "combat": [
+      "Regenerates 20 HP at the start of each turn — without radiant damage or a stake through the heart, it's nearly unkillable in direct combat.",
+      "Charm ability can turn the party against each other without a single swing of a weapon.",
+      "Shapechanger form (mist, bat, wolf) allows escape from nearly any combat situation."
+    ],
+    "world": [
+      "Controls thralls and spawn who do its bidding while it sleeps during daylight hours.",
+      "Must return to its coffin — locating that coffin is the key to ending the threat permanently.",
+      "Often poses as a noble, merchant, or other powerful figure, using its centuries of influence."
+    ],
+    "dmTips": [
+      "Great for gothic horror campaigns. Build dread through disappearances and missing townsfolk before the reveal.",
+      "The vampire's lair and its safeguards are often more dangerous than the vampire itself."
+    ]
+  },
+  "troll": {
+    "overview": "Trolls are nightmares of regeneration and hunger — stupid, violent, and nearly impossible to kill without fire or acid. They haunt wilderness regions, eating anything they can catch, growing back limbs and organs almost as fast as they are destroyed.",
+    "combat": [
+      "Regenerates 10 HP per turn — without fire or acid damage, simply knocking it out accomplishes nothing.",
+      "Rend attack can severely wound targets with its brutal claws in a single action.",
+      "Severed body parts remain alive and dangerous until burned."
+    ],
+    "world": [
+      "Solitary hunters that claim territories in swamps, forests, and mountain foothills.",
+      "Have no culture or society to speak of — driven entirely by hunger.",
+      "Even the most powerful trolls can be controlled by smarter creatures who understand their fear of fire."
+    ],
+    "dmTips": [
+      "Deliberately withhold information about regeneration until mid-combat — the moment players realize fire is required is memorable.",
+      "A great level 5–8 encounter that teaches resource management."
+    ]
+  },
+  "owlbear": {
+    "overview": "The owlbear is a vicious magical beast with the body of a bear and the head of an owl — created, according to some scholars, by a wizard's particularly ill-advised experiment. It is feared throughout wilderness regions for its aggression and unpredictability.",
+    "combat": [
+      "Screech can stun nearby creatures, creating an opening for its devastating attacks.",
+      "Grapple + Beak combination pins targets while dealing massive puncture damage.",
+      "Charges at full speed toward the nearest living thing it detects — it does not retreat."
+    ],
+    "world": [
+      "A territorial predator that defends a hunting range of several square miles.",
+      "Mates for life and is particularly dangerous when defending cubs or a mate.",
+      "Cannot be domesticated but can sometimes be trained from birth — rare owlbear riders are deeply respected (and feared) warriors."
+    ],
+    "dmTips": [
+      "Perfect mid-tier wilderness encounter for levels 3–6. Consider having a cub to complicate the moral decision.",
+      "An owlbear lair often contains valuables from its previous victims."
+    ]
+  },
+  "gelatinous-cube": {
+    "overview": "The gelatinous cube is a translucent, perfectly cubic ooze that silently glides through dungeon corridors, absorbing and digesting everything organic it encounters. It is nature's perfect garbage collector — and one of the most dangerous things about it is how easy it is to walk straight into.",
+    "combat": [
+      "Transparent — creatures must succeed on a DC 15 Perception check or they don't notice it until it's too late.",
+      "Engulf traps creatures inside the cube, dealing acid damage and restraining them each turn.",
+      "Immune to most conditions — it has no nervous system to confuse, charm, or frighten."
+    ],
+    "world": [
+      "Found exclusively in dungeons and underground ruins, cleaning corridors of organic debris.",
+      "Often contains partially digested remains of previous victims — including their equipment.",
+      "Multiple cubes may share the same dungeon in a crude ecosystem with other scavengers."
+    ],
+    "dmTips": [
+      "Use in narrow corridors to maximize the 'oh no' moment when players realize they walked into one.",
+      "Items visible inside the cube can serve as treasure bait — and a trap."
+    ]
+  },
+  "mind-flayer": {
+    "overview": "Mind flayers — illithids — are among the most terrifying creatures in the cosmos: telepathic, psionically powerful, and dependent on a diet of humanoid brains. They ruled vast empires in ancient ages and regard all other races as cattle.",
+    "combat": [
+      "Mind Blast (60-foot cone) stuns all creatures in range for up to a minute — a single use can end most fights.",
+      "Extract Brain instantly kills a stunned creature with 0 HP remaining.",
+      "Dominated targets fight for it, creating horrific scenarios where players must fight their own party members."
+    ],
+    "world": [
+      "Each mind flayer serves an elder brain — a massive colony mind that coordinates an entire underground city.",
+      "Creates intellect devourers from the brains of humanoid victims, using them as scouts.",
+      "Abhors sunlight and surface-world cultures, viewing them as primitive and inferior."
+    ],
+    "dmTips": [
+      "Use sparingly — their stun ability can completely invalidate party action economy if overused.",
+      "More terrifying as manipulators behind the scenes than direct combatants."
+    ]
+  },
+  "adult-blue-dragon": {
+    "overview": "Blue dragons are the most orderly and calculating of all chromatic dragons. They rule desert territories with absolute authority, demand tribute and obedience, and strike their enemies with devastating lightning from the sky before they can even react.",
+    "combat": [
+      "Lightning Breath (12d10) strikes in a 90-foot line — extremely dangerous against tight party formations.",
+      "Uses its burrowing speed to emerge from sand and disappear again, making it nearly impossible to pin down.",
+      "Legendary Actions allow it to detect hidden enemies with blindsight, preventing stealth-based strategies."
+    ],
+    "world": [
+      "Claims vast desert territories and may 'allow' humanoid settlements to exist in exchange for regular tribute.",
+      "More likely than most chromatic dragons to negotiate — but only from a position of complete dominance.",
+      "Often employs minions and informants, knowing the value of information over brute force."
+    ],
+    "dmTips": [
+      "Give it a long-standing rivalry with a neighboring settlement for pre-built narrative context.",
+      "Best encountered at levels 10–16; consider its fondness for lightning storms as atmospheric foreshadowing."
+    ]
+  },
+  "hydra": {
+    "overview": "The hydra is a multi-headed reptilian horror that grows back two heads for every one that is severed. It embodies relentless regeneration and overwhelming offensive pressure — a creature designed by nature to be extremely difficult to kill.",
+    "combat": [
+      "Each head provides a separate attack each turn — a five-headed hydra deals five bite attacks per round.",
+      "Severed heads regenerate at the start of its turn unless the stump is cauterized with fire before then.",
+      "Reactive Heads: even if it loses initiative, it snaps at enemies that attack it as a reaction."
+    ],
+    "world": [
+      "Found near swamps, rivers, and coastlines where it can ambush creatures coming to drink.",
+      "Ancient hydras with many heads are sometimes worshipped as gods by isolated communities.",
+      "Its lairs are littered with the bones of hundreds of creatures — a testament to its hunting success."
+    ],
+    "dmTips": [
+      "The key challenge is resource management: players must use fire or acid to prevent regeneration while managing action economy.",
+      "A great level 8–12 encounter that rewards creative problem-solving over raw damage output."
+    ]
+  },
+  "wyvern": {
+    "overview": "Wyverns are draconic cousins of true dragons — fierce, territorial predators that lack a breath weapon but compensate with their highly venomous stinger. They are commonly used as mounts by hobgoblin warlords and evil humanoid armies.",
+    "combat": [
+      "Multiattack combines claws and a stinger in the same action — the venom deals 7d6 additional poison damage.",
+      "Flyby attack allows it to strike and retreat without provoking opportunity attacks.",
+      "Will grapple with its claws and then sting repeatedly while holding a target aloft."
+    ],
+    "world": [
+      "Claims mountain peaks and high cliffs as territory, hunting from above.",
+      "Aggressive and territorial — will attack nearly anything that enters its airspace.",
+      "Unlike true dragons, wyverns have no interest in treasure or conversation."
+    ],
+    "dmTips": [
+      "Great aerial combat encounter for levels 6–9. Mix with terrain like cliffs, bridges, and towers.",
+      "A wyvern rider enemy transforms this into a much more complex tactical challenge."
+    ]
+  },
+  "roc": {
+    "overview": "The roc is a bird of truly mythological scale — large enough to pluck elephants from the ground and carry them back to its mountain nest. It is not naturally aggressive, but anything that enters its territory or threatens its nest faces terrifying consequences.",
+    "combat": [
+      "Talons can grapple Huge creatures — it will attempt to grab a player and drop them from enormous heights.",
+      "Its 20-foot wingspan creates powerful wing gusts that can knock creatures prone.",
+      "Will focus attacks on one target at a time, attempting to remove it from the fight entirely."
+    ],
+    "world": [
+      "Nests on isolated mountain peaks, volcanic islands, or cloud-shrouded plateaus.",
+      "So large that ships have occasionally been mistaken for prey from altitude.",
+      "Its eggs are worth enormous fortunes to collectors and sorcerers alike."
+    ],
+    "dmTips": [
+      "Works best as an environmental hazard during travel or as a setpiece encounter, not a standard fight.",
+      "Consider having it attack a ship or caravan the players are riding for maximum drama."
+    ]
+  },
+  "doppelganger": {
+    "overview": "Doppelgangers are shapeshifting creatures with no true form of their own, living among humanoid societies as spies, assassins, and infiltrators. They can perfectly duplicate any humanoid they have studied, and their telepathic abilities make them frighteningly effective at manipulation.",
+    "combat": [
+      "Read Thoughts as a bonus action reveals surface-level thoughts — it always knows what players intend before they act.",
+      "Two Claws attacks deal solid damage, but their real threat is disrupting the party through deception.",
+      "Ambusher: has advantage on attacks in the first round of combat against targets that are surprised."
+    ],
+    "world": [
+      "Works alone or in small cells, maintaining cover identities within humanoid settlements for years.",
+      "Has no gender, culture, or society of its own — entirely defined by what it mimics.",
+      "Will rarely fight to the death; it has invested too much in survival to throw its life away."
+    ],
+    "dmTips": [
+      "Most effective when players don't know one is present. The reveal should be dramatic.",
+      "Use to replace an NPC the players trust. Make the transition gradual and subtle."
+    ]
+  },
+  "basilisk": {
+    "overview": "The basilisk is a reptilian predator whose gaze turns living creatures to stone. It is not particularly intelligent, but its passive petrification ability makes every combat with it a dangerous puzzle — one wrong look and a character becomes a statue.",
+    "combat": [
+      "Petrifying Gaze triggers automatically at the start of each creature's turn if they can see the basilisk — Constitution save or begin turning to stone.",
+      "A creature already petrified must be freed with greater restoration or similar magic — without help, it is permanent.",
+      "The basilisk itself is unremarkable in melee, making it most effective as a combined encounter element."
+    ],
+    "world": [
+      "Lives in caves, ruins, and rocky wilderness, surrounded by the stone statues of its previous victims.",
+      "Its blood can reverse petrification when combined with dew — a fact known in local folklore.",
+      "Often used as guardians by villains willing to leave it in a room and let it do the work."
+    ],
+    "dmTips": [
+      "Closing your eyes means fighting blind (disadvantage) — make players choose between risk and limitation.",
+      "The stone statues in its lair tell a story. Put important NPCs among them."
+    ]
+  },
+  "medusa": {
+    "overview": "The medusa is a tragic and terrifying figure — once human (according to legend), now transformed into a creature of cursed beauty whose gaze turns the living to stone. It is both monster and prisoner of its own nature.",
+    "combat": [
+      "Petrifying Gaze at the start of each turn forces Constitution saves — a party that doesn't strategize around it will turn to stone rapidly.",
+      "Snake Hair attack can strike multiple targets, poisoning those who fail the save.",
+      "Longbow attacks at range allow it to engage from safe distance while its gaze does the heavy lifting."
+    ],
+    "world": [
+      "Lives in isolation, surrounded by stone statues of those who have looked upon it.",
+      "Some medusas have accepted their nature and cultivate gardens of stone former visitors.",
+      "May be found in ruins of ancient civilizations, where it has watched generations pass."
+    ],
+    "dmTips": [
+      "Fighting a medusa blindfolded or with mirrors is far more memorable than a standard combat.",
+      "Consider giving it a tragic backstory — some medusas desperately want to be cured."
+    ]
+  },
+  "kraken": {
+    "overview": "The kraken is a god of the deep — an ancient, tentacled horror of tremendous intelligence and catastrophic power that has sunk fleets, destroyed coastlines, and established cults of worshippers among desperate sailors and deep-sea communities.",
+    "combat": [
+      "Legendary Actions allow it to attack up to three additional times outside its turn — combined with Multiattack, it can strike six or more times in a round.",
+      "Tentacle attacks Grapple and Restrain targets — held creatures are then flung or swallowed.",
+      "Lightning Storm (recharge 5–6) deals 3d6 lightning to up to 6 creatures with no saving throw."
+    ],
+    "world": [
+      "Dwells in the deepest ocean trenches, awakening only to feed or when its territory is disturbed.",
+      "Maintains cults of humanoid worshippers who offer sacrifices in exchange for safe passage.",
+      "Is genuinely ancient — some krakens remember the world before recorded history."
+    ],
+    "dmTips": [
+      "This is a once-in-a-campaign boss encounter for level 18–20 parties. Build to it over months.",
+      "Fighting underwater changes everything — consider how the party will even breathe during this encounter."
+    ]
+  },
+  "werewolf": {
+    "overview": "Werewolves are cursed lycanthropes — people transformed into humanoid wolf-creatures at the full moon, or at will once they have mastered their curse. The greatest danger is not their claws, but the lycanthropy they carry and spread.",
+    "combat": [
+      "Immunity to non-magical, non-silvered weapons makes them extremely difficult to fight without preparation.",
+      "Bite attack can transmit lycanthropy — defeating a werewolf pack is not the end if players were bitten.",
+      "Shapechanger ability allows mid-combat transformation, adapting to the situation."
+    ],
+    "world": [
+      "May not know what they are — particularly tragic werewolves awaken each morning unaware of what they did.",
+      "Wolf pack instincts mean groups of werewolves operate with real tactical coordination.",
+      "Silver, wolfsbane, and remove curse are the key tools for dealing with lycanthropy."
+    ],
+    "dmTips": [
+      "The tension of lycanthropy is the real story hook — discovering a friend or NPC is infected is better than fighting one.",
+      "Track moon cycles during your campaign for organic werewolf encounter timing."
+    ]
+  },
+  "manticore": {
+    "overview": "The manticore is a chimeric apex predator with a lion's body, bat-like wings, and a tail packed with iron spikes it can launch like projectiles. It is aggressively territorial and highly cunning — sometimes even capable of speech, which it uses to taunt victims.",
+    "combat": [
+      "Tail Spikes (range 100/200) allow three ranged attacks per action — it can deal tremendous damage from complete safety.",
+      "Prefers to hover beyond melee range and use spike volleys until melee fighters are weakened.",
+      "Will retreat if brought below half HP, returning later to finish off the wounded."
+    ],
+    "world": [
+      "Claims a mountain or highland territory of roughly 30 square miles.",
+      "Collects trophies from those it has killed, sometimes decorating its lair with them.",
+      "Some manticores are bound into service by powerful wizards or warlords who provide them regular prey."
+    ],
+    "dmTips": [
+      "Excellent aerial harassment encounter for levels 4–7, especially on terrain with no cover.",
+      "A talking manticore that offers to leave the party alone in exchange for information can create interesting choices."
+    ]
+  },
+  "gnoll": {
+    "overview": "Gnolls are savage hyena-headed humanoids created by Yeenoghu, the Demon Lord of Gnolls. They are not merely predators — they are an ongoing demonic plague, multiplying by transforming the bodies of their victims into new gnolls through a horrific process.",
+    "combat": [
+      "Rampage: when a gnoll kills a creature, it can move up to half its speed and make a bonus action bite attack.",
+      "Pack Tactics grants advantage on attacks against any creature adjacent to an ally — they always surround their targets.",
+      "Hit and run — gnolls that are seriously outnumbered flee, only to return with a larger pack."
+    ],
+    "world": [
+      "Gnoll packs spread like wildfire — a single gnoll warband can depopulate a region in weeks.",
+      "Led by a Gnoll Fang of Yeenoghu, a particularly blessed warrior of the demon lord.",
+      "Leave trails of destruction and ritual carnage in their wake — obvious and terrifying."
+    ],
+    "dmTips": [
+      "Use as an ongoing regional threat, not just a single encounter. Show the aftermath of their raids.",
+      "A captive gnoll with grudges against its pack leader can be a surprisingly interesting ally."
+    ]
+  },
+  "ogre": {
+    "overview": "Ogres are enormous, brutish humanoids driven almost entirely by hunger and cruelty. They are not clever, but they are terrifyingly strong and durable — a single ogre can devastate a village guard post, and a group can threaten small fortresses.",
+    "combat": [
+      "Greatclub attack deals 2d8+6 bludgeoning — casual hits that can drop medium characters in two strikes.",
+      "Bag of Tricks variants (in published content) allow some ogres to use improvised weapons, doors, or barrels as attacks.",
+      "Low intelligence means they focus on the most obvious target and ignore flanking and positioning."
+    ],
+    "world": [
+      "Found in hills, mountains, and wilderness; sometimes as hired muscle for hobgoblin or orc warlords.",
+      "Ogre mages (oni) represent evolved ogres of far greater cunning and magical ability.",
+      "Occasionally form small family groups — a cave encounter with a family of ogres raises interesting moral questions."
+    ],
+    "dmTips": [
+      "Perfect straightforward level 2–4 encounter. Let the players feel strong by outsmarting a bigger creature.",
+      "Give one a crude talisman or a 'pet' rock — a small humanizing detail changes the tone dramatically."
+    ]
+  },
+  "harpy": {
+    "overview": "Harpies are winged humanoids with the gift of devastating song — their Luring Song draws victims helplessly toward them and into dangerous terrain, cliffs, or the waiting claws of their kin. They are ambush predators that use music as a weapon.",
+    "combat": [
+      "Luring Song forces Wisdom saves each turn — failing means moving toward the harpy regardless of hazards.",
+      "Claws attacks deal moderate damage, but harpies prefer to let their terrain and song do the work.",
+      "Often positioned near cliffs, lava, water, or other hazards that lured victims walk into."
+    ],
+    "world": [
+      "Found near rocky coastlines, clifftops, and volcanic regions where their song can lure sailors or travelers.",
+      "Live in small flocks with a dominant female leading the group.",
+      "Ancient myths frequently portray them as cursed humans, though no reliable source confirms this."
+    ],
+    "dmTips": [
+      "Position them on high cliffs over a 60-foot drop to make the luring song genuinely terrifying.",
+      "Consider a non-combat solution: what if a harpy just wants to be left alone?"
+    ]
+  },
+  "banshee": {
+    "overview": "A banshee is the tormented spirit of an elf who was so consumed by vanity in life that their soul became twisted upon death into a shrieking, malevolent undead. Its wail can kill outright — one of the few monsters whose signature ability can drop characters from full health to zero.",
+    "combat": [
+      "Horrifying Visage forces Wisdom saves; failure means aging 1d4 × 10 years and being frightened.",
+      "Wail (once per day): all living creatures within 30 feet must make DC 13 Constitution saves or drop to 0 HP immediately.",
+      "Corrupt Touch drains life force and can't be avoided by armor — only Constitution saves reduce the damage."
+    ],
+    "world": [
+      "Bound to the place where it died or where it lived in life — it cannot travel far from that location.",
+      "The only way to end a banshee is to destroy it in combat or to help it resolve the unfinished business that binds it.",
+      "Some banshees retain memory of their life and can be spoken to — briefly, before madness takes over."
+    ],
+    "dmTips": [
+      "The Wail is the most memorable feature — build the encounter so the party is appropriately terrified before it uses it.",
+      "A banshee quest to resolve its unfinished business is far more interesting than simply fighting it."
+    ]
+  },
+  "young-red-dragon": {
+    "overview": "A young red dragon is already a catastrophic threat — still growing into the arrogance that will define its adult years, but already powerful enough to devastate entire settlements. It has the full complement of draconic abilities without the centuries of cunning that make adults truly terrifying.",
+    "combat": [
+      "Fire Breath (9d6) in a 30-foot cone is already devastating at this stage of its development.",
+      "Frightful Presence affects creatures within 120 feet — sets the tone before initiative is even rolled.",
+      "Will use hit-and-run tactics from the air, preferring not to take sustained melee damage."
+    ],
+    "world": [
+      "Seeking to establish its first territory, often claiming a volcanic region or mountain range.",
+      "Has not yet built its hoard but is aggressively acquiring one, raiding settlements for valuables.",
+      "May serve a more powerful creature temporarily while gathering the strength to challenge its own domain."
+    ],
+    "dmTips": [
+      "A great climactic encounter for levels 7–10. The dragon has enough personality to negotiate.",
+      "Consider making it the child or underling of an adult red dragon — complications arise."
+    ]
+  },
+  "ghost": {
+    "overview": "Ghosts are the spirits of the dead who cannot move on — bound to the material world by powerful emotions: grief, rage, guilt, or an obsessive desire for revenge. They are incorporeal, which makes conventional combat far less effective than it should be.",
+    "combat": [
+      "Withering Touch deals necrotic damage that reduces the maximum HP of the target — a dangerous ongoing debuff.",
+      "Ethereal Escape allows it to move between the Material Plane and the Ethereal at will, making it impossible to corner.",
+      "Possession (Charisma save) takes over a humanoid, weaponizing them against the rest of the party."
+    ],
+    "world": [
+      "Haunts the place where it died or a location connected to its deepest emotional attachment.",
+      "Can be communicated with — and often wants to be. Many ghosts simply need to be heard.",
+      "Resolving a ghost's unfinished business typically ends the haunting peacefully and without combat."
+    ],
+    "dmTips": [
+      "Give the ghost a name and a story before the players encounter it. The tragedy matters.",
+      "The most frightening ghosts are those the party learns about before they meet — through journals, paintings, and witness accounts."
+    ]
+  },
+  "adult-black-dragon": {
+    "overview": "Adult black dragons are cruel, sadistic, and deeply patient. They inhabit putrid swamps and ruined places, accumulating treasure and power over centuries while psychologically tormenting those under their influence through fear, degradation, and slow starvation.",
+    "combat": [
+      "Acid Breath (12d8) dissolves armor and flesh alike in a 60-foot line — especially devastating against metal-armored fighters.",
+      "Legendary Actions include Tail Attack and Wing Attack, allowing it to disrupt melee fighters who close in.",
+      "Amphibious — will use underwater terrain to its full advantage, where most parties cannot follow."
+    ],
+    "world": [
+      "Occupies vast swampland territories and rules over lizardfolk, bullywug, and other swamp-dwelling humanoids.",
+      "Collects trophies of its cruelty — the heads, weapons, and broken crowns of those it has defeated.",
+      "Black dragons remember every slight. A party that embarrasses one will be hunted for years."
+    ],
+    "dmTips": [
+      "Use its swamp lair to its maximum tactical advantage: underwater tunnels, fog, sunken ruins.",
+      "The best black dragon encounters involve a morally complex community that lives under its shadow."
+    ]
+  },
+  "kobold": {
+    "overview": "Kobolds are small, reptilian humanoids who compensate for their physical weakness with cunning trap-making, pack tactics, and fervent devotion to their draconic 'masters.' Often underestimated, a kobold den is actually one of the most hazardous environments a low-level party can enter.",
+    "combat": [
+      "Pack Tactics grants advantage on attacks whenever an ally is adjacent to the target.",
+      "Sunlight Sensitivity — kobolds fighting outdoors in daylight have disadvantage on attack rolls and perception.",
+      "Sling and bolt attacks allow them to harass from safety while larger creatures hold the line."
+    ],
+    "world": [
+      "Live in large subterranean communities of up to hundreds, surrounding a draconic patron they genuinely worship.",
+      "Master trap-makers — a kobold warren is an obstacle course of pitfalls, alarms, and improvised weapons.",
+      "Actually quite intelligent by monster standards — their weakness is physical, not mental."
+    ],
+    "dmTips": [
+      "A great way to introduce dungeon exploration at level 1–2. The traps are the real challenge.",
+      "Consider a kobold NPC as an unlikely ally — their self-preservation instincts make them surprisingly pragmatic."
+    ]
+  },
+  "hill-giant": {
+    "overview": "Hill giants are the lowest of the true giant hierarchy — massive, dim-witted brutes who survive by raiding settlements and hoarding food above all else. Their size and strength make them extraordinarily dangerous despite their limited tactical thinking.",
+    "combat": [
+      "Greatclub attack deals 3d8+5 — comparable to a small cannon in a single swing.",
+      "Rock throwing at range 60/240 deals 4d10+5 and allows them to engage before melee is even possible.",
+      "Will fling boulders and debris as improvised missiles even indoors."
+    ],
+    "world": [
+      "Roam in small family groups, raiding farms and villages for food and livestock.",
+      "Culturally obsessed with food — they measure status by how much they can eat.",
+      "Serve as infantry for stone giants or frost giants who offer them regular feasting in exchange."
+    ],
+    "dmTips": [
+      "Excellent encounter for levels 5–8 that teaches players about action economy and crowd control.",
+      "Give the giant a name and a personality quirk — a giant that collects 'pretty rocks' is oddly charming."
+    ]
+  },
+  "zombie": {
+    "overview": "Zombies are the most common undead — mindless corpses reanimated through necromantic magic to serve as expendable troops or horrifying threats in their own right. They are slow, dumb, and individually manageable, but in numbers they overwhelm the living through sheer relentlessness.",
+    "combat": [
+      "Undead Fortitude: when reduced to 0 HP, it makes a Constitution save (DC 5 + damage) to drop to 1 HP instead — often refuses to stay down.",
+      "Slam attack is simple but deals reliable bludgeoning damage each turn.",
+      "No morale — zombies never flee, never hesitate, and never tire."
+    ],
+    "world": [
+      "Created and directed by necromancers, liches, vampires, or dark priests.",
+      "Retain physical memories of their former life but none of their personality or intelligence.",
+      "The primary threat is not the zombie itself but the wizard or undead controlling the horde."
+    ],
+    "dmTips": [
+      "Use in groups of 4–8 for proper horde feel at levels 1–4.",
+      "Include a zombie of someone the players knew — a dark but memorable storytelling beat."
+    ]
+  },
+  "skeleton": {
+    "overview": "Skeletons are the simplest undead — animated bones stripped of all flesh and driven by the necromantic magic of their creator. Cheap to make, tireless, and fearless, they are the foot soldiers of any undead army.",
+    "combat": [
+      "Shortsword or shortbow attacks are modest but consistent — in numbers they add up.",
+      "Immune to exhaustion, poison, and most conditions — they cannot be demoralized or reasoned with.",
+      "Vulnerable to bludgeoning damage — a simple solution that rewards players who figure it out."
+    ],
+    "world": [
+      "Require an ongoing direction from a controlling undead or magical object — without it they wander aimlessly.",
+      "Found in ancient tombs, battlefields, and anywhere a necromancer has been at work.",
+      "Occasionally retain 'muscle memory' of their former profession, wielding weapons with surprising competence."
+    ],
+    "dmTips": [
+      "Perfect for low-level encounters as a warm-up before a more interesting undead threat.",
+      "Skeletons of recognizable armor or uniforms tell the story of who died here."
+    ]
+  },
+  "griffon": {
+    "overview": "The griffon is a proud, fierce creature — half eagle, half lion — that nests in high mountains and hunts across vast ranges. They are respected throughout the world as symbols of courage and nobility, and bonded griffon riders are among the most elite forces in any military.",
+    "combat": [
+      "Keen Sight grants advantage on Perception checks, making it nearly impossible to sneak up on.",
+      "Pounce ability: if it dives at least 30 feet and hits with its claws, the target must save or be knocked prone.",
+      "Multiattack with claws and beak makes it consistently dangerous in sustained melee."
+    ],
+    "world": [
+      "Mates for life and defends its territory aggressively — particularly its nesting site.",
+      "Can be trained from hatching to serve as mounts. A trained griffon is worth more than most fortresses.",
+      "Wild griffons have a particular hatred of horses, which they hunt as preferred prey."
+    ],
+    "dmTips": [
+      "Griffon eggs or chicks make compelling side quest MacGuffins — and introducing a mount subplot can change a campaign.",
+      "Great aerial encounter for levels 4–7 in mountain terrain."
+    ]
+  },
+  "chimera": {
+    "overview": "The chimera is a grotesque combination of lion, goat, and dragon — three heads, three attacks, and a fire-breathing goat head that doesn't fit any natural category. It is unpredictable, aggressive, and deeply territorial.",
+    "combat": [
+      "Multiattack with horns, claws, and bite — its three heads operate independently.",
+      "Fire Breath (7d8) from the dragon head adds a ranged element to what is otherwise a melee monster.",
+      "Each head seems to act with partial independence, creating a tactically chaotic presence."
+    ],
+    "world": [
+      "Claims territories in the hills and mountains, attacking anything that enters.",
+      "Occasionally serves powerful evil wizards who supply it with livestock in exchange for obedience.",
+      "Ancient myths treat chimeras as divine punishment or as guardians of sacred places."
+    ],
+    "dmTips": [
+      "Works best in open terrain where its flight and breath weapon have room to shine.",
+      "A great 'random encounter' escalation at levels 6–9."
+    ]
+  },
+  "ettin": {
+    "overview": "The ettin is a giant with two heads and two personalities — they constantly argue with each other while still functioning as a single devastating melee combatant. This inherent conflict makes ettins chaotic, unpredictable allies for anyone foolish enough to hire them.",
+    "combat": [
+      "Two Heads: advantage on Wisdom (Perception) checks and saving throws against blindness, charm, and unconsciousness.",
+      "Wakeful: one head remains alert even while the other sleeps — it cannot be surprised.",
+      "Multiattack with battleaxe and morningstar — each head wields a different weapon simultaneously."
+    ],
+    "world": [
+      "Lives as a solitary wanderer or in pairs in wild hills and mountains.",
+      "Their two heads often have different names, different opinions, and occasionally different alignments.",
+      "Sometimes employed as guardians by orc warlords who can tolerate their constant bickering."
+    ],
+    "dmTips": [
+      "Play up the two heads as distinct personalities — a great source of dark comedy.",
+      "Encourage roleplay: what if one head wants to talk and the other wants to fight?"
+    ]
+  },
+  "clay-golem": {
+    "overview": "The clay golem is an artificial construct shaped from clay and animated by divine magic. Unlike stone or iron golems, it has a peculiar berserking quality — when damaged by certain spells, it enters a frenzy that even its creator cannot fully control.",
+    "combat": [
+      "Berserk state triggers when damaged below half HP by certain spells — it attacks everything including its creator.",
+      "Slam attack reduces the target's maximum HP until a long rest, stacking with repeated hits.",
+      "Immune to all spells except those that specifically affect it — direct magical attacks are largely wasted."
+    ],
+    "world": [
+      "Created through lengthy rituals by powerful clerics or divine spellcasters.",
+      "Typically guards temples, vaults, or the domains of religious institutions.",
+      "Has no concept of self-preservation or pain — it does exactly what it is told until destroyed."
+    ],
+    "dmTips": [
+      "The berserk mechanic creates interesting emergent scenarios — the players may end up fighting alongside a golem against its creator.",
+      "Use in a temple setting to raise questions about divine power and constructed life."
+    ]
+  },
+  "stone-golem": {
+    "overview": "The stone golem is the quintessential magical guardian — a powerful, slow-moving construct of animated granite that has guarded ancient vaults and wizard towers for centuries. Its slow plodding pace is deceptive: once it closes in, almost nothing can stop it.",
+    "combat": [
+      "Slow (recharge 5–6): targets must make Constitution saves or suffer reduced speed, single attacks only per turn.",
+      "Immune to most magic — only specific spells like transmute rock and flesh to stone affect it meaningfully.",
+      "Its attacks deal devastating bludgeoning damage that bypasses many damage-reduction abilities."
+    ],
+    "world": [
+      "Found exclusively in locations where wealthy or powerful creators have left them as guardians.",
+      "Has no goals, desires, or self-awareness beyond its programmed purpose.",
+      "May have been active for centuries, guarding a location long after its creator died."
+    ],
+    "dmTips": [
+      "Use in ruins or dungeons where it was clearly built by someone important — its existence implies treasure.",
+      "Great mid-to-late dungeon boss at levels 10–14 that rewards tactical thinking."
+    ]
+  },
+  "young-blue-dragon": {
+    "overview": "Young blue dragons already possess the calculating temperament that makes their elders so dangerous. They establish territories in desert regions and begin accumulating wealth and subordinates, viewing the world as a system they intend to master.",
+    "combat": [
+      "Lightning Breath (8d10) in a 60-foot line can devastate a party bunched together in a corridor.",
+      "Burrow speed allows it to enter and exit sand quickly, creating ambush opportunities.",
+      "Will attempt to separate the party using its breath and terrain before picking off individuals."
+    ],
+    "world": [
+      "Claims a desert canyon or plateau as its first territory, demanding tribute from nearby settlements.",
+      "Already studying magic and strategy, preparing for the centuries of rulership it plans to exercise.",
+      "May have a small cult of followers who believe it is a deity of storms."
+    ],
+    "dmTips": [
+      "A great encounter for levels 8–11 in an exotic desert setting.",
+      "Use the dragon as a quest patron — it may offer rewards in exchange for services before betraying the party."
+    ]
+  },
+  "ankheg": {
+    "overview": "The ankheg is a massive insectoid predator that burrows through soil and attacks from below, dragging creatures underground before releasing corrosive acid. It's one of the great agricultural nightmares of the D&D world — a monster that literally eats the farmland.",
+    "combat": [
+      "Burrow-and-attack: surfaces from underground to attack at advantage against creatures unaware of it.",
+      "Bite attack can Grapple and Restrain a target, dragging it below ground on subsequent turns.",
+      "Acid Spray (recharge 6): a 30-foot line of acid dealing 3d6 damage even on a successful save."
+    ],
+    "world": [
+      "Found in farmland, plains, and forests — particularly dangerous to agricultural communities.",
+      "A single ankheg can devastate crop fields over many acres as it tunnels in search of prey.",
+      "Its chitin is highly valuable as crafting material, making it worth hunting despite the risk."
+    ],
+    "dmTips": [
+      "Great low-level encounter (1–4) tied to protecting a farming village.",
+      "Let one drag a player underground before the others can react — creates immediate urgency."
+    ]
+  },
+  "wight": {
+    "overview": "Wights are undead warriors created when particularly evil or vengeful humanoids die but refuse to pass on. Unlike zombies, they retain their intelligence and cunning, making them dangerous leaders of lesser undead and skilled tacticians in their own right.",
+    "combat": [
+      "Life Drain reduces maximum HP on a hit — stacking multiple hits against a single target can be lethal even at higher levels.",
+      "Sunlight Sensitivity: disadvantage on attacks and perception in sunlight — a key vulnerability.",
+      "Can create Zombie servants from humanoids it kills, potentially turning the party's fallen against them."
+    ],
+    "world": [
+      "Often found leading bands of zombies and skeletons in ancient tombs or dark fortresses.",
+      "Retains memories of its mortal life, though twisted by hatred into something unrecognizable.",
+      "Bound to the place of its death or its greatest regret — rarely wanders far without purpose."
+    ],
+    "dmTips": [
+      "Give it the personality of whoever it was in life — a dead king, a betrayed soldier, a fallen paladin.",
+      "Its ability to create zombies mid-fight makes numbers unpredictable and terrifying."
+    ]
+  },
+  "phase-spider": {
+    "overview": "Phase spiders are aberrant arachnids that can shift between the material plane and the ethereal plane at will, making them nearly impossible to fight by conventional means. They hunt by phasing in, biting, and phasing out before any retaliation is possible.",
+    "combat": [
+      "Ethereal Jaunt: moves to or from the Ethereal Plane as a bonus action — can bite and vanish in a single turn.",
+      "Poison Bite requires a DC 11 Constitution save or take an additional 4d8 poison damage.",
+      "Cannot be cornered — any attempt to surround it simply causes it to phase out."
+    ],
+    "world": [
+      "Webs between planar boundaries rather than physical spaces — its lair partially exists in the Ethereal.",
+      "Hunts ethereal and material creatures alike, a unique predator across planes.",
+      "Colonies of phase spiders represent a serious threat to planar stability in affected regions."
+    ],
+    "dmTips": [
+      "Force players to think outside conventional combat — the answer may involve entering the Ethereal themselves.",
+      "Excellent mid-dungeon challenge for levels 4–7 that rewards creative problem-solving."
+    ]
+  },
+  "chuul": {
+    "overview": "The chuul is a massive crustacean aberration created by the aboleth to serve as soldiers and guards. It hunts by smell in murky water, ambushing with powerful claws before delivering a paralyzing venom through its tentacles.",
+    "combat": [
+      "Multiattack includes two pincer attacks — a successful hit allows it to Grapple with that pincer.",
+      "Paralyzing Tentacles: a Grappled target that fails a Constitution save is Paralyzed, setting up devastating follow-up attacks.",
+      "Amphibious — equally effective in and out of water."
+    ],
+    "world": [
+      "Found in swamps, underground lakes, and coastal ruins connected to aboleth activity.",
+      "Has an instinctive hatred of magic-using creatures, which it can sense and prioritizes as targets.",
+      "May be found abandoned — still guarding a location for a master who died centuries ago."
+    ],
+    "dmTips": [
+      "Use underwater or in flooded ruins where its aquatic mobility matters.",
+      "An abandoned chuul in an ancient ruin implies a much larger story about what happened here."
+    ]
+  },
+  "orc": {
+    "overview": "Orcs are warlike humanoids with fearsome physical power and an aggressive tribal culture centered on strength and conquest. They raid, they conquer, and they move on — but the most dangerous orcs are those who stop moving and start building empires.",
+    "combat": [
+      "Aggressive: can move up to its speed toward a visible enemy as a bonus action — rapidly closes distance.",
+      "Greataxe attack deals 1d12+3 — hits hard even at low levels.",
+      "Morale: orcs fight to the death in service of a strong leader, but may flee if that leader falls."
+    ],
+    "world": [
+      "Tribal societies organized around the strongest warrior, typically a war chief or war boss.",
+      "Many orcs venerate Gruumsh, the one-eyed god of slaughter, though orc culture varies widely.",
+      "The most interesting orcs are those caught between tribal tradition and their own individual choices."
+    ],
+    "dmTips": [
+      "Avoid flat villainy — an orc chieftain with territorial grievances, history, or conflicted followers is far more interesting.",
+      "Great for levels 1–4 as frontline combatants in varied mixed-encounter groups."
+    ]
+  },
+  "hobgoblin": {
+    "overview": "Hobgoblins are the military elite of goblinoid society — disciplined, organized, and genuinely dangerous in ways that goblins are not. They build fortresses, maintain supply lines, and wage coordinated military campaigns that would be impressive even by humanoid standards.",
+    "combat": [
+      "Martial Advantage: deals an extra 2d6 damage when attacking a creature adjacent to an ally — extreme damage for a CR 1/2 creature.",
+      "Longbow attacks allow them to engage at range before closing to melee.",
+      "Never fight alone: tactics, formations, and coordination are the hobgoblin's greatest weapons."
+    ],
+    "world": [
+      "Build sprawling military states governed by absolute hierarchy and strict discipline.",
+      "View all other species as either future subjects, useful tools, or enemies to be destroyed.",
+      "A hobgoblin army is a genuine regional threat — not a random monster encounter."
+    ],
+    "dmTips": [
+      "Use hobgoblin legions as the antagonist of an entire campaign arc, not just individual encounters.",
+      "A hobgoblin general with a strategic plan is far more terrifying than a random warband."
+    ]
+  },
+  "succubus-incubus": {
+    "overview": "Succubi and incubi are fiends who feed on the life force and souls of mortals through seduction and emotional manipulation. They are rarely encountered in direct combat — their weapons are whispered promises, false love, and the slow corruption of the people around them.",
+    "combat": [
+      "Draining Kiss: deals 5d6+3 psychic damage and reduces maximum HP — a single kiss can set up a kill.",
+      "Telepathy allows them to communicate and manipulate creatures at range without revealing their location.",
+      "Incorporeal Movement: can move through solid objects in ethereal form, making retreat trivial."
+    ],
+    "world": [
+      "Serve archdevils or demon lords, tasked with corrupting mortals of influence or power.",
+      "May spend years maintaining a cover identity as a trusted friend, lover, or adviser.",
+      "Their greatest power is never being recognized for what they are until it is too late."
+    ],
+    "dmTips": [
+      "Most effective in political and social encounters long before combat begins.",
+      "The reveal that a trusted NPC has been a fiend all along is a campaign-defining moment."
+    ]
+  }
+}

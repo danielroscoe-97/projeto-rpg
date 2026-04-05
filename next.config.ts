@@ -61,13 +61,17 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // SRD JSON bundles are versioned by content (2014/2024 suffix) and never change in-place.
-        // Serve with immutable CDN caching — satisfies NFR19.
+        // SRD JSON bundles — SRD-only filtered content, safe for public access.
+        // Cache for 1 day (content may be regenerated). Block search indexing.
         source: "/srd/:path*",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
           },
         ],
       },

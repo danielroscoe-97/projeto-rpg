@@ -23,7 +23,7 @@ let cachedData: TranslationData | null = null;
 
 async function loadTranslations(): Promise<TranslationData> {
   if (cachedData) return cachedData;
-  const mod = await import("@/public/srd/monster-descriptions-pt.json");
+  const mod = await import("@/data/srd/monster-descriptions-pt.json");
   cachedData = mod.default as TranslationData;
   return cachedData;
 }

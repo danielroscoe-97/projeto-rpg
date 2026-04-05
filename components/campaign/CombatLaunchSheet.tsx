@@ -20,7 +20,9 @@ interface CombatLaunchSheetProps {
   campaignName: string;
   playerEmails?: string[];
   activeSessionId?: string | null;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CombatLaunchSheet({
@@ -29,10 +31,17 @@ export function CombatLaunchSheet({
   playerEmails = [],
   activeSessionId,
   children,
+  open: controlledOpen,
+  onOpenChange,
 }: CombatLaunchSheetProps) {
   const t = useTranslations("campaign_combat");
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [_open, _setOpen] = useState(false);
+  const open = controlledOpen ?? _open;
+  const setOpen = (next: boolean) => {
+    if (controlledOpen === undefined) _setOpen(next);
+    onOpenChange?.(next);
+  };
   const [view, setView] = useState<"menu" | "new_combat" | "send_link" | "load_preset">("menu");
   const [autoInitiative, setAutoInitiative] = useState(false);
   const [notifyPlayers, setNotifyPlayers] = useState(true);
@@ -100,7 +109,9 @@ export function CombatLaunchSheet({
         if (!v) resetView();
       }}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      {controlledOpen === undefined && children && (
+        <DialogTrigger asChild>{children}</DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:top-auto max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-t-2xl max-sm:rounded-b-none max-sm:max-w-none">
         <DialogHeader>
           <DialogTitle>

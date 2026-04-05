@@ -302,11 +302,7 @@ export function MonsterBrowser() {
                 active={sourceFilter === s}
                 onClick={() => {
                   if (s === "complete" && !canAccess) {
-                    if (!isAuthenticated) {
-                      toast.info(t("login_required_complete"));
-                    } else {
-                      setGateOpen(true);
-                    }
+                    toast.info(t("complete_beta_only"));
                     return;
                   }
                   sourceManuallyChanged.current = true;

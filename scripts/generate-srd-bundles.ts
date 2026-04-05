@@ -22,7 +22,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-const OUTPUT_DIR = join(process.cwd(), "public", "srd");
+const OUTPUT_DIR = join(process.cwd(), "data", "srd");
 
 // ── Types for raw DB rows ──────────────────────────────────────────
 interface SrdMonsterRaw {
@@ -113,7 +113,8 @@ async function main() {
   );
   console.log(`  ${conditions?.length ?? 0} conditions written`);
 
-  console.log("\nDone. Files written to public/srd/");
+  console.log("\nDone. Files written to data/srd/");
+  console.log("Run: npx tsx scripts/filter-srd-public.ts to generate SRD-filtered public bundles.");
 }
 
 main().catch((err) => {
