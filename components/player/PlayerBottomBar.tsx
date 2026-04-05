@@ -95,7 +95,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
 
   return (
     <div
-      className={`fixed bottom-0 inset-x-0 z-40 bg-black/90 backdrop-blur-sm border-t-2 safe-area-pb lg:hidden transition-all duration-300 ease-in-out ${isPlayerTurn ? "border-amber-500 animate-pulse bg-amber-900/10" : "border-border/50"}`}
+      className={`fixed bottom-0 inset-x-0 z-40 bg-black/90 backdrop-blur-sm border-t-2 safe-area-pb lg:hidden transition-all duration-300 ease-in-out ${isPlayerTurn ? "border-amber-500 bg-amber-900/10" : "border-border/50"}`}
       data-testid={`player-bottom-bar-${character.id}`}
     >
       <div className="px-4 py-2.5 space-y-1.5">
