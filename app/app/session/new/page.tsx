@@ -117,15 +117,77 @@ export default function NewEncounterPage() {
   const handlePickCampaign = async (campaignId: string) => {
     setIsLoading(true);
     const supabase = createClient();
-    const { data: players } = await supabase
+
+    // Fetch existing character sheets for this campaign
+    const { data: sheets } = await supabase
       .from("player_characters")
       .select("*")
       .eq("campaign_id", campaignId)
       .order("created_at", { ascending: true });
 
+    const characterSheets = (sheets as PlayerCharacter[]) ?? [];
+    const sheetUserIds = new Set(characterSheets.map((pc) => pc.user_id).filter(Boolean));
+
+    // Fetch active player members who DON'T have a character sheet yet
+    const { data: memberRows } = await supabase
+      .from("campaign_members")
+      .select("user_id")
+      .eq("campaign_id", campaignId)
+      .eq("role", "player")
+      .eq("status", "active");
+
+    const unmatched = (memberRows ?? []).filter((m) => !sheetUserIds.has(m.user_id));
+
+    let placeholders: PlayerCharacter[] = [];
+    if (unmatched.length > 0) {
+      const { data: userRows } = await supabase
+        .from("users")
+        .select("id, display_name")
+        .in("id", unmatched.map((m) => m.user_id));
+
+      const userMap = new Map((userRows ?? []).map((u: { id: string; display_name: string | null }) => [u.id, u.display_name]));
+
+      placeholders = unmatched.map((m) => ({
+        id: `__placeholder__${m.user_id}`,
+        campaign_id: campaignId,
+        user_id: m.user_id,
+        name: userMap.get(m.user_id) ?? "Jogador",
+        max_hp: 0,
+        current_hp: 0,
+        ac: 0,
+        hp_temp: 0,
+        speed: null,
+        initiative_bonus: null,
+        inspiration: false,
+        conditions: [],
+        spell_save_dc: null,
+        dm_notes: "",
+        race: null,
+        class: null,
+        level: null,
+        subrace: null,
+        subclass: null,
+        background: null,
+        alignment: null,
+        notes: null,
+        token_url: null,
+        spell_slots: null,
+        str: null,
+        dex: null,
+        con: null,
+        int_score: null,
+        wis: null,
+        cha_score: null,
+        traits: null,
+        currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as PlayerCharacter));
+    }
+
     setChosen({
       campaignId,
-      preloadedPlayers: (players as PlayerCharacter[]) ?? [],
+      preloadedPlayers: [...characterSheets, ...placeholders],
     });
     setIsLoading(false);
   };

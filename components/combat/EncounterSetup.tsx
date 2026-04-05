@@ -147,7 +147,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
         group_order: null,
         dm_notes: "",
         player_notes: "",
-        player_character_id: pc.id,
+        player_character_id: pc.id.startsWith("__placeholder__") ? null : pc.id,
         combatant_role: null,
         legendary_actions_total: null,
         legendary_actions_used: 0,
