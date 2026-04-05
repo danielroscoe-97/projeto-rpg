@@ -300,14 +300,30 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
         </div>
       )}
 
-      {/* Link to full ranking */}
-      <div className="text-center pt-1">
-        <Link
-          href="/methodology/spell-tiers"
-          className="text-[11px] text-foreground/30 hover:text-gold/60 transition-colors duration-200"
-        >
-          {t.see_ranking}
-        </Link>
+      {/* Link to full ranking — ornamental banner */}
+      <div className="relative mt-2">
+        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-red-800/40 to-transparent" />
+        </div>
+        <div className="relative flex justify-center">
+          <Link
+            href="/methodology/spell-tiers"
+            className="group inline-flex items-center gap-2 px-5 py-2 text-xs font-medium
+              bg-gradient-to-r from-red-950/60 via-red-900/50 to-red-950/60
+              border border-red-700/30 hover:border-gold/40
+              text-gold/70 hover:text-gold
+              rounded-md shadow-[0_2px_8px_rgba(127,29,29,0.15)] hover:shadow-[0_2px_12px_rgba(212,168,83,0.2)]
+              transition-all duration-300"
+          >
+            <svg className="w-3.5 h-3.5 text-gold/50 group-hover:text-gold transition-colors duration-300" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5" aria-hidden="true">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            {t.see_ranking}
+            <svg className="w-3 h-3 text-gold/40 group-hover:text-gold/70 group-hover:translate-x-0.5 transition-all duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </Link>
+        </div>
       </div>
     </div>
   );
