@@ -11,11 +11,51 @@ const MAX_SPELL_NAME_LENGTH = 100;
 /**
  * GET /api/methodology/spell-vote — Spell tier vote stats.
  * Optional ?spell=name param for single-spell lookup. Without param returns top 20.
- * Public. Cached 5 minutes.
+ * Optional ?my=true param returns the authenticated user's personal votes.
+ * Public (stats). Cached 5 minutes (stats only — personal votes are not cached).
  */
 const getHandler: Parameters<typeof withRateLimit>[0] = async function GET(request: NextRequest) {
   try {
+    const myParam = request.nextUrl.searchParams.get("my");
     const spellParam = request.nextUrl.searchParams.get("spell");
+
+    // Personal votes mode — requires auth
+    if (myParam === "true") {
+      const supabase = await createClient();
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      if (user.is_anonymous) {
+        return NextResponse.json({ error: "Anonymous users cannot vote" }, { status: 403 });
+      }
+
+      const limitParam = request.nextUrl.searchParams.get("limit");
+      const offsetParam = request.nextUrl.searchParams.get("offset");
+      const limit = Math.min(Math.max(parseInt(limitParam ?? "50", 10) || 50, 1), 200);
+      const offset = Math.max(parseInt(offsetParam ?? "0", 10) || 0, 0);
+
+      const { data, error, count } = await supabase
+        .from("spell_tier_votes")
+        .select("spell_name, vote, voted_at", { count: "exact" })
+        .eq("user_id", user.id)
+        .order("voted_at", { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      return NextResponse.json(
+        { votes: data ?? [], total: count ?? 0 },
+        { headers: { "Cache-Control": "private, no-cache" } },
+      );
+    }
+
+    // Public aggregated stats mode
     if (spellParam && spellParam.length > MAX_SPELL_NAME_LENGTH) {
       return NextResponse.json([], { status: 400 });
     }

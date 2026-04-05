@@ -144,6 +144,7 @@ export default async function SpellTiersPage() {
               spell_ranking_votes: t("spell_ranking_votes"),
               spell_ranking_spell: t("spell_ranking_spell"),
               spell_ranking_distribution: t("spell_ranking_distribution"),
+              spell_ranking_your_vote: t("spell_ranking_your_vote"),
             }}
           />
         </div>

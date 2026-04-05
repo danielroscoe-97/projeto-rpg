@@ -19,8 +19,9 @@ import { BugReportDialog } from "@/components/feedback/BugReportDialog";
 import { RoleSelector } from "@/components/settings/RoleSelector";
 import { UserProfile } from "@/components/settings/UserProfile";
 import { SettingsForm } from "@/components/settings/SettingsForm";
+import { MySpellVotes } from "@/components/settings/MySpellVotes";
 
-type Tab = "preferences" | "wiki" | "billing" | "account";
+type Tab = "preferences" | "wiki" | "votes" | "billing" | "account";
 type WikiTab = "spells" | "monsters" | "conditions";
 
 interface SettingsClientProps {
@@ -39,13 +40,16 @@ export function SettingsClient({ email, displayName = "", avatarUrl = null }: Se
 
   // Support ?tab=billing query param for deep linking from billing CTAs
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "billing" ? "billing" : "preferences";
+  const tabParam = searchParams.get("tab") as Tab | null;
+  const validTabs: Set<Tab> = new Set(["preferences", "wiki", "votes", "billing", "account"]);
+  const initialTab: Tab = tabParam && validTabs.has(tabParam) ? tabParam : "preferences";
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [wikiTab, setWikiTab] = useState<WikiTab>("spells");
 
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: "preferences", label: t("tab_preferences"), icon: "⚙" },
     { id: "wiki", label: t("tab_wiki"), icon: "📖" },
+    { id: "votes", label: t("tab_votes"), icon: "🗳" },
     { id: "billing", label: t("tab_billing"), icon: "💳" },
     { id: "account", label: t("tab_account"), icon: "👤" },
   ];
@@ -84,6 +88,7 @@ export function SettingsClient({ email, displayName = "", avatarUrl = null }: Se
       {activeTab === "wiki" && (
         <WikiReferenceTab wikiTab={wikiTab} setWikiTab={setWikiTab} />
       )}
+      {activeTab === "votes" && <MySpellVotes />}
       {activeTab === "billing" && <SubscriptionPanel />}
       {activeTab === "account" && <AccountTab />}
     </div>

@@ -6,10 +6,9 @@ const SRD_CACHE = `srd-${CACHE_VERSION}`;
 const AUDIO_CACHE = `audio-${CACHE_VERSION}`;
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 
-// App shell files to pre-cache on install
+// App shell files to pre-cache on install (only public/unauthenticated routes)
 const APP_SHELL_FILES = [
   "/",
-  "/app/dashboard",
   "/manifest.json",
 ];
 
@@ -19,22 +18,41 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(APP_SHELL_CACHE).then((cache) => cache.addAll(APP_SHELL_FILES))
   );
-  // Activate immediately, don't wait for existing tabs to close
-  self.skipWaiting();
+  // Do NOT call skipWaiting() here — let the update banner show so the user
+  // can choose when to activate. skipWaiting is triggered via the SKIP_WAITING
+  // message handler when the user clicks "Update".
 });
 
-// ── Activate — clean up old caches ─────────────────────────────────────────────
+// ── Activate — clean up old caches and stale app-shell entries ────────────────
 
 self.addEventListener("activate", (event) => {
   const validCaches = [APP_SHELL_CACHE, SRD_CACHE, AUDIO_CACHE, STATIC_CACHE];
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => !validCaches.includes(key))
-          .map((key) => caches.delete(key))
-      )
-    )
+    Promise.all([
+      // Remove obsolete cache buckets
+      caches.keys().then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => !validCaches.includes(key))
+            .map((key) => caches.delete(key))
+        )
+      ),
+      // Purge stale HTML from app-shell cache so users get fresh pages
+      caches.open(APP_SHELL_CACHE).then((cache) =>
+        cache.keys().then((requests) =>
+          Promise.all(
+            requests
+              .filter((req) => {
+                const url = new URL(req.url);
+                // Delete cached HTML pages (navigation) — they'll be re-fetched network-first
+                return !url.pathname.startsWith("/api/") &&
+                       !url.pathname.match(/\.(js|css|json)$/);
+              })
+              .map((req) => cache.delete(req))
+          )
+        )
+      ),
+    ])
   );
   // Claim all open tabs immediately
   self.clients.claim();
@@ -81,13 +99,27 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Next.js hashed chunks (/_next/static/) — Cache-First
+  // These have content hashes in filenames, so cached = correct
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(cacheFirst(event.request, STATIC_CACHE));
+    return;
+  }
+
   // API calls — Network-First with cache fallback
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(networkFirst(event.request, APP_SHELL_CACHE));
     return;
   }
 
-  // App shell (HTML, JS, CSS) — Stale-While-Revalidate
+  // Navigation requests (HTML pages) — Network-First
+  // Ensures fresh HTML that references correct CSS/JS chunk hashes
+  if (event.request.mode === "navigate") {
+    event.respondWith(networkFirst(event.request, APP_SHELL_CACHE));
+    return;
+  }
+
+  // Everything else — Stale-While-Revalidate
   event.respondWith(staleWhileRevalidate(event.request, APP_SHELL_CACHE));
 });
 
@@ -113,13 +145,26 @@ async function networkFirst(request, cacheName) {
   try {
     const response = await fetch(request);
     if (response.ok) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
+      // Skip caching private/no-cache responses (e.g. personal vote data)
+      const cc = response.headers.get("cache-control") || "";
+      if (!cc.includes("private") && !cc.includes("no-cache")) {
+        const cache = await caches.open(cacheName);
+        cache.put(request, response.clone());
+      }
     }
     return response;
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
+    // Return HTML for navigation requests, JSON for API calls
+    if (request.mode === "navigate") {
+      return new Response(
+        "<!DOCTYPE html><html><head><meta charset=utf-8><title>Offline</title></head>" +
+        "<body style='font-family:system-ui;text-align:center;padding:4rem 1rem;color:#999'>" +
+        "<h1>Offline</h1><p>Check your connection and try again.</p></body></html>",
+        { status: 503, headers: { "Content-Type": "text/html" } }
+      );
+    }
     return new Response(JSON.stringify({ error: "offline" }), {
       status: 503,
       headers: { "Content-Type": "application/json" },
@@ -139,7 +184,7 @@ async function staleWhileRevalidate(request, cacheName) {
       }
       return response;
     })
-    .catch(() => cached);
+    .catch(() => cached ?? new Response("Offline", { status: 503 }));
 
   // Return cached immediately if available, otherwise wait for network
   return cached || fetchPromise;

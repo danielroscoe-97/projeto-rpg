@@ -25,6 +25,7 @@ interface SpellTierRankingProps {
     spell_ranking_votes: string;
     spell_ranking_spell: string;
     spell_ranking_distribution: string;
+    spell_ranking_your_vote?: string;
   };
 }
 
@@ -155,11 +156,43 @@ function SkeletonRow() {
   );
 }
 
+const STORAGE_KEY = "spell_votes_cast";
+
+function getUserVotes(): Record<string, SpellTier> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
+    const validated: Record<string, SpellTier> = {};
+    for (const [key, val] of Object.entries(raw)) {
+      if (TIERS.includes(val as SpellTier)) validated[key] = val as SpellTier;
+    }
+    return validated;
+  } catch {
+    return {};
+  }
+}
+
+function UserVoteBadge({ tier }: { tier: SpellTier }) {
+  const colors = TIER_COLORS[tier];
+  return (
+    <span
+      className={`inline-flex items-center justify-center w-7 h-7 rounded text-xs font-bold border ${colors.bg} ${colors.text} ${colors.border} shrink-0 opacity-80`}
+    >
+      {tier}
+    </span>
+  );
+}
+
 export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
   const [spells, setSpells] = useState<SpellVoteStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userVotes, setUserVotes] = useState<Record<string, SpellTier>>({});
 
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setUserVotes(getUserVotes());
+  }, []);
 
   useEffect(() => {
     fetch("/api/methodology/spell-vote")
@@ -230,6 +263,11 @@ export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
                   <th className="text-left px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider">
                     {t.spell_ranking_distribution}
                   </th>
+                  {Object.keys(userVotes).length > 0 && (
+                    <th className="text-center px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider w-20">
+                      {t.spell_ranking_your_vote ?? "Seu voto"}
+                    </th>
+                  )}
                   <th className="text-right px-4 py-3 text-foreground/40 text-xs font-medium uppercase tracking-wider w-24">
                     {t.spell_ranking_votes}
                   </th>
@@ -262,6 +300,15 @@ export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
                       <td className="px-4 py-3">
                         <VoteBar stats={spell} />
                       </td>
+                      {Object.keys(userVotes).length > 0 && (
+                        <td className="px-4 py-3 text-center">
+                          {userVotes[spell.spell_name] ? (
+                            <UserVoteBadge tier={userVotes[spell.spell_name]} />
+                          ) : (
+                            <span className="text-foreground/15 text-xs">—</span>
+                          )}
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-right text-foreground/40 text-xs tabular-nums">
                         {spell.total_votes.toLocaleString()}
                       </td>
@@ -299,6 +346,9 @@ export function SpellTierRanking({ translations: t }: SpellTierRankingProps) {
                         {spell.total_votes.toLocaleString()} {t.spell_ranking_votes}
                       </p>
                     </div>
+                    {userVotes[spell.spell_name] && (
+                      <UserVoteBadge tier={userVotes[spell.spell_name]} />
+                    )}
                   </div>
                   <VoteBar stats={spell} />
                   {/* Tier breakdown legend */}

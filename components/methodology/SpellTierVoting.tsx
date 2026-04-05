@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -81,6 +81,14 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
   const [currentSpell, setCurrentSpell] = useState<string>(FEATURED_SPELLS[0]);
   const [pendingVote, setPendingVote] = useState<SpellTier | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup auto-advance timer on unmount
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
 
   // Hydrate from localStorage — validate values are valid tiers
   useEffect(() => {
@@ -162,8 +170,8 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
       saveVoteCast(normalizedCurrent, pendingVote);
       toast.success(t.vote_thanks);
 
-      // Auto-advance to next unvoted spell after short delay
-      setTimeout(() => advanceToNextSpell(normalizedCurrent, updated), 800);
+      // Auto-advance to next unvoted spell after delay (enough to see confirmation)
+      advanceTimerRef.current = setTimeout(() => advanceToNextSpell(normalizedCurrent, updated), 2500);
     } catch {
       toast.error(t.vote_error);
     } finally {
@@ -225,13 +233,16 @@ export function SpellTierVoting({ translations: t, isLoggedIn }: SpellTierVoting
         </div>
       )}
 
-      {/* Already voted — show confirmed state */}
+      {/* Already voted — show confirmed state with prominent badge */}
       {hasVotedThisSpell && (
-        <div className="flex items-center justify-center gap-2 py-1">
-          <span className={`text-sm font-bold px-2.5 py-0.5 rounded ${TIER_COLORS[votedSpells[normalizedCurrent]].selected}`}>
+        <div className="flex items-center justify-center gap-2.5 py-2 animate-[fade-in_0.4s_ease-out]">
+          <span className={`text-base font-bold px-3 py-1 rounded-md ${TIER_COLORS[votedSpells[normalizedCurrent]].selected}`}>
             {votedSpells[normalizedCurrent]}
           </span>
-          <span className="text-xs text-foreground/40">{t.voted_label}</span>
+          <span className="text-xs text-foreground/50 font-medium">{t.voted_label}</span>
+          <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
         </div>
       )}
 
