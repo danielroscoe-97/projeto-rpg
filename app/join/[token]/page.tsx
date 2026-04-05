@@ -193,6 +193,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
       registeredPlayerNames={registeredPlayerNames}
       registeredPlayersWithStatus={registeredPlayersWithStatus}
       campaignId={campaignId}
+      sessionCampaignId={(session.campaign_id as string | null) ?? undefined}
     />
     </>
   );

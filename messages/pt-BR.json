@@ -129,7 +129,10 @@
     "role_continue": "Continuar",
     "role_skip": "Pular",
     "role_saving": "Salvando...",
-    "role_save_error": "Erro ao salvar preferência. Tente novamente."
+    "role_save_error": "Erro ao salvar preferência. Tente novamente.",
+    "signup_context_invite": "Crie sua conta para aceitar o convite",
+    "signup_context_join_code": "Crie sua conta para entrar na campanha",
+    "signup_context_campaign_join": "Crie uma conta grátis e continue jogando"
   },
   "role_switcher": {
     "toggle_label": "Alternar entre visão de Mestre e Jogador",
@@ -508,6 +511,7 @@
     "dm_empty_cta_quick": "Combate Rápido",
     "dm_nudge_invite": "Campanha criada! Agora convide seus jogadores",
     "dm_nudge_invite_desc": "Compartilhe o link da sessão para que seus jogadores entrem na mesa",
+    "campaign_joined_success": "Você entrou na campanha!",
     "streak_weeks": "{count, plural, one {# semana consecutiva} other {# semanas consecutivas}}",
     "invite_banner_title": "Seus jogadores ainda entram manual!",
     "invite_banner_description": "Convide eles pro app e no pr\u00f3ximo combate eles entram pelo celular com 1 clique \u2014 sem precisar de conta.",
@@ -898,6 +902,7 @@
     "role_dm_desc": "Comando as aventuras",
     "role_both_desc": "Mestro e jogo",
     "role_continue": "Continuar",
+    "role_save_error": "Erro ao salvar preferência. Tente novamente.",
     "celebration_title": "Sua mesa está pronta!",
     "celebration_subtitle": "Compartilhe o link com seus jogadores para começar",
     "launch_copied": "Copiado!",
@@ -1325,6 +1330,7 @@
     "recap_share_link": "Link",
     "recap_link_copied": "Link copiado! Cole no grupo pra compartilhar.",
     "recap_link_error": "Erro ao criar link. Tente novamente.",
+    "recap_join_campaign": "Entrar na Campanha",
     "recap_save_combat": "Salvar Combate",
     "recap_saved": "Salvo",
     "recap_save_success": "Combate salvo na campanha!",

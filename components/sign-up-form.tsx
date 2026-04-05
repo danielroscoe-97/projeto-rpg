@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics/track";
 import { getAuthErrorKey } from "@/lib/auth/translate-error";
 import { Swords, Shield, Users } from "lucide-react";
@@ -41,6 +41,25 @@ export function SignUpForm({
   const inviteToken = searchParams?.get("invite") ?? null;
   const inviteCampaignId = searchParams?.get("campaign") ?? null;
   const joinCode = searchParams?.get("join_code") ?? null;
+  const signupContext = searchParams?.get("context") ?? null;
+
+  // JO-01/JO-02: Save pending tokens to localStorage as fallback for tab close/OAuth redirect
+  useEffect(() => {
+    try {
+      if (inviteToken) {
+        localStorage.setItem("pendingInvite", JSON.stringify({
+          token: inviteToken,
+          campaignId: inviteCampaignId,
+          path: `/invite/${inviteToken}`,
+        }));
+      }
+      if (joinCode) {
+        localStorage.setItem("pendingJoinCode", joinCode);
+      }
+    } catch {
+      // localStorage unavailable — rely on URL params
+    }
+  }, [inviteToken, inviteCampaignId, joinCode]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,8 +120,37 @@ export function SignUpForm({
   const inputClass =
     "bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/60 focus:ring-gold/50";
 
+  // JO-03: Determine contextual signup type for banner display
+  const signupContextType: "invite" | "join_code" | "campaign_join" | "generic" = inviteToken
+    ? "invite"
+    : joinCode
+      ? "join_code"
+      : signupContext === "campaign_join"
+        ? "campaign_join"
+        : "generic";
+
   return (
     <div className={cn("flex flex-col", className)} {...props}>
+      {/* JO-03: Contextual banner when coming from invite/join/combat */}
+      {signupContextType !== "generic" && (
+        <div className="mb-4 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 flex items-center gap-3">
+          <div className="flex-shrink-0 text-gold">
+            {signupContextType === "invite" ? (
+              <Swords className="w-5 h-5" />
+            ) : signupContextType === "join_code" ? (
+              <Shield className="w-5 h-5" />
+            ) : (
+              <Swords className="w-5 h-5" />
+            )}
+          </div>
+          <p className="text-sm text-gold/90">
+            {signupContextType === "invite" && ts("signup_context_invite")}
+            {signupContextType === "join_code" && ts("signup_context_join_code")}
+            {signupContextType === "campaign_join" && ts("signup_context_campaign_join")}
+          </p>
+        </div>
+      )}
+
       {/* Icon circle */}
       <div className="flex justify-center mb-3">
         <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
@@ -249,10 +297,19 @@ export function SignUpForm({
         </div>
       </div>
 
-      {/* Google OAuth */}
+      {/* Google OAuth — always route through /auth/confirm with invite/join params */}
       <GoogleOAuthButton
         namespace="auth"
-        redirectTo={joinCode ? `${typeof window !== "undefined" ? window.location.origin : ""}/join-campaign/${joinCode}` : undefined}
+        redirectTo={(() => {
+          const origin = typeof window !== "undefined" ? window.location.origin : "";
+          const params = new URLSearchParams();
+          params.set("role", selectedRole);
+          if (joinCode) params.set("join_code", joinCode);
+          if (inviteToken) params.set("invite", inviteToken);
+          if (inviteCampaignId) params.set("campaign", inviteCampaignId);
+          if (signupContext) params.set("context", signupContext);
+          return `${origin}/auth/confirm?${params.toString()}`;
+        })()}
       />
 
       {/* Footer link */}

@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Swords, Zap, ChevronRight } from "lucide-react";
 
+import { toast } from "sonner";
+import { joinCampaignDirectAction } from "@/app/app/dashboard/actions";
 import { InvitePlayersBanner } from "@/components/dashboard/InvitePlayersBanner";
 import { StreakBadge } from "@/components/dashboard/StreakBadge";
 import { PocketDmLabBadge } from "@/components/dashboard/PocketDmLabBadge";
@@ -81,6 +84,12 @@ interface DashboardOverviewProps {
     dm_empty_title: string;
     dm_empty_desc: string;
     dm_empty_cta: string;
+    dm_empty_title_v2: string;
+    dm_empty_desc_v2: string;
+    dm_empty_cta_campaign: string;
+    dm_empty_cta_quick: string;
+    dm_nudge_invite: string;
+    dm_nudge_invite_desc: string;
     combats_empty_title: string;
     combats_empty_cta: string;
     methodology_milestone_toast: string;
@@ -88,6 +97,7 @@ interface DashboardOverviewProps {
     methodology_lab_tooltip: string;
     methodology_researcher_title: string;
     methodology_researcher_subtitle: string;
+    campaign_joined_success: string;
     methodology_researcher_link: string;
   };
   streakWeeks?: number;
@@ -103,11 +113,54 @@ export function DashboardOverview({
   translations: t,
   streakWeeks = 0,
 }: DashboardOverviewProps) {
+  const router = useRouter();
   const { activeView, initialized, loadRole } = useRoleStore();
 
   useEffect(() => {
     loadRole();
   }, [loadRole]);
+
+  // JO-01/JO-02/JO-04: Safety net — redirect to pending invite/join if localStorage has saved tokens
+  useEffect(() => {
+    try {
+      const pendingInvite = localStorage.getItem("pendingInvite");
+      if (pendingInvite) {
+        const { path } = JSON.parse(pendingInvite) as { path: string };
+        if (path) {
+          localStorage.removeItem("pendingInvite");
+          router.push(path);
+          return;
+        }
+      }
+      const pendingJoinCode = localStorage.getItem("pendingJoinCode");
+      if (pendingJoinCode) {
+        localStorage.removeItem("pendingJoinCode");
+        router.push(`/join-campaign/${pendingJoinCode}`);
+        return;
+      }
+      // JO-04: Auto-join campaign after post-combat sign-up
+      const pendingCampaignJoin = localStorage.getItem("pendingCampaignJoin");
+      if (pendingCampaignJoin) {
+        localStorage.removeItem("pendingCampaignJoin");
+        const { campaignId: pendingCampaignId, playerName } = JSON.parse(pendingCampaignJoin) as { campaignId: string; playerName?: string };
+        if (pendingCampaignId) {
+          (async () => {
+            try {
+              const result = await joinCampaignDirectAction(pendingCampaignId, playerName);
+              if (result.success && !result.alreadyMember) {
+                toast.success(t.campaign_joined_success);
+                router.refresh();
+              }
+            } catch {
+              // Best-effort — DM can still send join code
+            }
+          })();
+        }
+      }
+    } catch {
+      // localStorage unavailable or corrupt — continue to dashboard
+    }
+  }, [router, t.campaign_joined_success]);
 
   const dmMemberships = memberships.filter((m) => m.role === "dm");
   const playerMemberships = memberships.filter((m) => m.role === "player");
@@ -241,26 +294,33 @@ export function DashboardOverview({
         </>
       )}
 
-      {/* No campaigns at all — show different empty state based on role */}
+      {/* No campaigns at all — show different empty state based on role (JO-07) */}
       {!hasDmCampaigns && !hasPlayerCampaigns && (
         isDmRole ? (
-          <div className="flex flex-col items-center gap-3 py-12 text-center" data-testid="dm-empty-state">
+          <div className="flex flex-col items-center gap-4 py-12 text-center" data-testid="dm-empty-state">
             <Image
               src="/art/icons/carta.png"
               alt=""
-              width={64}
-              height={64}
-              className="pixel-art opacity-40 float-gentle"
+              width={96}
+              height={96}
+              className="pixel-art opacity-70 float-gentle"
               aria-hidden="true"
               unoptimized
             />
-            <p className="text-foreground text-base font-medium">
-              {t.dm_empty_title}
+            <h2 className="text-xl font-bold text-foreground tracking-tight">
+              {t.dm_empty_title_v2}
+            </h2>
+            <p className="text-muted-foreground text-sm max-w-xs">
+              {t.dm_empty_desc_v2}
             </p>
-            <p className="text-muted-foreground/70 text-sm">{t.dm_empty_desc}</p>
-            <Button variant="gold" className="mt-2 min-h-[44px]" asChild>
-              <Link href="/app/onboarding">{t.dm_empty_cta}</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full max-w-xs">
+              <Button variant="gold" className="flex-1 min-h-[44px]" asChild>
+                <Link href="/app/onboarding">{t.dm_empty_cta_campaign}</Link>
+              </Button>
+              <Button variant="goldOutline" className="flex-1 min-h-[44px]" asChild>
+                <Link href="/try">{t.dm_empty_cta_quick}</Link>
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 py-12 text-center" data-testid="player-empty-state">
@@ -282,6 +342,25 @@ export function DashboardOverview({
             </Button>
           </div>
         )
+      )}
+
+      {/* DM nudge: has campaigns but zero saved encounters (JO-07) */}
+      {isDmRole && hasDmCampaigns && savedEncounters.length === 0 && campaigns.length > 0 && (
+        <div className="mb-6 p-4 rounded-lg border border-gold/20 bg-gold/[0.04] flex items-start gap-3" data-testid="dm-nudge-invite">
+          <Image
+            src="/art/icons/team-chibi-1.png"
+            alt=""
+            width={40}
+            height={40}
+            className="pixel-art opacity-70 shrink-0"
+            aria-hidden="true"
+            unoptimized
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">{t.dm_nudge_invite}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t.dm_nudge_invite_desc}</p>
+          </div>
+        </div>
       )}
 
       {/* Recent Combats */}

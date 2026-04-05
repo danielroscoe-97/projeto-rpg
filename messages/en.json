@@ -129,7 +129,10 @@
     "role_continue": "Continue",
     "role_skip": "Skip",
     "role_saving": "Saving...",
-    "role_save_error": "Failed to save preference. Please try again."
+    "role_save_error": "Failed to save preference. Please try again.",
+    "signup_context_invite": "Create your account to accept the invite",
+    "signup_context_join_code": "Create your account to join the campaign",
+    "signup_context_campaign_join": "Create a free account and keep playing"
   },
   "role_switcher": {
     "toggle_label": "Switch between DM and Player view",
@@ -508,6 +511,7 @@
     "dm_empty_cta_quick": "Quick Combat",
     "dm_nudge_invite": "Campaign created! Now invite your players",
     "dm_nudge_invite_desc": "Share the session link so your players can join the table",
+    "campaign_joined_success": "You joined the campaign!",
     "streak_weeks": "{count, plural, one {# consecutive week} other {# consecutive weeks}}",
     "invite_banner_title": "Your players are still joining manually!",
     "invite_banner_description": "Invite them to the app and they'll join the next combat from their phone with 1 tap \u2014 no account needed.",
@@ -898,6 +902,7 @@
     "role_dm_desc": "I run the adventures",
     "role_both_desc": "I GM and play",
     "role_continue": "Continue",
+    "role_save_error": "Failed to save preference. Please try again.",
     "celebration_title": "Your table is ready!",
     "celebration_subtitle": "Share the link with your players to get started",
     "launch_copied": "Copied!",
@@ -1325,6 +1330,7 @@
     "recap_share_link": "Link",
     "recap_link_copied": "Link copied! Paste it in your group to share.",
     "recap_link_error": "Error creating link. Try again.",
+    "recap_join_campaign": "Join Campaign",
     "recap_save_combat": "Save Combat",
     "recap_saved": "Saved",
     "recap_save_success": "Combat saved to campaign!",

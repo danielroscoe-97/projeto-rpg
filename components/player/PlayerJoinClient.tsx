@@ -87,6 +87,8 @@ interface PlayerJoinClientProps {
   registeredPlayersWithStatus?: Array<{ name: string; isActive: boolean; lastSeenAt?: string | null }>;
   /** Campaign ID — present only for authenticated campaign members. Enables shared notes panel. */
   campaignId?: string | null;
+  /** Session's campaign_id — always set when session belongs to a campaign. Used for post-combat join CTA. */
+  sessionCampaignId?: string;
 }
 
 export function PlayerJoinClient({
@@ -104,6 +106,7 @@ export function PlayerJoinClient({
   registeredPlayerNames = [],
   registeredPlayersWithStatus = [],
   campaignId,
+  sessionCampaignId,
 }: PlayerJoinClientProps) {
   const router = useRouter();
   const t = useTranslations("player");
@@ -1776,9 +1779,20 @@ export function PlayerJoinClient({
   // B6: Post-combat recap — player sees full "Spotify Wrapped" experience
   if (combatStatsData && !showPoll) {
     if (combatRecapReport) {
+      // JO-04: Show "Join Campaign" CTA for anonymous players in a campaign session
+      const showJoinCampaignCta = !campaignId && !!sessionCampaignId;
       return (
         <CombatRecap
           report={combatRecapReport}
+          onJoinCampaign={showJoinCampaignCta ? () => {
+            try {
+              localStorage.setItem("pendingCampaignJoin", JSON.stringify({
+                campaignId: sessionCampaignId,
+                playerName: registeredName ?? "",
+              }));
+            } catch {}
+            window.location.href = "/auth/sign-up?context=campaign_join";
+          } : undefined}
           onRate={(vote) => {
             playerRatedInlineRef.current = true;
             handlePollVote(vote);

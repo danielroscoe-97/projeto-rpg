@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2 } from "lucide-react";
+import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { formatRecapShareText } from "@/lib/utils/combat-stats";
@@ -25,9 +25,11 @@ interface RecapActionsProps {
   onRate?: (vote: 1 | 2 | 3 | 4 | 5) => void;
   /** Pre-filled rating value */
   initialRating?: number | null;
+  /** JO-04: Anonymous player CTA to join the campaign */
+  onJoinCampaign?: () => void;
 }
 
-export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating }: RecapActionsProps) {
+export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign }: RecapActionsProps) {
   const t = useTranslations("combat");
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -101,6 +103,19 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
       transition={{ delay: 0.2 }}
       className="flex flex-col gap-2 pt-2"
     >
+      {/* JO-04: Primary CTA — Join Campaign (anonymous player in campaign session) */}
+      {onJoinCampaign && (
+        <button
+          type="button"
+          onClick={onJoinCampaign}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gold text-black hover:bg-gold/90 transition-colors text-sm font-bold min-h-[48px]"
+          data-testid="recap-join-campaign-btn"
+        >
+          <UserPlus className="size-4" />
+          {t("recap_join_campaign")}
+        </button>
+      )}
+
       {/* Primary CTA — Save & signup (guest only) */}
       {onSaveAndSignup && (
         <button

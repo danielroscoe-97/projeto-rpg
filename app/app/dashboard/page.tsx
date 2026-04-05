@@ -48,8 +48,8 @@ export default async function DashboardPage() {
 
   const onboarding = onboardingData as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
 
-  // Onboarding redirect — DMs who haven't completed the wizard and have no campaigns
-  if (userRole !== "player") {
+  // Onboarding redirect — any user who hasn't completed the wizard and has no campaigns/memberships
+  {
     const wizardDone = onboarding?.wizard_completed ?? false;
     if (!wizardDone && memberships.length === 0) {
       const { count, error: countErr } = await supabase
@@ -146,6 +146,12 @@ export default async function DashboardPage() {
     dm_empty_title: t("dm_empty_title"),
     dm_empty_desc: t("dm_empty_desc"),
     dm_empty_cta: t("dm_empty_cta"),
+    dm_empty_title_v2: t("dm_empty_title_v2"),
+    dm_empty_desc_v2: t("dm_empty_desc_v2"),
+    dm_empty_cta_campaign: t("dm_empty_cta_campaign"),
+    dm_empty_cta_quick: t("dm_empty_cta_quick"),
+    dm_nudge_invite: t("dm_nudge_invite"),
+    dm_nudge_invite_desc: t("dm_nudge_invite_desc"),
     combats_empty_title: t("combats_empty_title"),
     combats_empty_cta: t("combats_empty_cta"),
     // Methodology hooks
@@ -155,6 +161,7 @@ export default async function DashboardPage() {
     methodology_researcher_title: tm("researcher_title"),
     methodology_researcher_subtitle: tm("researcher_subtitle"),
     methodology_researcher_link: tm("researcher_link"),
+    campaign_joined_success: t("campaign_joined_success"),
   };
 
   // F6: Streak counter

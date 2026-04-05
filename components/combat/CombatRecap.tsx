@@ -29,9 +29,11 @@ interface CombatRecapProps {
   onRate?: (vote: 1 | 2 | 3 | 4 | 5) => void;
   /** Pre-filled rating value */
   initialRating?: number | null;
+  /** JO-04: Anonymous player CTA to join the campaign after combat */
+  onJoinCampaign?: () => void;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(report.awards.length > 0 ? "awards" : "details");
 
@@ -146,6 +148,7 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
                   encounterId={encounterId}
                   onRate={onRate}
                   initialRating={initialRating}
+                  onJoinCampaign={onJoinCampaign}
                 />
               </motion.div>
             )}
