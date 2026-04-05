@@ -154,6 +154,11 @@ export default {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        "shimmer-sweep": {
+          "0%": { transform: "translateX(-150%) skewX(-20deg)" },
+          "30%": { transform: "translateX(250%) skewX(-20deg)" },
+          "100%": { transform: "translateX(250%) skewX(-20deg)" },
+        },
       },
       animation: {
         "torch-flicker": "torch-flicker 3s ease-in-out infinite",
@@ -162,6 +167,7 @@ export default {
         "tour-pulse": "tour-pulse 4s ease-in-out infinite",
         "tour-pulse-intense": "tour-pulse-intense 0.5s ease-in-out 2",
         "fade-in": "fade-in 0.6s ease-out",
+        "shimmer-sweep": "shimmer-sweep 3.5s ease-in-out infinite",
       },
     },
   },
