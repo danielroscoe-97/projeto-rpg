@@ -124,7 +124,8 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
 
             {/* Welcome */}
             <h1 className="font-display text-3xl md:text-4xl text-foreground leading-tight">
-              Bem-vindo de volta,{" "}
+              Bem-vindo de volta,
+              <br />
               <span className="text-gold">{displayName}</span>
             </h1>
 
