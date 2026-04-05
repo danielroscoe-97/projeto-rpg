@@ -223,9 +223,9 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
         </div>
       )}
 
-      {/* Bottom fade — smooth transition to next section */}
+      {/* Bottom fade — long gradient for imperceptible transition */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 h-80 bg-gradient-to-b from-transparent via-background/70 to-background pointer-events-none"
         aria-hidden="true"
       />
     </section>

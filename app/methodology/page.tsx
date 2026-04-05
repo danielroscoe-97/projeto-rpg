@@ -179,7 +179,7 @@ export default async function MethodologyPage() {
 
         {/* Section 3: Personal Contributor Card (logged in only) */}
         {isLoggedIn && contrib !== undefined && (
-          <div className="pt-6">
+          <div className="-mt-8">
             <ContributorCard contrib={contrib} />
           </div>
         )}
