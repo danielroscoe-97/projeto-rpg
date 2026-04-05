@@ -62,8 +62,8 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       {/* Icon circle */}
-      <div className="flex justify-center mb-5">
-        <div className="w-14 h-14 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+      <div className="flex justify-center mb-3">
+        <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
           <svg className="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
           </svg>
@@ -74,11 +74,11 @@ export function LoginForm({
       <h2 className="font-display text-2xl text-center text-foreground tracking-wide mb-1">
         {t("login_title")}
       </h2>
-      <p className="text-center text-muted-foreground text-sm mb-6">
+      <p className="text-center text-muted-foreground text-sm mb-4">
         {t("login_description")}
       </p>
 
-      <form onSubmit={handleLogin} className="space-y-5">
+      <form onSubmit={handleLogin} className="space-y-4">
         {/* Email */}
         <div className="space-y-1.5">
           <label htmlFor="login-email" className="flex items-center gap-1.5 text-[11px] text-gold/80 uppercase tracking-widest font-medium">
@@ -157,7 +157,7 @@ export function LoginForm({
       </form>
 
       {/* Separator */}
-      <div className="relative my-5">
+      <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-white/[0.08]" />
         </div>
@@ -170,7 +170,7 @@ export function LoginForm({
       <GoogleOAuthButton namespace="auth" />
 
       {/* Footer link */}
-      <p className="mt-5 text-center text-sm text-muted-foreground/60">
+      <p className="mt-4 text-center text-sm text-muted-foreground/60">
         {t("no_account")}{" "}
         <Link href="/auth/sign-up" className="text-gold hover:underline underline-offset-4">
           {t("signup_link")}

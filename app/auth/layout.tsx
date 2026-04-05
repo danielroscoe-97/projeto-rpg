@@ -6,9 +6,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar brand="Pocket DM" brandHref="/" />
-      <div className="pt-[72px]">{children}</div>
+      <div className="pt-[72px] flex-1 flex flex-col">{children}</div>
     </div>
   );
 }

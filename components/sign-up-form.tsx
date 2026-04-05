@@ -104,8 +104,8 @@ export function SignUpForm({
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       {/* Icon circle */}
-      <div className="flex justify-center mb-5">
-        <div className="w-14 h-14 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+      <div className="flex justify-center mb-3">
+        <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
           <svg className="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
           </svg>
@@ -116,11 +116,11 @@ export function SignUpForm({
       <h2 className="font-display text-2xl text-center text-foreground tracking-wide mb-1">
         {t("signup_title")}
       </h2>
-      <p className="text-center text-muted-foreground text-sm mb-6">
+      <p className="text-center text-muted-foreground text-sm mb-4">
         {t("signup_description")}
       </p>
 
-      <form onSubmit={handleSignUp} className="space-y-5">
+      <form onSubmit={handleSignUp} className="space-y-4">
         {/* Email */}
         <div className="space-y-1.5">
           <label htmlFor="signup-email" className="flex items-center gap-1.5 text-[11px] text-gold/80 uppercase tracking-widest font-medium">
@@ -240,7 +240,7 @@ export function SignUpForm({
       </form>
 
       {/* Separator */}
-      <div className="relative my-5">
+      <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-white/[0.08]" />
         </div>
@@ -256,7 +256,7 @@ export function SignUpForm({
       />
 
       {/* Footer link */}
-      <p className="mt-5 text-center text-sm text-muted-foreground/60">
+      <p className="mt-4 text-center text-sm text-muted-foreground/60">
         {t("have_account")}{" "}
         <Link href="/auth/login" className="text-gold hover:underline underline-offset-4">
           {t("login_link")}

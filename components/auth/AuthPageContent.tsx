@@ -8,7 +8,7 @@ interface AuthPageContentProps {
 export function AuthPageContent({ defaultTab }: AuthPageContentProps) {
   return (
     <div className="max-w-md mx-auto">
-      <div className="bg-card border border-white/[0.06] rounded-xl p-8">
+      <div className="bg-card border border-white/[0.06] rounded-xl p-6">
         {defaultTab === "login" ? <LoginForm /> : <SignUpForm />}
       </div>
     </div>

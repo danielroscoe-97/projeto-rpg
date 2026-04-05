@@ -5,10 +5,10 @@ export default async function Page() {
   const t = await getTranslations("auth");
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="flex flex-1 w-full items-center justify-center p-4 md:p-6">
       <div className="w-full max-w-lg">
         {/* Heading — Liberty RO style */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4">
           <h1 className="font-display text-3xl md:text-4xl text-foreground tracking-wide">
             {t("page_heading_prefix")}{" "}
             <span className="text-gold">{t("page_heading_accent")}</span>
