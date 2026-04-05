@@ -141,6 +141,10 @@ const deleteHandler: Parameters<typeof withRateLimit>[0] = async function delete
     const storagePath = urlParts[1];
     if (storagePath && storagePath.startsWith(`${user.id}/`)) {
       await supabase.storage.from(BUCKET).remove([storagePath]).catch(() => {});
+    } else {
+      captureError(new Error(`Unexpected file_url format: cannot extract storage path`), {
+        component: "DmAudioAPI", action: "delete-cleanup", category: "database",
+      });
     }
 
     await supabase.from("dm_custom_sounds").delete().eq("id", soundId);

@@ -7,4 +7,4 @@ DROP POLICY IF EXISTS campaign_invites_read_by_token ON campaign_invites;
 
 CREATE POLICY campaign_invites_read_pending ON campaign_invites
   FOR SELECT
-  USING (status = 'pending' AND expires_at > now());
+  USING (status = 'pending' AND (expires_at IS NULL OR expires_at > now()));

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { readFileSync } from "fs";
+import { createHash } from "crypto";
 import { join } from "path";
 import { NextResponse } from "next/server";
 
@@ -35,7 +36,8 @@ function getFile(filename: string): { data: string; etag: string } {
   if (cached) return cached;
 
   const data = readFileSync(join(DATA_DIR, filename), "utf-8");
-  const etag = `"srd-${filename}-${Buffer.byteLength(data)}"`;
+  const hash = createHash("md5").update(data).digest("hex").slice(0, 12);
+  const etag = `"srd-${filename}-${hash}"`;
   const entry = { data, etag };
   fileCache.set(filename, entry);
   return entry;
