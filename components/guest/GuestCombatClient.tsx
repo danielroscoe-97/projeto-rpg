@@ -657,8 +657,10 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           onManualAdd={(data) => {
             const currentCombatants = useGuestCombatStore.getState().combatants;
             const numberedName = getGuestNumberedName(data.name, currentCombatants);
+            const role = data.role ?? "monster";
+            const isPlayer = role === "player";
             const existingNames = currentCombatants.filter((c: { is_player: boolean; display_name: string | null }) => !c.is_player && c.display_name).map((c: { display_name: string | null }) => c.display_name!);
-            const displayName = generateCreatureName(null, existingNames);
+            const displayName = isPlayer ? null : generateCreatureName(null, existingNames);
             addCombatant({
               name: numberedName,
               current_hp: data.hp ?? 0,
@@ -672,7 +674,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               ruleset_version: null,
               is_defeated: false,
               is_hidden: false,
-              is_player: false,
+              is_player: isPlayer,
               monster_id: null,
               token_url: null,
               creature_type: null,
@@ -682,7 +684,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               dm_notes: "",
               player_notes: "",
               player_character_id: null,
-              combatant_role: "monster",
+              combatant_role: role,
               legendary_actions_total: null,
               legendary_actions_used: 0,
             });

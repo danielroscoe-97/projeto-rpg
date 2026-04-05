@@ -845,7 +845,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
         defaultManualOpen
         onManualAdd={(data) => {
           const numberedName = getNumberedName(data.name, useCombatStore.getState().combatants);
-          const displayName = getDefaultDisplayName(null, useCombatStore.getState().combatants);
+          const role = data.role ?? "monster";
+          const isPlayer = role === "player";
+          const displayName = isPlayer ? null : getDefaultDisplayName(null, useCombatStore.getState().combatants);
           addCombatant({
             name: numberedName,
             current_hp: data.hp ?? 0,
@@ -859,7 +861,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             ruleset_version: null,
             is_defeated: false,
             is_hidden: false,
-            is_player: false,
+            is_player: isPlayer,
             monster_id: null,
             token_url: null,
             creature_type: null,
@@ -869,7 +871,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             dm_notes: "",
             player_notes: "",
             player_character_id: null,
-            combatant_role: "monster",
+            combatant_role: role,
             legendary_actions_total: null,
             legendary_actions_used: 0,
           });

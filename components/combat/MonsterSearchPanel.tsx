@@ -14,6 +14,22 @@ import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { ImportContentModal } from "@/components/import/ImportContentModal";
 import { getImportedSources } from "@/lib/import/import-cache";
 import type { RulesetVersion } from "@/lib/types/database";
+import type { CombatantRole } from "@/lib/types/combat";
+import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
+import { User, UserCircle, Sparkles, Skull } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+const MANUAL_ROLE_CONFIG: Record<CombatantRole, { icon: typeof User; color: string; bg: string }> = {
+  player: { icon: User, color: "text-blue-400", bg: "border-blue-400/30 hover:border-blue-400/50" },
+  npc: { icon: UserCircle, color: "text-gold", bg: "border-gold/30 hover:border-gold/50" },
+  summon: { icon: Sparkles, color: "text-purple-400", bg: "border-purple-400/30 hover:border-purple-400/50" },
+  monster: { icon: Skull, color: "text-red-400", bg: "border-red-400/30 hover:border-red-400/50" },
+};
 
 type SourceFilter = "all" | "srd" | "complete" | "mad";
 
@@ -109,7 +125,7 @@ interface MonsterSearchPanelProps {
   /** Start with manual add form expanded (default: false) */
   defaultManualOpen?: boolean;
   /** Called for manual add */
-  onManualAdd?: (data: { name: string; hp?: number; ac?: number; initiative?: number }) => void;
+  onManualAdd?: (data: { name: string; hp?: number; ac?: number; initiative?: number; role?: CombatantRole }) => void;
   /** Placeholder override */
   placeholder?: string;
 }
@@ -155,6 +171,7 @@ export function MonsterSearchPanel({
   const [manualHp, setManualHp] = useState("");
   const [manualAc, setManualAc] = useState("");
   const [manualInit, setManualInit] = useState("");
+  const [manualRole, setManualRole] = useState<CombatantRole>("monster");
 
   const [activeIndex, setActiveIndex] = useState(-1);
   const [gateOpen, setGateOpen] = useState(false);
@@ -310,11 +327,12 @@ export function MonsterSearchPanel({
     const hp = manualHp !== "" ? parseInt(manualHp, 10) : undefined;
     const ac = manualAc !== "" ? parseInt(manualAc, 10) : undefined;
     const init = manualInit !== "" ? parseInt(manualInit, 10) : undefined;
-    onManualAdd({ name, hp: hp !== undefined && !isNaN(hp) ? hp : undefined, ac: ac !== undefined && !isNaN(ac) ? ac : undefined, initiative: init !== undefined && !isNaN(init) ? init : undefined });
+    onManualAdd({ name, hp: hp !== undefined && !isNaN(hp) ? hp : undefined, ac: ac !== undefined && !isNaN(ac) ? ac : undefined, initiative: init !== undefined && !isNaN(init) ? init : undefined, role: manualRole });
     setManualName("");
     setManualHp("");
     setManualAc("");
     setManualInit("");
+    setManualRole("monster");
     setManualOpen(false);
   };
 
@@ -696,15 +714,38 @@ export function MonsterSearchPanel({
         <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row" data-tour-id="add-row" onKeyDown={(e) => { if (e.key === "Enter" && manualName.trim()) handleManualSubmit(); }}>
           <p className="text-xs font-medium text-foreground/80">{t("omnibar_manual_title")}</p>
           <div className="grid grid-cols-4 gap-2">
-            <input
-              type="text"
-              value={manualName}
-              onChange={(e) => setManualName(e.target.value)}
-              placeholder={t("add_name_placeholder")}
-              className="col-span-4 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
-              onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
-              data-testid="add-row-name"
-            />
+            <div className="col-span-4 flex items-center gap-2">
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const idx = COMBATANT_ROLE_CYCLE.indexOf(manualRole);
+                        setManualRole(COMBATANT_ROLE_CYCLE[(idx + 1) % COMBATANT_ROLE_CYCLE.length]);
+                      }}
+                      className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded border transition-all shrink-0 min-h-[32px] ${MANUAL_ROLE_CONFIG[manualRole].color} ${MANUAL_ROLE_CONFIG[manualRole].bg}`}
+                      data-testid="add-row-role"
+                    >
+                      {(() => { const Icon = MANUAL_ROLE_CONFIG[manualRole].icon; return <Icon className="w-3.5 h-3.5" />; })()}
+                      {t(`setup_role_${manualRole}`)}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    {t("setup_role_tooltip")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <input
+                type="text"
+                value={manualName}
+                onChange={(e) => setManualName(e.target.value)}
+                placeholder={t("add_name_placeholder")}
+                className="flex-1 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
+                onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
+                data-testid="add-row-name"
+              />
+            </div>
             <input
               type="number"
               value={manualInit}
