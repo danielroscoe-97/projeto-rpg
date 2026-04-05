@@ -40,7 +40,7 @@ export function GoogleOAuthButton({
     setLoading(true);
     try {
       const supabase = createClient();
-      const resolvedRedirect = redirectTo ?? `${window.location.origin}/app/dashboard`;
+      const resolvedRedirect = redirectTo ?? `${window.location.origin}/auth/confirm`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

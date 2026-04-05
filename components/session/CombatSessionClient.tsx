@@ -630,6 +630,7 @@ export function CombatSessionClient({
       .filter((c) => !c.is_player && c.display_name)
       .map((c) => c.display_name!);
     const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
+    const groupRoll = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
     for (let i = 1; i <= qty; i++) {
       newCombatants.push({
         name: `${monster.name} ${i}`,
@@ -638,7 +639,8 @@ export function CombatSessionClient({
         temp_hp: 0,
         ac: monster.armor_class,
         spell_save_dc: null,
-        initiative: null,
+        initiative: groupRoll.total,
+        initiative_breakdown: { roll: groupRoll.rolls[0], modifier: groupRoll.modifier },
         initiative_order: null,
         conditions: [],
         ruleset_version: monster.ruleset_version,

@@ -94,13 +94,18 @@ export default async function SessionPage({ params }: SessionPageProps) {
 
       {/* Session header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div className="min-w-0">
-          <h1 className="text-xl font-semibold text-foreground truncate">
-            {encounter?.name ?? "Encounter"}
-          </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">
-            {session.name} · Ruleset {session.ruleset_version}
-          </p>
+        <div className="min-w-0 flex items-center gap-3">
+          <Link href="/app/dashboard" className="shrink-0 opacity-80 hover:opacity-100 transition-opacity" aria-label="Pocket DM — Voltar ao Dashboard">
+            <Image src="/art/brand/logo-icon.svg" alt="Pocket DM" width={28} height={28} unoptimized />
+          </Link>
+          <div className="min-w-0">
+            <h1 className="text-xl font-semibold text-foreground truncate">
+              {encounter?.name ?? "Encounter"}
+            </h1>
+            <p className="text-muted-foreground text-sm mt-0.5">
+              {session.name} · Ruleset {session.ruleset_version}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <ShareSessionButton sessionId={sessionId} />
