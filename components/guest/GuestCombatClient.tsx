@@ -33,6 +33,7 @@ import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { Combatant, CombatantRole } from "@/lib/types/combat";
 import { hasLairActions, hasLairActionEntry, createLairActionCombatant } from "@/lib/utils/lair-action";
+import { getLegendaryActionCount } from "@/lib/srd/legendary-actions";
 import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
 import { STARTER_ENCOUNTER } from "@/lib/data/starter-encounters";
 import { getMonsterById } from "@/lib/srd/srd-search";
@@ -263,7 +264,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
-        legendary_actions_total: null,
+        legendary_actions_total: getLegendaryActionCount(monster),
         legendary_actions_used: 0,
       });
 
@@ -322,7 +323,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           player_notes: "",
           player_character_id: null,
           combatant_role: null,
-          legendary_actions_total: null,
+          legendary_actions_total: getLegendaryActionCount(monster),
           legendary_actions_used: 0,
         });
       }
@@ -554,7 +555,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
-        legendary_actions_total: null,
+        legendary_actions_total: source.legendary_actions_total,
         legendary_actions_used: 0,
       });
     },
@@ -1080,7 +1081,7 @@ export function GuestCombatClient() {
         monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
         display_name: displayName, monster_group_id: null, group_order: null,
         dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
-        legendary_actions_total: null, legendary_actions_used: 0,
+        legendary_actions_total: getLegendaryActionCount(monster), legendary_actions_used: 0,
       });
       const all = useGuestCombatStore.getState().combatants;
       hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
@@ -1107,7 +1108,7 @@ export function GuestCombatClient() {
           monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
           display_name: `${groupDisplayBase} ${i + 1}`, monster_group_id: groupId, group_order: i + 1,
           dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
-          legendary_actions_total: null, legendary_actions_used: 0,
+          legendary_actions_total: getLegendaryActionCount(monster), legendary_actions_used: 0,
         });
       }
       useGuestCombatStore.getState().addMonsterGroup(newCombatants);

@@ -2,6 +2,7 @@ import { createClient } from "./client";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { getLegendaryActionCount } from "@/lib/srd/legendary-actions";
 import { trackEvent } from "@/lib/analytics/track";
 import type { Plan } from "@/lib/types/subscription";
 
@@ -138,6 +139,8 @@ export async function createEncounterWithCombatants(
     dm_notes: c.dm_notes ?? '',
     player_notes: c.player_notes ?? '',
     player_character_id: c.player_character_id ?? null,
+    legendary_actions_total: c.legendary_actions_total ?? null,
+    legendary_actions_used: c.legendary_actions_used ?? 0,
   }));
 
   const { error: combatantsError } = await supabase
@@ -188,7 +191,7 @@ export function monsterToCombatant(
     player_notes: '',
     player_character_id: null,
     combatant_role: null,
-    legendary_actions_total: null,
+    legendary_actions_total: getLegendaryActionCount(monster),
     legendary_actions_used: 0,
   };
 }

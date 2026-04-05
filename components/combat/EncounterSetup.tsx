@@ -700,7 +700,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
         player_notes: "",
         player_character_id: null,
         combatant_role: source.combatant_role,
-        legendary_actions_total: null,
+        legendary_actions_total: source.legendary_actions_total,
         legendary_actions_used: 0,
       });
     },

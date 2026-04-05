@@ -128,6 +128,8 @@ export async function persistNewCombatant(
     dm_notes?: string;
     player_notes?: string;
     player_character_id?: string | null;
+    legendary_actions_total?: number | null;
+    legendary_actions_used?: number;
   }
 ): Promise<void> {
   const supabase = createClient();
@@ -155,6 +157,8 @@ export async function persistNewCombatant(
       dm_notes: combatant.dm_notes ?? '',
       player_notes: combatant.player_notes ?? '',
       player_character_id: combatant.player_character_id ?? null,
+      legendary_actions_total: combatant.legendary_actions_total ?? null,
+      legendary_actions_used: combatant.legendary_actions_used ?? 0,
     });
   if (error) throw new Error(error.message);
 }
