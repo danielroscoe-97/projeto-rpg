@@ -1,19 +1,29 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import Link from 'next/link'
-import { CampaignSections } from './CampaignSections'
 import { CampaignStatsBar } from '@/components/campaign/CampaignStatsBar'
 import { aggregateCampaignStats } from '@/lib/utils/campaign-stats'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
-import { CampaignQuickActions } from '@/components/campaign/CampaignQuickActions'
-import { CampaignCombatTriggers } from '@/components/campaign/CampaignCombatTriggers'
-import { CampaignOnboarding } from '@/components/campaign/CampaignOnboarding'
 import { getCampaignMembership, getCampaignMembers } from '@/lib/supabase/campaign-membership'
 import { getSrdMonsters, toSlug } from '@/lib/srd/srd-data-server'
+import { CampaignHero } from './CampaignHero'
+import { CampaignGrid } from './CampaignGrid'
+import { CampaignFocusView } from './CampaignFocusView'
+import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
+import { CampaignNavBar } from '@/components/campaign/CampaignNavBar'
+import type { SectionId } from '@/lib/types/campaign-hub'
 
-export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
+const VALID_SECTIONS: SectionId[] = ["encounters","quests","players","npcs","locations","factions","notes","inventory","mindmap"]
+
+export default async function CampaignPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ section?: string }>;
+}) {
   const { id } = await params
+  const { section: sectionParam } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
@@ -279,82 +289,75 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     .eq('campaign_id', id)
   const campaignStats = aggregateCampaignStats(campaignReports ?? [])
 
-  const t = await getTranslations("campaign")
-  const tDash = await getTranslations("dashboard")
+  // ── Hub v2: determine active section from URL ──────────────────────────────
+  const activeSection = sectionParam && VALID_SECTIONS.includes(sectionParam as SectionId)
+    ? (sectionParam as SectionId)
+    : null
+
+  // SRD monsters for encounter builder (DM only)
+  const srdMonsters = isOwner ? getSrdMonsters().map((m) => ({
+    name: m.name,
+    cr: m.cr,
+    type: m.type,
+    slug: toSlug(m.name),
+    token_url: m.token_url ?? null,
+    source: m.source === 'mad' || m.source === 'MAD' ? 'mad'
+      : m.ruleset_version === '2024' ? 'srd-2024' : 'srd',
+  })) : undefined
 
   return (
     <div className="space-y-6">
-      {/* Header Card */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <Link
-              href="/app/dashboard"
-              className="text-muted-foreground text-sm hover:text-foreground transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            >
-              {tDash("back_to_dashboard")}
-            </Link>
-            <h1 className="text-2xl font-semibold text-foreground mt-1">{campaign.name}</h1>
-          </div>
-          {/* Stats + Novo Combate + Active Session Banner — single sheet instance */}
-          <CampaignCombatTriggers
+      {activeSection ? (
+        <>
+          {/* Focus View: compact hero + nav bar + section content */}
+          <CampaignHeroCompact
+            campaignName={campaign.name}
+            characters={characters ?? []}
+            activeSessionName={dmActiveSession?.name ?? null}
+            sessionCount={sessionCount ?? 0}
+          />
+          <CampaignNavBar activeSection={activeSection} isOwner={isOwner} />
+          <CampaignFocusView
+            section={activeSection}
             campaignId={campaign.id}
             campaignName={campaign.name}
+            isOwner={isOwner}
+            userId={user.id}
+            characters={characters ?? []}
+            initialMembers={initialMembers}
+            srdMonsters={srdMonsters}
+          />
+        </>
+      ) : (
+        <>
+          {/* Overview: hero + stats bar + grid */}
+          <CampaignHero
+            campaignId={campaign.id}
+            campaignName={campaign.name}
+            characters={characters ?? []}
             playerEmails={playerEmails}
-            activeSessionId={dmActiveSession?.id ?? null}
-            activeSessionName={dmActiveSession?.name ?? null}
             playerCount={playerCount ?? 0}
             sessionCount={sessionCount ?? 0}
-            encounterCount={finishedEncounterCount}
+            questCount={questCount ?? 0}
+            finishedEncounterCount={finishedEncounterCount}
+            activeSessionId={dmActiveSession?.id ?? null}
+            activeSessionName={dmActiveSession?.name ?? null}
           />
-        </div>
-
-        {/* Quick Actions Row */}
-        <CampaignQuickActions campaignId={campaign.id} />
-      </div>
-
-      {/* Campaign Stats (F5) — only shows if >= 2 reports */}
-      <CampaignStatsBar stats={campaignStats} />
-
-      {/* Onboarding — shows until all 3 steps are done */}
-      {!((playerCount ?? 0) > 0 && (sessionCount ?? 0) > 0 && (questCount ?? 0) > 0) && (
-        <CampaignOnboarding
-          campaignId={campaign.id}
-          campaignName={campaign.name}
-          playerEmails={playerEmails}
-          activeSessionId={dmActiveSession?.id ?? null}
-          steps={{
-            players: (playerCount ?? 0) > 0,
-            session: (sessionCount ?? 0) > 0,
-            quest: (questCount ?? 0) > 0,
-          }}
-        />
+          <CampaignStatsBar stats={campaignStats} />
+          {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && (
+            <CampaignGrid
+              isOwner={isOwner}
+              playerCount={playerCount ?? 0}
+              npcCount={npcCount ?? 0}
+              locationCount={locationCount ?? 0}
+              factionCount={factionCount ?? 0}
+              noteCount={noteCount ?? 0}
+              questCount={questCount ?? 0}
+              finishedEncounterCount={finishedEncounterCount}
+            />
+          )}
+        </>
       )}
-
-      {/* Sections — hidden on brand-new campaigns (spec: "substitui o conteúdo principal") */}
-      {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && <CampaignSections
-        campaignId={campaign.id}
-        campaignName={campaign.name}
-        initialCharacters={characters ?? []}
-        isOwner={isOwner}
-        userId={user.id}
-        initialMembers={initialMembers}
-        sectionCounts={{
-          npcs: npcCount ?? 0,
-          locations: locationCount ?? 0,
-          factions: factionCount ?? 0,
-          notes: noteCount ?? 0,
-        }}
-        srdMonsters={isOwner ? getSrdMonsters().map((m) => ({
-          name: m.name,
-          cr: m.cr,
-          type: m.type,
-          slug: toSlug(m.name),
-          token_url: m.token_url ?? null,
-          source: m.source === 'mad' || m.source === 'MAD' ? 'mad'
-            : m.ruleset_version === '2024' ? 'srd-2024' : 'srd',
-        })) : undefined}
-      />}
     </div>
   )
 }
