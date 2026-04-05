@@ -1,6 +1,6 @@
 # Spec: Campaign Hub v2 — Redesign Completo da Página de Campanha (DM View)
 
-**Status:** Em Implementação — F1 concluída, F2 em andamento  
+**Status:** Em Implementação — F1-F3 COMPLETAS, F4 pendente  
 **Data:** 2026-04-05  
 **Sessão:** Party Mode com Sally (UX), John (PM), Winston (Arquiteto), Mary (Analista), Amelia (Dev), Bob (SM), Quinn (QA), Barry (Quick Flow), Paige (Tech Writer)  
 **Predecessor:** `docs/spec-campaign-page-redesign.md` (v1 — implementada)
@@ -10,11 +10,28 @@
 | Fase | Status | Commits | Descrição |
 |------|--------|---------|-----------|
 | **F1** | Concluída | `e4ff8c4`, `bfb5da3` | i18n (31 chaves PT-BR/EN), shared types (`campaign-hub.ts`), spec + plan |
-| **F2a** | Pendente | — | Hero section (avatares, KPI cards, quick actions) |
-| **F2b** | Pendente | — | Section grid (cards agrupados, Overview) |
-| **F2c** | Pendente | — | Focus View (nav bar sticky, seção expandida) |
-| **F3** | Pendente | — | Integração no `page.tsx` (roteamento Overview/Focus) |
-| **F4** | Pendente | — | Polish, mobile, cleanup |
+| **F2a** | Concluída | `89f7021` | Hero section — `CampaignPlayerAvatars` (popover c/ HP/AC), `CampaignStatusCards` (KPI + onboarding sequencial), `CampaignHero` (breadcrumb + title + quick actions) |
+| **F2b** | Concluída | `89f7021` | Section grid — `CampaignGridCard` (large/compact + framer-motion), `CampaignGrid` (3 grupos: Operacional/Mundo/Registro) |
+| **F2c** | Concluída | `89f7021` | Focus View — `CampaignNavBar` (sticky pills + scroll horizontal), `CampaignHeroCompact` (1 linha c/ mini avatares), `CampaignFocusView` (switch de seções + error boundary + Suspense) |
+| **F3** | Concluída | `89f7021` | `page.tsx` refatorado — `searchParams.section` controla Overview vs Focus, imports antigos removidos, Player View intacta |
+| **F4** | Pendente | — | Polish visual, mobile responsive, deprecar componentes antigos, E2E selectors |
+
+### Code Review (F2+F3)
+
+Realizado e corrigido no mesmo commit `89f7021`:
+
+| ID | Tipo | Fix |
+|----|------|-----|
+| B1 | Bug | `CampaignGridCard` — count 0 mostrava "0" E "None yet" simultaneamente → guard `count > 0` |
+| B2 | Bug | `CampaignHeroCompact` — link apontava `/app` → corrigido para `/app/dashboard` |
+| B3 | Bug | `CampaignPlayerAvatars` — `ring-dashed` inexistente no Tailwind → `border-2 border-dashed border-border` |
+| L1 | Lógica | `CampaignStatusCards` — onboarding cards mapeados errado (invite no card 2) → remapeado: Card 1=Players/Invite (Step 1), Card 2=Encounters/Create (Step 2), Card 3=Quests/Add (Step 3) |
+| L2 | Lógica | `CampaignHero`+`StatusCards` — 2 instâncias de `CombatLaunchSheet` → prop `onOpenCombat` delega ao Hero (instância única) |
+| M1 | Style | Quick action icons sem `text-amber-400` → adicionado |
+| M2 | Style | `HeroCompact` usava `next/image` (domain config risk) → trocado para `<img>` |
+| M3 | Style | Grid emojis errados (⚔/🌎/📖) → corrigido para spec (⚡/🌍/📋) |
+| M4 | Style | `NavBar` dead code `isOverview = false` → removido |
+| M5 | Style | `GridCard` `min-h-[44px]` redundante → removido |
 
 ---
 
@@ -382,39 +399,39 @@ Cada card no grid mostra informações SERVER-RENDERED:
 ## Critérios de Aceite
 
 ### Hero
-- [ ] Nome da campanha em `text-3xl font-bold`
-- [ ] Subtítulo contextual (sessão ativa / última sessão / campanha nova)
-- [ ] Avatares dos jogadores inline com initial/foto + nome + classe
-- [ ] Popover no avatar com HP, AC, classe, nível
-- [ ] KPI cards clicáveis (sessão ativa, encontros, quests)
-- [ ] KPIs zerados viram CTA de onboarding (substitui CampaignOnboarding)
-- [ ] Quick actions (Novo Combate, Novo Encontro, Nova Nota)
-- [ ] Sessão ativa como card dominante com pulsing dot
+- [x] Nome da campanha em `text-3xl font-bold` — `CampaignHero.tsx:58`
+- [x] Subtítulo contextual (sessão ativa / última sessão / campanha nova) — `hub_subtitle_session` / `hub_subtitle_new`
+- [x] Avatares dos jogadores inline com initial/foto + nome + classe — `CampaignPlayerAvatars.tsx`
+- [x] Popover no avatar com HP, AC, classe, nível — Popover c/ HP bar (tiers 70/40/10%), AC badge, class+level
+- [x] KPI cards clicáveis (sessão ativa, encontros, quests) — `CampaignStatusCards.tsx` 3 cards
+- [x] KPIs zerados viram CTA de onboarding (substitui CampaignOnboarding) — Steps 1/2/3 sequenciais (Players→Encounters→Quests)
+- [x] Quick actions (Novo Combate, Novo Encontro, Nova Nota) — inline no Hero, amber icons
+- [x] Sessão ativa como card dominante com pulsing dot — `cardActive` style + `animate-pulse` dot
 
 ### Grid (Overview)
-- [ ] Cards agrupados: Operacional (2 cols), Mundo (4 cols), Registro (3 cols)
-- [ ] Section group headers (texto uppercase sutil)
-- [ ] Cada card mostra ícone + título + contagem + flavor text
-- [ ] Click no card navega para `?section=X`
-- [ ] Responsivo: desktop 2-4 cols → mobile 2 cols
-- [ ] Campanha vazia: grid não aparece, KPIs com onboarding dominam
+- [x] Cards agrupados: Operacional (2 cols), Mundo (4 cols), Registro (3 cols) — `CampaignGrid.tsx`
+- [x] Section group headers (texto uppercase sutil) — `text-xs font-medium uppercase tracking-wider` + emojis ⚡/🌍/📋
+- [x] Cada card mostra ícone + título + contagem + flavor text — `CampaignGridCard.tsx` (large/compact)
+- [x] Click no card navega para `?section=X` — `router.push` shallow
+- [ ] Responsivo: desktop 2-4 cols → mobile 2 cols — **F4: verificar breakpoints**
+- [x] Campanha vazia: grid não aparece, KPIs com onboarding dominam — `page.tsx` guard
 
 ### Focus View
-- [ ] Hero compacta para 1 linha
-- [ ] Nav bar sticky horizontal com todas as seções + "Overview"
-- [ ] Seção ativa renderizada full-width
-- [ ] Lazy loading via Suspense boundary
-- [ ] Deep linking: `?section=encounters` abre direto
-- [ ] Browser back funciona (URL state)
-- [ ] Mobile: nav bar com scroll horizontal
+- [x] Hero compacta para 1 linha — `CampaignHeroCompact.tsx` (nome truncado + mini avatares + session badge)
+- [x] Nav bar sticky horizontal com todas as seções + "Overview" — `CampaignNavBar.tsx` sticky z-30 backdrop-blur
+- [x] Seção ativa renderizada full-width — `CampaignFocusView.tsx` switch/case
+- [x] Lazy loading via Suspense boundary — Suspense wrapper + skeleton fallback
+- [x] Deep linking: `?section=encounters` abre direto — `searchParams` server-side parse
+- [x] Browser back funciona (URL state) — shallow navigation via `router.push`
+- [x] Mobile: nav bar com scroll horizontal — `overflow-x-auto scrollbar-hide`
 
 ### Performance
-- [ ] Overview: < 1s load (apenas contagens SSR, sem dados pesados)
-- [ ] Focus View: < 2s load com skeleton placeholder
-- [ ] Build passa sem erros TypeScript
+- [ ] Overview: < 1s load (apenas contagens SSR, sem dados pesados) — **F4: verificar**
+- [ ] Focus View: < 2s load com skeleton placeholder — **F4: verificar**
+- [x] Build passa sem erros TypeScript — `tsc --noEmit` limpo
 
 ### Não-regressão
-- [ ] Nenhum componente interno de seção modificado
-- [ ] Player View inalterada
-- [ ] CombatLaunchSheet e InvitePlayerDialog funcionam
-- [ ] Mobile responsivo em todos os estados
+- [x] Nenhum componente interno de seção modificado — zero mudanças em NpcList, QuestBoard, etc.
+- [x] Player View inalterada — bloco `if (role === 'player')` intacto
+- [x] CombatLaunchSheet e InvitePlayerDialog funcionam — instância única controlada no Hero
+- [ ] Mobile responsivo em todos os estados — **F4: verificar**

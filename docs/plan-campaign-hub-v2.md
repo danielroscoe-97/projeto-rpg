@@ -2,7 +2,27 @@
 
 **Spec:** `docs/spec-campaign-hub-v2.md`  
 **Data:** 2026-04-05  
-**Estratégia:** 5 fases, com paralelização máxima dentro de cada fase.
+**Estratégia:** 5 fases, com paralelização máxima dentro de cada fase.  
+**Status:** F1-F3 COMPLETAS — F4 pendente
+
+### Execução Realizada
+
+| Fase | Status | Commit | Arquivos Criados/Modificados |
+|------|--------|--------|------------------------------|
+| **F1** | DONE | `e4ff8c4`, `bfb5da3` | `messages/pt-BR.json`, `messages/en.json`, `lib/types/campaign-hub.ts` |
+| **F2a** | DONE | `89f7021` | `components/campaign/CampaignPlayerAvatars.tsx`, `CampaignStatusCards.tsx`, `app/.../CampaignHero.tsx` |
+| **F2b** | DONE | `89f7021` | `components/campaign/CampaignGridCard.tsx`, `app/.../CampaignGrid.tsx` |
+| **F2c** | DONE | `89f7021` | `components/campaign/CampaignNavBar.tsx`, `CampaignHeroCompact.tsx`, `app/.../CampaignFocusView.tsx` |
+| **F3** | DONE | `89f7021` | `app/app/campaigns/[id]/page.tsx` (DM View refatorada) |
+| **F4** | PENDING | — | Polish, mobile, deprecar componentes antigos |
+
+**F2 rodou com 3 agentes paralelos** (F2a + F2b + F2c simultaneamente). F3 integrou sequencialmente. Code review completo realizado com 10 fixes aplicados (3 bugs, 2 logic, 5 style).
+
+**Desvios do plano original:**
+- `CampaignHero` virou client component (não server) — necessário para interatividade (quick actions, CombatLaunchSheet)
+- `CampaignStatusCards` recebeu prop `onOpenCombat` para evitar duplicação de `CombatLaunchSheet`
+- `CampaignGridCard` ganhou `framer-motion` (adicionado pelo linter/F4a antecipado)
+- Componentes F2 usam flat props em vez de `CampaignHubData` agrupado — integração mais explícita no `page.tsx`
 
 ---
 
