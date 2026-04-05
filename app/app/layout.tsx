@@ -34,6 +34,7 @@ export default async function AppLayout({
   // Only Compendium stays here (not duplicated in sidebar).
   const navLinks = [
     {
+      tourId: "dash-nav-compendium",
       label: (
         <span className="inline-flex items-center gap-1.5">
           <BookOpen className="w-4 h-4" aria-hidden="true" />

@@ -376,8 +376,8 @@ export function DashboardOverview({
               className="flex gap-2 w-full max-w-xs"
               onSubmit={(e) => {
                 e.preventDefault();
-                const code = playerCode.trim();
-                if (code) router.push(`/join-campaign/${code}`);
+                const code = playerCode.trim().replace(/[^a-zA-Z0-9_-]/g, "");
+                if (code) router.push(`/join-campaign/${encodeURIComponent(code)}`);
               }}
             >
               <input
@@ -391,8 +391,14 @@ export function DashboardOverview({
                 {t.player_empty_code_submit}
               </Button>
             </form>
+            {/* Separator */}
+            <div className="flex items-center gap-3 w-full max-w-xs text-muted-foreground/30 text-xs">
+              <div className="flex-1 border-t border-current" />
+              <span>ou</span>
+              <div className="flex-1 border-t border-current" />
+            </div>
             {/* Secondary links */}
-            <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground/60 mt-1">
+            <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground/60">
               <Link href="/app/compendium" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1">
                 {t.player_empty_explore} <ArrowRight className="w-3 h-3" />
               </Link>
@@ -542,7 +548,7 @@ function OverviewPlayerSection({
   t: DashboardOverviewProps["translations"];
 }) {
   // JO-10: sort campaigns with active sessions first
-  const sorted = [...playerMemberships].sort((a, b) => b.active_sessions - a.active_sessions);
+  const sorted = [...playerMemberships].sort((a, b) => (b.active_sessions ?? 0) - (a.active_sessions ?? 0));
 
   return (
     <div className="mb-8 space-y-3" data-testid="player-campaigns" data-tour-id="dash-player-campaigns">

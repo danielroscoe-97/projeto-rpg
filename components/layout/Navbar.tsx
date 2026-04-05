@@ -17,6 +17,7 @@ interface NavLink {
   href?: string;
   label: React.ReactNode;
   children?: { href: string; label: React.ReactNode }[];
+  tourId?: string;
 }
 
 interface NavbarProps {
@@ -75,6 +76,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
                   <DropdownMenuTrigger asChild>
                     <button
                       className="text-sm text-muted-foreground font-medium px-3 py-2 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] inline-flex items-center gap-1"
+                      data-tour-id={link.tourId}
                     >
                       {link.label}
                       <ChevronDown className="w-3 h-3 opacity-60" aria-hidden="true" />

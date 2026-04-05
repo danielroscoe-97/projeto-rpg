@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, Sparkles, Shield } from "lucide-react";
+import { Heart, Shield } from "lucide-react";
 import { getHpBarColor, getHpStatus, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import type { UserMembership } from "@/lib/types/campaign-membership";
 
@@ -138,9 +138,9 @@ export function PlayerCampaignCard({
         )}
 
         {/* JO-10: Join session CTA — shown when session is active */}
-        {hasActiveSession && t.sessionJoin && (
-          <span className="mt-2 block w-full text-center text-xs font-semibold py-1.5 px-3 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 group-hover:bg-emerald-500/30 transition-colors">
-            {t.sessionJoin}
+        {hasActiveSession && (
+          <span className="mt-2 block w-full text-center text-xs font-bold py-2 px-3 rounded-lg bg-gold/20 text-gold border border-gold/30 group-hover:bg-gold/30 group-hover:shadow-gold-glow transition-all">
+            {t.sessionJoin ?? t.activeSession}
           </span>
         )}
 

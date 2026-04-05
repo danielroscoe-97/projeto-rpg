@@ -74,7 +74,7 @@ export function DashboardTourProvider({
     return steps.map(resolveStep);
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mounted, hasDmAccess, isPlayerFirstCampaign]
+    [hasDmAccess, isPlayerFirstCampaign]
   );
 
   // Auto-start tour — wait for both the delay AND the page content to be in the DOM.
