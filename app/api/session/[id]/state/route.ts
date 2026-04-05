@@ -104,7 +104,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
     const { data: combatants } = await serviceClient
       .from("combatants")
       .select(
-        "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations"
+        "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations, death_saves"
       )
       .eq("encounter_id", encounter.id)
       .order("initiative_order", { ascending: true })

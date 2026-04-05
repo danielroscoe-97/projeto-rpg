@@ -21,6 +21,8 @@ export interface RawCombatantRow {
   group_order: number | null;
   /** Turn count per condition. Exposed to players for their own characters and other players. */
   condition_durations?: Record<string, number> | null;
+  /** Death saves — only meaningful for player characters at 0 HP. */
+  death_saves?: { successes: number; failures: number } | null;
 }
 
 /**
