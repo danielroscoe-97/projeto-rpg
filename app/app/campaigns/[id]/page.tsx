@@ -234,8 +234,9 @@ export default async function CampaignPage({
       .eq('campaign_id', id),
     supabase
       .from('sessions')
-      .select('id')
-      .eq('campaign_id', id),
+      .select('id, updated_at')
+      .eq('campaign_id', id)
+      .order('updated_at', { ascending: false }),
     supabase
       .from('sessions')
       .select('id, name')
@@ -344,6 +345,7 @@ export default async function CampaignPage({
               finishedEncounterCount={finishedEncounterCount}
               activeSessionId={dmActiveSession?.id ?? null}
               activeSessionName={dmActiveSession?.name ?? null}
+              lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
             />
             <CampaignStatsBar stats={campaignStats} />
             {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && (

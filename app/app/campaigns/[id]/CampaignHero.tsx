@@ -22,6 +22,7 @@ interface CampaignHeroProps {
   finishedEncounterCount: number;
   activeSessionId: string | null;
   activeSessionName: string | null;
+  lastSessionDate: string | null;
 }
 
 export function CampaignHero({
@@ -35,6 +36,7 @@ export function CampaignHero({
   finishedEncounterCount,
   activeSessionId,
   activeSessionName,
+  lastSessionDate,
 }: CampaignHeroProps) {
   const t = useTranslations("campaign");
   const tDash = useTranslations("dashboard");
@@ -42,10 +44,22 @@ export function CampaignHero({
   const [combatOpen, setCombatOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
 
-  const subtitle =
-    sessionCount > 0
-      ? t("hub_subtitle_session", { number: sessionCount })
-      : t("hub_subtitle_new");
+  const subtitle = (() => {
+    if (activeSessionId) {
+      return t("hub_subtitle_session", { number: sessionCount });
+    }
+    if (lastSessionDate) {
+      const daysAgo = Math.floor(
+        (Date.now() - new Date(lastSessionDate).getTime()) / 86400000,
+      );
+      if (daysAgo === 0) return t("hub_subtitle_last_today");
+      return t("hub_subtitle_last", { days: daysAgo });
+    }
+    if (sessionCount > 0) {
+      return t("hub_subtitle_session", { number: sessionCount });
+    }
+    return t("hub_subtitle_new");
+  })();
 
   return (
     <div className="bg-card border border-border rounded-xl p-5 space-y-4">

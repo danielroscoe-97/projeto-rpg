@@ -58,8 +58,7 @@ class SectionErrorBoundary extends Component<
         <div className="flex items-center gap-2 text-sm text-muted-foreground py-4 px-2">
           <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
           <span>
-            Erro ao carregar {this.props.fallbackLabel}. Tente recarregar a
-            página.
+            Error loading <strong>{this.props.fallbackLabel}</strong>. Reload the page.
           </span>
         </div>
       );
