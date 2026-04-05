@@ -18,7 +18,7 @@ export type SectionId =
   | "inventory"
   | "mindmap";
 
-export const VALID_SECTIONS: SectionId[] = [
+export const VALID_SECTIONS: readonly SectionId[] = [
   "encounters",
   "quests",
   "players",
@@ -28,7 +28,20 @@ export const VALID_SECTIONS: SectionId[] = [
   "notes",
   "inventory",
   "mindmap",
-];
+] as const;
+
+/** Order of sections in the Focus View nav bar. Defines display order. */
+export const SECTION_NAV_ORDER: readonly SectionId[] = [
+  "encounters",
+  "quests",
+  "players",
+  "npcs",
+  "notes",
+  "locations",
+  "factions",
+  "inventory",
+  "mindmap",
+] as const;
 
 // ── Section Card (for grid) ──────────────────────────────────────────────────
 

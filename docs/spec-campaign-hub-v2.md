@@ -185,6 +185,21 @@ O DM clicou num card. Hero compacta, nav bar aparece, seção ocupa full-width.
 
 Focus view mobile: nav bar = scrollable horizontal pills, seção full-width abaixo.
 
+### Guard: Seções DM-only
+
+Se um não-owner navegar para `?section=inventory` ou `?section=encounters` (builder mode):
+- **Comportamento:** redirect silencioso para Overview (remove `?section` do URL)
+- **Implementação:** check em `CampaignFocusView` — se `!isOwner && dmOnlySection`, `router.replace(pathname)`
+- **Nav bar:** seções DM-only não aparecem na nav bar para não-owners
+
+### Ordem da Nav Bar
+
+Definida em `SECTION_NAV_ORDER` (`lib/types/campaign-hub.ts`):
+
+`Overview → Encontros → Quests → Jogadores → NPCs → Notas → Locais → Facções → Inventário → Mapa Mental`
+
+Inventário só aparece para owners (`isOwner`).
+
 ---
 
 ## Design Language
@@ -305,7 +320,8 @@ Cada card no grid mostra informações SERVER-RENDERED:
 {
   "campaign": {
     "hub_subtitle_session": "Sessão {number}",
-    "hub_subtitle_last": "Última sessão: {days}",
+    "hub_subtitle_last": "Última sessão: há {days} dias",
+    "hub_subtitle_last_today": "Última sessão: hoje",
     "hub_subtitle_new": "Campanha nova",
     "hub_group_operational": "Operacional",
     "hub_group_world": "Mundo",
@@ -324,20 +340,19 @@ Cada card no grid mostra informações SERVER-RENDERED:
     "hub_card_active_quests": "{count} {count, plural, one {ativa} other {ativas}}",
     "hub_card_prepared": "{count} {count, plural, one {preparado} other {preparados}}",
     "hub_kpi_session_active": "Sessão Ativa",
-    "hub_kpi_session_enter": "Continuar →",
+    "hub_kpi_session_enter": "Continuar",
     "hub_kpi_encounters": "Encontros",
     "hub_kpi_quests": "Quests Ativas",
     "hub_onboard_step": "Passo {current}/{total}",
     "hub_onboard_invite_cta": "Convidar",
     "hub_onboard_encounter_cta": "Criar",
     "hub_onboard_quest_cta": "Adicionar",
-    "hub_avatar_online": "Online",
-    "hub_avatar_idle": "Ausente",
-    "hub_avatar_offline": "Offline",
     "hub_avatar_edit": "Editar personagem"
   }
 }
 ```
+
+> **Nota:** Chaves de presença real-time (`hub_avatar_online/idle/offline`) foram removidas — presença via Supabase Presence é escopo futuro (ver Bucket).
 
 ---
 

@@ -100,30 +100,44 @@ Adicionar dentro do objeto `"campaign"` (APÓS a chave `"vote_error"`):
 ```
 
 #### F1.2 — Shared Types
-**Arquivo NOVO:** `lib/types/campaign-hub.ts`
+**Arquivo:** `lib/types/campaign-hub.ts` (**IMPLEMENTADO** — ver código real abaixo)
 
 ```typescript
 import type { LucideIcon } from "lucide-react";
+import type { PlayerCharacter } from "@/lib/types/database";
+import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
+import type { AggregatedCampaignStats } from "@/lib/utils/campaign-stats";
 
-export type SectionId =
-  | "encounters"
-  | "quests"
-  | "players"
-  | "npcs"
-  | "locations"
-  | "factions"
-  | "notes"
-  | "inventory"
-  | "mindmap";
+export type SectionId = "encounters" | "quests" | "players" | "npcs"
+  | "locations" | "factions" | "notes" | "inventory" | "mindmap";
 
-export interface SectionCardData {
+export const VALID_SECTIONS: readonly SectionId[] = [...] as const;
+
+/** Order of sections in the Focus View nav bar */
+export const SECTION_NAV_ORDER: readonly SectionId[] = [
+  "encounters", "quests", "players", "npcs", "notes",
+  "locations", "factions", "inventory", "mindmap",
+] as const;
+
+export type SectionGroup = "operational" | "world" | "journal";
+
+export interface SectionCardDef {
   id: SectionId;
   icon: LucideIcon;
-  titleKey: string;     // i18n key within "campaign" namespace
-  count: number | null; // null = don't show count
-  flavor?: string;      // optional context line (e.g. last encounter name)
-  group: "operational" | "world" | "journal";
-  dmOnly?: boolean;     // hide from players
+  titleKey: string;        // i18n key (e.g. "hub_card_encounters")
+  group: SectionGroup;
+  dmOnly?: boolean;
+}
+
+export interface MonsterOption {
+  name: string; cr: string; type?: string;
+  slug?: string; token_url?: string | null; source?: string;
+}
+
+export interface CampaignSectionCounts {
+  players: number; sessions: number; encounters: number;
+  quests: number; npcs: number; locations: number;
+  factions: number; notes: number;
 }
 
 export interface CampaignHubData {
@@ -131,57 +145,20 @@ export interface CampaignHubData {
   campaignName: string;
   isOwner: boolean;
   userId: string;
-
-  // Player data (for avatars)
-  characters: Array<{
-    id: string;
-    name: string;
-    current_hp: number;
-    max_hp: number;
-    ac: number | null;
-    race: string | null;
-    class: string | null;
-    level: number | null;
-    user_id: string | null;
-    token_url?: string | null;
-  }>;
-
-  // Counts
-  playerCount: number;
-  sessionCount: number;
-  finishedEncounterCount: number;
-  npcCount: number;
-  locationCount: number;
-  factionCount: number;
-  noteCount: number;
-  questCount: number;
-
-  // Active session
+  characters: PlayerCharacter[];        // Supabase Row type (full)
+  counts: CampaignSectionCounts;        // grouped counts
   activeSessionId: string | null;
   activeSessionName: string | null;
-
-  // For combat/invite dialogs
   playerEmails: string[];
-
-  // Campaign stats (for stats bar)
-  campaignStats: import("@/lib/utils/campaign-stats").AggregatedCampaignStats;
-
-  // SRD monsters (for encounter builder, DM only)
-  srdMonsters?: Array<{
-    name: string;
-    cr: string;
-    type?: string;
-    slug?: string;
-    token_url?: string | null;
-    source?: string;
-  }>;
-
-  // Members (for PlayerCharacterManager)
-  initialMembers?: import("@/lib/types/campaign-membership").CampaignMemberWithUser[];
+  campaignStats: AggregatedCampaignStats;
+  srdMonsters?: MonsterOption[];
+  initialMembers?: CampaignMemberWithUser[];
 }
 ```
 
-**Commit:** `feat(campaign-hub): F1 — i18n keys + shared types for Campaign Hub v2`
+> **Nota para agentes F2:** usar `PlayerCharacter` (import de `@/lib/types/database`) para characters, não shape inline. Usar `counts.npcs`, `counts.players`, etc — NÃO flat `npcCount`.
+
+**Commit:** `e4ff8c4` — `feat(campaign-hub): F1 — i18n keys + shared types for Campaign Hub v2`
 
 ---
 
@@ -302,6 +279,8 @@ export interface CampaignHubData {
 #### `components/campaign/CampaignNavBar.tsx`
 - Client component
 - Props: `activeSection: SectionId`, `isOwner: boolean`
+- Usar `SECTION_NAV_ORDER` de `@/lib/types/campaign-hub` para definir ordem dos pills
+- Filtrar `inventory` se `!isOwner` (seção DM-only)
 - Pill buttons horizontais para cada seção + "Overview"
 - "Overview" pill: `onClick → router.push(pathname, { scroll: false })` (remove searchParam)
 - Seção pills: `onClick → router.push(\`?section=${id}\`, { scroll: false })`
@@ -321,7 +300,7 @@ export interface CampaignHubData {
 - Client component
 - Props: `section: SectionId` + todos os dados necessários para renderizar qualquer seção
 - Importa TODOS os componentes de seção (mesmos imports de `CampaignSections.tsx`)
-- Usa `SectionErrorBoundary` (copiar do `CampaignSections.tsx`)
+- Usa `ErrorBoundary` de `@/components/ui/ErrorBoundary` (NÃO copiar `SectionErrorBoundary` — usar o existente com `fallback` prop customizado e `name` para logging)
 - Switch/map de `section` → componente:
   ```tsx
   const SECTION_COMPONENTS: Record<SectionId, () => ReactNode> = {
@@ -342,7 +321,7 @@ export interface CampaignHubData {
   };
   ```
 - `Suspense` boundary ao redor do conteúdo com skeleton fallback
-- Seções DM-only (`inventory`, `encounters` builder) verificam `isOwner`
+- **Guard DM-only:** se `!isOwner` e `section` é `"inventory"`, redirecionar para Overview (`router.replace(pathname)`). `encounters` mostra apenas `EncounterHistory` para não-owners (sem builder)
 
 **Commit:** `feat(campaign-hub): F2c — Focus View with sticky nav bar and section rendering`
 
@@ -380,19 +359,21 @@ const hubData: CampaignHubData = {
   isOwner,
   userId: user.id,
   characters: characters ?? [],
-  playerCount: playerCount ?? 0,
-  sessionCount: sessionCount ?? 0,
-  finishedEncounterCount,
-  npcCount: npcCount ?? 0,
-  locationCount: locationCount ?? 0,
-  factionCount: factionCount ?? 0,
-  noteCount: noteCount ?? 0,
-  questCount: questCount ?? 0,
+  counts: {
+    players: playerCount ?? 0,
+    sessions: sessionCount ?? 0,
+    encounters: finishedEncounterCount,
+    quests: questCount ?? 0,
+    npcs: npcCount ?? 0,
+    locations: locationCount ?? 0,
+    factions: factionCount ?? 0,
+    notes: noteCount ?? 0,
+  },
   activeSessionId: dmActiveSession?.id ?? null,
   activeSessionName: dmActiveSession?.name ?? null,
   playerEmails,
   campaignStats,
-  srdMonsters: isOwner ? getSrdMonsters()... : undefined,
+  srdMonsters: isOwner ? getSrdMonsters().map(...) : undefined,
   initialMembers,
 };
 
