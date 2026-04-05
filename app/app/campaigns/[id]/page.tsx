@@ -316,8 +316,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       {/* Campaign Stats (F5) — only shows if >= 2 reports */}
       <CampaignStatsBar stats={campaignStats} />
 
-      {/* Onboarding — new campaigns with no players/sessions */}
-      {(playerCount ?? 0) === 0 && (sessionCount ?? 0) === 0 && (
+      {/* Onboarding — shows until all 3 steps are done */}
+      {!((playerCount ?? 0) > 0 && (sessionCount ?? 0) > 0 && (questCount ?? 0) > 0) && (
         <CampaignOnboarding
           campaignId={campaign.id}
           campaignName={campaign.name}
@@ -331,8 +331,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         />
       )}
 
-      {/* 2-Column Sections */}
-      <CampaignSections
+      {/* Sections — hidden on brand-new campaigns (spec: "substitui o conteúdo principal") */}
+      {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && <CampaignSections
         campaignId={campaign.id}
         campaignName={campaign.name}
         initialCharacters={characters ?? []}
@@ -354,7 +354,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           source: m.source === 'mad' || m.source === 'MAD' ? 'mad'
             : m.ruleset_version === '2024' ? 'srd-2024' : 'srd',
         })) : undefined}
-      />
+      />}
     </div>
   )
 }

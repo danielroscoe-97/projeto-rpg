@@ -27,21 +27,21 @@ export function CampaignOnboarding({
 
   const items = [
     {
-      key: "invite" as const,
+      key: "invite",
       done: steps.players,
       icon: Users,
       label: t("onboarding_step_invite"),
       onClick: () => setInviteOpen(true),
     },
     {
-      key: "session" as const,
+      key: "session",
       done: steps.session,
       icon: Swords,
       label: t("onboarding_step_session"),
       onClick: () => setCombatOpen(true),
     },
     {
-      key: "quest" as const,
+      key: "quest",
       done: steps.quest,
       icon: ScrollText,
       label: t("onboarding_step_quest"),
