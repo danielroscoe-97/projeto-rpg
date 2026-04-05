@@ -713,39 +713,16 @@ export function MonsterSearchPanel({
       {manualOpen && onManualAdd && (
         <div className="p-3 bg-white/[0.04] rounded-md space-y-2 border border-dashed border-border" data-testid="add-row" data-tour-id="add-row" onKeyDown={(e) => { if (e.key === "Enter" && manualName.trim()) handleManualSubmit(); }}>
           <p className="text-xs font-medium text-foreground/80">{t("omnibar_manual_title")}</p>
-          <div className="grid grid-cols-4 gap-2">
-            <div className="col-span-4 flex items-center gap-2">
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const idx = COMBATANT_ROLE_CYCLE.indexOf(manualRole);
-                        setManualRole(COMBATANT_ROLE_CYCLE[(idx + 1) % COMBATANT_ROLE_CYCLE.length]);
-                      }}
-                      className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded border transition-all shrink-0 min-h-[32px] ${MANUAL_ROLE_CONFIG[manualRole].color} ${MANUAL_ROLE_CONFIG[manualRole].bg}`}
-                      data-testid="add-row-role"
-                    >
-                      {(() => { const Icon = MANUAL_ROLE_CONFIG[manualRole].icon; return <Icon className="w-3.5 h-3.5" />; })()}
-                      {t(`setup_role_${manualRole}`)}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">
-                    {t("setup_role_tooltip")}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <input
-                type="text"
-                value={manualName}
-                onChange={(e) => setManualName(e.target.value)}
-                placeholder={t("add_name_placeholder")}
-                className="flex-1 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
-                onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
-                data-testid="add-row-name"
-              />
-            </div>
+          <div className="grid grid-cols-5 gap-2">
+            <input
+              type="text"
+              value={manualName}
+              onChange={(e) => setManualName(e.target.value)}
+              placeholder={t("add_name_placeholder")}
+              className="col-span-5 bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px]"
+              onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
+              data-testid="add-row-name"
+            />
             <input
               type="number"
               value={manualInit}
@@ -772,6 +749,27 @@ export function MonsterSearchPanel({
               className="bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm font-mono text-center placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 min-h-[32px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               data-testid="add-row-ac"
             />
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const idx = COMBATANT_ROLE_CYCLE.indexOf(manualRole);
+                      setManualRole(COMBATANT_ROLE_CYCLE[(idx + 1) % COMBATANT_ROLE_CYCLE.length]);
+                    }}
+                    className={`flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded border transition-all shrink-0 min-h-[32px] ${MANUAL_ROLE_CONFIG[manualRole].color} ${MANUAL_ROLE_CONFIG[manualRole].bg}`}
+                    data-testid="add-row-role"
+                  >
+                    {(() => { const Icon = MANUAL_ROLE_CONFIG[manualRole].icon; return <Icon className="w-3.5 h-3.5" />; })()}
+                    {t(`setup_role_${manualRole}`)}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {t("setup_role_tooltip")}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <button
               type="button"
               onClick={handleManualSubmit}
