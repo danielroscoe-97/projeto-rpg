@@ -51,6 +51,9 @@ const handler: Parameters<typeof withRateLimit>[0] = async function POST(request
 
     const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
+    // Idempotency key: same user + interval + 1-minute window = same session
+    const idempotencyKey = `checkout-${user.id}-${interval}-${Math.floor(Date.now() / 60000)}`;
+
     const session = await getStripe().checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
@@ -65,6 +68,8 @@ const handler: Parameters<typeof withRateLimit>[0] = async function POST(request
           user_id: user.id,
         },
       },
+    }, {
+      idempotencyKey,
     });
 
     return NextResponse.json({ url: session.url });

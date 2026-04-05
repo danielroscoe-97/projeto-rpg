@@ -92,8 +92,12 @@ export async function POST(request: Request) {
       );
     }
   } catch (error) {
-    // Fail-open: allow request if rate limit check fails
+    // Fail-closed: block request if rate limit check fails
     captureError(error, { component: "OracleAI", action: "rateLimit", category: "network" });
+    return Response.json(
+      { error: "Service temporarily unavailable. Try again later." },
+      { status: 503 },
+    );
   }
 
   let question: string;

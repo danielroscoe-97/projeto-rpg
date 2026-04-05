@@ -136,10 +136,11 @@ const deleteHandler: Parameters<typeof withRateLimit>[0] = async function delete
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Extract storage path from URL
+    // Extract storage path from URL and validate it's under the user's directory
     const urlParts = sound.file_url.split(`${BUCKET}/`);
-    if (urlParts.length > 1) {
-      await supabase.storage.from(BUCKET).remove([urlParts[1]]).catch(() => {});
+    const storagePath = urlParts[1];
+    if (storagePath && storagePath.startsWith(`${user.id}/`)) {
+      await supabase.storage.from(BUCKET).remove([storagePath]).catch(() => {});
     }
 
     await supabase.from("dm_custom_sounds").delete().eq("id", soundId);

@@ -87,7 +87,7 @@ function isRateLimited(ip: string): boolean {
 const MAX_PAYLOAD_BYTES = 4096;
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   if (isRateLimited(ip)) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
