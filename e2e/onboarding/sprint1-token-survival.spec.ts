@@ -11,8 +11,8 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAs } from "../helpers/auth";
-import { dmSetupCombatSession, playerJoinCombat } from "../helpers/session";
-import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
+import { dmSetupCombatSession } from "../helpers/session";
+import { DM_PRIMARY } from "../fixtures/test-accounts";
 
 // ─────────────────────────────────────────────────────────────
 // JO-03 — Contextual Banner
@@ -69,9 +69,8 @@ test.describe("JO-03 — Contextual Sign-Up Banner", () => {
     page,
   }) => {
     await page.goto("/auth/sign-up");
-    await page.waitForLoadState("domcontentloaded");
-    // Wait for React hydration
-    await page.waitForTimeout(2_000);
+    // networkidle ensures React has hydrated and no pending effects remain
+    await page.waitForLoadState("networkidle");
 
     const banner = page.locator('[data-testid="signup-context-banner"]');
     await expect(banner).not.toBeVisible();
@@ -89,8 +88,11 @@ test.describe("JO-01/02 — localStorage Token Persistence", () => {
       "/auth/sign-up?invite=my-test-token&campaign=my-campaign-id"
     );
     await page.waitForLoadState("domcontentloaded");
-    // Wait for useEffect to run
-    await page.waitForTimeout(1_500);
+    // Poll until useEffect writes to localStorage (avoids arbitrary fixed delay)
+    await page.waitForFunction(
+      () => localStorage.getItem("pendingInvite") !== null,
+      { timeout: 10_000 }
+    );
 
     const stored = await page.evaluate(() =>
       localStorage.getItem("pendingInvite")
@@ -101,6 +103,9 @@ test.describe("JO-01/02 — localStorage Token Persistence", () => {
     expect(parsed.token).toBe("my-test-token");
     expect(parsed.campaignId).toBe("my-campaign-id");
     expect(parsed.path).toBe("/invite/my-test-token");
+    // S1-EC-02: savedAt must be present for 24h TTL enforcement
+    expect(typeof parsed.savedAt).toBe("number");
+    expect(parsed.savedAt).toBeGreaterThan(Date.now() - 10_000);
   });
 
   test("JO-02: pendingJoinCode saved to localStorage when join_code in URL", async ({
@@ -108,13 +113,22 @@ test.describe("JO-01/02 — localStorage Token Persistence", () => {
   }) => {
     await page.goto("/auth/sign-up?join_code=MY-JOIN-CODE");
     await page.waitForLoadState("domcontentloaded");
-    // Wait for useEffect to run
-    await page.waitForTimeout(1_500);
+    // Poll until useEffect writes to localStorage (avoids arbitrary fixed delay)
+    await page.waitForFunction(
+      () => localStorage.getItem("pendingJoinCode") !== null,
+      { timeout: 10_000 }
+    );
 
     const stored = await page.evaluate(() =>
       localStorage.getItem("pendingJoinCode")
     );
-    expect(stored).toBe("MY-JOIN-CODE");
+    expect(stored).not.toBeNull();
+
+    // P2-06: pendingJoinCode is stored as JSON {code, savedAt} (not a raw string)
+    const parsed = JSON.parse(stored!);
+    expect(parsed.code).toBe("MY-JOIN-CODE");
+    expect(typeof parsed.savedAt).toBe("number");
+    expect(parsed.savedAt).toBeGreaterThan(Date.now() - 10_000);
   });
 });
 
@@ -179,9 +193,12 @@ test.describe("JO-01/02 — Dashboard Safety-Net Redirect", () => {
 
     await loginAs(page, DM_PRIMARY);
 
-    // Inject localStorage AFTER login
+    // Inject localStorage AFTER login — use current JSON format (P2-06)
     await page.evaluate(() => {
-      localStorage.setItem("pendingJoinCode", "REDIR-JOIN-CODE");
+      localStorage.setItem(
+        "pendingJoinCode",
+        JSON.stringify({ code: "REDIR-JOIN-CODE", savedAt: Date.now() })
+      );
     });
 
     // Navigate to dashboard to trigger the useEffect safety-net
