@@ -15,6 +15,7 @@ import type { PlayerCharacter } from "@/lib/types/database";
 interface CampaignPlayerAvatarsProps {
   characters: PlayerCharacter[];
   campaignId: string;
+  onInvite?: () => void;
 }
 
 function getHpColor(current: number, max: number): string {
@@ -38,10 +39,12 @@ function getInitials(name: string): string {
 export function CampaignPlayerAvatars({
   characters,
   campaignId,
+  onInvite,
 }: CampaignPlayerAvatarsProps) {
   const t = useTranslations("campaign");
   const router = useRouter();
   const [inviteOpen, setInviteOpen] = useState(false);
+  const handleInvite = onInvite ?? (() => setInviteOpen(true));
 
   return (
     <div className="flex flex-wrap gap-3 items-start">
@@ -123,7 +126,7 @@ export function CampaignPlayerAvatars({
       <button
         type="button"
         className="flex flex-col items-center gap-1 hover:scale-105 transition-transform min-h-[44px]"
-        onClick={() => setInviteOpen(true)}
+        onClick={handleInvite}
       >
         <div className="w-10 h-10 rounded-full bg-white/[0.04] border-2 border-dashed border-border flex items-center justify-center">
           <Plus className="w-4 h-4 text-muted-foreground" />
@@ -131,11 +134,14 @@ export function CampaignPlayerAvatars({
         <span className="text-[10px] text-muted-foreground">+</span>
       </button>
 
-      <InvitePlayerDialog
-        campaignId={campaignId}
-        open={inviteOpen}
-        onOpenChange={setInviteOpen}
-      />
+      {/* Only render internal dialog if parent doesn't control it */}
+      {!onInvite && (
+        <InvitePlayerDialog
+          campaignId={campaignId}
+          open={inviteOpen}
+          onOpenChange={setInviteOpen}
+        />
+      )}
     </div>
   );
 }

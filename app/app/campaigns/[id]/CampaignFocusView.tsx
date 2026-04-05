@@ -184,17 +184,19 @@ export function CampaignFocusView({
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <Suspense
-      fallback={
-        <div className="animate-pulse space-y-3">
-          <div className="h-8 bg-muted rounded w-1/3" />
-          <div className="h-32 bg-muted rounded" />
-        </div>
-      }
-    >
-      <SectionErrorBoundary fallbackLabel={section}>
-        {renderSection()}
-      </SectionErrorBoundary>
-    </Suspense>
+    <div id={`section_${section}`}>
+      <Suspense
+        fallback={
+          <div className="animate-pulse space-y-3">
+            <div className="h-8 bg-muted rounded w-1/3" />
+            <div className="h-32 bg-muted rounded" />
+          </div>
+        }
+      >
+        <SectionErrorBoundary fallbackLabel={section}>
+          {renderSection()}
+        </SectionErrorBoundary>
+      </Suspense>
+    </div>
   );
 }

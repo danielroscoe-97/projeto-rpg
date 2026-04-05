@@ -11,6 +11,7 @@ import { CampaignGrid } from './CampaignGrid'
 import { CampaignFocusView } from './CampaignFocusView'
 import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
 import { CampaignNavBar } from '@/components/campaign/CampaignNavBar'
+import { CampaignViewTransition } from '@/components/campaign/CampaignViewTransition'
 import type { SectionId } from '@/lib/types/campaign-hub'
 
 const VALID_SECTIONS: SectionId[] = ["encounters","quests","players","npcs","locations","factions","notes","inventory","mindmap"]
@@ -307,57 +308,59 @@ export default async function CampaignPage({
 
   return (
     <div className="space-y-6">
-      {activeSection ? (
-        <>
-          {/* Focus View: compact hero + nav bar + section content */}
-          <CampaignHeroCompact
-            campaignName={campaign.name}
-            characters={characters ?? []}
-            activeSessionName={dmActiveSession?.name ?? null}
-            sessionCount={sessionCount ?? 0}
-          />
-          <CampaignNavBar activeSection={activeSection} isOwner={isOwner} />
-          <CampaignFocusView
-            section={activeSection}
-            campaignId={campaign.id}
-            campaignName={campaign.name}
-            isOwner={isOwner}
-            userId={user.id}
-            characters={characters ?? []}
-            initialMembers={initialMembers}
-            srdMonsters={srdMonsters}
-          />
-        </>
-      ) : (
-        <>
-          {/* Overview: hero + stats bar + grid */}
-          <CampaignHero
-            campaignId={campaign.id}
-            campaignName={campaign.name}
-            characters={characters ?? []}
-            playerEmails={playerEmails}
-            playerCount={playerCount ?? 0}
-            sessionCount={sessionCount ?? 0}
-            questCount={questCount ?? 0}
-            finishedEncounterCount={finishedEncounterCount}
-            activeSessionId={dmActiveSession?.id ?? null}
-            activeSessionName={dmActiveSession?.name ?? null}
-          />
-          <CampaignStatsBar stats={campaignStats} />
-          {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && (
-            <CampaignGrid
+      <CampaignViewTransition viewKey={activeSection ?? "overview"}>
+        {activeSection ? (
+          <>
+            {/* Focus View: compact hero + nav bar + section content */}
+            <CampaignHeroCompact
+              campaignName={campaign.name}
+              characters={characters ?? []}
+              activeSessionName={dmActiveSession?.name ?? null}
+              sessionCount={sessionCount ?? 0}
+            />
+            <CampaignNavBar activeSection={activeSection} isOwner={isOwner} />
+            <CampaignFocusView
+              section={activeSection}
+              campaignId={campaign.id}
+              campaignName={campaign.name}
               isOwner={isOwner}
+              userId={user.id}
+              characters={characters ?? []}
+              initialMembers={initialMembers}
+              srdMonsters={srdMonsters}
+            />
+          </>
+        ) : (
+          <>
+            {/* Overview: hero + stats bar + grid */}
+            <CampaignHero
+              campaignId={campaign.id}
+              campaignName={campaign.name}
+              characters={characters ?? []}
+              playerEmails={playerEmails}
               playerCount={playerCount ?? 0}
-              npcCount={npcCount ?? 0}
-              locationCount={locationCount ?? 0}
-              factionCount={factionCount ?? 0}
-              noteCount={noteCount ?? 0}
+              sessionCount={sessionCount ?? 0}
               questCount={questCount ?? 0}
               finishedEncounterCount={finishedEncounterCount}
+              activeSessionId={dmActiveSession?.id ?? null}
+              activeSessionName={dmActiveSession?.name ?? null}
             />
-          )}
-        </>
-      )}
+            <CampaignStatsBar stats={campaignStats} />
+            {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && (
+              <CampaignGrid
+                isOwner={isOwner}
+                playerCount={playerCount ?? 0}
+                npcCount={npcCount ?? 0}
+                locationCount={locationCount ?? 0}
+                factionCount={factionCount ?? 0}
+                noteCount={noteCount ?? 0}
+                questCount={questCount ?? 0}
+                finishedEncounterCount={finishedEncounterCount}
+              />
+            )}
+          </>
+        )}
+      </CampaignViewTransition>
     </div>
   )
 }

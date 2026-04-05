@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Swords, FileText } from "lucide-react";
+import { Swords, Plus } from "lucide-react";
 import { CampaignPlayerAvatars } from "@/components/campaign/CampaignPlayerAvatars";
 import { CampaignStatusCards } from "@/components/campaign/CampaignStatusCards";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
+import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface CampaignHeroProps {
@@ -39,6 +40,7 @@ export function CampaignHero({
   const tDash = useTranslations("dashboard");
   const router = useRouter();
   const [combatOpen, setCombatOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const subtitle =
     sessionCount > 0
@@ -65,13 +67,12 @@ export function CampaignHero({
       <CampaignPlayerAvatars
         characters={characters}
         campaignId={campaignId}
+        onInvite={() => setInviteOpen(true)}
       />
 
-      {/* Status KPI Cards — single CombatLaunchSheet controlled from here */}
+      {/* Status KPI Cards — CombatLaunchSheet lives here, single instance */}
       <CampaignStatusCards
         campaignId={campaignId}
-        campaignName={campaignName}
-        playerEmails={playerEmails}
         playerCount={playerCount}
         sessionCount={sessionCount}
         questCount={questCount}
@@ -79,6 +80,7 @@ export function CampaignHero({
         activeSessionId={activeSessionId}
         activeSessionName={activeSessionName}
         onOpenCombat={() => setCombatOpen(true)}
+        onInvite={() => setInviteOpen(true)}
       />
 
       {/* Quick Actions Row */}
@@ -99,7 +101,7 @@ export function CampaignHero({
             router.push("?section=encounters", { scroll: false })
           }
         >
-          <Swords className="w-3.5 h-3.5 text-amber-400" />
+          <Plus className="w-3.5 h-3.5 text-amber-400" />
           {t("quick_action_encounter")}
         </button>
 
@@ -110,12 +112,17 @@ export function CampaignHero({
             router.push("?section=notes", { scroll: false })
           }
         >
-          <FileText className="w-3.5 h-3.5 text-amber-400" />
+          <Plus className="w-3.5 h-3.5 text-amber-400" />
           {t("quick_action_note")}
         </button>
       </div>
 
-      {/* Single CombatLaunchSheet instance for Hero + StatusCards */}
+      {/* Single shared dialog instances */}
+      <InvitePlayerDialog
+        campaignId={campaignId}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+      />
       <CombatLaunchSheet
         campaignId={campaignId}
         campaignName={campaignName}
