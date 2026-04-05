@@ -115,7 +115,7 @@ export function MonsterBrowser() {
   const t = useTranslations("compendium");
   const allMonsters = useSrdStore((s) => s.monsters);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
-  const { canAccess, isAuthenticated } = useContentAccess();
+  const { canAccess, isAuthenticated, isLoading: accessLoading } = useContentAccess();
   const [gateOpen, setGateOpen] = useState(false);
 
   // Filters
@@ -125,6 +125,14 @@ export function MonsterBrowser() {
   const [sizes, setSizes] = useState<Set<string>>(new Set());
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const sourceManuallyChanged = useRef(false);
+
+  // Auto-switch to "complete" for admin/beta testers once access loads
+  useEffect(() => {
+    if (!accessLoading && canAccess && !sourceManuallyChanged.current) {
+      setSourceFilter("complete");
+    }
+  }, [accessLoading, canAccess]);
 
   // Selection (split-panel)
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -301,6 +309,7 @@ export function MonsterBrowser() {
                     }
                     return;
                   }
+                  sourceManuallyChanged.current = true;
                   setSourceFilter(s);
                 }}
               >

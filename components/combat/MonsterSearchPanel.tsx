@@ -160,6 +160,14 @@ export function MonsterSearchPanel({
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
+  const sourceManuallyChanged = useRef(false);
+
+  // Auto-switch to "complete" for admin/beta testers once access loads
+  useEffect(() => {
+    if (extendedActive && !sourceManuallyChanged.current) {
+      setSourceFilter("complete");
+    }
+  }, [extendedActive]);
   const [crMin, setCrMin] = useState("");
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
@@ -451,7 +459,7 @@ export function MonsterSearchPanel({
                 <button
                   key={s}
                   type="button"
-                  onClick={() => setSourceFilter(s)}
+                  onClick={() => { sourceManuallyChanged.current = true; setSourceFilter(s); }}
                   className={`px-2 py-0.5 text-[11px] rounded-md font-medium transition-all border ${
                     sourceFilter === s
                       ? "bg-gold/20 text-gold border-gold/40"

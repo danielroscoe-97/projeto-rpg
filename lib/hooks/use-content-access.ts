@@ -40,7 +40,7 @@ async function fetchContentAccess(userId: string) {
   try {
     const supabase = createClient();
 
-    const [whitelistRes, agreementRes] = await Promise.all([
+    const [whitelistRes, agreementRes, adminRes] = await Promise.all([
       supabase
         .from("content_whitelist")
         .select("id")
@@ -53,12 +53,20 @@ async function fetchContentAccess(userId: string) {
         .eq("user_id", userId)
         .eq("agreement_version", CURRENT_AGREEMENT_VERSION)
         .maybeSingle(),
+      supabase
+        .from("users")
+        .select("is_admin")
+        .eq("id", userId)
+        .single(),
     ]);
 
+    const isAdmin = !adminRes.error && !!adminRes.data?.is_admin;
+
     // P5: check for errors (maybeSingle returns error if multiple rows)
+    // Admins bypass whitelist — they always have full access
     const result = {
-      isWhitelisted: !whitelistRes.error && !!whitelistRes.data,
-      hasAgreed: !agreementRes.error && !!agreementRes.data,
+      isWhitelisted: isAdmin || (!whitelistRes.error && !!whitelistRes.data),
+      hasAgreed: isAdmin || (!agreementRes.error && !!agreementRes.data),
     };
 
     cachedUserId = userId;
