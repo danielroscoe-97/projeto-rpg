@@ -1,5 +1,7 @@
 "use client";
 
+import { GoldBadge, SilverBadge, BronzeBadge } from "./TitleBadges";
+
 interface QualityTierBreakdownProps {
   gold: number;
   silver: number;
@@ -13,12 +15,7 @@ export function QualityTierBreakdown({ gold, silver, bronze }: QualityTierBreakd
     <div className="flex items-center justify-center gap-4 mt-2">
       {/* Gold */}
       <div className="flex items-center gap-1.5">
-        <span
-          className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold/10 text-gold text-[10px] font-bold shrink-0"
-          aria-hidden="true"
-        >
-          🥇
-        </span>
+        <GoldBadge className="w-5 h-5 shrink-0" />
         <span className="text-xs text-gold font-medium tabular-nums">{gold.toLocaleString()}</span>
       </div>
 
@@ -26,12 +23,7 @@ export function QualityTierBreakdown({ gold, silver, bronze }: QualityTierBreakd
 
       {/* Silver */}
       <div className="flex items-center gap-1.5">
-        <span
-          className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/5 text-gray-300 text-[10px] font-bold shrink-0"
-          aria-hidden="true"
-        >
-          🥈
-        </span>
+        <SilverBadge className="w-5 h-5 shrink-0" />
         <span className="text-xs text-gray-400 tabular-nums">{silver.toLocaleString()}</span>
       </div>
 
@@ -39,12 +31,7 @@ export function QualityTierBreakdown({ gold, silver, bronze }: QualityTierBreakd
 
       {/* Bronze */}
       <div className="flex items-center gap-1.5">
-        <span
-          className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-900/10 text-amber-700 text-[10px] font-bold shrink-0"
-          aria-hidden="true"
-        >
-          🥉
-        </span>
+        <BronzeBadge className="w-5 h-5 shrink-0" />
         <span className="text-xs text-amber-700/80 tabular-nums">{bronze.toLocaleString()}</span>
       </div>
     </div>

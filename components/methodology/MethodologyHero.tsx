@@ -218,10 +218,16 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
 
       {/* Children (progress bar) — renders within the hero background */}
       {children && (
-        <div className="relative pb-12">
+        <div className="relative pb-16">
           {children}
         </div>
       )}
+
+      {/* Bottom fade — smooth transition to next section */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-background pointer-events-none"
+        aria-hidden="true"
+      />
     </section>
   );
 }
