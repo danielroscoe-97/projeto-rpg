@@ -1,9 +1,20 @@
 # Spec: Campaign Hub v2 — Redesign Completo da Página de Campanha (DM View)
 
-**Status:** Spec Aprovada — Aguardando Implementação  
+**Status:** Em Implementação — F1 concluída, F2 em andamento  
 **Data:** 2026-04-05  
 **Sessão:** Party Mode com Sally (UX), John (PM), Winston (Arquiteto), Mary (Analista), Amelia (Dev), Bob (SM), Quinn (QA), Barry (Quick Flow), Paige (Tech Writer)  
 **Predecessor:** `docs/spec-campaign-page-redesign.md` (v1 — implementada)
+
+### Progresso
+
+| Fase | Status | Commits | Descrição |
+|------|--------|---------|-----------|
+| **F1** | Concluída | `e4ff8c4`, `bfb5da3` | i18n (31 chaves PT-BR/EN), shared types (`campaign-hub.ts`), spec + plan |
+| **F2a** | Pendente | — | Hero section (avatares, KPI cards, quick actions) |
+| **F2b** | Pendente | — | Section grid (cards agrupados, Overview) |
+| **F2c** | Pendente | — | Focus View (nav bar sticky, seção expandida) |
+| **F3** | Pendente | — | Integração no `page.tsx` (roteamento Overview/Focus) |
+| **F4** | Pendente | — | Polish, mobile, cleanup |
 
 ---
 

@@ -22,9 +22,27 @@ F4 (polish + mobile + cleanup)
 
 ---
 
-## F1 — Foundation (i18n + Types) — SEQUENTIAL, 1 agente
+## F1 — Foundation (i18n + Types) — CONCLUÍDA
 
+**Status:** Concluída  
+**Commits:** `e4ff8c4` (implementação), `bfb5da3` (code review fixes)  
 **Objetivo:** Criar as chaves i18n e interfaces TypeScript compartilhadas que F2a/F2b/F2c precisam.
+
+### O que foi feito
+
+1. **31 chaves i18n** adicionadas em `messages/pt-BR.json` e `messages/en.json` (prefixo `hub_*`)
+2. **`lib/types/campaign-hub.ts`** criado com:
+   - `SectionId` (union type das 9 seções)
+   - `VALID_SECTIONS` (readonly array para validação)
+   - `SECTION_NAV_ORDER` (ordem da nav bar no Focus View)
+   - `SectionGroup` ("operational" | "world" | "journal")
+   - `SectionCardDef` (definição estática de card)
+   - `MonsterOption` (centralizado, antes duplicado 3x)
+   - `CampaignSectionCounts` (contagens agrupadas)
+   - `CampaignHubData` (interface principal page.tsx → components)
+3. **Spec** (`spec-campaign-hub-v2.md`) — wireframes ASCII (4 estados), design language, critérios de aceite
+4. **Plan** (`plan-campaign-hub-v2.md`) — 5 fases com paralelização
+5. **Code review** — 7 achados corrigidos (readonly types, nav order, spec/plan alignment, DM-only guard, ErrorBoundary reuse)
 
 ### Tarefas
 
