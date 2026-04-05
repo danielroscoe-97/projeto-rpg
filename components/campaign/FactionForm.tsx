@@ -1,0 +1,321 @@
+"use client";
+
+import { useState, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
+import { FACTION_ALIGNMENTS } from "@/lib/types/mind-map";
+import type { FactionFormData } from "@/lib/hooks/use-campaign-factions";
+
+const ALIGNMENT_DOT_COLOR: Record<FactionAlignment, string> = {
+  ally: "bg-emerald-400",
+  neutral: "bg-zinc-400",
+  hostile: "bg-red-400",
+};
+
+interface FactionFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  campaignId: string;
+  faction?: CampaignFaction | null;
+  onSave: (data: FactionFormData) => Promise<void>;
+}
+
+export function FactionForm({
+  open,
+  onOpenChange,
+  campaignId,
+  faction,
+  onSave,
+}: FactionFormProps) {
+  const t = useTranslations("factions");
+  const tCommon = useTranslations("common");
+
+  const [name, setName] = useState(faction?.name ?? "");
+  const [alignment, setAlignment] = useState<FactionAlignment>(
+    faction?.alignment ?? "neutral",
+  );
+  const [description, setDescription] = useState(faction?.description ?? "");
+  const [imageUrl, setImageUrl] = useState(faction?.image_url ?? "");
+  const [visibleToPlayers, setVisibleToPlayers] = useState(
+    faction?.is_visible_to_players ?? true,
+  );
+  const [saving, setSaving] = useState(false);
+  const [nameError, setNameError] = useState(false);
+  const [saveError, setSaveError] = useState(false);
+  const [discardOpen, setDiscardOpen] = useState(false);
+
+  const isDirty = useMemo(() => {
+    const init = faction;
+    if (!init) {
+      return !!(
+        name ||
+        description ||
+        alignment !== "neutral" ||
+        imageUrl ||
+        !visibleToPlayers
+      );
+    }
+    return (
+      name !== (init.name ?? "") ||
+      description !== (init.description ?? "") ||
+      alignment !== (init.alignment ?? "neutral") ||
+      imageUrl !== (init.image_url ?? "") ||
+      visibleToPlayers !== (init.is_visible_to_players ?? true)
+    );
+  }, [faction, name, description, alignment, imageUrl, visibleToPlayers]);
+
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (!nextOpen && isDirty) {
+        setDiscardOpen(true);
+        return;
+      }
+      onOpenChange(nextOpen);
+    },
+    [isDirty, onOpenChange],
+  );
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      const trimmedName = name.trim();
+      if (!trimmedName) {
+        setNameError(true);
+        return;
+      }
+
+      const data: FactionFormData = {
+        name: trimmedName,
+        description: description.trim() || undefined,
+        alignment,
+        image_url: imageUrl.trim() || null,
+        is_visible_to_players: visibleToPlayers,
+      };
+
+      setSaving(true);
+      setSaveError(false);
+      try {
+        await onSave(data);
+        onOpenChange(false);
+      } catch {
+        setSaveError(true);
+      } finally {
+        setSaving(false);
+      }
+    },
+    [name, description, alignment, imageUrl, visibleToPlayers, onSave, onOpenChange],
+  );
+
+  const isEdit = !!faction;
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {isEdit ? t("form_title_edit") : t("form_title_new")}
+            </DialogTitle>
+          </DialogHeader>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            data-testid="faction-form"
+          >
+            {/* Name */}
+            <div className="space-y-1.5">
+              <Label htmlFor="faction-name">{t("field_name")} *</Label>
+              <Input
+                id="faction-name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError(false);
+                }}
+                placeholder={t("field_name")}
+                data-testid="faction-name-input"
+                aria-invalid={nameError}
+              />
+              {nameError && (
+                <p
+                  className="text-xs text-red-400"
+                  data-testid="faction-name-error"
+                >
+                  {t("name_required")}
+                </p>
+              )}
+            </div>
+
+            {/* Alignment */}
+            <div className="space-y-1.5">
+              <Label htmlFor="faction-alignment">{t("field_alignment")}</Label>
+              <Select
+                value={alignment}
+                onValueChange={(v) => setAlignment(v as FactionAlignment)}
+              >
+                <SelectTrigger
+                  className="w-full"
+                  data-testid="faction-alignment-trigger"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FACTION_ALIGNMENTS.map((a) => (
+                    <SelectItem key={a} value={a}>
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={`h-2 w-2 rounded-full shrink-0 ${ALIGNMENT_DOT_COLOR[a]}`}
+                        />
+                        {t(`alignment_${a}`)}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-1.5">
+              <Label htmlFor="faction-description">
+                {t("field_description")}
+              </Label>
+              <textarea
+                id="faction-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t("description_placeholder")}
+                rows={3}
+                className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
+                data-testid="faction-description-input"
+              />
+            </div>
+
+            {/* Image URL */}
+            <div className="space-y-1.5">
+              <Label htmlFor="faction-image">{t("field_image")}</Label>
+              <Input
+                id="faction-image"
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://..."
+                data-testid="faction-image-input"
+              />
+            </div>
+
+            {/* Visibility toggle */}
+            <div className="flex items-center justify-between py-2">
+              <Label htmlFor="faction-visible" className="cursor-pointer">
+                {t("field_visibility")}
+              </Label>
+              <button
+                id="faction-visible"
+                type="button"
+                role="switch"
+                aria-checked={visibleToPlayers}
+                onClick={() => setVisibleToPlayers((v) => !v)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                  visibleToPlayers ? "bg-emerald-500" : "bg-muted"
+                }`}
+                data-testid="faction-visible-toggle"
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ${
+                    visibleToPlayers ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Save error */}
+            {saveError && (
+              <p
+                className="text-xs text-red-400"
+                data-testid="faction-save-error"
+              >
+                {t("save_error")}
+              </p>
+            )}
+
+            {/* Submit */}
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleOpenChange(false)}
+                disabled={saving}
+              >
+                {tCommon("cancel")}
+              </Button>
+              <Button
+                type="submit"
+                variant="gold"
+                disabled={saving}
+                data-testid="faction-submit"
+              >
+                {saving ? tCommon("saving") : tCommon("save")}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={discardOpen} onOpenChange={setDiscardOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tCommon("discard_title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {tCommon("discard_description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tCommon("discard_cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setDiscardOpen(false);
+                // Reset fields to initial values so stale state doesn't persist
+                setName(faction?.name ?? "");
+                setAlignment(faction?.alignment ?? "neutral");
+                setDescription(faction?.description ?? "");
+                setImageUrl(faction?.image_url ?? "");
+                setVisibleToPlayers(faction?.is_visible_to_players ?? true);
+                onOpenChange(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {tCommon("discard_confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}

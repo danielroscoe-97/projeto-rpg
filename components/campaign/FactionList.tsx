@@ -1,18 +1,9 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Flag, Plus, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,124 +14,48 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { FactionCard } from "./FactionCard";
+import { FactionForm } from "./FactionForm";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
+import { captureError } from "@/lib/errors/capture";
 import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
-import { FACTION_ALIGNMENTS } from "@/lib/types/mind-map";
+import type { FactionFormData } from "@/lib/hooks/use-campaign-factions";
 
-const ALIGNMENT_STYLE: Record<FactionAlignment, string> = {
-  ally: "border-emerald-400/30 bg-card",
-  neutral: "border-border bg-card",
-  hostile: "border-red-400/30 bg-card",
-};
+type FilterMode = "all" | "ally" | "neutral" | "hostile";
 
-const ALIGNMENT_DOT: Record<FactionAlignment, string> = {
-  ally: "bg-emerald-400",
-  neutral: "bg-gray-400",
-  hostile: "bg-red-400",
-};
+const FILTER_OPTIONS: { key: FilterMode; i18nKey: string }[] = [
+  { key: "all", i18nKey: "filter_all" },
+  { key: "ally", i18nKey: "filter_allies" },
+  { key: "neutral", i18nKey: "filter_neutral" },
+  { key: "hostile", i18nKey: "filter_hostile" },
+];
 
-interface FactionCardProps {
-  faction: CampaignFaction;
-  onUpdate: (id: string, updates: Partial<Pick<CampaignFaction, "name" | "description" | "alignment" | "is_visible_to_players">>) => void;
-  onDelete: (id: string) => void;
-}
-
-function FactionCard({ faction, onUpdate, onDelete }: FactionCardProps) {
-  const t = useTranslations("factions");
-  const [confirmDelete, setConfirmDelete] = useState(false);
-
+function FactionCardSkeleton({ count = 3 }: { count?: number }) {
   return (
-    <>
-      <div className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${ALIGNMENT_STYLE[faction.alignment]}`}>
-        <div className="flex items-center gap-1.5 mt-1">
-          <span className={`h-2 w-2 rounded-full ${ALIGNMENT_DOT[faction.alignment]}`} />
-          <Flag className="h-4 w-4 text-rose-400 flex-shrink-0" />
-        </div>
-
-        <div className="flex-1 min-w-0 space-y-2">
-          <Input
-            defaultValue={faction.name}
-            className="h-7 text-sm font-semibold bg-transparent border-none px-0 focus-visible:ring-0"
-            onBlur={(e) => {
-              const val = e.target.value.trim();
-              if (val && val !== faction.name) onUpdate(faction.id, { name: val });
-            }}
-          />
-          <Textarea
-            defaultValue={faction.description}
-            placeholder={t("description_placeholder")}
-            className="min-h-[40px] text-xs bg-transparent border-none px-0 resize-none focus-visible:ring-0"
-            onBlur={(e) => {
-              if (e.target.value !== faction.description)
-                onUpdate(faction.id, { description: e.target.value });
-            }}
-          />
-
-          <div className="flex items-center gap-2">
-            <Select
-              defaultValue={faction.alignment}
-              onValueChange={(v) => onUpdate(faction.id, { alignment: v as FactionAlignment })}
-            >
-              <SelectTrigger className="h-7 w-[120px] text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FACTION_ALIGNMENTS.map((a) => (
-                  <SelectItem key={a} value={a} className="text-xs">
-                    {t(`alignment_${a}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={() =>
-                onUpdate(faction.id, { is_visible_to_players: !faction.is_visible_to_players })
-              }
-              title={faction.is_visible_to_players ? t("hide_from_players") : t("show_to_players")}
-            >
-              {faction.is_visible_to_players ? (
-                <Eye className="h-3.5 w-3.5 text-cyan-400" />
-              ) : (
-                <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 ml-auto text-destructive/60 hover:text-destructive"
-              onClick={() => setConfirmDelete(true)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+    <div
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+      aria-hidden="true"
+    >
+      {Array.from({ length: count }, (_, i) => (
+        <div
+          key={i}
+          className="animate-pulse bg-card border border-border rounded-xl p-4 space-y-3 border-l-4 border-l-zinc-700"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-12 h-12 rounded-lg bg-white/[0.06]" />
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.06]" />
+                <div className="h-4 w-28 bg-white/[0.06] rounded" />
+              </div>
+              <div className="h-5 w-16 bg-white/[0.06] rounded-md" />
+            </div>
           </div>
+          <div className="h-3 w-full bg-white/[0.06] rounded" />
+          <div className="h-3 w-2/3 bg-white/[0.06] rounded" />
         </div>
-      </div>
-
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("delete_title")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("delete_description", { name: faction.name })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => onDelete(faction.id)}
-            >
-              {t("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+      ))}
+    </div>
   );
 }
 
@@ -153,71 +68,219 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
   const t = useTranslations("factions");
   const { factions, loading, addFaction, updateFaction, deleteFaction } =
     useCampaignFactions(campaignId);
-  const [newName, setNewName] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleAdd = async () => {
-    const name = newName.trim();
-    if (!name) return;
-    await addFaction(name);
-    setNewName("");
-    inputRef.current?.focus();
-  };
+  const [filter, setFilter] = useState<FilterMode>("all");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingFaction, setEditingFaction] = useState<CampaignFaction | null>(
+    null,
+  );
+  const [deleteTarget, setDeleteTarget] = useState<CampaignFaction | null>(
+    null,
+  );
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAdd();
+  const filteredFactions = factions.filter((f) => {
+    if (filter === "all") return true;
+    return f.alignment === filter;
+  });
+
+  const handleCreate = useCallback(
+    async (data: FactionFormData) => {
+      await addFaction(data);
+    },
+    [addFaction],
+  );
+
+  const handleEdit = useCallback(
+    async (data: FactionFormData) => {
+      if (!editingFaction) return;
+      await updateFaction(editingFaction.id, {
+        name: data.name,
+        description: data.description ?? "",
+        alignment: data.alignment,
+        image_url: data.image_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setEditingFaction(null);
+    },
+    [editingFaction, updateFaction],
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteFaction(deleteTarget.id);
+    } catch (err) {
+      captureError(err, {
+        component: "FactionList",
+        action: "deleteFaction",
+        category: "network",
+      });
+    } finally {
+      setDeleteTarget(null);
     }
-  };
+  }, [deleteTarget, deleteFaction]);
+
+  const handleToggleVisibility = useCallback(
+    async (faction: CampaignFaction) => {
+      try {
+        await updateFaction(faction.id, {
+          is_visible_to_players: !faction.is_visible_to_players,
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "FactionList",
+          action: "toggleVisibility",
+          category: "network",
+        });
+      }
+    },
+    [updateFaction],
+  );
+
+  const openEditForm = useCallback((faction: CampaignFaction) => {
+    setEditingFaction(faction);
+    setFormOpen(true);
+  }, []);
+
+  const openCreateForm = useCallback(() => {
+    setEditingFaction(null);
+    setFormOpen(true);
+  }, []);
 
   if (loading) {
-    return (
-      <div className="text-sm text-muted-foreground py-4 text-center">{t("loading")}</div>
-    );
+    return <FactionCardSkeleton count={3} />;
   }
 
   return (
-    <div className="space-y-3">
-      {/* Add form */}
-      {isEditable && (
-        <div className="flex gap-2">
-          <Input
-            ref={inputRef}
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={t("add_placeholder")}
-            className="h-8 text-sm flex-1"
-          />
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          {/* Filter buttons */}
+          <div className="flex items-center rounded-lg border border-border overflow-hidden">
+            {FILTER_OPTIONS.map(({ key, i18nKey }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setFilter(key)}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  filter === key
+                    ? "bg-amber-400/15 text-amber-400"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                data-testid={`faction-filter-${key}`}
+              >
+                {t(i18nKey)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {isEditable && (
           <Button
+            variant="goldOutline"
             size="sm"
-            variant="outline"
-            className="h-8 px-3"
-            onClick={handleAdd}
-            disabled={!newName.trim()}
+            onClick={openCreateForm}
+            className="gap-1.5"
+            data-testid="faction-add-button"
           >
-            <Plus className="h-3.5 w-3.5 mr-1" />
-            {t("add")}
+            <Plus className="w-4 h-4" />
+            {t("add_faction")}
           </Button>
+        )}
+      </div>
+
+      {/* Empty state */}
+      {factions.length === 0 && (
+        <div
+          className="rounded-lg border border-border bg-card p-8 text-center"
+          data-testid="faction-empty-state"
+        >
+          <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+            <Flag className="w-6 h-6 text-amber-400/60" />
+          </div>
+          <p className="text-muted-foreground text-sm">{t("empty")}</p>
+          <p className="text-muted-foreground/60 text-xs mt-1">
+            {t("empty_cta")}
+          </p>
+          {isEditable && (
+            <Button
+              variant="goldOutline"
+              size="sm"
+              onClick={openCreateForm}
+              className="mt-4 gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              {t("add_faction")}
+            </Button>
+          )}
         </div>
       )}
 
-      {/* Faction list */}
-      {factions.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">{t("empty")}</p>
-      ) : (
-        <div className="space-y-2">
-          {factions.map((fac) => (
+      {/* Faction Grid */}
+      {filteredFactions.length > 0 && (
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+          data-testid="faction-container"
+        >
+          {filteredFactions.map((faction) => (
             <FactionCard
-              key={fac.id}
-              faction={fac}
-              onUpdate={updateFaction}
-              onDelete={deleteFaction}
+              key={faction.id}
+              faction={faction}
+              isEditable={isEditable}
+              onEdit={openEditForm}
+              onDelete={setDeleteTarget}
+              onToggleVisibility={handleToggleVisibility}
             />
           ))}
         </div>
       )}
+
+      {/* Filtered empty (factions exist but none match filter) */}
+      {factions.length > 0 && filteredFactions.length === 0 && (
+        <div className="rounded-lg border border-border bg-card p-6 text-center">
+          <p className="text-muted-foreground text-sm">{t("empty")}</p>
+        </div>
+      )}
+
+      {/* Create/Edit form dialog */}
+      <FactionForm
+        key={editingFaction?.id ?? "new"}
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingFaction(null);
+        }}
+        campaignId={campaignId}
+        faction={editingFaction}
+        onSave={editingFaction ? handleEdit : handleCreate}
+      />
+
+      {/* Delete confirmation */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("delete_title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget
+                ? t("delete_description", { name: deleteTarget.name })
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

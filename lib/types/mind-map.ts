@@ -81,6 +81,8 @@ export interface CampaignLocation {
   location_type: LocationType;
   parent_location_id: string | null;
   is_discovered: boolean;
+  image_url: string | null;
+  is_visible_to_players: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
@@ -98,6 +100,7 @@ export interface CampaignFaction {
   name: string;
   description: string;
   alignment: FactionAlignment;
+  image_url: string | null;
   is_visible_to_players: boolean;
   sort_order: number;
   created_at: string;

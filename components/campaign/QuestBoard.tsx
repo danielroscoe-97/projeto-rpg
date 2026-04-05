@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Circle, Target, CheckCircle2, Trash2, ChevronDown, Plus, Eye, EyeOff } from "lucide-react";
+import { Plus, ScrollText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,360 +14,275 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { QuestCard } from "./QuestCard";
+import { QuestForm } from "./QuestForm";
 import { useCampaignQuests } from "@/lib/hooks/use-campaign-quests";
-import type { CampaignQuest, QuestStatus } from "@/lib/types/quest";
+import { captureError } from "@/lib/errors/capture";
+import type { CampaignQuest, QuestFormData, QuestStatus } from "@/lib/types/quest";
 
-// ── Status config ────────────────────────────────────────────────────────────
+type FilterMode = "all" | "active" | "available" | "completed" | "failed";
 
-const STATUS_ICON: Record<QuestStatus, React.ComponentType<{ className?: string }>> = {
-  available: Circle,
-  active: Target,
-  completed: CheckCircle2,
-};
-
-const STATUS_BORDER: Record<QuestStatus, string> = {
-  available: "border-muted-foreground/30",
-  active: "border-[#D4A853]/50 shadow-[0_0_8px_rgba(212,168,83,0.15)]",
-  completed: "border-green-600/30 opacity-70",
-};
-
-const STATUS_ICON_CLASS: Record<QuestStatus, string> = {
-  available: "text-muted-foreground",
-  active: "text-[#D4A853]",
-  completed: "text-green-500",
-};
-
-// ── QuestCard ─────────────────────────────────────────────────────────────────
-
-interface QuestCardProps {
-  quest: CampaignQuest;
+interface QuestBoardProps {
+  campaignId: string;
   isEditable: boolean;
-  onUpdate: (id: string, data: Partial<{ title: string; description: string; status: QuestStatus; is_visible_to_players: boolean }>) => void;
-  onDelete: (id: string) => void;
 }
 
-function QuestCard({ quest, isEditable, onUpdate, onDelete }: QuestCardProps) {
+/* ── Skeleton loader ───────────────────────────────────────────────────────── */
+
+function QuestCardSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => (
+        <div
+          key={i}
+          className="animate-pulse bg-card border border-border rounded-xl p-4 space-y-3 border-l-4 border-l-muted-foreground/20"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-12 h-12 rounded-lg bg-white/[0.06]" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-32 bg-white/[0.06] rounded" />
+              <div className="flex gap-1.5">
+                <div className="h-5 w-16 bg-white/[0.06] rounded-md" />
+                <div className="h-5 w-14 bg-white/[0.06] rounded-md" />
+              </div>
+            </div>
+          </div>
+          <div className="h-3 w-full bg-white/[0.06] rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── QuestBoard ────────────────────────────────────────────────────────────── */
+
+export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
   const t = useTranslations("campaign.quests");
-  const [expanded, setExpanded] = useState(false);
-  const [title, setTitle] = useState(quest.title);
-  const [description, setDescription] = useState(quest.description);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const { quests, loading, createQuest, updateQuest, deleteQuest } =
+    useCampaignQuests(campaignId);
 
-  // Keep local state in sync with prop changes
-  useEffect(() => {
-    setTitle(quest.title);
-  }, [quest.title]);
+  const [filter, setFilter] = useState<FilterMode>("all");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingQuest, setEditingQuest] = useState<CampaignQuest | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<CampaignQuest | null>(null);
 
-  useEffect(() => {
-    setDescription(quest.description);
-  }, [quest.description]);
+  /* ── Filtering ───────────────────────────────────────────────────────────── */
 
-  const titleDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const descDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const filteredQuests = useMemo(() => {
+    if (filter === "all") return quests;
+    return quests.filter((q) => q.status === filter);
+  }, [quests, filter]);
 
-  const handleTitleChange = (val: string) => {
-    setTitle(val);
-    if (titleDebounce.current) clearTimeout(titleDebounce.current);
-    titleDebounce.current = setTimeout(() => {
-      if (val.trim() && val.trim() !== quest.title) {
-        onUpdate(quest.id, { title: val.trim() });
+  /* ── Handlers ────────────────────────────────────────────────────────────── */
+
+  const handleCreate = useCallback(
+    async (data: QuestFormData) => {
+      await createQuest(data);
+    },
+    [createQuest],
+  );
+
+  const handleEdit = useCallback(
+    async (data: QuestFormData) => {
+      if (!editingQuest) return;
+      await updateQuest(editingQuest.id, {
+        title: data.title,
+        quest_type: data.quest_type,
+        status: data.status,
+        context: data.context,
+        objective: data.objective,
+        reward: data.reward,
+        image_url: data.image_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setEditingQuest(null);
+    },
+    [editingQuest, updateQuest],
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteQuest(deleteTarget.id);
+    } catch (err) {
+      captureError(err, {
+        component: "QuestBoard",
+        action: "deleteQuest",
+        category: "network",
+      });
+    } finally {
+      setDeleteTarget(null);
+    }
+  }, [deleteTarget, deleteQuest]);
+
+  const handleToggleVisibility = useCallback(
+    async (quest: CampaignQuest) => {
+      try {
+        await updateQuest(quest.id, {
+          is_visible_to_players: !quest.is_visible_to_players,
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "QuestBoard",
+          action: "toggleVisibility",
+          category: "network",
+        });
       }
-    }, 600);
-  };
+    },
+    [updateQuest],
+  );
 
-  const handleDescChange = (val: string) => {
-    setDescription(val);
-    if (descDebounce.current) clearTimeout(descDebounce.current);
-    descDebounce.current = setTimeout(() => {
-      if (val !== quest.description) {
-        onUpdate(quest.id, { description: val });
-      }
-    }, 600);
-  };
+  const openEditForm = useCallback((quest: CampaignQuest) => {
+    setEditingQuest(quest);
+    setFormOpen(true);
+  }, []);
 
-  const handleStatusChange = (val: string) => {
-    onUpdate(quest.id, { status: val as QuestStatus });
-  };
+  const openCreateForm = useCallback(() => {
+    setEditingQuest(null);
+    setFormOpen(true);
+  }, []);
 
-  const Icon = STATUS_ICON[quest.status];
+  /* ── Filter config ───────────────────────────────────────────────────────── */
+
+  const filters: { key: FilterMode; label: string }[] = [
+    { key: "all", label: t("filter_all") },
+    { key: "active", label: t("filter_active") },
+    { key: "available", label: t("filter_available") },
+    { key: "completed", label: t("filter_completed") },
+    { key: "failed", label: t("filter_failed") },
+  ];
+
+  /* ── Loading state ───────────────────────────────────────────────────────── */
+
+  if (loading) {
+    return <QuestCardSkeleton count={3} />;
+  }
 
   return (
-    <>
-      <div
-        className={`border rounded-lg p-3 transition-colors cursor-pointer ${STATUS_BORDER[quest.status]} ${
-          quest.is_visible_to_players === false ? "opacity-50" : ""
-        }`}
-        onClick={() => setExpanded((v) => !v)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpanded((v) => !v); } }}
-        aria-expanded={expanded}
-      >
-        <div className="flex items-center gap-2">
-          <Icon className={`h-4 w-4 flex-shrink-0 ${STATUS_ICON_CLASS[quest.status]}`} />
-          {isEditable && (
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        {/* Filter buttons */}
+        <div className="flex items-center rounded-lg border border-border overflow-hidden">
+          {filters.map((f) => (
             <button
+              key={f.key}
               type="button"
-              className="flex-shrink-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdate(quest.id, { is_visible_to_players: !quest.is_visible_to_players });
-              }}
-              title={quest.is_visible_to_players ? t("visibility_show") : t("visibility_hide")}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                filter === f.key
+                  ? "bg-amber-400/15 text-amber-400"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              data-testid={`quest-filter-${f.key}`}
             >
-              {quest.is_visible_to_players ? (
-                <Eye className="h-3.5 w-3.5 text-cyan-400" />
-              ) : (
-                <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
+              {f.label}
             </button>
-          )}
-          <span className="font-medium text-sm flex-1 truncate">{quest.title}</span>
-          {isEditable && expanded && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-              role="none"
-            >
-              <Select value={quest.status} onValueChange={handleStatusChange}>
-                <SelectTrigger className="h-7 w-32 text-xs border-border/50 bg-card/50">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="available">{t("available")}</SelectItem>
-                  <SelectItem value="active">{t("active")}</SelectItem>
-                  <SelectItem value="completed">{t("completed")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          ))}
         </div>
 
-        {expanded && (
-          <div
-            className="mt-2 space-y-2"
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-            role="none"
+        {/* Add button (DM only) */}
+        {isEditable && (
+          <Button
+            variant="goldOutline"
+            size="sm"
+            onClick={openCreateForm}
+            className="gap-1.5"
+            data-testid="quest-add-button"
           >
-            {isEditable ? (
-              <>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                  className="w-full bg-card border border-border rounded px-2 py-1.5 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
-                  placeholder={quest.title}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <Textarea
-                  value={description}
-                  onChange={(e) => handleDescChange(e.target.value)}
-                  placeholder={t("description_placeholder")}
-                  className="text-sm min-h-[60px] bg-card border-border/50"
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <div className="flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-7 px-2"
-                    onClick={(e) => { e.stopPropagation(); setConfirmDelete(true); }}
-                  >
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    <span className="text-xs">{t("delete_confirm")}</span>
-                  </Button>
-                </div>
-              </>
-            ) : (
-              quest.description && (
-                <p className="text-sm text-muted-foreground">{quest.description}</p>
-              )
-            )}
-          </div>
+            <Plus className="w-4 h-4" />
+            {t("quest_form_title_new")}
+          </Button>
         )}
       </div>
 
+      {/* Empty state */}
+      {quests.length === 0 && (
+        <div
+          className="rounded-lg border border-border bg-card p-8 text-center"
+          data-testid="quest-empty-state"
+        >
+          <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+            <ScrollText className="w-6 h-6 text-amber-400/60" />
+          </div>
+          <p className="text-muted-foreground text-sm">{t("quest_empty")}</p>
+          <p className="text-muted-foreground/60 text-xs mt-1">{t("quest_empty_cta")}</p>
+          {isEditable && (
+            <Button
+              variant="goldOutline"
+              size="sm"
+              onClick={openCreateForm}
+              className="mt-4 gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              {t("quest_form_title_new")}
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Quest grid */}
+      {filteredQuests.length > 0 && (
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-3"
+          data-testid="quest-container"
+        >
+          {filteredQuests.map((quest) => (
+            <QuestCard
+              key={quest.id}
+              quest={quest}
+              isEditable={isEditable}
+              onEdit={openEditForm}
+              onDelete={setDeleteTarget}
+              onToggleVisibility={handleToggleVisibility}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Filtered empty (quests exist but none match filter) */}
+      {quests.length > 0 && filteredQuests.length === 0 && (
+        <div className="rounded-lg border border-border bg-card p-6 text-center">
+          <p className="text-muted-foreground text-sm">{t("quest_empty")}</p>
+        </div>
+      )}
+
+      {/* Create/Edit form dialog */}
+      <QuestForm
+        key={editingQuest?.id ?? "new"}
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingQuest(null);
+        }}
+        campaignId={campaignId}
+        quest={editingQuest}
+        onSave={editingQuest ? handleEdit : handleCreate}
+      />
+
       {/* Delete confirmation */}
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("delete_confirm")}</AlertDialogTitle>
             <AlertDialogDescription>
-              &ldquo;{quest.title}&rdquo;
+              &ldquo;{deleteTarget?.title}&rdquo;
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700"
-              onClick={() => { setConfirmDelete(false); onDelete(quest.id); }}
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("delete_button")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
-  );
-}
-
-// ── QuickCreateInput ─────────────────────────────────────────────────────────
-
-interface QuickCreateInputProps {
-  placeholder: string;
-  onSubmit: (title: string) => void;
-}
-
-function QuickCreateInput({ placeholder, onSubmit }: QuickCreateInputProps) {
-  const [value, setValue] = useState("");
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && value.trim()) {
-      e.preventDefault();
-      onSubmit(value.trim());
-      setValue("");
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        className="flex-1 bg-card border border-border rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring min-h-[36px]"
-      />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="h-9 w-9 text-muted-foreground hover:text-foreground"
-        onClick={() => { if (value.trim()) { onSubmit(value.trim()); setValue(""); } }}
-        aria-label="Add quest"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
-    </div>
-  );
-}
-
-// ── QuestBoard ───────────────────────────────────────────────────────────────
-
-interface QuestBoardProps {
-  campaignId: string;
-  /** DM can create/edit/delete; Player is read-only */
-  isEditable: boolean;
-}
-
-export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
-  const t = useTranslations("campaign.quests");
-  const { quests, loading, createQuest, updateQuest, deleteQuest } = useCampaignQuests(campaignId);
-  const [completedOpen, setCompletedOpen] = useState(false);
-
-  const activeQuests = quests.filter((q) => q.status === "active");
-  const availableQuests = quests.filter((q) => q.status === "available");
-  const completedQuests = quests.filter((q) => q.status === "completed");
-
-  const handleUpdate = useCallback(
-    (id: string, data: Partial<{ title: string; description: string; status: QuestStatus; is_visible_to_players: boolean }>) => {
-      updateQuest(id, data);
-    },
-    [updateQuest]
-  );
-
-  if (loading) {
-    return (
-      <div className="space-y-2">
-        {[1, 2].map((i) => (
-          <div key={i} className="h-12 bg-card/50 rounded-lg border border-border animate-pulse" />
-        ))}
-      </div>
-    );
-  }
-
-  const isEmpty = quests.length === 0;
-
-  return (
-    <div className="space-y-3">
-      {/* Quick create (DM only) */}
-      {isEditable && (
-        <QuickCreateInput
-          placeholder={t("quick_create_placeholder")}
-          onSubmit={createQuest}
-        />
-      )}
-
-      {/* Empty state */}
-      {isEmpty && (
-        <p className="text-muted-foreground text-sm text-center py-4">{t("empty")}</p>
-      )}
-
-      {/* Active quests */}
-      {activeQuests.map((q) => (
-        <QuestCard
-          key={q.id}
-          quest={q}
-          isEditable={isEditable}
-          onUpdate={handleUpdate}
-          onDelete={deleteQuest}
-        />
-      ))}
-
-      {/* Available quests */}
-      {availableQuests.map((q) => (
-        <QuestCard
-          key={q.id}
-          quest={q}
-          isEditable={isEditable}
-          onUpdate={handleUpdate}
-          onDelete={deleteQuest}
-        />
-      ))}
-
-      {/* Completed (collapsible, closed by default) */}
-      {completedQuests.length > 0 && (
-        <Collapsible open={completedOpen} onOpenChange={setCompletedOpen}>
-          <CollapsibleTrigger asChild>
-            <button
-              type="button"
-              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-border/40 bg-card/30 hover:bg-card/50 transition-colors text-left min-h-[40px]"
-            >
-              <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm text-muted-foreground flex-1">
-                {t("completed_section")} ({completedQuests.length})
-              </span>
-              <ChevronDown
-                className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
-                  completedOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="space-y-2 mt-2">
-              {completedQuests.map((q) => (
-                <QuestCard
-                  key={q.id}
-                  quest={q}
-                  isEditable={isEditable}
-                  onUpdate={handleUpdate}
-                  onDelete={deleteQuest}
-                />
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
     </div>
   );
 }

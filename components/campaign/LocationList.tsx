@@ -1,18 +1,9 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { MapPin, Plus, Trash2, Eye, EyeOff, Castle, TreePine, Building, Mountain } from "lucide-react";
+import { Plus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,124 +14,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { LocationCard } from "./LocationCard";
+import { LocationForm } from "./LocationForm";
 import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
-import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
-import { LOCATION_TYPES } from "@/lib/types/mind-map";
+import { captureError } from "@/lib/errors/capture";
+import type { CampaignLocation } from "@/lib/types/mind-map";
+import type { LocationFormData } from "@/lib/hooks/use-campaign-locations";
 
-const TYPE_ICONS: Record<LocationType, React.ComponentType<{ className?: string }>> = {
-  city: Castle,
-  dungeon: Mountain,
-  wilderness: TreePine,
-  building: Building,
-  region: MapPin,
-};
-
-interface LocationCardProps {
-  location: CampaignLocation;
-  onUpdate: (id: string, updates: Partial<Pick<CampaignLocation, "name" | "description" | "location_type" | "is_discovered">>) => void;
-  onDelete: (id: string) => void;
-}
-
-function LocationCard({ location, onUpdate, onDelete }: LocationCardProps) {
-  const t = useTranslations("locations");
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const Icon = TYPE_ICONS[location.location_type] ?? MapPin;
-
-  return (
-    <>
-      <div
-        className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${
-          location.is_discovered
-            ? "border-cyan-400/30 bg-card"
-            : "border-border bg-card/50 opacity-70"
-        }`}
-      >
-        <Icon className="h-4 w-4 text-cyan-400 mt-1 flex-shrink-0" />
-
-        <div className="flex-1 min-w-0 space-y-2">
-          <Input
-            defaultValue={location.name}
-            className="h-7 text-sm font-semibold bg-transparent border-none px-0 focus-visible:ring-0"
-            onBlur={(e) => {
-              const val = e.target.value.trim();
-              if (val && val !== location.name) onUpdate(location.id, { name: val });
-            }}
-          />
-          <Textarea
-            defaultValue={location.description}
-            placeholder={t("description_placeholder")}
-            className="min-h-[40px] text-xs bg-transparent border-none px-0 resize-none focus-visible:ring-0"
-            onBlur={(e) => {
-              if (e.target.value !== location.description)
-                onUpdate(location.id, { description: e.target.value });
-            }}
-          />
-
-          <div className="flex items-center gap-2">
-            <Select
-              defaultValue={location.location_type}
-              onValueChange={(v) => onUpdate(location.id, { location_type: v as LocationType })}
-            >
-              <SelectTrigger className="h-7 w-[120px] text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LOCATION_TYPES.map((lt) => (
-                  <SelectItem key={lt} value={lt} className="text-xs">
-                    {t(`type_${lt}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => onUpdate(location.id, { is_discovered: !location.is_discovered })}
-              title={location.is_discovered ? t("mark_undiscovered") : t("mark_discovered")}
-            >
-              {location.is_discovered ? (
-                <Eye className="h-3.5 w-3.5 text-cyan-400" />
-              ) : (
-                <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 ml-auto text-destructive/60 hover:text-destructive"
-              onClick={() => setConfirmDelete(true)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("delete_title")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("delete_description", { name: location.name })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => onDelete(location.id)}
-            >
-              {t("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
-}
+type FilterMode = "all" | "discovered" | "hidden";
 
 interface LocationListProps {
   campaignId: string;
@@ -149,32 +30,121 @@ interface LocationListProps {
 
 export function LocationList({ campaignId, isEditable = true }: LocationListProps) {
   const t = useTranslations("locations");
-  const { locations, loading, fetchError, addLocation, updateLocation, deleteLocation } =
-    useCampaignLocations(campaignId);
-  const [newName, setNewName] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const {
+    locations,
+    loading,
+    fetchError,
+    addLocation,
+    updateLocation,
+    deleteLocation,
+  } = useCampaignLocations(campaignId);
 
-  const handleAdd = async () => {
-    const name = newName.trim();
-    if (!name) return;
-    await addLocation(name);
-    setNewName("");
-    inputRef.current?.focus();
-  };
+  const [filter, setFilter] = useState<FilterMode>("all");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<CampaignLocation | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<CampaignLocation | null>(null);
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAdd();
+  const filteredLocations = locations.filter((loc) => {
+    if (filter === "discovered") return loc.is_discovered;
+    if (filter === "hidden") return !loc.is_discovered;
+    return true;
+  });
+
+  const handleCreate = useCallback(
+    async (data: LocationFormData) => {
+      await addLocation(data);
+    },
+    [addLocation],
+  );
+
+  const handleEdit = useCallback(
+    async (data: LocationFormData) => {
+      if (!editingLocation) return;
+      await updateLocation(editingLocation.id, {
+        name: data.name,
+        description: data.description ?? "",
+        location_type: data.location_type,
+        is_discovered: data.is_discovered,
+        image_url: data.image_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setEditingLocation(null);
+    },
+    [editingLocation, updateLocation],
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteLocation(deleteTarget.id);
+    } catch (err) {
+      captureError(err, {
+        component: "LocationList",
+        action: "deleteLocation",
+        category: "network",
+      });
+    } finally {
+      setDeleteTarget(null);
     }
-  };
+  }, [deleteTarget, deleteLocation]);
 
+  const handleToggleVisibility = useCallback(
+    async (loc: CampaignLocation) => {
+      try {
+        await updateLocation(loc.id, {
+          is_visible_to_players: !loc.is_visible_to_players,
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "LocationList",
+          action: "toggleVisibility",
+          category: "network",
+        });
+      }
+    },
+    [updateLocation],
+  );
+
+  const openEditForm = useCallback((loc: CampaignLocation) => {
+    setEditingLocation(loc);
+    setFormOpen(true);
+  }, []);
+
+  const openCreateForm = useCallback(() => {
+    setEditingLocation(null);
+    setFormOpen(true);
+  }, []);
+
+  // Loading state — skeleton cards
   if (loading) {
     return (
-      <div className="text-sm text-muted-foreground py-4 text-center">{t("loading")}</div>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-card border border-border/40 rounded-xl overflow-hidden animate-pulse"
+            >
+              <div className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-2/3 rounded bg-muted" />
+                    <div className="flex gap-1.5">
+                      <div className="h-5 w-16 rounded-md bg-muted" />
+                      <div className="h-5 w-20 rounded-md bg-muted" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
+  // Error state
   if (fetchError) {
     return (
       <div className="text-sm text-red-400 py-4 text-center">
@@ -184,46 +154,130 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
   }
 
   return (
-    <div className="space-y-3">
-      {/* Add form */}
-      {isEditable && (
-        <div className="flex gap-2">
-          <Input
-            ref={inputRef}
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={t("add_placeholder")}
-            className="h-8 text-sm flex-1"
-          />
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          {/* Filter buttons */}
+          <div className="flex items-center rounded-lg border border-border overflow-hidden">
+            {(["all", "discovered", "hidden"] as const).map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  filter === f
+                    ? "bg-amber-400/15 text-amber-400"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                data-testid={`location-filter-${f}`}
+              >
+                {t(`filter_${f}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {isEditable && (
           <Button
+            variant="goldOutline"
             size="sm"
-            variant="outline"
-            className="h-8 px-3"
-            onClick={handleAdd}
-            disabled={!newName.trim()}
+            onClick={openCreateForm}
+            className="gap-1.5"
+            data-testid="location-add-button"
           >
-            <Plus className="h-3.5 w-3.5 mr-1" />
-            {t("add")}
+            <Plus className="w-4 h-4" />
+            {t("add_location")}
           </Button>
+        )}
+      </div>
+
+      {/* Empty state */}
+      {locations.length === 0 && (
+        <div className="rounded-lg border border-border bg-card p-8 text-center" data-testid="location-empty-state">
+          <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+            <MapPin className="w-6 h-6 text-amber-400/60" />
+          </div>
+          <p className="text-muted-foreground text-sm">{t("empty")}</p>
+          <p className="text-muted-foreground/60 text-xs mt-1">{t("empty_cta")}</p>
+          {isEditable && (
+            <Button
+              variant="goldOutline"
+              size="sm"
+              onClick={openCreateForm}
+              className="mt-4 gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              {t("add_location")}
+            </Button>
+          )}
         </div>
       )}
 
-      {/* Location list */}
-      {locations.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">{t("empty")}</p>
-      ) : (
-        <div className="space-y-2">
-          {locations.map((loc) => (
+      {/* Location Grid */}
+      {filteredLocations.length > 0 && (
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+          data-testid="location-container"
+        >
+          {filteredLocations.map((loc) => (
             <LocationCard
               key={loc.id}
               location={loc}
-              onUpdate={updateLocation}
-              onDelete={deleteLocation}
+              isEditable={isEditable}
+              onEdit={openEditForm}
+              onDelete={setDeleteTarget}
+              onToggleVisibility={handleToggleVisibility}
             />
           ))}
         </div>
       )}
+
+      {/* Filtered empty (locations exist but none match filter) */}
+      {locations.length > 0 && filteredLocations.length === 0 && (
+        <div className="rounded-lg border border-border bg-card p-6 text-center">
+          <p className="text-muted-foreground text-sm">{t("empty")}</p>
+        </div>
+      )}
+
+      {/* Create/Edit form dialog */}
+      <LocationForm
+        key={editingLocation?.id ?? "new"}
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingLocation(null);
+        }}
+        campaignId={campaignId}
+        location={editingLocation}
+        onSave={editingLocation ? handleEdit : handleCreate}
+      />
+
+      {/* Delete confirmation */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("delete_title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget
+                ? t("delete_description", { name: deleteTarget.name })
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

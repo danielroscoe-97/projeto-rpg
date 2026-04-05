@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Circle, Target, CheckCircle2, Star, ChevronDown } from "lucide-react";
+import { Circle, Target, CheckCircle2, XCircle, Ban, Star, ChevronDown } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import type { QuestWithPlayerNotes, QuestStatus } from "@/lib/types/quest";
 
@@ -10,24 +10,32 @@ const STATUS_ICON: Record<QuestStatus, React.ComponentType<{ className?: string 
   available: Circle,
   active: Target,
   completed: CheckCircle2,
+  failed: XCircle,
+  cancelled: Ban,
 };
 
 const STATUS_BORDER: Record<QuestStatus, string> = {
   available: "border-muted-foreground/30",
   active: "border-[#D4A853]/50 shadow-[0_0_8px_rgba(212,168,83,0.15)]",
   completed: "border-green-600/30 opacity-70",
+  failed: "border-red-500/30 opacity-70",
+  cancelled: "border-zinc-500/30 opacity-50",
 };
 
 const STATUS_ICON_CLASS: Record<QuestStatus, string> = {
   available: "text-muted-foreground",
   active: "text-[#D4A853]",
   completed: "text-green-500",
+  failed: "text-red-400",
+  cancelled: "text-zinc-500",
 };
 
 const STATUS_BADGE: Record<QuestStatus, { label: string; className: string }> = {
   active: { label: "active", className: "bg-[#D4A853]/20 text-[#D4A853]" },
   available: { label: "available", className: "bg-muted text-muted-foreground" },
   completed: { label: "completed", className: "bg-green-500/20 text-green-500" },
+  failed: { label: "failed", className: "bg-red-500/20 text-red-400" },
+  cancelled: { label: "cancelled", className: "bg-zinc-500/20 text-zinc-500" },
 };
 
 interface PlayerQuestCardProps {
