@@ -6,7 +6,7 @@ import type { Combatant } from "@/lib/types/combat";
 
 export type HpMode = "damage" | "heal" | "temp";
 
-/** Module-level variable so the last-used mode persists across open/close cycles. */
+/** Module-level variable for keyboard shortcuts to pre-set the mode before opening. Resets to "damage" after each read. */
 let lastUsedMode: HpMode = "damage";
 
 /** Programmatically set the initial mode for the next HpAdjuster open (used by keyboard shortcuts). */
@@ -37,9 +37,13 @@ export function HpAdjuster({
   onApplyToMultiple,
 }: HpAdjusterProps) {
   const t = useTranslations("combat");
-  const [mode, setModeState] = useState<HpMode>(lastUsedMode);
+  const [mode, setModeState] = useState<HpMode>(() => {
+    // Read the pre-set mode (from keyboard shortcuts) then reset to default
+    const initial = lastUsedMode;
+    lastUsedMode = "damage";
+    return initial;
+  });
   const setMode = (m: HpMode) => {
-    lastUsedMode = m;
     setModeState(m);
   };
   const [value, setValue] = useState("");

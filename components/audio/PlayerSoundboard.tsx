@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { getAllPresets } from "@/lib/utils/audio-presets";
+import { getSfxPresets } from "@/lib/utils/audio-presets";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -68,7 +68,7 @@ export function PlayerSoundboard({
     [isPlayerTurn, playerName, channelRef]
   );
 
-  const presets = getAllPresets();
+  const presets = getSfxPresets();
 
   // Derive loading state for custom sounds specifically
   const hasCustomFiles = customAudioFiles.length > 0;

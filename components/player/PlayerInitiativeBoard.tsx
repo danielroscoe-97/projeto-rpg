@@ -281,6 +281,8 @@ export function PlayerInitiativeBoard({
   }, [deathSavePending, onDeathSave]);
   // Spell browser state
   const [spellsOpen, setSpellsOpen] = useState(false);
+  // Beneficial conditions toggle — collapsed by default
+  const [showBuffPicker, setShowBuffPicker] = useState(false);
 
   // B.07: AC/DC mid-combat flash — detect changes and flash amber for 1.5s
   const prevAcRef = useRef<number | undefined>(undefined);
@@ -693,28 +695,39 @@ export function PlayerInitiativeBoard({
                     ))}
                   </div>
                 )}
-                {/* Beneficial conditions self-picker — desktop own-char card */}
+                {/* Beneficial conditions self-picker — desktop own-char card (collapsed by default) */}
                 {onSelfConditionToggle && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {BENEFICIAL_CONDITIONS.map((condition) => {
-                      const isActive = pc.conditions.includes(condition);
-                      return (
-                        <button
-                          key={condition}
-                          type="button"
-                          onClick={() => onSelfConditionToggle(pc.id, condition)}
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
-                            isActive
-                              ? "bg-emerald-600 text-white"
-                              : "bg-emerald-900/20 text-emerald-400/70 hover:bg-emerald-900/40 hover:text-emerald-300"
-                          }`}
-                          aria-pressed={isActive}
-                          title={isActive ? `Remove ${condition}` : `Apply ${condition}`}
-                        >
-                          {condition}
-                        </button>
-                      );
-                    })}
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowBuffPicker((v) => !v)}
+                      className="text-[10px] text-emerald-400/60 hover:text-emerald-400 transition-colors"
+                    >
+                      {showBuffPicker ? "▾" : "▸"} {tc("beneficial_conditions_label")}
+                    </button>
+                    {showBuffPicker && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {BENEFICIAL_CONDITIONS.map((condition) => {
+                          const isActive = pc.conditions.includes(condition);
+                          return (
+                            <button
+                              key={condition}
+                              type="button"
+                              onClick={() => onSelfConditionToggle(pc.id, condition)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
+                                isActive
+                                  ? "bg-emerald-600 text-white"
+                                  : "bg-emerald-900/20 text-emerald-400/70 hover:bg-emerald-900/40 hover:text-emerald-300"
+                              }`}
+                              aria-pressed={isActive}
+                              title={isActive ? `Remove ${condition}` : `Apply ${condition}`}
+                            >
+                              {condition}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
                 {/* Spell browser — desktop own-char card */}

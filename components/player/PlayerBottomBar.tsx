@@ -191,18 +191,6 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                   </span>
                 </div>
               )}
-              {/* Inline End Turn button — mobile only, during player's turn */}
-              {isPlayerTurn && onEndTurn && (
-                <button
-                  type="button"
-                  onClick={onEndTurn}
-                  disabled={endTurnPending}
-                  className="shrink-0 px-3 py-1.5 bg-gold/20 text-gold font-medium text-xs rounded-lg active:bg-gold/40 transition-colors min-h-[36px] disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="player-bottom-bar-end-turn"
-                >
-                  {endTurnPending ? "..." : t("end_turn")}
-                </button>
-              )}
             </div>
             {/* HP self-management actions — mobile (C.13) */}
             {onHpAction && (
