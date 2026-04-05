@@ -55,7 +55,11 @@ export function SignUpForm({
         }));
       }
       if (joinCode) {
-        localStorage.setItem("pendingJoinCode", joinCode);
+        // P2-06: store with savedAt so dashboard can enforce 24h TTL
+        localStorage.setItem("pendingJoinCode", JSON.stringify({
+          code: joinCode,
+          savedAt: Date.now(),
+        }));
       }
     } catch {
       // localStorage unavailable — rely on URL params
@@ -80,11 +84,15 @@ export function SignUpForm({
 
     try {
       // Preserve invite/join params through email confirmation redirect
-      let redirectUrl = `${window.location.origin}/auth/confirm?role=${encodeURIComponent(selectedRole)}`;
+      let redirectUrl = `${window.location.origin}/auth/confirm?role=${encodeURIComponent(selectedRole || "both")}`;
       if (joinCode) {
         redirectUrl += `&join_code=${encodeURIComponent(joinCode)}`;
-      } else if (inviteToken && inviteCampaignId) {
-        redirectUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
+      } else if (inviteToken) {
+        // P1-02: campaignId is optional — invite token alone is sufficient
+        redirectUrl += `&invite=${encodeURIComponent(inviteToken)}`;
+        if (inviteCampaignId) redirectUrl += `&campaign=${encodeURIComponent(inviteCampaignId)}`;
+      } else if (signupContext) {
+        redirectUrl += `&context=${encodeURIComponent(signupContext)}`;
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -101,11 +109,15 @@ export function SignUpForm({
         setIsLoading(false);
         return;
       }
-      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole)}`;
+      let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole || "both")}`;
       if (joinCode) {
         successUrl += `&join_code=${encodeURIComponent(joinCode)}`;
-      } else if (inviteToken && inviteCampaignId) {
-        successUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
+      } else if (inviteToken) {
+        // P1-02: campaignId is optional
+        successUrl += `&invite=${encodeURIComponent(inviteToken)}`;
+        if (inviteCampaignId) successUrl += `&campaign=${encodeURIComponent(inviteCampaignId)}`;
+      } else if (signupContext) {
+        successUrl += `&context=${encodeURIComponent(signupContext)}`;
       }
       router.push(successUrl);
     } catch (error: unknown) {
@@ -304,7 +316,7 @@ export function SignUpForm({
         redirectTo={(() => {
           const origin = typeof window !== "undefined" ? window.location.origin : "";
           const params = new URLSearchParams();
-          params.set("role", selectedRole);
+          params.set("role", selectedRole || "both"); // P2-08: always non-empty
           if (joinCode) params.set("join_code", joinCode);
           if (inviteToken) params.set("invite", inviteToken);
           if (inviteCampaignId) params.set("campaign", inviteCampaignId);

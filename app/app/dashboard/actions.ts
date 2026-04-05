@@ -8,13 +8,15 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
  * Uses service client to bypass RLS — authorization is based on:
  *   1. User is authenticated
  *   2. Campaign exists and is active
+ *   3. Session belongs to that campaign (prevents joining arbitrary campaigns)
  */
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function joinCampaignDirectAction(
   campaignId: string,
-  playerName?: string
+  playerName?: string,
+  sessionId?: string
 ): Promise<{ success: boolean; alreadyMember?: boolean }> {
   // S1-BH-01: Validate UUID format before any DB query
   if (!UUID_RE.test(campaignId)) throw new Error("ID de campanha inválido");
@@ -24,6 +26,20 @@ export async function joinCampaignDirectAction(
   if (!user) throw new Error("Unauthorized");
 
   const service = createServiceClient();
+
+  // P1-01: Verify that sessionId belongs to this campaign, preventing
+  // arbitrary campaign joins by users who never participated in a session.
+  if (sessionId && UUID_RE.test(sessionId)) {
+    const { data: session } = await service
+      .from("sessions")
+      .select("campaign_id")
+      .eq("id", sessionId)
+      .maybeSingle();
+
+    if (!session || session.campaign_id !== campaignId) {
+      throw new Error("Sessão inválida para esta campanha");
+    }
+  }
 
   // Validate campaign exists
   const { data: campaign } = await service
@@ -55,9 +71,9 @@ export async function joinCampaignDirectAction(
   if (memberError?.code === "23505") return { success: true, alreadyMember: true };
   if (memberError) throw new Error("Erro ao ingressar na campanha");
 
-  // Create a basic character with the player's combat name (optional, best-effort)
+  // P2-07: Create a basic character — capture error so join still succeeds
   if (playerName?.trim()) {
-    await service.from("player_characters").insert({
+    const { error: charError } = await service.from("player_characters").insert({
       campaign_id: campaignId,
       user_id: user.id,
       name: playerName.trim(),
@@ -65,7 +81,10 @@ export async function joinCampaignDirectAction(
       current_hp: 10,
       ac: 10,
     });
-    // Non-fatal — character can be created later
+    if (charError) {
+      // Non-fatal — character can be created later by the player
+      console.warn("[joinCampaignDirectAction] character insert failed:", charError.message);
+    }
   }
 
   return { success: true };

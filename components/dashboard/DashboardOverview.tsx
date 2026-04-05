@@ -167,22 +167,40 @@ export function DashboardOverview({
         }
       }
 
-      const pendingJoinCode = localStorage.getItem("pendingJoinCode");
-      if (pendingJoinCode) {
+      // P2-06: pendingJoinCode now stored as JSON with savedAt; handle both old
+      // (plain string) and new (JSON) formats for backward compatibility.
+      const pendingJoinCodeRaw = localStorage.getItem("pendingJoinCode");
+      if (pendingJoinCodeRaw) {
         localStorage.removeItem("pendingJoinCode");
-        router.push(`/join-campaign/${pendingJoinCode}`);
-        return () => { mounted = false; };
+        let joinCode = pendingJoinCodeRaw;
+        let joinCodeSavedAt: number | undefined;
+        try {
+          const parsed = JSON.parse(pendingJoinCodeRaw) as { code: string; savedAt?: number };
+          joinCode = parsed.code;
+          joinCodeSavedAt = parsed.savedAt;
+        } catch {
+          // plain string (old format) — no TTL, use as-is
+        }
+        const joinCodeStale = joinCodeSavedAt != null && Date.now() - joinCodeSavedAt > 86_400_000;
+        if (!joinCodeStale && joinCode) {
+          router.push(`/join-campaign/${joinCode}`);
+          return () => { mounted = false; };
+        }
       }
 
       // JO-04: Auto-join campaign after post-combat sign-up
       const pendingCampaignJoin = localStorage.getItem("pendingCampaignJoin");
       if (pendingCampaignJoin) {
         localStorage.removeItem("pendingCampaignJoin");
-        const { campaignId: pendingCampaignId, playerName } = JSON.parse(pendingCampaignJoin) as { campaignId: string; playerName?: string };
+        const { campaignId: pendingCampaignId, playerName, sessionId: pendingSessionId } = JSON.parse(pendingCampaignJoin) as {
+          campaignId: string;
+          playerName?: string;
+          sessionId?: string; // P1-01: passed to server action for validation
+        };
         if (pendingCampaignId) {
           (async () => {
             try {
-              const result = await joinCampaignDirectAction(pendingCampaignId, playerName);
+              const result = await joinCampaignDirectAction(pendingCampaignId, playerName, pendingSessionId);
               if (mounted && result.success && !result.alreadyMember) {
                 toast.success(t.campaign_joined_success);
                 router.refresh();

@@ -69,6 +69,12 @@ export async function GET(request: NextRequest) {
     if (invite && /^[a-f0-9-]{36}$/.test(invite)) {
       return `/invite/${invite}`;
     }
+    // P2-05: post-combat campaign join — skip onboarding, go to dashboard
+    // where the pendingCampaignJoin localStorage entry will be consumed.
+    const context = searchParams.get("context");
+    if (context === "campaign_join") {
+      return "/app/dashboard";
+    }
     // Check if user has campaigns — if not, go to onboarding
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {

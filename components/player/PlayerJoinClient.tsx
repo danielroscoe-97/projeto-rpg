@@ -1779,8 +1779,10 @@ export function PlayerJoinClient({
   // B6: Post-combat recap — player sees full "Spotify Wrapped" experience
   if (combatStatsData && !showPoll) {
     if (combatRecapReport) {
-      // JO-04: Show "Join Campaign" CTA for anonymous players in a campaign session
-      const showJoinCampaignCta = !campaignId && !!sessionCampaignId;
+      // JO-04: Show "Join Campaign" CTA only for truly anonymous players (no auth user).
+      // P1-03: !authUserId is the correct guard — !campaignId can also be true for
+      // authenticated users whose campaign lookup silently failed.
+      const showJoinCampaignCta = !authUserId && !!sessionCampaignId;
       return (
         <CombatRecap
           report={combatRecapReport}
@@ -1789,6 +1791,7 @@ export function PlayerJoinClient({
               localStorage.setItem("pendingCampaignJoin", JSON.stringify({
                 campaignId: sessionCampaignId,
                 playerName: registeredName ?? "",
+                sessionId, // P1-01: passed to server action for session ownership validation
               }));
             } catch {}
             window.location.href = "/auth/sign-up?context=campaign_join";
