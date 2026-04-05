@@ -158,7 +158,7 @@ export default async function MethodologyPage() {
       />
 
       <main className="flex-1">
-        {/* Section 1: Hero + Progress Bar — shared background */}
+        {/* Section 1: Hero + Progress Bar + Contributor — shared background */}
         <MethodologyHero
           variant={isLoggedIn ? "logado" : "publico"}
           displayName={displayName}
@@ -175,14 +175,14 @@ export default async function MethodologyPage() {
                 : "Você está aqui no começo. Isso é raro."}
             </p>
           </div>
-        </MethodologyHero>
 
-        {/* Section 3: Personal Contributor Card (logged in only) */}
-        {isLoggedIn && contrib !== undefined && (
-          <div className="-mt-8">
-            <ContributorCard contrib={contrib} />
-          </div>
-        )}
+          {/* Contributor Card — inside hero for seamless background */}
+          {isLoggedIn && contrib !== undefined && (
+            <div className="mt-8">
+              <ContributorCard contrib={contrib} />
+            </div>
+          )}
+        </MethodologyHero>
 
         {/* Divider */}
         <div className="flex items-center gap-3 max-w-3xl mx-auto px-6 py-8">
