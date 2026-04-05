@@ -216,16 +216,16 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
         )}
       </div>
 
-      {/* Children (progress bar) — renders within the hero background */}
+      {/* Children (progress bar + contributor card) */}
       {children && (
-        <div className="relative pb-16">
+        <div className="relative pb-6">
           {children}
         </div>
       )}
 
-      {/* Bottom fade — long gradient for imperceptible transition */}
+      {/* Bottom fade — subtle transition */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-80 bg-gradient-to-b from-transparent via-background/70 to-background pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-background pointer-events-none"
         aria-hidden="true"
       />
     </section>
