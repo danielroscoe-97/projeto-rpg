@@ -1,8 +1,9 @@
-# Spec: Redesign da Página de Campanha (DM View)
+# Spec: Redesign da Página de Campanha (DM View) — v1 (SUPERSEDED)
 
-**Status:** Implementado + Deployed + Code Review OK  
+**Status:** ~~Implementado~~ → SUPERSEDED por `spec-campaign-hub-v2.md`  
 **Data:** 2026-04-05  
-**Sessão:** party-mode com Sally (UX), John (PM), Mary (Analyst), Amelia (Dev)
+**Sessão:** party-mode com Sally (UX), John (PM), Mary (Analyst), Amelia (Dev)  
+**Nota:** Esta spec foi a primeira rodada de melhorias (tier visual, quick actions, onboarding). A v2 substitui a estrutura inteira por um Campaign Hub com grid de cards + focus view.
 
 ---
 
