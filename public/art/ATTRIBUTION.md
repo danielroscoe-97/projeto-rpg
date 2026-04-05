@@ -25,6 +25,16 @@ D&D 5e combat tracker to provide RPG atmosphere.
 | `decorations/hero-*.png` | RO Reference | `Slider01-03.png` |
 | `decorations/chibi-*.png` | RO Reference | `slide_*_img.png` |
 
+## Campaign Cover Defaults
+
+| Asset | Source | License |
+|-------|--------|---------|
+| `campaigns/dragon-revoy.jpg` | David Revoy, peppercarrot.com | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| `campaigns/dragon-medieval.jpg` | The Illuminated Books of the Middle Ages (1844–1849), British Library | CC0 / Public Domain |
+| `campaigns/figurines-map.jpg` | Via decorations/hero-figurines-map.jpg | See RO Reference below |
+| `campaigns/dice-bw.jpg` | Via decorations/hero-dice-bw.jpg | See RO Reference below |
+| `campaigns/map-dice.jpg` | Via decorations/hero-map-dice.jpg | See RO Reference below |
+
 ## License
 
 These assets are from a Ragnarok Online private server template used as visual reference.

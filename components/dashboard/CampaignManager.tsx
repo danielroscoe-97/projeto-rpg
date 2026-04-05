@@ -40,16 +40,16 @@ interface Props {
   userId: string;
 }
 
-const PLACEHOLDER_ICONS = [
-  "/art/icons/shield.png",
-  "/art/icons/chibi-knight.png",
-  "/art/icons/chibi-mage.png",
-  "/art/icons/chibi-archer.png",
-  "/art/icons/chibi-priest.png",
+const CAMPAIGN_COVERS = [
+  "/art/campaigns/figurines-map.jpg",
+  "/art/campaigns/dragon-revoy.jpg",
+  "/art/campaigns/dice-bw.jpg",
+  "/art/campaigns/dragon-medieval.jpg",
+  "/art/campaigns/map-dice.jpg",
 ];
 
-function getPlaceholderIcon(index: number) {
-  return PLACEHOLDER_ICONS[index % PLACEHOLDER_ICONS.length];
+function getCampaignCover(index: number) {
+  return CAMPAIGN_COVERS[index % CAMPAIGN_COVERS.length];
 }
 
 export function CampaignManager({ initialCampaigns, userId }: Props) {
@@ -334,18 +334,17 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                 className="group block"
               >
                 <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] h-full">
-                  {/* Image placeholder */}
-                  <div className="h-28 bg-gradient-to-br from-surface-secondary to-surface-deep flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,168,83,0.06)_0%,transparent_70%)]" />
+                  {/* Campaign cover */}
+                  <div className="h-28 relative overflow-hidden">
                     <Image
-                      src={getPlaceholderIcon(index)}
+                      src={getCampaignCover(index)}
                       alt=""
-                      width={48}
-                      height={48}
-                      className="pixel-art opacity-25 group-hover:opacity-40 transition-opacity duration-[250ms]"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       aria-hidden="true"
                       unoptimized
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   </div>
 
                   {/* Info */}
