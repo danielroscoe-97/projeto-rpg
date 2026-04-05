@@ -968,6 +968,7 @@
     "remove_button": "Remove",
     "ac_label": "AC",
     "dc_label": "DC",
+    "add_combatant_title": "Add Combatant",
     "add_name_label": "Name",
     "add_name_placeholder": "Combatant name",
     "add_hp_label": "HP",

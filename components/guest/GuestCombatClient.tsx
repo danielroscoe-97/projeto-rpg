@@ -682,7 +682,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               dm_notes: "",
               player_notes: "",
               player_character_id: null,
-              combatant_role: null,
+              combatant_role: "monster",
               legendary_actions_total: null,
               legendary_actions_used: 0,
             });
@@ -722,6 +722,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               onRemove={removeCombatant}
               onRollInitiative={handleRollOne}
               onDisplayNameChange={handleDisplayNameChange}
+              onRoleChange={(id, role) => useGuestCombatStore.setState((state) => ({ combatants: state.combatants.map((c2) => c2.id === id ? { ...c2, combatant_role: role } : c2) }))}
               dragHandleProps={dragHandleProps}
               highlightInit={invalidInitIds.has(c.id)}
             />
@@ -1138,6 +1139,7 @@ export function GuestCombatClient() {
     hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
     setMidCombatAddRow(EMPTY_ADD_ROW);
     setMidCombatAddRowRole(DEFAULT_ADD_ROW_ROLE);
+    setShowAddForm(false);
   }, [addCombatant, hydrateCombatants, midCombatAddRow, midCombatAddRowRole]);
 
   const handleRemoveCombatant = useCallback(

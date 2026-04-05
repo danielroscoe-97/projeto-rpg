@@ -17,6 +17,7 @@ import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant } f
 import { getNumberedName } from "@/lib/stores/combat-store";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
+import { getLegendaryActionCount } from "@/lib/srd/legendary-actions";
 import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
@@ -615,7 +616,7 @@ export function CombatSessionClient({
       player_notes: "",
       player_character_id: null,
       combatant_role: null,
-      legendary_actions_total: null,
+      legendary_actions_total: getLegendaryActionCount(monster),
       legendary_actions_used: 0,
     });
   }, [addCombatantAction]);
@@ -657,7 +658,7 @@ export function CombatSessionClient({
         player_notes: "",
         player_character_id: null,
         combatant_role: null,
-        legendary_actions_total: null,
+        legendary_actions_total: getLegendaryActionCount(monster),
         legendary_actions_used: 0,
       });
     }
@@ -1358,10 +1359,11 @@ export function CombatSessionClient({
                 dm_notes: "",
                 player_notes: "",
                 player_character_id: null,
-                combatant_role: null,
+                combatant_role: "monster",
                 legendary_actions_total: null,
                 legendary_actions_used: 0,
               });
+              setAddMode(null);
             }}
           />
         </SheetContent>

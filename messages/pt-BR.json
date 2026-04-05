@@ -968,6 +968,7 @@
     "remove_button": "Remover",
     "ac_label": "CA",
     "dc_label": "CD",
+    "add_combatant_title": "Adicionar Combatente",
     "add_name_label": "Nome",
     "add_name_placeholder": "Nome do combatente",
     "add_hp_label": "HP",

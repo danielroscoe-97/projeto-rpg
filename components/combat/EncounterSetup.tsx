@@ -869,7 +869,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             dm_notes: "",
             player_notes: "",
             player_character_id: null,
-            combatant_role: null,
+            combatant_role: "monster",
             legendary_actions_total: null,
             legendary_actions_used: 0,
           });
