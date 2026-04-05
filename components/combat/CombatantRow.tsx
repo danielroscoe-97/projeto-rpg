@@ -366,8 +366,8 @@ export const CombatantRow = memo(function CombatantRow({
               aria-label={`Legendary Actions: ${combatant.legendary_actions_used}/${combatant.legendary_actions_total} used`}
               onClick={(e) => e.stopPropagation()}
             >
-              <span className="text-[10px] text-muted-foreground font-medium">LA</span>
-              <div className="flex gap-0.5">
+              <span className="text-xs text-muted-foreground font-medium">{t("legendary_actions_inline")}</span>
+              <div className="flex gap-1">
                 {Array.from({ length: combatant.legendary_actions_total }).map((_, i) => (
                   <button
                     key={i}
@@ -378,7 +378,7 @@ export const CombatantRow = memo(function CombatantRow({
                       const target = i + 1 === combatant.legendary_actions_used ? i : i + 1;
                       onSetLegendaryActionsUsed?.(combatant.id, target);
                     }}
-                    className={`w-2.5 h-2.5 rounded-full border transition-colors ${
+                    className={`w-3.5 h-3.5 rounded-full border transition-colors ${
                       i < combatant.legendary_actions_used
                         ? "bg-gold border-gold/60"
                         : "bg-transparent border-zinc-500 hover:border-gold/40"
