@@ -158,7 +158,7 @@ export default {
       animation: {
         "torch-flicker": "torch-flicker 3s ease-in-out infinite",
         "ember-float": "ember-float 4s ease-out infinite",
-        "rune-pulse": "rune-pulse 6s ease-in-out infinite",
+        "rune-pulse": "rune-pulse 12s ease-in-out infinite",
         "tour-pulse": "tour-pulse 4s ease-in-out infinite",
         "tour-pulse-intense": "tour-pulse-intense 0.5s ease-in-out 2",
         "fade-in": "fade-in 0.6s ease-out",
