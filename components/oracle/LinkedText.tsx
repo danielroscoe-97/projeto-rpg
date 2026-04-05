@@ -45,7 +45,11 @@ interface Segment {
 export function LinkedText({ text, rulesetVersion }: LinkedTextProps) {
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const [tooltip, setTooltip] = useState<string | null>(null);
-  const [tooltipAnchor, setTooltipAnchor] = useState<{ x: number; y: number } | null>(null);
+  const [tooltipAnchor, setTooltipAnchor] = useState<{
+    x: number;
+    top?: number;
+    bottom?: number;
+  } | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Build name→entry map and regex once per rulesetVersion
@@ -130,8 +134,15 @@ export function LinkedText({ text, rulesetVersion }: LinkedTextProps) {
     const target = e.currentTarget;
     timerRef.current = setTimeout(() => {
       const rect = target.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openAbove = spaceBelow < 220;
       setTooltip(content);
-      setTooltipAnchor({ x: rect.left, y: rect.bottom + 6 });
+      if (openAbove) {
+        // Pin bottom of tooltip to just above the trigger
+        setTooltipAnchor({ x: rect.left, bottom: window.innerHeight - rect.top + 6 });
+      } else {
+        setTooltipAnchor({ x: rect.left, top: rect.bottom + 6 });
+      }
     }, 300);
   };
 
@@ -183,8 +194,10 @@ export function LinkedText({ text, rulesetVersion }: LinkedTextProps) {
           role="tooltip"
           style={{
             position: "fixed",
-            left: tooltipAnchor.x,
-            top: tooltipAnchor.y,
+            left: Math.min(tooltipAnchor.x, window.innerWidth - 420),
+            ...(tooltipAnchor.bottom !== undefined
+              ? { bottom: tooltipAnchor.bottom, top: "auto" }
+              : { top: tooltipAnchor.top }),
             background: "var(--5e-bg, #1a1a1e)",
             border: "1px solid var(--5e-accent-red, #922610)",
             color: "var(--5e-text, #e8e4d0)",
