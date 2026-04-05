@@ -248,6 +248,7 @@
     "hub_subtitle_last": "Last session: {days} days ago",
     "hub_subtitle_last_today": "Last session: today",
     "hub_subtitle_new": "New campaign",
+    "hub_back_to_campaign": "← Back to {name}",
     "hub_group_operational": "Operations",
     "hub_group_world": "World",
     "hub_group_journal": "Journal",

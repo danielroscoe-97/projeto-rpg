@@ -314,6 +314,7 @@ export default async function CampaignPage({
           <>
             {/* Focus View: compact hero + nav bar + section content */}
             <CampaignHeroCompact
+              campaignId={campaign.id}
               campaignName={campaign.name}
               characters={characters ?? []}
               activeSessionName={dmActiveSession?.name ?? null}

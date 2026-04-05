@@ -248,6 +248,7 @@
     "hub_subtitle_last": "Última sessão: há {days} dias",
     "hub_subtitle_last_today": "Última sessão: hoje",
     "hub_subtitle_new": "Campanha nova",
+    "hub_back_to_campaign": "← Voltar para {name}",
     "hub_group_operational": "Operacional",
     "hub_group_world": "Mundo",
     "hub_group_journal": "Registro",

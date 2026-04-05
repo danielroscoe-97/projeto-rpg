@@ -38,92 +38,98 @@ export function CampaignGrid({
   const t = useTranslations("campaign");
 
   return (
-    <div>
+    <div className="space-y-8">
       {/* Group 1: Operational */}
-      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-0 mb-2 flex items-center gap-2">
-        <span>&#9889;</span> {t("hub_group_operational")}
-      </h3>
-      <div className="grid grid-cols-2 gap-3">
-        <CampaignGridCard
-          sectionId="encounters"
-          icon={Swords}
-          title={t("hub_card_encounters")}
-          count={finishedEncounterCount}
-          size="large"
-        />
-        <CampaignGridCard
-          sectionId="quests"
-          icon={ScrollText}
-          title={t("hub_card_quests")}
-          count={questCount}
-          size="large"
-        />
-      </div>
+      <section>
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+          <span>&#9889;</span> {t("hub_group_operational")}
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          <CampaignGridCard
+            sectionId="encounters"
+            icon={Swords}
+            title={t("hub_card_encounters")}
+            count={finishedEncounterCount}
+            size="large"
+          />
+          <CampaignGridCard
+            sectionId="quests"
+            icon={ScrollText}
+            title={t("hub_card_quests")}
+            count={questCount}
+            size="large"
+          />
+        </div>
+      </section>
 
       {/* Group 2: World */}
-      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-6 mb-2 flex items-center gap-2">
-        <span>&#127757;</span> {t("hub_group_world")}
-      </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <CampaignGridCard
-          sectionId="players"
-          icon={Users}
-          title={t("hub_card_players")}
-          count={playerCount}
-          size="compact"
-        />
-        <CampaignGridCard
-          sectionId="npcs"
-          icon={UserCircle}
-          title={t("hub_card_npcs")}
-          count={npcCount}
-          size="compact"
-        />
-        <CampaignGridCard
-          sectionId="locations"
-          icon={MapPin}
-          title={t("hub_card_locations")}
-          count={locationCount}
-          size="compact"
-        />
-        <CampaignGridCard
-          sectionId="factions"
-          icon={Flag}
-          title={t("hub_card_factions")}
-          count={factionCount}
-          size="compact"
-        />
-      </div>
+      <section>
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+          <span>&#127757;</span> {t("hub_group_world")}
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <CampaignGridCard
+            sectionId="players"
+            icon={Users}
+            title={t("hub_card_players")}
+            count={playerCount}
+            size="compact"
+          />
+          <CampaignGridCard
+            sectionId="npcs"
+            icon={UserCircle}
+            title={t("hub_card_npcs")}
+            count={npcCount}
+            size="compact"
+          />
+          <CampaignGridCard
+            sectionId="locations"
+            icon={MapPin}
+            title={t("hub_card_locations")}
+            count={locationCount}
+            size="compact"
+          />
+          <CampaignGridCard
+            sectionId="factions"
+            icon={Flag}
+            title={t("hub_card_factions")}
+            count={factionCount}
+            size="compact"
+          />
+        </div>
+      </section>
 
       {/* Group 3: Journal */}
-      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-6 mb-2 flex items-center gap-2">
-        <span>&#128203;</span> {t("hub_group_journal")}
-      </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <CampaignGridCard
-          sectionId="notes"
-          icon={FileText}
-          title={t("hub_card_notes")}
-          count={noteCount}
-          size="compact"
-        />
-        {isOwner && (
+      <section>
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+          <span>&#128203;</span> {t("hub_group_journal")}
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <CampaignGridCard
-            sectionId="inventory"
-            icon={Package}
-            title={t("hub_card_inventory")}
+            sectionId="notes"
+            icon={FileText}
+            title={t("hub_card_notes")}
+            count={noteCount}
+            size="compact"
+          />
+          {isOwner && (
+            <CampaignGridCard
+              sectionId="inventory"
+              icon={Package}
+              title={t("hub_card_inventory")}
+              count={null}
+              size="compact"
+            />
+          )}
+          <CampaignGridCard
+            sectionId="mindmap"
+            icon={Network}
+            title={t("hub_card_mindmap")}
             count={null}
             size="compact"
           />
-        )}
-        <CampaignGridCard
-          sectionId="mindmap"
-          icon={Network}
-          title={t("hub_card_mindmap")}
-          count={null}
-          size="compact"
-        />
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
