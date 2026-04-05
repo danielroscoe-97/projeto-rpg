@@ -903,7 +903,7 @@
     "error_generic": "Algo deu errado. Por favor, tente novamente.",
     "creating": "Criando…",
     "create_button": "Criar & Obter Link da Sessão",
-    "go_to_dashboard": "Ir para Dashboard",
+    "go_to_dashboard": "Ir para o Dashboard",
     "go_back_to_combat": "Voltar ao Combate",
     "players_hint": "Você pode completar depois na gestão de campanha",
     "players_advanced_details": "Detalhes avançados (opcional)",
@@ -922,7 +922,6 @@
     "role_save_error": "Erro ao salvar preferência. Tente novamente.",
     "celebration_title": "Sua mesa está pronta!",
     "celebration_subtitle": "Compartilhe o link da sessão e seus jogadores entram com um clique.",
-    "go_to_dashboard": "Ir para o Dashboard",
     "launch_copied": "Copiado!",
     "campaign_created": "Mesa criada com sucesso!"
   },
