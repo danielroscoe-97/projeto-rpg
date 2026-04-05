@@ -76,19 +76,15 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
     const inviteLink = `${baseUrl}/auth/sign-up?invite=${token}&campaign=${campaignId}`;
 
-    // F-44: Send branded email invite via Novu (fail-open — invite link still works if Novu unavailable)
+    // Send branded email invite via Resend (fail-open — invite link still works if email fails)
     const { data: dmUser } = await supabase.from("users").select("display_name").eq("id", user.id).maybeSingle();
-    sendCampaignInviteEmail({
+    // Must await — Vercel kills serverless functions after response, so fire-and-forget never completes
+    await sendCampaignInviteEmail({
       email,
       dmName: dmUser?.display_name || user.email || "Dungeon Master",
       campaignName: campaign.name,
       inviteLink,
       inviteToken: token,
-    }).then((sent) => {
-      if (!sent) console.warn("[invites] email NOT sent for", email);
-    }).catch((err) => {
-      console.error("[invites] email send failed:", err);
-      captureError(err, { component: "CampaignInvitesAPI", action: "sendEmail", category: "network", extra: { email } });
     });
 
     return NextResponse.json({
