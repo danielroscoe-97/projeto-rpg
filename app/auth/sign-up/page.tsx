@@ -10,8 +10,8 @@ export default async function Page() {
         {/* Heading — Liberty RO style */}
         <div className="text-center mb-4">
           <h1 className="font-display text-3xl md:text-4xl text-foreground tracking-wide">
-            {t("page_heading_prefix")}{" "}
-            <span className="text-gold">{t("page_heading_accent")}</span>
+            {t("signup_heading_prefix")}{" "}
+            <span className="text-gold">{t("signup_heading_accent")}</span>
           </h1>
           {/* Ornamental divider */}
           <div className="flex items-center justify-center gap-3 mt-4">

@@ -60,6 +60,10 @@
   "auth": {
     "page_heading_prefix": "Access your",
     "page_heading_accent": "Account",
+    "login_heading_prefix": "Welcome",
+    "login_heading_accent": "Back",
+    "signup_heading_prefix": "Begin your",
+    "signup_heading_accent": "Adventure",
     "login_title": "Login",
     "login_description": "Access your account to manage combats",
     "email_label": "Email",

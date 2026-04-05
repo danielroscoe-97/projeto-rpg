@@ -60,6 +60,10 @@
   "auth": {
     "page_heading_prefix": "Acesse sua",
     "page_heading_accent": "Conta",
+    "login_heading_prefix": "Bem-vindo de",
+    "login_heading_accent": "Volta",
+    "signup_heading_prefix": "Comece sua",
+    "signup_heading_accent": "Aventura",
     "login_title": "Entrar",
     "login_description": "Acesse sua conta para gerenciar combates",
     "email_label": "Email",
