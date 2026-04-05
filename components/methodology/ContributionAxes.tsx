@@ -74,7 +74,7 @@ export function ContributionAxes() {
           </div>
           <h3 className="font-display text-foreground/40 text-base mb-2">Tier de Magias</h3>
           <p className="text-foreground/25 text-sm leading-relaxed">
-            Fireball é tier 3? Vote e descubra junto com a comunidade o tier real de cada magia.
+            Fireball é tier S? Vote e descubra junto com a comunidade o ranking real de cada magia.
           </p>
         </div>
       </div>
