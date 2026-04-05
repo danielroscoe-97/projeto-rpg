@@ -13,6 +13,8 @@ import {
   Package,
   PanelLeftClose,
   Ellipsis,
+  Plus,
+  UserPlus,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -28,6 +30,9 @@ interface SidebarTranslations {
   profile: string;
   nav_label: string;
   more: string;
+  new_combat?: string;
+  invite_player?: string;
+  quick_actions?: string;
 }
 
 interface DashboardSidebarProps {
@@ -200,6 +205,28 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false, collaps
             );
           })}
         </nav>
+
+        {/* JO-15: Quick Actions — visible only expanded + DM access */}
+        {hasDmAccess && !collapsed && (
+          <div className="px-2 pb-3 space-y-1 border-t border-white/[0.06] pt-3" data-tour-id="dash-sidebar-actions">
+            <Link
+              href="/app/session/new"
+              data-testid="sidebar-new-combat"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-amber-400 hover:bg-amber-400/10 transition-colors"
+            >
+              <Plus className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span className="whitespace-nowrap">{t.new_combat ?? "New Combat"}</span>
+            </Link>
+            <Link
+              href="/app/dashboard/campaigns"
+              data-testid="sidebar-invite-player"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition-colors"
+            >
+              <UserPlus className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span className="whitespace-nowrap">{t.invite_player ?? "Invite Player"}</span>
+            </Link>
+          </div>
+        )}
       </motion.aside>
 
       {/* Mobile Bottom Navigation */}
@@ -230,6 +257,32 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false, collaps
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.15 }}
               >
+                {/* JO-15: Quick actions in mobile More menu */}
+                {hasDmAccess && (
+                  <>
+                    <Link
+                      href="/app/session/new"
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      data-testid="mobile-new-combat"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-amber-400 hover:bg-amber-400/10 transition-colors"
+                    >
+                      <Plus className="w-5 h-5" aria-hidden="true" />
+                      {t.new_combat ?? "New Combat"}
+                    </Link>
+                    <Link
+                      href="/app/dashboard/campaigns"
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      data-testid="mobile-invite-player"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition-colors"
+                    >
+                      <UserPlus className="w-5 h-5" aria-hidden="true" />
+                      {t.invite_player ?? "Invite Player"}
+                    </Link>
+                    <div className="border-t border-white/[0.06]" />
+                  </>
+                )}
                 {mobileMoreItems.map((item) => {
                   const active = isActive(item.href);
                   const Icon = item.icon;

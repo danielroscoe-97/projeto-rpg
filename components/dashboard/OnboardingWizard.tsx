@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import { Loader2, CheckCircle, Swords, Shield, Users, Copy, Check, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -161,8 +162,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       const num = Number(savedStep);
       const parsed: WizardStep = !isNaN(num) && num >= 1 && num <= 4 ? (num as WizardStep) : (savedStep as WizardStep);
       if (["welcome", "choose", "role", 1, 2, 3, 4].includes(parsed as number | string)) {
-        // P6: Legacy users with "welcome"/"choose" savedStep but no role set → force role first
-        if (!userRole && (parsed === "welcome" || parsed === "choose")) return "role";
+        // P6: Legacy users with ANY savedStep but no role set → force role first
+        if (!userRole && parsed !== "role") return "role";
         return parsed;
       }
     }
@@ -456,13 +457,15 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     }
   }
 
-  async function handleCopyLink() {
-    if (!state.sessionLink) return;
+  async function handleCopyLink(): Promise<boolean> {
+    if (!state.sessionLink) return false;
     try {
       await navigator.clipboard.writeText(state.sessionLink ?? "");
       setState((s) => ({ ...s, copyError: null }));
+      return true;
     } catch {
       setState((s) => ({ ...s, copyError: t("launch_copy_error") }));
+      return false;
     }
   }
 
@@ -481,12 +484,13 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     try {
       const supabase = createClient();
 
-      // P2: Check error on role write — don't advance if it fails
-      const { error: roleErr } = await supabase
+      // P2: Check error on role write — don't advance if it fails or RLS silently blocks
+      const { data: roleData, error: roleErr } = await supabase
         .from("users")
         .update({ role: selectedRole })
-        .eq("id", userId);
-      if (roleErr) {
+        .eq("id", userId)
+        .select("id");
+      if (roleErr || !roleData?.length) {
         captureError(roleErr, { component: "OnboardingWizard", action: "saveRole", category: "database" });
         toast.error(t("role_save_error"));
         return;
@@ -1320,7 +1324,7 @@ function CelebrationStep({
 }: {
   sessionLink: string;
   showCelebration: boolean;
-  onCopy: () => void;
+  onCopy: () => Promise<boolean> | void;
   copyError: string | null;
   t: (key: string) => string;
 }) {
@@ -1335,7 +1339,10 @@ function CelebrationStep({
   }, []);
 
   async function handleCopy() {
-    onCopy();
+    const result = onCopy();
+    // Only show "Copied!" if clipboard succeeded (no copyError after onCopy)
+    const ok = result instanceof Promise ? await result : true;
+    if (ok === false) return;
     setCopied(true);
     if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
     copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
@@ -1464,6 +1471,14 @@ function CelebrationStep({
       {copyError && (
         <p className="text-xs text-red-400" role="alert">{copyError}</p>
       )}
+
+      {/* JO-08: "Go to Dashboard" CTA */}
+      <Link
+        href="/app/dashboard"
+        className="block w-full text-center px-4 py-2.5 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:text-foreground hover:bg-white/[0.05] transition-colors"
+      >
+        {t("go_to_dashboard")}
+      </Link>
 
       <p className="text-xs text-muted-foreground text-center">
         {t("launch_share_hint")}

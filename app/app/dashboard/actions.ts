@@ -9,10 +9,16 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
  *   1. User is authenticated
  *   2. Campaign exists and is active
  */
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function joinCampaignDirectAction(
   campaignId: string,
   playerName?: string
 ): Promise<{ success: boolean; alreadyMember?: boolean }> {
+  // S1-BH-01: Validate UUID format before any DB query
+  if (!UUID_RE.test(campaignId)) throw new Error("ID de campanha inválido");
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Unauthorized");
@@ -27,6 +33,9 @@ export async function joinCampaignDirectAction(
     .maybeSingle();
 
   if (!campaign) throw new Error("Campanha não encontrada");
+
+  // S1-BH-02: DM cannot join their own campaign as a player
+  if (campaign.owner_id === user.id) return { success: true, alreadyMember: true };
 
   // Idempotent: check if already a member
   const { data: existing } = await service

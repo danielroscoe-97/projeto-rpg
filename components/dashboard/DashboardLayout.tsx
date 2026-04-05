@@ -19,6 +19,9 @@ interface DashboardLayoutProps {
     profile: string;
     more: string;
     nav_label: string;
+    new_combat?: string;
+    invite_player?: string;
+    quick_actions?: string;
   };
   hasDmAccess?: boolean;
   showDashboardTour?: boolean;

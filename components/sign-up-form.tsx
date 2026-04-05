@@ -51,6 +51,7 @@ export function SignUpForm({
           token: inviteToken,
           campaignId: inviteCampaignId,
           path: `/invite/${inviteToken}`,
+          savedAt: Date.now(), // S1-EC-02: TTL anchor — expires in 24h
         }));
       }
       if (joinCode) {

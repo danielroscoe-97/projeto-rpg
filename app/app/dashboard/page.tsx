@@ -90,12 +90,45 @@ export default async function DashboardPage() {
     .order("updated_at", { ascending: false })
     .limit(5);
 
-  // Check if DM has ever run any combat session (for nudge condition)
-  const { count: sessionCount } = await supabase
-    .from("sessions")
-    .select("id", { count: "exact", head: true })
-    .eq("owner_id", user.id);
-  const hasUsedCombat = (sessionCount ?? 0) > 0;
+  // Check if DM has ever run any real combat (encounters, not just sessions from onboarding)
+  const { count: encounterCount } = await supabase
+    .from("encounters")
+    .select("id, sessions!inner(owner_id)", { count: "exact", head: true })
+    .eq("sessions.owner_id", user.id);
+  const hasUsedCombat = (encounterCount ?? 0) > 0;
+
+  // JO-13: Activation checklist data (DM only)
+  let checklistStatus = {
+    hasAccount: true,
+    hasRunCombat: hasUsedCombat,
+    hasInvitedPlayer: false,
+    hasUsedLegendary: false,
+    hasViewedRecap: false,
+  };
+  if (userRole !== "player") {
+    const [inviteRes, legendaryRes, recapRes] = await Promise.all([
+      supabase
+        .from("session_tokens")
+        .select("id, sessions!inner(owner_id)", { count: "exact", head: true })
+        .eq("sessions.owner_id", user.id)
+        .not("player_name", "is", null),
+      supabase
+        .from("combatants")
+        .select("id, encounters!inner(session_id, sessions!inner(owner_id))", { count: "exact", head: true })
+        .eq("encounters.sessions.owner_id", user.id)
+        .gt("legendary_actions_used", 0),
+      supabase
+        .from("combat_reports")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id),
+    ]);
+    checklistStatus = {
+      ...checklistStatus,
+      hasInvitedPlayer: (inviteRes.count ?? 0) > 0,
+      hasUsedLegendary: (legendaryRes.count ?? 0) > 0,
+      hasViewedRecap: (recapRes.count ?? 0) > 0,
+    };
+  }
 
   const savedEncounters: SavedEncounterRow[] = (rawEncounters ?? []).map((e) => ({
     session_id: e.session_id as string,
@@ -179,6 +212,16 @@ export default async function DashboardPage() {
     // JO-10: Active session
     session_live: t("session_live"),
     session_join: t("session_join"),
+    // JO-13: Activation checklist
+    checklist_title: t("checklist_title"),
+    checklist_progress: t("checklist_progress"),
+    checklist_dismiss: t("checklist_dismiss"),
+    checklist_account: t("checklist_account"),
+    checklist_combat: t("checklist_combat"),
+    checklist_invite: t("checklist_invite"),
+    checklist_legendary: t("checklist_legendary"),
+    checklist_recap: t("checklist_recap"),
+    checklist_all_complete: t("checklist_all_complete"),
   };
 
   // F6: Streak counter
@@ -197,6 +240,7 @@ export default async function DashboardPage() {
         translations={translations}
         streakWeeks={streakWeeks}
         hasUsedCombat={hasUsedCombat}
+        checklistStatus={checklistStatus}
       />
     </div>
   );

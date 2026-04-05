@@ -22,6 +22,9 @@ export default async function DashboardRouteLayout({
     profile: t("profile"),
     more: t("more"),
     nav_label: t("nav_label"),
+    new_combat: t("new_combat"),
+    invite_player: t("invite_player"),
+    quick_actions: t("quick_actions"),
   };
 
   // Check if dashboard tour should be shown + DM access for sidebar presets

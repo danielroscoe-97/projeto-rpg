@@ -19,6 +19,8 @@ import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import { CampaignCard } from "@/components/dashboard/CampaignCard";
 import { CombatHistoryCard } from "@/components/dashboard/CombatHistoryCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
+import { ActivationChecklist } from "@/components/dashboard/ActivationChecklist";
+import type { ChecklistStatus } from "@/components/dashboard/ActivationChecklist";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { Button } from "@/components/ui/button";
 import type { UserRole, ActiveView } from "@/lib/stores/role-store";
@@ -110,9 +112,20 @@ interface DashboardOverviewProps {
     // JO-10: Active session
     session_live: string;
     session_join: string;
+    // JO-13: Activation checklist
+    checklist_title: string;
+    checklist_progress: string;
+    checklist_dismiss: string;
+    checklist_account: string;
+    checklist_combat: string;
+    checklist_invite: string;
+    checklist_legendary: string;
+    checklist_recap: string;
+    checklist_all_complete: string;
   };
   streakWeeks?: number;
   hasUsedCombat?: boolean;
+  checklistStatus?: ChecklistStatus;
 }
 
 export function DashboardOverview({
@@ -125,6 +138,7 @@ export function DashboardOverview({
   translations: t,
   streakWeeks = 0,
   hasUsedCombat = false,
+  checklistStatus,
 }: DashboardOverviewProps) {
   const router = useRouter();
   const { activeView, initialized, loadRole } = useRoleStore();
@@ -136,22 +150,30 @@ export function DashboardOverview({
 
   // JO-01/JO-02/JO-04: Safety net — redirect to pending invite/join if localStorage has saved tokens
   useEffect(() => {
+    let mounted = true; // S1-EC-01: cleanup flag for async IIFE
+
     try {
       const pendingInvite = localStorage.getItem("pendingInvite");
       if (pendingInvite) {
-        const { path } = JSON.parse(pendingInvite) as { path: string };
-        if (path) {
+        const parsed = JSON.parse(pendingInvite) as { path: string; savedAt?: number };
+        // S1-EC-02: Enforce 24h TTL — stale invite tokens should not fire
+        const isStale = parsed.savedAt != null && Date.now() - parsed.savedAt > 86_400_000;
+        if (isStale) {
           localStorage.removeItem("pendingInvite");
-          router.push(path);
-          return;
+        } else if (parsed.path) {
+          localStorage.removeItem("pendingInvite");
+          router.push(parsed.path);
+          return () => { mounted = false; };
         }
       }
+
       const pendingJoinCode = localStorage.getItem("pendingJoinCode");
       if (pendingJoinCode) {
         localStorage.removeItem("pendingJoinCode");
         router.push(`/join-campaign/${pendingJoinCode}`);
-        return;
+        return () => { mounted = false; };
       }
+
       // JO-04: Auto-join campaign after post-combat sign-up
       const pendingCampaignJoin = localStorage.getItem("pendingCampaignJoin");
       if (pendingCampaignJoin) {
@@ -161,7 +183,7 @@ export function DashboardOverview({
           (async () => {
             try {
               const result = await joinCampaignDirectAction(pendingCampaignId, playerName);
-              if (result.success && !result.alreadyMember) {
+              if (mounted && result.success && !result.alreadyMember) {
                 toast.success(t.campaign_joined_success);
                 router.refresh();
               }
@@ -174,6 +196,8 @@ export function DashboardOverview({
     } catch {
       // localStorage unavailable or corrupt — continue to dashboard
     }
+
+    return () => { mounted = false; };
   }, [router, t.campaign_joined_success]);
 
   const dmMemberships = memberships.filter((m) => m.role === "dm");
@@ -254,6 +278,24 @@ export function DashboardOverview({
           </div>
         )}
       </div>
+
+      {/* JO-13: Activation Checklist — DM/both role */}
+      {isDmRole && checklistStatus && (
+        <ActivationChecklist
+          status={checklistStatus}
+          translations={{
+            title: t.checklist_title,
+            progress: t.checklist_progress,
+            dismiss: t.checklist_dismiss,
+            item_account: t.checklist_account,
+            item_combat: t.checklist_combat,
+            item_invite: t.checklist_invite,
+            item_legendary: t.checklist_legendary,
+            item_recap: t.checklist_recap,
+            all_complete: t.checklist_all_complete,
+          }}
+        />
+      )}
 
       {/* Pending Invites — standard position (player with campaigns, or DM) */}
       {!showInvitesAtTop && pendingInvites.length > 0 && (
