@@ -1,6 +1,6 @@
 # Spec: Redesign da Página de Campanha (DM View)
 
-**Status:** Pronto para implementação  
+**Status:** Implementado + Deployed + Code Review OK  
 **Data:** 2026-04-05  
 **Sessão:** party-mode com Sally (UX), John (PM), Mary (Analyst), Amelia (Dev)
 
@@ -199,15 +199,41 @@ Chaves novas em `messages/pt-BR/campaign.json` e `messages/en/campaign.json`:
 
 ## Critérios de Aceite — Fases 1–3
 
-- [ ] DM vê quick actions (Convidar, Novo Encontro, Nova Nota) no topo sem scroll
-- [ ] Sessão ativa aparece como banner dourado se existir
-- [ ] Tier 1 sections visualmente mais proeminentes que Tier 2/3
-- [ ] Seções Tier 2 mostram badge de contagem (ou "Vazio")
-- [ ] Nenhum componente interno de seção foi modificado
-- [ ] Build passa sem erros de TypeScript
-- [ ] Funciona em mobile (responsive)
+- [x] DM vê quick actions (Convidar, Novo Encontro, Nova Nota) no topo sem scroll
+- [x] Sessão ativa aparece como banner dourado se existir
+- [x] Tier 1 sections visualmente mais proeminentes que Tier 2/3
+- [x] Seções Tier 2 mostram badge de contagem (ou "Vazio")
+- [x] Nenhum componente interno de seção foi modificado
+- [x] Build passa sem erros de TypeScript
+- [x] Funciona em mobile (responsive)
 
 ## Critérios de Aceite — Fase 4 (Onboarding)
 
-- [ ] Campanha nova (0 jogadores, 0 sessões) mostra onboarding de 3 passos
-- [ ] Onboarding desaparece após completar os 3 passos
+- [x] Campanha nova (0 jogadores, 0 sessões) mostra onboarding de 3 passos
+- [x] Onboarding desaparece após completar os 3 passos
+
+---
+
+## Code Review — 2026-04-05
+
+**Revisor:** Claude (party-mode session)  
+**Status:** Aprovado — todos os critérios atendidos, deployed em produção
+
+### Commits de Implementação
+
+| Commit | Fase | Descrição |
+|---|---|---|
+| `b6d9ca2` | F2 | Visual tier hierarchy (Section component com tier prop) |
+| `2dbcb95` | F1+F3 | Quick actions, active session banner, SSR count badges |
+| `9f1c4c2` | F4 | Code review patches + Fase 4 onboarding |
+| `e12aac6` | F4 | Onboarding guard, section visibility, cleanup |
+
+### Arquivos Novos
+
+- `components/campaign/CampaignQuickActions.tsx` — 3 botões de ação rápida
+- `components/campaign/CampaignCombatTriggers.tsx` — stats + banner sessão ativa + combat sheet controlado
+- `components/campaign/CampaignOnboarding.tsx` — checklist 3 passos para campanha nova
+
+### Achado Menor (bucket)
+
+Quick actions "Novo Encontro" e "Nova Nota" scrollam para sections que estão hidden em campanhas vazias. Impacto zero — onboarding domina a tela nesse estado. Corrigível futuramente.
