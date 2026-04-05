@@ -41,11 +41,11 @@ interface Props {
 }
 
 const CAMPAIGN_COVERS = [
-  "/art/campaigns/figurines-map.jpg",
-  "/art/campaigns/dragon-revoy.jpg",
-  "/art/campaigns/dice-bw.jpg",
-  "/art/campaigns/dragon-medieval.jpg",
-  "/art/campaigns/map-dice.jpg",
+  "/art/campaigns/epic-1.jpg",
+  "/art/campaigns/epic-2.jpg",
+  "/art/campaigns/epic-3.jpg",
+  "/art/campaigns/epic-4.jpg",
+  "/art/campaigns/epic-6.jpg",
 ];
 
 function getCampaignCover(index: number) {
