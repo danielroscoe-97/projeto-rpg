@@ -35,7 +35,7 @@ function QuestCardSkeleton({ count = 3 }: { count?: number }) {
       {Array.from({ length: count }, (_, i) => (
         <div
           key={i}
-          className="animate-pulse bg-card border border-border rounded-xl p-4 space-y-3 border-l-4 border-l-muted-foreground/20"
+          className="animate-pulse bg-card border border-border/40 rounded-xl p-4 space-y-3 border-l-4 border-l-muted-foreground/20"
         >
           <div className="flex items-start gap-3">
             <div className="w-12 h-12 rounded-lg bg-white/[0.06]" />
@@ -163,7 +163,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
       {/* Toolbar */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         {/* Filter buttons */}
-        <div className="flex items-center rounded-lg border border-border overflow-hidden">
+        <div className="flex items-center rounded-lg border border-border/40 overflow-hidden">
           {filters.map((f) => (
             <button
               key={f.key}
@@ -199,7 +199,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
       {/* Empty state */}
       {quests.length === 0 && (
         <div
-          className="rounded-lg border border-border bg-card p-8 text-center"
+          className="rounded-lg border border-border/40 bg-card p-8 text-center"
           data-testid="quest-empty-state"
         >
           <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
@@ -242,7 +242,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
 
       {/* Filtered empty (quests exist but none match filter) */}
       {quests.length > 0 && filteredQuests.length === 0 && (
-        <div className="rounded-lg border border-border bg-card p-6 text-center">
+        <div className="rounded-lg border border-border/40 bg-card p-6 text-center">
           <p className="text-muted-foreground text-sm">{t("quest_empty")}</p>
         </div>
       )}
