@@ -23,19 +23,27 @@ export default async function OnboardingPage() {
     redirect("/app/dashboard");
   }
 
-  // Fetch onboarding source for contextual welcome
-  const { data: onboardingData } = await supabase
-    .from("user_onboarding")
-    .select("source, wizard_step")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  // Fetch onboarding source + user role (needed to enforce role step for legacy users)
+  const [{ data: onboardingData }, { data: userData }] = await Promise.all([
+    supabase
+      .from("user_onboarding")
+      .select("source, wizard_step")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle(),
+  ]);
 
   const source: OnboardingSource = (onboardingData?.source as OnboardingSource) ?? "fresh";
   const savedStep = onboardingData?.wizard_step ?? null;
+  const userRole = (userData?.role as string | null) ?? null;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <OnboardingWizard userId={user.id} source={source} savedStep={savedStep} />
+      <OnboardingWizard userId={user.id} source={source} savedStep={savedStep} userRole={userRole} />
     </div>
   );
 }

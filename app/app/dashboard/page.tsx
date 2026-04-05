@@ -90,6 +90,13 @@ export default async function DashboardPage() {
     .order("updated_at", { ascending: false })
     .limit(5);
 
+  // Check if DM has ever run any combat session (for nudge condition)
+  const { count: sessionCount } = await supabase
+    .from("sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", user.id);
+  const hasUsedCombat = (sessionCount ?? 0) > 0;
+
   const savedEncounters: SavedEncounterRow[] = (rawEncounters ?? []).map((e) => ({
     session_id: e.session_id as string,
     encounter_name: (e.name ?? "Encounter") as string,
@@ -179,6 +186,7 @@ export default async function DashboardPage() {
         pendingInvites={pendingInvites}
         translations={translations}
         streakWeeks={streakWeeks}
+        hasUsedCombat={hasUsedCombat}
       />
     </div>
   );

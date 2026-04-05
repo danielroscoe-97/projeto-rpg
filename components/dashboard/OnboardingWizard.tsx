@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Loader2, CheckCircle, Swords, Shield, Users, Copy, Check, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +48,8 @@ interface PlayerInput {
   spell_save_dc: number | null;
 }
 
-type WizardStep = "welcome" | "choose" | "express" | 1 | 2 | 3 | 4 | "done";
+type UserRole = "player" | "dm" | "both";
+type WizardStep = "role" | "welcome" | "choose" | "express" | 1 | 2 | 3 | 4 | "done";
 
 interface WizardState {
   step: WizardStep;
@@ -66,6 +68,8 @@ interface OnboardingWizardProps {
   userId: string;
   source?: OnboardingSource;
   savedStep?: string | null;
+  /** Current role from DB — null means role was never set (show role step even with a savedStep) */
+  userRole?: string | null;
 }
 
 function readSessionStorage(): Partial<WizardState> | null {
@@ -102,7 +106,7 @@ function writeSessionStorage(state: Partial<WizardState>) {
   }
 }
 
-export function OnboardingWizard({ userId, source = "fresh", savedStep }: OnboardingWizardProps) {
+export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole }: OnboardingWizardProps) {
   const router = useRouter();
   const t = useTranslations("onboarding");
   const tc = useTranslations("common");
@@ -147,7 +151,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
 
   const initialCampaignName = effectiveSource === "guest_combat" ? t("campaign_name_guest_default") : "";
 
-  // Determine initial step: sessionStorage → savedStep → welcome
+  // Determine initial step: sessionStorage → savedStep → role (new first step)
+  // P6: If userRole is null (never set), force "role" step even if there's a savedStep
   const [initialStep] = useState<WizardStep>(() => {
     const ss = readSessionStorage();
     if (ss?.step && ss.step !== "done") return ss.step as WizardStep;
@@ -155,9 +160,13 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
       // savedStep comes from DB as string — convert numeric strings to numbers
       const num = Number(savedStep);
       const parsed: WizardStep = !isNaN(num) && num >= 1 && num <= 4 ? (num as WizardStep) : (savedStep as WizardStep);
-      if (["welcome", "choose", 1, 2, 3, 4].includes(parsed as number | string)) return parsed;
+      if (["welcome", "choose", "role", 1, 2, 3, 4].includes(parsed as number | string)) {
+        // P6: Legacy users with "welcome"/"choose" savedStep but no role set → force role first
+        if (!userRole && (parsed === "welcome" || parsed === "choose")) return "role";
+        return parsed;
+      }
     }
-    return "welcome";
+    return "role";
   });
 
   const [state, setState] = useState<WizardState>(() => {
@@ -181,7 +190,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
     writeSessionStorage(newState);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      if (newState.step === "done" || newState.step === "welcome") return;
+      if (newState.step === "done" || newState.step === "welcome" || newState.step === "role") return;
       try {
         const supabase = createClient();
         await supabase
@@ -266,6 +275,15 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
   }
 
   function handleStep2Next() {
+    // Zero players is valid (JO-06) — skip validation
+    if (state.players.length === 0) {
+      setState((s) => {
+        const next = { ...s, step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
+        persistProgress(next);
+        return next;
+      });
+      return;
+    }
     const errors = new Set<string>();
     for (const p of state.players) {
       if (!p.name.trim()) errors.add(`player-name-${p._id}`);
@@ -446,6 +464,113 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
     } catch {
       setState((s) => ({ ...s, copyError: t("launch_copy_error") }));
     }
+  }
+
+  // ── Role Step (JO-05) ──────────────────────────────────────────────
+  const [selectedRole, setSelectedRole] = useState<UserRole>("both");
+  const [roleSubmitting, setRoleSubmitting] = useState(false);
+
+  const ROLE_OPTIONS: { value: UserRole; icon: React.ReactNode; labelKey: string; descKey: string }[] = [
+    { value: "player", icon: <Swords className="w-7 h-7" />, labelKey: "role_player", descKey: "role_player_desc" },
+    { value: "dm", icon: <Shield className="w-7 h-7" />, labelKey: "role_dm", descKey: "role_dm_desc" },
+    { value: "both", icon: <Users className="w-7 h-7" />, labelKey: "role_both", descKey: "role_both_desc" },
+  ];
+
+  async function handleRoleContinue() {
+    setRoleSubmitting(true);
+    try {
+      const supabase = createClient();
+
+      // P2: Check error on role write — don't advance if it fails
+      const { error: roleErr } = await supabase
+        .from("users")
+        .update({ role: selectedRole })
+        .eq("id", userId);
+      if (roleErr) {
+        captureError(roleErr, { component: "OnboardingWizard", action: "saveRole", category: "database" });
+        toast.error(t("role_save_error"));
+        return;
+      }
+
+      if (selectedRole === "player") {
+        // P3: Check error on upsert before redirecting
+        const { error: onboardingErr } = await supabase
+          .from("user_onboarding")
+          .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
+        if (onboardingErr) {
+          captureError(onboardingErr, { component: "OnboardingWizard", action: "markWizardDone", category: "database" });
+          toast.error(t("role_save_error"));
+          return;
+        }
+        router.push("/app/dashboard");
+        return;
+      }
+
+      // DM or Both → continue to welcome
+      setState((s) => ({ ...s, step: "welcome" }));
+    } catch (err) {
+      captureError(err, { component: "OnboardingWizard", action: "handleRoleContinue", category: "database" });
+      toast.error(t("role_save_error"));
+    } finally {
+      setRoleSubmitting(false);
+    }
+  }
+
+  if (state.step === "role") {
+    return (
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Image
+            src="/art/icons/edenhat.png"
+            alt=""
+            width={56}
+            height={56}
+            className="pixel-art mx-auto mb-3 opacity-80"
+            aria-hidden="true"
+            unoptimized
+          />
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            {t("role_title")}
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            {t("role_subtitle")}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          {ROLE_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setSelectedRole(option.value)}
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 min-h-[120px] ${
+                selectedRole === option.value
+                  ? "border-gold bg-gold/10 text-gold"
+                  : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/[0.15]"
+              }`}
+            >
+              <span className={selectedRole === option.value ? "text-gold" : "text-muted-foreground"}>
+                {option.icon}
+              </span>
+              <span className="text-sm font-semibold">{t(option.labelKey)}</span>
+              <span className="text-[11px] text-muted-foreground leading-tight text-center">
+                {t(option.descKey)}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <Button
+          onClick={handleRoleContinue}
+          disabled={roleSubmitting}
+          variant="gold"
+          className="w-full"
+        >
+          {roleSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("role_continue")}
+        </Button>
+      </div>
+    );
   }
 
   // ── Welcome Step ──────────────────────────────────────────────────
@@ -793,126 +918,25 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
           </div>
         )}
 
-        {/* ── Step 2: Players ── */}
+        {/* ── Step 2: Players (Simplified — JO-06) ── */}
         {state.step === 2 && (
-          <div className="space-y-4">
-            {state.players.map((player, index) => (
-              <div
-                key={player._id}
-                className="p-3 rounded-lg bg-white/[0.04] border border-border space-y-3"
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    {t("players_label")} {index + 1}
-                  </span>
-                  {state.players.length > 1 && (
-                    <button
-                      onClick={() => handleRemovePlayer(index)}
-                      className="text-xs text-red-400 hover:text-red-300"
-                      type="button"
-                    >
-                      {tc("remove")}
-                    </button>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 space-y-1">
-                    <Label
-                      htmlFor={`player-name-${player._id}`}
-                      className="text-foreground text-xs"
-                    >
-                      {t("players_name_label")}
-                    </Label>
-                    <Input
-                      id={`player-name-${player._id}`}
-                      placeholder={t("players_name_placeholder")}
-                      value={player.name}
-                      maxLength={50}
-                      onChange={(e) => handlePlayerChange(index, "name", e.target.value)}
-                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${state.fieldErrors.has(`player-name-${player._id}`) ? " field-error" : ""}`}
-                      aria-invalid={state.fieldErrors.has(`player-name-${player._id}`) || undefined}
-                      aria-describedby={state.fieldErrors.has(`player-name-${player._id}`) ? "players-error" : undefined}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label
-                      htmlFor={`player-hp-${player._id}`}
-                      className="text-foreground text-xs"
-                    >
-                      {t("players_hp_label")}{" "}
-                      <span className="text-muted-foreground">{tc("optional")}</span>
-                    </Label>
-                    <Input
-                      id={`player-hp-${player._id}`}
-                      type="number"
-                      min={1}
-                      max={9999}
-                      placeholder="10"
-                      value={player.max_hp || ""}
-                      onChange={(e) => handlePlayerChange(index, "max_hp", e.target.value)}
-                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/40 h-8 text-sm${state.fieldErrors.has(`player-hp-${player._id}`) ? " field-error" : ""}`}
-                      aria-invalid={state.fieldErrors.has(`player-hp-${player._id}`) || undefined}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label
-                      htmlFor={`player-ac-${player._id}`}
-                      className="text-foreground text-xs"
-                    >
-                      {t("players_ac_label")}{" "}
-                      <span className="text-muted-foreground">{tc("optional")}</span>
-                    </Label>
-                    <Input
-                      id={`player-ac-${player._id}`}
-                      type="number"
-                      min={1}
-                      max={99}
-                      placeholder="10"
-                      value={player.ac || ""}
-                      onChange={(e) => handlePlayerChange(index, "ac", e.target.value)}
-                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/40 h-8 text-sm${state.fieldErrors.has(`player-ac-${player._id}`) ? " field-error" : ""}`}
-                      aria-invalid={state.fieldErrors.has(`player-ac-${player._id}`) || undefined}
-                    />
-                  </div>
-                  <div className="col-span-2 space-y-1">
-                    <Label
-                      htmlFor={`player-dc-${player._id}`}
-                      className="text-foreground text-xs"
-                    >
-                      {t("players_spell_dc_label")}{" "}
-                      <span className="text-muted-foreground">{tc("optional")}</span>
-                    </Label>
-                    <Input
-                      id={`player-dc-${player._id}`}
-                      type="number"
-                      min={1}
-                      max={99}
-                      placeholder={tc("dash")}
-                      value={player.spell_save_dc ?? ""}
-                      onChange={(e) => handlePlayerChange(index, "spell_save_dc", e.target.value)}
-                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${state.fieldErrors.has(`player-dc-${player._id}`) ? " field-error" : ""}`}
-                      aria-invalid={state.fieldErrors.has(`player-dc-${player._id}`) || undefined}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-            {/* Hint text */}
-            <p className="text-xs text-muted-foreground/70 text-center">
-              {t("players_hint")}
-            </p>
-            {state.players.length < MAX_PLAYERS && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleAddPlayer}
-                className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
-              >
-                {t("players_add_another")}
-              </Button>
-            )}
-          </div>
+          <PlayerStep
+            players={state.players}
+            fieldErrors={state.fieldErrors}
+            maxPlayers={MAX_PLAYERS}
+            onPlayerChange={handlePlayerChange}
+            onAddPlayer={handleAddPlayer}
+            onRemovePlayer={handleRemovePlayer}
+            onSkip={() => {
+              setState((s) => {
+                const next = { ...s, players: [], step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
+                persistProgress(next);
+                return next;
+              });
+            }}
+            t={t}
+            tc={tc}
+          />
         )}
 
         {/* ── Step 3: Encounter Name ── */}
@@ -969,46 +993,15 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
           </div>
         )}
 
-        {/* ── Done: Session Link + Celebration ── */}
+        {/* ── Done: Session Link + Celebration (JO-08) ── */}
         {state.step === "done" && state.sessionLink && (
-          <div className="space-y-3">
-            {/* Gold flash celebration */}
-            {state.showCelebration && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-2 p-3 rounded-lg bg-gold/10 border border-gold/30"
-                role="status"
-                aria-live="polite"
-              >
-                <CheckCircle className="w-5 h-5 text-gold shrink-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gold">{t("campaign_created")}</p>
-              </motion.div>
-            )}
-            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                {t("launch_session_link_label")}
-              </p>
-              <p className="text-sm font-mono text-gold break-all">
-                {state.sessionLink}
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleCopyLink}
-              className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
-            >
-              {t("launch_copy_link")}
-            </Button>
-            {state.copyError && (
-              <p className="text-xs text-red-400" role="alert">{state.copyError}</p>
-            )}
-            <p className="text-xs text-muted-foreground text-center">
-              {t("launch_share_hint")}
-            </p>
-          </div>
+          <CelebrationStep
+            sessionLink={state.sessionLink}
+            showCelebration={state.showCelebration}
+            onCopy={handleCopyLink}
+            copyError={state.copyError}
+            t={t}
+          />
         )}
 
         {/* Error message */}
@@ -1052,7 +1045,6 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
             </Button>
             <Button
               onClick={handleStep2Next}
-              disabled={state.players.length === 0}
               variant="gold"
             >
               {tc("next")}
@@ -1130,5 +1122,352 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep }: Onboar
         )}
       </CardFooter>
     </Card>
+  );
+}
+
+// ── PlayerStep — Simplified Step 2 (JO-06) ──────────────────────────
+function PlayerStep({
+  players,
+  fieldErrors,
+  maxPlayers,
+  onPlayerChange,
+  onAddPlayer,
+  onRemovePlayer,
+  onSkip,
+  t,
+  tc,
+}: {
+  players: PlayerInput[];
+  fieldErrors: Set<string>;
+  maxPlayers: number;
+  onPlayerChange: (index: number, field: keyof PlayerInput, value: string) => void;
+  onAddPlayer: () => void;
+  onRemovePlayer: (index: number) => void;
+  onSkip: () => void;
+  t: (key: string) => string;
+  tc: (key: string) => string;
+}) {
+  const [expandedStats, setExpandedStats] = useState<Set<number>>(new Set());
+
+  function toggleStats(playerId: number) {
+    setExpandedStats((prev) => {
+      const next = new Set(prev);
+      if (next.has(playerId)) next.delete(playerId);
+      else next.add(playerId);
+      return next;
+    });
+  }
+
+  return (
+    <div className="space-y-4">
+      {players.map((player, index) => (
+        <div
+          key={player._id}
+          className="p-3 rounded-lg bg-white/[0.04] border border-border space-y-3"
+        >
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("players_label")} {index + 1}
+            </span>
+            {players.length > 1 && (
+              <button
+                onClick={() => onRemovePlayer(index)}
+                className="text-xs text-red-400 hover:text-red-300"
+                type="button"
+              >
+                {tc("remove")}
+              </button>
+            )}
+          </div>
+
+          {/* Name — always visible */}
+          <div className="space-y-1">
+            <Label
+              htmlFor={`player-name-${player._id}`}
+              className="text-foreground text-xs"
+            >
+              {t("players_name_label")}
+            </Label>
+            <Input
+              id={`player-name-${player._id}`}
+              placeholder={t("players_name_placeholder")}
+              value={player.name}
+              maxLength={50}
+              onChange={(e) => onPlayerChange(index, "name", e.target.value)}
+              className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${fieldErrors.has(`player-name-${player._id}`) ? " field-error" : ""}`}
+              aria-invalid={fieldErrors.has(`player-name-${player._id}`) || undefined}
+            />
+          </div>
+
+          {/* Stats — collapsible accordion */}
+          <button
+            type="button"
+            onClick={() => toggleStats(player._id)}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors w-full"
+          >
+            <ChevronDown
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                expandedStats.has(player._id) ? "rotate-180" : ""
+              }`}
+            />
+            {t("players_advanced_details")}
+          </button>
+
+          <AnimatePresence initial={false}>
+            {expandedStats.has(player._id) && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div className="space-y-1">
+                    <Label htmlFor={`player-hp-${player._id}`} className="text-foreground text-xs">
+                      {t("players_hp_label")}{" "}
+                      <span className="text-muted-foreground">{tc("optional")}</span>
+                    </Label>
+                    <Input
+                      id={`player-hp-${player._id}`}
+                      type="number"
+                      min={1}
+                      max={9999}
+                      placeholder="10"
+                      value={player.max_hp || ""}
+                      onChange={(e) => onPlayerChange(index, "max_hp", e.target.value)}
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/40 h-8 text-sm${fieldErrors.has(`player-hp-${player._id}`) ? " field-error" : ""}`}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`player-ac-${player._id}`} className="text-foreground text-xs">
+                      {t("players_ac_label")}{" "}
+                      <span className="text-muted-foreground">{tc("optional")}</span>
+                    </Label>
+                    <Input
+                      id={`player-ac-${player._id}`}
+                      type="number"
+                      min={1}
+                      max={99}
+                      placeholder="10"
+                      value={player.ac || ""}
+                      onChange={(e) => onPlayerChange(index, "ac", e.target.value)}
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/40 h-8 text-sm${fieldErrors.has(`player-ac-${player._id}`) ? " field-error" : ""}`}
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-1">
+                    <Label htmlFor={`player-dc-${player._id}`} className="text-foreground text-xs">
+                      {t("players_spell_dc_label")}{" "}
+                      <span className="text-muted-foreground">{tc("optional")}</span>
+                    </Label>
+                    <Input
+                      id={`player-dc-${player._id}`}
+                      type="number"
+                      min={1}
+                      max={99}
+                      placeholder={tc("dash")}
+                      value={player.spell_save_dc ?? ""}
+                      onChange={(e) => onPlayerChange(index, "spell_save_dc", e.target.value)}
+                      className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60 h-8 text-sm${fieldErrors.has(`player-dc-${player._id}`) ? " field-error" : ""}`}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
+
+      {/* Hint text */}
+      <p className="text-xs text-muted-foreground/70 text-center">
+        {t("players_fill_later")}
+      </p>
+
+      {players.length < maxPlayers && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onAddPlayer}
+          className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
+        >
+          {t("players_add_another")}
+        </Button>
+      )}
+
+      {/* Skip — invite later */}
+      <button
+        type="button"
+        onClick={onSkip}
+        className="w-full text-center py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {t("players_skip")}
+      </button>
+      <p className="text-[11px] text-muted-foreground/60 text-center -mt-2">
+        {t("players_skip_hint")}
+      </p>
+    </div>
+  );
+}
+
+// ── CelebrationStep — Enhanced "done" step (JO-08) ──────────────────
+function CelebrationStep({
+  sessionLink,
+  showCelebration,
+  onCopy,
+  copyError,
+  t,
+}: {
+  sessionLink: string;
+  showCelebration: boolean;
+  onCopy: () => void;
+  copyError: string | null;
+  t: (key: string) => string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // P4: Clean up timeout on unmount to avoid state updates on unmounted component
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  async function handleCopy() {
+    onCopy();
+    setCopied(true);
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+  }
+
+  // P1: Memoize particles so positions are stable across re-renders
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        delay: Math.random() * 0.6,
+        duration: 1.5 + Math.random() * 1,
+        size: 4 + Math.random() * 6,
+      })),
+    [] // computed once on mount
+  );
+
+  return (
+    <div className="space-y-4 relative">
+      {/* Sparkle particles */}
+      {showCelebration && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden -top-8">
+          {particles.map((p) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: -10, x: `${p.x}%`, scale: 0 }}
+              animate={{
+                opacity: [0, 1, 1, 0],
+                y: ["-10%", "120%"],
+                scale: [0, 1, 0.8, 0],
+              }}
+              transition={{
+                duration: p.duration,
+                delay: p.delay,
+                ease: "easeOut",
+              }}
+              className="absolute"
+              style={{ left: `${p.x}%` }}
+            >
+              <div
+                className="rounded-full bg-gold"
+                style={{ width: p.size, height: p.size, opacity: 0.8 }}
+              />
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Celebration title */}
+      {showCelebration && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          className="text-center py-2"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Image
+              src="/art/icons/mvp-crown.png"
+              alt=""
+              width={56}
+              height={56}
+              className="pixel-art mx-auto mb-2"
+              aria-hidden="true"
+              unoptimized
+            />
+          </motion.div>
+          <h3 className="text-lg font-bold text-gold">{t("celebration_title")}</h3>
+          <p className="text-sm text-muted-foreground mt-1">{t("celebration_subtitle")}</p>
+        </motion.div>
+      )}
+
+      {/* Session link card */}
+      <div className="p-3 rounded-lg bg-white/[0.04] border border-gold/20">
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
+          {t("launch_session_link_label")}
+        </p>
+        <p className="text-sm font-mono text-gold break-all">
+          {sessionLink}
+        </p>
+      </div>
+
+      {/* Copy button with animated feedback */}
+      <Button
+        type="button"
+        variant={copied ? "gold" : "outline"}
+        onClick={handleCopy}
+        className={`w-full transition-all duration-300 ${
+          copied
+            ? "border-gold text-surface-primary"
+            : "border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
+        }`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {copied ? (
+            <motion.span
+              key="copied"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-2"
+            >
+              <Check className="w-4 h-4" />
+              {t("launch_copied")}
+            </motion.span>
+          ) : (
+            <motion.span
+              key="copy"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              {t("launch_copy_link")}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Button>
+
+      {copyError && (
+        <p className="text-xs text-red-400" role="alert">{copyError}</p>
+      )}
+
+      <p className="text-xs text-muted-foreground text-center">
+        {t("launch_share_hint")}
+      </p>
+    </div>
   );
 }

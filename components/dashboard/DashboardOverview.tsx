@@ -101,6 +101,7 @@ interface DashboardOverviewProps {
     methodology_researcher_link: string;
   };
   streakWeeks?: number;
+  hasUsedCombat?: boolean;
 }
 
 export function DashboardOverview({
@@ -112,6 +113,7 @@ export function DashboardOverview({
   pendingInvites,
   translations: t,
   streakWeeks = 0,
+  hasUsedCombat = false,
 }: DashboardOverviewProps) {
   const router = useRouter();
   const { activeView, initialized, loadRole } = useRoleStore();
@@ -344,8 +346,8 @@ export function DashboardOverview({
         )
       )}
 
-      {/* DM nudge: has campaigns but zero saved encounters (JO-07) */}
-      {isDmRole && hasDmCampaigns && savedEncounters.length === 0 && campaigns.length > 0 && (
+      {/* DM nudge: has campaigns but never used combat and no players registered (JO-07) */}
+      {isDmRole && hasDmCampaigns && !hasUsedCombat && campaigns.every((c) => c.player_count === 0) && (
         <div className="mb-6 p-4 rounded-lg border border-gold/20 bg-gold/[0.04] flex items-start gap-3" data-testid="dm-nudge-invite">
           <Image
             src="/art/icons/team-chibi-1.png"

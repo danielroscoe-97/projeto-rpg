@@ -69,6 +69,15 @@ ms-playwright/
 
 # QA evidence screenshots (local only — never commit/deploy)
 qa-evidence/
+
+# Personal campaign files — not part of the app
+public/fichas/
+
+# Large video files — use CDN/storage, not public/
+public/video/*.mp4
+
+# Internal docs served via admin route, not public
+docs/internal/
 C\:\\Users\\*/
 
 # Large sound effect source files
