@@ -53,45 +53,57 @@ export default async function MethodologyPage() {
     const claims = data?.claims;
 
     if (claims?.sub && !claims.is_anonymous) {
-      // Fetch display name + contribution stats + community stats in parallel
-      const [userResult, contribResult, statsResult] = await Promise.all([
-        supabase
-          .from("users")
-          .select("display_name")
-          .eq("id", claims.sub)
-          .maybeSingle(),
-        supabase.rpc("get_user_methodology_contribution", {
-          p_user_id: claims.sub,
-        }),
-        supabase.rpc("get_methodology_stats"),
-      ]);
-
-      if (contribResult.error) {
-        captureError(contribResult.error, { component: "methodology", action: "get-contribution-ssr" });
-      }
-      if (statsResult.error) {
-        captureError(statsResult.error, { component: "methodology", action: "get-stats-ssr" });
-      }
-
-      // Only mark as logged in AFTER data fetches succeed
+      // Auth confirmed — set immediately so UI always reflects logged-in state
       isLoggedIn = true;
       displayName =
-        (userResult.data?.display_name as string | null) ||
-        claims.email?.split("@")[0] ||
-        "Mestre";
-      contrib = contribResult.data ?? {
-        total_combats: 0,
-        rated_combats: 0,
-        is_researcher: false,
-      };
-      uniqueDms = statsResult.data?.unique_dms ?? 0;
+        claims.email?.split("@")[0] || "Mestre";
+
+      // Data fetches in nested try — failures don't break auth state
+      try {
+        const [userResult, contribResult, statsResult] = await Promise.all([
+          supabase
+            .from("users")
+            .select("display_name")
+            .eq("id", claims.sub)
+            .maybeSingle(),
+          supabase.rpc("get_user_methodology_contribution", {
+            p_user_id: claims.sub,
+          }),
+          supabase.rpc("get_methodology_stats"),
+        ]);
+
+        if (contribResult.error) {
+          captureError(contribResult.error, { component: "methodology", action: "get-contribution-ssr" });
+        }
+        if (statsResult.error) {
+          captureError(statsResult.error, { component: "methodology", action: "get-stats-ssr" });
+        }
+
+        displayName =
+          (userResult.data?.display_name as string | null) ||
+          claims.email?.split("@")[0] ||
+          "Mestre";
+        contrib = contribResult.data ?? {
+          total_combats: 0,
+          rated_combats: 0,
+          is_researcher: false,
+        };
+        uniqueDms = statsResult.data?.unique_dms ?? 0;
+      } catch (err) {
+        captureError(err, { component: "methodology", action: "fetch-data-ssr" });
+        // isLoggedIn stays true, data stays at defaults
+      }
     } else {
       // Guest / anonymous — just fetch community stats for hero counter
-      const { data: statsData } = await supabase.rpc("get_methodology_stats");
-      uniqueDms = statsData?.unique_dms ?? 0;
+      try {
+        const { data: statsData } = await supabase.rpc("get_methodology_stats");
+        uniqueDms = statsData?.unique_dms ?? 0;
+      } catch {
+        // Stats unavailable — render with zero
+      }
     }
   } catch {
-    // Supabase unavailable — render logged-out version gracefully
+    // Supabase client/auth unavailable — render logged-out version
   }
 
   const jsonLd = {
@@ -146,20 +158,14 @@ export default async function MethodologyPage() {
       />
 
       <main className="flex-1">
-        {/* Section 1: Hero — conditional logado/deslogado */}
+        {/* Section 1: Hero + Progress Bar — shared background */}
         <MethodologyHero
           variant={isLoggedIn ? "logado" : "publico"}
           displayName={displayName}
           contrib={contrib}
           uniqueDms={uniqueDms}
-        />
-
-        {/* Section 2: Community Progress Bar */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gold/[0.04] rounded-full blur-[120px]" />
-          </div>
-          <div className="relative max-w-3xl mx-auto px-6 pt-10 pb-4">
+        >
+          <div className="max-w-3xl mx-auto px-6">
             <MethodologyProgressBar />
             <p className="text-center text-foreground/40 text-xs italic mt-4">
               {isLoggedIn && contrib && contrib.total_combats > 0
@@ -169,7 +175,7 @@ export default async function MethodologyPage() {
                 : "Você está aqui no começo. Isso é raro."}
             </p>
           </div>
-        </div>
+        </MethodologyHero>
 
         {/* Section 3: Personal Contributor Card (logged in only) */}
         {isLoggedIn && contrib !== undefined && (

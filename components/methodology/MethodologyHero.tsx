@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HeroParticles } from "@/components/marketing/HeroParticles";
@@ -14,6 +15,7 @@ interface Props {
   displayName?: string;
   contrib?: ContribData;
   uniqueDms?: number;
+  children?: React.ReactNode;
 }
 
 interface TitleInfo {
@@ -69,18 +71,14 @@ function getMotivation(contrib: ContribData | undefined): string {
   return "Rode seu primeiro combate e entre para a história.";
 }
 
-export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0 }: Props) {
+export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, children }: Props) {
   const title = getCurrentTitle(contrib);
   const motivation = getMotivation(contrib);
   const isLoggedIn = variant === "logado";
 
   return (
-    <section
-      className={`relative flex items-center justify-center px-6 pt-[72px] overflow-hidden ${
-        isLoggedIn ? "min-h-[45vh] pb-12" : "min-h-[60vh] pb-16"
-      }`}
-    >
-      {/* Background photo */}
+    <section className="relative overflow-hidden">
+      {/* Background photo — extends behind children (progress bar) */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <Image
           src="/art/decorations/hero-figurines-map.jpg"
@@ -90,7 +88,7 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0 }
           priority
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/95" />
       </div>
 
       {/* Floating particles */}
@@ -104,7 +102,11 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0 }
         )}
       </div>
 
-      <div className="relative max-w-2xl mx-auto text-center space-y-5">
+      <div
+        className={`relative max-w-2xl mx-auto text-center space-y-5 px-6 pt-[72px] ${
+          isLoggedIn ? "pb-8" : "pb-10"
+        }`}
+      >
         {isLoggedIn ? (
           <>
             {/* Logo mark */}
@@ -165,7 +167,7 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0 }
 
             {/* Headline */}
             <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-display text-foreground leading-[1.1] tracking-tight animate-fade-in-up"
+              className="text-2xl sm:text-3xl md:text-4xl font-display text-foreground leading-[1.15] tracking-tight animate-fade-in-up"
             >
               {uniqueDms > 0 ? (
                 <>
@@ -214,6 +216,13 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0 }
           </>
         )}
       </div>
+
+      {/* Children (progress bar) — renders within the hero background */}
+      {children && (
+        <div className="relative pb-12">
+          {children}
+        </div>
+      )}
     </section>
   );
 }
