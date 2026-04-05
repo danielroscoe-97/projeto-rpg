@@ -148,6 +148,23 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* Floating particles */}
       <HeroParticles />
 
+      {/* Open Beta sticker — floating left of hero content */}
+      <div className="absolute left-[16%] top-[38%] -translate-y-1/2 rotate-[-14deg] z-10 hidden md:block select-none pointer-events-none">
+        <div className="relative px-5 py-2.5 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent border border-gold/45 rounded-lg shadow-[0_6px_28px_rgba(212,168,83,0.2),inset_0_1px_0_rgba(212,168,83,0.25)] backdrop-blur-sm">
+          {/* top shimmer */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/70 to-transparent rounded-t-lg" />
+          {/* bottom shadow line */}
+          <div className="absolute inset-x-2 bottom-0 h-px bg-black/30 rounded-b-lg" />
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_8px_rgba(212,168,83,1)] animate-pulse" />
+              <span className="font-display font-black text-gold text-[13px] tracking-[0.28em] uppercase leading-none drop-shadow-[0_0_8px_rgba(212,168,83,0.4)]">Open Beta</span>
+            </div>
+            <span className="text-gold/45 text-[9px] font-mono tracking-[0.22em] uppercase leading-none">— fase —</span>
+          </div>
+        </div>
+      </div>
+
       {/* Radial glows */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/[0.07] rounded-full blur-[120px]" />
@@ -1071,7 +1088,7 @@ export default async function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
       />
-      <Navbar
+<Navbar
         brand="Pocket DM"
         brandHref="/"
         links={[
