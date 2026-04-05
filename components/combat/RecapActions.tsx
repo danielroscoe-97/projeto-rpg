@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Share2, RotateCcw, BookmarkPlus, Link2, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { formatRecapShareText } from "@/lib/utils/combat-stats";
+import { DifficultyRatingStrip } from "./DifficultyRatingStrip";
 
 interface RecapActionsProps {
   report: CombatReport;
@@ -19,11 +21,22 @@ interface RecapActionsProps {
   campaignId?: string;
   /** Encounter ID for linking the report (DM mode) */
   encounterId?: string;
+  /** Called when user submits an inline rating */
+  onRate?: (vote: 1 | 2 | 3 | 4 | 5) => void;
+  /** Pre-filled rating value */
+  initialRating?: number | null;
 }
 
-export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId }: RecapActionsProps) {
+export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating }: RecapActionsProps) {
   const t = useTranslations("combat");
-  const [isCreatingLink, setIsCreatingLink] = useState(false);
+  const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false);
+  // Already saved if auto-save ran with a campaign linked
+  const [isSaved, setIsSaved] = useState(!!(existingShareUrl && campaignId));
+  const [hasRated, setHasRated] = useState(initialRating != null);
+  // Abort in-flight save on unmount
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
 
   const handleShareText = useCallback(async () => {
     const text = formatRecapShareText(report);
@@ -45,51 +58,41 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
     }
   }, [report, t]);
 
-  const handleShareLink = useCallback(async () => {
-    setIsCreatingLink(true);
-    try {
-      // Reuse existing URL from auto-save if available, otherwise create new
-      let url = existingShareUrl;
-      if (!url) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15_000);
-        try {
-          const res = await fetch("/api/combat-reports", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ report, campaignId, encounterId }),
-            signal: controller.signal,
-          });
-          clearTimeout(timeout);
-          if (!res.ok) throw new Error("Failed to create link");
-          const data = await res.json();
-          url = data.url;
-        } catch (err) {
-          clearTimeout(timeout);
-          throw err;
-        }
-      }
-
-      if (typeof navigator !== "undefined" && navigator.share) {
-        try {
-          await navigator.share({ url: url!, text: formatRecapShareText(report) });
-          return;
-        } catch { /* fall through to clipboard */ }
-      }
-
-      try {
-        await navigator.clipboard.writeText(url!);
-        toast.success(t("recap_link_copied"));
-      } catch {
-        // Clipboard blocked — show URL in toast so user can copy manually
-        toast.success(url!, { duration: 8000 });
-      }
-    } catch {
-      toast.error(t("recap_link_error"));
-    } finally {
-      setIsCreatingLink(false);
+  const handleSaveCombat = useCallback(async () => {
+    if (!campaignId) {
+      toast.info(t("recap_save_no_campaign"));
+      onNewCombat();
+      router.push("/app/dashboard/campaigns");
+      return;
     }
-  }, [report, existingShareUrl, campaignId, encounterId, t]);
+
+    if (isSaved) {
+      toast.success(t("recap_save_success"));
+      return;
+    }
+
+    setIsSaving(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+    try {
+      const res = await fetch("/api/combat-reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ report, campaignId, encounterId }),
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setIsSaved(true);
+      toast.success(t("recap_save_success"));
+    } catch {
+      if (!controller.signal.aborted) toast.error(t("recap_save_error"));
+    } finally {
+      clearTimeout(timeout);
+      abortRef.current = null;
+      setIsSaving(false);
+    }
+  }, [campaignId, isSaved, report, encounterId, t, onNewCombat, router]);
 
   return (
     <motion.div
@@ -111,7 +114,21 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
         </button>
       )}
 
-      {/* Action row — Share text + Share link + New combat */}
+      {/* Inline rating strip */}
+      {onRate && (
+        <div className="space-y-2 pt-1">
+          <p className="text-xs text-muted-foreground text-center">
+            {hasRated ? t("recap_rate_thanks") : t("recap_rate_label")}
+          </p>
+          <DifficultyRatingStrip
+            compact
+            initialValue={initialRating}
+            onSelect={(vote) => { setHasRated(true); onRate(vote); }}
+          />
+        </div>
+      )}
+
+      {/* Action row — Share text + Save combat + New combat */}
       <div className="flex gap-2">
         <button
           type="button"
@@ -124,13 +141,23 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
         </button>
         <button
           type="button"
-          onClick={handleShareLink}
-          disabled={isCreatingLink}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-gold/30 text-gold hover:bg-gold/10 transition-colors text-sm font-medium min-h-[44px] disabled:opacity-50"
-          data-testid="recap-share-link-btn"
+          onClick={handleSaveCombat}
+          disabled={isSaving}
+          className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border transition-colors text-sm font-medium min-h-[44px] disabled:opacity-50 ${
+            isSaved
+              ? "border-green-500/30 text-green-400 hover:bg-green-500/10"
+              : "border-gold/30 text-gold hover:bg-gold/10"
+          }`}
+          data-testid="recap-save-combat-btn"
         >
-          {isCreatingLink ? <Loader2 className="size-4 animate-spin" /> : <Link2 className="size-4" />}
-          {t("recap_share_link")}
+          {isSaving ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : isSaved ? (
+            <Check className="size-4" />
+          ) : (
+            <Save className="size-4" />
+          )}
+          {isSaved ? t("recap_saved") : t("recap_save_combat")}
         </button>
         <button
           type="button"

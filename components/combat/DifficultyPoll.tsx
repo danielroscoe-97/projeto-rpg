@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Coffee, Smile, Swords, Flame, Skull, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { DifficultyRatingStrip } from "./DifficultyRatingStrip";
 
 const DIFFICULTY_OPTIONS = [
   { value: 1 as const, icon: Coffee, labelKey: "poll_very_easy", color: "text-green-400", bgActive: "bg-green-500/20 border-green-500/50", bgBar: "bg-green-500/20" },
@@ -25,11 +26,9 @@ interface DifficultyPollProps {
 
 export function DifficultyPoll({ onVote, onSkip, isLocalOnly = false }: DifficultyPollProps) {
   const t = useTranslations("combat");
-  const [myVote, setMyVote] = useState<number | null>(null);
-  const hasVoted = myVote !== null;
+  const [hasVoted, setHasVoted] = useState(false);
 
   return (
-    // UX.05 — entrance animation
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -40,38 +39,9 @@ export function DifficultyPoll({ onVote, onSkip, isLocalOnly = false }: Difficul
         <h2 className="text-center text-lg font-semibold text-foreground">
           {t("poll_title")}
         </h2>
-        <div className="flex justify-center gap-2">
-          {DIFFICULTY_OPTIONS.map((opt) => {
-            const Icon = opt.icon;
-            return (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  if (!hasVoted) {
-                    setMyVote(opt.value);
-                    onVote(opt.value);
-                  }
-                }}
-                disabled={hasVoted}
-                className={cn(
-                  // UX.14-style: minimum touch target
-                  "flex flex-col items-center gap-1.5 px-2.5 py-2.5 rounded-lg border transition-all min-h-[44px] touch-manipulation",
-                  myVote === opt.value
-                    ? opt.bgActive
-                    : hasVoted
-                      ? "opacity-20 border-white/5"
-                      : `border-white/10 hover:border-white/20 ${opt.color}`
-                )}
-              >
-                <Icon className="w-6 h-6" />
-                {/* UX.03 — text-xs not text-[10px] */}
-                <span className="text-xs leading-tight font-medium">
-                  {t(opt.labelKey)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <DifficultyRatingStrip
+          onSelect={(vote) => { setHasVoted(true); onVote(vote); }}
+        />
 
         {/* UX.01 — waiting state after vote (player only, not local-only) */}
         {hasVoted && !isLocalOnly && (

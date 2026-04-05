@@ -172,6 +172,8 @@ export function PlayerJoinClient({
   // P1.02: Track deferred session:ended when leaderboard/poll is active
   const pendingSessionEndRef = useRef(false);
   const combatStatsActiveRef = useRef(false);
+  // Tracks if player rated inline in the recap — skips standalone DifficultyPoll if so
+  const playerRatedInlineRef = useRef(false);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
   // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
@@ -1777,7 +1779,26 @@ export function PlayerJoinClient({
       return (
         <CombatRecap
           report={combatRecapReport}
-          onClose={() => { setCombatRecapReport(null); setShowPoll(true); }}
+          onRate={(vote) => {
+            playerRatedInlineRef.current = true;
+            handlePollVote(vote);
+          }}
+          onClose={() => {
+            setCombatRecapReport(null);
+            if (playerRatedInlineRef.current) {
+              // Already rated inline — skip DifficultyPoll, go straight to awaiting
+              setCombatStatsData(null);
+              combatStatsActiveRef.current = false;
+              if (pendingSessionEndRef.current) {
+                pendingSessionEndRef.current = false;
+                setSessionEnded(true);
+              } else {
+                setAwaitingSessionEnd(true);
+              }
+            } else {
+              setShowPoll(true);
+            }
+          }}
         />
       );
     }

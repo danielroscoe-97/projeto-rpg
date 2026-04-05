@@ -6,6 +6,14 @@
 > PRD master: [prd-v2.md](prd-v2.md) | Epics master: [epics-and-sprints-spec.md](epics-and-sprints-spec.md)
 > Decisões sem PRD formal: [decisoes-implementadas-2026-04-03.md](decisoes-implementadas-2026-04-03.md)
 >
+> **Party Mode 2026-04-05 — Decisões:**
+> - Onboarding Tour (WS2 Sprint 1.2) → Absorvido pelo Epic User Journey (`docs/epic-user-journey-onboarding.md`, JO-12/JO-14)
+> - Dashboard Tour infra → Absorvido pelo Epic User Journey (JO-14)
+> - Role Selection page → Absorvido pelo Epic User Journey (JO-05)
+> - UC-08 NOVO: Jogador anônimo → recap → join campanha (JO-04)
+> - **Nova prioridade principal do projeto**: Epic User Journey & Onboarding
+> - **Zona proibida**: Todo código de combate (construção + ongoing) é intocável
+>
 > **Party Mode 2026-04-03 — Decisões:**
 > - F-05/F-06/F-07 → Absorvidos pelo PHQ Epic (Sprint 1-4)
 > - F-29 → JÁ IMPLEMENTADO (TurnNotificationOverlay + Web Push)

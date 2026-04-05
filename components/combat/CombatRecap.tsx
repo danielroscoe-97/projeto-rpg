@@ -25,9 +25,13 @@ interface CombatRecapProps {
   encounterId?: string;
   /** CTA-11: Previous encounter duration in ms for trend comparison */
   previousDurationMs?: number | null;
+  /** Inline difficulty rating — called when user selects a rating inside the recap */
+  onRate?: (vote: 1 | 2 | 3 | 4 | 5) => void;
+  /** Pre-filled rating value */
+  initialRating?: number | null;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(report.awards.length > 0 ? "awards" : "details");
 
@@ -140,6 +144,8 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
                   existingShareUrl={existingShareUrl}
                   campaignId={campaignId}
                   encounterId={encounterId}
+                  onRate={onRate}
+                  initialRating={initialRating}
                 />
               </motion.div>
             )}

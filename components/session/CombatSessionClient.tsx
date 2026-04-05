@@ -352,6 +352,9 @@ export function CombatSessionClient({
   const postCombatPhaseRef = useRef<PostCombatPhase>(null);
   postCombatPhaseRef.current = postCombatPhase;
 
+  // Tracks DM inline rating from recap — if set, skip dm_feedback phase
+  const dmInlineRatingRef = useRef<number | null>(null);
+
   // BUG-I2: Mutual exclusion — derived state prevents log during any post-combat phase
   const effectiveShowActionLog = showActionLog && !postCombatPhase;
 
@@ -1459,8 +1462,17 @@ export function CombatSessionClient({
         {postCombatPhase === "leaderboard" && combatReport && (
           <CombatRecap
             report={combatReport}
-            // Sprint 3: After leaderboard, DM goes to dm_feedback
-            onClose={() => setPostCombatPhase("dm_feedback")}
+            onClose={() => {
+              // If DM rated inline, skip dm_feedback and go straight to result
+              setPostCombatPhase(dmInlineRatingRef.current !== null ? "result" : "dm_feedback");
+            }}
+            onRate={(vote) => {
+              dmInlineRatingRef.current = vote;
+              const encId = useCombatStore.getState().encounter_id;
+              if (encId) {
+                persistDmFeedback(encId, vote, "").catch(() => { /* fire-and-forget */ });
+              }
+            }}
             existingShareUrl={reportShareUrl}
             campaignId={campaignId ?? undefined}
             encounterId={useCombatStore.getState().encounter_id ?? undefined}

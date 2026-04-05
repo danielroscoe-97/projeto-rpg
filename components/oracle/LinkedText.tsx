@@ -67,11 +67,7 @@ export function LinkedText({ text, rulesetVersion }: LinkedTextProps) {
           kind: "condition",
           id: c.id,
           name: c.name,
-          tooltipText: (() => {
-            const desc = c.description ?? "";
-            const first = desc.split(/\.\s/)[0] ?? desc;
-            return first.endsWith(".") ? first : first + ".";
-          })(),
+          tooltipText: c.description ?? "",
         }),
       ),
     ];
@@ -194,11 +190,12 @@ export function LinkedText({ text, rulesetVersion }: LinkedTextProps) {
             color: "var(--5e-text, #e8e4d0)",
             padding: "6px 10px",
             borderRadius: 4,
-            fontSize: "0.8em",
+            fontSize: "0.85em",
             zIndex: 9999,
-            maxWidth: 260,
+            maxWidth: 400,
             pointerEvents: "none",
             lineHeight: 1.4,
+            whiteSpace: "pre-line",
           }}
         >
           {tooltip}
