@@ -183,7 +183,7 @@ export function MethodologyProgressBar() {
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-foreground/50">
           <span>
             <span className="text-gold font-medium">{stats.unique_dms}</span>{" "}
-            DMs contribuindo
+            Mestres contribuindo
           </span>
           <span className="text-white/10">|</span>
           <span>
@@ -195,7 +195,7 @@ export function MethodologyProgressBar() {
                 : 0}
               %
             </span>{" "}
-            com rating do DM
+            com rating do Mestre
           </span>
         </div>
       )}

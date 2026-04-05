@@ -36,6 +36,7 @@ interface ContribData {
   total_combats: number;
   rated_combats: number;
   is_researcher: boolean;
+  spell_votes?: number;
 }
 
 export default async function MethodologyPage() {

@@ -31,7 +31,7 @@ const TITLES: TitleDef[] = [
   {
     badge: SilverBadge,
     name: "Caçador de Dados",
-    criterion: "10 combates com rating do DM",
+    criterion: "10 combates com rating do Mestre",
     colorClass: "text-slate-300",
     borderClass: "border-slate-400/20",
     bgFromClass: "from-slate-400/[0.04]",

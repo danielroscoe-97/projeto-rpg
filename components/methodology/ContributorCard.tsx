@@ -2,6 +2,7 @@ interface ContribData {
   total_combats: number;
   rated_combats: number;
   is_researcher: boolean;
+  spell_votes?: number;
 }
 
 interface NextTitleInfo {
@@ -65,11 +66,13 @@ export function ContributorCard({ contrib }: Props) {
             <div className="font-display text-3xl text-gold tabular-nums">
               {rated_combats}
             </div>
-            <div className="text-foreground/50 text-xs mt-1">com rating do DM</div>
+            <div className="text-foreground/50 text-xs mt-1">com rating do Mestre</div>
           </div>
-          <div className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-4 text-center opacity-40">
-            <div className="font-display text-3xl text-foreground/30 tabular-nums">—</div>
-            <div className="text-foreground/30 text-xs mt-1">spell votes</div>
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4 text-center">
+            <div className="font-display text-3xl text-gold tabular-nums">
+              {contrib.spell_votes ?? 0}
+            </div>
+            <div className="text-foreground/50 text-xs mt-1">spell votes</div>
           </div>
         </div>
 

@@ -175,10 +175,10 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
                     duration={1800}
                     className="text-gold tabular-nums"
                   />{" "}
-                  DMs estão construindo
+                  Mestres estão construindo
                 </>
               ) : (
-                "DMs estão construindo"
+                "Mestres estão construindo"
               )}
               <br />
               <span className="text-gold drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]">
