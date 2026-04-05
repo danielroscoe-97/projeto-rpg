@@ -17,8 +17,6 @@ const AWARD_CONFIG: Record<AwardType, { icon: typeof Crown; color: string; bg: s
   slowpoke: { icon: Timer, color: "text-orange-400", bg: "bg-orange-400/10 border-orange-400/30" },
 };
 
-const AUTO_ADVANCE_MS = 3000;
-
 interface RecapAwardsCarouselProps {
   awards: CombatReportAward[];
   onComplete: () => void;
@@ -32,18 +30,13 @@ export function RecapAwardsCarousel({ awards, onComplete }: RecapAwardsCarouselP
   const advance = useCallback(() => {
     if (currentIndex < awards.length - 1) {
       setCurrentIndex((i) => i + 1);
-    } else {
+    } else if (!isComplete) {
       setIsComplete(true);
+      // Don't auto-advance — wait for an explicit click to go to summary
+    } else {
       onComplete();
     }
-  }, [currentIndex, awards.length, onComplete]);
-
-  // Auto-advance timer
-  useEffect(() => {
-    if (isComplete) return;
-    const timer = setTimeout(advance, AUTO_ADVANCE_MS);
-    return () => clearTimeout(timer);
-  }, [currentIndex, isComplete, advance]);
+  }, [currentIndex, awards.length, isComplete, onComplete]);
 
   // Tap/click anywhere to advance
   const handleTap = useCallback(() => {
@@ -135,17 +128,16 @@ export function RecapAwardsCarousel({ awards, onComplete }: RecapAwardsCarouselP
       </AnimatePresence>
 
       {/* Tap hint */}
-      {!isComplete && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="flex items-center gap-1 mt-4 text-xs text-muted-foreground/50"
-        >
-          {t("recap_tap_to_continue")}
-          <ChevronRight className="size-3" />
-        </motion.p>
-      )}
+      <motion.p
+        key={isComplete ? "summary" : currentIndex}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: isComplete ? 0.3 : 1.5 }}
+        className="flex items-center gap-1 mt-4 text-xs text-muted-foreground/50"
+      >
+        {isComplete ? t("recap_tap_for_summary") : t("recap_tap_to_continue")}
+        <ChevronRight className="size-3" />
+      </motion.p>
     </div>
   );
 }

@@ -1290,6 +1290,7 @@
 
     "recap_title": "Combat Recap",
     "recap_tap_to_continue": "Toque para continuar",
+    "recap_tap_for_summary": "Toque para ver o resumo",
     "recap_skip": "Pular animação",
     "recap_new_combat": "Novo Combate",
     "recap_save_and_signup": "Salvar resultados e criar campanha",
@@ -1297,6 +1298,13 @@
     "recap_share_link": "Link",
     "recap_link_copied": "Link copiado! Cole no grupo pra compartilhar.",
     "recap_link_error": "Erro ao criar link. Tente novamente.",
+    "recap_save_combat": "Salvar Combate",
+    "recap_saved": "Salvo",
+    "recap_save_success": "Combate salvo na campanha!",
+    "recap_save_error": "Erro ao salvar o combate. Tente novamente.",
+    "recap_save_no_campaign": "Selecione uma campanha para salvar o combate.",
+    "recap_rate_label": "Dê a nota para este combate",
+    "recap_rate_thanks": "Avaliado!",
     "recap_epic_moments": "Momentos Épicos",
 
     "recap_award_mvp": "MVP",
