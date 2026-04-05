@@ -40,34 +40,58 @@ export function useCampaignQuests(campaignId: string) {
       if (!title.trim()) return;
       const supabase = createClient();
       const maxOrder = quests.reduce((max, q) => Math.max(max, q.sort_order), -1);
-      await supabase.from("campaign_quests").insert({
-        campaign_id: campaignId,
-        title: title.trim(),
-        description: "",
-        status: "available",
-        sort_order: maxOrder + 1,
-      });
-      await fetchQuests();
+
+      const { data, error } = await supabase
+        .from("campaign_quests")
+        .insert({
+          campaign_id: campaignId,
+          title: title.trim(),
+          description: "",
+          status: "available",
+          sort_order: maxOrder + 1,
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        setQuests((prev) => sortQuestsByStatus([...prev, data as CampaignQuest]));
+      }
     },
-    [campaignId, quests, fetchQuests]
+    [campaignId, quests],
   );
 
   const updateQuest = useCallback(
     async (id: string, updates: Partial<{ title: string; description: string; status: QuestStatus; is_visible_to_players: boolean }>) => {
+      // Optimistic update
+      setQuests((prev) =>
+        sortQuestsByStatus(prev.map((q) => (q.id === id ? { ...q, ...updates } : q))),
+      );
+
       const supabase = createClient();
-      await supabase.from("campaign_quests").update(updates).eq("id", id);
-      await fetchQuests();
+      const { error } = await supabase.from("campaign_quests").update(updates).eq("id", id);
+
+      if (error) {
+        // Rollback on failure
+        await fetchQuests();
+      }
     },
-    [fetchQuests]
+    [fetchQuests],
   );
 
   const deleteQuest = useCallback(
     async (id: string) => {
+      // Optimistic removal
+      const prev = quests;
+      setQuests((current) => current.filter((q) => q.id !== id));
+
       const supabase = createClient();
-      await supabase.from("campaign_quests").delete().eq("id", id);
-      await fetchQuests();
+      const { error } = await supabase.from("campaign_quests").delete().eq("id", id);
+
+      if (error) {
+        setQuests(prev);
+      }
     },
-    [fetchQuests]
+    [quests],
   );
 
   const reorderQuest = useCallback(
@@ -76,7 +100,7 @@ export function useCampaignQuests(campaignId: string) {
       await supabase.from("campaign_quests").update({ sort_order: newOrder }).eq("id", id);
       await fetchQuests();
     },
-    [fetchQuests]
+    [fetchQuests],
   );
 
   return { quests, loading, createQuest, updateQuest, deleteQuest, reorderQuest, refetch: fetchQuests };

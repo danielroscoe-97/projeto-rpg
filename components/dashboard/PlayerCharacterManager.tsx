@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, User } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -328,7 +328,7 @@ export function PlayerCharacterManager({
       )}
 
       {/* Unified character list */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {entries.map((entry) => {
           if (!entry.character) return null;
           const character = entry.character;
@@ -374,76 +374,29 @@ export function PlayerCharacterManager({
           }
 
           return (
-            <div key={entry.key} className="space-y-2">
-              {/* CharacterCard */}
-              <CharacterCard
-                character={character}
-                onClick={() => setEditingCharacter(character)}
-                onUploadToken={() => setTokenUploadChar(character)}
-              />
-
-              {/* Account badge (linked only) */}
-              {entry.member && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-md text-xs">
-                  <User className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                  <span className="text-muted-foreground truncate">
-                    {entry.member.display_name ?? entry.member.email?.split("@")[0] ?? "Jogador"}
-                  </span>
-                  <span className="text-[10px] text-emerald-400 ml-auto whitespace-nowrap">
-                    Conta vinculada
-                  </span>
-                </div>
-              )}
-
-              {/* Remove action */}
-              <div className="flex justify-end px-1">
-                <button
-                  type="button"
-                  className="text-red-400 hover:text-red-300 text-xs transition-colors"
-                  onClick={() => {
-                    if (entry.entryType === "linked" && entry.member) {
-                      const memberName =
-                        entry.member.display_name ?? entry.member.email?.split("@")[0] ?? "Jogador";
-                      setLinkedRemoveTarget({
-                        userId: entry.member.user_id,
-                        memberName,
-                      });
-                    } else {
-                      setRemoveTargetId(character.id);
-                      setError(null);
-                    }
-                  }}
-                >
-                  {tc("remove")}
-                </button>
-              </div>
-
-              {/* DM Notes */}
-              <div className="space-y-1">
-                <textarea
-                  value={notesValues[character.id] ?? ""}
-                  onChange={(e) => handleNotesChange(character.id, e.target.value)}
-                  placeholder="Notas sobre este jogador..."
-                  maxLength={2000}
-                  rows={2}
-                  className="w-full bg-transparent border border-border/50 rounded-md px-3 py-2 text-sm text-muted-foreground placeholder:text-muted-foreground/30 resize-y focus:outline-none focus:border-border/80 transition-colors"
-                  style={{ fontSize: 16, minHeight: "3.5rem", maxHeight: "9rem" }}
-                />
-                <div className="flex justify-end h-4 mt-0.5">
-                  {notesSaveStatus[character.id] === "saving" && (
-                    <span className="text-[10px] text-muted-foreground animate-pulse">
-                      Salvando...
-                    </span>
-                  )}
-                  {notesSaveStatus[character.id] === "saved" && (
-                    <span className="text-[10px] text-emerald-400">Salvo</span>
-                  )}
-                  {notesSaveStatus[character.id] === "error" && (
-                    <span className="text-[10px] text-red-400">Erro ao salvar</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <CharacterCard
+              key={entry.key}
+              character={character}
+              onClick={() => setEditingCharacter(character)}
+              onUploadToken={() => setTokenUploadChar(character)}
+              onDelete={() => {
+                if (entry.entryType === "linked" && entry.member) {
+                  const memberName =
+                    entry.member.display_name ?? entry.member.email?.split("@")[0] ?? "Jogador";
+                  setLinkedRemoveTarget({
+                    userId: entry.member.user_id,
+                    memberName,
+                  });
+                } else {
+                  setRemoveTargetId(character.id);
+                  setError(null);
+                }
+              }}
+              member={entry.member ?? null}
+              dmNotes={notesValues[character.id] ?? ""}
+              onDmNotesChange={(value) => handleNotesChange(character.id, value)}
+              notesSaveStatus={notesSaveStatus[character.id] ?? "idle"}
+            />
           );
         })}
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, LayoutGrid, List, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,7 @@ import {
 import { NpcCard } from "./NpcCard";
 import { NpcForm } from "./NpcForm";
 import { NpcCardSkeleton } from "@/components/ui/skeletons/NpcCardSkeleton";
-import {
-  getNpcs,
-  createNpc,
-  updateNpc,
-  deleteNpc,
-  toggleNpcVisibility,
-} from "@/lib/supabase/campaign-npcs";
-import { getCampaignNoteNpcLinks } from "@/lib/supabase/note-npc-links";
-import { createClient } from "@/lib/supabase/client";
+import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignNpc, CampaignNpcInsert } from "@/lib/types/campaign-npcs";
 import type { NoteNpcLink } from "@/lib/types/note-npc-links";
@@ -44,54 +36,22 @@ interface NpcListProps {
 
 export function NpcList({ campaignId }: NpcListProps) {
   const t = useTranslations("npcs");
-  const [npcs, setNpcs] = useState<CampaignNpc[]>([]);
-  const [npcLinks, setNpcLinks] = useState<NoteNpcLink[]>([]);
-  const [noteInfos, setNoteInfos] = useState<NoteInfo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    npcs,
+    npcLinks,
+    noteInfos,
+    loading,
+    addNpc,
+    editNpc,
+    removeNpc,
+    toggleVisibility,
+  } = useCampaignNpcs(campaignId);
+
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [editingNpc, setEditingNpc] = useState<CampaignNpc | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignNpc | null>(null);
-
-  // Fetch NPCs, links, and note titles on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [npcsData, linksData] = await Promise.all([
-          getNpcs(campaignId),
-          getCampaignNoteNpcLinks(campaignId),
-        ]);
-        setNpcs(npcsData);
-        setNpcLinks(linksData);
-
-        // Fetch note titles for linked notes
-        if (linksData.length > 0) {
-          const supabase = createClient();
-          const noteIds = [...new Set(linksData.map((l) => l.note_id))];
-          const { data: notesData } = await supabase
-            .from("campaign_notes")
-            .select("id, title")
-            .in("id", noteIds);
-          setNoteInfos(
-            (notesData ?? []).map((n: { id: string; title: string }) => ({
-              id: n.id,
-              title: n.title,
-            })),
-          );
-        }
-      } catch (err) {
-        captureError(err, {
-          component: "NpcList",
-          action: "fetchNpcs",
-          category: "network",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [campaignId]);
 
   // Build related notes map per NPC
   const relatedNotesMap = useMemo(() => {
@@ -117,35 +77,30 @@ export function NpcList({ campaignId }: NpcListProps) {
 
   const handleCreate = useCallback(
     async (data: CampaignNpcInsert) => {
-      const created = await createNpc(data);
-      setNpcs((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)));
+      await addNpc(data);
     },
-    []
+    [addNpc],
   );
 
   const handleEdit = useCallback(
     async (data: CampaignNpcInsert) => {
       if (!editingNpc) return;
-      const updated = await updateNpc(editingNpc.id, {
+      await editNpc(editingNpc.id, {
         name: data.name,
         description: data.description,
         stats: data.stats,
         avatar_url: data.avatar_url,
         is_visible_to_players: data.is_visible_to_players,
       });
-      setNpcs((prev) =>
-        prev.map((n) => (n.id === updated.id ? updated : n)).sort((a, b) => a.name.localeCompare(b.name))
-      );
       setEditingNpc(null);
     },
-    [editingNpc]
+    [editingNpc, editNpc],
   );
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
     try {
-      await deleteNpc(deleteTarget.id);
-      setNpcs((prev) => prev.filter((n) => n.id !== deleteTarget.id));
+      await removeNpc(deleteTarget.id);
     } catch (err) {
       captureError(err, {
         component: "NpcList",
@@ -155,20 +110,22 @@ export function NpcList({ campaignId }: NpcListProps) {
     } finally {
       setDeleteTarget(null);
     }
-  }, [deleteTarget]);
+  }, [deleteTarget, removeNpc]);
 
-  const handleToggleVisibility = useCallback(async (npc: CampaignNpc) => {
-    try {
-      const updated = await toggleNpcVisibility(npc.id, !npc.is_visible_to_players);
-      setNpcs((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
-    } catch (err) {
-      captureError(err, {
-        component: "NpcList",
-        action: "toggleVisibility",
-        category: "network",
-      });
-    }
-  }, []);
+  const handleToggleVisibility = useCallback(
+    async (npc: CampaignNpc) => {
+      try {
+        await toggleVisibility(npc);
+      } catch (err) {
+        captureError(err, {
+          component: "NpcList",
+          action: "toggleVisibility",
+          category: "network",
+        });
+      }
+    },
+    [toggleVisibility],
+  );
 
   const openEditForm = useCallback((npc: CampaignNpc) => {
     setEditingNpc(npc);
@@ -327,7 +284,7 @@ export function NpcList({ campaignId }: NpcListProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{/* uses common cancel */}Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

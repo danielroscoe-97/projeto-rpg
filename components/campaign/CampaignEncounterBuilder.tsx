@@ -49,8 +49,8 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
 
   // ── State ──
   const players = members.filter((m) => m.role === "player");
-  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() =>
-    players.map((p) => p.id)
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(() =>
+    characters.map((c) => c.id)
   );
   const [encounter, setEncounter] = useState<EncounterMonster[]>([]);
   const [search, setSearch] = useState("");
@@ -75,20 +75,16 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
 
   // ── Computed party data ──
   const { partySize, partyLevel } = useMemo(() => {
-    const selectedChars = selectedMemberIds
-      .map((mid) => {
-        const member = players.find((p) => p.id === mid);
-        if (!member) return null;
-        return characters.find((c) => c.user_id === member.user_id);
-      })
-      .filter(Boolean) as PlayerCharacter[];
+    const selectedChars = characters.filter((c) =>
+      selectedCharacterIds.includes(c.id),
+    );
 
-    const size = selectedMemberIds.length;
+    const size = selectedChars.length;
     const totalLevel = selectedChars.reduce((sum, c) => sum + (c.level ?? 1), 0);
     const avgLevel = size > 0 ? Math.round(totalLevel / size) : 1;
 
     return { partySize: size, partyLevel: avgLevel };
-  }, [selectedMemberIds, players, characters]);
+  }, [selectedCharacterIds, characters]);
 
   // ── Monster search ──
   const searchResults = useMemo(() => {
@@ -175,7 +171,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
         difficulty: calc.difficulty,
         totalXp: calc.totalValue,
         adjustedXp: calc.totalValue,
-        selectedMembers: selectedMemberIds,
+        selectedMembers: selectedCharacterIds,
         formulaVersion,
         creatures,
       };
@@ -205,10 +201,20 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
     setEditingPresetId(preset.id);
     setPresetName(preset.name);
     setPresetNotes(preset.notes ?? "");
-    // P7: filter out stale member IDs that no longer exist in the campaign
-    const validMemberIds = new Set(players.map((p) => p.id));
-    const filtered = preset.selected_members.filter((id) => validMemberIds.has(id));
-    setSelectedMemberIds(filtered.length > 0 ? filtered : players.map((p) => p.id));
+    // Try character IDs first, then fallback to member-based matching (old presets)
+    const validCharIds = new Set(characters.map((c) => c.id));
+    let filtered = preset.selected_members.filter((id) => validCharIds.has(id));
+    if (filtered.length === 0) {
+      // Fallback: old preset stored member IDs — resolve to character IDs via user_id
+      const memberMap = new Map(players.map((p) => [p.id, p.user_id]));
+      filtered = preset.selected_members
+        .map((mid) => {
+          const userId = memberMap.get(mid);
+          return userId ? characters.find((c) => c.user_id === userId)?.id : undefined;
+        })
+        .filter((id): id is string => !!id);
+    }
+    setSelectedCharacterIds(filtered.length > 0 ? filtered : characters.map((c) => c.id));
     setFormulaVersion(preset.formula_version as FormulaVersion);
     setEncounter(
       preset.creatures.map((c) => ({
@@ -262,10 +268,9 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           {/* Player selector */}
           <div className="rounded-xl border border-border bg-card/50 p-4">
             <EncounterPlayerSelector
-              members={members}
               characters={characters}
-              selectedMemberIds={selectedMemberIds}
-              onSelectionChange={setSelectedMemberIds}
+              selectedCharacterIds={selectedCharacterIds}
+              onSelectionChange={setSelectedCharacterIds}
             />
           </div>
 

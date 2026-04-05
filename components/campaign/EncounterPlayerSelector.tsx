@@ -1,48 +1,38 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Check, AlertTriangle } from "lucide-react";
+import { Check, AlertTriangle, User, Heart, Shield, Sparkles } from "lucide-react";
 import type { PlayerCharacter } from "@/lib/types/database";
-import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 
 interface Props {
-  members: CampaignMemberWithUser[];
   characters: PlayerCharacter[];
-  selectedMemberIds: string[];
+  selectedCharacterIds: string[];
   onSelectionChange: (ids: string[]) => void;
 }
 
-function getCharacterForMember(
-  member: CampaignMemberWithUser,
-  characters: PlayerCharacter[]
-): PlayerCharacter | undefined {
-  return characters.find((c) => c.user_id === member.user_id);
-}
-
 export function EncounterPlayerSelector({
-  members,
   characters,
-  selectedMemberIds,
+  selectedCharacterIds,
   onSelectionChange,
 }: Props) {
   const t = useTranslations("encounter_builder");
-  const players = members.filter((m) => m.role === "player");
 
-  const allSelected = players.length > 0 && players.every((p) => selectedMemberIds.includes(p.id));
+  const allSelected =
+    characters.length > 0 && characters.every((c) => selectedCharacterIds.includes(c.id));
 
   function toggleAll() {
     if (allSelected) {
       onSelectionChange([]);
     } else {
-      onSelectionChange(players.map((p) => p.id));
+      onSelectionChange(characters.map((c) => c.id));
     }
   }
 
-  function toggleMember(memberId: string) {
-    if (selectedMemberIds.includes(memberId)) {
-      onSelectionChange(selectedMemberIds.filter((id) => id !== memberId));
+  function toggleCharacter(charId: string) {
+    if (selectedCharacterIds.includes(charId)) {
+      onSelectionChange(selectedCharacterIds.filter((id) => id !== charId));
     } else {
-      onSelectionChange([...selectedMemberIds, memberId]);
+      onSelectionChange([...selectedCharacterIds, charId]);
     }
   }
 
@@ -59,58 +49,82 @@ export function EncounterPlayerSelector({
         </button>
       </div>
 
-      {players.length === 0 ? (
+      {characters.length === 0 ? (
         <p className="text-xs text-muted-foreground py-4 text-center">{t("no_players")}</p>
       ) : (
-        <div className="space-y-1">
-          {players.map((member) => {
-            const char = getCharacterForMember(member, characters);
-            const isSelected = selectedMemberIds.includes(member.id);
-            const hasLevel = char?.level != null;
+        <div className="space-y-1.5">
+          {characters.map((char) => {
+            const isSelected = selectedCharacterIds.includes(char.id);
+            const hasLevel = char.level != null;
+            const subtitle = [char.race, char.class].filter(Boolean).join(" ");
 
             return (
               <button
-                key={member.id}
+                key={char.id}
                 type="button"
-                onClick={() => toggleMember(member.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border transition-colors text-left ${
+                onClick={() => toggleCharacter(char.id)}
+                className={`group/player w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 text-left ${
                   isSelected
-                    ? "border-amber-500/30 bg-amber-500/5"
-                    : "border-border bg-card/50 opacity-50"
+                    ? "border-amber-500/30 bg-amber-500/5 shadow-[0_0_12px_-6px_rgba(251,191,36,0.15)]"
+                    : "border-border/40 bg-card/50 opacity-60 hover:opacity-80"
                 }`}
               >
                 {/* Checkbox */}
                 <div
-                  className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 ${
+                  className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                     isSelected
                       ? "bg-amber-500 border-amber-500"
-                      : "border-gray-600 bg-transparent"
+                      : "border-zinc-600 bg-transparent"
                   }`}
                 >
                   {isSelected && <Check className="w-3 h-3 text-black" />}
                 </div>
 
-                {/* Avatar placeholder */}
-                <div className="w-8 h-8 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs text-gray-400 font-bold">
-                    {(char?.name ?? member.display_name ?? "?").charAt(0).toUpperCase()}
-                  </span>
+                {/* Token avatar */}
+                <div className="shrink-0 relative">
+                  {char.token_url ? (
+                    <img
+                      src={char.token_url}
+                      alt={char.name}
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-400/25 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400/15 to-amber-600/10 ring-2 ring-amber-400/20 flex items-center justify-center">
+                      <User className="w-4 h-4 text-amber-400/60" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground truncate">
-                    {char?.name ?? member.character_name ?? member.display_name ?? member.email}
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {char.name}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    {char?.class && <span>{char.class}</span>}
-                    {char?.level != null && (
-                      <span>
-                        {t("level_abbr")} {char.level}
-                      </span>
-                    )}
-                    {char?.race && <span className="opacity-70">{char.race}</span>}
-                  </div>
+                  {subtitle && (
+                    <p className="text-[11px] text-muted-foreground/70 truncate">{subtitle}</p>
+                  )}
+                </div>
+
+                {/* Stat badges */}
+                <div className="flex items-center gap-1 shrink-0">
+                  {char.level != null && (
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/15">
+                      <Sparkles className="w-2.5 h-2.5" />
+                      {char.level}
+                    </span>
+                  )}
+                  {char.max_hp > 0 && (
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/15">
+                      <Heart className="w-2.5 h-2.5" />
+                      {char.max_hp}
+                    </span>
+                  )}
+                  {char.ac > 0 && (
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/15">
+                      <Shield className="w-2.5 h-2.5" />
+                      {char.ac}
+                    </span>
+                  )}
                 </div>
 
                 {/* Warning if no level */}
@@ -128,7 +142,7 @@ export function EncounterPlayerSelector({
       {/* Summary */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
         <span>
-          {selectedMemberIds.length} {t("selected_count")}
+          {selectedCharacterIds.length} {t("selected_count")}
         </span>
       </div>
     </div>

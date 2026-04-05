@@ -60,7 +60,11 @@ export function useBagOfHolding(campaignId: string, userId: string) {
         (payload) => {
           if (payload.eventType === "INSERT") {
             const newItem = payload.new as PartyInventoryItem;
-            setItems((prev) => [{ ...newItem }, ...prev]);
+            setItems((prev) => {
+              // Skip if already in state (optimistic add)
+              if (prev.some((i) => i.id === newItem.id)) return prev;
+              return [{ ...newItem }, ...prev];
+            });
           } else if (payload.eventType === "UPDATE") {
             const updated = payload.new as PartyInventoryItem;
             setItems((prev) =>
@@ -81,9 +85,26 @@ export function useBagOfHolding(campaignId: string, userId: string) {
     };
   }, [campaignId, supabase]);
 
-  // Add item
+  // Add item (optimistic)
   const addItem = useCallback(
     async (input: { item_name: string; quantity: number; notes?: string }) => {
+      const optimistic: BagItem = {
+        id: crypto.randomUUID(),
+        campaign_id: campaignId,
+        item_name: input.item_name,
+        quantity: input.quantity,
+        notes: input.notes ?? null,
+        added_by: userId,
+        added_at: new Date().toISOString(),
+        status: "active",
+        removed_by: null,
+        removed_at: null,
+        removal_approved_by: null,
+      };
+
+      // Instant UI feedback
+      setItems((prev) => [optimistic, ...prev]);
+
       const { data, error } = await supabase
         .from("party_inventory_items")
         .insert({
@@ -97,13 +118,19 @@ export function useBagOfHolding(campaignId: string, userId: string) {
         .single();
 
       if (error) {
+        // Rollback optimistic
+        setItems((prev) => prev.filter((i) => i.id !== optimistic.id));
         toast.error("Failed to add item");
         return null;
       }
-      // Realtime will handle the insert
+
+      // Replace optimistic with real data
+      setItems((prev) =>
+        prev.map((i) => (i.id === optimistic.id ? { ...data } : i)),
+      );
       return data;
     },
-    [campaignId, userId, supabase]
+    [campaignId, userId, supabase],
   );
 
   // C3 fix: Atomic request removal — check status first, then do both ops
