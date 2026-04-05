@@ -41,9 +41,8 @@ export function dispatchInitiativeRoll(
 ): void {
   if (typeof window === "undefined") return;
   const mod = rollResult.modifier;
-  const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
   const result: RollResult = {
-    notation: `1d20${modStr}`,
+    notation: "1d20",
     label: "Iniciativa",
     dice: [{ sides: 20, value: rollResult.rolls[0] }],
     modifier: mod,
