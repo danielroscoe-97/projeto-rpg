@@ -8,7 +8,7 @@ import {
   initDiceHistoryListener,
   type HistoryEntry,
 } from "@/lib/stores/dice-history-store";
-import type { RollResult } from "@/lib/dice/roll";
+import { type RollResult, parseNotation } from "@/lib/dice/roll";
 
 // ---------------------------------------------------------------------------
 // DiceHistoryPanel — floating bottom-right panel showing all dice rolls
@@ -190,8 +190,14 @@ function ModeBadge({ mode }: { mode: RollResult["mode"] }) {
   }
 }
 
+function diceOnlyNotation(notation: string): string {
+  const { count, sides } = parseNotation(notation);
+  return sides > 0 ? `${count}d${sides}` : notation;
+}
+
 function EntryBreakdown({ result }: { result: RollResult }) {
   const { mode, dice, discardedDice, modifier } = result;
+  const base = diceOnlyNotation(result.notation);
 
   if ((mode === "advantage" || mode === "disadvantage") && discardedDice.length > 0 && dice.length > 0) {
     const kept = dice[0].value;
@@ -201,7 +207,7 @@ function EntryBreakdown({ result }: { result: RollResult }) {
       : "";
     return (
       <>
-        {result.notation}{" "}
+        {base}{" "}
         [{kept}, <span className="dice-discarded">{discarded}</span>]{modStr}
       </>
     );
@@ -214,7 +220,7 @@ function EntryBreakdown({ result }: { result: RollResult }) {
       : "";
     return (
       <>
-        {result.notation} {diceStr}{modStr} → {result.total} ÷ 2
+        {base} {diceStr}{modStr} → {result.total} ÷ 2
       </>
     );
   }
@@ -226,7 +232,7 @@ function EntryBreakdown({ result }: { result: RollResult }) {
 
   return (
     <>
-      {result.notation} {diceStr}{modStr}
+      {base} {diceStr}{modStr}
     </>
   );
 }
