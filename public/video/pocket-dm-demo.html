@@ -590,7 +590,7 @@ html, body {
 #scene5 .zero-friction {
   display: flex;
   gap: 40px;
-  margin-top: 50px;
+  margin-top: 20px;
   opacity: 0;
   animation: slideUp 0.5s ease-out 1.2s both;
 }
@@ -615,7 +615,7 @@ html, body {
 }
 
 /* ===== SCENE 6: FEATURES GRID ===== */
-#scene6 { padding: 80px 120px; }
+#scene6 { padding: 50px 120px; }
 #scene6 .scene-title {
   font-size: 24px;
   color: var(--gold);
@@ -974,7 +974,7 @@ html, body {
 <!-- ============================================================ -->
 <div class="scene active" id="scene1">
   <div class="hook-text cinzel gold-gradient">
-    Cansado de gerenciar combate<br>no papel?
+    Cansado de gerenciar combate no papel?
   </div>
   <div class="hook-sub jakarta">
     Initiative, HP, conditions, stat blocks... tudo ao mesmo tempo.
@@ -1064,7 +1064,7 @@ html, body {
       <div class="app-logo-text cinzel gold-text">POCKET DM</div>
       <div style="display:flex;gap:20px;align-items:center">
         <span style="color:var(--text-secondary);font-size:14px">Novo Encontro</span>
-        <span style="background:var(--gold);color:var(--bg-deep);padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600">Criar Gratis</span>
+        <span style="background:var(--gold);color:var(--bg-deep);padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600">Criar Grátis</span>
       </div>
     </div>
     <div class="app-content">
@@ -1074,7 +1074,7 @@ html, body {
       </div>
       <div class="monster-list">
         <div class="monster-row highlight">
-          <div class="monster-token">D</div>
+          <div class="monster-token"><img src="assets/adult-red-dragon.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
           <div class="monster-info">
             <div class="monster-name">Adult Red Dragon</div>
             <div class="monster-meta">Huge Dragon, Chaotic Evil — SRD 2014</div>
@@ -1082,7 +1082,7 @@ html, body {
           <div class="monster-cr mono">CR 17</div>
         </div>
         <div class="monster-row">
-          <div class="monster-token">D</div>
+          <div class="monster-token"><img src="assets/adult-blue-dragon.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
           <div class="monster-info">
             <div class="monster-name">Adult Blue Dragon</div>
             <div class="monster-meta">Huge Dragon, Lawful Evil — SRD 2014</div>
@@ -1090,7 +1090,7 @@ html, body {
           <div class="monster-cr mono">CR 16</div>
         </div>
         <div class="monster-row">
-          <div class="monster-token">D</div>
+          <div class="monster-token"><img src="assets/adult-black-dragon.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
           <div class="monster-info">
             <div class="monster-name">Adult Black Dragon</div>
             <div class="monster-meta">Huge Dragon, Chaotic Evil — SRD 2024</div>
@@ -1098,7 +1098,7 @@ html, body {
           <div class="monster-cr mono">CR 14</div>
         </div>
         <div class="monster-row">
-          <div class="monster-token">D</div>
+          <div class="monster-token"><img src="assets/adult-green-dragon.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
           <div class="monster-info">
             <div class="monster-name">Adult Green Dragon</div>
             <div class="monster-meta">Huge Dragon, Lawful Evil — SRD 2014</div>
@@ -1115,7 +1115,7 @@ html, body {
     <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
     <div class="stat-badge-item jakarta"><span>2014</span> + <span>2024</span></div>
     <div class="stat-badge-item jakarta" style="color:var(--text-secondary)">|</div>
-    <div class="stat-badge-item jakarta">Bilingue <span style="font-size:18px">EN + PT-BR</span></div>
+    <div class="stat-badge-item jakarta">Bilíngue <span style="font-size:18px">EN + PT-BR</span></div>
   </div>
 </div>
 
@@ -1128,33 +1128,31 @@ html, body {
   <div class="combat-frame">
     <div class="round-indicator">
       <span class="round-badge">RODADA 3</span>
-      <span>Turno do Goblin Boss</span>
+      <span id="turnName">Turno do Goblin Boss</span>
       <span style="margin-left:auto;color:var(--gold)">7 combatentes</span>
     </div>
     <div class="combatant-list">
-      <div class="combatant active-turn">
+      <div class="combatant active-turn" id="combGoblinBoss">
         <div class="turn-arrow">&#9654;</div>
         <div class="init-badge">18</div>
-        <div class="combatant-token token-monster">G</div>
+        <div class="combatant-token token-monster"><img src="assets/goblin-boss.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
         <div class="combatant-info">
           <div class="combatant-name">Goblin Boss</div>
           <div class="combatant-type">Small Humanoid</div>
         </div>
         <div class="hp-bar-container">
-          <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--gold)">21 / 21</span></div>
-          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full"></div></div>
+          <div class="hp-label"><span>HP</span><span class="mono" id="gbHpText" style="color:var(--gold)">21 / 21</span></div>
+          <div class="hp-bar-bg"><div class="hp-bar-fill hp-full" id="gbHpBar"></div></div>
         </div>
-        <div class="condition-badges">
-          <!-- conditions appear later -->
-        </div>
+        <div class="condition-badges"></div>
       </div>
-      <div class="combatant">
+      <div class="combatant" id="combRagnar">
         <div class="turn-arrow">&#9654;</div>
         <div class="init-badge">16</div>
-        <div class="combatant-token token-player">R</div>
+        <div class="combatant-token token-player"><img src="assets/knight.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
         <div class="combatant-info">
           <div class="combatant-name">Ragnar</div>
-          <div class="combatant-type">Jogador - Barbaro Lv 5</div>
+          <div class="combatant-type">Jogador - Bárbaro Lv 5</div>
         </div>
         <div class="hp-bar-container">
           <div class="hp-label"><span>HP</span><span class="mono" style="color:var(--hp-yellow)">32 / 55</span></div>
@@ -1167,7 +1165,7 @@ html, body {
       <div class="combatant">
         <div class="turn-arrow">&#9654;</div>
         <div class="init-badge">14</div>
-        <div class="combatant-token token-player">L</div>
+        <div class="combatant-token token-player"><img src="assets/mage.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
         <div class="combatant-info">
           <div class="combatant-name">Lyra</div>
           <div class="combatant-type">Jogadora - Maga Lv 5</div>
@@ -1183,7 +1181,7 @@ html, body {
       <div class="combatant">
         <div class="turn-arrow">&#9654;</div>
         <div class="init-badge">12</div>
-        <div class="combatant-token token-monster">G</div>
+        <div class="combatant-token token-monster"><img src="assets/goblin.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
         <div class="combatant-info">
           <div class="combatant-name">Goblin 1</div>
           <div class="combatant-type">Small Humanoid</div>
@@ -1199,7 +1197,7 @@ html, body {
       <div class="combatant">
         <div class="turn-arrow">&#9654;</div>
         <div class="init-badge">8</div>
-        <div class="combatant-token token-player">K</div>
+        <div class="combatant-token token-player"><img src="assets/veteran.webp" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></div>
         <div class="combatant-info">
           <div class="combatant-name">Kael</div>
           <div class="combatant-type">Jogador - Paladino Lv 5</div>
@@ -1212,11 +1210,26 @@ html, body {
       </div>
     </div>
   </div>
+  <!-- Phone notification overlay -->
+  <div id="phoneNotif" style="display:none;position:absolute;top:50%;right:80px;transform:translateY(-50%);z-index:50;">
+    <div style="width:320px;background:#1C1C1E;border-radius:20px;padding:16px 18px;box-shadow:0 8px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.1);animation:slideLeft 0.4s ease-out both;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#D4A853,#B8903D);display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0F" stroke-width="2.5"><path d="M5 3l3.057-3L12 4.286 15.943 0 19 3l-7 14L5 3z"/></svg>
+        </div>
+        <span style="font-size:13px;font-weight:600;color:#8E8E93;">POCKET DM</span>
+        <span style="font-size:12px;color:#636366;margin-left:auto;">agora</span>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:3px;">Seu turno, Ragnar!</div>
+      <div style="font-size:13px;color:#8E8E93;">Rodada 3 — você está Envenenado</div>
+    </div>
+  </div>
+
   <div class="keyboard-hint">
-    <div class="key"><kbd>Space</kbd> Proximo turno</div>
+    <div class="key"><kbd>Space</kbd> Próximo turno</div>
     <div class="key"><kbd>D</kbd> Aplicar dano</div>
     <div class="key"><kbd>H</kbd> Curar</div>
-    <div class="key"><kbd>C</kbd> Condicoes</div>
+    <div class="key"><kbd>C</kbd> Condições</div>
     <div class="key"><kbd>&#8593;&#8595;</kbd> Navegar</div>
   </div>
 </div>
@@ -1273,21 +1286,21 @@ html, body {
 <!-- SCENE 6: FEATURES (2:15 - 2:35) -->
 <!-- ============================================================ -->
 <div class="scene" id="scene6">
-  <div class="scene-title cinzel">E mais...</div>
-  <div class="scene-heading cinzel">Tudo que um mestre precisa</div>
+  <div class="scene-heading cinzel" style="margin-bottom:10px">E mais...</div>
+  <div class="scene-title cinzel" style="font-size:28px;margin-bottom:40px">Tudo que um mestre precisa</div>
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon fi-gold">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="15" r="3"/></svg>
       </div>
       <div class="feature-title">Soundboard</div>
-      <div class="feature-desc">Musica ambiente e efeitos sonoros integrados. Taverna, floresta, combate.</div>
+      <div class="feature-desc">Música ambiente e efeitos sonoros integrados. Taverna, floresta, combate.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon fi-blue">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
       </div>
-      <div class="feature-title">Compendio SRD</div>
+      <div class="feature-title">Compêndio SRD</div>
       <div class="feature-desc">1.100+ monstros e 604 magias com stats completos. 2014 + 2024 lado a lado.</div>
     </div>
     <div class="feature-card">
@@ -1295,28 +1308,28 @@ html, body {
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
       </div>
       <div class="feature-title">Undo / Redo</div>
-      <div class="feature-desc">Errou o dano? Desfaca. Nenhum outro tracker tem isso.</div>
+      <div class="feature-desc">Errou o dano? Desfaça. Nenhum outro tracker tem isso.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon fi-red">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
       </div>
       <div class="feature-title">Death Saves</div>
-      <div class="feature-desc">Salvaguardas contra morte completas, com regras SRD integradas. Unico no mercado.</div>
+      <div class="feature-desc">Salvaguardas contra morte completas, com regras SRD integradas.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon fi-green">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
       </div>
       <div class="feature-title">Leaderboard</div>
-      <div class="feature-desc">Ranking de dano em tempo real. Engajamento maximo para jogadores competitivos.</div>
+      <div class="feature-desc">Ranking de dano em tempo real. Engajamento máximo para jogadores competitivos.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon fi-cyan">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       </div>
-      <div class="feature-title">Bilingue</div>
-      <div class="feature-desc">Unico combat tracker com interface nativa em portugues. EN + PT-BR completo.</div>
+      <div class="feature-title">Bilíngue</div>
+      <div class="feature-desc">Único combat tracker com interface nativa em português. EN + PT-BR completo.</div>
     </div>
   </div>
 </div>
@@ -1328,18 +1341,18 @@ html, body {
   <div class="indie-layout">
     <div class="indie-left">
       <div class="indie-badge jakarta">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
         Projeto indie 100% brasileiro
       </div>
       <div class="indie-title cinzel gold-gradient">
-        Feito por mestre,<br>para mestres.
+        Feito por mestres,<br>para mestres.
       </div>
       <div class="indie-desc jakarta">
-        O Pocket DM e um projeto independente criado por um DM brasileiro que queria uma ferramenta simples, bonita e gratuita para usar na propria mesa. Sem investidor, sem comite, sem burocracia — evolucao constante.
+        O Pocket DM é um projeto independente criado por um DM brasileiro que queria uma ferramenta simples, bonita e gratuita para usar na própria mesa. Sem investidor, sem comitê, sem burocracia.
       </div>
-      <div class="pipers-love jakarta" style="display:flex;align-items:center;gap:10px;font-size:17px;color:var(--text-secondary);opacity:0;animation:fadeIn 0.5s ease-out 1.2s both;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#D4A853" stroke="none"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-        <span>Feito com amor pelos <strong style="color:var(--gold)">Pipers</strong></span>
+      <div class="pipers-love jakarta" style="display:flex;align-items:center;gap:12px;font-size:20px;color:var(--text-secondary);opacity:0;animation:fadeIn 0.6s ease-out 1.2s both;margin-top:8px;">
+        <span>Feito com</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#D4A853" stroke="none"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span>pelos   <strong style="color:var(--gold);font-size:22px;letter-spacing:1px">Pipers</strong></span>
       </div>
     </div>
     <div class="indie-right">
@@ -1350,7 +1363,7 @@ html, body {
           </div>
           <div class="method-info">
             <div class="method-title">Metodologia Pocket DM</div>
-            <div class="method-desc">Calculo de dificuldade baseado em dados reais. Cada sessao alimenta o modelo.</div>
+            <div class="method-desc">Cálculo de dificuldade baseado em dados reais. Cada sessão alimenta o modelo.</div>
           </div>
         </div>
         <div class="goal-bar-wrap" style="width:100%;opacity:0;animation:fadeIn 0.4s ease-out 1.6s both;">
@@ -1377,7 +1390,7 @@ html, body {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
         <div class="method-info">
-          <div class="method-title">Evolui a cada sessao</div>
+          <div class="method-title">Evolui a cada sessão</div>
           <div class="method-desc">Quanto mais mesas usam, mais inteligente fica. Uma ferramenta que aprende com a comunidade brasileira de RPG.</div>
         </div>
       </div>
@@ -1411,7 +1424,7 @@ html, body {
       <div class="comp-problems">
         <div class="con">Tracker ainda fraco</div>
         <div class="con">Exige comprar livros</div>
-        <div class="con">Em reconstrucao</div>
+        <div class="con">Em reconstrução</div>
       </div>
     </div>
     <div class="comp-card">
@@ -1421,13 +1434,26 @@ html, body {
       <div class="comp-name">Papel</div>
       <div class="comp-problems">
         <div class="con">Lento e desorganizado</div>
-        <div class="con">Players nao veem nada</div>
-        <div class="con">Sem historico</div>
+        <div class="con">Players não veem nada</div>
+        <div class="con">Sem histórico</div>
       </div>
     </div>
     <div class="comp-card winner">
-      <div class="comp-icon comp-gold">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l3.057-3L12 4.286 15.943 0 19 3l-7 14L5 3z"/><path d="M7 21h10"/><path d="M12 17v4"/></svg>
+      <div class="comp-icon comp-gold" style="width:72px;height:72px;background:none;">
+        <svg width="60" height="60" viewBox="0 0 512 420" fill="none">
+          <g transform="translate(6, 10) scale(0.98)">
+            <g stroke="#D4A853" fill="none" stroke-linejoin="round" stroke-linecap="round">
+              <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="11"/>
+              <polygon points="256,194 176,326 336,326" stroke-width="7" opacity="0.55"/>
+              <line x1="256" y1="110" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+              <line x1="256" y1="110" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+              <line x1="256" y1="410" x2="176" y2="326" stroke-width="6" opacity="0.5"/>
+              <line x1="256" y1="410" x2="336" y2="326" stroke-width="6" opacity="0.5"/>
+            </g>
+            <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
+              fill="#D4A853" stroke="#D4A853" stroke-width="2" stroke-linejoin="round"/>
+          </g>
+        </svg>
       </div>
       <div class="comp-name gold-text" style="font-size:28px">Pocket DM</div>
       <div class="comp-problems">
@@ -1477,9 +1503,9 @@ html, body {
     </g>
   </svg>
   <div class="cta-title cinzel gold-gradient">Teste agora</div>
-  <div class="cta-sub jakarta">Gratis. Sem cadastro. Sem instalar nada.</div>
-  <div class="cta-button cinzel">Comecar Agora &rarr;</div>
-  <div class="cta-url mono gold-text">pocketdm.app/try</div>
+  <div class="cta-sub jakarta">Grátis. Sem cadastro. Sem instalar nada.</div>
+  <div class="cta-button cinzel">Começar Agora &rarr;</div>
+  <div class="cta-url mono gold-text">pocketdm.com.br</div>
   <div class="cta-free jakarta">Combat Tracker gratuito para D&D 5e</div>
 </div>
 
@@ -1518,6 +1544,50 @@ for (let i = 0; i < 30; i++) {
   particleContainer.appendChild(p);
 }
 
+let combatTurnAnimated = false;
+function animateCombatTurn() {
+  if (combatTurnAnimated) return;
+  combatTurnAnimated = true;
+  setTimeout(() => {
+    const gb = document.getElementById('combGoblinBoss');
+    const ragnar = document.getElementById('combRagnar');
+    const gbBar = document.getElementById('gbHpBar');
+    const gbText = document.getElementById('gbHpText');
+    if (!gb || !ragnar) return;
+    // 1. Drain Goblin Boss HP (took damage from Ragnar)
+    if (gbBar) {
+      gbBar.style.transition = 'width 0.8s ease-out, background 0.8s ease-out';
+      gbBar.style.width = '52%';
+      gbBar.style.background = 'var(--hp-yellow)';
+    }
+    if (gbText) {
+      gbText.style.color = 'var(--hp-yellow)';
+      gbText.textContent = '11 / 21';
+    }
+    // 2. After HP drain, switch turn
+    setTimeout(() => {
+      gb.classList.remove('active-turn');
+      gb.style.borderColor = 'transparent';
+      gb.style.boxShadow = 'none';
+      ragnar.classList.add('active-turn');
+      ragnar.style.borderColor = 'var(--gold)';
+      ragnar.style.boxShadow = '0 0 15px rgba(212,168,83,0.2)';
+      ragnar.querySelector('.turn-arrow').style.display = 'block';
+      gb.querySelector('.turn-arrow').style.display = 'none';
+      // Update turn name text
+      const turnName = document.getElementById('turnName');
+      if (turnName) turnName.textContent = 'Turno de Ragnar';
+      // Show phone notification
+      const notif = document.getElementById('phoneNotif');
+      if (notif) {
+        notif.style.display = 'block';
+        // Hide after 3s
+        setTimeout(() => { notif.style.display = 'none'; }, 3500);
+      }
+    }, 1200);
+  }, 4000);
+}
+
 let goalAnimated = false;
 function animateGoalBar() {
   if (goalAnimated) return;
@@ -1525,9 +1595,9 @@ function animateGoalBar() {
   const bar = document.getElementById('goalBar');
   const counter = document.getElementById('goalCounter');
   if (!bar || !counter) return;
-  const target = 1247;
+  const target = 127;
   const goalMax = 5000;
-  const duration = 2500;
+  const duration = 5000;
   const start = performance.now();
   function tick(now) {
     const p = Math.min((now - start) / duration, 1);
@@ -1555,6 +1625,11 @@ function showScene(index) {
   if (SCENES[index].id === 'sceneIndie') {
     goalAnimated = false;
     animateGoalBar();
+  }
+  // Trigger combat turn change on scene4
+  if (SCENES[index].id === 'scene4') {
+    combatTurnAnimated = false;
+    animateCombatTurn();
   }
 }
 
