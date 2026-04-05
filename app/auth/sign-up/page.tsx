@@ -5,7 +5,7 @@ export default async function Page() {
   const t = await getTranslations("auth");
 
   return (
-    <div className="flex flex-1 w-full items-center justify-center p-4 md:p-6">
+    <div className="flex flex-1 w-full items-start justify-center px-4 pt-6 md:px-6 md:pt-8">
       <div className="w-full max-w-lg">
         {/* Heading — Liberty RO style */}
         <div className="text-center mb-4">
