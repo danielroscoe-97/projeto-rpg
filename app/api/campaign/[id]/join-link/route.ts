@@ -15,17 +15,35 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 async function getAuthenticatedOwner(campaignId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized", status: 401 as const, supabase, user: null };
+  // Use getUser() to validate session — the middleware already refreshed tokens
+  // via getClaims(), so this should have a valid access token.
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (!user) {
+    captureError(authError ?? new Error("No user in session"), {
+      component: "api/join-link",
+      action: "getAuthenticatedOwner",
+      category: "auth",
+      extra: { campaignId, authErrorCode: authError?.code },
+    });
+    return { error: "Unauthorized", status: 401 as const, supabase, user: null };
+  }
 
-  const { data: campaign } = await supabase
+  const { data: campaign, error: queryError } = await supabase
     .from("campaigns")
     .select("id, join_code, join_code_active, max_players")
     .eq("id", campaignId)
     .eq("owner_id", user.id)
     .single();
 
-  if (!campaign) return { error: "Campaign not found", status: 404 as const, supabase, user: null };
+  if (!campaign) {
+    captureError(queryError ?? new Error("Campaign not found for owner"), {
+      component: "api/join-link",
+      action: "getAuthenticatedOwner",
+      category: "database",
+      extra: { campaignId, userId: user.id },
+    });
+    return { error: "Campaign not found", status: 404 as const, supabase, user: null };
+  }
 
   return { campaign, supabase, user, error: null };
 }

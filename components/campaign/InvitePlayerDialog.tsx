@@ -66,13 +66,17 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
     setLinkError(false);
     try {
       const res = await fetch(`/api/campaign/${campaignId}/join-link`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(`HTTP ${res.status}: ${body.error ?? "unknown"}`);
+      }
       const { data } = await res.json();
       setLinkCode(data.code);
       setLinkActive(data.is_active);
     } catch (err) {
+      console.error("[InvitePlayerDialog] loadJoinLink failed:", err);
       setLinkError(true);
-      captureError(err, { component: "InvitePlayerDialog", action: "loadJoinLink", category: "network" });
+      captureError(err, { component: "InvitePlayerDialog", action: "loadJoinLink", category: "network", extra: { campaignId } });
     } finally {
       setLinkLoading(false);
     }
