@@ -89,7 +89,7 @@ export function MethodologyHero({ variant, displayName, contrib, uniqueDms = 0, 
           priority
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 via-[70%] to-background" />
       </div>
 
       {/* Floating particles */}
