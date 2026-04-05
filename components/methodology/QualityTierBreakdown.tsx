@@ -13,10 +13,10 @@ export function QualityTierBreakdown({ gold, silver, bronze }: QualityTierBreakd
 
   return (
     <div className="flex items-center justify-center gap-4 mt-2">
-      {/* Gold */}
+      {/* Bronze */}
       <div className="flex items-center gap-1.5">
-        <GoldBadge className="w-5 h-5 shrink-0" />
-        <span className="text-xs text-gold font-medium tabular-nums">{gold.toLocaleString()}</span>
+        <BronzeBadge className="w-5 h-5 shrink-0" />
+        <span className="text-xs text-amber-700/80 tabular-nums">{bronze.toLocaleString()}</span>
       </div>
 
       <div className="w-px h-3 bg-white/10" aria-hidden="true" />
@@ -29,10 +29,10 @@ export function QualityTierBreakdown({ gold, silver, bronze }: QualityTierBreakd
 
       <div className="w-px h-3 bg-white/10" aria-hidden="true" />
 
-      {/* Bronze */}
+      {/* Gold */}
       <div className="flex items-center gap-1.5">
-        <BronzeBadge className="w-5 h-5 shrink-0" />
-        <span className="text-xs text-amber-700/80 tabular-nums">{bronze.toLocaleString()}</span>
+        <GoldBadge className="w-5 h-5 shrink-0" />
+        <span className="text-xs text-gold font-medium tabular-nums">{gold.toLocaleString()}</span>
       </div>
     </div>
   );
