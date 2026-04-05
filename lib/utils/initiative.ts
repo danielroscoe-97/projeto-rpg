@@ -1,6 +1,7 @@
 import type { Combatant } from "@/lib/types/combat";
 import { rollD20, abilityModifier } from "@/lib/utils/dice";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import type { RollResult } from "@/lib/dice/roll";
 
 /** Result of rolling initiative for a single combatant. */
 export interface InitiativeRollResult {
@@ -28,6 +29,34 @@ export function rollInitiativeForCombatant(
     rolls: result.rolls,
     modifier: mod,
   };
+}
+
+/**
+ * Dispatch an initiative roll to the dice history panel via CustomEvent.
+ * Converts an InitiativeRollResult into a RollResult and fires "dice-roll-result".
+ */
+export function dispatchInitiativeRoll(
+  rollResult: InitiativeRollResult,
+  name: string
+): void {
+  if (typeof window === "undefined") return;
+  const mod = rollResult.modifier;
+  const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
+  const result: RollResult = {
+    notation: `1d20${modStr}`,
+    label: "Iniciativa",
+    dice: [{ sides: 20, value: rollResult.rolls[0] }],
+    modifier: mod,
+    total: rollResult.total,
+    isNat1: rollResult.rolls[0] === 1,
+    isNat20: rollResult.rolls[0] === 20,
+    mode: "normal",
+    discardedDice: [],
+    source: name,
+  };
+  window.dispatchEvent(
+    new CustomEvent("dice-roll-result", { detail: structuredClone(result) })
+  );
 }
 
 /**

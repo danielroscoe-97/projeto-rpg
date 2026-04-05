@@ -13,7 +13,7 @@ import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { RulesetVersion, PlayerCharacter } from "@/lib/types/database";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant } from "@/lib/utils/initiative";
+import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, dispatchInitiativeRoll } from "@/lib/utils/initiative";
 import { getNumberedName } from "@/lib/stores/combat-store";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { createEncounterWithCombatants } from "@/lib/supabase/encounter";
@@ -593,6 +593,7 @@ export function CombatSessionClient({
       .map((c) => c.display_name!);
     const displayName = generateCreatureName(monster.type, existingNames);
     const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+    dispatchInitiativeRoll(rollResult, numberedName);
 
     addCombatantAction({
       name: numberedName,
@@ -635,6 +636,7 @@ export function CombatSessionClient({
       .map((c) => c.display_name!);
     const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);
     const groupRoll = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+    dispatchInitiativeRoll(groupRoll, `${monster.name} (grupo)`);
     for (let i = 1; i <= qty; i++) {
       newCombatants.push({
         name: `${monster.name} ${i}`,

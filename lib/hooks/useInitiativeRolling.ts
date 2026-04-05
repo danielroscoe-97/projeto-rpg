@@ -3,7 +3,7 @@
 import { useCallback, useRef, useEffect } from "react";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { loadMonsters } from "@/lib/srd/srd-loader";
-import { rollInitiativeForCombatant, getDexScore } from "@/lib/utils/initiative";
+import { rollInitiativeForCombatant, getDexScore, dispatchInitiativeRoll } from "@/lib/utils/initiative";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -41,6 +41,7 @@ export function useInitiativeRolling(
       if (!c) return;
       const dex = getDexScore(c, monsterIndexRef.current);
       const result = rollInitiativeForCombatant(id, dex);
+      dispatchInitiativeRoll(result, c.name);
       const breakdown = { roll: result.rolls[0], modifier: result.modifier };
 
       // If this combatant belongs to a group, apply the same roll to all members
@@ -67,6 +68,7 @@ export function useInitiativeRolling(
         if (!groupRolls.has(c.monster_group_id)) {
           const dex = getDexScore(c, monsterIndexRef.current);
           const result = rollInitiativeForCombatant(c.id, dex);
+          dispatchInitiativeRoll(result, `${c.name} (grupo)`);
           groupRolls.set(c.monster_group_id, { total: result.total, breakdown: { roll: result.rolls[0], modifier: result.modifier } });
         }
         const gr = groupRolls.get(c.monster_group_id)!;
@@ -74,6 +76,7 @@ export function useInitiativeRolling(
       } else {
         const dex = getDexScore(c, monsterIndexRef.current);
         const result = rollInitiativeForCombatant(c.id, dex);
+        dispatchInitiativeRoll(result, c.name);
         entries.push({ id: c.id, value: result.total, breakdown: { roll: result.rolls[0], modifier: result.modifier } });
       }
     }

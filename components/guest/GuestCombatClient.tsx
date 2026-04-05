@@ -27,7 +27,7 @@ import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
+import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, dispatchInitiativeRoll, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -238,6 +238,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
 
       // Roll initiative instantly using the monster's DEX
       const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+      dispatchInitiativeRoll(rollResult, numberedName);
 
       addCombatant({
         name: numberedName,
@@ -287,6 +288,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       const groupId = crypto.randomUUID();
       // Roll initiative once for the whole group (D&D 5e PHB p.189)
       const groupInitResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
+      dispatchInitiativeRoll(groupInitResult, `${monster.name} (grupo)`);
       const groupInit = groupInitResult.total;
       const groupBreakdown = { roll: groupInitResult.rolls[0], modifier: groupInitResult.modifier };
       const currentCombatants = useGuestCombatStore.getState().combatants;
@@ -1072,6 +1074,7 @@ export function GuestCombatClient() {
       const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
       const displayName = generateCreatureName(monster.type, existingNames);
       const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+      dispatchInitiativeRoll(rollResult, numberedName);
       addCombatant({
         name: numberedName, current_hp: monster.hit_points, max_hp: monster.hit_points, temp_hp: 0,
         ac: monster.armor_class, spell_save_dc: null, initiative: rollResult.total,
@@ -1093,6 +1096,7 @@ export function GuestCombatClient() {
     (monster: SrdMonster, qty: number, options?: { isHidden?: boolean }) => {
       const groupId = crypto.randomUUID();
       const initResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
+      dispatchInitiativeRoll(initResult, `${monster.name} (grupo)`);
       const currentCombatants = useGuestCombatStore.getState().combatants;
       const existingNames = currentCombatants.filter((c) => !c.is_player && c.display_name).map((c) => c.display_name!);
       const groupDisplayBase = generateCreatureName(monster.type ?? null, existingNames);

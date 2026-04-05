@@ -18,7 +18,7 @@ import { CRCalculator } from "@/components/combat/CRCalculator";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { getLegendaryActionCount } from "@/lib/srd/legendary-actions";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
-import { rollInitiativeForCombatant } from "@/lib/utils/initiative";
+import { rollInitiativeForCombatant, dispatchInitiativeRoll } from "@/lib/utils/initiative";
 import type { RulesetVersion, PlayerCharacter, MonsterPresetEntry } from "@/lib/types/database";
 import type { Combatant } from "@/lib/types/combat";
 import { applyGroupRename } from "@/lib/utils/group-rename";
@@ -234,6 +234,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
 
       // Roll initiative instantly using the monster's DEX
       const rollResult = rollInitiativeForCombatant("tmp", monster.dex ?? undefined);
+      dispatchInitiativeRoll(rollResult, numberedName);
 
       addCombatant({
         name: numberedName,
@@ -281,6 +282,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
       const groupId = crypto.randomUUID();
       // Roll initiative once for the whole group (D&D 5e PHB p.189)
       const groupInitResult = rollInitiativeForCombatant("group", monster.dex ?? undefined);
+      dispatchInitiativeRoll(groupInitResult, `${monster.name} (grupo)`);
       const groupInit = groupInitResult.total;
       const groupBreakdown = { roll: groupInitResult.rolls[0], modifier: groupInitResult.modifier };
       const currentCombatants = useCombatStore.getState().combatants;
