@@ -51,7 +51,7 @@ import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users, ScrollText, Pause, Play } from "lucide-react";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
-import type { WeatherEffect } from "@/components/player/WeatherOverlay";
+// WEATHER_DISABLED: import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
 import { DmPostitSender } from "@/components/combat/DmPostitSender";
@@ -121,7 +121,7 @@ export function CombatSessionClient({
   const [combatReport, setCombatReport] = useState<CombatReport | null>(null);
   const [reportShareUrl, setReportShareUrl] = useState<string | null>(null);
   const [previousDurationMs, setPreviousDurationMs] = useState<number | null>(null);
-  const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
+  // WEATHER_DISABLED: const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   // Broadcast-driven player status — fed to PlayersOnlinePanel for < 2s latency (spec 4.3.6)
@@ -1244,16 +1244,9 @@ export function CombatSessionClient({
           >
             {t("add_mid_combat")}
           </button>
+          {/* WEATHER_DISABLED: weatherEffect + onWeatherChange removidos — reintroduzir no futuro */}
           <DmAtmospherePanel
             onBroadcast={(event, payload) => broadcastEvent(sessionId ?? "", { type: event, ...payload } as import("@/lib/types/realtime").RealtimeEvent)}
-            weatherEffect={weatherEffect}
-            onWeatherChange={(effect) => {
-              setWeatherEffect(effect);
-              broadcastEvent(sessionId ?? "", {
-                type: "session:weather_change",
-                effect,
-              });
-            }}
           />
           {campaignId && (
             <button

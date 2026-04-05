@@ -14,7 +14,7 @@ import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDow
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherOverlay";
+// WEATHER_DISABLED: import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherOverlay";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
@@ -161,8 +161,7 @@ interface PlayerInitiativeBoardProps {
   nextCombatantId?: string | null;
   /** Callback when a player edits their own character's note */
   onPlayerNote?: (combatantId: string, note: string) => void;
-  /** Weather effect from DM broadcast */
-  weatherEffect?: string;
+  // WEATHER_DISABLED: weatherEffect?: string;
   /** Realtime channel ref for broadcasting audio events */
   channelRef?: React.RefObject<RealtimeChannel | null>;
   /** Player's custom audio files */
@@ -204,7 +203,7 @@ export function PlayerInitiativeBoard({
   rulesetVersion,
   combatLog,
   nextCombatantId,
-  weatherEffect,
+  // WEATHER_DISABLED: weatherEffect,
   onPlayerNote,
   channelRef,
   customAudioFiles = [],
@@ -450,8 +449,7 @@ export function PlayerInitiativeBoard({
 
   return (
     <div className="relative bg-black lg:bg-transparent min-h-screen lg:min-h-0 space-y-3 pb-32 lg:pb-0">
-      {/* Weather overlay — above background (z-10), below content (z-30) */}
-      <WeatherOverlay effect={(weatherEffect ?? "none") as WeatherEffect} />
+      {/* WEATHER_DISABLED: <WeatherOverlay effect={(weatherEffect ?? "none") as WeatherEffect} /> */}
 
       {/* Story 3.2: "É sua vez!" — full-screen overlay with spring animation, auto-dismiss 3s */}
       <TurnNotificationOverlay

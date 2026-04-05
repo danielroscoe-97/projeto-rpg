@@ -145,8 +145,7 @@ export function PlayerJoinClient({
   const [registeredName, setRegisteredName] = useState<string | undefined>();
   const [joinedPlayers, setJoinedPlayers] = useState<Array<{ id: string; name: string }>>([]);
   const [nextCombatantId, setNextCombatantId] = useState<string | null>(null);
-  // TODO: include weatherEffect in session:state_sync for reconnect support
-  const [weatherEffect, setWeatherEffect] = useState<string>("none");
+  // WEATHER_DISABLED: const [weatherEffect, setWeatherEffect] = useState<string>("none");
   const [effectiveTokenId, setEffectiveTokenId] = useState(tokenId);
   const [lateJoinStatus, setLateJoinStatus] = useState<"idle" | "waiting" | "accepted" | "rejected" | "polling" | "timeout">("idle");
   const lateJoinRequestIdRef = useRef<string | null>(null);
@@ -1098,11 +1097,12 @@ export function PlayerJoinClient({
             });
           }
         })
-        .on("broadcast", { event: "session:weather_change" }, ({ payload }) => {
-          if (payload.effect !== undefined) {
-            setWeatherEffect(payload.effect);
-          }
-        })
+        // WEATHER_DISABLED:
+        // .on("broadcast", { event: "session:weather_change" }, ({ payload }) => {
+        //   if (payload.effect !== undefined) {
+        //     setWeatherEffect(payload.effect);
+        //   }
+        // })
         .on("broadcast", { event: "audio:play_sound" }, ({ payload }) => {
           // DM played an SFX — play it on the player side too
           if (payload.sound_id && payload.source) {
@@ -2138,7 +2138,6 @@ export function PlayerJoinClient({
           rulesetVersion={rulesetVersion}
           combatLog={combatLog}
           nextCombatantId={nextCombatantId}
-          weatherEffect={weatherEffect}
           onPlayerNote={(combatantId, note) => {
             // Broadcast player note to DM via realtime channel
             if (channelRef.current) {
