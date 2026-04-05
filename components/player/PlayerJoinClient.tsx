@@ -21,6 +21,8 @@ import { useAudioStore } from "@/lib/stores/audio-store";
 import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
+import { CombatRecap } from "@/components/combat/CombatRecap";
+import type { CombatReport } from "@/lib/types/combat-report";
 import { DifficultyPoll, DIFFICULTY_OPTIONS } from "@/components/combat/DifficultyPoll";
 import { PlayerSharedNotes } from "@/components/player/PlayerSharedNotes";
 import { PlayerChat } from "@/components/player/PlayerChat";
@@ -166,6 +168,8 @@ export function PlayerJoinClient({
   const hpActionOptimisticRef = useRef<number>(0);
   // P1.03: Track which specific combatant was acted on — limit HP protection to that target only
   const lastHpActionCombatantRef = useRef<string | null>(null);
+  // Guard: timestamp of last condition broadcast — prevents polling from overwriting (B3)
+  const conditionOptimisticRef = useRef<number>(0);
   // P1.02: Track deferred session:ended when leaderboard/poll is active
   const pendingSessionEndRef = useRef(false);
   const combatStatsActiveRef = useRef(false);
@@ -203,6 +207,8 @@ export function PlayerJoinClient({
     combatDuration: number;
   } | null>(null);
   const [showPoll, setShowPoll] = useState(false);
+  // B6: Full combat recap report for player "Spotify Wrapped" experience
+  const [combatRecapReport, setCombatRecapReport] = useState<CombatReport | null>(null);
   // UX.18: transition screen after poll dismiss, before session:ended arrives
   const [awaitingSessionEnd, setAwaitingSessionEnd] = useState(false);
   // C.15-B: Poll aggregate results received from DM before session:ended
@@ -729,7 +735,9 @@ export function PlayerJoinClient({
         const isDeathSaveProtected = Date.now() - deathSaveOptimisticRef.current < 5000;
         // C.13: Preserve optimistic HP action for 5s after player self-report
         const isHpActionProtected = Date.now() - hpActionOptimisticRef.current < 5000;
-        if (isDeathSaveProtected || isHpActionProtected) {
+        // B3: Preserve optimistic conditions for 5s after broadcast
+        const isConditionProtected = Date.now() - conditionOptimisticRef.current < 5000;
+        if (isDeathSaveProtected || isHpActionProtected || isConditionProtected) {
           updateCombatants((prev) => {
             const serverList = data.combatants as PlayerCombatant[];
             return serverList.map((sc) => {
@@ -745,6 +753,10 @@ export function PlayerJoinClient({
               // P1.03: Preserve optimistic HP only for the specific combatant that was acted on
               if (isHpActionProtected && local && sc.id === lastHpActionCombatantRef.current) {
                 return { ...sc, current_hp: local.current_hp, temp_hp: local.temp_hp };
+              }
+              // B3: Preserve conditions from broadcast over potentially stale server data
+              if (isConditionProtected && local?.conditions) {
+                return { ...sc, conditions: local.conditions, condition_durations: local.condition_durations };
               }
               return sc;
             });
@@ -926,6 +938,7 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:condition_change" }, ({ payload }) => {
           if (payload.combatant_id) {
+            conditionOptimisticRef.current = Date.now();
             updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
@@ -1129,6 +1142,10 @@ export function PlayerJoinClient({
         })
         .on("broadcast", { event: "combat:started" }, ({ payload }) => {
           setActive(true);
+          setCombatStatsData(null);
+          setCombatRecapReport(null);
+          setShowPoll(false);
+          setAwaitingSessionEnd(false);
           if (payload?.encounter_id) {
             setCurrentEncounterId(payload.encounter_id);
             fetchFullState(payload.encounter_id);
@@ -1144,6 +1161,12 @@ export function PlayerJoinClient({
               rounds: (payload.rounds as number) ?? 0,
               combatDuration: (payload.combatDuration as number) ?? 0,
             });
+          }
+        })
+        .on("broadcast", { event: "session:combat_recap" }, ({ payload }) => {
+          // B6: Full combat recap from DM — player sees "Spotify Wrapped" experience
+          if (payload.report) {
+            setCombatRecapReport(payload.report as CombatReport);
           }
         })
         .on("broadcast", { event: "session:poll_results" }, ({ payload }) => {
@@ -1748,8 +1771,16 @@ export function PlayerJoinClient({
     );
   }
 
-  // C.15: Post-combat leaderboard — player sees stats before poll
+  // B6: Post-combat recap — player sees full "Spotify Wrapped" experience
   if (combatStatsData && !showPoll) {
+    if (combatRecapReport) {
+      return (
+        <CombatRecap
+          report={combatRecapReport}
+          onClose={() => { setCombatRecapReport(null); setShowPoll(true); }}
+        />
+      );
+    }
     return (
       <CombatLeaderboard
         stats={combatStatsData.stats}
@@ -1768,6 +1799,7 @@ export function PlayerJoinClient({
         onVote={(vote) => {
           handlePollVote(vote);
           setCombatStatsData(null);
+          setCombatRecapReport(null);
           setShowPoll(false);
           combatStatsActiveRef.current = false; // P1.02: poll flow done
           if (pendingSessionEndRef.current) {
@@ -1780,6 +1812,7 @@ export function PlayerJoinClient({
         }}
         onSkip={() => {
           setCombatStatsData(null);
+          setCombatRecapReport(null);
           setShowPoll(false);
           combatStatsActiveRef.current = false; // P1.02: poll flow done
           if (pendingSessionEndRef.current) {

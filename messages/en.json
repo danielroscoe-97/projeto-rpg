@@ -1421,7 +1421,13 @@
     "prone": "Prone",
     "restrained": "Restrained",
     "stunned": "Stunned",
-    "unconscious": "Unconscious"
+    "unconscious": "Unconscious",
+    "blessed": "Blessed",
+    "flying": "Flying",
+    "haste": "Haste",
+    "heroism": "Heroism",
+    "inspired": "Inspired",
+    "raging": "Raging"
   },
   "homebrew": {
     "badge": "Homebrew",

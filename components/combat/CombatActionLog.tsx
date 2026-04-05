@@ -100,14 +100,14 @@ export function CombatActionLog({ open, onClose, playerId }: CombatActionLogProp
     <>
       {/* Mobile overlay backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        className="fixed inset-0 bg-black/50 z-[55] lg:hidden"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Panel */}
       <div
-        className="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-card border-l border-border z-50 flex flex-col shadow-2xl"
+        className="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-card border-l border-border z-[60] flex flex-col shadow-2xl"
         role="log"
         aria-label={t("combat_log_title")}
       >

@@ -1421,7 +1421,13 @@
     "prone": "Caído",
     "restrained": "Contido",
     "stunned": "Atordoado",
-    "unconscious": "Inconsciente"
+    "unconscious": "Inconsciente",
+    "blessed": "Abençoado",
+    "flying": "Voando",
+    "haste": "Acelerado",
+    "heroism": "Heroísmo",
+    "inspired": "Inspirado",
+    "raging": "Furioso"
   },
   "homebrew": {
     "badge": "Homebrew",

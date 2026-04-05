@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { createClient as createAuthClient, createServiceClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { PlayerJoinClient } from "@/components/player/PlayerJoinClient";
+import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { getHpStatus } from "@/lib/utils/hp-status";
 import type { Plan } from "@/lib/types/subscription";
 
@@ -175,6 +176,8 @@ export default async function JoinPage({ params }: JoinPageProps) {
     }));
 
   return (
+    <>
+    <SrdInitializer />
     <PlayerJoinClient
       tokenId={tokenRow.id}
       sessionId={session.id}
@@ -191,5 +194,6 @@ export default async function JoinPage({ params }: JoinPageProps) {
       registeredPlayersWithStatus={registeredPlayersWithStatus}
       campaignId={campaignId}
     />
+    </>
   );
 }

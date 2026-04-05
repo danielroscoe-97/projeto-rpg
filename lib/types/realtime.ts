@@ -23,6 +23,7 @@ export type RealtimeEventType =
   | "session:state_sync"
   | "session:player_linked"
   | "session:combat_stats"
+  | "session:combat_recap"
   | "session:ended"
   | "session:poll_results"
   | "session:weather_change"
@@ -175,6 +176,12 @@ export interface RealtimeCombatStats {
   combatDuration?: number;
 }
 
+/** B6: Full combat recap broadcast so players see the "Spotify Wrapped" experience */
+export interface RealtimeCombatRecap {
+  type: "session:combat_recap";
+  report: import("@/lib/types/combat-report").CombatReport;
+}
+
 export interface RealtimeSessionEnded {
   type: "session:ended";
   reason?: "dm_ended" | "session_expired";
@@ -303,7 +310,8 @@ export type RealtimeEvent =
   | RealtimePlayerHpAction
   | RealtimeChatPlayerMessage
   | RealtimeChatDmPostit
-  | RealtimePlayerSelfConditionToggle;
+  | RealtimePlayerSelfConditionToggle
+  | RealtimeCombatRecap;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -407,4 +415,5 @@ export type SanitizedEvent =
   | RealtimeAmbientStop
   | RealtimeLoopStop
   | RealtimeChatPlayerMessage
-  | RealtimeChatDmPostit;
+  | RealtimeChatDmPostit
+  | RealtimeCombatRecap;
