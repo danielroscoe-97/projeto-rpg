@@ -528,7 +528,7 @@
     "combats_empty_cta": "Novo Combate",
     "player_hq_button": "Player HQ",
     "checklist_title": "Primeiros Passos",
-    "checklist_progress": "{done}/{total} completo",
+    "checklist_progress": "'{done}/{total}' completo",
     "checklist_dismiss": "Fechar checklist",
     "checklist_account": "Criar sua conta",
     "checklist_combat": "Rodar seu primeiro combate",

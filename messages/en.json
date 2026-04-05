@@ -528,7 +528,7 @@
     "combats_empty_cta": "New Combat",
     "player_hq_button": "Player HQ",
     "checklist_title": "Getting Started",
-    "checklist_progress": "{done}/{total} complete",
+    "checklist_progress": "'{done}/{total}' complete",
     "checklist_dismiss": "Dismiss checklist",
     "checklist_account": "Create your account",
     "checklist_combat": "Run your first combat",
