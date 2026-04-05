@@ -219,7 +219,7 @@ export const CombatantRow = memo(function CombatantRow({
     <li
       className={`bg-card border rounded-md overflow-hidden transition-all duration-500 ${
         isCurrentTurn ? "border-gold bg-gold/[0.07] ring-1 ring-gold/30" : "border-border"
-      } ${combatant.is_defeated ? "opacity-50 grayscale-[50%]" : isCritical ? "border-2 border-red-500/80 shadow-[inset_0_0_0_2000px_rgba(127,29,29,0.15),0_0_8px_rgba(239,68,68,0.15)] animate-pulse" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
+      } ${combatant.is_defeated ? "opacity-60 grayscale-[40%]" : isCritical ? "border-2 border-red-500/60 shadow-[0_0_6px_rgba(239,68,68,0.15)] animate-critical-glow" : ""} ${flash === "damage" ? "animate-flash-red" : flash === "heal" ? "animate-flash-green" : ""} ${
         isCritical ? "" : (combatant.is_player ? "border-l-4 border-l-cool" : isMonster ? "border-l-4 border-l-red-500/60" : "")
       } ${combatant.is_hidden ? "border-dashed opacity-70" : ""}`}
       role="listitem"
@@ -229,10 +229,10 @@ export const CombatantRow = memo(function CombatantRow({
       data-panel-open={openPanel !== null ? "true" : "false"}
     >
       {/* === ZERO-TAP TIER: always visible === */}
-      <div className="px-3 py-1.5">
+      <div className="px-2 py-1 sm:py-0.5">
         {/* Name row — entire row clickable to open stat block (UX 2) */}
         <div
-          className={`flex items-center gap-1.5 mb-1 ${isClickable ? "cursor-pointer" : ""}`}
+          className={`flex items-center gap-1.5 mb-0.5 ${isClickable ? "cursor-pointer" : ""}`}
           onClick={(e) => {
             e.stopPropagation(); // A.8: prevent bubble to MonsterGroupHeader
             if (canExpand && fullMonster) {
@@ -272,7 +272,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onAdvanceTurn?.(); }}
-              className="text-gold shrink-0 text-sm leading-none select-none cursor-pointer hover:scale-125 transition-transform min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="text-gold shrink-0 text-sm leading-none select-none cursor-pointer hover:scale-125 transition-transform min-h-[44px] sm:min-h-[28px] min-w-[44px] sm:min-w-[28px] flex items-center justify-center"
               aria-label={t("advance_turn")}
               title={t("advance_turn")}
               data-testid="current-turn-indicator"
@@ -317,7 +317,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); openInlineEdit("initiative", combatant.initiative !== null ? String(combatant.initiative) : ""); }}
-                className="flex-shrink-0 px-2 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors min-h-[44px] inline-flex items-center"
+                className="flex-shrink-0 px-2 rounded bg-white/[0.06] text-muted-foreground text-[10px] font-mono hover:text-gold hover:bg-gold/10 transition-colors min-h-[44px] sm:min-h-[28px] inline-flex items-center"
                 title={t("edit_initiative_title")}
                 data-testid={`initiative-badge-${combatant.id}`}
               >
@@ -426,7 +426,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
-                className={`text-muted-foreground min-h-[44px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                className={`text-muted-foreground min-h-[44px] sm:min-h-[28px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
                 title={showActions ? t("edit_current_hp_title") : undefined}
                 data-testid={`current-hp-btn-${combatant.id}`}
               >
@@ -459,7 +459,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => { if (showActions) openInlineEdit("max", String(combatant.max_hp)); }}
-                className={`text-muted-foreground/60 min-h-[44px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                className={`text-muted-foreground/60 min-h-[44px] sm:min-h-[28px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
                 title={showActions ? t("edit_max_hp_title") : undefined}
                 data-testid={`max-hp-btn-${combatant.id}`}
               >
@@ -517,7 +517,7 @@ export const CombatantRow = memo(function CombatantRow({
           {/* Only show when max_hp > 0 (HP was actually configured) */}
           {combatant.is_player && combatant.current_hp === 0 && combatant.max_hp > 0 && !combatant.is_defeated && (
             <span
-              className="text-xs text-red-300 font-medium animate-pulse"
+              className="text-xs text-red-300 font-medium animate-critical-glow"
               data-testid="dying-badge"
             >
               {t("dying_label")}
@@ -526,7 +526,7 @@ export const CombatantRow = memo(function CombatantRow({
         </div>
 
         {/* HP bar with tooltip — purple segment for temp HP */}
-        <div className="mb-1">
+        <div className="mb-0.5">
           <div
             className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden cursor-help flex"
             role="progressbar"
@@ -664,7 +664,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => pinCard("monster", fullMonster.id, combatant.ruleset_version ?? "2014")}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 aria-label={t("pin_stat_block", { name: combatant.name })}
                 data-testid={`pin-btn-${combatant.id}`}
               >
@@ -674,7 +674,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("hp")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] min-w-[44px] inline-flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] min-w-[44px] sm:min-w-[28px] inline-flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "hp" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("adjust_hp")}
@@ -685,7 +685,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("conditions")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "conditions" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("manage_conditions")}
@@ -697,7 +697,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onSetDefeated?.(combatant.id, true)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-red-900/20 text-red-400 hover:bg-red-900/40"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-red-900/20 text-red-400 hover:bg-red-900/40"
                 aria-label={t("defeat_aria")}
                 data-testid={`defeat-btn-${combatant.id}`}
               >
@@ -707,7 +707,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onSetDefeated?.(combatant.id, false)}
-                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-500/80 text-emerald-100 hover:bg-emerald-500 border border-emerald-400/70"
+                className="px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] bg-emerald-500/80 text-emerald-100 hover:bg-emerald-500 border border-emerald-400/70"
                 aria-label={t("revive_aria")}
                 data-testid={`revive-btn-${combatant.id}`}
               >
@@ -717,7 +717,7 @@ export const CombatantRow = memo(function CombatantRow({
             <button
               type="button"
               onClick={() => togglePanel("edit")}
-              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] inline-flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 openPanel === "edit" ? "bg-gold text-surface-primary" : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
               }`}
               aria-label={t("edit_stats")}
@@ -730,7 +730,7 @@ export const CombatantRow = memo(function CombatantRow({
                 <button
                   type="button"
                   onClick={() => setVersionConfirmOpen(true)}
-                  className="px-2 py-1 text-xs rounded font-medium min-h-[44px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                   aria-label={t("switch_version", { version: otherVersion })}
                   data-testid={`version-btn-${combatant.id}`}
                 >
@@ -757,7 +757,7 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => onToggleHidden(combatant.id)}
-                className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] inline-flex items-center gap-1 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] inline-flex items-center gap-1 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                   combatant.is_hidden
                     ? "bg-purple-900/30 text-purple-400 hover:bg-purple-900/50"
                     : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
@@ -774,7 +774,7 @@ export const CombatantRow = memo(function CombatantRow({
               <AlertDialogTrigger asChild>
                 <button
                   type="button"
-                  className="px-2 py-1 text-xs rounded font-medium min-h-[44px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                   aria-label={t("remove_aria")}
                   data-testid={`remove-btn-${combatant.id}`}
                 >

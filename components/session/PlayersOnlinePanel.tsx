@@ -21,6 +21,8 @@ interface PlayersOnlinePanelProps {
   onPlayerCountChange?: (count: number) => void;
   /** Broadcast-driven status overrides from DM channel (player:disconnecting/idle/active) */
   broadcastStatuses?: Record<string, PlayerStatus>;
+  /** Compact inline mode — single row with dots instead of full card */
+  compact?: boolean;
 }
 
 const OFFLINE_DELAY_MS = 5000;
@@ -28,7 +30,7 @@ const STALE_CHECK_INTERVAL_MS = 30_000; // DM polls last_seen_at every 30s (halv
 const ACTIVE_THRESHOLD_MS = 180_000; // 3x heartbeat interval (60s) — avoids false-offline from JS throttling
 const IDLE_THRESHOLD_MS = 300_000; // 5min
 
-export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastStatuses }: PlayersOnlinePanelProps) {
+export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastStatuses, compact }: PlayersOnlinePanelProps) {
   const t = useTranslations("combat");
   const [players, setPlayers] = useState<PresencePlayer[]>([]);
   const offlineTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -186,6 +188,38 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastSt
   if (players.length === 0) return null;
 
   const onlineCount = players.filter((p) => p.is_online).length;
+
+  // Compact inline mode — single row with status dots and names
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2 min-w-0" data-testid="players-online-panel">
+        <Users className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+        <div className="flex items-center gap-2 min-w-0 overflow-x-auto scrollbar-hide">
+          {players.map((player) => (
+            <span
+              key={player.id}
+              className={`inline-flex items-center gap-1 text-xs whitespace-nowrap ${player.status === "offline" ? "opacity-50" : ""}`}
+              data-testid={`player-presence-${player.id}`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                  player.status === "online" ? "bg-green-500"
+                  : player.status === "idle" ? "bg-yellow-500"
+                  : "bg-zinc-500"
+                }`}
+                aria-label={
+                  player.status === "online" ? t("player_online")
+                  : player.status === "idle" ? t("player_idle")
+                  : t("player_offline")
+                }
+              />
+              <span className="text-muted-foreground">{player.name}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card border border-border rounded-lg px-3 py-2" data-testid="players-online-panel">

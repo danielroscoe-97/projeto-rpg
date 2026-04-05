@@ -45,7 +45,7 @@ import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
 import { createClient } from "@/lib/supabase/client";
 import { CombatTimer } from "@/components/combat/CombatTimer";
-import { StickyTurnHeader } from "@/components/combat/StickyTurnHeader";
+// StickyTurnHeader removed — turn info now inline in round header (desktop) and compact row (mobile)
 import { TurnTimer } from "@/components/combat/TurnTimer";
 import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
@@ -269,6 +269,27 @@ export function CombatSessionClient({
           rounds: pending.rounds,
           combatDuration: pending.combatDuration,
         });
+        // B6: Broadcast full recap so players see the "Spotify Wrapped" experience
+        // Map names in awards/rankings/narratives using display_name for privacy
+        const nameMap = new Map<string, string>();
+        for (const c of combatants) {
+          if (c.display_name) nameMap.set(c.name, c.display_name);
+        }
+        const mapName = (n: string) => nameMap.get(n) ?? n;
+        const playerSafeReport = {
+          ...report,
+          awards: report.awards.map((a) => ({ ...a, combatantName: mapName(a.combatantName) })),
+          rankings: playerSafeStats,
+          narratives: report.narratives.map((n) => ({
+            ...n,
+            text: [...nameMap.entries()].reduce((txt, [real, display]) => txt.replaceAll(real, display), n.text),
+            actors: n.actors.map(mapName),
+          })),
+        };
+        broadcastEvent(sid, {
+          type: "session:combat_recap",
+          report: playerSafeReport,
+        });
       }
     } else {
       // No meaningful combat stats — skip leaderboard but still offer DM feedback
@@ -376,6 +397,16 @@ export function CombatSessionClient({
     }
     doEndEncounter();
   }, [doEndEncounter, getSessionId, pollVotes]);
+
+  // Hide navbar + reduce main padding when combat is active — saves ~72px vertical space
+  useEffect(() => {
+    if (is_active) {
+      document.documentElement.setAttribute("data-combat-active", "true");
+    }
+    return () => {
+      document.documentElement.removeAttribute("data-combat-active");
+    };
+  }, [is_active]);
 
   // Register hidden lookup so broadcast.ts can filter events for hidden combatants
   useEffect(() => {
@@ -1127,11 +1158,11 @@ export function CombatSessionClient({
   // Active combat view
   return (
     <div className="w-full max-w-6xl mx-auto px-2" data-testid="active-combat">
-      <div className="sticky top-[72px] z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <h2 className="text-foreground font-semibold whitespace-nowrap">
-            {encounter_name && <span className="mr-2">{encounter_name}</span>}
+      <div className="sticky top-0 z-30 bg-background pb-1 space-y-1 border-b border-white/[0.06] -mx-2 px-2 pt-1">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <h2 className="text-foreground font-semibold whitespace-nowrap text-sm">
+            {encounter_name && <span className="mr-1.5 hidden sm:inline">{encounter_name}</span>}
             {t("round")} <span className="font-mono text-gold">{round_number}</span>
           </h2>
           {combatStartedAt && <CombatTimer startTime={combatStartedAt} isPaused={isPaused} />}
@@ -1140,7 +1171,7 @@ export function CombatSessionClient({
             <button
               type="button"
               onClick={() => useCombatStore.getState().toggleTimerPause()}
-              className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md transition-colors ${
+              className={`min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] flex items-center justify-center rounded-md transition-colors ${
                 isPaused
                   ? "text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
                   : "text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.04]"
@@ -1151,12 +1182,26 @@ export function CombatSessionClient({
               {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
             </button>
           )}
+          {/* Inline turn indicator — replaces separate StickyTurnHeader */}
+          <div className="hidden sm:flex items-center gap-1.5 text-xs min-w-0 border-l border-white/[0.08] pl-2 ml-1">
+            <span className="text-gold shrink-0" aria-hidden="true">▶</span>
+            <span className={`truncate max-w-[140px] font-medium ${combatants[current_turn_index]?.is_player ? "text-gold" : "text-foreground"}`}>
+              {combatants[current_turn_index]?.is_player
+                ? t("sticky_pc_turn", { name: combatants[current_turn_index]?.name ?? "" })
+                : combatants[current_turn_index]?.name ?? t("dm_turn_label")}
+            </span>
+            {combatants[(current_turn_index + 1) % combatants.length] && (
+              <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
+                → {combatants[(current_turn_index + 1) % combatants.length]?.name}
+              </span>
+            )}
+          </div>
         </div>
         <button
           type="button"
           onClick={handleAdvanceTurn}
           disabled={turnPending}
-          className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap inline-flex items-center gap-2"
+          className="px-3 py-1.5 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px] disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap inline-flex items-center gap-2"
           aria-label="Advance to next turn"
           data-testid="next-turn-btn"
         >
@@ -1165,14 +1210,14 @@ export function CombatSessionClient({
         </button>
       </div>
       <div className="relative scroll-fade-hint">
-      <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide">
           <span className="text-muted-foreground text-xs">
             {t(combatants.length === 1 ? "combatants_count" : "combatants_count_plural", { count: combatants.length })}
           </span>
           <button
             type="button"
             onClick={() => { if (!postCombatPhase) setShowActionLog(v => !v); }}
-            className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+            className="px-2 py-1 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center rounded-md"
             aria-label={t("combat_log_title")}
             title={t("combat_log_title")}
             data-testid="action-log-btn"
@@ -1182,7 +1227,7 @@ export function CombatSessionClient({
           <button
             type="button"
             onClick={handleEndEncounter}
-            className="px-3 py-2 bg-red-900/20 text-red-400 font-medium rounded-md hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
+            className="px-2 py-1 bg-red-900/20 text-red-400 font-medium rounded-md hover:bg-red-900/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px]"
             aria-label="End encounter"
             data-testid="end-encounter-btn"
           >
@@ -1191,7 +1236,7 @@ export function CombatSessionClient({
           <button
             type="button"
             onClick={() => setAddMode((prev) => (prev ? null : "open"))}
-            className="px-3 py-2 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
+            className="px-2 py-1 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px]"
             aria-label="Add combatant"
             data-testid="add-combatant-btn"
           >
@@ -1212,7 +1257,7 @@ export function CombatSessionClient({
             <button
               type="button"
               onClick={() => setPlayerDrawerOpen((v) => !v)}
-              className={`px-2 py-2 text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1.5 rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              className={`px-2 py-1 text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center gap-1.5 rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 playerDrawerOpen
                   ? "bg-gold/10 text-gold border border-gold/30"
                   : "text-muted-foreground hover:text-foreground bg-white/[0.04]"
@@ -1231,7 +1276,7 @@ export function CombatSessionClient({
           <button
             type="button"
             onClick={() => setCheatsheetOpen((v) => !v)}
-            className="px-2 py-2 text-muted-foreground hover:text-foreground transition-colors text-sm min-h-[44px] min-w-[44px] hidden md:inline-flex items-center justify-center"
+            className="px-2 py-1 text-muted-foreground hover:text-foreground transition-colors text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] hidden md:inline-flex items-center justify-center"
             aria-label={t("shortcut_title")}
             title={t("shortcut_title")}
           >
@@ -1248,16 +1293,16 @@ export function CombatSessionClient({
         onRejectAll={handleRejectAllJoinRequests}
       />
 
+      {/* Compact players row — inline dots + postit senders */}
       {sessionId && (
-        <div className="flex items-start gap-2">
-          <div className="flex-1 min-w-0">
-            <PlayersOnlinePanel
-              sessionId={sessionId}
-              broadcastStatuses={playerBroadcastStatuses}
-            />
-          </div>
+        <div className="flex items-center gap-2 text-xs px-1">
+          <PlayersOnlinePanel
+            sessionId={sessionId}
+            broadcastStatuses={playerBroadcastStatuses}
+            compact
+          />
           {/* F-38: Per-player postit buttons + send to all */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0 ml-auto">
             {combatants
               .filter((c) => c.is_player && !c.is_defeated)
               .map((c) => (
@@ -1326,16 +1371,23 @@ export function CombatSessionClient({
           />
         </SheetContent>
       </Sheet>
-      {/* Sticky turn indicator */}
-      <StickyTurnHeader
-        currentCombatantName={combatants[current_turn_index]?.name ?? t("dm_turn_label")}
-        isPcTurn={combatants[current_turn_index]?.is_player ?? false}
-        nextCombatantName={combatants[(current_turn_index + 1) % combatants.length]?.name}
-        roundNumber={round_number}
-      />
+      {/* Turn indicator on mobile — visible only below sm breakpoint */}
+      <div className="sm:hidden flex items-center gap-2 px-2 py-1 text-xs">
+        <span className="text-gold shrink-0" aria-hidden="true">▶</span>
+        <span className={`truncate font-medium ${combatants[current_turn_index]?.is_player ? "text-gold" : "text-foreground"}`}>
+          {combatants[current_turn_index]?.is_player
+            ? t("sticky_pc_turn", { name: combatants[current_turn_index]?.name ?? "" })
+            : combatants[current_turn_index]?.name ?? t("dm_turn_label")}
+        </span>
+        {combatants[(current_turn_index + 1) % combatants.length] && (
+          <span className="text-[10px] text-muted-foreground truncate">
+            → {combatants[(current_turn_index + 1) % combatants.length]?.name}
+          </span>
+        )}
+      </div>
       </div>{/* end sticky controls */}
 
-      <div className="mt-4">
+      <div className="mt-1">
       <CombatList
         combatants={combatants}
         currentTurnIndex={current_turn_index}
@@ -1558,7 +1610,7 @@ function CombatList({
       role="list"
       aria-label={t("initiative_order")}
       data-testid="initiative-list"
-      className="space-y-2"
+      className="space-y-1"
     >
       <SortableCombatantList
         combatants={combatants}

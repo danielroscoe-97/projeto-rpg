@@ -36,6 +36,17 @@ html {
   scroll-padding-top: 80px;
 }
 
+/* Combat Focus Mode — hides navbar and reclaims ~72px vertical space during active combat */
+html[data-combat-active="true"] nav[aria-label="Main navigation"] {
+  transform: translateY(-100%);
+  pointer-events: none;
+  opacity: 0;
+}
+html[data-combat-active="true"] main#main-content {
+  padding-top: 0 !important;
+  transition: padding-top 250ms ease;
+}
+
 @layer base {
   /* ===================================================================
      RPG Combat Tracker — Dark RPG Theme
@@ -482,6 +493,16 @@ html {
     animation: flash-green 0.5s ease-out both;
   }
 
+  /* Critical HP — subtle slow glow (replaces aggressive animate-pulse) */
+  @keyframes critical-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.82; }
+  }
+
+  .animate-critical-glow {
+    animation: critical-glow 3.5s ease-in-out infinite;
+  }
+
   /* HP=0 dramatic red pulse on character card border */
   @keyframes pulse-red {
     0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
@@ -537,7 +558,8 @@ html {
     .animate-rune-pulse,
     .animate-flow-dash,
     .node-reveal,
-    .new-badge-enter {
+    .new-badge-enter,
+    .animate-critical-glow {
       animation: none !important;
     }
   }

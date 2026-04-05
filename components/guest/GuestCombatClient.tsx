@@ -14,7 +14,7 @@ import { CombatantRow } from "@/components/combat/CombatantRow";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
-import { StickyTurnHeader } from "@/components/combat/StickyTurnHeader";
+// StickyTurnHeader removed — turn info now inline in round header (desktop) and compact row (mobile)
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { CombatRecap } from "@/components/combat/CombatRecap";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
@@ -1020,6 +1020,16 @@ export function GuestCombatClient() {
     setUpsellOpen(true);
   }, []);
 
+  // Hide navbar during active combat — saves ~72px vertical space
+  useEffect(() => {
+    if (phase === "combat") {
+      document.documentElement.setAttribute("data-combat-active", "true");
+    }
+    return () => {
+      document.documentElement.removeAttribute("data-combat-active");
+    };
+  }, [phase]);
+
   // Auto-scroll to active combatant when turn advances (skip initial mount)
   const isFirstTurnRef = useRef(true);
   useEffect(() => {
@@ -1485,11 +1495,11 @@ export function GuestCombatClient() {
   // Active combat view
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto space-y-4 px-2" data-testid="active-combat" data-tour-id="tour-complete">
-        <div className="sticky top-[72px] z-30 bg-background pb-3 space-y-3 border-b border-white/[0.06] -mx-2 px-2 pt-1">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <h2 className="text-foreground font-semibold whitespace-nowrap">
+      <div className="w-full max-w-6xl mx-auto space-y-1 px-2" data-testid="active-combat" data-tour-id="tour-complete">
+        <div className="sticky top-0 z-30 bg-background pb-1 space-y-1 border-b border-white/[0.06] -mx-2 px-2 pt-1">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <h2 className="text-foreground font-semibold whitespace-nowrap text-sm">
               {t("round")} <span className="font-mono text-gold">{roundNumber}</span>
             </h2>
             {combatStartTime && <CombatTimer startTime={combatStartTime} isPaused={isPaused} />}
@@ -1498,7 +1508,7 @@ export function GuestCombatClient() {
               <button
                 type="button"
                 onClick={() => useGuestCombatStore.getState().toggleTimerPause()}
-                className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md transition-colors ${
+                className={`min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] flex items-center justify-center rounded-md transition-colors ${
                   isPaused
                     ? "text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
                     : "text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.04]"
@@ -1509,11 +1519,25 @@ export function GuestCombatClient() {
                 {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
               </button>
             )}
+            {/* Inline turn indicator — replaces separate StickyTurnHeader */}
+            <div className="hidden sm:flex items-center gap-1.5 text-xs min-w-0 border-l border-white/[0.08] pl-2 ml-1">
+              <span className="text-gold shrink-0" aria-hidden="true">▶</span>
+              <span className={`truncate max-w-[140px] font-medium ${combatants[currentTurnIndex]?.is_player ? "text-gold" : "text-foreground"}`}>
+                {combatants[currentTurnIndex]?.is_player
+                  ? t("sticky_pc_turn", { name: combatants[currentTurnIndex]?.name ?? "" })
+                  : combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
+              </span>
+              {combatants[(currentTurnIndex + 1) % combatants.length] && (
+                <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
+                  → {combatants[(currentTurnIndex + 1) % combatants.length]?.name}
+                </span>
+              )}
+            </div>
           </div>
           <button
             type="button"
             onClick={handleAdvanceTurn}
-            className="px-4 py-2 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] shrink-0 whitespace-nowrap"
+            className="px-3 py-1.5 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px] shrink-0 whitespace-nowrap"
             aria-label="Advance to next turn"
             data-testid="next-turn-btn"
             data-tour-id="next-turn"
@@ -1522,12 +1546,12 @@ export function GuestCombatClient() {
           </button>
         </div>
         <div className="relative scroll-fade-hint">
-        <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide" data-tour-id="combat-controls">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide" data-tour-id="combat-controls">
             {/* Action log toggle */}
             <button
               type="button"
               onClick={() => { if (!guestPostCombatPhase) setShowActionLog(v => !v); }}
-              className="px-2 py-2 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+              className="px-2 py-1 text-muted-foreground hover:text-gold bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center rounded-md"
               aria-label={t("combat_log_title")}
               title={t("combat_log_title")}
               data-testid="action-log-btn"
@@ -1538,7 +1562,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={handleEndEncounter}
-              className="px-3 py-2 bg-red-900/20 text-red-400 font-medium rounded-md hover:bg-red-900/40 transition-all duration-[250ms] text-sm min-h-[44px]"
+              className="px-2 py-1 bg-red-900/20 text-red-400 font-medium rounded-md hover:bg-red-900/40 transition-all duration-[250ms] text-sm min-h-[44px] sm:min-h-[32px]"
               aria-label="End encounter"
               data-testid="end-encounter-btn"
             >
@@ -1549,7 +1573,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => openUpsell("save")}
-              className="px-3 py-2 bg-white/[0.06] text-muted-foreground/60 font-medium rounded-md hover:bg-white/[0.1] hover:text-muted-foreground transition-all duration-[250ms] text-sm min-h-[44px] flex items-center gap-1.5"
+              className="px-2 py-1 bg-white/[0.06] text-muted-foreground/60 font-medium rounded-md hover:bg-white/[0.1] hover:text-muted-foreground transition-all duration-[250ms] text-sm min-h-[44px] sm:min-h-[32px] flex items-center gap-1.5"
               title={tg("save_requires_account")}
               data-testid="save-btn"
             >
@@ -1561,7 +1585,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => openUpsell("weather")}
-              className="px-2 py-2 text-muted-foreground/60 hover:text-muted-foreground bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
+              className="px-2 py-1 text-muted-foreground/60 hover:text-muted-foreground bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center rounded-md"
               aria-label={tg("weather_upsell_label")}
               title={tg("weather_upsell_label")}
               data-testid="weather-upsell-btn"
@@ -1576,7 +1600,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => setShowAddForm((prev) => !prev)}
-              className="px-3 py-2 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px]"
+              className="px-2 py-1 bg-emerald-900/30 text-emerald-400 font-medium rounded-md hover:bg-emerald-900/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px]"
               aria-label="Add combatant"
               data-testid="add-combatant-btn"
             >
@@ -1586,7 +1610,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => setCheatsheetOpen(true)}
-              className="px-3 py-2 bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] font-mono font-medium rounded-md transition-all duration-[250ms] text-sm min-h-[44px]"
+              className="px-2 py-1 bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] font-mono font-medium rounded-md transition-all duration-[250ms] text-sm min-h-[44px] sm:min-h-[32px]"
               aria-label="Keyboard shortcuts"
               data-testid="cheatsheet-btn"
               title={t("shortcut_title")}
@@ -1598,7 +1622,7 @@ export function GuestCombatClient() {
             <button
               type="button"
               onClick={() => setSpellsOpen(true)}
-              className="px-2 py-2 bg-white/[0.06] text-gold/70 hover:text-gold hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
+              className="px-2 py-1 bg-white/[0.06] text-gold/70 hover:text-gold hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center"
               aria-label={t("spell_open")}
               title={t("spell_open")}
               data-testid="spell-browser-btn"
@@ -1614,7 +1638,7 @@ export function GuestCombatClient() {
               type="button"
               onClick={handleUndo}
               disabled={!canUndo()}
-              className="px-2 py-2 bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] inline-flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+              className="px-2 py-1 bg-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label={t("shortcut_undo_action")}
               title={`${t("shortcut_undo_action")} (Ctrl+Z)`}
               data-testid="undo-btn"
@@ -1624,14 +1648,21 @@ export function GuestCombatClient() {
 
         </div>
         </div>
-        {/* Sticky turn indicator row */}
+        {/* Turn indicator on mobile — visible only below sm breakpoint */}
         {phase === "combat" && (
-          <StickyTurnHeader
-            currentCombatantName={combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
-            isPcTurn={combatants[currentTurnIndex]?.is_player ?? false}
-            nextCombatantName={combatants[(currentTurnIndex + 1) % combatants.length]?.name}
-            roundNumber={roundNumber}
-          />
+          <div className="sm:hidden flex items-center gap-2 px-2 py-1 text-xs">
+            <span className="text-gold shrink-0" aria-hidden="true">▶</span>
+            <span className={`truncate font-medium ${combatants[currentTurnIndex]?.is_player ? "text-gold" : "text-foreground"}`}>
+              {combatants[currentTurnIndex]?.is_player
+                ? t("sticky_pc_turn", { name: combatants[currentTurnIndex]?.name ?? "" })
+                : combatants[currentTurnIndex]?.name ?? t("dm_turn_label")}
+            </span>
+            {combatants[(currentTurnIndex + 1) % combatants.length] && (
+              <span className="text-[10px] text-muted-foreground truncate">
+                → {combatants[(currentTurnIndex + 1) % combatants.length]?.name}
+              </span>
+            )}
+          </div>
         )}
         </div>{/* end sticky controls */}
 
@@ -1669,7 +1700,7 @@ export function GuestCombatClient() {
           aria-label={t("initiative_order")}
           data-testid="initiative-list"
           data-tour-id="hp-adjust"
-          className="space-y-2"
+          className="space-y-1"
         >
           <SortableCombatantList
             combatants={combatants}
