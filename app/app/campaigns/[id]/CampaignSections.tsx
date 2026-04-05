@@ -63,25 +63,41 @@ function Section({
   icon: Icon,
   title,
   defaultOpen,
+  tier = 1,
+  count,
   children,
 }: {
   id?: string;
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   defaultOpen: boolean;
+  tier?: 1 | 2 | 3;
+  count?: number;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const t = useTranslations("campaign");
+
+  const isCompact = tier >= 2;
+  const borderClass = tier === 3 ? "border-border/50" : "border-border";
+  const iconClass = isCompact ? "h-4 w-4 text-muted-foreground flex-shrink-0" : "h-4 w-4 text-amber-400 flex-shrink-0";
+  const titleClass = isCompact ? "text-muted-foreground font-medium text-sm flex-1" : "text-amber-400 font-semibold text-sm flex-1";
+  const paddingClass = isCompact ? "py-2" : "py-3";
 
   return (
-    <div id={id} className="border border-border rounded-lg overflow-hidden scroll-mt-20">
+    <div id={id} className={`border ${borderClass} rounded-lg overflow-hidden scroll-mt-20`}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 w-full px-4 py-3 min-h-[44px] bg-card hover:bg-card/80 transition-colors text-left"
+        className={`flex items-center gap-2 w-full px-4 ${paddingClass} min-h-[44px] bg-card hover:bg-card/80 transition-colors text-left`}
       >
-        <Icon className="h-4 w-4 text-amber-400 flex-shrink-0" />
-        <span className="text-amber-400 font-semibold text-sm flex-1">{title}</span>
+        <Icon className={iconClass} />
+        <span className={titleClass}>{title}</span>
+        {isCompact && count !== undefined && (
+          <span className="text-xs px-1.5 py-0.5 rounded-full mr-1 bg-muted text-muted-foreground">
+            {count === 0 ? t("badge_empty") : count}
+          </span>
+        )}
         <ChevronDown
           className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
             open ? "rotate-180" : ""
@@ -89,7 +105,7 @@ function Section({
         />
       </button>
       {open && (
-        <div className="px-4 py-4 border-t border-border">
+        <div className={`px-4 py-4 border-t ${borderClass}`}>
           <SectionErrorBoundary fallbackLabel={title}>{children}</SectionErrorBoundary>
         </div>
       )}
@@ -158,16 +174,16 @@ export function CampaignSections({
           </Section>
         )}
 
-        <Section id="section_npcs" icon={UserCircle} title={t("section_npcs")} defaultOpen={false}>
+        <Section id="section_npcs" icon={UserCircle} title={t("section_npcs")} defaultOpen={false} tier={2}>
           <NpcList campaignId={campaignId} />
         </Section>
 
-        <Section id="section_notes" icon={FileText} title={t("section_notes")} defaultOpen={false}>
+        <Section id="section_notes" icon={FileText} title={t("section_notes")} defaultOpen={false} tier={2}>
           <CampaignNotes campaignId={campaignId} />
         </Section>
 
         {isOwner && (
-          <Section id="section_inventory" icon={Package} title={t("section_inventory")} defaultOpen={false}>
+          <Section id="section_inventory" icon={Package} title={t("section_inventory")} defaultOpen={false} tier={3}>
             <BagOfHolding campaignId={campaignId} userId={userId} isDm={true} />
           </Section>
         )}
@@ -186,15 +202,15 @@ export function CampaignSections({
           <QuestBoard campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section id="section_locations" icon={MapPin} title={t("section_locations")} defaultOpen={false}>
+        <Section id="section_locations" icon={MapPin} title={t("section_locations")} defaultOpen={false} tier={2}>
           <LocationList campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section id="section_factions" icon={Flag} title={t("section_factions")} defaultOpen={false}>
+        <Section id="section_factions" icon={Flag} title={t("section_factions")} defaultOpen={false} tier={2}>
           <FactionList campaignId={campaignId} isEditable={isOwner} />
         </Section>
 
-        <Section id="section_mindmap" icon={Network} title={t("section_mindmap")} defaultOpen={false}>
+        <Section id="section_mindmap" icon={Network} title={t("section_mindmap")} defaultOpen={false} tier={3}>
           <CampaignMindMap campaignId={campaignId} campaignName={campaignName} />
         </Section>
       </div>
