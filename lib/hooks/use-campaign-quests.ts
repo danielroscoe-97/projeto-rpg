@@ -81,17 +81,17 @@ export function useCampaignQuests(campaignId: string) {
   const deleteQuest = useCallback(
     async (id: string) => {
       // Optimistic removal
-      const prev = quests;
       setQuests((current) => current.filter((q) => q.id !== id));
 
       const supabase = createClient();
       const { error } = await supabase.from("campaign_quests").delete().eq("id", id);
 
       if (error) {
-        setQuests(prev);
+        // Rollback by refetching — avoids stale closure issues
+        await fetchQuests();
       }
     },
-    [quests],
+    [fetchQuests],
   );
 
   const reorderQuest = useCallback(

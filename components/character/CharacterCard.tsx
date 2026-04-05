@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import {
   User,
   Upload,
-  Pencil,
   Trash2,
   Heart,
   Shield,
@@ -45,14 +44,23 @@ export function CharacterCard({
   const [expanded, setExpanded] = useState(false);
 
   const subtitle = [character.race, character.class].filter(Boolean).join(" ");
-  const levelStr = character.level ? `Lv ${character.level}` : null;
+  const levelStr = character.level ? `${t("level_abbr")} ${character.level}` : null;
   const hasNotes = dmNotes != null && onDmNotesChange != null;
   const hasExpandableContent = hasNotes || character.notes || character.background;
 
   return (
     <div
       data-testid={`character-card-${character.id}`}
-      className="group relative bg-card border border-border/40 rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)]"
+      className={`group relative bg-card border border-border/40 rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${onClick ? "cursor-pointer" : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
     >
       {/* Subtle top accent line */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -61,7 +69,7 @@ export function CharacterCard({
         {/* Header row */}
         <div className="flex items-start gap-3">
           {/* Token avatar */}
-          <div className="shrink-0 relative group/avatar">
+          <div className="shrink-0 relative">
             {character.token_url ? (
               <img
                 src={character.token_url}
@@ -73,22 +81,9 @@ export function CharacterCard({
                 <User className="w-5 h-5 text-amber-400/70" />
               </div>
             )}
-            {onUploadToken && (
-              <button
-                type="button"
-                aria-label="Upload token"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUploadToken();
-                }}
-                className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center"
-              >
-                <Upload className="w-4 h-4 text-white" />
-              </button>
-            )}
             {/* Linked account dot */}
             {member && (
-              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card bg-emerald-400" title="Conta vinculada" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card bg-emerald-400" />
             )}
           </div>
 
@@ -126,7 +121,7 @@ export function CharacterCard({
               {character.level != null && character.level > 0 && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <Sparkles className="w-3 h-3" />
-                  Lv {character.level}
+                  {t("level_abbr")} {character.level}
                 </span>
               )}
               {character.initiative_bonus != null && (
@@ -139,16 +134,16 @@ export function CharacterCard({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            {onClick && (
+          <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+            {onUploadToken && (
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={onClick}
-                title={t("edit")}
+                onClick={(e) => { e.stopPropagation(); onUploadToken(); }}
+                title={t("upload_token")}
               >
-                <Pencil className="w-3.5 h-3.5" />
+                <Upload className="w-3.5 h-3.5" />
               </Button>
             )}
             {onDelete && (
@@ -156,7 +151,7 @@ export function CharacterCard({
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-red-400"
-                onClick={onDelete}
+                onClick={(e) => { e.stopPropagation(); onDelete(); }}
                 title={t("delete_confirm")}
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -173,7 +168,7 @@ export function CharacterCard({
               {member.display_name ?? member.email?.split("@")[0] ?? "Jogador"}
             </span>
             <span className="text-[10px] text-emerald-400/80 whitespace-nowrap">
-              Vinculado
+              {t("linked_account")}
             </span>
           </div>
         )}
@@ -182,7 +177,7 @@ export function CharacterCard({
         {hasExpandableContent && (
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
             className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors w-full"
           >
             <div className="flex-1 h-px bg-border/50" />
@@ -192,7 +187,7 @@ export function CharacterCard({
               <ChevronDown className="w-3 h-3 shrink-0" />
             )}
             <span className="shrink-0">
-              {expanded ? t("notes") : hasNotes ? t("notes") : "Info"}
+              {expanded ? t("notes") : hasNotes ? t("notes") : t("info")}
             </span>
             <div className="flex-1 h-px bg-border/50" />
           </button>
@@ -206,7 +201,7 @@ export function CharacterCard({
               <div className="text-xs text-muted-foreground leading-relaxed space-y-1">
                 {character.background && (
                   <p>
-                    <span className="text-muted-foreground/50">Background:</span>{" "}
+                    <span className="text-muted-foreground/50">{t("background_label")}:</span>{" "}
                     {character.background}
                   </p>
                 )}
@@ -220,25 +215,25 @@ export function CharacterCard({
             {hasNotes && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-medium text-amber-400/70">DM Notes</p>
+                  <p className="text-[11px] font-medium text-amber-400/70">{t("dm_notes_label")}</p>
                   <div className="h-4">
                     {notesSaveStatus === "saving" && (
                       <span className="text-[10px] text-muted-foreground animate-pulse">
-                        Salvando...
+                        {t("saving")}
                       </span>
                     )}
                     {notesSaveStatus === "saved" && (
-                      <span className="text-[10px] text-emerald-400">Salvo</span>
+                      <span className="text-[10px] text-emerald-400">{t("saved")}</span>
                     )}
                     {notesSaveStatus === "error" && (
-                      <span className="text-[10px] text-red-400">Erro</span>
+                      <span className="text-[10px] text-red-400">{t("save_error")}</span>
                     )}
                   </div>
                 </div>
                 <textarea
                   value={dmNotes}
                   onChange={(e) => onDmNotesChange!(e.target.value)}
-                  placeholder="Notas sobre este jogador..."
+                  placeholder={t("dm_notes_placeholder")}
                   maxLength={2000}
                   rows={2}
                   className="w-full bg-amber-500/5 border border-amber-500/10 rounded-lg px-3 py-2 text-xs text-muted-foreground placeholder:text-muted-foreground/30 resize-y focus:outline-none focus:border-amber-500/25 transition-colors"

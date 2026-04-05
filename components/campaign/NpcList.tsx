@@ -20,7 +20,6 @@ import { NpcCardSkeleton } from "@/components/ui/skeletons/NpcCardSkeleton";
 import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignNpc, CampaignNpcInsert } from "@/lib/types/campaign-npcs";
-import type { NoteNpcLink } from "@/lib/types/note-npc-links";
 
 interface NoteInfo {
   id: string;

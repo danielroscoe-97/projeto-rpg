@@ -76,11 +76,9 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
 
           {/* Name + visibility badge */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground line-clamp-2 break-words leading-tight">
-                {npc.name}
-              </h3>
-            </div>
+            <h3 className="text-sm font-semibold text-foreground line-clamp-2 break-words leading-tight">
+              {npc.name}
+            </h3>
 
             {/* Stat badges */}
             {hasStats && (
@@ -114,7 +112,7 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
             <Button
               variant="ghost"
               size="icon"

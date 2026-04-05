@@ -2668,7 +2668,16 @@
     "drag_drop": "Drag an image or click",
     "token_updated": "Token updated!",
     "no_characters": "No characters",
-    "create_first": "Create your first character"
+    "create_first": "Create your first character",
+    "level_abbr": "Lv",
+    "linked_account": "Linked",
+    "dm_notes_label": "DM Notes",
+    "dm_notes_placeholder": "Notes about this player...",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "save_error": "Error",
+    "info": "Info",
+    "background_label": "Background"
   },
   "mindmap": {
     "title": "Mind Map",

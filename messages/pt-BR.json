@@ -2668,7 +2668,16 @@
     "drag_drop": "Arraste uma imagem ou clique",
     "token_updated": "Token atualizado!",
     "no_characters": "Nenhum personagem",
-    "create_first": "Crie seu primeiro personagem"
+    "create_first": "Crie seu primeiro personagem",
+    "level_abbr": "Nv",
+    "linked_account": "Vinculado",
+    "dm_notes_label": "Notas do Mestre",
+    "dm_notes_placeholder": "Notas sobre este jogador...",
+    "saving": "Salvando...",
+    "saved": "Salvo",
+    "save_error": "Erro",
+    "info": "Info",
+    "background_label": "Background"
   },
   "mindmap": {
     "title": "Mapa Mental",
