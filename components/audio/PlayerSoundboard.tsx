@@ -112,7 +112,7 @@ export function PlayerSoundboard({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-40 right-4 left-4 z-40 bg-card border border-border rounded-xl p-4 shadow-2xl max-w-md mx-auto"
+            className="fixed bottom-40 right-4 left-4 z-40 bg-card border border-border rounded-xl p-4 shadow-2xl max-w-md mx-auto max-h-[60vh] overflow-y-auto"
             data-testid="soundboard-drawer"
           >
             {/* Presets Section */}

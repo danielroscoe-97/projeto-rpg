@@ -1374,6 +1374,32 @@ export function PlayerJoinClient({
     };
   }, [isRegistered, active, effectiveTokenId]);
 
+  // Lobby polling — fallback when broadcast `combat:started` is missed.
+  // Polls session state every 5s while registered but combat hasn't started.
+  useEffect(() => {
+    if (!isRegistered || active || !sessionId) return;
+
+    let cancelled = false;
+    const poll = async () => {
+      if (cancelled || document.visibilityState === "hidden") return;
+      try {
+        const res = await fetch(`/api/session/${sessionId}/state`);
+        if (!res.ok || cancelled) return;
+        const { data } = await res.json();
+        if (data?.encounter?.is_active && data?.encounter?.id) {
+          setActive(true);
+          setCurrentEncounterId(data.encounter.id);
+          if (data.combatants) updateCombatants(data.combatants);
+          if (data.encounter.round_number) setRound(data.encounter.round_number);
+          if (data.encounter.current_turn_index !== undefined) updateTurnIndex(data.encounter.current_turn_index);
+        }
+      } catch { /* silent — will retry */ }
+    };
+
+    const id = setInterval(poll, 5000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [isRegistered, active, sessionId, updateCombatants, updateTurnIndex]);
+
   // DM stale detection — checks dm_last_seen_at via polling every 15s.
   // If DM hasn't heartbeated for >45s, shows "DM offline" indicator.
   useEffect(() => {

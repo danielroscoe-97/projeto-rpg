@@ -1194,7 +1194,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       "sessions",
     ];
 
-    let channel = supabase.channel(`mindmap:${campaignId}`);
+    let channel = supabase.channel(`mindmap:${campaignId}:${Math.random().toString(36).slice(2, 8)}`);
     for (const table of tables) {
       channel = channel.on(
         "postgres_changes",
