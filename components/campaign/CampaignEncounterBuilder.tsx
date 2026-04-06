@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Plus, Minus, X, Save, Loader2, ChevronDown, Sparkles, BookOpen } from "lucide-react";
+import { Search, Plus, Minus, X, Save, Loader2, ChevronDown, Sparkles } from "lucide-react";
 import { EncounterPlayerSelector } from "./EncounterPlayerSelector";
 import { EncounterDifficultyBar } from "./EncounterDifficultyBar";
 import { CampaignEncounterList } from "./CampaignEncounterList";
 import { MonsterToken } from "@/components/srd/MonsterToken";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import type { RulesetVersion } from "@/lib/types/database";
 import {
   createEncounterPreset,
   updateEncounterPreset,
@@ -17,6 +19,7 @@ import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 import { calculateDifficulty, type FormulaVersion } from "@/lib/utils/cr-calculator";
 import { BUILDER_STARTER_ENCOUNTERS, type BuilderStarterEncounter } from "@/lib/data/starter-encounters";
+import { createClient } from "@/lib/supabase/client";
 
 interface MonsterOption {
   name: string;
@@ -45,14 +48,21 @@ function generateAutoName(creatures: EncounterMonster[]): string {
     .join(" + ");
 }
 
+function sourceToRuleset(source?: string): RulesetVersion {
+  return source === "srd-2024" ? "2024" : "2014";
+}
+
 export function CampaignEncounterBuilder({ campaignId, members, characters, monsters }: Props) {
   const t = useTranslations("encounter_builder");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
   // ── State ──
   const players = members.filter((m) => m.role === "player");
+  const [localCharacters, setLocalCharacters] = useState<PlayerCharacter[]>(characters);
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(() =>
     characters.map((c) => c.id)
   );
+  const levelTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [encounter, setEncounter] = useState<EncounterMonster[]>([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -75,17 +85,38 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
   }, [campaignId]);
 
   // ── Computed party data ──
-  const { partySize, partyLevel } = useMemo(() => {
-    const selectedChars = characters.filter((c) =>
+  const { partySize, partyLevel, playerLevels } = useMemo(() => {
+    const selectedChars = localCharacters.filter((c) =>
       selectedCharacterIds.includes(c.id),
     );
 
     const size = selectedChars.length;
-    const totalLevel = selectedChars.reduce((sum, c) => sum + (c.level ?? 1), 0);
+    const levels = selectedChars.map((c) => c.level ?? 1);
+    const totalLevel = levels.reduce((sum, l) => sum + l, 0);
     const avgLevel = size > 0 ? Math.round(totalLevel / size) : 1;
 
-    return { partySize: size, partyLevel: avgLevel };
-  }, [selectedCharacterIds, characters]);
+    return { partySize: size, partyLevel: avgLevel, playerLevels: levels };
+  }, [selectedCharacterIds, localCharacters]);
+
+  // ── Inline level change (debounced persist) ──
+  const handleLevelChange = useCallback(
+    (charId: string, level: number) => {
+      setLocalCharacters((prev) =>
+        prev.map((c) => (c.id === charId ? { ...c, level } : c))
+      );
+      // Debounce Supabase update
+      if (levelTimers.current[charId]) clearTimeout(levelTimers.current[charId]);
+      levelTimers.current[charId] = setTimeout(async () => {
+        const supabase = createClient();
+        await supabase
+          .from("player_characters")
+          .update({ level })
+          .eq("id", charId)
+          .eq("campaign_id", campaignId);
+      }, 600);
+    },
+    [campaignId]
+  );
 
   // ── Monster search ──
   const searchResults = useMemo(() => {
@@ -203,7 +234,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
     setPresetName(preset.name);
     setPresetNotes(preset.notes ?? "");
     // Try character IDs first, then fallback to member-based matching (old presets)
-    const validCharIds = new Set(characters.map((c) => c.id));
+    const validCharIds = new Set(localCharacters.map((c) => c.id));
     let filtered = preset.selected_members.filter((id) => validCharIds.has(id));
     if (filtered.length === 0) {
       // Fallback: old preset stored member IDs — resolve to character IDs via user_id
@@ -211,11 +242,11 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
       filtered = preset.selected_members
         .map((mid) => {
           const userId = memberMap.get(mid);
-          return userId ? characters.find((c) => c.user_id === userId)?.id : undefined;
+          return userId ? localCharacters.find((c) => c.user_id === userId)?.id : undefined;
         })
         .filter((id): id is string => !!id);
     }
-    setSelectedCharacterIds(filtered.length > 0 ? filtered : characters.map((c) => c.id));
+    setSelectedCharacterIds(filtered.length > 0 ? filtered : localCharacters.map((c) => c.id));
     setFormulaVersion(preset.formula_version as FormulaVersion);
     setEncounter(
       preset.creatures.map((c) => ({
@@ -269,9 +300,10 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           {/* Player selector */}
           <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <EncounterPlayerSelector
-              characters={characters}
+              characters={localCharacters}
               selectedCharacterIds={selectedCharacterIds}
               onSelectionChange={setSelectedCharacterIds}
+              onLevelChange={handleLevelChange}
             />
           </div>
 
@@ -321,11 +353,22 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                       key={`${m.name}-${m.cr}`}
                       className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent transition-colors"
                     >
-                      <button
-                        type="button"
-                        onClick={() => addMonster(m)}
-                        className="flex items-center gap-2 flex-1 min-w-0 text-left"
-                      >
+                      {m.slug ? (
+                        <button
+                          type="button"
+                          onClick={() => pinCard("monster", m.slug!, sourceToRuleset(m.source))}
+                          className="shrink-0 cursor-pointer"
+                          title={t("view_stat_block")}
+                        >
+                          <MonsterToken
+                            tokenUrl={m.token_url ?? undefined}
+                            creatureType={m.type}
+                            name={m.name}
+                            size={28}
+                            isMonsterADay={m.source === "mad"}
+                          />
+                        </button>
+                      ) : (
                         <MonsterToken
                           tokenUrl={m.token_url ?? undefined}
                           creatureType={m.type}
@@ -333,21 +376,15 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                           size={28}
                           isMonsterADay={m.source === "mad"}
                         />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => addMonster(m)}
+                        className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                      >
                         <span className="text-foreground flex-1 truncate">{m.name}</span>
                         <span className="text-xs text-muted-foreground shrink-0">CR {m.cr}</span>
                       </button>
-                      {m.slug && (
-                        <a
-                          href={`/monsters/${m.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-1 text-muted-foreground hover:text-amber-400 transition-colors shrink-0"
-                          title={t("view_stat_block")}
-                        >
-                          <BookOpen className="w-4 h-4" />
-                        </a>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -383,11 +420,10 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {m.slug ? (
-                        <a
-                          href={`/monsters/${m.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shrink-0 hover:opacity-80 transition-opacity"
+                        <button
+                          type="button"
+                          onClick={() => pinCard("monster", m.slug!, sourceToRuleset(m.source))}
+                          className="shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
                           title={t("view_stat_block")}
                         >
                           <MonsterToken
@@ -397,7 +433,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                             size={36}
                             isMonsterADay={m.source === "mad"}
                           />
-                        </a>
+                        </button>
                       ) : (
                         <MonsterToken
                           tokenUrl={m.token_url ?? undefined}
@@ -505,6 +541,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
             partySize={partySize}
             monsters={monstersForCalc}
             formulaVersion={formulaVersion}
+            playerLevels={playerLevels}
           />
         </div>
       </div>
