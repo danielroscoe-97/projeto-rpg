@@ -266,7 +266,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
         {/* Left: Builder */}
         <div className="lg:col-span-2 space-y-4">
           {/* Player selector */}
-          <div className="rounded-xl border border-border/30 bg-card/50 p-4">
+          <div className="rounded-xl border border-border/30 bg-card p-4">
             <EncounterPlayerSelector
               characters={characters}
               selectedCharacterIds={selectedCharacterIds}
@@ -294,7 +294,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           </div>
 
           {/* Monster search */}
-          <div className="rounded-xl border border-border/30 bg-card/50 p-4">
+          <div className="rounded-xl border border-border/30 bg-card p-4">
             <label className="text-sm text-amber-400 font-semibold block mb-2">
               {t("add_monster")}
             </label>
@@ -339,7 +339,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           </div>
 
           {/* Monster list */}
-          <div className="rounded-xl border border-border/30 bg-card/50 p-4">
+          <div className="rounded-xl border border-border/30 bg-card p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-amber-400">
                 {t("encounter_monsters")} ({encounter.reduce((s, m) => s + m.count, 0)})
@@ -362,7 +362,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                 {encounter.map((m) => (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between rounded-lg border border-border/50 bg-background/50 px-3 py-2"
+                    className="flex items-center justify-between rounded-lg border border-border/30 bg-background/50 px-3 py-2"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden bg-gray-800 border border-gray-700">
@@ -409,7 +409,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
 
           {/* Save controls */}
           {encounter.length > 0 && (
-            <div className="rounded-xl border border-border/30 bg-card/50 p-4 space-y-3">
+            <div className="rounded-xl border border-border/30 bg-card p-4 space-y-3">
               <h3 className="text-sm font-semibold text-amber-400">
                 {editingPresetId ? t("update_preset") : t("save_preset")}
               </h3>
@@ -505,7 +505,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                   key={starter.id}
                   type="button"
                   onClick={() => loadStarter(starter)}
-                  className="text-left rounded-lg border border-border/30 bg-card/50 p-3 hover:bg-accent transition-colors"
+                  className="text-left rounded-lg border border-border/30 bg-card p-3 hover:bg-accent transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-medium text-foreground">{t(starter.nameKey)}</span>

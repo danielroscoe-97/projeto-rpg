@@ -69,7 +69,7 @@ export function EncounterDifficultyBar({ partyLevel, partySize, monsters, formul
     : DIFFICULTY_COLORS[difficulty];
 
   return (
-    <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4 sticky top-20 space-y-4">
+    <div className="rounded-xl border border-border/30 bg-card p-4 sticky top-20 space-y-4">
       {/* Difficulty badge */}
       <div className={`rounded-xl border-2 p-4 text-center ${colorClass}`}>
         <p className="text-xs opacity-70 mb-1">{t("difficulty")}</p>

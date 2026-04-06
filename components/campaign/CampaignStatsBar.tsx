@@ -35,7 +35,7 @@ export function CampaignStatsBar({ stats }: CampaignStatsBarProps) {
           return (
             <div
               key={i}
-              className="flex items-center gap-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 py-2.5"
+              className="flex items-center gap-2.5 rounded-lg bg-card border border-border/30 px-3 py-2.5"
             >
               <Icon className="size-4 text-muted-foreground flex-shrink-0" />
               <div className="min-w-0">

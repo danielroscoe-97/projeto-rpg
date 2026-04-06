@@ -62,7 +62,7 @@ export function CampaignHero({
   })();
 
   return (
-    <div className="bg-card border border-border/40 rounded-xl p-4 space-y-3">
+    <div className="bg-card border border-border/30 rounded-xl p-4 space-y-3">
       {/* Breadcrumb + Title */}
       <div>
         <Link
@@ -101,7 +101,7 @@ export function CampaignHero({
       <div className="flex flex-wrap gap-2 pt-2 border-t border-border/30">
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border/30 bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
           onClick={() => setCombatOpen(true)}
         >
           <Swords className="w-3.5 h-3.5 text-amber-400" />
@@ -110,7 +110,7 @@ export function CampaignHero({
 
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border/30 bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
           onClick={() =>
             router.push("?section=encounters", { scroll: false })
           }
@@ -121,7 +121,7 @@ export function CampaignHero({
 
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border/30 bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
           onClick={() =>
             router.push("?section=notes", { scroll: false })
           }

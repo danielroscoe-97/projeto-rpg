@@ -64,7 +64,7 @@ export function CampaignNavBar({ activeSection, isOwner }: CampaignNavBarProps) 
   }
 
   return (
-    <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border/60 py-2 px-4">
+    <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border/30 py-2 px-4">
       <div className="flex gap-1 overflow-x-auto scrollbar-hide">
         {/* Overview pill — always first, never active in Focus View */}
         <button

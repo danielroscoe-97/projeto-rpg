@@ -20,7 +20,7 @@ interface CampaignStatusCardsProps {
 }
 
 const cardBase =
-  "bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-xl p-4 cursor-pointer hover:border-amber-500/30 hover:bg-white/[0.06] transition-all";
+  "bg-card border border-border/30 rounded-xl p-4 cursor-pointer hover:border-amber-500/30 hover:bg-white/[0.04] transition-all";
 
 const cardActive =
   "bg-amber-500/10 backdrop-blur-sm border border-amber-500/50 rounded-xl p-4 cursor-pointer hover:border-amber-500/60 hover:bg-amber-500/15 transition-all";
