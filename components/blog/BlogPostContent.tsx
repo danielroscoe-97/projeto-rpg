@@ -4520,7 +4520,7 @@ export function BlogPost15() {
           <div className="absolute inset-0 bg-gold/10 blur-[20px] rounded-full" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/art/blog/devlog-scroll-collection.webp"
+            src="/art/blog/devlog-scroll-collection.png"
             alt=""
             width={80}
             height={100}
