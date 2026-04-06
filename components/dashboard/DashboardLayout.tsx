@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { DashboardLoadingScreen } from "./DashboardLoadingScreen";
 import { DashboardTourProvider } from "@/components/tour/DashboardTourProvider";
 import { DashboardTourHelpButton } from "@/components/tour/DashboardTourHelpButton";
 import { cn } from "@/lib/utils";
@@ -56,6 +57,7 @@ export function DashboardLayout({
         isPlayerFirstCampaign={isPlayerFirstCampaign}
       />
       <DashboardTourHelpButton />
+      <DashboardLoadingScreen />
     </div>
   );
 }

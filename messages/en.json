@@ -2637,6 +2637,16 @@
     "management_monsters": "{count} monsters",
     "management_imported_at": "Imported on {date}"
   },
+  "dashboard_loading": {
+    "msg_rolling_initiative": "Rolling for initiative...",
+    "msg_opening_grimoire": "Opening the grimoire...",
+    "msg_lighting_torches": "Lighting the torches...",
+    "msg_summoning_familiar": "Summoning familiar...",
+    "msg_checking_sheets": "Checking character sheets...",
+    "msg_entering_dungeon": "Entering the dungeon...",
+    "msg_consulting_oracle": "Consulting the oracle...",
+    "msg_polishing_armor": "Polishing armor..."
+  },
   "srd_loading": {
     "msg_cataloging_monsters": "Cataloging monsters...",
     "msg_rolling_initiative": "Rolling initiative order...",

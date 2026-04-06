@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     // where the pendingCampaignJoin localStorage entry will be consumed.
     const context = searchParams.get("context");
     if (context === "campaign_join") {
-      return "/app/dashboard";
+      return "/app/dashboard?welcome=1";
     }
     // Check if user has campaigns — if not, go to onboarding
     const { data: { user } } = await supabase.auth.getUser();
@@ -85,7 +85,9 @@ export async function GET(request: NextRequest) {
         return "/app/onboarding";
       }
     }
-    return next;
+    // Add welcome loading screen for dashboard redirects
+    const target = next.startsWith("/app/dashboard") ? "/app/dashboard?welcome=1" : next;
+    return target;
   }
 
   // PKCE flow: Supabase redirects with ?code=... after email verification

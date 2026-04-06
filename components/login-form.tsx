@@ -56,7 +56,12 @@ export function LoginForm({
       } catch {
         // Non-critical — middleware fallback handles locale
       }
-      router.push(nextUrl);
+      // Add welcome param to show loading screen on dashboard
+      const target = new URL(nextUrl, window.location.origin);
+      if (target.pathname === "/app/dashboard") {
+        target.searchParams.set("welcome", "1");
+      }
+      router.push(target.pathname + target.search);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "";
       const key = getAuthErrorKey(msg);

@@ -2637,6 +2637,16 @@
     "management_monsters": "{count} monstros",
     "management_imported_at": "Importado em {date}"
   },
+  "dashboard_loading": {
+    "msg_rolling_initiative": "Rolando iniciativa...",
+    "msg_opening_grimoire": "Abrindo o grimório...",
+    "msg_lighting_torches": "Acendendo as tochas...",
+    "msg_summoning_familiar": "Invocando familiar...",
+    "msg_checking_sheets": "Conferindo fichas...",
+    "msg_entering_dungeon": "Entrando na masmorra...",
+    "msg_consulting_oracle": "Consultando o oráculo...",
+    "msg_polishing_armor": "Polindo a armadura..."
+  },
   "srd_loading": {
     "msg_cataloging_monsters": "Catalogando monstros...",
     "msg_rolling_initiative": "Reunindo ordem de iniciativa...",
