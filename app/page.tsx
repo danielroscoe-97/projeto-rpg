@@ -770,11 +770,11 @@ function ComparisonSection() {
         feature: "Foco na mesa física",
         roll20: { type: "cross", label: "Online-first" },
         beyond: { type: "cross", label: "Digital-first" },
-        pocketdm: { type: "check", label: "Pensado pro presencial" },
+        pocketdm: { type: "check", label: "Pro presencial" },
       },
       {
         icon: "📚",
-        feature: "Compendium 2014 + 2024",
+        feature: "Compendium 2014/2024",
         roll20: { type: "partial", label: "Módulo pago" },
         beyond: { type: "partial", label: "Pago" },
         pocketdm: { type: "check", label: "Grátis e atualizado" },
