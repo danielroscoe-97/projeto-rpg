@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluxo Pos-Combate — PocketDM</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #facc15;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 2px solid #facc1533;
+      padding-bottom: 0.5rem;
+    }
+    h2 {
+      color: #60a5fa;
+      font-size: 1.5rem;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      color: #4ade80;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    p, li { color: #b0b0b0; margin-bottom: 0.5rem; }
+    .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 2rem; }
+    .mermaid {
+      background: #111118;
+      border: 1px solid #ffffff15;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+    th {
+      background: #1a1a2e;
+      color: #facc15;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid #facc1533;
+    }
+    td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid #ffffff10;
+      color: #ccc;
+    }
+    tr:hover td { background: #ffffff08; }
+    code {
+      background: #1e1e2e;
+      color: #facc15;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-green { background: #2d4a1a; color: #4ade80; border: 1px solid #4ade8033; }
+    .badge-yellow { background: #4a3a1a; color: #facc15; border: 1px solid #facc1533; }
+    .badge-blue { background: #1a2a4a; color: #60a5fa; border: 1px solid #60a5fa33; }
+    .badge-red { background: #4a1a1a; color: #f87171; border: 1px solid #f8717133; }
+    .section-divider {
+      border: none;
+      border-top: 1px solid #ffffff10;
+      margin: 3rem 0;
+    }
+    .comparison td:nth-child(2),
+    .comparison td:nth-child(3),
+    .comparison td:nth-child(4) { text-align: center; }
+    .comparison th:nth-child(2),
+    .comparison th:nth-child(3),
+    .comparison th:nth-child(4) { text-align: center; }
+    .fix-box {
+      background: #1a2a1a;
+      border: 1px solid #4ade8033;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+    }
+    .fix-box h4 { color: #4ade80; margin-bottom: 0.5rem; }
+    .fix-box p { color: #a0c8a0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<h1>Fluxo Pos-Combate</h1>
+<p class="subtitle">PocketDM — Ultima atualizacao: 05/04/2026 — Referencia tecnica do fluxo pos-combate nos 3 modos</p>
+
+<!-- ============================================================ -->
+<h2>Bugs Corrigidos (commit acd69b3)</h2>
+
+<div class="fix-box">
+  <h4>Bug 1 — Recap sumia apos refresh do navegador</h4>
+  <p>O log de combate fica na memoria do navegador. Se a pagina recarregar durante o combate (F5, tab morrendo no celular, hot reload), o log some. O sistema so checava o log pra decidir se mostrava o recap — agora tambem checa se alguem perdeu HP.</p>
+</div>
+<div class="fix-box">
+  <h4>Bug 2 — Numero de rounds ia pra zero</h4>
+  <p>O numero de rounds tambem vinha do log. Se o log sumia, rounds = 0. Agora usa o round real do combate como fallback.</p>
+</div>
+<div class="fix-box">
+  <h4>Bug 3 — DM ficava travado se relatorio crashasse</h4>
+  <p>Se o buildCombatReport desse erro, nada acontecia e o DM ficava preso. Agora pula pro feedback do DM se der erro.</p>
+</div>
+
+<hr class="section-divider" />
+
+<!-- ============================================================ -->
+<h2>1. Fluxo do DM (Sessao Real)</h2>
+
+<div class="mermaid">
+flowchart TD
+    START([DM clica Encerrar Combate]) --> CAPTURE["Captura dados:
+    Log de acoes, HP de todos,
+    tempo de turno, rounds"]
+    CAPTURE --> NAME_MODAL["Modal: De um nome ao encontro
+    ex: Emboscada Goblin"]
+    NAME_MODAL -->|Salva ou Pula| CHECK{"Houve combate real?
+    Log tem dano/cura/morte
+    OU alguem perdeu HP?"}
+
+    CHECK -->|SIM| RECAP["TELA 1: Combat Recap
+    estilo Spotify Wrapped
+    Premiacoes animadas
+    Narrativas epicas
+    Resumo + ranking de dano
+    Opcao de avaliar e compartilhar"]
+    CHECK -->|NAO| DM_FEEDBACK
+
+    RECAP -->|DM fecha o recap| DM_RATED{"DM ja avaliou
+    dentro do recap?"}
+    DM_RATED -->|SIM| POLL_RESULT
+    DM_RATED -->|NAO| DM_FEEDBACK
+
+    DM_FEEDBACK["TELA 2: Feedback do DM
+    Como foi esse combate?
+    Nota de 1-5 + anotacoes"]
+    DM_FEEDBACK -->|Envia ou Pula| POLL_RESULT
+
+    POLL_RESULT["TELA 3: Resultado da Votacao
+    Mostra os votos dos jogadores
+    sobre dificuldade 1-5"]
+    POLL_RESULT -->|DM fecha| CLEANUP["Limpa tudo, salva dados,
+    encerra encounter no banco,
+    volta pro Dashboard"]
+
+    style RECAP fill:#2d4a1a,stroke:#4ade80,color:#fff
+    style DM_FEEDBACK fill:#4a3a1a,stroke:#facc15,color:#fff
+    style POLL_RESULT fill:#1a2a4a,stroke:#60a5fa,color:#fff
+    style CHECK fill:#4a1a1a,stroke:#f87171,color:#fff
+</div>
+
+<h3>Passo a passo</h3>
+<table>
+  <tr><th>Passo</th><th>O que acontece</th><th>Arquivo</th></tr>
+  <tr><td>1</td><td>DM clica "Encerrar Combate"</td><td><code>CombatSessionClient.tsx:1237</code></td></tr>
+  <tr><td>2</td><td>Sistema fotografa tudo: log de acoes, snapshot de todos os combatentes, tempos de turno</td><td><code>CombatSessionClient.tsx:307-341</code></td></tr>
+  <tr><td>3</td><td>Modal aparece pedindo nome do encontro (ex: "Emboscada Goblin")</td><td><code>CombatSessionClient.tsx:1440-1464</code></td></tr>
+  <tr><td>4</td><td>DM salva ou pula o nome</td><td><code>CombatSessionClient.tsx:343-352</code></td></tr>
+  <tr><td>5</td><td>Sistema checa: "Houve combate de verdade?" — olha o log E o HP dos combatentes</td><td><code>CombatSessionClient.tsx:204-207</code></td></tr>
+  <tr><td>6</td><td><span class="badge badge-green">Se SIM</span> Monta o relatorio, manda broadcast pros jogadores, mostra o Recap</td><td><code>CombatSessionClient.tsx:207-297</code></td></tr>
+  <tr><td>7</td><td><span class="badge badge-red">Se NAO</span> Pula direto pro feedback do DM</td><td><code>CombatSessionClient.tsx:298-302</code></td></tr>
+  <tr><td>8</td><td>DM fecha o Recap — vai pro Feedback (ou pula se ja avaliou)</td><td><code>CombatSessionClient.tsx:1470-1472</code></td></tr>
+  <tr><td>9</td><td>DM da nota + anotacoes — vai pro Resultado da Votacao</td><td><code>CombatSessionClient.tsx:1489-1501</code></td></tr>
+  <tr><td>10</td><td>DM fecha resultado — salva tudo no banco e vai pro dashboard</td><td><code>CombatSessionClient.tsx:365-406</code></td></tr>
+</table>
+
+<h3>Maquina de estados do DM</h3>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> leaderboard : Houve combate real
+    [*] --> dm_feedback : Sem atividade de combate
+
+    leaderboard --> dm_feedback : DM fecha recap sem avaliar
+    leaderboard --> result : DM fecha recap ja avaliou inline
+
+    dm_feedback --> result : DM envia ou pula feedback
+
+    result --> [*] : DM fecha resultado handleDismissAll
+</div>
+
+<hr class="section-divider" />
+
+<!-- ============================================================ -->
+<h2>2. Fluxo do Player (Sessao Real)</h2>
+
+<div class="mermaid">
+flowchart TD
+    P_START([DM encerra combate]) -->|broadcast| P_STATS["Recebe stats do combate"]
+    P_STATS -->|broadcast| P_RECAP_DATA["Recebe relatorio completo"]
+    P_RECAP_DATA --> P_CHECK{"Tem relatorio
+    completo?"}
+
+    P_CHECK -->|SIM| P_RECAP["TELA 1: Combat Recap
+    estilo Spotify Wrapped
+    + botao Entrar na Campanha
+    se for jogador anonimo"]
+    P_CHECK -->|NAO| P_LEADERBOARD["TELA 1B: Leaderboard simples
+    fallback se recap nao chegou"]
+
+    P_RECAP -->|Jogador ja avaliou no recap| P_WAITING
+    P_RECAP -->|Jogador fecha sem avaliar| P_POLL
+    P_LEADERBOARD -->|Fecha| P_POLL
+
+    P_POLL["TELA 2: Votacao de Dificuldade
+    Quao dificil foi?
+    Voto de 1-5"]
+    P_POLL -->|Vota ou Pula| P_RESULTS
+
+    P_RESULTS["TELA 3: Resultado ao Vivo
+    Grafico com votos de todos
+    Atualiza a cada voto novo
+    + spinner Aguardando Mestre"]
+    P_RESULTS -->|DM encerra sessao| P_END([Sessao encerrada])
+
+    style P_RECAP fill:#2d4a1a,stroke:#4ade80,color:#fff
+    style P_POLL fill:#4a3a1a,stroke:#facc15,color:#fff
+    style P_RESULTS fill:#1a2a4a,stroke:#60a5fa,color:#fff
+</div>
+
+<h3>Passo a passo</h3>
+<table>
+  <tr><th>Passo</th><th>O que acontece</th><th>Arquivo</th></tr>
+  <tr><td>1</td><td>DM manda broadcast de stats — Player recebe e guarda</td><td><code>PlayerJoinClient.tsx:1159-1169</code></td></tr>
+  <tr><td>2</td><td>DM manda broadcast de recap — Player recebe e guarda</td><td><code>PlayerJoinClient.tsx:1171-1176</code></td></tr>
+  <tr><td>3</td><td><span class="badge badge-green">Se recap chegou</span> Mostra Combat Recap completo</td><td><code>PlayerJoinClient.tsx:1807-1846</code></td></tr>
+  <tr><td>4</td><td><span class="badge badge-yellow">Se nao chegou</span> Mostra Leaderboard simples (fallback)</td><td><code>PlayerJoinClient.tsx:1848-1856</code></td></tr>
+  <tr><td>5</td><td>Jogador fecha recap — aparece votacao de dificuldade</td><td><code>PlayerJoinClient.tsx:1860-1890</code></td></tr>
+  <tr><td>6</td><td>Jogador vota ou pula — ve grafico de votos ao vivo (atualiza a cada voto novo)</td><td><code>PlayerJoinClient.tsx:1893+</code></td></tr>
+  <tr><td>7</td><td>DM fecha tudo — broadcast <code>session:ended</code> — Player ve "sessao encerrada"</td><td>via broadcast</td></tr>
+</table>
+
+<h3>Comunicacao via Broadcast (Supabase Realtime)</h3>
+<div class="mermaid">
+sequenceDiagram
+    participant DM as DM
+    participant SB as Supabase Realtime
+    participant P as Player
+
+    DM->>SB: session:combat_stats
+    SB->>P: session:combat_stats
+    DM->>SB: session:combat_recap
+    SB->>P: session:combat_recap
+
+    P->>SB: player:poll_vote
+    SB->>DM: player:poll_vote
+    Note over DM: Recebe voto e retransmite resultado ao vivo
+    DM->>SB: session:poll_results (ao vivo, a cada voto)
+    SB->>P: session:poll_results (grafico atualiza)
+
+    Note over DM: DM fecha tudo handleDismissAll
+    DM->>SB: session:poll_results (final)
+    SB->>P: session:poll_results
+    DM->>SB: session:ended
+    SB->>P: session:ended
+</div>
+
+<hr class="section-divider" />
+
+<!-- ============================================================ -->
+<h2>3. Fluxo do Guest (Combate Rapido)</h2>
+
+<div class="mermaid">
+flowchart TD
+    G_START([Guest clica Encerrar]) --> G_CHECK{"Houve combate real?
+    Stats com atividade
+    OU alguem perdeu HP?"}
+
+    G_CHECK -->|SIM| G_RECAP["TELA UNICA: Combat Recap
+    + botao Salvar e Criar Conta"]
+    G_CHECK -->|NAO| G_RESET["Reseta combate direto
+    volta pro setup"]
+
+    G_RECAP -->|Fecha| G_RESET
+
+    style G_RECAP fill:#2d4a1a,stroke:#4ade80,color:#fff
+</div>
+
+<h3>Passo a passo</h3>
+<table>
+  <tr><th>Passo</th><th>O que acontece</th><th>Arquivo</th></tr>
+  <tr><td>1</td><td>Guest clica "Encerrar"</td><td><code>GuestCombatClient.tsx:1400</code></td></tr>
+  <tr><td>2</td><td>Checa se houve combate real (log + HP)</td><td><code>GuestCombatClient.tsx:1430-1432</code></td></tr>
+  <tr><td>3</td><td><span class="badge badge-green">Se SIM</span> Mostra recap + botao "Criar Conta"</td><td><code>GuestCombatClient.tsx:1830-1836</code></td></tr>
+  <tr><td>4</td><td><span class="badge badge-red">Se NAO</span> Reseta direto pro setup</td><td><code>GuestCombatClient.tsx:1451-1454</code></td></tr>
+  <tr><td>5</td><td>Sem feedback, votacao ou persistencia (simplificado de proposito)</td><td>—</td></tr>
+</table>
+
+<hr class="section-divider" />
+
+<!-- ============================================================ -->
+<h2>4. Comparacao entre os 3 Modos</h2>
+
+<table class="comparison">
+  <tr>
+    <th>Recurso</th>
+    <th>DM (Sessao)</th>
+    <th>Player (Sessao)</th>
+    <th>Guest</th>
+  </tr>
+  <tr><td>Combat Recap (Spotify Wrapped)</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim (broadcast)</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+  <tr><td>Nomear o encontro</td><td><span class="badge badge-green">Sim</span></td><td>—</td><td>—</td></tr>
+  <tr><td>Feedback do DM (nota + notas)</td><td><span class="badge badge-yellow">Sim</span></td><td>—</td><td>—</td></tr>
+  <tr><td>Votacao de dificuldade</td><td><span class="badge badge-blue">Ve resultados</span></td><td><span class="badge badge-yellow">Vota 1-5</span></td><td>—</td></tr>
+  <tr><td>Salvar relatorio no banco</td><td><span class="badge badge-green">Automatico</span></td><td>—</td><td>—</td></tr>
+  <tr><td>Botao "Criar Conta"</td><td>—</td><td>—</td><td><span class="badge badge-blue">Sim</span></td></tr>
+  <tr><td>Botao "Entrar na Campanha"</td><td>—</td><td><span class="badge badge-blue">Sim (anonimo)</span></td><td>—</td></tr>
+</table>
+
+<hr class="section-divider" />
+
+<!-- ============================================================ -->
+<h2>5. Condicao para mostrar o Recap</h2>
+
+<p>A condicao e a mesma nos 3 modos (parity rule):</p>
+
+<div class="mermaid">
+flowchart LR
+    A["Log tem atividade?
+    dano causado/recebido
+    cura ou mortes"] -->|OU| C{"MOSTRAR
+    RECAP"}
+    B["Alguem perdeu HP?
+    current_hp menor que max_hp
+    ou is_defeated"] -->|OU| C
+    D["Nenhum dos dois"] --> E{"PULAR
+    RECAP"}
+
+    style C fill:#2d4a1a,stroke:#4ade80,color:#fff
+    style E fill:#4a1a1a,stroke:#f87171,color:#fff
+</div>
+
+<p>Isso garante que o recap aparece mesmo se o navegador recarregar no meio do combate — o log some mas o HP dos combatentes sobrevive no banco de dados.</p>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1a2a4a',
+      primaryTextColor: '#e0e0e0',
+      primaryBorderColor: '#60a5fa',
+      lineColor: '#666',
+      secondaryColor: '#4a3a1a',
+      tertiaryColor: '#2d4a1a',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+    }
+  });
+</script>
+
+</body>
+</html>

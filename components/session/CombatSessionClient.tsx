@@ -1074,6 +1074,17 @@ export function CombatSessionClient({
       setPollVotes((prev) => {
         const next = new Map(prev);
         next.set(player_name, vote);
+        // Live broadcast: players see results update as each vote arrives
+        const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        let sum = 0; let playerVotes = 0;
+        for (const [n, v] of next) {
+          if (n !== "DM" && v >= 1 && v <= 5) { distribution[v] = (distribution[v] ?? 0) + 1; sum += v; playerVotes++; }
+        }
+        const avg = playerVotes > 0 ? Math.min(5.0, Math.max(1.0, sum / playerVotes)) : 0;
+        const sid = getSessionId();
+        if (sid) {
+          broadcastEvent(sid, { type: "session:poll_results", avg, distribution, total_votes: playerVotes });
+        }
         return next;
       });
     };
