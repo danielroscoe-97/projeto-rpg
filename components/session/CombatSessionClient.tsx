@@ -567,6 +567,16 @@ export function CombatSessionClient({
       store.setEncounterId(encounter_id, session_id);
       await persistInitiativeAndStartCombat(encounter_id, sorted);
       store.startCombat();
+      // Fire-and-forget: check if this is the user's first combat and send celebratory email
+      fetch("/api/first-combat-check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          encounterName: encounterName || "Encounter 1",
+          playerCount: sorted.filter((c) => c.is_player).length,
+          monsterCount: sorted.filter((c) => !c.is_player).length,
+        }),
+      }).catch(() => {});
       // P2-A: Log first combatant's turn so all combatants have matching turn entries
       const firstNew = sorted[0];
       if (firstNew) {
@@ -1521,6 +1531,12 @@ export function CombatSessionClient({
             }}
             onRate={(vote) => {
               dmInlineRatingRef.current = vote;
+              // Add DM vote to poll map so PollResult displays it
+              setPollVotes((prev) => {
+                const next = new Map(prev);
+                next.set("DM", vote);
+                return next;
+              });
               const encId = useCombatStore.getState().encounter_id;
               if (encId) {
                 persistDmFeedback(encId, vote, "").catch(() => { /* fire-and-forget */ });

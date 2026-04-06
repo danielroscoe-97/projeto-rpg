@@ -136,7 +136,6 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
             {hasRated ? t("recap_rate_thanks") : t("recap_rate_label")}
           </p>
           <DifficultyRatingStrip
-            compact
             initialValue={initialRating}
             onSelect={(vote) => { setHasRated(true); onRate(vote); }}
           />

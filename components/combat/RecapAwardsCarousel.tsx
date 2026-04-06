@@ -38,10 +38,10 @@ export function RecapAwardsCarousel({ awards, onComplete }: RecapAwardsCarouselP
     }
   }, [currentIndex, awards.length, isComplete, onComplete]);
 
-  // Tap/click anywhere to advance
+  // Tap/click anywhere to advance (including after last award to go to summary)
   const handleTap = useCallback(() => {
-    if (!isComplete) advance();
-  }, [isComplete, advance]);
+    advance();
+  }, [advance]);
 
   // Handle empty awards via effect to avoid setState-during-render
   useEffect(() => {
