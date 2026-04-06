@@ -130,6 +130,8 @@ export async function persistNewCombatant(
     player_character_id?: string | null;
     legendary_actions_total?: number | null;
     legendary_actions_used?: number;
+    condition_durations?: Record<string, number>;
+    death_saves?: { successes: number; failures: number } | null;
   }
 ): Promise<void> {
   const supabase = createClient();
@@ -159,6 +161,8 @@ export async function persistNewCombatant(
       player_character_id: combatant.player_character_id ?? null,
       legendary_actions_total: combatant.legendary_actions_total ?? null,
       legendary_actions_used: combatant.legendary_actions_used ?? 0,
+      condition_durations: combatant.condition_durations ?? {},
+      death_saves: combatant.death_saves ?? null,
     });
   if (error) throw new Error(error.message);
 }

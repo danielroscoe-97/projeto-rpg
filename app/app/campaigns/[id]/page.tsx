@@ -162,6 +162,7 @@ export default async function CampaignPage({
           user_id: m.user_id,
           display_name: m.display_name,
           character_name: m.character_name,
+          character_id: m.character_id ?? null,
           role: m.role,
         }))}
         currentUserId={user.id}

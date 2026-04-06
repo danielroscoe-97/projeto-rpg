@@ -336,6 +336,7 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     "combat:stats_update",
     "combat:player_notes_update",
     "combat:version_switch",
+    "combat:reaction_toggle",
   ];
   if (combatantTargetedTypes.includes(event.type) && "combatant_id" in event) {
     if (isCombatantHidden((event as { combatant_id: string }).combatant_id)) {

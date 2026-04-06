@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { trackEvent } from "@/lib/analytics/track";
 import { getAuthErrorKey } from "@/lib/auth/translate-error";
 import { Swords, Shield, Users } from "lucide-react";
@@ -36,12 +37,12 @@ export function SignUpForm({
     { value: "both" as const, icon: <Users className="w-5 h-5" />, label: ts("role_both") },
   ];
 
-  // Capture invite/join params from URL
-  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-  const inviteToken = searchParams?.get("invite") ?? null;
-  const inviteCampaignId = searchParams?.get("campaign") ?? null;
-  const joinCode = searchParams?.get("join_code") ?? null;
-  const signupContext = searchParams?.get("context") ?? null;
+  // A6: Use Next.js useSearchParams for SSR-safe param reading (no hydration mismatch)
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("invite") ?? null;
+  const inviteCampaignId = searchParams.get("campaign") ?? null;
+  const joinCode = searchParams.get("join_code") ?? null;
+  const signupContext = searchParams.get("context") ?? null;
 
   // JO-01/JO-02: Save pending tokens to localStorage as fallback for tab close/OAuth redirect
   useEffect(() => {

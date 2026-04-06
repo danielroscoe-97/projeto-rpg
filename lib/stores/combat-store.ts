@@ -195,6 +195,8 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         }
         sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
       }
+      // Reset reaction for the combatant whose turn is starting
+      sorted[next] = { ...sorted[next], reaction_used: false };
       // Reset legendary actions when a new round starts
       const finalCombatants = roundBumped
         ? sorted.map((c) => c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c)
@@ -545,6 +547,20 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         c.id === id && c.legendary_actions_total != null
           ? { ...c, legendary_actions_used: Math.max(0, Math.min(count, c.legendary_actions_total)) }
           : c
+      ),
+    })),
+
+  toggleReaction: (id) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, reaction_used: !c.reaction_used } : c
+      ),
+    })),
+
+  setReactionUsed: (id, used) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, reaction_used: used } : c
       ),
     })),
 

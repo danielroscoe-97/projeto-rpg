@@ -193,6 +193,7 @@ export function monsterToCombatant(
     combatant_role: null,
     legendary_actions_total: getLegendaryActionCount(monster),
     legendary_actions_used: 0,
+    reaction_used: false,
   };
 }
 

@@ -72,10 +72,21 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect authed users away from auth pages
+  // Redirect authed users away from auth pages — preserve invite/join context
   if (user && (pathname === "/auth/login" || pathname === "/auth/sign-up")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/app/dashboard";
+    const invite = url.searchParams.get("invite");
+    const joinCode = url.searchParams.get("join_code");
+    if (invite && /^[a-f0-9-]{36}$/i.test(invite)) {
+      url.pathname = `/invite/${invite}`;
+      url.searchParams.delete("invite");
+      url.searchParams.delete("campaign");
+    } else if (joinCode && /^[A-Z2-9]{8}$/i.test(joinCode)) {
+      url.pathname = `/join-campaign/${joinCode}`;
+      url.searchParams.delete("join_code");
+    } else {
+      url.pathname = "/app/dashboard";
+    }
     return NextResponse.redirect(url);
   }
 

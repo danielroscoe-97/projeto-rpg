@@ -55,6 +55,8 @@ interface PlayerCombatant {
   death_saves?: { successes: number; failures: number };
   /** Turn count per condition — used for duration badges. Players only. */
   condition_durations?: Record<string, number>;
+  /** Whether this combatant has used their reaction this round */
+  reaction_used?: boolean;
 }
 
 interface PrefilledCharacter {
@@ -863,7 +865,15 @@ export function PlayerJoinClient({
           lastTurnBroadcastRef.current = Date.now();
           dmLastSeenRef.current = Date.now();
           setDmOffline(false);
-          if (payload.current_turn_index !== undefined) updateTurnIndex(payload.current_turn_index);
+          if (payload.current_turn_index !== undefined) {
+            updateTurnIndex(payload.current_turn_index);
+            // Reset reaction for the combatant whose turn is starting
+            updateCombatants((prev) =>
+              prev.map((c, i) =>
+                i === payload.current_turn_index ? { ...c, reaction_used: false } : c
+              )
+            );
+          }
           if (payload.round_number !== undefined) setRound(payload.round_number);
           setNextCombatantId(payload.next_combatant_id ?? null);
         })
@@ -951,6 +961,17 @@ export function PlayerJoinClient({
                       conditions: payload.conditions,
                       ...(payload.condition_durations !== undefined && { condition_durations: payload.condition_durations }),
                     }
+                  : c
+              )
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }) => {
+          if (payload.combatant_id) {
+            updateCombatants((prev) =>
+              prev.map((c) =>
+                c.id === payload.combatant_id
+                  ? { ...c, reaction_used: payload.reaction_used }
                   : c
               )
             );
@@ -2281,6 +2302,32 @@ export function PlayerJoinClient({
                 player_name: registeredName,
                 combatant_id: combatantId,
                 condition,
+              },
+            });
+          }}
+          onToggleReaction={(combatantId) => {
+            // D1: Compute new value BEFORE optimistic update to avoid stale closure
+            const current = combatantsRef.current.find((c) => c.id === combatantId);
+            const newValue = !(current?.reaction_used ?? false);
+            // Optimistic local update
+            updateCombatants((prev) =>
+              prev.map((c) =>
+                c.id === combatantId ? { ...c, reaction_used: newValue } : c
+              )
+            );
+            // Broadcast to DM
+            const ch = channelRef.current;
+            if (!ch || connectionStatus !== "connected") {
+              toast.error(tRef.current("sync_offline"));
+              return;
+            }
+            ch.send({
+              type: "broadcast",
+              event: "combat:reaction_toggle",
+              payload: {
+                combatant_id: combatantId,
+                reaction_used: newValue,
+                player_name: registeredName,
               },
             });
           }}

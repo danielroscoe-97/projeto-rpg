@@ -21,7 +21,9 @@ export async function GET(request: NextRequest) {
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/app/dashboard";
+  const rawNext = searchParams.get("next") ?? "/app/dashboard";
+  // A1: Prevent open redirect — only allow relative paths
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/app/dashboard";
 
   const supabase = await createClient();
 
@@ -66,7 +68,7 @@ export async function GET(request: NextRequest) {
     }
     // If invite params present, go straight to invite page (user is now authenticated)
     const invite = searchParams.get("invite");
-    if (invite && /^[a-f0-9-]{36}$/.test(invite)) {
+    if (invite && /^[a-f0-9-]{36}$/i.test(invite)) {
       return `/invite/${invite}`;
     }
     // P2-05: post-combat campaign join — skip onboarding, go to dashboard

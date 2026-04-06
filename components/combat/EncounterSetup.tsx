@@ -151,6 +151,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
         combatant_role: null,
         legendary_actions_total: null,
         legendary_actions_used: 0,
+        reaction_used: false,
       };
       addCombatant(newCombatant);
       currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -213,6 +214,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
           combatant_role: null,
           legendary_actions_total: null,
           legendary_actions_used: 0,
+          reaction_used: false,
         });
       })
       .subscribe();
@@ -263,6 +265,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
         combatant_role: null,
         legendary_actions_total: getLegendaryActionCount(monster),
         legendary_actions_used: 0,
+        reaction_used: false,
       });
 
       // Auto-add Lair Action entry at initiative 20 if this monster has lair actions
@@ -318,6 +321,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
           combatant_role: null,
           legendary_actions_total: getLegendaryActionCount(monster),
           legendary_actions_used: 0,
+          reaction_used: false,
         });
       }
       useCombatStore.getState().addMonsterGroup(newCombatants);
@@ -397,6 +401,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             combatant_role: null,
             legendary_actions_total: null,
             legendary_actions_used: 0,
+            reaction_used: false,
           });
         }
       }
@@ -470,6 +475,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
       combatant_role: sel?.id ? null : "player",
       legendary_actions_total: null,
       legendary_actions_used: 0,
+      reaction_used: false,
     });
 
     lastSelectedMonster.current = null;
@@ -510,6 +516,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
           combatant_role: null,
           legendary_actions_total: null,
           legendary_actions_used: 0,
+          reaction_used: false,
         };
         addCombatant(newCombatant);
         currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -552,6 +559,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             combatant_role: null,
             legendary_actions_total: null,
             legendary_actions_used: 0,
+            reaction_used: false,
           };
           addCombatant(newCombatant);
           currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
@@ -704,6 +712,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
         combatant_role: source.combatant_role,
         legendary_actions_total: source.legendary_actions_total,
         legendary_actions_used: 0,
+        reaction_used: false,
       });
     },
     [addCombatant]
@@ -841,6 +850,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             combatant_role: null,
             legendary_actions_total: null,
             legendary_actions_used: 0,
+            reaction_used: false,
           });
         }}
         showManualAdd
@@ -876,6 +886,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             combatant_role: role,
             legendary_actions_total: null,
             legendary_actions_used: 0,
+            reaction_used: false,
           });
         }}
       />

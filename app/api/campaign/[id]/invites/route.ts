@@ -79,7 +79,7 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
     // Send branded email invite via Resend (fail-open — invite link still works if email fails)
     const { data: dmUser } = await supabase.from("users").select("display_name").eq("id", user.id).maybeSingle();
     // Must await — Vercel kills serverless functions after response, so fire-and-forget never completes
-    await sendCampaignInviteEmail({
+    const emailSent = await sendCampaignInviteEmail({
       email,
       dmName: dmUser?.display_name || user.email || "Dungeon Master",
       campaignName: campaign.name,
@@ -87,11 +87,13 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
       inviteToken: token,
     });
 
+    // D3: Include email_sent flag so frontend can show fallback "copy link" if email failed
     return NextResponse.json({
       data: {
         ...invite,
         invite_link: inviteLink,
         campaign_name: campaign.name,
+        email_sent: emailSent,
       },
     });
   } catch (err) {

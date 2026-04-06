@@ -43,6 +43,7 @@ export interface CampaignMemberWithUser {
   display_name: string | null;
   email: string;
   character_name: string | null;
+  character_id: string | null;
 }
 
 export interface CampaignInviteWithDetails {

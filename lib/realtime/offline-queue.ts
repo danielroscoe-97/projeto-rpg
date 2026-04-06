@@ -50,9 +50,10 @@ function generateIdempotencyKey(event: RealtimeEvent): string {
   const base = event.type;
   if ("combatant_id" in event) {
     const cid = (event as { combatant_id: string }).combatant_id;
-    // For HP updates, include the HP value so sequential HP changes are distinct
+    // D2: For HP updates, include a monotonic counter instead of final HP value.
+    // Using HP value causes false dedup when damage→heal→same damage produces identical keys.
     if (event.type === "combat:hp_update") {
-      return `${base}:${cid}:${(event as { current_hp: number }).current_hp}`;
+      return `${base}:${cid}:${++_idCounter}`;
     }
     // For condition changes, include the conditions array to distinguish toggles
     if (event.type === "combat:condition_change" && "conditions" in event) {

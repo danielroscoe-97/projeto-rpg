@@ -56,6 +56,8 @@ export interface CombatantRowProps {
   onAdvanceTurn?: () => void;
   /** Set legendary actions used to exact count (clicking dot i → sets to i+1 or i to undo). */
   onSetLegendaryActionsUsed?: (id: string, count: number) => void;
+  /** Toggle reaction used/available for a combatant. */
+  onToggleReaction?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -86,6 +88,7 @@ export const CombatantRow = memo(function CombatantRow({
   onAddDeathSaveFailure,
   onAdvanceTurn,
   onSetLegendaryActionsUsed,
+  onToggleReaction,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -387,6 +390,30 @@ export const CombatantRow = memo(function CombatantRow({
                   />
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Reaction dot — visible during active combat for all non-defeated combatants */}
+          {showActions && !combatant.is_lair_action && !combatant.is_defeated && (
+            <div
+              className="flex items-center gap-1 shrink-0"
+              aria-label={`${t("reaction_inline")}: ${combatant.reaction_used ? t("reaction_used") : t("reaction_available")}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="text-xs text-muted-foreground font-medium">{t("reaction_inline")}</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleReaction?.(combatant.id);
+                }}
+                className={`w-3.5 h-3.5 rounded-full border transition-colors ${
+                  combatant.reaction_used
+                    ? "bg-red-500 border-red-400/60"
+                    : "bg-transparent border-emerald-500 hover:border-emerald-400"
+                }`}
+                aria-label={combatant.reaction_used ? t("reaction_used") : t("reaction_available")}
+              />
             </div>
           )}
 

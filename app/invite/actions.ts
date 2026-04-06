@@ -34,7 +34,7 @@ export async function acceptInviteAction(data: AcceptInviteData) {
   // Verify invite is still valid for this token
   const { data: invite } = await supabase
     .from("campaign_invites")
-    .select("id, campaign_id, status, expires_at, invited_by")
+    .select("id, campaign_id, status, expires_at, invited_by, email")
     .eq("id", data.inviteId)
     .eq("token", data.token)
     .single();
@@ -43,8 +43,32 @@ export async function acceptInviteAction(data: AcceptInviteData) {
   if (invite.status !== "pending") throw new Error("Invite already used");
   if (new Date(invite.expires_at) < new Date()) throw new Error("Invite expired");
 
+  // B1: Verify the authenticated user's email matches the invite (if invite has email)
+  if (invite.email && user.email && invite.email.toLowerCase() !== user.email.toLowerCase()) {
+    throw new Error("This invite was sent to a different email address");
+  }
+
   // Service client bypasses RLS — safe here because we've validated the invite above
   const service = createServiceClient();
+
+  // B2: Check max_players before adding member
+  const { data: campaign } = await service
+    .from("campaigns")
+    .select("max_players")
+    .eq("id", invite.campaign_id)
+    .single();
+
+  if (campaign?.max_players) {
+    const { count } = await service
+      .from("campaign_members")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", invite.campaign_id)
+      .eq("status", "active");
+
+    if (count != null && count >= campaign.max_players) {
+      throw new Error("Campaign has reached maximum number of players");
+    }
+  }
 
   // Add to campaign_members (idempotent)
   const { error: memberError } = await service

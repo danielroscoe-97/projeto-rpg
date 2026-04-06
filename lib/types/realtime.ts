@@ -15,6 +15,7 @@ export type RealtimeEventType =
   | "combat:hidden_change"
   | "combat:stats_update"
   | "combat:player_notes_update"
+  | "combat:reaction_toggle"
   | "combat:late_join_request"
   | "combat:late_join_response"
   | "combat:rejoin_request"
@@ -119,6 +120,12 @@ export interface RealtimePlayerNotesUpdate {
   type: "combat:player_notes_update";
   combatant_id: string;
   player_notes: string;
+}
+
+export interface RealtimeReactionToggle {
+  type: "combat:reaction_toggle";
+  combatant_id: string;
+  reaction_used: boolean;
 }
 
 export interface RealtimeLateJoinRequest {
@@ -291,6 +298,7 @@ export type RealtimeEvent =
   | RealtimeHiddenChange
   | RealtimeStatsUpdate
   | RealtimePlayerNotesUpdate
+  | RealtimeReactionToggle
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
   | RealtimeRejoinRequest
@@ -401,6 +409,7 @@ export type SanitizedEvent =
   | RealtimeVersionSwitch
   | RealtimeDefeatedChange
   | RealtimePlayerNotesUpdate
+  | RealtimeReactionToggle
   | RealtimeLateJoinRequest
   | RealtimeLateJoinResponse
   | RealtimeRejoinRequest

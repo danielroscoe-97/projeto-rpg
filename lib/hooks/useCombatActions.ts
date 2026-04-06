@@ -350,6 +350,8 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const snap = useCombatStore.getState();
     const idx = snap.combatants.findIndex((c) => c.id === id);
     const wasCurrentTurn = idx === snap.current_turn_index;
+    // C3: Also detect if removed combatant was BEFORE current turn
+    const wasBeforeCurrent = idx !== -1 && idx < snap.current_turn_index;
 
     snap.removeCombatant(id);
 
@@ -358,6 +360,13 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       const clampedIdx = Math.min(postRemove.current_turn_index, postRemove.combatants.length - 1);
       if (clampedIdx !== postRemove.current_turn_index) {
         postRemove.hydrateActiveState(clampedIdx, postRemove.round_number);
+      }
+    } else if (wasBeforeCurrent) {
+      // C3: Decrement turn index to keep pointing at the same combatant
+      const postRemove = useCombatStore.getState();
+      const newIdx = Math.max(0, postRemove.current_turn_index - 1);
+      if (newIdx !== postRemove.current_turn_index) {
+        postRemove.hydrateActiveState(newIdx, postRemove.round_number);
       }
     }
 

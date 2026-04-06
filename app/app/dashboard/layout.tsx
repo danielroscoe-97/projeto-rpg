@@ -43,22 +43,24 @@ export default async function DashboardRouteLayout({
         .maybeSingle(),
       unstable_cache(
         async (userId: string) => {
+          // E1: Create fresh Supabase client inside cached function to avoid stale cookie closure
+          const freshSupabase = await createClient();
           const [
             { count: dmMembershipCount },
             { count: ownedCampaignCount },
             { data: userData },
           ] = await Promise.all([
-            supabase
+            freshSupabase
               .from("campaign_members")
               .select("id", { count: "exact", head: true })
               .eq("user_id", userId)
               .eq("role", "dm")
               .eq("status", "active"),
-            supabase
+            freshSupabase
               .from("campaigns")
               .select("id", { count: "exact", head: true })
               .eq("owner_id", userId),
-            supabase
+            freshSupabase
               .from("users")
               .select("role")
               .eq("id", userId)

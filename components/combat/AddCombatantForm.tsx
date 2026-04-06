@@ -75,6 +75,7 @@ export function AddCombatantForm({ onAdd, onClose }: AddCombatantFormProps) {
       combatant_role: "player",
       legendary_actions_total: null,
       legendary_actions_used: 0,
+      reaction_used: false,
     });
   };
 

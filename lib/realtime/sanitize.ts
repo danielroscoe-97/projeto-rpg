@@ -174,6 +174,13 @@ export function sanitizePayloadServer(
     return result;
   }
 
+  // Reaction toggle: pass through (players see reaction state), but suppress for hidden
+  if (event.type === "combat:reaction_toggle") {
+    const combatant = allCombatants?.find((c) => c.id === event.combatant_id);
+    if (combatant?.is_hidden) return null;
+    return event;
+  }
+
   // Per-combatant events for hidden combatants — suppress
   const combatantTargetedTypes = [
     "combat:hp_update",

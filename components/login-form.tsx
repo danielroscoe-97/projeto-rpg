@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { trackEvent } from "@/lib/analytics/track";
 import { getAuthErrorKey } from "@/lib/auth/translate-error";
 import { GoogleOAuthButton } from "@/components/auth/GoogleOAuthButton";
@@ -24,6 +25,13 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // A2: Respect ?next= param from middleware redirect (e.g. /app/campaigns/abc)
+  const nextUrl = useMemo(() => {
+    const raw = searchParams.get("next");
+    if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+    return "/app/dashboard";
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +56,7 @@ export function LoginForm({
       } catch {
         // Non-critical — middleware fallback handles locale
       }
-      router.push("/app/dashboard");
+      router.push(nextUrl);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "";
       const key = getAuthErrorKey(msg);
@@ -166,8 +174,17 @@ export function LoginForm({
         </div>
       </div>
 
-      {/* Google OAuth */}
-      <GoogleOAuthButton namespace="auth" />
+      {/* Google OAuth — pass next param through /auth/confirm */}
+      <GoogleOAuthButton
+        namespace="auth"
+        redirectTo={(() => {
+          const origin = typeof window !== "undefined" ? window.location.origin : "";
+          const params = new URLSearchParams();
+          if (nextUrl !== "/app/dashboard") params.set("next", nextUrl);
+          const qs = params.toString();
+          return `${origin}/auth/confirm${qs ? `?${qs}` : ""}`;
+        })()}
+      />
 
       {/* Footer link */}
       <p className="mt-4 text-center text-sm text-muted-foreground/60">

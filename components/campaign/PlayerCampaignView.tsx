@@ -39,6 +39,7 @@ interface CampaignMemberInfo {
   user_id: string;
   display_name: string | null;
   character_name: string | null;
+  character_id: string | null;
   role: "dm" | "player";
 }
 
@@ -399,9 +400,10 @@ export function PlayerCampaignView({
               .filter((m) => m.role !== "dm")
               .map((member) => {
                 const isMe = member.user_id === currentUserId;
-                const companionHp = companions.find(
-                  (c) => c.name === member.character_name
-                );
+                // D4: Match by character_id (stable) instead of name (can collide)
+                const companionHp = member.character_id
+                  ? companions.find((c) => c.id === member.character_id)
+                  : companions.find((c) => c.name === member.character_name);
                 const displayName =
                   member.display_name ?? member.character_name ?? "???";
 

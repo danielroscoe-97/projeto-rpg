@@ -51,6 +51,11 @@ export async function reconcileFullState(
       player_notes: c.player_notes ?? "",
       player_character_id: c.player_character_id ?? null,
       ruleset_version: c.ruleset_version,
+      // C1/C2: Persist combat mechanics fields that were previously missing
+      condition_durations: c.condition_durations ?? {},
+      death_saves: c.death_saves ?? null,
+      legendary_actions_total: c.legendary_actions_total ?? null,
+      legendary_actions_used: c.legendary_actions_used ?? 0,
     }));
 
     const { error } = await supabase.rpc("reconcile_combat_state", {

@@ -27,6 +27,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     combatant_role: null,
     legendary_actions_total: null,
     legendary_actions_used: 0,
+    reaction_used: false,
   },
   {
     name: "Goblin 2",
@@ -54,6 +55,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     combatant_role: null,
     legendary_actions_total: null,
     legendary_actions_used: 0,
+    reaction_used: false,
   },
   {
     name: "Goblin 3",
@@ -81,6 +83,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     combatant_role: null,
     legendary_actions_total: null,
     legendary_actions_used: 0,
+    reaction_used: false,
   },
   {
     name: "Herói 1",
@@ -108,6 +111,7 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     combatant_role: null,
     legendary_actions_total: null,
     legendary_actions_used: 0,
+    reaction_used: false,
   },
   {
     name: "Herói 2",
@@ -135,5 +139,6 @@ export const SAMPLE_ENCOUNTER: Omit<Combatant, "id">[] = [
     combatant_role: null,
     legendary_actions_total: null,
     legendary_actions_used: 0,
+    reaction_used: false,
   },
 ];

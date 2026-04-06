@@ -633,6 +633,7 @@ export function CombatSessionClient({
       combatant_role: null,
       legendary_actions_total: getLegendaryActionCount(monster),
       legendary_actions_used: 0,
+      reaction_used: false,
     });
   }, [addCombatantAction]);
 
@@ -676,6 +677,7 @@ export function CombatSessionClient({
         combatant_role: null,
         legendary_actions_total: getLegendaryActionCount(monster),
         legendary_actions_used: 0,
+        reaction_used: false,
       });
     }
     for (const c of newCombatants) {
@@ -866,6 +868,7 @@ export function CombatSessionClient({
         combatant_role: null,
         legendary_actions_total: null,
         legendary_actions_used: 0,
+        reaction_used: false,
       } as Omit<Combatant, "id">);
       broadcastEvent(sid, {
         type: "combat:late_join_response",
@@ -1176,6 +1179,23 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "player:self_condition_toggle" }, handleSelfConditionToggle);
 
+    // Listen for combat:reaction_toggle from players toggling their own reaction
+    const handlePlayerReactionToggle = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const { combatant_id, reaction_used, player_name } = payload as { combatant_id: string; reaction_used: boolean; player_name: string };
+      if (!combatant_id || typeof reaction_used !== "boolean") return;
+      // Security: combatant must exist and be a player
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (!combatant || !combatant.is_player) return;
+      // Security: name confirmation prevents toggling another player's reaction
+      if (combatant.name.toLowerCase() !== String(player_name ?? "").toLowerCase()) return;
+      useCombatStore.getState().setReactionUsed(combatant_id, reaction_used);
+      // Re-broadcast to all players so everyone sees the update
+      broadcastEvent(getSessionId()!, { type: "combat:reaction_toggle", combatant_id, reaction_used });
+    };
+
+    ch.on("broadcast", { event: "combat:reaction_toggle" }, handlePlayerReactionToggle);
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef
   }, [is_active, getSessionId]);
@@ -1389,6 +1409,7 @@ export function CombatSessionClient({
                 combatant_role: "monster",
                 legendary_actions_total: null,
                 legendary_actions_used: 0,
+                reaction_used: false,
               });
               setAddMode(null);
             }}
@@ -1432,6 +1453,14 @@ export function CombatSessionClient({
         onToggleHidden={handleToggleHidden}
         onAdvanceTurn={handleAdvanceTurn}
         onSetLegendaryActionsUsed={(id, count) => useCombatStore.getState().setLegendaryActionsUsed(id, count)}
+        onToggleReaction={(id) => {
+          useCombatStore.getState().toggleReaction(id);
+          const sid = getSessionId();
+          if (sid) {
+            const c = useCombatStore.getState().combatants.find((x) => x.id === id);
+            if (c) broadcastEvent(sid, { type: "combat:reaction_toggle", combatant_id: id, reaction_used: c.reaction_used });
+          }
+        }}
         onAddDeathSaveSuccess={(id) => {
           useCombatStore.getState().addDeathSaveSuccess(id);
           const sid = getSessionId();
@@ -1590,6 +1619,7 @@ interface CombatListProps {
   onToggleHidden: (id: string) => void;
   onAdvanceTurn: () => void;
   onSetLegendaryActionsUsed: (id: string, count: number) => void;
+  onToggleReaction?: (id: string) => void;
   onAddDeathSaveSuccess?: (id: string) => void;
   onAddDeathSaveFailure?: (id: string) => void;
   expandedGroups: Record<string, boolean>;
@@ -1618,6 +1648,7 @@ function CombatList({
   onToggleHidden,
   onAdvanceTurn,
   onSetLegendaryActionsUsed,
+  onToggleReaction,
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
   expandedGroups,
@@ -1674,6 +1705,7 @@ function CombatList({
                 onToggleHidden={onToggleHidden}
                 onAdvanceTurn={onAdvanceTurn}
                 onSetLegendaryActionsUsed={onSetLegendaryActionsUsed}
+                onToggleReaction={onToggleReaction}
                 onAddDeathSaveSuccess={onAddDeathSaveSuccess}
                 onAddDeathSaveFailure={onAddDeathSaveFailure}
               />
@@ -1721,6 +1753,7 @@ function CombatList({
                       onToggleHidden={onToggleHidden}
                       onAdvanceTurn={onAdvanceTurn}
                       onSetLegendaryActionsUsed={onSetLegendaryActionsUsed}
+                      onToggleReaction={onToggleReaction}
                       onAddDeathSaveSuccess={onAddDeathSaveSuccess}
                       onAddDeathSaveFailure={onAddDeathSaveFailure}
                     />

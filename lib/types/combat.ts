@@ -53,6 +53,8 @@ export interface Combatant {
   legendary_actions_total: number | null;
   /** Legendary actions used this round. Resets to 0 at start of each round. */
   legendary_actions_used: number;
+  /** Whether this combatant has used their reaction this round. Resets on their turn start. */
+  reaction_used: boolean;
   /** True for the synthetic "Lair Actions" entry at initiative 20. Not a real creature. */
   is_lair_action?: boolean;
 }
@@ -165,6 +167,10 @@ export interface CombatActions {
   incrementLegendaryAction: (id: string) => void;
   /** Set legendary actions used to an exact count (0 to total). */
   setLegendaryActionsUsed: (id: string, count: number) => void;
+  /** Toggle reaction used/available for a combatant. */
+  toggleReaction: (id: string) => void;
+  /** Set reaction_used to an exact value for a combatant. */
+  setReactionUsed: (id: string, used: boolean) => void;
   /** CTA-12: Toggle combat timer pause. On pause: freeze timers. On resume: shift timestamps forward by pause duration. */
   toggleTimerPause: () => void;
 }

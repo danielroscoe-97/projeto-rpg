@@ -133,6 +133,8 @@ interface GuestCombatActions {
   resetDeathSaves: (id: string) => void;
   incrementLegendaryAction: (id: string) => void;
   setLegendaryActionsUsed: (id: string, count: number) => void;
+  toggleReaction: (id: string) => void;
+  setReactionUsed: (id: string, used: boolean) => void;
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
   resetCombat: () => void;
   resetForNewSession: () => void;
@@ -211,6 +213,10 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           const updated = state.combatants.map((c) =>
             c.id === id ? { ...c, initiative: value } : c
           );
+          // C4: Parity with auth store — don't re-sort during active combat
+          if (state.phase === "combat") {
+            return { combatants: updated };
+          }
           const sorted = assignInitiativeOrder(sortByInitiative(updated));
           return { combatants: sorted };
         });
@@ -223,6 +229,10 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           const updated = state.combatants.map((c) =>
             initMap.has(c.id) ? { ...c, initiative: initMap.get(c.id)! } : c
           );
+          // C4: Parity with auth store — don't re-sort during active combat
+          if (state.phase === "combat") {
+            return { combatants: updated };
+          }
           return { combatants: assignInitiativeOrder(sortByInitiative(updated)) };
         });
       },
@@ -334,6 +344,8 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             }
             sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
           }
+          // Reset reaction for the combatant whose turn is starting
+          sorted[next] = { ...sorted[next], reaction_used: false };
           // Reset legendary actions when a new round starts
           const finalCombatants = roundBumped
             ? sorted.map((c) => c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c)
@@ -493,6 +505,24 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             c.id === id && c.legendary_actions_total != null
               ? { ...c, legendary_actions_used: Math.max(0, Math.min(count, c.legendary_actions_total)) }
               : c
+          ),
+        }));
+      },
+
+      toggleReaction: (id) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, reaction_used: !c.reaction_used } : c
+          ),
+        }));
+      },
+
+      setReactionUsed: (id, used) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id ? { ...c, reaction_used: used } : c
           ),
         }));
       },

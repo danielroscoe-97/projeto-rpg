@@ -81,6 +81,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
     death_saves: (row.death_saves as { successes: number; failures: number } | null) ?? undefined,
     legendary_actions_total: row.legendary_actions_total ?? null,
     legendary_actions_used: row.legendary_actions_used ?? 0,
+    reaction_used: false,
   }));
 
   const t = await getTranslations("dashboard");

@@ -21,6 +21,8 @@ export default function Page() {
   const role = searchParams.get("role") ?? "both";
   const inviteToken = searchParams.get("invite");
   const inviteCampaignId = searchParams.get("campaign");
+  const joinCode = searchParams.get("join_code");
+  const context = searchParams.get("context");
   const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
 
   const handleResend = async () => {
@@ -28,8 +30,13 @@ export default function Page() {
     setResendStatus("loading");
     const supabase = createClient();
     let redirectUrl = `${window.location.origin}/auth/confirm?role=${encodeURIComponent(role)}`;
-    if (inviteToken && inviteCampaignId) {
-      redirectUrl += `&invite=${encodeURIComponent(inviteToken)}&campaign=${encodeURIComponent(inviteCampaignId)}`;
+    if (joinCode) {
+      redirectUrl += `&join_code=${encodeURIComponent(joinCode)}`;
+    } else if (inviteToken) {
+      redirectUrl += `&invite=${encodeURIComponent(inviteToken)}`;
+      if (inviteCampaignId) redirectUrl += `&campaign=${encodeURIComponent(inviteCampaignId)}`;
+    } else if (context) {
+      redirectUrl += `&context=${encodeURIComponent(context)}`;
     }
     const { error } = await supabase.auth.resend({
       type: "signup",

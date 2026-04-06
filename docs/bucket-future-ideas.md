@@ -120,6 +120,14 @@
 | F-45 | Quick Add Character Mode — create character with 3 clicks (class + level = auto HP/AC) | User decision 2026-04-04 | DEFERRED | User preference: manual mode is sufficient for now. Reavaliar pré-demo |
 | F-46 | Avatar Storage Cleanup — delete old avatars when uploading new ones | Code review 2026-04-04 | DEFERRED | Low priority. `player-avatars` bucket uses upsert but orphaned files from deleted characters remain |
 
+## Analytics & Monetização
+
+| # | Item | Origem | Status | Notas |
+|---|------|--------|--------|-------|
+| F-47 | Analytics Dashboard expandido (funnel, cohort, feature usage, upsell effectiveness) | Spec 2026-04-05 | PENDENTE | Spec completo: `docs/spec-analytics-monetization-readiness.md`. ~1 dia de trabalho |
+| F-48 | Instrumentar 13 eventos P0 faltantes (turn_advanced, oracle:result_click, preset, compendium, pricing) | Spec 2026-04-05 | PENDENTE | 3 eventos quebrados (fora do allowlist) + 10 não implementados. ~2h |
+| F-49 | Stripe integration + freemium model (Products, Prices, Webhooks, Portal) | Spec 2026-04-05 | BACKLOG | Depende de F-47 (dados) + 50+ usuários ativos. Soft tags primeiro, hard gate depois. ~1-2 semanas |
+
 ## Tech Debt (Baixa prioridade)
 
 | # | Item | Origem | Notas |
@@ -141,5 +149,5 @@
 
 ---
 
-> **Última atualização:** 2026-04-04 (F-07 avatar upload DONE via PHQ, F-45 Quick Add deferred, F-46 orphaned avatar cleanup added)
+> **Última atualização:** 2026-04-05 (F-47/F-48/F-49 Analytics + Stripe backlog items added)
 > **Revisado por:** Dani_ + BMAD Party Mode (John, Winston, Mary, Bob, Quinn, Sally, Amelia)

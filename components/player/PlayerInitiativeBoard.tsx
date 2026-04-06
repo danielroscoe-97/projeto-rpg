@@ -59,6 +59,8 @@ interface PlayerCombatant {
   death_saves?: { successes: number; failures: number };
   /** Turn count per condition — shown for other players only (anti-metagaming: hidden for monsters) */
   condition_durations?: Record<string, number>;
+  /** Whether this combatant has used their reaction this round */
+  reaction_used?: boolean;
 }
 
 
@@ -194,6 +196,8 @@ interface PlayerInitiativeBoardProps {
   onLongRest?: () => void;
   /** Callback when player self-toggles a beneficial condition on their own character */
   onSelfConditionToggle?: (combatantId: string, condition: string) => void;
+  /** Callback when player toggles their own reaction */
+  onToggleReaction?: (combatantId: string) => void;
 }
 
 export function PlayerInitiativeBoard({
@@ -221,6 +225,7 @@ export function PlayerInitiativeBoard({
   onToggleSlot,
   onLongRest,
   onSelfConditionToggle,
+  onToggleReaction,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
@@ -991,6 +996,37 @@ export function PlayerInitiativeBoard({
                       turnCount={isPlayer && !isOwnChar ? combatant.condition_durations?.[condition] : undefined}
                     />
                   ))}
+                </div>
+              )}
+
+              {/* Reaction indicator — toggleable for own character, read-only for others */}
+              {combatant.reaction_used !== undefined && !combatant.is_defeated && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className="text-xs text-muted-foreground font-medium">{tc("reaction_inline")}</span>
+                  {isOwnChar ? (
+                    <button
+                      type="button"
+                      onClick={() => onToggleReaction?.(combatant.id)}
+                      className={`w-4 h-4 lg:w-3.5 lg:h-3.5 rounded-full border transition-colors ${
+                        combatant.reaction_used
+                          ? "bg-red-500 border-red-400/60"
+                          : "bg-transparent border-emerald-500 hover:border-emerald-400"
+                      }`}
+                      aria-label={combatant.reaction_used ? tc("reaction_used") : tc("reaction_available")}
+                    />
+                  ) : (
+                    <span
+                      className={`w-4 h-4 lg:w-3.5 lg:h-3.5 rounded-full border inline-block ${
+                        combatant.reaction_used
+                          ? "bg-red-500 border-red-400/60"
+                          : "bg-transparent border-emerald-500"
+                      }`}
+                      aria-label={combatant.reaction_used ? tc("reaction_used") : tc("reaction_available")}
+                    />
+                  )}
+                  <span className={`text-[10px] ${combatant.reaction_used ? "text-red-400" : "text-emerald-400/70"}`}>
+                    {combatant.reaction_used ? tc("reaction_used") : tc("reaction_available")}
+                  </span>
                 </div>
               )}
 

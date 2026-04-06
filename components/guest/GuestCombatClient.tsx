@@ -159,6 +159,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         combatant_role: "player",
         legendary_actions_total: null,
         legendary_actions_used: 0,
+        reaction_used: false,
       });
     }
 
@@ -211,6 +212,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           combatant_role: null,
           legendary_actions_total: null,
           legendary_actions_used: 0,
+          reaction_used: false,
         });
       }
     }
@@ -267,6 +269,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         combatant_role: null,
         legendary_actions_total: getLegendaryActionCount(monster),
         legendary_actions_used: 0,
+        reaction_used: false,
       });
 
       // Auto-add Lair Action entry at initiative 20 if this monster has lair actions
@@ -327,6 +330,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
           combatant_role: null,
           legendary_actions_total: getLegendaryActionCount(monster),
           legendary_actions_used: 0,
+          reaction_used: false,
         });
       }
       addMonsterGroup(newCombatants);
@@ -414,6 +418,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       combatant_role: sel ? null : addRowRole,
       legendary_actions_total: null,
       legendary_actions_used: 0,
+      reaction_used: false,
     });
 
     lastSelectedMonster.current = null;
@@ -559,6 +564,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
         combatant_role: null,
         legendary_actions_total: source.legendary_actions_total,
         legendary_actions_used: 0,
+        reaction_used: false,
       });
     },
     [addCombatant]
@@ -690,6 +696,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
               combatant_role: role,
               legendary_actions_total: null,
               legendary_actions_used: 0,
+              reaction_used: false,
             });
           }}
         />
@@ -889,6 +896,7 @@ export function GuestCombatClient() {
     toggleGroupExpanded,
     setGroupInitiative,
     setLegendaryActionsUsed,
+    toggleReaction,
   } = useGuestCombatStore();
 
   // ─── Undo stack (Story 1.1) ─────────────────────────────────────────────────
@@ -1084,7 +1092,7 @@ export function GuestCombatClient() {
         monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
         display_name: displayName, monster_group_id: null, group_order: null,
         dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
-        legendary_actions_total: getLegendaryActionCount(monster), legendary_actions_used: 0,
+        legendary_actions_total: getLegendaryActionCount(monster), legendary_actions_used: 0, reaction_used: false,
       });
       const all = useGuestCombatStore.getState().combatants;
       hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
@@ -1112,7 +1120,7 @@ export function GuestCombatClient() {
           monster_id: monster.id, token_url: monster.token_url ?? null, creature_type: monster.type ?? null,
           display_name: `${groupDisplayBase} ${i + 1}`, monster_group_id: groupId, group_order: i + 1,
           dm_notes: "", player_notes: "", player_character_id: null, combatant_role: null,
-          legendary_actions_total: getLegendaryActionCount(monster), legendary_actions_used: 0,
+          legendary_actions_total: getLegendaryActionCount(monster), legendary_actions_used: 0, reaction_used: false,
         });
       }
       useGuestCombatStore.getState().addMonsterGroup(newCombatants);
@@ -1140,7 +1148,7 @@ export function GuestCombatClient() {
       monster_id: null, token_url: null, creature_type: null, display_name: displayName,
       monster_group_id: null, group_order: null, dm_notes: "", player_notes: midCombatAddRow.notes.trim(),
       player_character_id: null, combatant_role: midCombatAddRowRole,
-      legendary_actions_total: null, legendary_actions_used: 0,
+      legendary_actions_total: null, legendary_actions_used: 0, reaction_used: false,
     });
     const all = useGuestCombatStore.getState().combatants;
     hydrateCombatants(assignInitiativeOrder(sortByInitiative(all)));
@@ -1741,6 +1749,7 @@ export function GuestCombatClient() {
                   onAddDeathSaveFailure={addDeathSaveFailure}
                   onAdvanceTurn={handleAdvanceTurn}
                   onSetLegendaryActionsUsed={setLegendaryActionsUsed}
+                  onToggleReaction={toggleReaction}
                 />
               );
             }}
@@ -1783,6 +1792,7 @@ export function GuestCombatClient() {
                       onAddDeathSaveFailure={addDeathSaveFailure}
                       onAdvanceTurn={handleAdvanceTurn}
                       onSetLegendaryActionsUsed={setLegendaryActionsUsed}
+                      onToggleReaction={toggleReaction}
                     />
                   ))}
                 </MonsterGroupHeader>
