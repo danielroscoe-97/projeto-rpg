@@ -7,7 +7,6 @@ import { BLOG_CATEGORIES } from "@/lib/blog/posts";
 
 type LangFilter = "all" | "pt" | "en";
 
-/** Determine post language from slug convention: -en suffix = English, otherwise Portuguese */
 function getPostLang(slug: string): "pt" | "en" {
   return slug.endsWith("-en") ? "en" : "pt";
 }
@@ -25,7 +24,6 @@ function formatDate(date: string) {
   return new Date(date).toLocaleDateString("pt-BR", {
     day: "numeric",
     month: "short",
-    year: "numeric",
   });
 }
 
@@ -54,36 +52,82 @@ function LangBadge({ slug }: { slug: string }) {
   );
 }
 
-/* ─── Featured Card (latest post) ───────────────────────────── */
-function FeaturedCard({ post }: { post: BlogPost }) {
+/* ─── Portal Section (wiki column) ────────────────────────── */
+function PortalSection({
+  title,
+  icon,
+  posts,
+  accentClass,
+  filterCategory,
+  onFilter,
+}: {
+  title: string;
+  icon: string;
+  posts: BlogPost[];
+  accentClass: string;
+  filterCategory: BlogCategory | null;
+  onFilter: (cat: BlogCategory | null) => void;
+}) {
+  return (
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 flex flex-col">
+      <button
+        type="button"
+        onClick={() => onFilter(filterCategory)}
+        className="flex items-center gap-2 mb-3 group"
+      >
+        <span className="text-base">{icon}</span>
+        <h2 className={`font-display text-sm tracking-wide ${accentClass} group-hover:brightness-125 transition-all`}>
+          {title}
+        </h2>
+        <svg className="w-3 h-3 ml-auto text-muted-foreground/40 group-hover:text-foreground/60 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+      <div className="flex-1 space-y-1">
+        {posts.map((post) => (
+          <Link
+            key={post.slug}
+            href={`/blog/${post.slug}`}
+            className="group/item flex items-start gap-2 py-1.5 px-2 -mx-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+          >
+            <span className="text-gold/30 text-[8px] mt-[6px] shrink-0">&#9670;</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] text-foreground/75 group-hover/item:text-gold leading-snug transition-colors line-clamp-2">
+                {post.title}
+              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] text-muted-foreground/50">{post.readingTime}</span>
+                {getPostLang(post.slug) === "en" && (
+                  <span className="text-[8px] font-bold text-sky-400/60">EN</span>
+                )}
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Compact Post Row (for grid below portal) ────────────── */
+function PostRow({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block rounded-xl border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 sm:p-8 hover:border-gold/30 hover:from-gold/[0.07] transition-all duration-300"
+      className="group flex items-center gap-3 py-3 px-3 -mx-3 rounded-lg hover:bg-white/[0.03] transition-colors border-b border-white/[0.03] last:border-b-0"
     >
-      <div className="flex items-center gap-3 mb-3">
-        {post.pinned && (
-          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border bg-gold/20 text-gold border-gold/30">
-            Fixo
-          </span>
-        )}
-        <CategoryBadge category={post.category} />
-        <LangBadge slug={post.slug} />
-        <span className="text-xs text-muted-foreground">{formatDate(post.date)}</span>
-        <span className="text-xs text-muted-foreground">·</span>
-        <span className="text-xs text-muted-foreground">{post.readingTime}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <CategoryBadge category={post.category} />
+          <LangBadge slug={post.slug} />
+        </div>
+        <h3 className="text-[14px] text-foreground/80 group-hover:text-gold transition-colors leading-snug">
+          {post.title}
+        </h3>
       </div>
-      <h2 className="font-display text-xl sm:text-2xl text-foreground group-hover:text-gold transition-colors duration-200 mb-3 leading-tight">
-        {post.title}
-      </h2>
-      <p className="text-sm text-foreground/55 leading-relaxed max-w-2xl">
-        {post.description}
-      </p>
-      <div className="mt-4 flex items-center gap-1.5 text-gold/70 text-sm font-medium group-hover:text-gold transition-colors">
-        Ler artigo
-        <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
+      <div className="shrink-0 text-right">
+        <span className="text-[11px] text-muted-foreground">{post.readingTime}</span>
+        <p className="text-[10px] text-muted-foreground/50">{formatDate(post.date)}</p>
       </div>
     </Link>
   );
@@ -94,27 +138,19 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 h-full"
+      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 h-full"
     >
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-2">
         <CategoryBadge category={post.category} />
         <LangBadge slug={post.slug} />
-        <span className="text-[11px] text-muted-foreground ml-auto">{post.readingTime}</span>
+        <span className="text-[10px] text-muted-foreground ml-auto">{post.readingTime}</span>
       </div>
-      <h3 className="font-display text-[15px] text-foreground group-hover:text-gold transition-colors duration-200 mb-2 leading-snug flex-1">
+      <h3 className="font-display text-[14px] text-foreground group-hover:text-gold transition-colors duration-200 mb-1.5 leading-snug flex-1">
         {post.title}
       </h3>
-      <p className="text-xs text-foreground/50 leading-relaxed line-clamp-2 mb-3">
+      <p className="text-[11px] text-foreground/45 leading-relaxed line-clamp-2">
         {post.description}
       </p>
-      <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/[0.04]">
-        <time className="text-[11px] text-muted-foreground" dateTime={post.date}>
-          {formatDate(post.date)}
-        </time>
-        <span className="text-xs text-gold/50 group-hover:text-gold/80 transition-colors">
-          Ler &rarr;
-        </span>
-      </div>
     </Link>
   );
 }
@@ -125,22 +161,33 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
   const [activeCategory, setActiveCategory] = useState<BlogCategory | null>(null);
   const [langFilter, setLangFilter] = useState<LangFilter>("all");
 
-  // Language detection removed — default is "all", user filters manually
-
   const categories = useMemo(() => {
     const cats = new Set(posts.map((p) => p.category));
     return Array.from(cats) as BlogCategory[];
   }, [posts]);
 
-  // Check if there are posts in multiple languages (to decide whether to show the filter)
   const hasMultipleLanguages = useMemo(() => {
     const langs = new Set(posts.map((p) => getPostLang(p.slug)));
     return langs.size > 1;
   }, [posts]);
 
+  // Article categories (tutorials, guias, listas, comparativos)
+  const articleCats: BlogCategory[] = ["tutorial", "guia", "lista", "comparativo"];
+  const articles = useMemo(
+    () => posts.filter((p) => articleCats.includes(p.category)).sort((a, b) => b.date.localeCompare(a.date)),
+    [posts]
+  );
+  const builds = useMemo(
+    () => posts.filter((p) => p.category === "build").sort((a, b) => b.date.localeCompare(a.date)),
+    [posts]
+  );
+  const devlogs = useMemo(
+    () => posts.filter((p) => p.category === "devlog").sort((a, b) => b.date.localeCompare(a.date)),
+    [posts]
+  );
+
   const filtered = useMemo(() => {
     let result = posts;
-    // Language filter
     if (langFilter !== "all") {
       result = result.filter((p) => getPostLang(p.slug) === langFilter);
     }
@@ -158,7 +205,6 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
     return result;
   }, [posts, query, activeCategory, langFilter]);
 
-  // Sort: pinned first, then by date descending
   const sorted = useMemo(
     () =>
       [...filtered].sort((a, b) => {
@@ -169,14 +215,42 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
     [filtered]
   );
 
-  const [featured, ...rest] = sorted;
   const hasFilters = !!(query || activeCategory || langFilter !== "all");
 
   return (
     <div>
-      {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-8">
-        {/* Search */}
+      {/* ─── Wiki Portal ─── */}
+      {!hasFilters && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <PortalSection
+            title="Artigos & Guias"
+            icon="📜"
+            posts={articles.slice(0, 5)}
+            accentClass="text-blue-400"
+            filterCategory="tutorial"
+            onFilter={() => setActiveCategory("tutorial")}
+          />
+          <PortalSection
+            title="Builds"
+            icon="⚔️"
+            posts={builds.slice(0, 5)}
+            accentClass="text-rose-400"
+            filterCategory="build"
+            onFilter={() => setActiveCategory("build")}
+          />
+          <PortalSection
+            title="Diário de Aventura"
+            icon="📖"
+            posts={devlogs.slice(0, 5)}
+            accentClass="text-gold"
+            filterCategory="devlog"
+            onFilter={() => setActiveCategory("devlog")}
+          />
+        </div>
+      )}
+
+      {/* ─── Filter bar ─── */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none"
@@ -196,16 +270,15 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar artigos..."
-            className="w-full h-10 pl-9 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 transition-colors"
+            className="w-full h-9 pl-9 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 transition-colors"
           />
         </div>
 
-        {/* Category chips + language toggle */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             type="button"
             onClick={() => setActiveCategory(null)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
               !activeCategory
                 ? "bg-gold/15 text-gold border border-gold/25"
                 : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
@@ -218,7 +291,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
               key={cat}
               type="button"
               onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                 activeCategory === cat
                   ? "bg-gold/15 text-gold border border-gold/25"
                   : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
@@ -228,16 +301,15 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
             </button>
           ))}
 
-          {/* Language toggle */}
           {hasMultipleLanguages && (
             <>
-              <span className="w-px h-5 bg-white/[0.08] mx-1 hidden sm:block" />
+              <span className="w-px h-4 bg-white/[0.08] mx-1 hidden sm:block" />
               {(["all", "pt", "en"] as const).map((l) => (
                 <button
                   key={l}
                   type="button"
                   onClick={() => setLangFilter(l)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                     langFilter === l
                       ? "bg-gold/15 text-gold border border-gold/25"
                       : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
@@ -253,48 +325,46 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
 
       {/* Results count when filtered */}
       {hasFilters && (
-        <p className="text-xs text-muted-foreground mb-4">
+        <p className="text-xs text-muted-foreground mb-3">
           {sorted.length} {sorted.length === 1 ? "artigo encontrado" : "artigos encontrados"}
           {activeCategory && ` em ${BLOG_CATEGORIES[activeCategory]}`}
+          <button
+            type="button"
+            onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
+            className="ml-2 text-gold/70 hover:text-gold hover:underline"
+          >
+            Limpar
+          </button>
         </p>
       )}
 
       {sorted.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground text-sm">Nenhum artigo encontrado.</p>
           <button
             type="button"
             onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
-            className="mt-3 text-gold text-sm hover:underline"
+            className="mt-2 text-gold text-sm hover:underline"
           >
             Limpar filtros
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {/* Featured post */}
-          {featured && !hasFilters && <FeaturedCard post={featured} />}
-
-          {/* Grid */}
-          {(hasFilters ? sorted : rest).length > 0 && (
-            <>
-              {!hasFilters && (
-                <div className="flex items-center gap-3 pt-2">
-                  <div className="flex-1 h-px bg-gradient-to-r from-white/[0.06] to-transparent" />
-                  <span className="text-[11px] text-muted-foreground/50 uppercase tracking-widest">
-                    Mais artigos
-                  </span>
-                  <div className="flex-1 h-px bg-gradient-to-l from-white/[0.06] to-transparent" />
-                </div>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {(hasFilters ? sorted : rest).map((post) => (
-                  <PostCard key={post.slug} post={post} />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        <>
+          {/* ─── Todos os Posts ─── */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-white/[0.06] to-transparent" />
+            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-widest">
+              {hasFilters ? "Resultados" : "Todos os artigos"}
+            </span>
+            <div className="flex-1 h-px bg-gradient-to-l from-white/[0.06] to-transparent" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {sorted.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
