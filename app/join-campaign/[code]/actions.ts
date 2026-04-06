@@ -1,7 +1,8 @@
 "use server";
 
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-import { sendCampaignJoinedEmail } from "@/lib/notifications/campaign-joined";
+import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
+import { trackServerEvent } from "@/lib/analytics/track-server";
 
 const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
 
@@ -112,15 +113,28 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
       ? (playerUser?.display_name ?? playerUser?.email ?? "Jogador")
       : data.name!;
 
-    if (dmUser && playerUser) {
-      await sendCampaignJoinedEmail({
+    const { count: memberCount } = await service
+      .from("campaign_members")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaign.id)
+      .eq("status", "active");
+
+    if (dmUser) {
+      const sent = await sendInviteAcceptedEmail({
         dmEmail: dmUser.email,
         dmName: dmUser.display_name ?? dmUser.email,
-        playerName: playerDisplayName,
-        playerEmail: playerUser.email,
+        playerDisplayName,
         campaignName: campaign.name,
         campaignUrl: `${APP_URL}/app/campaigns/${campaign.id}`,
+        memberCount: memberCount ?? 1,
       });
+
+      if (sent) {
+        trackServerEvent("email:invite_accepted_sent", {
+          userId: campaign.owner_id,
+          properties: { campaign_id: campaign.id },
+        });
+      }
     }
   } catch {
     // Notification failure must not block the join

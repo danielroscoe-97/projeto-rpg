@@ -1,4 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { sendCombatRecapEmail, shouldSendRecap } from "@/lib/notifications/combat-recap-email";
+import { trackServerEvent } from "@/lib/analytics/track-server";
+import type { CombatReport } from "@/lib/types/combat-report";
 import { NextResponse } from "next/server";
 
 const MAX_PAYLOAD_SIZE = 100_000; // 100KB max for report_data
@@ -52,5 +55,39 @@ export async function POST(req: Request) {
   }
 
   const origin = new URL(req.url).origin;
-  return NextResponse.json({ shortCode, url: `${origin}/r/${shortCode}` });
+  const reportUrl = `${origin}/r/${shortCode}`;
+
+  // Fire-and-forget: send combat recap email for valid combats (logged-in users only)
+  const typedReport = report as unknown as CombatReport;
+  if (user && shouldSendRecap(typedReport)) {
+    (async () => {
+      try {
+        const { data: profile } = await supabase
+          .from("users")
+          .select("display_name, email")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.email) {
+          const sent = await sendCombatRecapEmail({
+            email: profile.email,
+            displayName: profile.display_name ?? "Mestre",
+            report: typedReport,
+            encounterUrl: reportUrl,
+          });
+
+          if (sent) {
+            trackServerEvent("email:combat_recap_sent", {
+              userId: user.id,
+              properties: { encounter_id: typeof encounterId === "string" ? encounterId : undefined },
+            });
+          }
+        }
+      } catch {
+        // Recap email failure must never block the response
+      }
+    })();
+  }
+
+  return NextResponse.json({ shortCode, url: reportUrl });
 }

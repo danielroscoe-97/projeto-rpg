@@ -1,6 +1,8 @@
 "use server";
 
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
+import { trackServerEvent } from "@/lib/analytics/track-server";
 
 interface AcceptInviteData {
   inviteId: string;
@@ -125,4 +127,57 @@ export async function acceptInviteAction(data: AcceptInviteData) {
     .eq("id", data.inviteId);
 
   if (inviteError) throw inviteError;
+
+  // Notify DM via email (fail-open)
+  try {
+    const { data: campaign } = await service
+      .from("campaigns")
+      .select("name, owner_id")
+      .eq("id", invite.campaign_id)
+      .single();
+
+    const { data: dmUser } = await service
+      .from("users")
+      .select("display_name, email")
+      .eq("id", campaign?.owner_id ?? invite.invited_by)
+      .single();
+
+    const { data: playerUser } = await service
+      .from("users")
+      .select("display_name, email")
+      .eq("id", user.id)
+      .single();
+
+    const playerDisplayName = data.existingCharacterId
+      ? (playerUser?.display_name ?? playerUser?.email ?? "Jogador")
+      : (data.name ?? playerUser?.display_name ?? "Jogador");
+
+    const { count: memberCount } = await service
+      .from("campaign_members")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", invite.campaign_id)
+      .eq("status", "active");
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
+
+    if (dmUser) {
+      const sent = await sendInviteAcceptedEmail({
+        dmEmail: dmUser.email,
+        dmName: dmUser.display_name ?? dmUser.email,
+        playerDisplayName,
+        campaignName: campaign?.name ?? "Campanha",
+        campaignUrl: `${siteUrl}/app/campaigns/${invite.campaign_id}`,
+        memberCount: memberCount ?? 1,
+      });
+
+      if (sent) {
+        trackServerEvent("email:invite_accepted_sent", {
+          userId: campaign?.owner_id ?? invite.invited_by,
+          properties: { campaign_id: invite.campaign_id },
+        });
+      }
+    }
+  } catch {
+    // Notification failure must not block invite acceptance
+  }
 }

@@ -1,5 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getUserLanguagePreference } from "@/lib/supabase/user";
+import { sendWelcomeEmail } from "@/lib/notifications/welcome-email";
+import { trackServerEvent } from "@/lib/analytics/track-server";
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -59,6 +61,47 @@ export async function GET(request: NextRequest) {
       .upsert({ user_id: authUser.id, source }, { onConflict: "user_id" });
   }
 
+  // Fire-and-forget welcome email for new signups (dedup via welcome_email_sent flag)
+  async function maybeSendWelcomeEmail(): Promise<void> {
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser?.email) return;
+
+      const service = createServiceClient();
+      const { data: onboarding } = await service
+        .from("user_onboarding")
+        .select("welcome_email_sent")
+        .eq("user_id", authUser.id)
+        .single();
+
+      if (onboarding?.welcome_email_sent) return;
+
+      const { data: profile } = await service
+        .from("users")
+        .select("display_name")
+        .eq("id", authUser.id)
+        .single();
+
+      const sent = await sendWelcomeEmail({
+        email: authUser.email,
+        displayName: profile?.display_name ?? authUser.email.split("@")[0],
+      });
+
+      if (sent) {
+        await service
+          .from("user_onboarding")
+          .update({ welcome_email_sent: true })
+          .eq("user_id", authUser.id);
+
+        trackServerEvent("email:welcome_sent", {
+          userId: authUser.id,
+        });
+      }
+    } catch {
+      // Welcome email failure must never block auth flow
+    }
+  }
+
   // Determine redirect: new signups go to onboarding, otherwise to specified next
   async function getRedirectTarget(): Promise<string> {
     // If join_code param present, redirect back to join flow
@@ -96,6 +139,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       await saveRoleFromParams();
       await updateOnboardingSource();
+      void maybeSendWelcomeEmail();
       const target = await getRedirectTarget();
       await syncLocaleAndRedirect(target);
     } else {
@@ -112,6 +156,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       await saveRoleFromParams();
       await updateOnboardingSource();
+      void maybeSendWelcomeEmail();
       const target = await getRedirectTarget();
       await syncLocaleAndRedirect(target);
     } else {
