@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -114,9 +114,16 @@ export function CharacterForm({
   const uniqueRaces = getUniqueRaces();
   const uniqueClasses = getUniqueClasses();
 
+  useEffect(() => {
+    if (open) {
+      setForm(character ? formFromCharacter(character) : EMPTY_FORM);
+      setError(null);
+    }
+  }, [open, character]);
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      setForm(character ? formFromCharacter(character) : EMPTY_FORM);
+      setForm(EMPTY_FORM);
       setError(null);
     }
     onOpenChange(nextOpen);
