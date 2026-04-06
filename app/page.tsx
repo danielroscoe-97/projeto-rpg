@@ -983,7 +983,7 @@ function BeyondCombatSection() {
   ];
 
   return (
-    <section data-section="beyond-combat" className="py-12 md:py-20 px-4 md:px-6 relative overflow-hidden">
+    <section data-section="beyond-combat" id="alem-do-combate" className="py-12 md:py-20 px-4 md:px-6 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/[0.03] rounded-full blur-[120px]" />
       </div>
@@ -1017,6 +1017,20 @@ function BeyondCombatSection() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* CTA — Methodology */}
+        <div className="text-center mt-8 md:mt-10 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+          <Link
+            href="/methodology"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-gold/30 bg-gold/[0.06] text-gold font-semibold text-sm hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 min-h-[44px]"
+          >
+            Conhecer a Metodologia
+            <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+          </Link>
+          <p className="text-muted-foreground text-xs mt-2">
+            Como coletamos e analisamos os dados de combate
+          </p>
         </div>
       </div>
     </section>
@@ -1196,6 +1210,7 @@ export default async function LandingPage() {
           { href: "#features", label: "Features" },
           { href: "#como-funciona", label: "Como Funciona" },
           { href: "#comparativo", label: "Comparativo" },
+          { href: "#alem-do-combate", label: "Metodologia" },
           { href: "#precos", label: "Preços" },
         ]}
         rightSlot={
