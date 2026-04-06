@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const APP_SHELL_CACHE = `app-shell-${CACHE_VERSION}`;
 const SRD_CACHE = `srd-${CACHE_VERSION}`;
 const AUDIO_CACHE = `audio-${CACHE_VERSION}`;
@@ -77,6 +77,9 @@ self.addEventListener("fetch", (event) => {
     url.hostname.includes("va.vercel-scripts.com")
   ) return;
 
+  // Skip Supabase REST/Auth API calls — must always hit the server fresh
+  if (url.hostname.includes("supabase")) return;
+
   // SRD bundles — Cache-First (immutable content)
   if (url.pathname.startsWith("/srd/")) {
     event.respondWith(cacheFirst(event.request, SRD_CACHE));
@@ -108,6 +111,14 @@ self.addEventListener("fetch", (event) => {
 
   // API calls — Network-First with cache fallback
   if (url.pathname.startsWith("/api/")) {
+    event.respondWith(networkFirst(event.request, APP_SHELL_CACHE));
+    return;
+  }
+
+  // RSC (React Server Component) requests — Network-First
+  // RSC payloads are version-specific: a stale cached RSC from a previous deploy
+  // paired with updated JS chunks causes hydration crashes ("Algo Deu Errado")
+  if (url.searchParams.has("_rsc") || event.request.headers.get("Rsc")) {
     event.respondWith(networkFirst(event.request, APP_SHELL_CACHE));
     return;
   }
