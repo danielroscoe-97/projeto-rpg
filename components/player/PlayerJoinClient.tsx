@@ -466,6 +466,7 @@ export function PlayerJoinClient({
     if (rejoinRetryTimerRef.current) { clearTimeout(rejoinRetryTimerRef.current); rejoinRetryTimerRef.current = null; }
     if (sessionEndedUnsubTimerRef.current) { clearTimeout(sessionEndedUnsubTimerRef.current); sessionEndedUnsubTimerRef.current = null; }
     if (spellSlotSaveTimerRef.current) { clearTimeout(spellSlotSaveTimerRef.current); spellSlotSaveTimerRef.current = null; }
+    if (deathSaveResolutionTimerRef.current) { clearTimeout(deathSaveResolutionTimerRef.current); deathSaveResolutionTimerRef.current = null; }
   }, []);
 
   // C.15: Send poll vote to DM via broadcast + persist to encounter_votes for auth players (F-42)
@@ -672,6 +673,19 @@ export function PlayerJoinClient({
     }
   }, [registeredName, prefilledCharacters]);
 
+  // F-41: Persist spell slots to DB (debounced helper)
+  const saveSpellSlotsToDb = useCallback((slots: Record<string, { max: number; used: number }>) => {
+    if (!registeredName || !prefilledCharacters) return;
+    const match = prefilledCharacters.find((c) => c.name === registeredName);
+    if (!match) return;
+    const supabase = createClient();
+    supabase
+      .from("player_characters")
+      .update({ spell_slots: slots })
+      .eq("id", match.id)
+      .then(() => {});
+  }, [registeredName, prefilledCharacters]);
+
   // F-41: Toggle a spell slot dot — debounced save to DB
   const handleToggleSlot = useCallback((level: string, slotIndex: number) => {
     setCharacterSpellSlots((prev) => {
@@ -680,47 +694,36 @@ export function PlayerJoinClient({
       if (!slot) return prev;
       const isUsed = slotIndex >= slot.max - slot.used;
       const newUsed = isUsed ? Math.max(0, slot.used - 1) : Math.min(slot.max, slot.used + 1);
-      const updated = { ...prev, [level]: { ...slot, used: newUsed } };
-
-      // Debounced save — find character id from prefilledCharacters by registered name
-      if (spellSlotSaveTimerRef.current) clearTimeout(spellSlotSaveTimerRef.current);
-      spellSlotSaveTimerRef.current = setTimeout(() => {
-        spellSlotSaveTimerRef.current = null;
-        if (!registeredName || !prefilledCharacters) return;
-        const match = prefilledCharacters.find((c) => c.name === registeredName);
-        if (!match) return;
-        const supabase = createClient();
-        supabase
-          .from("player_characters")
-          .update({ spell_slots: updated })
-          .eq("id", match.id)
-          .then(() => {});
-      }, 300);
-
-      return updated;
+      return { ...prev, [level]: { ...slot, used: newUsed } };
     });
-  }, [registeredName, prefilledCharacters]);
+    // Side effect outside state updater — debounced save
+    if (spellSlotSaveTimerRef.current) clearTimeout(spellSlotSaveTimerRef.current);
+    spellSlotSaveTimerRef.current = setTimeout(() => {
+      spellSlotSaveTimerRef.current = null;
+      // Read latest state at save time
+      setCharacterSpellSlots((current) => {
+        if (current) saveSpellSlotsToDb(current);
+        return current; // no mutation
+      });
+    }, 300);
+  }, [saveSpellSlotsToDb]);
 
   // F-41: Long Rest — reset all spell slots to full and save immediately
   const handleLongRest = useCallback(() => {
     setCharacterSpellSlots((prev) => {
       if (!prev) return prev;
-      const reset = Object.fromEntries(
+      return Object.fromEntries(
         Object.entries(prev).map(([level, slot]) => [level, { ...slot, used: 0 }])
       );
-      // Immediate save
-      if (!registeredName || !prefilledCharacters) return reset;
-      const match = prefilledCharacters.find((c) => c.name === registeredName);
-      if (!match) return reset;
-      const supabase = createClient();
-      supabase
-        .from("player_characters")
-        .update({ spell_slots: reset })
-        .eq("id", match.id)
-        .then(() => {});
-      return reset;
     });
-  }, [registeredName, prefilledCharacters]);
+    // Immediate save — read latest after state update via microtask
+    queueMicrotask(() => {
+      setCharacterSpellSlots((current) => {
+        if (current) saveSpellSlotsToDb(current);
+        return current;
+      });
+    });
+  }, [saveSpellSlotsToDb]);
 
   // Full state fetch via API — used on reconnect & polling fallback.
   // Uses /api/session/[id]/state which sanitizes monster data server-side.
@@ -878,6 +881,11 @@ export function PlayerJoinClient({
           setNextCombatantId(payload.next_combatant_id ?? null);
         })
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
+          // Discard out-of-order HP updates using broadcast sequence number
+          const hpSeq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (hpSeq > 0 && hpSeq <= lastSeqRef.current) return;
+          if (hpSeq > 0) lastSeqRef.current = hpSeq;
+
           if (payload.combatant_id) {
             // HP delta visual feedback — calculate before updating state
             const existing = combatantsRef.current.find((c) => c.id === payload.combatant_id);

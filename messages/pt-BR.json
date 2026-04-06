@@ -159,6 +159,8 @@
     "invite_claim_subtitle": "O mestre já cadastrou esses personagens. Qual é o seu?",
     "invite_pick_subtitle": "Escolha um personagem para entrar na campanha",
     "invite_create_subtitle": "Crie seu personagem para entrar na campanha",
+    "invite_create_new": "+ Criar personagem novo",
+    "invite_use_existing": "\u2190 Usar personagem existente",
     "invite_claim_hint": "Escolha o personagem que o mestre criou pra você:",
     "invite_claim_not_listed": "Não estou na lista — criar personagem novo",
     "invite_claim_submit": "Sou eu! Entrar como este personagem",

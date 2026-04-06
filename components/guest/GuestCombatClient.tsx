@@ -1164,20 +1164,32 @@ export function GuestCombatClient() {
       const wasCurrentTurn = idx === store.currentTurnIndex;
       const wasBeforeCurrent = idx < store.currentTurnIndex;
 
+      // Track the combatant that should keep the turn after re-sort
+      let currentTurnCombatantId: string | null = null;
+      if (!wasCurrentTurn) {
+        const adjustedIdx = wasBeforeCurrent ? store.currentTurnIndex - 1 : store.currentTurnIndex;
+        const remaining = store.combatants.filter((c) => c.id !== id);
+        currentTurnCombatantId = remaining[adjustedIdx]?.id ?? null;
+      } else {
+        // Current turn removed — clamp to next available
+        const remaining = store.combatants.filter((c) => c.id !== id);
+        const clampedIdx = Math.min(store.currentTurnIndex, remaining.length - 1);
+        currentTurnCombatantId = remaining[clampedIdx]?.id ?? null;
+      }
+
       removeCombatant(id);
 
       const updated = useGuestCombatStore.getState().combatants;
-      if (updated.length === 0) {
-        useGuestCombatStore.setState({ currentTurnIndex: 0 });
-      } else if (wasCurrentTurn) {
-        const clampedIdx = Math.min(store.currentTurnIndex, updated.length - 1);
-        useGuestCombatStore.setState({ currentTurnIndex: clampedIdx });
-      } else if (wasBeforeCurrent) {
-        useGuestCombatStore.setState({ currentTurnIndex: store.currentTurnIndex - 1 });
-      }
-
       const reordered = assignInitiativeOrder(updated);
       hydrateCombatants(reordered);
+
+      // Find the correct index after re-sort
+      if (reordered.length === 0) {
+        useGuestCombatStore.setState({ currentTurnIndex: 0 });
+      } else if (currentTurnCombatantId) {
+        const newIdx = reordered.findIndex((c) => c.id === currentTurnCombatantId);
+        useGuestCombatStore.setState({ currentTurnIndex: newIdx !== -1 ? newIdx : 0 });
+      }
     },
     [removeCombatant, hydrateCombatants]
   );

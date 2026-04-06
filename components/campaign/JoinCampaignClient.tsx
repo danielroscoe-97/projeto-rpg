@@ -91,8 +91,8 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
         </h2>
         <p className="text-muted-foreground text-sm">
           {mode === "pick"
-            ? "Escolha um personagem para entrar na campanha"
-            : "Crie seu personagem para entrar na campanha"}
+            ? t("invite_pick_subtitle")
+            : t("invite_create_subtitle")}
         </p>
       </div>
 
@@ -162,7 +162,7 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
               onClick={() => { setMode("create"); setSelectedCharId(null); }}
               className="w-full p-3 rounded-lg border border-dashed border-white/20 text-muted-foreground text-sm hover:border-white/40 hover:text-foreground transition-colors"
             >
-              + Criar personagem novo
+              {t("invite_create_new")}
             </button>
           </div>
         )}
@@ -176,7 +176,7 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
                 onClick={() => setMode("pick")}
                 className="text-xs text-gold/70 hover:text-gold transition-colors"
               >
-                ← Usar personagem existente
+                {t("invite_use_existing")}
               </button>
             )}
 
