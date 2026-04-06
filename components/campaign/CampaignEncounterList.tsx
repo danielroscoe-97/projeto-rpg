@@ -66,7 +66,7 @@ export function CampaignEncounterList({ campaignId, presets, onEdit, onDeleted }
         return (
           <div
             key={preset.id}
-            className="rounded-lg border border-border bg-card/50 p-3 space-y-2"
+            className="rounded-lg border border-border/30 bg-card/50 p-3 space-y-2"
           >
             {/* Header */}
             <div className="flex items-start justify-between gap-2">

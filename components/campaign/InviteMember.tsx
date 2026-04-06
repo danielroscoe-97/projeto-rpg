@@ -143,7 +143,7 @@ export function InviteMember({ campaignId }: InviteMemberProps) {
               type="text"
               readOnly
               value={`${baseUrl}/auth/sign-up?campaign=${campaignId}`}
-              className="bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs font-mono w-full truncate"
+              className="bg-background border border-border/30 rounded-md px-3 py-2 text-foreground text-xs font-mono w-full truncate"
               data-testid="invite-link-input"
             />
             <Button
@@ -176,7 +176,7 @@ export function InviteMember({ campaignId }: InviteMemberProps) {
             {pendingInvites.map((inv) => (
               <div
                 key={inv.id}
-                className="flex items-center gap-2 text-sm py-2 border-b border-border last:border-0"
+                className="flex items-center gap-2 text-sm py-2 border-b border-border/30 last:border-0"
               >
                 {STATUS_ICONS[inv.status]}
                 <span className="flex-1 truncate text-foreground">

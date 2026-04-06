@@ -140,7 +140,7 @@ function CollapsibleSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
+    <div className="border border-border/30 rounded-lg overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -158,7 +158,7 @@ function CollapsibleSection({
         />
       </button>
       {open && (
-        <div className="px-4 py-4 border-t border-border">{children}</div>
+        <div className="px-4 py-4 border-t border-border/30">{children}</div>
       )}
     </div>
   );

@@ -66,7 +66,7 @@ export function MemberCard({ member, isOwner, onRemoved }: MemberCardProps) {
 
   return (
     <div
-      className="bg-card border border-border rounded-lg p-4 flex items-start gap-3"
+      className="bg-card border border-border/30 rounded-lg p-4 flex items-start gap-3"
       data-testid={`member-card-${member.user_id}`}
     >
       {/* Avatar */}

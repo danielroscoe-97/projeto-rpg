@@ -61,7 +61,7 @@ export function MembersList({
 
   if (members.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center" data-testid="members-empty">
+      <div className="rounded-lg border border-border/30 bg-card p-8 text-center" data-testid="members-empty">
         <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
           <Users className="w-6 h-6 text-amber-400/60" />
         </div>

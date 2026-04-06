@@ -36,7 +36,7 @@ const NAV_ITEMS: { id: SectionId; icon: LucideIcon; labelKey: string; dmOnly?: b
 const PILL_BASE =
   "text-xs px-3 py-1.5 rounded-full border transition-colors whitespace-nowrap inline-flex items-center gap-1.5 min-h-[44px]";
 const PILL_ACTIVE = "border-amber-500 text-amber-400 bg-amber-500/10";
-const PILL_INACTIVE = "border-border text-muted-foreground hover:text-foreground";
+const PILL_INACTIVE = "border-border/30 text-muted-foreground hover:text-foreground";
 
 // ── Component ───────────────────────────────────────────────────────────────
 

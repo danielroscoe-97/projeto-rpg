@@ -30,13 +30,13 @@ const NOTE_TYPE_CONFIG: Array<{
   activeColor: string;
   dotColor: string;
 }> = [
-  { key: "general", icon: FileText, color: "text-muted-foreground/60 border-border", activeColor: "text-blue-400 border-blue-400 bg-blue-400/10", dotColor: "bg-blue-400" },
-  { key: "lore", icon: BookOpen, color: "text-muted-foreground/60 border-border", activeColor: "text-indigo-400 border-indigo-400 bg-indigo-400/10", dotColor: "bg-indigo-400" },
-  { key: "location", icon: MapPin, color: "text-muted-foreground/60 border-border", activeColor: "text-cyan-400 border-cyan-400 bg-cyan-400/10", dotColor: "bg-cyan-400" },
-  { key: "npc", icon: UserCircle, color: "text-muted-foreground/60 border-border", activeColor: "text-purple-400 border-purple-400 bg-purple-400/10", dotColor: "bg-purple-400" },
-  { key: "session_recap", icon: Scroll, color: "text-muted-foreground/60 border-border", activeColor: "text-orange-400 border-orange-400 bg-orange-400/10", dotColor: "bg-orange-400" },
-  { key: "secret", icon: EyeOff, color: "text-muted-foreground/60 border-border", activeColor: "text-gray-400 border-gray-500 bg-gray-500/10", dotColor: "bg-gray-400" },
-  { key: "plot_hook", icon: Lightbulb, color: "text-muted-foreground/60 border-border", activeColor: "text-yellow-400 border-yellow-400 bg-yellow-400/10", dotColor: "bg-yellow-400" },
+  { key: "general", icon: FileText, color: "text-muted-foreground/60 border-border/30", activeColor: "text-blue-400 border-blue-400 bg-blue-400/10", dotColor: "bg-blue-400" },
+  { key: "lore", icon: BookOpen, color: "text-muted-foreground/60 border-border/30", activeColor: "text-indigo-400 border-indigo-400 bg-indigo-400/10", dotColor: "bg-indigo-400" },
+  { key: "location", icon: MapPin, color: "text-muted-foreground/60 border-border/30", activeColor: "text-cyan-400 border-cyan-400 bg-cyan-400/10", dotColor: "bg-cyan-400" },
+  { key: "npc", icon: UserCircle, color: "text-muted-foreground/60 border-border/30", activeColor: "text-purple-400 border-purple-400 bg-purple-400/10", dotColor: "bg-purple-400" },
+  { key: "session_recap", icon: Scroll, color: "text-muted-foreground/60 border-border/30", activeColor: "text-orange-400 border-orange-400 bg-orange-400/10", dotColor: "bg-orange-400" },
+  { key: "secret", icon: EyeOff, color: "text-muted-foreground/60 border-border/30", activeColor: "text-gray-400 border-gray-500 bg-gray-500/10", dotColor: "bg-gray-400" },
+  { key: "plot_hook", icon: Lightbulb, color: "text-muted-foreground/60 border-border/30", activeColor: "text-yellow-400 border-yellow-400 bg-yellow-400/10", dotColor: "bg-yellow-400" },
 ];
 import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
@@ -530,7 +530,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         <div className="flex-1 min-w-0 space-y-3">
           {/* Empty state */}
           {filteredNotes.length === 0 && (
-            <div className="rounded-lg border border-border bg-card p-8 text-center">
+            <div className="rounded-lg border border-border/30 bg-card p-8 text-center">
               <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
                 <Plus className="w-6 h-6 text-amber-400/60" />
               </div>
@@ -565,7 +565,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
             return (
               <div
                 key={note.id}
-                className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all duration-200"
+                className="rounded-xl border border-border/30 bg-card shadow-card overflow-hidden transition-all duration-200"
               >
                 {/* Collapsed header */}
                 <button
@@ -661,7 +661,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                               if (next.has(note.id)) next.delete(note.id); else next.add(note.id);
                               return next;
                             })}
-                            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-medium transition-all ${activeConfig?.activeColor ?? "text-muted-foreground/60 border-border"}`}
+                            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-medium transition-all ${activeConfig?.activeColor ?? "text-muted-foreground/60 border-border/30"}`}
                           >
                             <ActiveIcon className="w-3 h-3" />
                             {t(`note_type_${note.note_type || "general"}`)}
@@ -843,7 +843,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
 
         {/* Player Notes section (DM read-only view) — only shown in "All notes" context, not inside a folder */}
         {isOwner && playerNotes.length > 0 && selectedFolderId === null && (
-          <div className="mt-4 border-t border-border pt-4">
+          <div className="mt-4 border-t border-border/30 pt-4">
             <button
               type="button"
               onClick={() => setPlayerNotesExpanded((v) => !v)}
@@ -866,7 +866,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                 {playerNotes.map((note) => (
                   <div
                     key={note.id}
-                    className="rounded-lg border border-border bg-surface-tertiary px-3 py-2.5 space-y-1"
+                    className="rounded-lg border border-border/30 bg-surface-tertiary px-3 py-2.5 space-y-1"
                   >
                     <div className="flex items-center gap-1.5 mb-1">
                       <span className="inline-flex items-center rounded-full bg-amber-400/10 px-2 py-0.5 text-xs text-amber-400">

@@ -79,7 +79,7 @@ export function NpcTagSelector({
           <button
             type="button"
             onClick={() => setOpen(!open)}
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-purple-400 transition-colors px-1.5 py-0.5 rounded border border-dashed border-border hover:border-purple-400/30"
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-purple-400 transition-colors px-1.5 py-0.5 rounded border border-dashed border-border/30 hover:border-purple-400/30"
             data-testid="npc-tag-add"
           >
             <Plus className="w-3 h-3" />
@@ -88,9 +88,9 @@ export function NpcTagSelector({
 
           {/* Dropdown */}
           {open && (
-            <div className="absolute z-50 top-full left-0 mt-1 w-56 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+            <div className="absolute z-50 top-full left-0 mt-1 w-56 bg-card border border-border/30 rounded-lg shadow-lg overflow-hidden">
               {/* Search input */}
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
                 <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <input
                   ref={inputRef}
