@@ -19,6 +19,7 @@ import {
   BlogPost12,
   BlogPost13,
   BlogPost14,
+  BlogPost15,
 } from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
@@ -74,6 +75,7 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
   "teatro-da-mente-vs-grid-dnd-5e": BlogPost12,
   "build-half-elf-order-cleric-divine-soul-sorcerer": BlogPost13,
   "build-half-elf-order-cleric-divine-soul-sorcerer-en": BlogPost14,
+  "diario-de-aventura": BlogPost15,
 };
 
 export const revalidate = 86400;

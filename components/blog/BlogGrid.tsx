@@ -18,6 +18,7 @@ const CATEGORY_COLORS: Record<BlogCategory, string> = {
   lista: "bg-amber-500/15 text-amber-400 border-amber-500/20",
   comparativo: "bg-purple-500/15 text-purple-400 border-purple-500/20",
   build: "bg-rose-500/15 text-rose-400 border-rose-500/20",
+  devlog: "bg-gold/15 text-gold border-gold/25",
 };
 
 function formatDate(date: string) {
@@ -61,6 +62,11 @@ function FeaturedCard({ post }: { post: BlogPost }) {
       className="group block rounded-xl border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 sm:p-8 hover:border-gold/30 hover:from-gold/[0.07] transition-all duration-300"
     >
       <div className="flex items-center gap-3 mb-3">
+        {post.pinned && (
+          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border bg-gold/20 text-gold border-gold/30">
+            Fixo
+          </span>
+        )}
         <CategoryBadge category={post.category} />
         <LangBadge slug={post.slug} />
         <span className="text-xs text-muted-foreground">{formatDate(post.date)}</span>
@@ -152,9 +158,14 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
     return result;
   }, [posts, query, activeCategory, langFilter]);
 
-  // Sort by date descending
+  // Sort: pinned first, then by date descending
   const sorted = useMemo(
-    () => [...filtered].sort((a, b) => b.date.localeCompare(a.date)),
+    () =>
+      [...filtered].sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return b.date.localeCompare(a.date);
+      }),
     [filtered]
   );
 

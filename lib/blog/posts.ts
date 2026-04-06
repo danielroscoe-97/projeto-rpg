@@ -1,4 +1,4 @@
-export type BlogCategory = "tutorial" | "guia" | "lista" | "comparativo" | "build";
+export type BlogCategory = "tutorial" | "guia" | "lista" | "comparativo" | "build" | "devlog";
 
 export const BLOG_CATEGORIES: Record<BlogCategory, string> = {
   tutorial: "Tutorial",
@@ -6,6 +6,7 @@ export const BLOG_CATEGORIES: Record<BlogCategory, string> = {
   lista: "Lista",
   comparativo: "Comparativo",
   build: "Build",
+  devlog: "Devlog",
 };
 
 export interface BlogPost {
@@ -17,9 +18,31 @@ export interface BlogPost {
   keywords: string[];
   ogTitle: string;
   category: BlogCategory;
+  pinned?: boolean;
 }
 
 export const BLOG_POSTS: BlogPost[] = [
+  {
+    slug: "diario-de-aventura",
+    title: "Diário de Aventura — A Jornada do Pocket DM",
+    description:
+      "Da dor de gerenciar combate no caderno até um combat tracker completo para D&D 5e. A história do Pocket DM contada por quem viveu cada mesa, cada bug e cada decisão.",
+    date: "2026-04-05",
+    readingTime: "15 min",
+    keywords: [
+      "Pocket DM",
+      "changelog",
+      "devlog",
+      "desenvolvimento",
+      "combat tracker D&D",
+      "indie dev",
+      "RPG tools",
+      "diário de desenvolvimento",
+    ],
+    ogTitle: "Diário de Aventura — A Jornada do Pocket DM",
+    category: "devlog",
+    pinned: true,
+  },
   {
     slug: "como-usar-combat-tracker-dnd-5e",
     title: "Como Usar um Combat Tracker na sua Mesa de D&D 5e",
