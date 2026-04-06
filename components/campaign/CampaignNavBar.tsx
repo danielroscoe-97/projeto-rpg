@@ -36,7 +36,7 @@ const NAV_ITEMS: { id: SectionId; icon: LucideIcon; labelKey: string; dmOnly?: b
 const PILL_BASE =
   "text-xs px-3 py-1.5 rounded-full border transition-colors whitespace-nowrap inline-flex items-center gap-1.5 min-h-[44px]";
 const PILL_ACTIVE = "border-amber-500 text-amber-400 bg-amber-500/10";
-const PILL_INACTIVE = "border-border/30 text-muted-foreground hover:text-foreground";
+const PILL_INACTIVE = "border-white/[0.04] text-muted-foreground hover:text-foreground";
 
 // ── Component ───────────────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ export function CampaignNavBar({ activeSection, isOwner }: CampaignNavBarProps) 
   }
 
   return (
-    <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border/30 py-2 px-4">
+    <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-white/[0.04] py-2 px-4">
       <div className="flex gap-1 overflow-x-auto scrollbar-hide">
         {/* Overview pill — always first, never active in Focus View */}
         <button

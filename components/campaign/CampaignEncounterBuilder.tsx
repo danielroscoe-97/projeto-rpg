@@ -266,7 +266,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
         {/* Left: Builder */}
         <div className="lg:col-span-2 space-y-4">
           {/* Player selector */}
-          <div className="rounded-xl border border-border/30 bg-card p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <EncounterPlayerSelector
               characters={characters}
               selectedCharacterIds={selectedCharacterIds}
@@ -285,7 +285,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                 className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                   formulaVersion === v
                     ? "border-amber-500 text-amber-400 bg-amber-500/10"
-                    : "border-border/30 text-muted-foreground hover:text-foreground"
+                    : "border-white/[0.04] text-muted-foreground hover:text-foreground"
                 }`}
               >
                 DMG {v}
@@ -294,7 +294,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           </div>
 
           {/* Monster search */}
-          <div className="rounded-xl border border-border/30 bg-card p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <label className="text-sm text-amber-400 font-semibold block mb-2">
               {t("add_monster")}
             </label>
@@ -310,11 +310,11 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                   }}
                   onFocus={() => setShowSearch(true)}
                   placeholder={t("search_placeholder")}
-                  className="w-full rounded-lg border border-border/30 bg-background pl-9 pr-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-amber-500/50"
+                  className="w-full rounded-lg border border-white/[0.04] bg-background pl-9 pr-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-amber-500/50"
                 />
               </div>
               {showSearch && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-border/30 bg-card shadow-xl z-30 max-h-60 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-white/[0.04] bg-card shadow-xl z-30 max-h-60 overflow-y-auto">
                   {searchResults.map((m) => (
                     <button
                       key={`${m.name}-${m.cr}`}
@@ -339,7 +339,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
           </div>
 
           {/* Monster list */}
-          <div className="rounded-xl border border-border/30 bg-card p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-amber-400">
                 {t("encounter_monsters")} ({encounter.reduce((s, m) => s + m.count, 0)})
@@ -362,7 +362,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                 {encounter.map((m) => (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between rounded-lg border border-border/30 bg-background/50 px-3 py-2"
+                    className="flex items-center justify-between rounded-lg border border-white/[0.04] bg-background/50 px-3 py-2"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden bg-gray-800 border border-gray-700">
@@ -376,7 +376,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                         <button
                           type="button"
                           onClick={() => adjustCount(m.id, -1)}
-                          className="w-6 h-6 rounded text-xs border border-border/30 text-muted-foreground hover:text-foreground hover:border-foreground/30 flex items-center justify-center"
+                          className="w-6 h-6 rounded text-xs border border-white/[0.04] text-muted-foreground hover:text-foreground hover:border-foreground/30 flex items-center justify-center"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
@@ -386,7 +386,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                         <button
                           type="button"
                           onClick={() => adjustCount(m.id, 1)}
-                          className="w-6 h-6 rounded text-xs border border-border/30 text-muted-foreground hover:text-foreground hover:border-foreground/30 flex items-center justify-center"
+                          className="w-6 h-6 rounded text-xs border border-white/[0.04] text-muted-foreground hover:text-foreground hover:border-foreground/30 flex items-center justify-center"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
@@ -409,7 +409,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
 
           {/* Save controls */}
           {encounter.length > 0 && (
-            <div className="rounded-xl border border-border/30 bg-card p-4 space-y-3">
+            <div className="rounded-xl border border-white/[0.04] bg-card p-4 space-y-3">
               <h3 className="text-sm font-semibold text-amber-400">
                 {editingPresetId ? t("update_preset") : t("save_preset")}
               </h3>
@@ -418,14 +418,14 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                 value={presetName}
                 onChange={(e) => setPresetName(e.target.value)}
                 placeholder={autoName || t("preset_name_placeholder")}
-                className="w-full rounded-lg border border-border/30 bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-amber-500/50"
+                className="w-full rounded-lg border border-white/[0.04] bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-amber-500/50"
               />
               <textarea
                 value={presetNotes}
                 onChange={(e) => setPresetNotes(e.target.value)}
                 placeholder={t("notes_placeholder")}
                 rows={2}
-                className="w-full rounded-lg border border-border/30 bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-amber-500/50 resize-none"
+                className="w-full rounded-lg border border-white/[0.04] bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-amber-500/50 resize-none"
               />
               <div className="flex items-center gap-2">
                 <button
@@ -450,7 +450,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                       setPresetName("");
                       setPresetNotes("");
                     }}
-                    className="px-4 py-2 text-sm rounded-lg border border-border/30 text-muted-foreground hover:text-foreground transition-colors min-h-[40px]"
+                    className="px-4 py-2 text-sm rounded-lg border border-white/[0.04] text-muted-foreground hover:text-foreground transition-colors min-h-[40px]"
                   >
                     {t("cancel")}
                   </button>
@@ -475,7 +475,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
       </div>
 
       {/* Starter Packs */}
-      <div className="border-t border-border/30 pt-6">
+      <div className="border-t border-white/[0.04] pt-6">
         <button
           type="button"
           onClick={() => setStartersOpen((v) => !v)}
@@ -505,7 +505,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                   key={starter.id}
                   type="button"
                   onClick={() => loadStarter(starter)}
-                  className="text-left rounded-lg border border-border/30 bg-card p-3 hover:bg-accent transition-colors"
+                  className="text-left rounded-lg border border-white/[0.04] bg-card p-3 hover:bg-accent transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-medium text-foreground">{t(starter.nameKey)}</span>
@@ -525,7 +525,7 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
       </div>
 
       {/* Saved presets */}
-      <div className="border-t border-border/30 pt-6">
+      <div className="border-t border-white/[0.04] pt-6">
         <h2 className="text-sm font-semibold text-amber-400 mb-3">{t("saved_presets")}</h2>
         {presetsLoading ? (
           <div className="flex items-center justify-center py-8">

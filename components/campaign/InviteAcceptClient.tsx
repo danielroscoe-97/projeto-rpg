@@ -157,7 +157,7 @@ export function InviteAcceptClient({
                       : "border-white/[0.15] bg-surface-tertiary hover:border-white/30",
                   ].join(" ")}
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-background border border-border/30 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-background border border-white/[0.04] flex items-center justify-center">
                     <User className="w-5 h-5 text-muted-foreground/40" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -165,12 +165,12 @@ export function InviteAcceptClient({
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0">
                     {char.max_hp > 0 && (
-                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-border/30">
+                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-white/[0.04]">
                         HP {char.max_hp}
                       </span>
                     )}
                     {char.ac > 0 && (
-                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-border/30">
+                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-white/[0.04]">
                         AC {char.ac}
                       </span>
                     )}
@@ -219,7 +219,7 @@ export function InviteAcceptClient({
                         className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-400/40"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-background border border-border/30 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-background border border-white/[0.04] flex items-center justify-center">
                         <User className="w-5 h-5 text-muted-foreground/40" />
                       </div>
                     )}
@@ -238,12 +238,12 @@ export function InviteAcceptClient({
                   {/* Stats */}
                   <div className="flex gap-1.5 flex-shrink-0">
                     {char.max_hp > 0 && (
-                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-border/30">
+                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-white/[0.04]">
                         HP {char.max_hp}
                       </span>
                     )}
                     {char.ac > 0 && (
-                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-border/30">
+                      <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-white/[0.04]">
                         AC {char.ac}
                       </span>
                     )}

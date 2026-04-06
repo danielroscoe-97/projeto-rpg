@@ -43,7 +43,7 @@ export function CampaignHeroCompact({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="bg-card border-b border-border/30 px-4 py-3 flex items-center gap-3 flex-wrap"
+      className="bg-card border-b border-white/[0.04] px-4 py-3 flex items-center gap-3 flex-wrap"
     >
       {/* Back to campaign overview */}
       <Link

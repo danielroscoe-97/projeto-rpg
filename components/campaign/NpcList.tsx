@@ -146,7 +146,7 @@ export function NpcList({ campaignId }: NpcListProps) {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           {/* Filter buttons */}
-          <div className="flex items-center rounded-lg border border-border/30 overflow-hidden">
+          <div className="flex items-center rounded-lg border border-white/[0.04] overflow-hidden">
             {(["all", "visible", "hidden"] as const).map((f) => (
               <button
                 key={f}
@@ -165,7 +165,7 @@ export function NpcList({ campaignId }: NpcListProps) {
           </div>
 
           {/* View toggle */}
-          <div className="flex items-center rounded-lg border border-border/30 overflow-hidden">
+          <div className="flex items-center rounded-lg border border-white/[0.04] overflow-hidden">
             <button
               type="button"
               onClick={() => setViewMode("grid")}
@@ -209,7 +209,7 @@ export function NpcList({ campaignId }: NpcListProps) {
 
       {/* Empty state */}
       {npcs.length === 0 && (
-        <div className="rounded-lg border border-border/30 bg-card p-8 text-center" data-testid="npc-empty-state">
+        <div className="rounded-lg border border-white/[0.04] bg-card p-8 text-center" data-testid="npc-empty-state">
           <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
             <User className="w-6 h-6 text-amber-400/60" />
           </div>
@@ -252,7 +252,7 @@ export function NpcList({ campaignId }: NpcListProps) {
 
       {/* Filtered empty (NPCs exist but none match filter) */}
       {npcs.length > 0 && filteredNpcs.length === 0 && (
-        <div className="rounded-lg border border-border/30 bg-card p-6 text-center">
+        <div className="rounded-lg border border-white/[0.04] bg-card p-6 text-center">
           <p className="text-muted-foreground text-sm">{t("no_npcs")}</p>
         </div>
       )}

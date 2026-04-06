@@ -39,7 +39,7 @@ function FactionCardSkeleton({ count = 3 }: { count?: number }) {
       {Array.from({ length: count }, (_, i) => (
         <div
           key={i}
-          className="animate-pulse bg-card border border-border/30 rounded-xl p-4 space-y-3 border-l-4 border-l-zinc-700"
+          className="animate-pulse bg-card border border-white/[0.04] rounded-xl p-4 space-y-3 border-l-4 border-l-zinc-700"
         >
           <div className="flex items-start gap-3">
             <div className="w-12 h-12 rounded-lg bg-white/[0.06]" />
@@ -157,7 +157,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           {/* Filter buttons */}
-          <div className="flex items-center rounded-lg border border-border/30 overflow-hidden">
+          <div className="flex items-center rounded-lg border border-white/[0.04] overflow-hidden">
             {FILTER_OPTIONS.map(({ key, i18nKey }) => (
               <button
                 key={key}
@@ -193,7 +193,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
       {/* Empty state */}
       {factions.length === 0 && (
         <div
-          className="rounded-lg border border-border/30 bg-card p-8 text-center"
+          className="rounded-lg border border-white/[0.04] bg-card p-8 text-center"
           data-testid="faction-empty-state"
         >
           <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
@@ -238,7 +238,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
 
       {/* Filtered empty (factions exist but none match filter) */}
       {factions.length > 0 && filteredFactions.length === 0 && (
-        <div className="rounded-lg border border-border/30 bg-card p-6 text-center">
+        <div className="rounded-lg border border-white/[0.04] bg-card p-6 text-center">
           <p className="text-muted-foreground text-sm">{t("empty")}</p>
         </div>
       )}

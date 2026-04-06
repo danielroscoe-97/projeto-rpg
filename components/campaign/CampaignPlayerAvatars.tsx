@@ -128,7 +128,7 @@ export function CampaignPlayerAvatars({
         className="flex flex-col items-center gap-1 hover:scale-105 transition-transform min-h-[44px]"
         onClick={handleInvite}
       >
-        <div className="w-10 h-10 rounded-full bg-white/[0.04] border-2 border-dashed border-border/30 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-white/[0.04] border-2 border-dashed border-white/[0.04] flex items-center justify-center">
           <Plus className="w-4 h-4 text-muted-foreground" />
         </div>
         <span className="text-[10px] text-muted-foreground">+</span>

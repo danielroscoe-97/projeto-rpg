@@ -23,10 +23,10 @@ export function DiceHistoryPanel() {
     useDiceHistoryStore();
 
   // Only show on routes where dice rolling is relevant
+  // (not on campaign hub — only session/combat/compendium)
   const showPanel =
     pathname.startsWith("/app/session") ||
-    pathname.startsWith("/app/compendium") ||
-    pathname.startsWith("/app/campaigns/");
+    pathname.startsWith("/app/compendium");
 
   // Init the CustomEvent listener for roll results
   useEffect(() => {

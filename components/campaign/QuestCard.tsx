@@ -74,7 +74,7 @@ export function QuestCard({ quest, isEditable, onEdit, onDelete, onToggleVisibil
 
   return (
     <div
-      className={`group relative bg-card border border-border/30 rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${STATUS_BORDER[quest.status]} ${
+      className={`group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${STATUS_BORDER[quest.status]} ${
         !quest.is_visible_to_players ? "opacity-60" : ""
       }`}
       data-testid={`quest-card-${quest.id}`}

@@ -21,7 +21,7 @@ export function NoteCard({ note, folder, onClick }: NoteCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left rounded-lg border border-border/30 bg-card p-3 shadow-card hover:border-amber-500/30 transition-all duration-200"
+      className="w-full text-left rounded-lg border border-white/[0.04] bg-card p-3 shadow-card hover:border-amber-500/30 transition-all duration-200"
       data-testid={`note-card-${note.id}`}
     >
       <div className="flex items-start justify-between gap-2">

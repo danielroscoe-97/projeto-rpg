@@ -39,7 +39,7 @@ export function CampaignGridCard({
           router.push(`?section=${sectionId}`, { scroll: false });
         }
       }}
-      className={`bg-card border border-border/30 rounded-xl cursor-pointer hover:border-amber-500/30 hover:shadow-sm transition-all ${
+      className={`bg-card border border-white/[0.04] rounded-xl cursor-pointer hover:border-amber-500/30 hover:shadow-sm transition-all ${
         size === "large" ? "p-5 min-h-[120px]" : "p-4 min-h-[80px]"
       }`}
     >

@@ -67,7 +67,7 @@ export function PlayerQuestBoard({ campaignId, userId }: PlayerQuestBoardProps) 
     return (
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-12 bg-card/50 rounded-lg border border-border/30 animate-pulse" />
+          <div key={i} className="h-12 bg-card/50 rounded-lg border border-white/[0.04] animate-pulse" />
         ))}
       </div>
     );

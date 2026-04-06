@@ -270,7 +270,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
                     Renovar Link
                   </Button>
                 ) : (
-                  <div className="rounded-lg border border-border/30 p-3 space-y-2">
+                  <div className="rounded-lg border border-white/[0.04] p-3 space-y-2">
                     <p className="text-xs text-muted-foreground">
                       Jogadores com o link antigo precisarão do novo link para entrar.
                     </p>
@@ -318,7 +318,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
                 {invites.map((inv) => (
                   <div
                     key={inv.id}
-                    className="flex items-center gap-2 text-sm py-2 border-b border-border/30 last:border-0"
+                    className="flex items-center gap-2 text-sm py-2 border-b border-white/[0.04] last:border-0"
                   >
                     {STATUS_ICONS[inv.status]}
                     <span className="flex-1 truncate text-foreground">{inv.email}</span>

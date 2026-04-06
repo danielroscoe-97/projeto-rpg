@@ -73,7 +73,7 @@ function getHpColor(current: number, max: number): string {
 
 function EncounterCardSkeleton() {
   return (
-    <div className="animate-pulse bg-card border border-border/30 rounded-lg p-4 space-y-3" aria-hidden="true">
+    <div className="animate-pulse bg-card border border-white/[0.04] rounded-lg p-4 space-y-3" aria-hidden="true">
       <div className="flex items-center justify-between">
         <div className="space-y-2 flex-1">
           <div className="h-4 w-48 bg-white/[0.06] rounded" />
@@ -143,7 +143,7 @@ function EncounterCard({ encounter }: { encounter: FinishedEncounter }) {
 
   return (
     <div
-      className="bg-card border border-border/30 rounded-lg transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-gold/30"
+      className="bg-card border border-white/[0.04] rounded-lg transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-gold/30"
       data-testid={`encounter-history-card-${encounter.id}`}
     >
       {/* Header — clickable to expand */}
@@ -195,7 +195,7 @@ function EncounterCard({ encounter }: { encounter: FinishedEncounter }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="border-t border-border/30 px-4 pb-4 pt-3 space-y-1">
+        <div className="border-t border-white/[0.04] px-4 pb-4 pt-3 space-y-1">
           <p className="text-xs text-muted-foreground font-medium mb-2 uppercase tracking-wider">
             Combatentes
           </p>
@@ -333,7 +333,7 @@ export function EncounterHistory({ campaignId }: EncounterHistoryProps) {
     return (
       <div className="space-y-3" data-testid="encounter-history-empty">
         <h2 className="text-lg font-semibold text-foreground">{t("encounter_history_title")}</h2>
-        <div className="rounded-lg border border-border/30 bg-card p-8 text-center">
+        <div className="rounded-lg border border-white/[0.04] bg-card p-8 text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
             <Swords className="w-6 h-6 text-amber-400/60" aria-hidden="true" />
           </div>

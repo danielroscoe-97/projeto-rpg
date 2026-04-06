@@ -204,7 +204,7 @@ export function CombatLaunchSheet({
                   type="checkbox"
                   checked={autoInitiative}
                   onChange={(e) => setAutoInitiative(e.target.checked)}
-                  className="w-4 h-4 rounded border-border/30 accent-gold"
+                  className="w-4 h-4 rounded border-white/[0.04] accent-gold"
                 />
               </label>
 
@@ -221,7 +221,7 @@ export function CombatLaunchSheet({
                     type="checkbox"
                     checked={notifyPlayers}
                     onChange={(e) => setNotifyPlayers(e.target.checked)}
-                    className="w-4 h-4 rounded border-border/30 accent-gold"
+                    className="w-4 h-4 rounded border-white/[0.04] accent-gold"
                   />
                 </label>
               )}

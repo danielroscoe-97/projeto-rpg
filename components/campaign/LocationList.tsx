@@ -123,7 +123,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-card border border-border/30 rounded-xl overflow-hidden animate-pulse"
+              className="bg-card border border-white/[0.04] rounded-xl overflow-hidden animate-pulse"
             >
               <div className="p-4">
                 <div className="flex items-start gap-3">
@@ -159,7 +159,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           {/* Filter buttons */}
-          <div className="flex items-center rounded-lg border border-border/30 overflow-hidden">
+          <div className="flex items-center rounded-lg border border-white/[0.04] overflow-hidden">
             {(["all", "discovered", "hidden"] as const).map((f) => (
               <button
                 key={f}
@@ -194,7 +194,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
 
       {/* Empty state */}
       {locations.length === 0 && (
-        <div className="rounded-lg border border-border/30 bg-card p-8 text-center" data-testid="location-empty-state">
+        <div className="rounded-lg border border-white/[0.04] bg-card p-8 text-center" data-testid="location-empty-state">
           <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
             <MapPin className="w-6 h-6 text-amber-400/60" />
           </div>
@@ -235,7 +235,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
 
       {/* Filtered empty (locations exist but none match filter) */}
       {locations.length > 0 && filteredLocations.length === 0 && (
-        <div className="rounded-lg border border-border/30 bg-card p-6 text-center">
+        <div className="rounded-lg border border-white/[0.04] bg-card p-6 text-center">
           <p className="text-muted-foreground text-sm">{t("empty")}</p>
         </div>
       )}
