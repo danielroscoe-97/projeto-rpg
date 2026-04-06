@@ -215,6 +215,7 @@
     "quick_action_invite": "Invite Player",
     "quick_action_encounter": "New Encounter",
     "quick_action_note": "New Note",
+    "quick_action_npc": "New NPC",
     "active_session_banner": "Active session",
     "session_start_combat": "Start combat",
     "section_quests": "Quests",

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Swords, Plus } from "lucide-react";
+import { Swords, Plus, FileText, UserCircle } from "lucide-react";
 import { CampaignPlayerAvatars } from "@/components/campaign/CampaignPlayerAvatars";
 import { CampaignStatusCards } from "@/components/campaign/CampaignStatusCards";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
@@ -98,19 +98,19 @@ export function CampaignHero({
       />
 
       {/* Quick Actions Row */}
-      <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.04]">
+      <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.04]">
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/[0.04] bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-red-500/20 bg-red-500/5 text-red-300 hover:bg-red-500/10 hover:border-red-500/40 transition-colors min-h-[44px]"
           onClick={() => setCombatOpen(true)}
         >
-          <Swords className="w-3.5 h-3.5 text-amber-400" />
+          <Swords className="w-3.5 h-3.5 text-red-400" />
           {t("new_combat_button")}
         </button>
 
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/[0.04] bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-300 hover:bg-amber-500/10 hover:border-amber-500/40 transition-colors min-h-[44px]"
           onClick={() =>
             router.push("?section=encounters", { scroll: false })
           }
@@ -121,13 +121,24 @@ export function CampaignHero({
 
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/[0.04] bg-background/50 hover:bg-background hover:border-amber-500/50 transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-blue-500/20 bg-blue-500/5 text-blue-300 hover:bg-blue-500/10 hover:border-blue-500/40 transition-colors min-h-[44px]"
           onClick={() =>
             router.push("?section=notes", { scroll: false })
           }
         >
-          <Plus className="w-3.5 h-3.5 text-amber-400" />
+          <FileText className="w-3.5 h-3.5 text-blue-400" />
           {t("quick_action_note")}
+        </button>
+
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-purple-500/20 bg-purple-500/5 text-purple-300 hover:bg-purple-500/10 hover:border-purple-500/40 transition-colors min-h-[44px]"
+          onClick={() =>
+            router.push("?section=npcs", { scroll: false })
+          }
+        >
+          <UserCircle className="w-3.5 h-3.5 text-purple-400" />
+          {t("quick_action_npc")}
         </button>
       </div>
 

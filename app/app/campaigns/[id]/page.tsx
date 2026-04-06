@@ -12,6 +12,7 @@ import { CampaignFocusView } from './CampaignFocusView'
 import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
 import { CampaignNavBar } from '@/components/campaign/CampaignNavBar'
 import { CampaignViewTransition } from '@/components/campaign/CampaignViewTransition'
+import { CampaignSidebarIndex } from '@/components/campaign/CampaignSidebarIndex'
 import type { SectionId } from '@/lib/types/campaign-hub'
 
 const VALID_SECTIONS: SectionId[] = ["encounters","quests","players","npcs","locations","factions","notes","inventory","mindmap"]
@@ -333,35 +334,40 @@ export default async function CampaignPage({
             />
           </>
         ) : (
-          <>
-            {/* Overview: hero + stats bar + grid */}
-            <CampaignHero
-              campaignId={campaign.id}
-              campaignName={campaign.name}
-              characters={characters ?? []}
-              playerEmails={playerEmails}
-              playerCount={playerCount ?? 0}
-              sessionCount={sessionCount ?? 0}
-              questCount={questCount ?? 0}
-              finishedEncounterCount={finishedEncounterCount}
-              activeSessionId={dmActiveSession?.id ?? null}
-              activeSessionName={dmActiveSession?.name ?? null}
-              lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
-            />
-            <CampaignStatsBar stats={campaignStats} />
-            {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && (
-              <CampaignGrid
-                isOwner={isOwner}
+          <div className="flex gap-6">
+            {/* Main content */}
+            <div className="flex-1 min-w-0 space-y-8">
+              {/* Overview: hero + stats bar + grid */}
+              <CampaignHero
+                campaignId={campaign.id}
+                campaignName={campaign.name}
+                characters={characters ?? []}
+                playerEmails={playerEmails}
                 playerCount={playerCount ?? 0}
-                npcCount={npcCount ?? 0}
-                locationCount={locationCount ?? 0}
-                factionCount={factionCount ?? 0}
-                noteCount={noteCount ?? 0}
+                sessionCount={sessionCount ?? 0}
                 questCount={questCount ?? 0}
                 finishedEncounterCount={finishedEncounterCount}
+                activeSessionId={dmActiveSession?.id ?? null}
+                activeSessionName={dmActiveSession?.name ?? null}
+                lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
               />
-            )}
-          </>
+              <CampaignStatsBar stats={campaignStats} />
+              {((playerCount ?? 0) > 0 || (sessionCount ?? 0) > 0) && (
+                <CampaignGrid
+                  isOwner={isOwner}
+                  playerCount={playerCount ?? 0}
+                  npcCount={npcCount ?? 0}
+                  locationCount={locationCount ?? 0}
+                  factionCount={factionCount ?? 0}
+                  noteCount={noteCount ?? 0}
+                  questCount={questCount ?? 0}
+                  finishedEncounterCount={finishedEncounterCount}
+                />
+              )}
+            </div>
+            {/* Wiki-style sidebar index */}
+            <CampaignSidebarIndex isOwner={isOwner} />
+          </div>
         )}
       </CampaignViewTransition>
     </div>
