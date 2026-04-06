@@ -1427,7 +1427,9 @@ export function GuestCombatClient() {
       const stats = useGuestCombatStats.getState().getStats(turnTimeByName, turnCountByName);
       // CTA-12 fix: exclude active pause time from duration
       const duration = guestStore.combatStartTime ? effectiveNow - guestStore.combatStartTime : 0;
-      if (stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0)) {
+      const hasGuestLogActivity = stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0 || s.totalHealing > 0 || s.knockouts > 0);
+      const hasGuestHpChanges = guestStore.combatants.some((c) => c.current_hp < c.max_hp || c.is_defeated);
+      if (hasGuestLogActivity || hasGuestHpChanges) {
         // Build CombatReport for the new Recap UI
         const report = buildCombatReportFromStats({
           stats,

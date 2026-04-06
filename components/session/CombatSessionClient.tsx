@@ -201,96 +201,106 @@ export function CombatSessionClient({
       }).catch(() => { /* fire-and-forget */ });
     }
 
-    if (pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0)) {
-      setLeaderboardData(pending.stats);
-      setLeaderboardMeta({ name: finalName, rounds: pending.rounds, combatDuration: pending.combatDuration });
-      // Build CombatReport for the new Recap UI
-      const report = buildCombatReport({
-        entries: pending.logEntries,
-        combatants: pending.combatantsSnapshot,
-        turnTimeAccumulated: pending.turnTimeAccumulated,
-        turnTimeSnapshots: pending.turnTimeSnapshots,
-        idToName: pending.idToName,
-        encounterName: finalName,
-        combatDuration: pending.combatDuration,
-        roundNumber: pending.rounds,
-        t,
-      });
-      setCombatReport(report);
-
-      // F4: Auto-persist combat report — capture URL for share link dedup
-      const encId = useCombatStore.getState().encounter_id;
-      fetch("/api/combat-reports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          report,
-          campaignId: campaignId ?? undefined,
-          encounterId: encId ?? undefined,
-        }),
-      })
-        .then((res) => res.ok ? res.json() : null)
-        .then((data) => { if (data?.url) setReportShareUrl(data.url); })
-        .catch(() => { /* non-fatal */ });
-
-      // CTA-11: Fetch previous encounter duration for trend comparison (fire-and-forget)
-      if (campaignId) {
-        (async () => {
-          try {
-            const sb = createClient();
-            const { data } = await sb
-              .from("encounters")
-              .select("duration_seconds, session_id!inner(campaign_id)")
-              .eq("session_id.campaign_id", campaignId)
-              .not("duration_seconds", "is", null)
-              .neq("id", encIdForSnapshot ?? "")
-              .order("created_at", { ascending: false })
-              .limit(1)
-              .maybeSingle();
-            if (data?.duration_seconds) setPreviousDurationMs(data.duration_seconds * 1000);
-          } catch { /* non-fatal */ }
-        })();
-      }
-
-      setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
-      setShowActionLog(false); // Close action log to avoid overlapping with recap
-      setPollVotes(new Map()); // Reset votes for new encounter
-      const sid = getSessionId();
-      if (sid) {
-        // P3-A: Map real names to display_name for player privacy (anti-metagaming)
-        const combatants = useCombatStore.getState().combatants;
-        const playerSafeStats = pending.stats.map((s) => {
-          const c = combatants.find((x) => x.name === s.name);
-          return c?.display_name ? { ...s, name: c.display_name } : s;
-        });
-        broadcastEvent(sid, {
-          type: "session:combat_stats",
-          stats: playerSafeStats,
-          encounter_name: finalName,
-          rounds: pending.rounds,
+    // Show recap if log has any combat activity OR if combatants have HP changes (handles page-refresh mid-combat where in-memory log is lost)
+    const hasLogActivity = pending && pending.stats.length > 0 && pending.stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0 || s.totalHealing > 0 || s.knockouts > 0);
+    const hasHpChanges = pending && pending.combatantsSnapshot.some((c) => c.current_hp < c.max_hp || c.is_defeated);
+    if (pending && (hasLogActivity || hasHpChanges)) {
+      try {
+        setLeaderboardData(pending.stats);
+        setLeaderboardMeta({ name: finalName, rounds: pending.rounds, combatDuration: pending.combatDuration });
+        // Build CombatReport for the new Recap UI
+        const report = buildCombatReport({
+          entries: pending.logEntries,
+          combatants: pending.combatantsSnapshot,
+          turnTimeAccumulated: pending.turnTimeAccumulated,
+          turnTimeSnapshots: pending.turnTimeSnapshots,
+          idToName: pending.idToName,
+          encounterName: finalName,
           combatDuration: pending.combatDuration,
+          roundNumber: pending.rounds,
+          t,
         });
-        // B6: Broadcast full recap so players see the "Spotify Wrapped" experience
-        // Map names in awards/rankings/narratives using display_name for privacy
-        const nameMap = new Map<string, string>();
-        for (const c of combatants) {
-          if (c.display_name) nameMap.set(c.name, c.display_name);
+        setCombatReport(report);
+
+        // F4: Auto-persist combat report — capture URL for share link dedup
+        const encId = useCombatStore.getState().encounter_id;
+        fetch("/api/combat-reports", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            report,
+            campaignId: campaignId ?? undefined,
+            encounterId: encId ?? undefined,
+          }),
+        })
+          .then((res) => res.ok ? res.json() : null)
+          .then((data) => { if (data?.url) setReportShareUrl(data.url); })
+          .catch(() => { /* non-fatal */ });
+
+        // CTA-11: Fetch previous encounter duration for trend comparison (fire-and-forget)
+        if (campaignId) {
+          (async () => {
+            try {
+              const sb = createClient();
+              const { data } = await sb
+                .from("encounters")
+                .select("duration_seconds, session_id!inner(campaign_id)")
+                .eq("session_id.campaign_id", campaignId)
+                .not("duration_seconds", "is", null)
+                .neq("id", encIdForSnapshot ?? "")
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+              if (data?.duration_seconds) setPreviousDurationMs(data.duration_seconds * 1000);
+            } catch { /* non-fatal */ }
+          })();
         }
-        const mapName = (n: string) => nameMap.get(n) ?? n;
-        const playerSafeReport = {
-          ...report,
-          awards: report.awards.map((a) => ({ ...a, combatantName: mapName(a.combatantName) })),
-          rankings: playerSafeStats,
-          narratives: report.narratives.map((n) => ({
-            ...n,
-            text: [...nameMap.entries()].reduce((txt, [real, display]) => txt.replaceAll(real, display), n.text),
-            actors: n.actors.map(mapName),
-          })),
-        };
-        broadcastEvent(sid, {
-          type: "session:combat_recap",
-          report: playerSafeReport,
-        });
+
+        setPostCombatPhase("leaderboard"); // C.15: Start post-combat state machine
+        setShowActionLog(false); // Close action log to avoid overlapping with recap
+        setPollVotes(new Map()); // Reset votes for new encounter
+        const sid = getSessionId();
+        if (sid) {
+          // P3-A: Map real names to display_name for player privacy (anti-metagaming)
+          const combatants = useCombatStore.getState().combatants;
+          const playerSafeStats = pending.stats.map((s) => {
+            const c = combatants.find((x) => x.name === s.name);
+            return c?.display_name ? { ...s, name: c.display_name } : s;
+          });
+          broadcastEvent(sid, {
+            type: "session:combat_stats",
+            stats: playerSafeStats,
+            encounter_name: finalName,
+            rounds: pending.rounds,
+            combatDuration: pending.combatDuration,
+          });
+          // B6: Broadcast full recap so players see the "Spotify Wrapped" experience
+          // Map names in awards/rankings/narratives using display_name for privacy
+          const nameMap = new Map<string, string>();
+          for (const c of combatants) {
+            if (c.display_name) nameMap.set(c.name, c.display_name);
+          }
+          const mapName = (n: string) => nameMap.get(n) ?? n;
+          const playerSafeReport = {
+            ...report,
+            awards: report.awards.map((a) => ({ ...a, combatantName: mapName(a.combatantName) })),
+            rankings: playerSafeStats,
+            narratives: report.narratives.map((n) => ({
+              ...n,
+              text: [...nameMap.entries()].reduce((txt, [real, display]) => txt.replaceAll(real, display), n.text),
+              actors: n.actors.map(mapName),
+            })),
+          };
+          broadcastEvent(sid, {
+            type: "session:combat_recap",
+            report: playerSafeReport,
+          });
+        }
+      } catch (err) {
+        // Defensive: if report building fails, still show dm_feedback instead of leaving DM stuck
+        console.error("[CombatSession] proceedAfterNaming recap failed:", err);
+        setPostCombatPhase("dm_feedback");
+        setPollVotes(new Map());
       }
     } else {
       // No meaningful combat stats — skip leaderboard but still offer DM feedback
@@ -326,7 +336,8 @@ export function CombatSessionClient({
     }
 
     const stats = computeCombatStats(logEntries, finalAccumulated, idToName);
-    const rounds = getMaxRound(logEntries);
+    // Fallback to store round_number when log is empty (e.g. page refresh wiped in-memory log)
+    const rounds = getMaxRound(logEntries) || state.round_number;
     // CTA-12 fix: exclude active pause time from duration
     let combatDuration = state.combatStartedAt ? effectiveNow - state.combatStartedAt : 0;
     const existingName = state.encounter_name.trim();
