@@ -712,7 +712,7 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
     : "text-white/70 text-sm leading-snug";
 
   return (
-    <div className="flex items-center gap-2.5 py-5">
+    <div className="flex items-center gap-2.5 py-3">
       {val.type === "check" && highlight && (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0 drop-shadow-[0_0_6px_rgba(74,158,92,0.5)]">
           <circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" strokeWidth="1.5" />
@@ -756,35 +756,35 @@ function ComparisonSection() {
         feature: "Combat tracker",
         roll20: { type: "partial", label: "Pesado" },
         beyond: { type: "partial", label: "Básico" },
-        pocketdm: { type: "check", label: "Otimizado para mestrar" },
+        pocketdm: { type: "check", label: "Otimizado" },
       },
       {
         icon: "📱",
         feature: "Player view no celular",
-        roll20: { type: "cross", label: "Requer app + conta" },
+        roll20: { type: "cross", label: "App + conta" },
         beyond: { type: "cross", label: "Indisponível" },
         pocketdm: { type: "check", label: "Link direto, zero conta" },
       },
       {
         icon: "🎯",
-        feature: "Foco na Mesa Física",
+        feature: "Foco na mesa física",
         roll20: { type: "cross", label: "Online-first" },
         beyond: { type: "cross", label: "Digital-first" },
-        pocketdm: { type: "check", label: "Pensado para a mesa real" },
+        pocketdm: { type: "check", label: "Pensado pro presencial" },
       },
       {
         icon: "📚",
         feature: "Compendium 2014 + 2024",
         roll20: { type: "partial", label: "Módulo pago" },
         beyond: { type: "partial", label: "Pago" },
-        pocketdm: { type: "check", label: "Grátis, sempre atualizado" },
+        pocketdm: { type: "check", label: "Grátis e atualizado" },
       },
       {
         icon: "📊",
         feature: "Dados da comunidade",
         roll20: { type: "cross", label: "Sem dados" },
         beyond: { type: "cross", label: "Sem dados" },
-        pocketdm: { type: "check", label: "Tier lists e balanceamento" },
+        pocketdm: { type: "check", label: "Contribuição ativa" },
       },
       {
         icon: "📶",
@@ -839,20 +839,20 @@ function ComparisonSection() {
         >
           {/* Column headers */}
           <div className="grid grid-cols-[1.3fr_1fr_1fr_1.15fr]">
-            <div className="px-7 py-6 border-b border-white/[0.10]" />
-            <div className="px-6 py-6 text-center border-b border-l border-white/[0.10]">
+            <div className="px-7 py-4 border-b border-white/[0.10]" />
+            <div className="px-6 py-4 text-center border-b border-l border-white/[0.10] flex items-center justify-center">
               <span className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">
                 Roll20 / Foundry
               </span>
             </div>
-            <div className="px-6 py-6 text-center border-b border-l border-white/[0.10]">
+            <div className="px-6 py-4 text-center border-b border-l border-white/[0.10] flex items-center justify-center">
               <span className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">
                 D&amp;D Beyond
               </span>
             </div>
             {/* Pocket DM header — gold gradient with glow */}
             <div
-              className="px-6 py-5 text-center flex flex-col items-center gap-2 relative overflow-hidden"
+              className="px-6 py-3.5 text-center flex flex-col items-center gap-1.5 relative overflow-hidden"
               style={{
                 background: "linear-gradient(180deg, rgba(212,168,83,0.15) 0%, rgba(212,168,83,0.07) 100%)",
                 borderTop: "2px solid rgba(212,168,83,0.7)",
