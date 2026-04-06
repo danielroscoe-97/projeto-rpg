@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, User, Heart, Shield, Sparkles } from "lucide-react";
+import { Check, User, Heart, Shield, Sparkles, ChevronDown } from "lucide-react";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface Props {
@@ -18,6 +19,7 @@ export function EncounterPlayerSelector({
   onLevelChange,
 }: Props) {
   const t = useTranslations("encounter_builder");
+  const [collapsed, setCollapsed] = useState(false);
 
   const allSelected =
     characters.length > 0 && characters.every((c) => selectedCharacterIds.includes(c.id));
@@ -41,19 +43,41 @@ export function EncounterPlayerSelector({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-amber-400">{t("player_selector_title")}</h3>
         <button
           type="button"
-          onClick={toggleAll}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-1.5 group"
         >
-          {allSelected ? t("deselect_all") : t("select_all")}
+          <ChevronDown
+            className={`w-3.5 h-3.5 text-amber-400 transition-transform duration-200 ${
+              collapsed ? "-rotate-90" : ""
+            }`}
+          />
+          <h3 className="text-sm font-semibold text-amber-400 group-hover:text-amber-300 transition-colors">
+            {t("player_selector_title")}
+          </h3>
+          {collapsed && selectedCharacterIds.length > 0 && (
+            <span className="text-[10px] text-muted-foreground ml-1">
+              ({selectedCharacterIds.length})
+            </span>
+          )}
         </button>
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {allSelected ? t("deselect_all") : t("select_all")}
+          </button>
+        )}
       </div>
 
-      {characters.length === 0 ? (
+      {!collapsed && characters.length === 0 ? (
         <p className="text-xs text-muted-foreground py-4 text-center">{t("no_players")}</p>
-      ) : (
+      ) : null}
+
+      {!collapsed && characters.length > 0 ? (
         <div className="space-y-1.5">
           {characters.map((char) => {
             const isSelected = selectedCharacterIds.includes(char.id);
@@ -167,11 +191,13 @@ export function EncounterPlayerSelector({
       )}
 
       {/* Summary */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-        <span>
-          {selectedCharacterIds.length} {t("selected_count")}
-        </span>
-      </div>
+      {!collapsed && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+          <span>
+            {selectedCharacterIds.length} {t("selected_count")}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
