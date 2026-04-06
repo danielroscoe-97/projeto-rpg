@@ -3006,6 +3006,7 @@
     "error_delete": "Falha ao excluir. Tente novamente.",
     "start_combat": "Iniciar Combate",
     "section_title": "Encontros",
+    "view_stat_block": "Ver Ficha",
     "starter_packs": "Starter Packs",
     "level_range": "Nível {min}-{max}",
     "pocket_dm_tooltip": "Metodologia de dificuldade Pocket DM — em breve, baseada em dados reais de combate",

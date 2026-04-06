@@ -3006,6 +3006,7 @@
     "error_delete": "Failed to delete. Please try again.",
     "start_combat": "Start Combat",
     "section_title": "Encounters",
+    "view_stat_block": "View Stat Block",
     "starter_packs": "Starter Packs",
     "level_range": "Level {min}-{max}",
     "pocket_dm_tooltip": "Pocket DM difficulty methodology — coming soon based on real combat data",

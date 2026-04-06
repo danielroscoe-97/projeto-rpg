@@ -2,10 +2,11 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Plus, Minus, X, Save, Loader2, ChevronDown, Sparkles } from "lucide-react";
+import { Search, Plus, Minus, X, Save, Loader2, ChevronDown, Sparkles, BookOpen } from "lucide-react";
 import { EncounterPlayerSelector } from "./EncounterPlayerSelector";
 import { EncounterDifficultyBar } from "./EncounterDifficultyBar";
 import { CampaignEncounterList } from "./CampaignEncounterList";
+import { MonsterToken } from "@/components/srd/MonsterToken";
 import {
   createEncounterPreset,
   updateEncounterPreset,
@@ -316,22 +317,38 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
               {showSearch && searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-white/[0.04] bg-card shadow-xl z-30 max-h-60 overflow-y-auto">
                   {searchResults.map((m) => (
-                    <button
+                    <div
                       key={`${m.name}-${m.cr}`}
-                      type="button"
-                      onClick={() => addMonster(m)}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2"
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent transition-colors"
                     >
-                      <div className="w-6 h-6 shrink-0 rounded-full overflow-hidden bg-gray-800 border border-gray-700">
-                        {m.token_url ? (
-                          <img src={m.token_url} alt="" className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-600 text-[10px]">?</div>
-                        )}
-                      </div>
-                      <span className="text-foreground flex-1 truncate">{m.name}</span>
-                      <span className="text-xs text-muted-foreground shrink-0">CR {m.cr}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => addMonster(m)}
+                        className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                      >
+                        <MonsterToken
+                          tokenUrl={m.token_url ?? undefined}
+                          creatureType={m.type}
+                          name={m.name}
+                          size={28}
+                          isMonsterADay={m.source === "mad"}
+                        />
+                        <span className="text-foreground flex-1 truncate">{m.name}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">CR {m.cr}</span>
+                      </button>
+                      {m.slug && (
+                        <a
+                          href={`/monsters/${m.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1 text-muted-foreground hover:text-amber-400 transition-colors shrink-0"
+                          title={t("view_stat_block")}
+                        >
+                          <BookOpen className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -365,13 +382,31 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
                     className="flex items-center justify-between rounded-lg border border-white/[0.04] bg-background/50 px-3 py-2"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden bg-gray-800 border border-gray-700">
-                        {m.token_url ? (
-                          <img src={m.token_url} alt="" className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">?</div>
-                        )}
-                      </div>
+                      {m.slug ? (
+                        <a
+                          href={`/monsters/${m.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 hover:opacity-80 transition-opacity"
+                          title={t("view_stat_block")}
+                        >
+                          <MonsterToken
+                            tokenUrl={m.token_url ?? undefined}
+                            creatureType={m.type}
+                            name={m.name}
+                            size={36}
+                            isMonsterADay={m.source === "mad"}
+                          />
+                        </a>
+                      ) : (
+                        <MonsterToken
+                          tokenUrl={m.token_url ?? undefined}
+                          creatureType={m.type}
+                          name={m.name}
+                          size={36}
+                          isMonsterADay={m.source === "mad"}
+                        />
+                      )}
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
