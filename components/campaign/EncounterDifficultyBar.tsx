@@ -14,6 +14,7 @@ interface Props {
   partySize: number;
   monsters: Array<{ cr: string; count: number }>;
   formulaVersion: FormulaVersion;
+  playerLevels?: number[];
 }
 
 const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
@@ -30,7 +31,7 @@ const BAR_COLORS: Record<DifficultyLevel, string> = {
   deadly: "bg-red-500",
 };
 
-export function EncounterDifficultyBar({ partyLevel, partySize, monsters, formulaVersion }: Props) {
+export function EncounterDifficultyBar({ partyLevel, partySize, monsters, formulaVersion, playerLevels }: Props) {
   const t = useTranslations("encounter_builder");
 
   // Expand monsters: [{cr: "1/4", count: 3}] → [{cr: "1/4"}, {cr: "1/4"}, {cr: "1/4"}]
@@ -138,13 +139,27 @@ export function EncounterDifficultyBar({ partyLevel, partySize, monsters, formul
       </div>
 
       {/* Party info */}
-      <div className="flex items-center justify-between text-xs text-gray-500 border-t border-gray-800 pt-3">
-        <span>
-          {partySize} {t("players")} &middot; {t("level_abbr")} {partyLevel}
-        </span>
-        <span>
-          {totalCount} {t("monsters_count")}
-        </span>
+      <div className="space-y-1.5 border-t border-gray-800 pt-3">
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span>
+            {partySize} {t("players")} &middot; {t("level_abbr")} {partyLevel}
+          </span>
+          <span>
+            {totalCount} {t("monsters_count")}
+          </span>
+        </div>
+        {playerLevels && playerLevels.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {playerLevels.map((lv, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/15"
+              >
+                {t("level_abbr")} {lv}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Pocket DM label */}
