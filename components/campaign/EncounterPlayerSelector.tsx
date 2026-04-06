@@ -1,19 +1,21 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Check, AlertTriangle, User, Heart, Shield, Sparkles } from "lucide-react";
+import { Check, User, Heart, Shield, Sparkles } from "lucide-react";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface Props {
   characters: PlayerCharacter[];
   selectedCharacterIds: string[];
   onSelectionChange: (ids: string[]) => void;
+  onLevelChange?: (charId: string, level: number | null) => void;
 }
 
 export function EncounterPlayerSelector({
   characters,
   selectedCharacterIds,
   onSelectionChange,
+  onLevelChange,
 }: Props) {
   const t = useTranslations("encounter_builder");
 
@@ -107,12 +109,44 @@ export function EncounterPlayerSelector({
 
                 {/* Stat badges */}
                 <div className="flex items-center gap-1 shrink-0">
-                  {char.level != null && (
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/15">
-                      <Sparkles className="w-2.5 h-2.5" />
-                      {char.level}
-                    </span>
-                  )}
+                  {/* Inline level editor */}
+                  <span
+                    className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium border ${
+                      hasLevel
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/15"
+                        : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                    }`}
+                  >
+                    <Sparkles className="w-2.5 h-2.5" />
+                    {onLevelChange ? (
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={char.level ?? ""}
+                        placeholder="—"
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          if (raw === "") {
+                            onLevelChange(char.id, null);
+                            return;
+                          }
+                          const val = Math.min(20, Math.max(1, parseInt(raw) || 1));
+                          onLevelChange(char.id, val);
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value === "" && char.level == null) return;
+                          if (e.target.value === "") {
+                            onLevelChange(char.id, 1);
+                          }
+                        }}
+                        className="w-6 h-4 text-center text-[10px] font-medium bg-transparent border-none outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+                      />
+                    ) : (
+                      <span>{char.level ?? "—"}</span>
+                    )}
+                  </span>
                   {char.max_hp > 0 && (
                     <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/15">
                       <Heart className="w-2.5 h-2.5" />
@@ -126,13 +160,6 @@ export function EncounterPlayerSelector({
                     </span>
                   )}
                 </div>
-
-                {/* Warning if no level */}
-                {!hasLevel && isSelected && (
-                  <span title={t("missing_level")}>
-                    <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-                  </span>
-                )}
               </button>
             );
           })}
