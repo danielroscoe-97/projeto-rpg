@@ -437,6 +437,12 @@ html[data-combat-active="true"] main#main-content {
     100% { transform: translateX(100%); }
   }
 
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    50%  { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
+  }
+
   .btn-shimmer::after {
     content: '';
     position: absolute;

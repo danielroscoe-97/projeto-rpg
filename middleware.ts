@@ -9,10 +9,15 @@ export async function middleware(request: NextRequest) {
   // If no NEXT_LOCALE cookie, detect from Accept-Language and set it
   if (!request.cookies.get("NEXT_LOCALE")?.value) {
     const acceptLang = request.headers.get("accept-language") || "";
-    const detected = acceptLang
+    const langs = acceptLang
       .split(",")
-      .map((part) => part.split(";")[0].trim())
-      .find((lang) => locales.includes(lang as Locale));
+      .map((part) => part.split(";")[0].trim());
+
+    // Match exact ("pt-BR") or prefix ("pt" → "pt-BR")
+    const detected = langs.find((lang) => locales.includes(lang as Locale))
+      ?? langs
+        .map((lang) => locales.find((l) => l.startsWith(lang + "-") || l === lang))
+        .find(Boolean);
 
     const locale = detected || defaultLocale;
     response.cookies.set("NEXT_LOCALE", locale, {

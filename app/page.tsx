@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Smartphone, Moon } from "lucide-react";
+import { Smartphone, BarChart3 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
@@ -148,23 +148,6 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* Floating particles */}
       <HeroParticles />
 
-      {/* Open Beta sticker — floating left of hero content */}
-      <div className="absolute left-[16%] top-[38%] -translate-y-1/2 rotate-[-14deg] z-10 hidden md:block select-none pointer-events-none">
-        <div className="relative px-5 py-2.5 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent border border-gold/45 rounded-lg shadow-[0_6px_28px_rgba(212,168,83,0.2),inset_0_1px_0_rgba(212,168,83,0.25)] backdrop-blur-sm">
-          {/* top shimmer */}
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/70 to-transparent rounded-t-lg" />
-          {/* bottom shadow line */}
-          <div className="absolute inset-x-2 bottom-0 h-px bg-black/30 rounded-b-lg" />
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_8px_rgba(212,168,83,1)] animate-pulse" />
-              <span className="font-display font-black text-gold text-[13px] tracking-[0.28em] uppercase leading-none drop-shadow-[0_0_8px_rgba(212,168,83,0.4)]">Open Beta</span>
-            </div>
-            <span className="text-gold/45 text-[9px] font-mono tracking-[0.22em] uppercase leading-none">— fase —</span>
-          </div>
-        </div>
-      </div>
-
       {/* Radial glows */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/[0.07] rounded-full blur-[120px]" />
@@ -172,8 +155,17 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
 
       <div className="relative max-w-3xl mx-auto text-center space-y-4">
-        {/* Crown d20 Logo */}
+        {/* Crown d20 Logo + Open Beta badge */}
         <div className="animate-fade-in flex flex-col items-center gap-2">
+          {/* Open Beta — inline badge (emerald = live/open) */}
+          <div className="relative px-4 py-1.5 bg-gradient-to-r from-emerald-500/15 via-emerald-400/10 to-emerald-500/15 border border-emerald-400/40 rounded-full shadow-[0_4px_16px_rgba(52,211,153,0.12)] backdrop-blur-sm mb-1 overflow-hidden">
+            {/* shimmer sweep */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] -translate-x-full" />
+            <div className="relative flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
+              <span className="font-display font-bold text-emerald-300 text-[11px] tracking-[0.22em] uppercase leading-none">Open Beta</span>
+            </div>
+          </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/art/brand/logo-icon.svg"
@@ -251,8 +243,8 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         {/* Stats strip */}
         <div className="flex items-center justify-center gap-0 pt-1 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           {[
-            { value: 1200, label: "monstros" },
-            { value: 750, label: "magias" },
+            { value: 1100, label: "monstros" },
+            { value: 600, label: "magias" },
           ].map((stat, i) => (
             <React.Fragment key={stat.label}>
               {i > 0 && <div className="w-px h-7 bg-white/[0.08] mx-5" />}
@@ -336,11 +328,11 @@ function FeaturesSection() {
       hoverAnim: "icon-anim-bounce",
     },
     {
-      icon: Moon,
-      tag: null,
-      title: "Dark Mode RPG",
+      icon: BarChart3,
+      tag: "Novo",
+      title: "Dados da Comunidade",
       description:
-        "Interface escura com toques dourados. Feita para sessões noturnas sem cansar a vista.",
+        "Cada combate alimenta nosso banco de dados. Em breve: tier lists de spells, CR accuracy e balanceamento baseados em sessões reais.",
       hoverAnim: "icon-anim-swing",
     },
   ];
@@ -393,31 +385,27 @@ function FeaturesSection() {
           ))}
         </div>
 
-        {/* Mobile: expandable cards — tap to reveal full description */}
-        <div className="flex flex-col gap-2 md:hidden">
+        {/* Mobile: visual mini-cards with icon + description visible */}
+        <div className="grid grid-cols-2 gap-2.5 md:hidden">
           {features.map((f, i) => (
-            <details
+            <div
               key={f.title}
-              className="group bg-card border border-border rounded-lg animate-fade-in-up [&[open]]:border-gold/25"
+              className="relative bg-card border border-border rounded-xl p-3.5 animate-fade-in-up"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
-              <summary className="flex items-center gap-3 px-3.5 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <div className="bg-amber-400/10 rounded-full p-2.5 shrink-0 w-fit">
-                  <f.icon className="w-5 h-5 text-amber-400" />
-                </div>
-                <h3 className="font-display text-foreground text-sm leading-tight flex-1">{f.title}</h3>
-                <svg
-                  className="w-4 h-4 text-muted-foreground/50 shrink-0 transition-transform duration-200 group-open:rotate-180"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                >
-                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </summary>
-              <p className="text-muted-foreground text-xs leading-relaxed px-3.5 pb-3 pt-0.5 pl-[3.25rem]">
+              {f.tag && (
+                <span className="absolute top-2.5 right-2.5 text-[8px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-gold/10 text-gold border border-gold/20">
+                  {f.tag}
+                </span>
+              )}
+              <div className="bg-amber-400/10 rounded-full p-2 w-fit mb-2.5">
+                <f.icon className="w-4.5 h-4.5 text-amber-400" />
+              </div>
+              <h3 className="font-display text-foreground text-[13px] leading-tight mb-1">{f.title}</h3>
+              <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-3">
                 {f.description}
               </p>
-            </details>
+            </div>
           ))}
         </div>
       </div>
@@ -429,19 +417,25 @@ function FeaturesSection() {
 function SocialProofSection() {
   const testimonials = [
     {
-      quote: "Finalmente algo feito para quem mestra na mesa, não num monitor. Meus jogadores adoram acompanhar pelo celular.",
+      quote: "Na sessão passada, um combate de 8 criaturas que levava 40 minutos no papel levou 15 com o Pocket DM. Meus jogadores ficam no celular acompanhando HP e turnos ao vivo.",
       author: "Mestre há 8 anos",
       role: "Campanha semanal, 5 jogadores",
+      icon: "🛡️",
+      accent: "from-amber-500/20 to-amber-700/10",
     },
     {
-      quote: "Eu usava Roll20 só pelo tracker e odiava a lentidão. Pocket DM resolve em 30 segundos o que demorava 5 minutos.",
+      quote: "Eu pagava $5/mês no Roll20 só pelo tracker e odiava a lentidão. Pocket DM é grátis e resolve em 30 segundos o que demorava 5 minutos. Não volto.",
       author: "DM veterano",
       role: "Migrou do Roll20",
+      icon: "⚔️",
+      accent: "from-red-500/20 to-red-700/10",
     },
     {
-      quote: "O oráculo de magias salvou minha vida. Consultar magia no meio do combate sem perder o ritmo é game changer.",
+      quote: "Sou mestra nova e o oráculo de magias me salvou. Consulto stat blocks e spells no meio do combate sem perder o ritmo — os jogadores nem percebem.",
       author: "Mestra iniciante",
       role: "Primeira campanha DMando",
+      icon: "✨",
+      accent: "from-purple-500/20 to-purple-700/10",
     },
   ];
 
@@ -466,12 +460,18 @@ function SocialProofSection() {
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up"
+              className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up hover:border-gold/30 transition-colors duration-300"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <svg width="28" height="21" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-4 shrink-0" aria-hidden="true">
-                <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
-              </svg>
+              {/* RPG class icon + quote mark */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.accent} flex items-center justify-center text-lg border border-white/[0.08]`}>
+                  {t.icon}
+                </div>
+                <svg width="24" height="18" viewBox="0 0 32 24" fill="none" className="text-gold/25 shrink-0" aria-hidden="true">
+                  <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
+                </svg>
+              </div>
               <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
                 &ldquo;{t.quote}&rdquo;
               </p>
@@ -491,16 +491,18 @@ function SocialProofSection() {
                 key={i}
                 className="relative bg-card border border-border rounded-xl p-5 flex flex-col snap-center shrink-0 w-[85vw] max-w-[320px]"
               >
-                <svg width="20" height="15" viewBox="0 0 32 24" fill="none" className="text-gold/20 mb-3 shrink-0" aria-hidden="true">
-                  <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
-                </svg>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${t.accent} flex items-center justify-center text-sm border border-white/[0.08]`}>
+                    {t.icon}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground leading-tight">{t.author}</p>
+                    <p className="text-[10px] text-muted-foreground">{t.role}</p>
+                  </div>
+                </div>
                 <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-                <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                  <p className="text-sm font-medium text-foreground">{t.author}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
-                </div>
               </div>
             ))}
           </div>
@@ -631,7 +633,7 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
         </div>
 
-        {/* Mobile: compact inline timeline */}
+        {/* Mobile: visual timeline with fire progression */}
         <div className="md:hidden flex flex-col gap-0 animate-fade-in-up">
           {steps.map((s) => {
             const stepColor = getFireStepColor(s.step, TOTAL_STEPS);
@@ -640,27 +642,40 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             return (
               <div
                 key={s.step}
-                className="flex items-center gap-3 py-3 border-b border-white/[0.06] last:border-b-0"
+                className="flex items-start gap-3.5 py-3.5 border-b border-white/[0.06] last:border-b-0"
               >
-                <div
-                  className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold font-mono"
-                  style={{
-                    color: stepColor,
-                    border: `1.5px solid ${stepColor}`,
-                    background: isLast ? `${stepColor}15` : "transparent",
-                    boxShadow: isLast ? `0 0 12px ${stepColor}30` : "none",
-                  }}
-                >
-                  {s.step}
-                </div>
-                <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
-                  <h3 className="font-display text-foreground text-sm truncate">{s.title}</h3>
-                  <span
-                    className="text-[10px] font-mono uppercase tracking-wider shrink-0"
-                    style={{ color: stepColor, opacity: 0.7 }}
+                {/* Step circle with emoji */}
+                <div className="relative shrink-0">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold font-mono"
+                    style={{
+                      color: stepColor,
+                      border: `1.5px solid ${stepColor}`,
+                      background: `${stepColor}12`,
+                      boxShadow: isLast ? `0 0 16px ${stepColor}40` : `0 0 8px ${stepColor}15`,
+                    }}
                   >
-                    {s.time}
-                  </span>
+                    {s.emoji}
+                  </div>
+                  {/* Fire connector line */}
+                  {!isLast && (
+                    <div
+                      className="absolute top-10 left-1/2 -translate-x-1/2 w-0.5 h-3.5"
+                      style={{ background: `linear-gradient(to bottom, ${stepColor}60, transparent)` }}
+                    />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 pt-1">
+                  <div className="flex items-center justify-between gap-2 mb-0.5">
+                    <h3 className="font-display text-foreground text-sm">{s.title}</h3>
+                    <span
+                      className="text-[10px] font-mono uppercase tracking-wider shrink-0"
+                      style={{ color: stepColor, opacity: 0.8 }}
+                    >
+                      {s.time}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
                 </div>
               </div>
             );
@@ -763,6 +778,27 @@ function ComparisonSection() {
         roll20: { type: "partial", label: "Módulo pago" },
         beyond: { type: "partial", label: "Pago" },
         pocketdm: { type: "check", label: "Grátis, sempre atualizado" },
+      },
+      {
+        icon: "📊",
+        feature: "Dados da comunidade",
+        roll20: { type: "cross", label: "Sem dados" },
+        beyond: { type: "cross", label: "Sem dados" },
+        pocketdm: { type: "check", label: "Tier lists e balanceamento" },
+      },
+      {
+        icon: "📶",
+        feature: "Funciona offline",
+        roll20: { type: "cross", label: "Online obrigatório" },
+        beyond: { type: "cross", label: "Online obrigatório" },
+        pocketdm: { type: "check", label: "Compêndio offline" },
+      },
+      {
+        icon: "⏱️",
+        feature: "Setup do combate",
+        roll20: { type: "cross", label: "5–10 min" },
+        beyond: { type: "partial", label: "3–5 min" },
+        pocketdm: { type: "check", label: "< 1 minuto" },
       },
       {
         icon: "💰",
@@ -889,9 +925,14 @@ function ComparisonSection() {
               description: "Gere um link. Jogadores abrem no celular. Sem app, sem conta.",
             },
             {
-              icon: "📚",
-              title: "Regras 2014 + 2024 grátis",
-              description: "Bestiário SRD + Monster a Day e todas as magias SRD. Nos concorrentes, é módulo pago.",
+              icon: "📊",
+              title: "Dados da comunidade",
+              description: "Tier lists de spells e balanceamento de combate gerados por sessões reais. Nenhum concorrente tem.",
+            },
+            {
+              icon: "⏱️",
+              title: "Setup em < 1 minuto",
+              description: "Busque monstros, adicione ao combate e role iniciativa. Tudo em menos de 60 segundos.",
             },
           ].map((item) => (
             <div
@@ -921,7 +962,67 @@ function ComparisonSection() {
   );
 }
 
-// ── Social Proof ─────────────────────────────────────────────────────────────
+// ── Beyond Combat ────────────────────────────────────────────────────────────
+function BeyondCombatSection() {
+  const pillars = [
+    {
+      icon: "📊",
+      title: "Tier Lists de Spells",
+      description: "Rankings gerados por uso real em combate, não teoria.",
+    },
+    {
+      icon: "⚖️",
+      title: "Balanceamento de CR",
+      description: "Quão letal é cada monstro na prática? Os dados respondem.",
+    },
+    {
+      icon: "🧪",
+      title: "Metodologia Aberta",
+      description: "Dados anonimizados, análise transparente, comunidade que contribui.",
+    },
+  ];
+
+  return (
+    <section data-section="beyond-combat" className="py-12 md:py-20 px-4 md:px-6 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/[0.03] rounded-full blur-[120px]" />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto">
+        <div className="text-center mb-8 md:mb-12 animate-fade-in">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-[11px] font-semibold uppercase tracking-wider mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+            Em desenvolvimento
+          </span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-foreground mb-3">
+            Além do combate
+          </h2>
+          <p className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto leading-relaxed">
+            Cada sessão no Pocket DM alimenta uma base de dados que vai
+            transformar como a comunidade entende D&D 5e.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          {pillars.map((p, i) => (
+            <div
+              key={p.title}
+              className="flex md:flex-col items-start md:items-center md:text-center gap-3.5 md:gap-3 rounded-xl px-4 py-4 md:p-6 bg-card border border-border hover:border-gold/30 transition-colors duration-300 animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.08}s` }}
+            >
+              <span className="text-2xl md:text-3xl shrink-0">{p.icon}</span>
+              <div>
+                <h3 className="font-display text-foreground text-sm md:text-base mb-1">{p.title}</h3>
+                <p className="text-muted-foreground text-xs md:text-sm leading-relaxed">{p.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
@@ -1129,6 +1230,8 @@ export default async function LandingPage() {
       <SectionDivider />
       <ComparisonSection />
       <SocialProofSection />
+      <SectionDivider />
+      <BeyondCombatSection />
       <SectionDivider />
       <LpPricingSection isLoggedIn={isLoggedIn} />
       <FinalCtaSection isLoggedIn={isLoggedIn} />

@@ -64,16 +64,16 @@ export function LpPricingSection({ isLoggedIn }: { isLoggedIn: boolean }) {
           </Link>
         </div>
 
-        {/* Section heading — desktop only */}
-        <div className="text-center mb-12 animate-fade-in hidden md:block">
-          <h2 className="text-3xl sm:text-4xl font-display text-gold mb-4">
+        {/* Section heading */}
+        <div className="text-center mb-8 md:mb-12 animate-fade-in">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-gold mb-4">
             {t("section_title")}
           </h2>
         </div>
 
-        {/* Plan Cards — desktop only */}
+        {/* Plan Cards */}
         <div
-          className="hidden md:grid md:grid-cols-2 gap-6 animate-fade-in-up"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up"
           style={{ animationDelay: "0.1s" }}
         >
           {/* ── Free Card ── */}
@@ -129,9 +129,9 @@ export function LpPricingSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             </Link>
           </div>
 
-          {/* ── Pro Card (dimmed) — collapsed on mobile ── */}
+          {/* ── Pro Card (dimmed) — hidden on mobile ── */}
           <div
-            className="relative rounded-2xl border border-border p-5 md:p-8 flex flex-col opacity-60 cursor-default"
+            className="relative rounded-2xl border border-border p-5 md:p-8 hidden md:flex flex-col opacity-60 cursor-default"
             aria-disabled="true"
             style={{
               background: "#13131f",
