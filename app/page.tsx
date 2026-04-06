@@ -746,6 +746,7 @@ function ComparisonSection() {
   const rows: {
     icon: string;
     feature: string;
+    featureTooltip?: string;
     roll20: CellValue;
     beyond: CellValue;
     pocketdm: CellValue;
@@ -774,7 +775,8 @@ function ComparisonSection() {
       },
       {
         icon: "📚",
-        feature: "Compendium 2014/2024",
+        feature: "Bestiário + Magias",
+        featureTooltip: "SRD completo 2014 + 2024",
         roll20: { type: "partial", label: "Módulo pago" },
         beyond: { type: "partial", label: "Pago" },
         pocketdm: { type: "check", label: "Grátis e atualizado" },
@@ -885,7 +887,7 @@ function ComparisonSection() {
                 {/* Feature name — gold left border on hover */}
                 <div className={`px-7 py-1 flex items-center gap-3 transition-all duration-300 border-l-2 border-l-transparent group-hover:border-l-gold/60 group-hover:bg-white/[0.03] ${isLast ? "" : "border-b border-white/[0.07]"}`}>
                   <span className="text-xl leading-none shrink-0 transition-transform duration-300 group-hover:scale-110">{row.icon}</span>
-                  <span className="text-[15px] font-semibold text-white/90 transition-colors duration-300 group-hover:text-white">{row.feature}</span>
+                  <span className="text-[15px] font-semibold text-white/90 transition-colors duration-300 group-hover:text-white" title={row.featureTooltip}>{row.feature}</span>
                 </div>
                 {/* Competitor cells — dim on hover to contrast with Pocket DM */}
                 <div className={`px-6 border-l border-white/[0.07] transition-all duration-300 group-hover:bg-white/[0.02] group-hover:opacity-70 ${isLast ? "" : "border-b"}`}>
