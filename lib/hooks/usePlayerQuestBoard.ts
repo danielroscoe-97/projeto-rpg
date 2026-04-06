@@ -175,12 +175,16 @@ export function usePlayerQuestBoard(campaignId: string, userId: string) {
   const activeQuests = sortWithFavorites(quests.filter((q) => q.status === "active"));
   const availableQuests = sortWithFavorites(quests.filter((q) => q.status === "available"));
   const completedQuests = sortWithFavorites(quests.filter((q) => q.status === "completed"));
+  const failedQuests = sortWithFavorites(quests.filter((q) => q.status === "failed"));
+  const cancelledQuests = sortWithFavorites(quests.filter((q) => q.status === "cancelled"));
 
   return {
     quests,
     activeQuests,
     availableQuests,
     completedQuests,
+    failedQuests,
+    cancelledQuests,
     loading,
     saveNote,
     toggleFavorite,

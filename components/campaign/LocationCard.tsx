@@ -132,7 +132,7 @@ export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleV
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
                 onClick={() => onToggleVisibility(location)}
-                title={location.is_visible_to_players ? t("mark_undiscovered") : t("mark_discovered")}
+                title={location.is_visible_to_players ? t("field_visibility") : t("field_visibility")}
                 data-testid={`location-visibility-${location.id}`}
               >
                 {location.is_visible_to_players ? (

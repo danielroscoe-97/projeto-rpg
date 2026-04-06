@@ -20,7 +20,7 @@ import { useCampaignQuests } from "@/lib/hooks/use-campaign-quests";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignQuest, QuestFormData, QuestStatus } from "@/lib/types/quest";
 
-type FilterMode = "all" | "active" | "available" | "completed" | "failed";
+type FilterMode = "all" | "active" | "available" | "completed" | "failed" | "cancelled";
 
 interface QuestBoardProps {
   campaignId: string;
@@ -150,6 +150,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
     { key: "available", label: t("filter_available") },
     { key: "completed", label: t("filter_completed") },
     { key: "failed", label: t("filter_failed") },
+    { key: "cancelled", label: t("filter_cancelled") },
   ];
 
   /* ── Loading state ───────────────────────────────────────────────────────── */
