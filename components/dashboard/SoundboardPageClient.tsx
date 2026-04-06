@@ -10,6 +10,7 @@ import {
   getSfxPresets,
 } from "@/lib/utils/audio-presets";
 import { useAudioStore } from "@/lib/stores/audio-store";
+import { DmAudioControls } from "@/components/audio/DmAudioControls";
 import { Play, Square, X } from "lucide-react";
 
 type PresetTab = "ambient" | "music" | "sfx";
@@ -78,16 +79,19 @@ export function SoundboardPageClient({ title }: { title: string }) {
           <h1 className="text-2xl font-semibold text-foreground mb-1">{title}</h1>
           <p className="text-muted-foreground text-sm">{t("description")}</p>
         </div>
-        {(activeLoops.length > 0 || activeAudioId) && (
-          <button
-            type="button"
-            onClick={() => stopAllAudio()}
-            className="shrink-0 mt-1 px-3 py-2 text-xs font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors flex items-center gap-1.5 min-h-[36px]"
-          >
-            <Square className="w-3.5 h-3.5" />
-            {tAudio("dm_stop_all")}
-          </button>
-        )}
+        <div className="flex items-center gap-2 shrink-0 mt-1">
+          <DmAudioControls />
+          {(activeLoops.length > 0 || activeAudioId) && (
+            <button
+              type="button"
+              onClick={() => stopAllAudio()}
+              className="px-3 py-2 text-xs font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors flex items-center gap-1.5 min-h-[36px]"
+            >
+              <Square className="w-3.5 h-3.5" />
+              {tAudio("dm_stop_all")}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ── Custom Sounds Section ── */}
