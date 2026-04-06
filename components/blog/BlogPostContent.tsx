@@ -4766,155 +4766,38 @@ export function BlogPost15() {
         ouvir o que falta.
       </Tip>
 
-      {/* ── ERA 6 ── */}
-      <H2>Comunidade e Conteúdo</H2>
-      <P>
-        Se a ferramenta é boa, o conteúdo a torna indispensável. Publicamos 14
-        posts de blog &mdash; tutoriais, guias, comparativos, builds de
-        personagem. SEO otimizado pra quem busca &ldquo;como mestrar
-        D&D&rdquo;, &ldquo;combat tracker D&D 5e&rdquo;, &ldquo;condições D&D
-        5e&rdquo;. Tudo bilíngue, tudo com links internos, tudo com
-        screenshots reais.
-      </P>
-      <P>
-        Mas o blog é só uma parte. A{" "}
-        <ProdLink href="/methodology">página de Metodologia</ProdLink> é onde a
-        comunidade vota em tiers de magias (S/A/B/C/D, estilo tier list de jogo
-        competitivo). Cada voto conta, cada mago tem opinião. O Pocket DM não é
-        só uma ferramenta &mdash; é um lugar onde a comunidade de D&D constrói
-        conhecimento junto.
-      </P>
-      <H3>Conteúdo público e gratuito</H3>
-      <Ul>
-        <Li>
-          30+ páginas públicas com SEO &mdash; incluindo{" "}
-          <ProdLink href="/monstros">compêndio de monstros</ProdLink> e{" "}
-          <ProdLink href="/magias">oráculo de magias</ProdLink>
-        </Li>
-        <Li>
-          Spell tier voting &mdash; sistema S/A/B/C/D/E de ranking comunitário
-        </Li>
-        <Li>
-          Blog bilíngue com categorias: tutorial, guia, lista, comparativo,
-          build
-        </Li>
-        <Li>
-          Referência rápida de regras, condições e dice roller integrado
-        </Li>
-      </Ul>
-
-      {/* ── ERA 7 ── */}
-      <H2>Campaign Hub e Mapa Mental</H2>
-      <P>
-        Sua campanha merece mais que uma pasta no Google Drive. O Campaign Hub
-        foi redesenhado do zero: cards visuais com capas de fantasia épica,
-        sidebar wiki-style, ações rápidas, integração com encontros e presets.
-      </P>
-      <P>
-        O{" "}
-        <strong>mind map de campanha</strong> permite ao mestre visualizar NPCs,
-        locais, quests e conexões &mdash; com fog of war pra jogadores (eles só
-        veem o que o mestre revela). E sim: tem um &ldquo;Bag of
-        Holding&rdquo; &mdash; a seção de itens e notas da campanha. Porque
-        todo mestre precisa de um lugar pra guardar loot que os jogadores vão
-        esquecer que têm.
-      </P>
-      <H3>Destaques do Campaign Hub</H3>
-      <Ul>
-        <Li>
-          Encounter presets &mdash; monte encontros prontos e reutilize
-          (&ldquo;Goblin Ambush&rdquo; uma vez, use pra sempre)
-        </Li>
-        <Li>
-          Mind map com fog of war &mdash; jogadores descobrem a campanha no
-          ritmo do mestre
-        </Li>
-        <Li>
-          Convites por email &mdash; jogadores entram na campanha com um clique
-        </Li>
-        <Li>
-          Player HQ &mdash; cada jogador tem seu espaço com personagem, notas
-          e histórico
-        </Li>
-      </Ul>
-
-      {/* ── ERA 8 ── */}
-      <H2>User Journey e Onboarding</H2>
-      <P>
-        O melhor produto do mundo não serve se ninguém entende como usar. Essa
-        fase focou em suavizar cada ponto de fricção: token de sessão que
-        sobrevive refresh, CTA contextual quando o mestre não tem campanha,
-        tour guiado pro mestre e pro jogador, checklist de ativação.
-      </P>
-      <P>
-        E o sistema de{" "}
-        <strong>reconexão resiliente</strong>: o jogador pode fechar o celular,
-        trocar de aba, perder sinal, e quando voltar, tudo estará lá. Sem pedir
-        aprovação do mestre, sem tela branca, sem formulário. O sistema tem 4
-        camadas de fallback &mdash; sessionStorage, localStorage, cookie auth, e
-        lista de nomes no servidor. Se todas falharem, aí sim aparece o
-        formulário. Mas pra isso, o universo inteiro precisa conspirar contra o
-        jogador.
-      </P>
-      <H3>Melhorias de experiência</H3>
-      <Ul>
-        <Li>
-          Reconexão automática em 4 camadas &mdash; o jogador nunca perde
-          conexão de forma perceptível
-        </Li>
-        <Li>
-          Tour guiado &mdash; mestre e jogador aprendem a ferramenta sem manual
-        </Li>
-        <Li>
-          Reaction tracker &mdash; rastreia reações usadas por turno
-        </Li>
-        <Li>
-          Poll de dificuldade ao vivo &mdash; resultados aparecem conforme cada
-          jogador vota
-        </Li>
-      </Ul>
-
-      {/* ── PRÓXIMAS QUESTS ── */}
-      <H2>Próximas Quests &mdash; O que Vem por Aí</H2>
-      <P>
-        O backlog não para de crescer. E isso é bom. Aqui estão algumas das
-        áreas que estamos explorando:
-      </P>
-      <Ul>
-        <Li>
-          <strong>Áudio avançado</strong> &mdash; efeitos sonoros por turno,
-          biblioteca de sons, áudio remoto no PC do mestre
-        </Li>
-        <Li>
-          <strong>IA integrada</strong> &mdash; NPC generator, encounter
-          builder inteligente, assistente narrativo
-        </Li>
-        <Li>
-          <strong>Analytics expandido</strong> &mdash; dashboard de métricas
-          pra o mestre entender o ritmo dos combates
-        </Li>
-        <Li>
-          <strong>Modelo freemium</strong> &mdash; tiers de acesso com Stripe,
-          mantendo o core gratuito
-        </Li>
-        <Li>
-          <strong>Demo presencial</strong> &mdash; levar o Pocket DM pra bares
-          de RPG e mesas reais em Belo Horizonte
-        </Li>
-        <Li>
-          <strong>Multi-sistema</strong> &mdash; suporte a Pathfinder 2e e
-          outros sistemas além de D&D 5e
-        </Li>
-        <Li>
-          <strong>Marketplace</strong> &mdash; compartilhar e trocar campanhas,
-          NPCs, mapas e presets entre mestres
-        </Li>
-      </Ul>
-      <P>
-        Não prometemos datas. Prometemos que cada atualização vai ser anunciada
-        aqui primeiro. Se quiser acompanhar de perto, crie uma conta gratuita
-        e fique de olho.
-      </P>
+      {/* ── EM BREVE ── */}
+      <div className="mt-14 mb-8 rounded-xl border border-gold/20 bg-gradient-to-br from-gold/[0.04] to-transparent p-8 text-center relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-gold/[0.06] rounded-full blur-[80px]" />
+        </div>
+        <div className="relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/art/blog/devlog-scroll-item.webp"
+            alt=""
+            width={32}
+            height={32}
+            className="mx-auto mb-3 opacity-70"
+            aria-hidden="true"
+          />
+          <p className="font-display text-lg text-gold mb-2">
+            A jornada continua...
+          </p>
+          <p className="text-sm text-foreground/60 leading-relaxed max-w-md mx-auto mb-4">
+            Comunidade, Campaign Hub, Mapa Mental, Onboarding e muito mais
+            &mdash; os próximos capítulos do Pocket DM estão sendo escritos.
+            Volte em breve pra acompanhar a evolução.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 text-[11px] text-muted-foreground/50">
+            <span className="px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">Comunidade & Conteúdo</span>
+            <span className="px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">Campaign Hub</span>
+            <span className="px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">Mapa Mental</span>
+            <span className="px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">User Journey</span>
+            <span className="px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">Próximas Quests</span>
+          </div>
+        </div>
+      </div>
 
       {/* Final CTA */}
       <div className="rounded-lg border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent p-6 my-8 text-center relative overflow-hidden">
