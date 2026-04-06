@@ -118,8 +118,8 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
   }, [selectedCharacterIds, localCharacters]);
 
   // ── Inline level change (debounced persist) ──
-  const handleLevelChange: (charId: string, level: number | null) => void = useCallback(
-    (charId, level) => {
+  const handleLevelChange = useCallback(
+    (charId: string, level: number | null) => {
       // P3: Update local state immediately (null = user clearing the field)
       setLocalCharacters((prev) =>
         prev.map((c) => (c.id === charId ? { ...c, level } : c))
