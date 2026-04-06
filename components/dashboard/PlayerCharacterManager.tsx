@@ -302,7 +302,7 @@ export function PlayerCharacterManager({
           {isOwner && <InvitePlayerDialog campaignId={campaignId} />}
           <Button
             size="sm"
-            className="bg-gold hover:bg-gold/80 text-foreground min-h-[44px]"
+            className="bg-gold hover:bg-gold/80 text-surface-primary font-semibold min-h-[44px]"
             onClick={() => {
               setShowAdd(true);
               setError(null);
