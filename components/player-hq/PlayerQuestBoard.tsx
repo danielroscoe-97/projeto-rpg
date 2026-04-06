@@ -140,7 +140,7 @@ export function PlayerQuestBoard({ campaignId, userId }: PlayerQuestBoardProps) 
           <CollapsibleTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-border/40 bg-card/30 hover:bg-card/50 transition-colors text-left min-h-[40px]"
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-white/[0.04] bg-card/30 hover:bg-card/50 transition-colors text-left min-h-[40px]"
             >
               <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
               <span className="text-sm text-muted-foreground flex-1">
@@ -176,7 +176,7 @@ export function PlayerQuestBoard({ campaignId, userId }: PlayerQuestBoardProps) 
           <CollapsibleTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-border/40 bg-card/30 hover:bg-card/50 transition-colors text-left min-h-[40px]"
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-white/[0.04] bg-card/30 hover:bg-card/50 transition-colors text-left min-h-[40px]"
             >
               <XCircle className="h-4 w-4 text-red-400 flex-shrink-0" />
               <span className="text-sm text-muted-foreground flex-1">

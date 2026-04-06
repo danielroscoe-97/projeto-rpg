@@ -63,15 +63,9 @@ export function CampaignHero({
 
   return (
     <div className="bg-card border border-white/[0.04] rounded-xl p-4 space-y-3">
-      {/* Breadcrumb + Title */}
+      {/* Title */}
       <div>
-        <Link
-          href="/app/dashboard"
-          className="text-muted-foreground text-sm hover:text-foreground transition-colors"
-        >
-          {tDash("back_to_dashboard")}
-        </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mt-1">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {campaignName}
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>

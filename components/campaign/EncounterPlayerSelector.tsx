@@ -66,7 +66,7 @@ export function EncounterPlayerSelector({
                 className={`group/player w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 text-left ${
                   isSelected
                     ? "border-amber-500/30 bg-amber-500/5 shadow-[0_0_12px_-6px_rgba(251,191,36,0.15)]"
-                    : "border-border/40 bg-card/50 opacity-60 hover:opacity-80"
+                    : "border-white/[0.04] bg-card/50 opacity-60 hover:opacity-80"
                 }`}
               >
                 {/* Checkbox */}
