@@ -77,7 +77,7 @@ export function EncounterPlayerSelector({
         <p className="text-xs text-muted-foreground py-4 text-center">{t("no_players")}</p>
       ) : null}
 
-      {!collapsed && characters.length > 0 ? (
+      {!collapsed && characters.length > 0 && (
         <div className="space-y-1.5">
           {characters.map((char) => {
             const isSelected = selectedCharacterIds.includes(char.id);
