@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { unstable_cache } from "next/cache";
 
 export default async function DashboardRouteLayout({
   children,
@@ -35,48 +34,33 @@ export default async function DashboardRouteLayout({
   let hasDmAccess = false;
 
   if (user) {
-    const [{ data: onboarding }, dmAccess, { count: playerMembershipCount }] = await Promise.all([
+    const [
+      { data: onboarding },
+      { count: dmMembershipCount },
+      { count: ownedCampaignCount },
+      { data: userRoleData },
+      { count: playerMembershipCount },
+    ] = await Promise.all([
       supabase
         .from("user_onboarding")
         .select("wizard_completed, dashboard_tour_completed, source")
         .eq("user_id", user.id)
         .maybeSingle(),
-      unstable_cache(
-        async (userId: string) => {
-          // E1: Create fresh Supabase client inside cached function to avoid stale cookie closure
-          const freshSupabase = await createClient();
-          const [
-            { count: dmMembershipCount },
-            { count: ownedCampaignCount },
-            { data: userData },
-          ] = await Promise.all([
-            freshSupabase
-              .from("campaign_members")
-              .select("id", { count: "exact", head: true })
-              .eq("user_id", userId)
-              .eq("role", "dm")
-              .eq("status", "active"),
-            freshSupabase
-              .from("campaigns")
-              .select("id", { count: "exact", head: true })
-              .eq("owner_id", userId),
-            freshSupabase
-              .from("users")
-              .select("role")
-              .eq("id", userId)
-              .maybeSingle(),
-          ]);
-          const userDbRole = userData?.role ?? "both";
-          return (
-            (dmMembershipCount ?? 0) > 0 ||
-            (ownedCampaignCount ?? 0) > 0 ||
-            userDbRole === "dm" ||
-            userDbRole === "both"
-          );
-        },
-        [`dm-access-sidebar-${user.id}`],
-        { revalidate: 60 }
-      )(user.id),
+      supabase
+        .from("campaign_members")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("role", "dm")
+        .eq("status", "active"),
+      supabase
+        .from("campaigns")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id),
+      supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle(),
       supabase
         .from("campaign_members")
         .select("id", { count: "exact", head: true })
@@ -84,6 +68,13 @@ export default async function DashboardRouteLayout({
         .eq("role", "player")
         .eq("status", "active"),
     ]);
+
+    const userDbRole = userRoleData?.role ?? "both";
+    const dmAccess =
+      (dmMembershipCount ?? 0) > 0 ||
+      (ownedCampaignCount ?? 0) > 0 ||
+      userDbRole === "dm" ||
+      userDbRole === "both";
 
     showDashboardTour = onboarding
       ? (onboarding.wizard_completed && !onboarding.dashboard_tour_completed)
