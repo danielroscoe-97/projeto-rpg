@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useSearchParams, useRouter } from "next/navigation";
 
 const LOADING_MESSAGE_KEYS = [
   "msg_rolling_initiative",
@@ -146,36 +145,32 @@ const ICON_COMPONENTS = [D20Icon, WizardHatIcon, SwordIcon, SpellBookIcon, Potio
  */
 export function DashboardLoadingScreen() {
   const t = useTranslations("dashboard_loading");
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const isWelcome = searchParams.get("welcome") === "1";
 
-  const [showLoader, setShowLoader] = useState(isWelcome);
+  // Read ?welcome=1 from window.location on mount (avoids useSearchParams Suspense requirement)
+  const [showLoader, setShowLoader] = useState(false);
   const [iconSlot, setIconSlot] = useState(0);
   const [pickedIcons, setPickedIcons] = useState([0, 1, 2, 3]);
   const [pickedMessages, setPickedMessages] = useState([0, 1, 2, 3]);
-  const dismissedRef = useRef(false);
+  const isWelcomeRef = useRef(false);
 
-  // Randomize on mount
+  // Detect ?welcome=1 on mount (client-side only)
   useEffect(() => {
-    if (!isWelcome) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("welcome") !== "1") return;
+    isWelcomeRef.current = true;
+    setShowLoader(true);
     setPickedIcons(pickRandom(ICON_COMPONENTS.length, ICONS_TO_SHOW));
     setPickedMessages(pickRandom(LOADING_MESSAGE_KEYS.length, ICONS_TO_SHOW));
-  }, [isWelcome]);
 
-  // Auto-dismiss after min display time
-  useEffect(() => {
-    if (!isWelcome) return;
+    // Auto-dismiss after min display time and clean URL
     const timer = setTimeout(() => {
-      dismissedRef.current = true;
       setShowLoader(false);
-      // Clean URL param without triggering navigation
       const url = new URL(window.location.href);
       url.searchParams.delete("welcome");
       window.history.replaceState({}, "", url.pathname + url.search);
     }, MIN_DISPLAY_MS);
     return () => clearTimeout(timer);
-  }, [isWelcome]);
+  }, []);
 
   // Cycle through icons
   useEffect(() => {
@@ -186,7 +181,7 @@ export function DashboardLoadingScreen() {
     return () => clearInterval(interval);
   }, [showLoader]);
 
-  if (!isWelcome) return null;
+  if (!showLoader) return null;
 
   const CurrentIcon = ICON_COMPONENTS[pickedIcons[iconSlot]];
 

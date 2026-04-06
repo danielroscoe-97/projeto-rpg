@@ -27,6 +27,15 @@ export default function AppError({
         <p className="text-sm text-white/60">
           {t("app_description")}
         </p>
+        {error?.message && (
+          <details className="text-left mt-2">
+            <summary className="text-xs text-white/30 cursor-pointer">Debug</summary>
+            <pre className="text-xs text-white/20 mt-1 whitespace-pre-wrap break-all max-h-32 overflow-auto">
+              {error.message}
+              {error.digest ? `\nDigest: ${error.digest}` : ""}
+            </pre>
+          </details>
+        )}
         <div className="flex flex-col gap-3 pt-2">
           <button
             type="button"
