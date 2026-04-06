@@ -9,7 +9,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
-import { Plus, Shield } from "lucide-react";
+import { UserPlus, Shield } from "lucide-react";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface CampaignPlayerAvatarsProps {
@@ -128,10 +128,10 @@ export function CampaignPlayerAvatars({
         className="flex flex-col items-center gap-1 hover:scale-105 transition-transform min-h-[44px]"
         onClick={handleInvite}
       >
-        <div className="w-10 h-10 rounded-full bg-white/[0.04] border-2 border-dashed border-white/[0.04] flex items-center justify-center">
-          <Plus className="w-4 h-4 text-muted-foreground" />
+        <div className="w-10 h-10 rounded-full bg-emerald-400/10 border-2 border-dashed border-emerald-400/20 flex items-center justify-center">
+          <UserPlus className="w-4 h-4 text-emerald-400" />
         </div>
-        <span className="text-[10px] text-muted-foreground">+</span>
+        <span className="text-[10px] text-emerald-400/60">+</span>
       </button>
 
       {/* Only render internal dialog if parent doesn't control it */}

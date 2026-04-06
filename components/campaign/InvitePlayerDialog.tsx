@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Mail, X, Clock, Check, AlertCircle, Copy, RefreshCw, Link as LinkIcon } from "lucide-react";
+import { Mail, UserPlus, X, Clock, Check, AlertCircle, Copy, RefreshCw, Link as LinkIcon } from "lucide-react";
 
 interface Invite {
   id: string;
@@ -202,7 +202,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
       {controlledOpen === undefined && (
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2">
-            <Mail className="w-4 h-4" />
+            <UserPlus className="w-4 h-4 text-emerald-400" />
             {t("invite_button")}
           </Button>
         </DialogTrigger>

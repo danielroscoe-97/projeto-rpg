@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Swords, UserPlus, Plus, Globe, ChevronRight } from "lucide-react";
+import { Swords, UserPlus, UserCircle, Plus, Globe, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -162,9 +162,9 @@ export function QuickActions({ translations: t, campaigns, userRole = "both" }: 
               type="button"
               onClick={() => setNpcDialogOpen(true)}
               data-testid="quick-action-create_npc"
-              className={`${actionCardClass} hover:border-blue-400/30 hover:bg-white/[0.02] cursor-pointer`}
+              className={`${actionCardClass} hover:border-purple-400/30 hover:bg-white/[0.02] cursor-pointer`}
             >
-              <Plus className="w-5 h-5 text-blue-400 shrink-0" aria-hidden="true" />
+              <UserCircle className="w-5 h-5 text-purple-400 shrink-0" aria-hidden="true" />
               <span className="text-sm font-medium text-foreground group-hover:text-white transition-colors">
                 {t.create_npc}
               </span>
