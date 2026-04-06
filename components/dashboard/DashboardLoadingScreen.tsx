@@ -15,9 +15,9 @@ const LOADING_MESSAGE_KEYS = [
   "msg_polishing_armor",
 ] as const;
 
-const ICONS_TO_SHOW = 4;
-const ICON_DURATION_MS = 600;
-const MIN_DISPLAY_MS = ICONS_TO_SHOW * ICON_DURATION_MS; // 2.4s
+const ICONS_TO_SHOW = 3;
+const ICON_DURATION_MS = 1000;
+const MIN_DISPLAY_MS = ICONS_TO_SHOW * ICON_DURATION_MS; // 3s
 
 /** Pick N random unique indices from an array of length `total`. */
 function pickRandom(total: number, count: number): number[] {
@@ -153,21 +153,21 @@ export function DashboardLoadingScreen() {
   const [pickedMessages, setPickedMessages] = useState([0, 1, 2, 3]);
   const isWelcomeRef = useRef(false);
 
-  // Detect ?welcome=1 on mount (client-side only)
+  // Show loading screen on every dashboard entry (layout mounts once per navigation)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("welcome") !== "1") return;
     isWelcomeRef.current = true;
     setShowLoader(true);
     setPickedIcons(pickRandom(ICON_COMPONENTS.length, ICONS_TO_SHOW));
     setPickedMessages(pickRandom(LOADING_MESSAGE_KEYS.length, ICONS_TO_SHOW));
 
-    // Auto-dismiss after min display time and clean URL
+    // Auto-dismiss after min display time and clean ?welcome param if present
     const timer = setTimeout(() => {
       setShowLoader(false);
       const url = new URL(window.location.href);
-      url.searchParams.delete("welcome");
-      window.history.replaceState({}, "", url.pathname + url.search);
+      if (url.searchParams.has("welcome")) {
+        url.searchParams.delete("welcome");
+        window.history.replaceState({}, "", url.pathname + url.search);
+      }
     }, MIN_DISPLAY_MS);
     return () => clearTimeout(timer);
   }, []);
