@@ -20,6 +20,7 @@ import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
 import { calculateDifficulty, type FormulaVersion } from "@/lib/utils/cr-calculator";
 import { BUILDER_STARTER_ENCOUNTERS, type BuilderStarterEncounter } from "@/lib/data/starter-encounters";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface MonsterOption {
   name: string;
@@ -84,6 +85,24 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
       .finally(() => setPresetsLoading(false));
   }, [campaignId]);
 
+  // P4: Sync localCharacters when parent prop changes (e.g. CharacterForm edit)
+  useEffect(() => {
+    setLocalCharacters((prev) => {
+      // Preserve local level edits, merge everything else from prop
+      const localLevels = new Map(prev.map((c) => [c.id, c.level]));
+      return characters.map((c) => ({
+        ...c,
+        level: localLevels.has(c.id) ? localLevels.get(c.id)! : c.level,
+      }));
+    });
+  }, [characters]);
+
+  // P1: Cleanup debounce timers on unmount
+  useEffect(() => {
+    const timers = levelTimers.current;
+    return () => Object.values(timers).forEach(clearTimeout);
+  }, []);
+
   // ── Computed party data ──
   const { partySize, partyLevel, playerLevels } = useMemo(() => {
     const selectedChars = localCharacters.filter((c) =>
@@ -99,23 +118,34 @@ export function CampaignEncounterBuilder({ campaignId, members, characters, mons
   }, [selectedCharacterIds, localCharacters]);
 
   // ── Inline level change (debounced persist) ──
-  const handleLevelChange = useCallback(
-    (charId: string, level: number) => {
+  const handleLevelChange: (charId: string, level: number | null) => void = useCallback(
+    (charId, level) => {
+      // P3: Update local state immediately (null = user clearing the field)
       setLocalCharacters((prev) =>
         prev.map((c) => (c.id === charId ? { ...c, level } : c))
       );
-      // Debounce Supabase update
+      // Only persist valid levels to Supabase
+      if (level === null) return;
       if (levelTimers.current[charId]) clearTimeout(levelTimers.current[charId]);
       levelTimers.current[charId] = setTimeout(async () => {
         const supabase = createClient();
-        await supabase
+        // P2: Error handling with rollback
+        const { error } = await supabase
           .from("player_characters")
           .update({ level })
           .eq("id", charId)
           .eq("campaign_id", campaignId);
+        if (error) {
+          // Rollback local state to the prop value
+          const original = characters.find((c) => c.id === charId);
+          setLocalCharacters((prev) =>
+            prev.map((c) => (c.id === charId ? { ...c, level: original?.level ?? null } : c))
+          );
+          toast.error(t("error_save"));
+        }
       }, 600);
     },
-    [campaignId]
+    [campaignId, characters, t]
   );
 
   // ── Monster search ──
