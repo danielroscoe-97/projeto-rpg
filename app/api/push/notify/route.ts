@@ -18,6 +18,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 import {
   sendPushNotification,
   PushSubscriptionExpiredError,
@@ -37,11 +38,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    // Verify caller is authenticated and owns the session (DM only)
+    const supabaseAuth = await createServerClient();
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // Service role to read subscriptions (bypasses RLS)
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
+
+    // Verify the caller is the DM (session owner)
+    const { data: session } = await supabase
+      .from("sessions")
+      .select("owner_id")
+      .eq("id", sessionId)
+      .eq("is_active", true)
+      .single();
+
+    if (!session || session.owner_id !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // Fetch all push subscriptions for this player in this session
     const { data: subs, error } = await supabase

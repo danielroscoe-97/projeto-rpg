@@ -1,5 +1,6 @@
 import { ORACLE_SYSTEM_PROMPT } from "@/lib/oracle-ai/system-prompt";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 import { captureError } from "@/lib/errors/capture";
 
 export const runtime = "nodejs";
@@ -70,6 +71,17 @@ export async function POST(request: Request) {
     );
   }
 
+  // Require authenticated user — Oracle AI is a logged-in feature
+  const supabaseAuth = await createServerClient();
+  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+
+  if (authError || !user) {
+    return Response.json(
+      { error: "Authentication required to use Oracle AI." },
+      { status: 401 },
+    );
+  }
+
   const ip =
     request.headers.get("x-real-ip") ||
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -80,7 +92,7 @@ export async function POST(request: Request) {
   try {
     if (!supabase) throw new Error("Supabase not configured for rate limiting");
     const { data: allowed, error } = await supabase.rpc("check_rate_limit", {
-      p_key: `oracle:${ip}`,
+      p_key: `oracle:${user.id}`,
       p_max: 20,
       p_window_seconds: 3600,
     });

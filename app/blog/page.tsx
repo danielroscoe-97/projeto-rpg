@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { BlogGrid } from "@/components/blog/BlogGrid";
+import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 
 export const metadata: Metadata = {
   title: "Blog — Dicas para Mestres de D&D 5e",
@@ -35,22 +35,7 @@ export default function BlogIndexPage() {
           { href: "/magias", label: "Magias" },
           { href: "/pricing", label: "Preços" },
         ]}
-        rightSlot={
-          <>
-            <Link
-              href="/auth/login"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center text-sm"
-            >
-              Login
-            </Link>
-            <Link
-              href="/try"
-              className="bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms]"
-            >
-              Testar Grátis
-            </Link>
-          </>
-        }
+        rightSlot={<BlogNavAuthSlot />}
       />
 
       <main className="flex-1 pt-[72px]">

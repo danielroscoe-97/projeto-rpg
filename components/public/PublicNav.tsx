@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PublicNavAuthSlot } from "./PublicNavAuthSlot";
 
 interface PublicNavProps {
   breadcrumbs?: { label: string; href?: string }[];
@@ -143,20 +144,9 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
           </Link>
         </div>
 
-        {/* Right: CTA */}
+        {/* Right: auth-aware CTA */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <Link
-            href="/try"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-[#D4A853] px-3 py-1.5 text-white text-sm font-semibold hover:bg-[#D4A853]/90 transition-colors"
-          >
-            {l.tryFree}
-          </Link>
-          <Link
-            href="/auth/sign-up"
-            className="inline-flex items-center gap-1.5 rounded-md border border-[#D4A853]/30 px-3 py-1.5 text-[#D4A853] text-sm font-semibold hover:bg-[#D4A853]/10 transition-colors"
-          >
-            {l.signUp}
-          </Link>
+          <PublicNavAuthSlot locale={locale} />
         </div>
       </div>
     </nav>

@@ -35,6 +35,20 @@ export async function POST(req: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
+    // Verify session exists, is active, and player has an active token in it
+    const { data: token } = await supabase
+      .from("session_tokens")
+      .select("id")
+      .eq("session_id", sessionId)
+      .eq("player_name", playerName)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (!token) {
+      return NextResponse.json({ error: "Invalid session or player" }, { status: 403 });
+    }
+
     const userAgent = req.headers.get("user-agent") ?? undefined;
 
     // Upsert: same endpoint in the same session → just update player_name/keys
@@ -83,6 +97,18 @@ export async function DELETE(req: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
+
+    // Verify subscription belongs to an active session before deleting
+    const { data: sub } = await supabase
+      .from("player_push_subscriptions")
+      .select("id")
+      .eq("session_id", sessionId)
+      .eq("endpoint", endpoint)
+      .maybeSingle();
+
+    if (!sub) {
+      return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
+    }
 
     const { error } = await supabase
       .from("player_push_subscriptions")

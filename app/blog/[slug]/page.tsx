@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { BLOG_POSTS, BLOG_CATEGORIES, getPostBySlug } from "@/lib/blog/posts";
+import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 import {
   BlogPost1,
   BlogPost2,
@@ -169,22 +170,7 @@ export default async function BlogPostPage({
           { href: "/magias", label: "Magias" },
           { href: "/pricing", label: "Preços" },
         ]}
-        rightSlot={
-          <>
-            <Link
-              href="/auth/login"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center text-sm"
-            >
-              Login
-            </Link>
-            <Link
-              href="/try"
-              className="bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms]"
-            >
-              Testar Grátis
-            </Link>
-          </>
-        }
+        rightSlot={<BlogNavAuthSlot />}
       />
 
       <main className="flex-1 pt-[72px]">

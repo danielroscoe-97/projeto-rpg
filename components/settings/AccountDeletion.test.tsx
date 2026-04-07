@@ -6,8 +6,9 @@ import { AccountDeletion } from "./AccountDeletion";
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
 const mockPush = jest.fn();
+const mockRefresh = jest.fn();
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
 }));
 
 const mockSignOut = jest.fn();
@@ -15,6 +16,18 @@ jest.mock("@/lib/supabase/client", () => ({
   createClient: jest.fn(() => ({
     auth: { signOut: mockSignOut },
   })),
+}));
+
+const mockResetRole = jest.fn();
+jest.mock("@/lib/stores/role-store", () => ({
+  useRoleStore: (selector: (s: { reset: () => void }) => unknown) =>
+    selector({ reset: mockResetRole }),
+}));
+
+const mockResetSubscription = jest.fn();
+jest.mock("@/lib/stores/subscription-store", () => ({
+  useSubscriptionStore: (selector: (s: { reset: () => void }) => unknown) =>
+    selector({ reset: mockResetSubscription }),
 }));
 
 const mockFetch = jest.fn();
@@ -96,7 +109,10 @@ describe("AccountDeletion", () => {
       { method: "POST" }
     ));
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled());
+    await waitFor(() => expect(mockResetRole).toHaveBeenCalled());
+    await waitFor(() => expect(mockResetSubscription).toHaveBeenCalled());
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith("/"));
+    await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });
 
   it("shows loading state while deletion is in progress", async () => {

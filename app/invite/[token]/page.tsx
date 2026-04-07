@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -13,10 +13,12 @@ interface InvitePageProps {
 export default async function InvitePage({ params }: InvitePageProps) {
   const { token } = await params;
   const t = await getTranslations("campaign");
-  const supabase = await createClient();
+
+  // Use service client for invite lookup — RLS no longer allows public reads
+  const supabaseService = createServiceClient();
 
   // Validate invite token
-  const { data: invite } = await supabase
+  const { data: invite } = await supabaseService
     .from("campaign_invites")
     .select("id, campaign_id, email, status, expires_at, campaigns(name, owner_id, users(display_name, email))")
     .eq("token", token)
@@ -64,7 +66,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
     );
   }
 
-  // Check if user is authenticated
+  // Check if user is authenticated (needs cookie-based client for auth)
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const campaignData = invite.campaigns as unknown as {

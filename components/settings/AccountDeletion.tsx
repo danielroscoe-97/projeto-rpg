@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { useRoleStore } from "@/lib/stores/role-store";
+import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -24,6 +26,8 @@ export function AccountDeletion() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const resetRole = useRoleStore((s) => s.reset);
+  const resetSubscription = useSubscriptionStore((s) => s.reset);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -36,7 +40,10 @@ export function AccountDeletion() {
       }
       const supabase = createClient();
       await supabase.auth.signOut();
+      resetRole();
+      resetSubscription();
       router.push("/");
+      router.refresh();
     } catch (err) {
       setError(
         err instanceof Error

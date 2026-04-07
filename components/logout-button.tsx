@@ -17,6 +17,7 @@ export function LogoutButton() {
     resetRole();
     resetSubscription();
     router.push("/");
+    router.refresh();
   };
 
   return (

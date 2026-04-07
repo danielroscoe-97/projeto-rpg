@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useRoleStore } from "@/lib/stores/role-store";
+import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 
 interface Props {
   displayName: string;
@@ -20,11 +21,14 @@ interface Props {
 export function LandingLoggedInNav({ displayName }: Props) {
   const router = useRouter();
   const resetRole = useRoleStore((s) => s.reset);
+  const resetSubscription = useSubscriptionStore((s) => s.reset);
 
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
     resetRole();
+    resetSubscription();
+    router.push("/");
     router.refresh();
   };
 
