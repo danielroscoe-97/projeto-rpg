@@ -140,9 +140,8 @@ function DragonIcon({ className }: { className?: string }) {
 const ICON_COMPONENTS = [D20Icon, WizardHatIcon, SwordIcon, SpellBookIcon, PotionIcon, ShieldIcon, ScrollIcon, DragonIcon];
 
 /**
- * RPG-themed loading screen shown after login.
- * Triggered by ?welcome=1 URL param, auto-dismisses after ~2.4s.
- * SVG icons cycle with flavor text to mask RSC/data loading.
+ * RPG-themed loading screen shown once per browser session on first dashboard visit.
+ * Auto-dismisses after ~3s. SVG icons cycle with flavor text to mask RSC/data loading.
  */
 export function DashboardLoadingScreen() {
   const t = useTranslations("dashboard_loading");
@@ -153,13 +152,7 @@ export function DashboardLoadingScreen() {
   const [pickedMessages, setPickedMessages] = useState([0, 1, 2, 3]);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const shouldShowWelcomeLoader = url.searchParams.get("welcome") === "1";
-
-    if (!shouldShowWelcomeLoader) {
-      return;
-    }
-
+    // Show loader once per browser session (first dashboard visit)
     let hasShownInSession = false;
     try {
       hasShownInSession = sessionStorage.getItem(DASHBOARD_WELCOME_LOADER_SESSION_KEY) === "1";
@@ -167,9 +160,14 @@ export function DashboardLoadingScreen() {
       hasShownInSession = false;
     }
 
-    if (hasShownInSession) {
+    // Clean ?welcome param if present (legacy from auth/confirm redirect)
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("welcome")) {
       url.searchParams.delete("welcome");
       window.history.replaceState({}, "", url.pathname + url.search);
+    }
+
+    if (hasShownInSession) {
       return;
     }
 
@@ -186,10 +184,6 @@ export function DashboardLoadingScreen() {
 
     const timer = setTimeout(() => {
       setShowLoader(false);
-      if (url.searchParams.has("welcome")) {
-        url.searchParams.delete("welcome");
-        window.history.replaceState({}, "", url.pathname + url.search);
-      }
     }, MIN_DISPLAY_MS);
     return () => clearTimeout(timer);
   }, []);
