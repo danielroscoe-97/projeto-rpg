@@ -2647,6 +2647,16 @@
     "msg_consulting_oracle": "Consulting the oracle...",
     "msg_polishing_armor": "Polishing armor..."
   },
+  "campaign_loading": {
+    "msg_gathering_party": "Gathering the party...",
+    "msg_unfurling_map": "Unfurling the map...",
+    "msg_loading_quests": "Loading quest log...",
+    "msg_preparing_battlefield": "Preparing the battlefield...",
+    "msg_summoning_allies": "Summoning allies...",
+    "msg_reading_chronicle": "Reading the chronicle...",
+    "msg_setting_camp": "Setting up camp...",
+    "msg_scouting_ahead": "Scouting ahead..."
+  },
   "srd_loading": {
     "msg_cataloging_monsters": "Cataloging monsters...",
     "msg_rolling_initiative": "Rolling initiative order...",

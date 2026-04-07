@@ -2647,6 +2647,16 @@
     "msg_consulting_oracle": "Consultando o oráculo...",
     "msg_polishing_armor": "Polindo a armadura..."
   },
+  "campaign_loading": {
+    "msg_gathering_party": "Reunindo o grupo...",
+    "msg_unfurling_map": "Desenrolando o mapa...",
+    "msg_loading_quests": "Carregando diário de missões...",
+    "msg_preparing_battlefield": "Preparando o campo de batalha...",
+    "msg_summoning_allies": "Convocando aliados...",
+    "msg_reading_chronicle": "Lendo a crônica...",
+    "msg_setting_camp": "Montando acampamento...",
+    "msg_scouting_ahead": "Explorando adiante..."
+  },
   "srd_loading": {
     "msg_cataloging_monsters": "Catalogando monstros...",
     "msg_rolling_initiative": "Reunindo ordem de iniciativa...",

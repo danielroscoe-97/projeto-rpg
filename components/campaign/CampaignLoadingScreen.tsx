@@ -6,27 +6,27 @@ import { useTranslations } from "next-intl";
 import { RPG_ICON_COMPONENTS, pickRandom } from "@/components/loading/RpgLoadingIcons";
 
 const LOADING_MESSAGE_KEYS = [
-  "msg_rolling_initiative",
-  "msg_opening_grimoire",
-  "msg_lighting_torches",
-  "msg_summoning_familiar",
-  "msg_checking_sheets",
-  "msg_entering_dungeon",
-  "msg_consulting_oracle",
-  "msg_polishing_armor",
+  "msg_gathering_party",
+  "msg_unfurling_map",
+  "msg_loading_quests",
+  "msg_preparing_battlefield",
+  "msg_summoning_allies",
+  "msg_reading_chronicle",
+  "msg_setting_camp",
+  "msg_scouting_ahead",
 ] as const;
 
 const ICONS_TO_SHOW = 3;
 const ICON_DURATION_MS = 1000;
 const MIN_DISPLAY_MS = ICONS_TO_SHOW * ICON_DURATION_MS; // 3s
-const DASHBOARD_WELCOME_LOADER_SESSION_KEY = "dashboardWelcomeLoaderShown";
+const CAMPAIGN_LOADER_SESSION_PREFIX = "campaignLoaderShown_";
 
 /**
- * RPG-themed loading screen shown once per browser session on first dashboard visit.
+ * RPG-themed loading screen shown once per browser session on first visit to each campaign.
  * Auto-dismisses after ~3s. SVG icons cycle with flavor text to mask RSC/data loading.
  */
-export function DashboardLoadingScreen() {
-  const t = useTranslations("dashboard_loading");
+export function CampaignLoadingScreen({ campaignId }: { campaignId: string }) {
+  const t = useTranslations("campaign_loading");
 
   const [showLoader, setShowLoader] = useState(false);
   const [iconSlot, setIconSlot] = useState(0);
@@ -34,19 +34,13 @@ export function DashboardLoadingScreen() {
   const [pickedMessages, setPickedMessages] = useState([0, 1, 2]);
 
   useEffect(() => {
-    // Show loader once per browser session (first dashboard visit)
+    const sessionKey = `${CAMPAIGN_LOADER_SESSION_PREFIX}${campaignId}`;
+
     let hasShownInSession = false;
     try {
-      hasShownInSession = sessionStorage.getItem(DASHBOARD_WELCOME_LOADER_SESSION_KEY) === "1";
+      hasShownInSession = sessionStorage.getItem(sessionKey) === "1";
     } catch {
       hasShownInSession = false;
-    }
-
-    // Clean ?welcome param if present (legacy from auth/confirm redirect)
-    const url = new URL(window.location.href);
-    if (url.searchParams.has("welcome")) {
-      url.searchParams.delete("welcome");
-      window.history.replaceState({}, "", url.pathname + url.search);
     }
 
     if (hasShownInSession) {
@@ -54,7 +48,7 @@ export function DashboardLoadingScreen() {
     }
 
     try {
-      sessionStorage.setItem(DASHBOARD_WELCOME_LOADER_SESSION_KEY, "1");
+      sessionStorage.setItem(sessionKey, "1");
     } catch {
       // sessionStorage can fail in restricted contexts; loader still works for this visit
     }
@@ -68,7 +62,7 @@ export function DashboardLoadingScreen() {
       setShowLoader(false);
     }, MIN_DISPLAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [campaignId]);
 
   // Cycle through icons
   useEffect(() => {
@@ -92,7 +86,7 @@ export function DashboardLoadingScreen() {
       <AnimatePresence>
         {showLoader && (
           <motion.div
-            key="dashboard-loader"
+            key="campaign-loader"
             className="w-full h-full flex flex-col items-center justify-center bg-surface-primary"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
