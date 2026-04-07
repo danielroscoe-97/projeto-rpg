@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useTourStore } from "@/lib/stores/tour-store";
-import { buildMonsterIndex, searchMonsters, mergeImportedMonsters } from "@/lib/srd/srd-search";
+import Fuse from "fuse.js";
+import { mergeImportedMonsters } from "@/lib/srd/srd-search";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
@@ -190,6 +191,7 @@ export function MonsterSearchPanel({
   const listRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const madMonstersRef = useRef<SrdMonster[]>([]);
+  const fuseRef = useRef<Fuse<SrdMonster> | null>(null);
 
   // Check if user has imported content
   useEffect(() => {
@@ -221,8 +223,21 @@ export function MonsterSearchPanel({
     loadMonsters(rulesetVersion)
       .then((monsters) => {
         if (!cancelled) {
-          buildMonsterIndex(monsters);
-          // Re-merge MAD monsters after index rebuild (buildMonsterIndex wipes the map)
+          // Build a LOCAL Fuse instance so the SRD store's global index
+          // rebuild (Phase 1 → 2024 only) doesn't overwrite our data.
+          fuseRef.current = new Fuse(monsters, {
+            keys: [
+              { name: "name", weight: 0.5 },
+              { name: "type", weight: 0.3 },
+              { name: "cr", weight: 0.2 },
+            ],
+            threshold: 0.35,
+            ignoreLocation: true,
+            includeScore: true,
+            minMatchCharLength: 2,
+          });
+          // Still merge into global map so getMonsterById() works for pinned cards
+          mergeImportedMonsters(monsters);
           if (madMonstersRef.current.length > 0) {
             mergeImportedMonsters(madMonstersRef.current);
           }
@@ -259,8 +274,10 @@ export function MonsterSearchPanel({
         // MAD-only: simple name search (no Fuse)
         base = q ? madMonsters.filter((m) => m.name.toLowerCase().includes(q)) : madMonsters;
       } else {
-        // 5e.tools sources: use Fuse when there's a query
-        base = q ? searchMonsters(query, rulesetVersion).map((r) => r.item) : allMonsters;
+        // 5e.tools sources: use local Fuse when there's a query
+        base = q && fuseRef.current
+          ? fuseRef.current.search(query).map((r) => r.item)
+          : allMonsters;
 
         if (sourceFilter === "srd") {
           base = base.filter((m) => m.is_srd === true);
