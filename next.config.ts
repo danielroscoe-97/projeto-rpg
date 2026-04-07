@@ -6,6 +6,11 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const isDev = process.env.NODE_ENV !== "production";
 
 const nextConfig: NextConfig = {
+  // Ensure data/srd/ JSON bundles are included in serverless function bundles.
+  // readFileSync with dynamic paths isn't always traced by Vercel NFT.
+  outputFileTracingIncludes: {
+    "/api/srd/full/**": ["./data/srd/**/*"],
+  },
   async headers() {
     return [
       {

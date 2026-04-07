@@ -7,6 +7,7 @@ import {
   loadItems,
   loadMadMonsters,
   loadFeats,
+  clearAllLoaderCaches,
 } from "@/lib/srd/srd-loader";
 import {
   getCachedMonsters,
@@ -87,8 +88,10 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
     if (monsters.length > 0 && loadedMode === requestedMode) return;
 
     // If the user changed from public SRD to full-data mode (or back) in the
-    // same tab, drop the in-memory snapshot and reload the correct dataset.
+    // same tab, drop the in-memory snapshot AND the module-level fetch caches
+    // so loadMonsters/loadSpells/etc. actually re-fetch from the correct URL.
     if (loadedMode && loadedMode !== requestedMode) {
+      clearAllLoaderCaches();
       set({
         monsters: [],
         spells: [],

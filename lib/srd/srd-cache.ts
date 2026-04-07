@@ -99,7 +99,7 @@ export async function setCachedSpells(
 export async function getCachedConditions(): Promise<SrdCondition[] | null> {
   try {
     const db = await getDb();
-    const result = await db.get("conditions", "all");
+    const result = await db.get("conditions", `all${cacheSuffix()}`);
     return result ?? null;
   } catch {
     return null;
@@ -111,7 +111,7 @@ export async function setCachedConditions(
 ): Promise<void> {
   try {
     const db = await getDb();
-    await db.put("conditions", data, "all");
+    await db.put("conditions", data, `all${cacheSuffix()}`);
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }
@@ -120,7 +120,7 @@ export async function setCachedConditions(
 export async function getCachedItems(): Promise<SrdItem[] | null> {
   try {
     const db = await getDb();
-    const result = await db.get("items", "all");
+    const result = await db.get("items", `all${cacheSuffix()}`);
     return result ?? null;
   } catch {
     return null;
@@ -132,7 +132,7 @@ export async function setCachedItems(
 ): Promise<void> {
   try {
     const db = await getDb();
-    await db.put("items", data, "all");
+    await db.put("items", data, `all${cacheSuffix()}`);
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }
@@ -141,7 +141,7 @@ export async function setCachedItems(
 export async function getCachedFeats(): Promise<SrdFeat[] | null> {
   try {
     const db = await getDb();
-    const result = await db.get("feats", "all");
+    const result = await db.get("feats", `all${cacheSuffix()}`);
     return result ?? null;
   } catch {
     return null;
@@ -153,7 +153,7 @@ export async function setCachedFeats(
 ): Promise<void> {
   try {
     const db = await getDb();
-    await db.put("feats", data, "all");
+    await db.put("feats", data, `all${cacheSuffix()}`);
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }

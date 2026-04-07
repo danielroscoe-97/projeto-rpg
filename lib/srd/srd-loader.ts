@@ -1,5 +1,5 @@
 import type { RulesetVersion } from "@/lib/types/database";
-import { srdDataUrl } from "./srd-mode";
+import { srdDataUrl, isFullDataMode } from "./srd-mode";
 
 export interface MonsterAction {
   name: string;
@@ -180,12 +180,25 @@ export interface SrdFeat {
   ruleset_version: string;
 }
 
-const monsterCache = new Map<RulesetVersion, Promise<SrdMonster[]>>();
+const monsterCache = new Map<string, Promise<SrdMonster[]>>();
+
+/** Cache key that includes version + data mode so public/full never collide. */
+function loaderCacheKey(version: string): string {
+  return `${version}-${isFullDataMode() ? "full" : "public"}`;
+}
 
 /** @internal — exposed only for test isolation */
 export function _clearMonsterCache() {
   monsterCache.clear();
-  madMonsterCache = null;
+  madMonsterCache.clear();
+}
+
+/** Clear ALL module-level loader caches. Call when data mode changes. */
+export function clearAllLoaderCaches() {
+  monsterCache.clear();
+  madMonsterCache.clear();
+  featCache.clear();
+  itemCache.clear();
 }
 
 /** Fetches the SRD monster bundle for a given ruleset version.
@@ -193,38 +206,42 @@ export function _clearMonsterCache() {
 export function loadMonsters(
   version: RulesetVersion
 ): Promise<SrdMonster[]> {
-  const cached = monsterCache.get(version);
+  const key = loaderCacheKey(version);
+  const cached = monsterCache.get(key);
   if (cached) return cached;
   const promise = fetch(srdDataUrl(`monsters-${version}.json`)).then((res) => {
     if (!res.ok) {
-      monsterCache.delete(version);
+      monsterCache.delete(key);
       throw new Error(`Failed to load SRD monsters (${version}): ${res.status}`);
     }
     return res.json() as Promise<SrdMonster[]>;
   });
-  monsterCache.set(version, promise);
+  monsterCache.set(key, promise);
   return promise;
 }
 
-let madMonsterCache: Promise<SrdMonster[]> | null = null;
+const madMonsterCache = new Map<string, Promise<SrdMonster[]>>();
 
 /** Fetches the Monster-a-Day community monsters bundle.
  *  Returns empty array if file is missing (non-critical). */
 export function loadMadMonsters(): Promise<SrdMonster[]> {
-  if (madMonsterCache) return madMonsterCache;
-  madMonsterCache = fetch(srdDataUrl("monsters-mad.json"))
+  const key = loaderCacheKey("mad");
+  const cached = madMonsterCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl("monsters-mad.json"))
     .then((res) => {
       if (!res.ok) {
-        madMonsterCache = null;
+        madMonsterCache.delete(key);
         return [] as SrdMonster[];
       }
       return res.json() as Promise<SrdMonster[]>;
     })
     .catch(() => {
-      madMonsterCache = null;
+      madMonsterCache.delete(key);
       return [] as SrdMonster[];
     });
-  return madMonsterCache;
+  madMonsterCache.set(key, promise);
+  return promise;
 }
 
 /** Fetches the SRD spell bundle for a given ruleset version.
@@ -252,7 +269,7 @@ export async function loadConditions(): Promise<SrdCondition[]> {
 const featCache = new Map<string, Promise<SrdFeat[]>>();
 
 export function loadFeats(): Promise<SrdFeat[]> {
-  const key = "all";
+  const key = loaderCacheKey("all");
   const cached = featCache.get(key);
   if (cached) return cached;
   const promise = fetch(srdDataUrl("feats.json")).then((res) => {
@@ -272,7 +289,7 @@ const itemCache = new Map<string, Promise<SrdItem[]>>();
  *  Filters to SRD/Basic Rules items only (defense in depth — server also filters).
  *  Promise is cached so multiple callers share one fetch+parse. */
 export function loadItems(): Promise<SrdItem[]> {
-  const key = "all";
+  const key = loaderCacheKey("all");
   const cached = itemCache.get(key);
   if (cached) return cached;
   const promise = fetch(srdDataUrl("items.json")).then((res) => {
