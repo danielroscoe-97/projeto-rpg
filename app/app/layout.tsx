@@ -128,7 +128,7 @@ export default async function AppLayout({
           {children}
         </ErrorBoundary>
       </main>
-      <footer className="border-t border-white/[0.08] px-6 py-3 flex items-center gap-4 text-xs text-muted-foreground shrink-0">
+      <footer className="lg:hidden border-t border-white/[0.08] px-6 py-3 flex items-center gap-4 text-xs text-muted-foreground shrink-0">
         <a href="/legal/attribution" className="hover:text-foreground transition-colors">{t("attribution")}</a>
         <a href="/legal/privacy" className="hover:text-foreground transition-colors">{t("privacy")}</a>
       </footer>
