@@ -173,6 +173,7 @@
 |---------|-----------|--------|
 | [discovery-audio-feedback-2026-03-28.md](discovery-audio-feedback-2026-03-28.md) | Discovery de áudio e feedback | concluído |
 | [discovery-mobile-bugs-campaigns-2026-03-28.md](discovery-mobile-bugs-campaigns-2026-03-28.md) | Bugs mobile em campanhas | concluído |
+| [srd-full-data-pipeline-2026-04-07.md](srd-full-data-pipeline-2026-04-07.md) | **Arquitetura SRD dual-mode + 3 bugfixes** (loader caches, Fuse race condition, filtro non-SRD) | concluído |
 | [bugfix-dashboard-welcome-loader-2026-04-07.md](bugfix-dashboard-welcome-loader-2026-04-07.md) | Welcome loader do dashboard passa a aparecer apenas na primeira entrada da sessão | concluído |
 | [fix-guided-tour-mobile-2026-03-28.md](fix-guided-tour-mobile-2026-03-28.md) | Fix guided tour no mobile | concluído |
 | [lp-mobile-party-mode-audit-2026-03-29.md](lp-mobile-party-mode-audit-2026-03-29.md) | Auditoria LP mobile + party mode | concluído |
