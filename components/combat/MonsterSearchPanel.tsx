@@ -165,12 +165,12 @@ export function MonsterSearchPanel({
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const sourceManuallyChanged = useRef(false);
 
-  // Auto-switch to "complete" for admin/beta testers once access loads (auth only)
+  // Auto-switch to "complete" for admin/beta testers (full data mode = all content available)
   useEffect(() => {
-    if (extendedActive && !sourceManuallyChanged.current && isFullDataMode()) {
+    if (!sourceManuallyChanged.current && isFullDataMode()) {
       setSourceFilter("complete");
     }
-  }, [extendedActive]);
+  }, []);
   const [crMin, setCrMin] = useState("");
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
