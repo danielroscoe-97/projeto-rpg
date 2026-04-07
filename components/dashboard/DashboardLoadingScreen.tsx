@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 
@@ -18,6 +18,7 @@ const LOADING_MESSAGE_KEYS = [
 const ICONS_TO_SHOW = 3;
 const ICON_DURATION_MS = 1000;
 const MIN_DISPLAY_MS = ICONS_TO_SHOW * ICON_DURATION_MS; // 3s
+const DASHBOARD_WELCOME_LOADER_SESSION_KEY = "dashboardWelcomeLoaderShown";
 
 /** Pick N random unique indices from an array of length `total`. */
 function pickRandom(total: number, count: number): number[] {
@@ -146,24 +147,45 @@ const ICON_COMPONENTS = [D20Icon, WizardHatIcon, SwordIcon, SpellBookIcon, Potio
 export function DashboardLoadingScreen() {
   const t = useTranslations("dashboard_loading");
 
-  // Read ?welcome=1 from window.location on mount (avoids useSearchParams Suspense requirement)
   const [showLoader, setShowLoader] = useState(false);
   const [iconSlot, setIconSlot] = useState(0);
   const [pickedIcons, setPickedIcons] = useState([0, 1, 2, 3]);
   const [pickedMessages, setPickedMessages] = useState([0, 1, 2, 3]);
-  const isWelcomeRef = useRef(false);
 
-  // Show loading screen on every dashboard entry (layout mounts once per navigation)
   useEffect(() => {
-    isWelcomeRef.current = true;
+    const url = new URL(window.location.href);
+    const shouldShowWelcomeLoader = url.searchParams.get("welcome") === "1";
+
+    if (!shouldShowWelcomeLoader) {
+      return;
+    }
+
+    let hasShownInSession = false;
+    try {
+      hasShownInSession = sessionStorage.getItem(DASHBOARD_WELCOME_LOADER_SESSION_KEY) === "1";
+    } catch {
+      hasShownInSession = false;
+    }
+
+    if (hasShownInSession) {
+      url.searchParams.delete("welcome");
+      window.history.replaceState({}, "", url.pathname + url.search);
+      return;
+    }
+
+    try {
+      sessionStorage.setItem(DASHBOARD_WELCOME_LOADER_SESSION_KEY, "1");
+    } catch {
+      // sessionStorage can fail in restricted contexts; loader still works for this visit
+    }
+
     setShowLoader(true);
+    setIconSlot(0);
     setPickedIcons(pickRandom(ICON_COMPONENTS.length, ICONS_TO_SHOW));
     setPickedMessages(pickRandom(LOADING_MESSAGE_KEYS.length, ICONS_TO_SHOW));
 
-    // Auto-dismiss after min display time and clean ?welcome param if present
     const timer = setTimeout(() => {
       setShowLoader(false);
-      const url = new URL(window.location.href);
       if (url.searchParams.has("welcome")) {
         url.searchParams.delete("welcome");
         window.history.replaceState({}, "", url.pathname + url.search);

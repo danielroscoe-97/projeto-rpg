@@ -2,6 +2,7 @@ import { useSrdStore } from "./srd-store";
 import * as loader from "@/lib/srd/srd-loader";
 import * as cache from "@/lib/srd/srd-cache";
 import * as fuseProvider from "@/lib/srd/fuse-search-provider";
+import * as srdMode from "@/lib/srd/srd-mode";
 
 jest.mock("@/lib/srd/srd-loader");
 jest.mock("@/lib/srd/srd-cache");
@@ -23,11 +24,19 @@ const MONSTERS_2014 = [
 const MONSTERS_2024 = [
   { id: "goblin-2024", name: "Goblin", cr: "1/4", type: "humanoid", hit_points: 10, armor_class: 15, ruleset_version: "2024" as const },
 ];
+const FULL_MONSTERS_2024 = [
+  ...MONSTERS_2024,
+  { id: "beholder", name: "Beholder", cr: "13", type: "aberration", hit_points: 180, armor_class: 18, ruleset_version: "2024" as const, is_srd: false },
+];
 const SPELLS_2014 = [
   { id: "fireball", name: "Fireball", ruleset_version: "2014" as const, level: 3, school: "Evocation", casting_time: "1 action", range: "150 feet", components: "V, S, M", duration: "Instantaneous", description: "...", higher_levels: null, classes: ["Wizard"], ritual: false, concentration: false },
 ];
 const SPELLS_2024 = [
   { id: "fireball-2024", name: "Fireball", ruleset_version: "2024" as const, level: 3, school: "Evocation", casting_time: "1 action", range: "150 feet", components: "V, S, M", duration: "Instantaneous", description: "...", higher_levels: null, classes: ["Wizard"], ritual: false, concentration: false },
+];
+const FULL_SPELLS_2024 = [
+  ...SPELLS_2024,
+  { id: "silvery-barbs", name: "Silvery Barbs", ruleset_version: "2024" as const, level: 1, school: "Enchantment", casting_time: "1 reaction", range: "60 feet", components: "V", duration: "Instantaneous", description: "...", higher_levels: null, classes: ["Wizard"], ritual: false, concentration: false, is_srd: false },
 ];
 const CONDITIONS = [
   { id: "blinded", name: "Blinded", description: "Can't see." },
@@ -52,13 +61,16 @@ function flushIdleCallbacks() {
 beforeEach(() => {
   jest.clearAllMocks();
   idleCallbacks = [];
+  jest.spyOn(srdMode, "isFullDataMode").mockReturnValue(false);
   // Reset store state between tests
   useSrdStore.setState({
     monsters: [],
     spells: [],
     conditions: [],
     items: [],
+    feats: [],
     is_loading: false,
+    loadedMode: null,
     loadedVersions: new Set(),
     error: null,
   });
@@ -74,13 +86,27 @@ beforeEach(() => {
   (cache.setCachedItems as jest.Mock).mockResolvedValue(undefined);
 
   (loader.loadMonsters as jest.Mock).mockImplementation((v: string) =>
-    Promise.resolve(v === "2014" ? MONSTERS_2014 : MONSTERS_2024)
+    Promise.resolve(
+      v === "2014"
+        ? MONSTERS_2014
+        : srdMode.isFullDataMode()
+          ? FULL_MONSTERS_2024
+          : MONSTERS_2024
+    )
   );
   (loader.loadSpells as jest.Mock).mockImplementation((v: string) =>
-    Promise.resolve(v === "2014" ? SPELLS_2014 : SPELLS_2024)
+    Promise.resolve(
+      v === "2014"
+        ? SPELLS_2014
+        : srdMode.isFullDataMode()
+          ? FULL_SPELLS_2024
+          : SPELLS_2024
+    )
   );
   (loader.loadConditions as jest.Mock).mockResolvedValue(CONDITIONS);
   (loader.loadItems as jest.Mock).mockResolvedValue(ITEMS);
+  (loader.loadMadMonsters as jest.Mock).mockResolvedValue([]);
+  (loader.loadFeats as jest.Mock).mockResolvedValue([]);
 
   (provider.buildMonsterIndex as jest.Mock).mockImplementation(() => {});
   (provider.buildSpellIndex as jest.Mock).mockImplementation(() => {});
@@ -182,6 +208,22 @@ describe("useSrdStore.initializeSrd", () => {
   it("does not throw on failure — oracle degrades gracefully", async () => {
     (loader.loadMonsters as jest.Mock).mockRejectedValue(new Error("fail"));
     await expect(useSrdStore.getState().initializeSrd()).resolves.toBeUndefined();
+  });
+  it("reloads the dataset when access switches from public to full in the same tab", async () => {
+    await useSrdStore.getState().initializeSrd();
+    expect(useSrdStore.getState().monsters).toEqual(MONSTERS_2024);
+    expect(useSrdStore.getState().loadedMode).toBe("public");
+
+    (srdMode.isFullDataMode as jest.Mock).mockReturnValue(true);
+
+    await useSrdStore.getState().initializeSrd();
+
+    const state = useSrdStore.getState();
+    expect(state.monsters).toEqual(FULL_MONSTERS_2024);
+    expect(state.spells).toEqual(FULL_SPELLS_2024);
+    expect(state.loadedMode).toBe("full");
+    expect(loader.loadMonsters).toHaveBeenCalledTimes(2);
+    expect(loader.loadSpells).toHaveBeenCalledTimes(2);
   });
 });
 
