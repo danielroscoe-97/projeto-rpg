@@ -23,6 +23,9 @@ import {
 import { srdSearchProvider } from "@/lib/srd/fuse-search-provider";
 import { getImportedMonsters } from "@/lib/import/import-cache";
 import type { RulesetVersion } from "@/lib/types/database";
+import { isFullDataMode } from "@/lib/srd/srd-mode";
+
+type SrdDataMode = "public" | "full";
 
 interface SrdState {
   monsters: SrdMonster[];
@@ -31,6 +34,8 @@ interface SrdState {
   items: SrdItem[];
   feats: SrdFeat[];
   is_loading: boolean;
+  /** Tracks whether the in-memory store was loaded from public or full SRD data. */
+  loadedMode: SrdDataMode | null;
   /** Tracks which SRD versions have been loaded */
   loadedVersions: Set<RulesetVersion>;
   error: string | null;
@@ -51,6 +56,7 @@ const initialState: SrdState = {
   items: [],
   feats: [],
   is_loading: false,
+  loadedMode: null,
   loadedVersions: new Set(),
   error: null,
 };
@@ -75,8 +81,25 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
   ...initialState,
 
   initializeSrd: async () => {
-    const { is_loading, monsters } = get();
-    if (is_loading || monsters.length > 0) return;
+    const requestedMode: SrdDataMode = isFullDataMode() ? "full" : "public";
+    const { is_loading, monsters, loadedMode } = get();
+    if (is_loading) return;
+    if (monsters.length > 0 && loadedMode === requestedMode) return;
+
+    // If the user changed from public SRD to full-data mode (or back) in the
+    // same tab, drop the in-memory snapshot and reload the correct dataset.
+    if (loadedMode && loadedMode !== requestedMode) {
+      set({
+        monsters: [],
+        spells: [],
+        conditions: [],
+        items: [],
+        feats: [],
+        loadedVersions: new Set(),
+        error: null,
+      });
+    }
+
     set({ is_loading: true, error: null });
     try {
       // Phase 1: Load primary version + conditions + items (critical path)
@@ -129,6 +152,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         conditions,
         items,
         is_loading: false,
+        loadedMode: requestedMode,
         loadedVersions: new Set([PRIMARY_VERSION]),
       });
 
@@ -170,12 +194,21 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to load SRD content";
-      set({ error: message, is_loading: false });
+      set({ error: message, is_loading: false, loadedMode: null });
     }
   },
 
   loadVersionOnDemand: async (version: RulesetVersion) => {
-    if (get().loadedVersions.has(version)) return;
+    const requestedMode: SrdDataMode = isFullDataMode() ? "full" : "public";
+    const { loadedVersions, loadedMode } = get();
+    if (loadedVersions.has(version) && loadedMode === requestedMode) return;
+
+    // If a deferred load from a previous mode fires after the user changes
+    // access level, re-bootstrap the store instead of mixing datasets.
+    if (loadedMode && loadedMode !== requestedMode) {
+      await get().initializeSrd();
+      return;
+    }
 
     try {
       const [newMonsters, newSpells] = await Promise.all([
@@ -204,6 +237,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
       set({
         monsters: mergedMonsters,
         spells: mergedSpells,
+        loadedMode: requestedMode,
         loadedVersions: new Set([...loadedVersions, version]),
       });
     } catch {
