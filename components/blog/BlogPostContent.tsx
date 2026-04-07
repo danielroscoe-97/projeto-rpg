@@ -116,37 +116,40 @@ export function BlogPost1() {
   return (
     <>
       <P>
-        Um <ProdLink href="/try">combat tracker</ProdLink> é uma ferramenta
-        digital que ajuda o mestre de D&D 5e a gerenciar encontros de combate de
-        forma rápida e organizada. Em vez de anotar tudo em papel, você rastreia
-        iniciativa, HP, condições e turnos em uma interface visual — e seus
-        jogadores podem acompanhar em tempo real.
+        Seis criaturas na iniciativa, o Barbarian acabou de acertar um crítico
+        no Goblin — peraí, era o Goblin 3 ou o 4? E aquele Hobgoblin tava
+        envenenado ou era o Orc? Enquanto você folheia seus post-its, a mesa
+        inteira tá no celular. Essa cena é a realidade de 90% dos mestres que
+        ainda gerenciam combate no papel. Um{" "}
+        <ProdLink href="/try">combat tracker</ProdLink> resolve isso em
+        segundos.
       </P>
 
-      <H2>O que é um Combat Tracker?</H2>
+      <H2>Tá, mas o que é um Combat Tracker?</H2>
       <P>
-        É um aplicativo web ou app que substitui a ficha de papel do mestre
-        durante o combate. Ele mantém a ordem de iniciativa, mostra quem já
-        jogou, rastreia pontos de vida e condições ativas (como <em>envenenado</em>,{" "}
-        <em>atordoado</em> ou <em>agarrado</em>), e avança turnos automaticamente.
+        Pensa nele como o substituto digital daquele caderno amassado. Ele
+        mantém a ordem de iniciativa, mostra de quem é o turno, rastreia HP
+        com barras visuais e marca condições ativas (<em>envenenado</em>,{" "}
+        <em>atordoado</em>, <em>agarrado</em>) — tudo automático.
       </P>
       <P>
-        Existem diversas opções no mercado — desde planilhas simples até
-        plataformas complexas como{" "}
+        Sim, existem VTTs como{" "}
         <ExtLink href="https://roll20.net">Roll20</ExtLink> e{" "}
-        <ExtLink href="https://foundryvtt.com">Foundry VTT</ExtLink>. Mas para mesas
-        presenciais, a maioria dessas ferramentas é complexa demais. O ideal é
-        algo rápido, que funcione no celular e não exija que seus jogadores
-        criem conta.
+        <ExtLink href="https://foundryvtt.com">Foundry</ExtLink> que fazem
+        isso e muito mais. Mas se sua mesa é presencial, você não precisa de
+        um cockpit de avião pra gerenciar 4 goblins. Precisa de algo que abra
+        no celular e funcione em 30 segundos — sem forçar seus jogadores a
+        criar conta em lugar nenhum.
       </P>
 
       <Img src="/art/blog/combat-active.png" alt="Pocket DM — Combate ativo com iniciativa, HP e condições em tempo real" />
 
-      <H2>5 Coisas que Todo Combat Tracker Deve Rastrear</H2>
+      <H2>Os 5 pilares que seu tracker PRECISA cobrir</H2>
       <P>
-        Segundo o guia do{" "}
-        <ExtLink href="https://slyflourish.com/tracking_combat.html">Sly Flourish</ExtLink>, um dos maiores blogs de D&D do mundo,
-        existem cinco elementos essenciais para rastrear durante o combate:
+        O{" "}
+        <ExtLink href="https://slyflourish.com/tracking_combat.html">Sly Flourish</ExtLink>{" "}
+        tem um guia clássico sobre isso, e a lista dele bate com tudo que já
+        vi dar errado em mesa presencial:
       </P>
       <Ul>
         <Li>
@@ -173,74 +176,77 @@ export function BlogPost1() {
         </Li>
       </Ul>
 
-      <H2>Como Usar na Prática (Passo a Passo)</H2>
+      <H2>Do zero ao combate em 5 minutos</H2>
       <H3>1. Antes da sessão: monte o encontro</H3>
       <P>
-        Adicione os monstros que vão participar do combate. Um bom combat tracker
-        já tem um bestiário integrado — você pesquisa pelo nome e adiciona com
-        um clique. No Pocket DM, por exemplo, são mais de{" "}
-        <ProdLink href="/monstros">1.200 monstros</ProdLink> do{" "}
-        <ExtLink href="https://5e.d20srd.org/">SRD</ExtLink> + monstros do{" "}
-        <ExtLink href="https://www.reddit.com/r/monsteraday/">r/monsteraday</ExtLink> disponíveis.
+        Jogue os monstros no tracker antes da sessão. Um tracker decente já tem
+        bestiário embutido — busca por nome, clica, pronto. No Pocket DM são{" "}
+        <ProdLink href="/monstros">mais de 1.200 criaturas</ProdLink> do{" "}
+        <ExtLink href="https://5e.d20srd.org/">SRD</ExtLink> + a coleção
+        inteira do{" "}
+        <ExtLink href="https://www.reddit.com/r/monsteraday/">r/monsteraday</ExtLink>.
+        Dois cliques e o encontro tá montado.
       </P>
       <Img src="/art/blog/monster-search.png" alt="Busca de monstros SRD no Pocket DM — pesquise e adicione com um clique" />
 
       <H3>2. Na hora do combate: role iniciativa</H3>
       <P>
-        Cada jogador rola seu d20 + modificador e informa ao mestre. O combat
-        tracker ordena automaticamente. Monstros podem ter iniciativa rolada ou
-        usar o valor médio do stat block.
+        Jogadores rolam o d20, te passam o número, e você digita. O tracker
+        ordena tudo sozinho. Monstros? Rola automático ou usa o valor médio
+        do stat block — sua escolha.
       </P>
 
-      <H3>3. Durante o combate: gerencie turnos</H3>
+      <H3>3. Durante o combate: só jogue</H3>
       <P>
-        O tracker avança turno por turno. Quando um jogador ataca, você reduz
-        o HP do monstro direto na ferramenta. Quando um monstro aplica uma
-        condição, você marca na criatura afetada. Tudo visual, tudo rápido.
+        Avance turno por turno. Jogador acertou o ogre? Clica no HP, digita o
+        dano, a barra desce. Monstro aplicou uma condição? Marca ali mesmo.
+        Acabou aquela dança de "peraí, quanto de HP o monstro 2 tinha mesmo?"
       </P>
       <Img src="/art/blog/combat-hp-panel.png" alt="Painel de HP no Pocket DM — aplique dano, cure ou adicione HP temporário" />
 
       <H3>4. Jogadores acompanham no celular</H3>
       <P>
-        Num combat tracker com sincronização em tempo real, cada jogador vê no
-        próprio celular: de quem é o turno, quanto de HP ele tem, quais
-        condições estão ativas. Sem precisar instalar nada — só abrir o link.
+        Essa é a parte que vende qualquer jogador cético: eles abrem um link
+        no celular e veem tudo em tempo real. De quem é o turno, quanto de HP
+        cada um tem, quais condições estão rolando. Sem instalar nada.
       </P>
 
       <Tip>
-        Com o Pocket DM, o mestre compartilha um link e os jogadores entram
-        instantaneamente. Sem cadastro, sem app, sem fricção.
+        No Pocket DM, o mestre compartilha um link e os jogadores entram
+        na hora. Sem cadastro, sem app. O bardo preguiçoso que nunca baixa
+        nada consegue entrar em 3 segundos.
       </Tip>
 
-      <H2>Combat Tracker Digital vs Papel</H2>
+      <H2>O caderno amassado vs o digital</H2>
       <P>
-        A abordagem mais comum de mestres é anotar iniciativa em papel ou
-        notecards. Funciona, mas tem problemas:
+        Anotar iniciativa em papel e notecards funciona? Funciona. Até a
+        terceira rodada, quando metade dos post-its já caiu no chão e você
+        tem 4 rasuras em cima do HP do mesmo goblin. Os problemas clássicos:
       </P>
       <Ul>
-        <Li>Fácil esquecer condições ativas</Li>
-        <Li>HP fica confuso com rasuras</Li>
-        <Li>Jogadores não veem a ordem de iniciativa</Li>
-        <Li>Demorado para configurar com muitos monstros</Li>
+        <Li>Esqueceu que o Fighter tava envenenado há 3 rodadas</Li>
+        <Li>HP virou uma sopa de rasuras ilegíveis</Li>
+        <Li>Jogadores perguntando "de quem é o turno?" a cada 30 segundos</Li>
+        <Li>Setup de 15 minutos pra um encontro que dura 10</Li>
       </Ul>
       <P>
-        Um combat tracker digital resolve tudo isso. E com ferramentas gratuitas
-        como o <ProdLink href="/try">Pocket DM</ProdLink>, não há desculpa
-        para não experimentar.
+        Um tracker digital elimina tudo isso. E se for gratuito como o{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>? Não tem argumento contra.
       </P>
 
       <CTA />
 
-      <H2>Conclusão</H2>
+      <H2>Então vale a pena?</H2>
       <P>
-        Usar um combat tracker transforma a experiência na mesa. Combates
-        ficam mais rápidos, organizados e imersivos. Se você mestra D&D 5e
-        presencialmente, experimentar um tracker é o upgrade mais impactante
-        que você pode fazer na sua sessão — especialmente se for gratuito e
-        sem barreiras de entrada. Confira também nossas{" "}
-        <IntLink slug="como-agilizar-combate-dnd-5e">10 dicas para agilizar o combate</IntLink>{" "}
-        e as{" "}
-        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais para mestres</IntLink>.
+        Se você mestra presencialmente e ainda gerencia combate no papel, um
+        tracker é o maior upgrade que existe. Não porque seja tecnologia
+        revolucionária — porque elimina exatamente as partes chatas que
+        fazem combate arrastar. O resto continua sendo você, seus jogadores e
+        a história. Só que agora sem rasura. Se quiser ir além, dê uma olhada
+        nas{" "}
+        <IntLink slug="como-agilizar-combate-dnd-5e">10 dicas pra acelerar combate</IntLink>{" "}
+        e nas{" "}
+        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas que todo mestre deveria ter</IntLink>.
       </P>
     </>
   );
@@ -253,32 +259,33 @@ export function BlogPost2() {
   return (
     <>
       <P>
-        As 5 ferramentas mais importantes para mestres de D&D 5e são: um combat
-        tracker, um bestiário digital, um catálogo de magias, música ambiente e
-        dados virtuais. Com essas cinco, você cobre 90% de tudo que precisa
-        durante uma sessão.
+        Não precisa de 15 apps abertos pra rodar uma boa sessão de D&D. Na
+        real, a maioria dos mestres que eu conheço sobrevive com 3-4 coisas.
+        Mas se tivesse que escolher o kit perfeito? Cinco ferramentas. Com
+        essas cinco, você cobre tudo que acontece entre o "rolem iniciativa"
+        e o "a sessão acaba aqui".
       </P>
 
-      <H2>1. Combat Tracker (Rastreador de Combate)</H2>
+      <H2>1. Combat Tracker — o coração da mesa</H2>
       <P>
-        O <ProdLink href="/try">combat tracker</ProdLink> é a ferramenta #1
-        porque combate é o momento em que o mestre mais precisa de organização.
-        Rastrear iniciativa, HP e condições de 5+ criaturas simultaneamente em
-        papel é caótico — especialmente com jogadores impacientes esperando
-        seu turno.
+        Combate é o momento em que mais coisa acontece ao mesmo tempo. 6
+        criaturas, cada uma com HP diferente, condições ativas, ataques
+        multiaction — e você ali no meio tentando lembrar de quem é o turno.
+        Um <ProdLink href="/try">combat tracker</ProdLink> tira todo esse
+        peso das suas costas.
       </P>
       <P>
-        Um bom combat tracker permite adicionar monstros do bestiário com um
-        clique, rolar iniciativa, gerenciar HP com barras visuais e marcar
-        condições. Ferramentas como o Pocket DM ainda sincronizam tudo em tempo
-        real no celular dos jogadores.
+        O bom tracker adiciona monstros com um clique, rola iniciativa, mostra
+        HP em barras coloridas e marca condições sem você precisar escrever
+        nada. O Pocket DM faz tudo isso e ainda sincroniza no celular de cada
+        jogador — então ninguém mais pergunta "de quem é o turno?"
       </P>
 
-      <H2>2. Bestiário Digital</H2>
+      <H2>2. Bestiário Digital — tchau, Monster Manual no colo</H2>
       <P>
-        Folhear o Monster Manual durante o combate mata o ritmo. Um bestiário
-        digital com busca por nome, CR (Challenge Rating) ou tipo de criatura
-        resolve isso. Os stat blocks ficam a um clique de distância.
+        Nada mata mais o ritmo do que o mestre parando pra folhear 300 páginas
+        do Monster Manual procurando o stat block do Ankheg. Bestiário digital
+        com busca por nome, CR ou tipo de criatura resolve em 2 segundos.
       </P>
       <Img src="/art/blog/bestiary-index.png" alt="Bestiário do Pocket DM — monstros SRD + Monster a Day organizados por letra e CR" />
       <P>
@@ -290,11 +297,11 @@ export function BlogPost2() {
         — com stat blocks completos, todos pesquisáveis.
       </P>
 
-      <H2>3. Catálogo de Magias</H2>
+      <H2>3. Catálogo de Magias — "o que essa spell faz mesmo?"</H2>
       <P>
-        {"\u201C"}O que essa magia faz mesmo?{"\u201D"} — essa pergunta aparece em toda sessão.
-        Ter um catálogo de magias com busca por nome, escola, nível e classe
-        evita pausas desnecessárias.
+        Se eu ganhasse 1 XP toda vez que um jogador pergunta "o que Counterspell
+        faz mesmo?", já teria alcançado o nível épico. Um catálogo de magias com
+        busca por nome, escola, nível e classe elimina aquela pausa constrangedora.
       </P>
       <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 750+ spells organizadas por nível e escola" />
       <P>
@@ -303,25 +310,27 @@ export function BlogPost2() {
         acessível durante o combate sem interromper o fluxo do jogo.
       </P>
 
-      <H2>4. Música Ambiente</H2>
+      <H2>4. Música Ambiente — a arma secreta que ninguém usa</H2>
       <P>
-        Música é o elemento mais subestimado de uma boa sessão. A trilha sonora
-        certa transforma um combate genérico em um momento épico. Uma taverna
-        sem música de taverna é só uma sala.
+        Faz o teste: na próxima sessão, coloque uma trilha de taverna medieval
+        quando o grupo entrar no bar. Não fale nada. Só observe. Pelo menos
+        um jogador vai sorrir e entrar no clima instantaneamente. Uma taverna
+        sem música de taverna é só uma sala com NPCs.
       </P>
       <P>
-        O ideal é ter presets temáticos prontos — taverna, dungeon, floresta,
-        batalha épica — para trocar rapidamente conforme a cena muda. O Pocket
-        DM oferece mais de 12 presets integrados diretamente na interface de
-        combate.
+        Ter 3-4 presets prontos (taverna, dungeon, combate, épico) resolve
+        90% das cenas. Troca rápida, sem perder o ritmo. O Pocket DM já vem
+        com 12+ presets embutidos na interface de combate — sem precisar de
+        app separado.
       </P>
 
-      <H2>5. Dados Virtuais (Dice Roller)</H2>
+      <H2>5. Dados Virtuais — backup, não substituto</H2>
       <P>
-        Todo mundo ama dados físicos. Mas dados virtuais servem como backup
-        rápido quando você precisa rolar 8d6 de fireball ou verificar uma
-        salvaguarda rapidamente. Integrados ao combat tracker, eles aceleram
-        o combate sem substituir a experiência tátil dos dados reais.
+        Calma, ninguém tá falando pra abandonar os dados físicos. Mas quando
+        o mago lança Fireball e você precisa rolar 8d6 pros 4 goblins que
+        estavam na área... dados virtuais salvam 3 minutos de sua vida. No
+        combat tracker, é um clique. No papel, é uma salada de dados
+        espalhados pela mesa inteira.
       </P>
 
       <Tip>
@@ -330,7 +339,7 @@ export function BlogPost2() {
         mesmo lugar.
       </Tip>
 
-      <H2>Ferramentas que NÃO São Essenciais (Mas São Legais)</H2>
+      <H2>E o que NÃO é essencial (mas é legal)</H2>
       <Ul>
         <Li>
           <strong>VTT completo (<ExtLink href="https://roll20.net">Roll20</ExtLink>, <ExtLink href="https://foundryvtt.com">Foundry</ExtLink>)</strong> — ótimo para mesas
@@ -352,13 +361,13 @@ export function BlogPost2() {
 
       <CTA />
 
-      <H2>Conclusão</H2>
+      <H2>Menos é mais (de verdade)</H2>
       <P>
-        Não precisa de 10 ferramentas. Com cinco bem escolhidas — combat tracker,
-        bestiário, magias, música e dados — você cobre o que realmente importa
-        na mesa. O segredo é simplicidade: a ferramenta não pode ser mais
-        complexa que o problema que ela resolve. Quer ver como funciona na
-        prática? Leia o{" "}
+        Cinco ferramentas. Não dez, não quinze. O erro mais comum de mestre
+        iniciante é achar que precisa de um cockpit inteiro pra rodar uma sessão.
+        Não precisa. A ferramenta não pode ser mais complicada que o problema que
+        ela resolve — e se ela te atrapalha mais do que ajuda, volta pro papel sem
+        culpa. Quer testar tudo isso junto? Veja o{" "}
         <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>{" "}
         ou o{" "}
         <IntLink slug="como-usar-pocket-dm-tutorial">tutorial completo do Pocket DM</IntLink>.
@@ -374,16 +383,17 @@ export function BlogPost3() {
   return (
     <>
       <P>
-        A diferença principal: um combat tracker gerencia apenas o combate
-        (iniciativa, HP, condições), enquanto um VTT (Virtual Tabletop) é uma
-        plataforma completa para jogar RPG online — com mapas, tokens, fichas e
-        grid. Se você joga presencialmente, um combat tracker é tudo que precisa.
+        "Usa Roll20?" — essa é a primeira pergunta que todo mestre escuta quando
+        menciona que usa ferramenta digital. E a resposta geralmente é: "pra mesa
+        presencial? Não, obrigado." A confusão entre combat tracker e VTT é
+        real e faz muita gente usar ferramenta errada pro problema errado.
+        Vamos separar as coisas.
       </P>
 
-      <H2>O que é um VTT?</H2>
+      <H2>VTT: o canivete suíço que pode ser demais</H2>
       <P>
-        Virtual Tabletop (VTT) é uma plataforma que simula a mesa de RPG no
-        computador. Exemplos populares incluem{" "}
+        Virtual Tabletop é uma plataforma que simula a mesa inteira no
+        computador. Os mais conhecidos:{" "}
         <ExtLink href="https://roll20.net">Roll20</ExtLink>,{" "}
         <ExtLink href="https://foundryvtt.com">Foundry VTT</ExtLink> e{" "}
         <ExtLink href="https://www.fantasygrounds.com">Fantasy Grounds</ExtLink>. Eles oferecem:
@@ -399,11 +409,10 @@ export function BlogPost3() {
 
       <Img src="/art/blog/landing-hero.png" alt="Mesa presencial de D&D com dados, miniaturas e livros — o cenário ideal para um combat tracker" />
 
-      <H2>O que é um Combat Tracker?</H2>
+      <H2>Combat Tracker: faz uma coisa e faz direito</H2>
       <P>
-        Um <ProdLink href="/try">combat tracker</ProdLink> é uma ferramenta focada
-        exclusivamente em gerenciar o momento do combate. Ele faz menos coisas,
-        mas faz melhor e mais rápido:
+        Um <ProdLink href="/try">combat tracker</ProdLink> é cirúrgico. Ele
+        só gerencia combate — e por isso é muito mais rápido de usar:
       </P>
       <Ul>
         <Li>Ordem de iniciativa automática</Li>
@@ -414,7 +423,7 @@ export function BlogPost3() {
         <Li>Funciona no celular dos jogadores</Li>
       </Ul>
 
-      <H2>Comparação Direta</H2>
+      <H2>Lado a lado: onde cada um ganha</H2>
       <div className="overflow-x-auto mb-6">
         <table className="w-full text-sm border-collapse">
           <thead>
@@ -464,8 +473,8 @@ export function BlogPost3() {
         </table>
       </div>
 
-      <H2>Quando Usar Cada Um</H2>
-      <H3>Use um VTT se:</H3>
+      <H2>Qual escolher? Depende da sua mesa</H2>
+      <H3>VTT faz sentido se:</H3>
       <Ul>
         <Li>Seus jogadores jogam online/remotamente</Li>
         <Li>Você quer mapas interativos e fog of war</Li>
@@ -475,7 +484,7 @@ export function BlogPost3() {
 
       <Img src="/art/blog/combat-with-monsters.png" alt="Pocket DM — setup de encontro com 4 monstros prontos para o combate" />
 
-      <H3>Use um Combat Tracker se:</H3>
+      <H3>Combat Tracker é o caminho se:</H3>
       <Ul>
         <Li>Você joga presencialmente</Li>
         <Li>Quer algo rápido e sem complicação</Li>
@@ -485,24 +494,26 @@ export function BlogPost3() {
       </Ul>
 
       <Tip>
-        Muitos mestres usam os dois: um VTT para mesas online e um combat
-        tracker para sessões presenciais. São ferramentas complementares.
+        Na prática, muitos mestres usam os dois. VTT na quarta-feira à noite
+        quando o grupo joga online, combat tracker no sábado quando se encontram
+        presencialmente. Não são concorrentes — são ferramentas pra contextos
+        diferentes.
       </Tip>
 
       <CTA />
 
-      <H2>Conclusão</H2>
+      <H2>Resumindo</H2>
       <P>
-        VTTs são poderosos, mas são feitos para jogar online. Se sua mesa é
-        presencial, um combat tracker leve e gratuito como o{" "}
-        <ProdLink href="/try">Pocket DM</ProdLink> é a escolha certa — menos
-        setup, menos complexidade, mais foco no jogo. Quer aprofundar? Leia
-        nosso{" "}
-        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker para D&amp;D 5e</IntLink>{" "}
-        ou confira as{" "}
-        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais para mestres</IntLink>.
-        Para uma comparação detalhada de VTTs, veja o{" "}
-        <ExtLink href="https://www.hipstersanddragons.com/best-virtual-tabletops/">guia do Hipsters &amp; Dragons</ExtLink>.
+        VTT é um ecossistema completo pra jogar online. Combat tracker é uma
+        ferramenta cirúrgica pra gerenciar combate presencial. Se sua mesa se
+        encontra ao vivo, o{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink> faz o trabalho em uma fração
+        do tempo e da complexidade. Se quer aprofundar, veja o{" "}
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>,
+        as{" "}
+        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais</IntLink>,
+        ou o{" "}
+        <ExtLink href="https://www.hipstersanddragons.com/best-virtual-tabletops/">comparativo de VTTs do Hipsters &amp; Dragons</ExtLink>.
       </P>
     </>
   );
@@ -515,26 +526,29 @@ export function BlogPost4() {
   return (
     <>
       <P>
-        O D&D 5e tem 15 condições oficiais que podem afetar criaturas durante o
-        combate. Cada condição impõe restrições específicas — de desvantagem em
-        ataques até incapacidade total. Este guia explica todas em português,
-        com exemplos de quando cada uma aparece.
+        O Monk acerta um Stunning Strike. O Goblin falha no save. E aí...
+        o que Stunned faz mesmo? Desvantagem em ataques? Não pode se mover?
+        Ataques contra ele são automáticos? Se você já passou por esse momento
+        de "peraí, deixa eu conferir", este guia é sua referência rápida. Todas
+        as 15 condições do D&D 5e, explicadas em português, com exemplos
+        práticos de mesa.
       </P>
 
-      <H2>O que São Condições?</H2>
+      <H2>Condições em 30 segundos</H2>
       <P>
-        Condições são efeitos que alteram as capacidades de uma criatura. Podem
-        ser causadas por magias, habilidades de classe, ataques de monstros ou
-        efeitos do ambiente. Uma condição dura até ser removida (como
-        ficar <em>prone</em> e se levantar) ou até o tempo do efeito expirar.
-        Para a referência oficial em inglês, veja o{" "}
-        <ExtLink href="https://5e.d20srd.org/srd/conditionSummary.htm">SRD Condition Summary</ExtLink> ou o guia do{" "}
-        <ExtLink href="https://arcaneeye.com/mechanic-overview/5e-conditions/">Arcane Eye sobre condições</ExtLink>.
+        Condições são efeitos que mudam o que uma criatura pode ou não fazer.
+        Vêm de magias, habilidades de classe, ataques de monstro ou do
+        próprio ambiente. Duram até serem removidas (tipo se levantar de{" "}
+        <em>prone</em>) ou até o efeito expirar. Referência oficial em inglês
+        no{" "}
+        <ExtLink href="https://5e.d20srd.org/srd/conditionSummary.htm">SRD</ExtLink>{" "}
+        e no guia do{" "}
+        <ExtLink href="https://arcaneeye.com/mechanic-overview/5e-conditions/">Arcane Eye</ExtLink>.
       </P>
 
       <Img src="/art/blog/combat-conditions.png" alt="Painel de condições do Pocket DM — todas as 15 condições D&D 5e disponíveis com um clique" />
 
-      <H2>Todas as 15 Condições</H2>
+      <H2>As 15 condições — uma por uma</H2>
 
       {[
         {
@@ -635,12 +649,14 @@ export function BlogPost4() {
         <ProdLink href="/condicoes">referência rápida de condições</ProdLink>.
       </Tip>
 
-      <H2>Condições que Combinam</H2>
+      <H2>O efeito cascata: condições que se empilham</H2>
       <P>
-        Algumas condições são {"\u201C"}pré-requisitos{"\u201D"} de outras. <strong>Paralyzed</strong>,{" "}
-        <strong>Stunned</strong> e <strong>Unconscious</strong> todos incluem{" "}
-        <strong>Incapacitated</strong>. Isso significa que se uma criatura está
-        paralisada, ela também está incapacitada automaticamente.
+        Detalhe que pega muita gente: <strong>Paralyzed</strong>,{" "}
+        <strong>Stunned</strong> e <strong>Unconscious</strong> já incluem{" "}
+        <strong>Incapacitated</strong> automaticamente. Se o monstro tá
+        paralisado, ele também tá incapacitado — você não precisa marcar
+        os dois. Saber disso evita aquela discussão de 5 minutos no meio
+        do combate.
       </P>
 
       <CTA />
@@ -655,92 +671,97 @@ export function BlogPost5() {
   return (
     <>
       <P>
-        Combate lento é o maior vilão de uma sessão de D&D. A boa notícia:
-        existem técnicas comprovadas para acelerar combates sem perder a
-        diversão. Aqui estão 10 dicas práticas usadas por mestres experientes em
-        todo o mundo.
+        O combate tem 4 ogres, 6 goblins e um hobgoblin mago. Já são 40
+        minutos, só dois jogadores agiram, e o Cleric tá no celular esperando
+        o turno dele chegar. Se você já viveu isso, sabe: combate lento não
+        mata personagens — mata sessões. Aqui vão 10 coisas que funcionam de
+        verdade pra resolver isso.
       </P>
 
-      <H2>1. Use Dano Fixo dos Monstros</H2>
+      <H2>1. Dano fixo: a dica que ninguém usa (e deveria)</H2>
       <P>
-        O Monster Manual lista dano médio para todo monstro — é o número antes
-        dos parênteses. Em vez de rolar 2d6+3 pra cada ataque do ogre, use 10.
-        Isso elimina dezenas de rolagens por combate. Segundo o{" "}
-        <ExtLink href="https://slyflourish.com/tips_to_speed_up_combat.html">Sly Flourish</ExtLink>,
-        menos de 10% dos mestres usam dano fixo, mas é a forma mais fácil de
-        acelerar combates.
+        Todo stat block tem um número antes dos parênteses — é o dano médio.
+        O ogre faz 2d8+4? Usa 13. Pronto. Sem rolar dado pra cada ataque de
+        cada monstro. O{" "}
+        <ExtLink href="https://slyflourish.com/tips_to_speed_up_combat.html">Sly Flourish</ExtLink>{" "}
+        estima que menos de 10% dos mestres fazem isso. Os outros 90% estão
+        perdendo tempo rolando 2d6+3 pro quinto goblin do turno.
       </P>
 
-      <H2>2. Simplifique os Inimigos</H2>
+      <H2>2. Menos tipos de monstro = menos dor de cabeça</H2>
       <P>
-        Um combate com 4 ogres é mais rápido de gerenciar que um com 2 ogres,
-        6 goblins e 1 hobgoblin mago. Menos tipos de monstros = menos stat
-        blocks = menos troca de contexto mental.
+        4 ogres é rápido de rodar. 2 ogres + 6 goblins + 1 hobgoblin mago é
+        um pesadelo logístico — 3 stat blocks diferentes, 3 CAs diferentes,
+        3 listas de habilidades. Se quer velocidade, simplifique a composição.
+        Variedade tática é ótima quando você tem ferramenta; sem ela, é puro
+        caos.
       </P>
 
-      <H2>3. Use um Combat Tracker Digital</H2>
+      <H2>3. Troque o papel por um tracker digital</H2>
       <P>
-        Anotar HP em papel, riscar, reescrever, perder o papel... isso consome
-        tempo. Um <ProdLink href="/try">combat tracker digital</ProdLink> com
-        barras de HP visuais e avanço automático de turno elimina essa fricção.
-        Com o Pocket DM, você adiciona monstros do{" "}
+        Riscar HP no papel, perder a conta, reescrever, achar que o monstro
+        morreu mas na verdade tinha HP temporário... já deu. Um{" "}
+        <ProdLink href="/try">combat tracker digital</ProdLink> com barras de
+        HP visuais e avanço automático de turno elimina isso tudo. No Pocket DM,
+        você joga os monstros do{" "}
         <ProdLink href="/monstros">bestiário</ProdLink>, rola iniciativa e
-        começa — em menos de 2 minutos.
+        começa. Setup de 2 minutos.
       </P>
       <Img src="/art/blog/combat-active.png" alt="Combate ativo no Pocket DM — barras de HP, turnos e condições gerenciados visualmente" />
 
-      <H2>4. Role Iniciativa em Grupo</H2>
+      <H2>4. Iniciativa em grupo — um dado, todos os goblins</H2>
       <P>
-        Em vez de rolar iniciativa individual para cada goblin, role uma vez e
-        use para todos os goblins. Isso corta drasticamente o tempo de setup
-        e simplifica a ordem de turnos.
+        Rola uma vez pro bando de goblins. Um resultado, mesmo modificador, todo
+        mundo age junto. Corta o setup pela metade e simplifica a ordem de turnos.
+        Se quiser mais variação, role dois grupos (metade dos goblins em cada).
       </P>
 
-      <H2>5. Timer de Turno (Suave)</H2>
+      <H2>5. Timer suave: 60 segundos ou Dodge</H2>
       <P>
-        Não precisa ser rígido, mas combinar que cada jogador tem ~60 segundos
-        para decidir sua ação mantém o ritmo. A regra: {"\u201C"}se não decidiu,
-        seu personagem usa o turno se defendendo (Dodge).{"\u201D"}
+        Combine com a mesa: cada jogador tem mais ou menos 1 minuto pra decidir
+        sua ação. Passou? O personagem se defende (Dodge). Não precisa ser
+        cronômetro rígido — a mera existência da regra já acelera. Ninguém quer
+        ser "o cara que perdeu o turno pensando".
       </P>
 
-      <H2>6. Delegue Tarefas aos Jogadores</H2>
+      <H2>6. Distribua o trabalho</H2>
       <P>
-        Um jogador anota a iniciativa. Outro controla o mapa. Outro cuida das
-        condições. Distribuir responsabilidades tira carga do mestre e engaja
-        os jogadores mesmo quando não é o turno deles. Com um combat tracker
-        como o Pocket DM, isso acontece naturalmente — cada jogador vê seu
-        status no próprio celular.
+        O mestre não precisa fazer tudo sozinho. Um jogador anota iniciativa,
+        outro cuida do mapa, outro rastreia condições. Isso engaja gente que
+        ficaria no celular esperando o turno. Com um tracker como o Pocket DM,
+        cada jogador já vê tudo no próprio celular — a delegação acontece
+        naturalmente.
       </P>
 
-      <H2>7. Monstros Fogem</H2>
+      <H2>7. Monstros inteligentes fogem (e deveriam)</H2>
       <P>
-        Monstros inteligentes não lutam até a morte. Quando um goblin cai
-        a 20% de HP, ele foge. Isso encurta combates e adiciona realismo.
-        Os jogadores ainda ganham ataques de oportunidade, e você elimina 2-3
-        rodadas de {"\u201C"}acabamento{"\u201D"}.
+        Goblin a 20% de HP? Ele corre. Bandido que viu dois aliados caírem?
+        Ele se rende. Isso encurta 2-3 rodadas de "acabamento" onde todo mundo
+        já sabe que ganhou e tá só esperando o HP chegar a zero. Bônus: é mais
+        realista e gera momentos narrativos interessantes.
       </P>
 
-      <H2>8. Teatro da Mente para Combates Menores</H2>
+      <H2>8. Nem todo combate precisa de mapa</H2>
       <P>
-        Nem todo combate precisa de mapa e miniaturas. Encontros rápidos
-        contra 3-4 inimigos fracos funcionam perfeitamente com teatro da mente.
-        Descreva o cenário, pergunte posições gerais e resolva. Reserve o mapa
-        para boss fights e encontros táticos.
+        3 bandidos numa estrada? Teatro da mente. Emboscada rápida numa
+        caverna? Teatro da mente. Reserve o grid e as miniaturas pra boss
+        fights e encontros táticos complexos. O resto resolve na conversa.
       </P>
 
-      <H2>9. Prepare Antes da Sessão</H2>
+      <H2>9. 10 minutos de prep = 30 minutos salvos</H2>
       <P>
-        Leia os stat blocks antes da sessão. Marque as habilidades que vai usar.
-        Pré-role ou defina iniciativa dos monstros. 10 minutos de preparação
-        economizam 30 minutos de combate travado.
+        Leia os stat blocks antes da sessão. Marque as 2-3 habilidades que
+        realmente vai usar. Defina iniciativa média dos monstros se não quiser
+        rolar. Parece pouco, mas esse preparo evita aquela parada de "peraí,
+        deixa eu ver o que esse monstro faz" no meio do combate.
       </P>
 
-      <H2>10. Menos Combates, Mais Impacto</H2>
+      <H2>10. Menos combates, cada um importando mais</H2>
       <P>
-        Se o problema é que combates demoram, uma solução é ter menos. Dois
-        combates significativos por sessão valem mais que cinco genéricos.
-        Cada encontro deve ter um propósito narrativo — se não tem, considere
-        resolver com um teste de habilidade.
+        Se todo combate demora 45 minutos e você tenta enfiar 4 por sessão...
+        a matemática não fecha. Dois combates bem construídos por sessão valem
+        mais que cinco genéricos. E se um encontro não tem propósito narrativo?
+        Resolve com um teste de habilidade e segue a história.
       </P>
 
       <Tip>
@@ -751,18 +772,19 @@ export function BlogPost5() {
 
       <CTA />
 
-      <H2>Conclusão</H2>
+      <H2>A diferença entre rápido e superficial</H2>
       <P>
-        Combate rápido não é combate superficial — é combate bem gerenciado.
-        Com as técnicas certas e um bom combat tracker, você mantém a tensão
-        sem o tédio. Seus jogadores vão agradecer. Para mais dicas, confira o{" "}
-        <ExtLink href="https://www.hipstersanddragons.com/fixing-slow-combat-5e/">guia do Hipsters &amp; Dragons</ExtLink>{" "}
-        e o artigo do{" "}
-        <ExtLink href="https://rpgbot.net/dnd5/dungeonmasters/faster-combat/">RPGBot sobre combate mais rápido</ExtLink>.
-        Veja também nosso{" "}
+        Combate rápido não significa combate sem graça. Significa combate sem
+        as partes chatas — sem aquela espera morta, sem burocracia de papel,
+        sem turnos de 5 minutos pra decidir o que fazer. A tensão fica. A
+        diversão fica. O tédio vai embora. Pra mais leitura, veja o{" "}
+        <ExtLink href="https://www.hipstersanddragons.com/fixing-slow-combat-5e/">Hipsters &amp; Dragons</ExtLink>,
+        o{" "}
+        <ExtLink href="https://rpgbot.net/dnd5/dungeonmasters/faster-combat/">RPGBot</ExtLink>,
+        nosso{" "}
         <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>{" "}
         e o{" "}
-        <IntLink slug="guia-condicoes-dnd-5e">guia completo de condições</IntLink>.
+        <IntLink slug="guia-condicoes-dnd-5e">guia de condições</IntLink>.
       </P>
     </>
   );
@@ -775,10 +797,10 @@ export function BlogPost6() {
   return (
     <>
       <P>
-        O Pocket DM é um combat tracker gratuito para D&D 5e que funciona direto
-        no navegador. Em menos de 2 minutos você monta um encontro, adiciona
-        monstros do bestiário SRD e inicia o combate — com seus jogadores
-        acompanhando em tempo real no celular. Este tutorial mostra cada passo.
+        Vou ser direto: em 2 minutos você vai do zero a um combate rodando com
+        monstros, iniciativa e seus jogadores acompanhando tudo no celular.
+        Sem instalar nada, sem criar conta se não quiser. Esse tutorial mostra
+        cada passo com screenshots — é acompanhar e fazer.
       </P>
 
       <H2>Passo 1: Acessar o Pocket DM</H2>
@@ -952,16 +974,14 @@ export function BlogPost6() {
 
       <CTA />
 
-      <H2>Conclusão</H2>
+      <H2>Agora é com você</H2>
       <P>
-        O Pocket DM foi projetado para ser a ferramenta mais simples e rápida
-        para gerenciar combate de D&D 5e na mesa presencial. Sem curva de
-        aprendizado, sem instalação, sem cadastro obrigatório. Monte um
-        encontro, role iniciativa e jogue. Para mais contexto sobre combat
-        trackers em geral, leia nosso{" "}
+        Isso é tudo. Monte o encontro, role iniciativa, jogue. Sem curva de
+        aprendizado, sem instalação, sem surpresa. Se quiser entender mais
+        sobre combat trackers em geral, tem o{" "}
         <IntLink slug="como-usar-combat-tracker-dnd-5e">guia completo de combat trackers</IntLink>{" "}
         e as{" "}
-        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais para mestres</IntLink>.
+        <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas essenciais pra mestres</IntLink>.
       </P>
     </>
   );
@@ -974,28 +994,24 @@ export function BlogPost7() {
   return (
     <>
       <P>
-        Montar um encontro balanceado no D&D 5e é uma das habilidades mais
-        importantes que um mestre pode desenvolver. Um encontro mal calibrado
-        pode transformar uma sessão em tédio (fácil demais) ou em frustração
-        (TPK inesperado). Mas equilibrar encontros não precisa ser complicado
-        nem exigir planilhas complexas. Neste guia, você vai aprender os métodos
-        mais confiáveis para criar encontros desafiadores, justos e memoráveis
-        para sua mesa.
+        Você preparou o encontro com carinho: 3 Ogres num corredor de dungeon,
+        dificuldade "Difícil" segundo a tabela do DMG. Na sessão, o Paladin
+        abre com Smite crítico, o Wizard larga um Hypnotic Pattern que pega
+        dois dos três, e em 2 rodadas acabou. "Era pra ser difícil?" pergunta
+        o Rogue, limpando a adaga. Se isso já aconteceu com você, bem-vindo
+        ao clube — e a este guia.
       </P>
 
-      <H2>Por que Balancear Encontros Importa</H2>
+      <H2>Por que se dar ao trabalho de balancear?</H2>
       <P>
-        O combate ocupa uma parcela significativa do tempo de jogo na maioria
-        das mesas de D&D 5e. Quando os encontros são consistentemente fáceis
-        demais, os jogadores perdem o senso de risco e param de pensar
-        taticamente. Quando são brutais demais sem contexto narrativo, geram
-        frustração. O ponto ideal é aquele em que os jogadores sentem que
-        precisam usar seus recursos com inteligência, fazer escolhas táticas
-        e trabalhar em equipe.
+        Encontro fácil demais? Jogadores param de pensar. Encontro brutal
+        demais sem aviso? Frustração. O ponto bom é quando o grupo sente que
+        precisa jogar direito — usar recursos com inteligência, fazer escolhas
+        táticas, trabalhar em equipe. Esse é o combate que gera histórias.
       </P>
       <P>
-        Vale reforçar: balancear não significa que todo encontro precisa ser
-        uma luta equilibrada. Como{" "}
+        Agora, balancear NÃO significa que todo encontro precisa ser justo.
+        Existem encontros triviais e encontros avassaladores. Como{" "}
         <ExtLink href="https://slyflourish.com/5e_encounter_building.html">
           Sly Flourish argumenta
         </ExtLink>, o mundo não se conforma ao nível dos personagens. Existem
@@ -1004,10 +1020,11 @@ export function BlogPost7() {
         que surpresas letais aconteçam por escolha do mestre, não por acidente.
       </P>
 
-      <H2>O Método do Orçamento de XP (DMG)</H2>
+      <H2>O método oficial: Orçamento de XP (DMG)</H2>
       <P>
-        O método oficial do Dungeon Master{"'"}s Guide é o mais conhecido. Ele
-        funciona em quatro passos:
+        O método do Dungeon Master{"'"}s Guide é o mais conhecido — e o mais
+        confuso na primeira vez. Mas é mais simples do que parece. Quatro
+        passos:
       </P>
 
       <H3>Passo 1: Determine os Limiares de XP do Grupo</H3>
@@ -1076,9 +1093,9 @@ export function BlogPost7() {
         reais de morte de personagem.
       </P>
 
-      <H2>O Lazy Encounter Benchmark (Sly Flourish)</H2>
+      <H2>O atalho do Sly Flourish: Lazy Encounter Benchmark</H2>
       <P>
-        Se o método do XP Budget parece trabalhoso demais para o dia a dia,{" "}
+        Ok, se o XP Budget pareceu trabalhoso (e é, pra uso no dia a dia),{" "}
         <ExtLink href="https://slyflourish.com/the_lazy_encounter_benchmark.html">
           o Lazy Encounter Benchmark de Mike Shea (Sly Flourish)
         </ExtLink>{" "}
@@ -1112,11 +1129,11 @@ export function BlogPost7() {
         precisar parar para fazer contas.
       </Tip>
 
-      <H2>Economia de Ações: O Fator Invisível</H2>
+      <H2>Economia de ações: o fator que o CR não captura</H2>
       <P>
-        A economia de ações é provavelmente o fator mais importante e mais
-        subestimado no balanceamento de encontros. A regra é simples: o lado
-        que tem mais ações por rodada tende a vencer. Um dragão adulto com CR
+        Se tem UMA coisa que você precisa entender sobre balanceamento no 5e,
+        é economia de ações. A regra é brutalmente simples: o lado com mais
+        ações por rodada tende a ganhar. Um dragão adulto com CR
         13 pode parecer aterrorizante, mas contra 5 jogadores de nível 10, ele
         terá 1 ação contra 5. Mesmo com Multiattack e ações lendárias, a ação
         econômica está contra ele.
@@ -1158,11 +1175,11 @@ export function BlogPost7() {
         antigo pode cair em 2-3 rodadas contra um grupo otimizado.
       </Tip>
 
-      <H2>Variedade de Monstros: Composição Tática</H2>
+      <H2>Composição: por que 6 goblins iguais é entediante</H2>
       <P>
-        Um encontro memorável raramente é composto por 6 cópias do mesmo
-        monstro. A variedade de funções táticas é o que transforma um combate
-        mecânico em algo dinâmico e inesquecível.{" "}
+        Seis cópias do mesmo monstro funcionam numericamente, mas na mesa é
+        monótono. A variedade de funções táticas é o que transforma combate
+        mecânico em algo que os jogadores lembram semanas depois.{" "}
         <ExtLink href="https://www.themonstersknow.com/thoughts-constructing-encounters/">
           Keith Ammann (The Monsters Know What They{"'"}re Doing)
         </ExtLink>{" "}
@@ -1203,12 +1220,12 @@ export function BlogPost7() {
         ao mesmo tempo.
       </P>
 
-      <H2>Terreno e Ambiente: O Terceiro Lado do Combate</H2>
+      <H2>Terreno: o multiplicador de dificuldade que ninguém calcula</H2>
       <P>
-        O terreno é frequentemente ignorado por mestres que montam encontros
-        apenas pelo XP. Mas um encontro médio num terreno vantajoso para os
-        monstros pode se tornar mortal, e um encontro difícil num terreno
-        favorável ao grupo pode se tornar trivial.
+        A maioria dos mestres monta encontros só pelos números e esquece onde
+        a luta acontece. Mas coloque 4 goblins com arcos no topo de um
+        penhasco e aquele encontro "Fácil" vira um pesadelo. O inverso também
+        vale: o boss fight épico perde a graça se o grupo tem cobertura total.
       </P>
 
       <H3>Elementos de Terreno que Mudam Tudo</H3>
@@ -1248,10 +1265,10 @@ export function BlogPost7() {
         Médio com terreno favorável aos monstros joga como Difícil.
       </Tip>
 
-      <H2>Os Quatro Níveis de Dificuldade na Prática</H2>
+      <H2>Fácil, Médio, Difícil, Mortal — o que realmente muda na mesa</H2>
       <P>
-        O DMG define quatro níveis de dificuldade, mas o que cada um realmente
-        significa na mesa? Aqui está um guia prático:
+        Os rótulos do DMG parecem óbvios, mas na prática geram muita confusão.
+        Aqui vai o que cada um realmente significa quando os dados caem:
       </P>
 
       <H3>Fácil</H3>
@@ -1288,11 +1305,10 @@ export function BlogPost7() {
         satisfatório. Nunca use encontros Mortais como encontros aleatórios.
       </P>
 
-      <H2>Orçamento do Dia de Aventura</H2>
+      <H2>O elefante na sala: 6-8 encontros por dia (sério?)</H2>
       <P>
-        Um conceito que muitos mestres ignoram é o orçamento total do dia de
-        aventura. O DMG assume que um grupo enfrenta 6-8 encontros médios
-        entre descansos longos. Esse pressuposto é a base de todo o sistema
+        Esse é o conceito que mais confunde mestres novos. O DMG assume que
+        um grupo enfrenta 6-8 encontros médios entre descansos longos. Esse pressuposto é a base de todo o sistema
         de balanceamento: classes com recursos limitados (como o warlock com
         2 spell slots) são balanceadas em torno de descansos curtos frequentes,
         enquanto classes com muitos recursos (como o wizard) são balanceadas
@@ -1313,12 +1329,13 @@ export function BlogPost7() {
         compensa a falta de pressão por atrito de recursos.
       </Tip>
 
-      <H2>Ajustes na Hora: Quando o Balanceamento Falha</H2>
+      <H2>Quando o plano vai pro lixo (e como salvar na hora)</H2>
       <P>
-        Nenhum sistema de balanceamento é perfeito. Personagens otimizados,
-        itens mágicos, táticas criativas e rolagens de dados podem transformar
-        um encontro Mortal em piada ou um encontro Fácil em desastre. O
-        segredo do bom mestre é ajustar na hora, sem que os jogadores percebam.
+        Nenhum sistema de balanceamento sobrevive ao contato com jogadores
+        reais. O Paladin otimizado que faz 60 de dano no primeiro turno. O
+        Wizard que larga Hypnotic Pattern e desliga metade do encontro. Ou o
+        contrário: um crit do monstro que derruba o Cleric na rodada 1. O
+        bom mestre ajusta na hora — sem que ninguém perceba.
       </P>
 
       <H3>Técnicas de Ajuste em Tempo Real</H3>
@@ -1355,10 +1372,9 @@ export function BlogPost7() {
         tensão é bom, desespero silencioso não.
       </P>
 
-      <H2>Checklist Prático: Montando seu Encontro</H2>
+      <H2>Checklist: monte seu próximo encontro agora</H2>
       <P>
-        Aqui está um passo a passo que você pode seguir agora mesmo para
-        montar o próximo encontro da sua sessão:
+        Chega de teoria. Use isso pra montar o encontro da sua próxima sessão:
       </P>
       <Ul>
         <Li>
@@ -1402,7 +1418,7 @@ export function BlogPost7() {
         </Li>
       </Ul>
 
-      <H2>Erros Comuns ao Balancear Encontros</H2>
+      <H2>Os erros que todo mestre comete (pelo menos uma vez)</H2>
       <Ul>
         <Li>
           <strong>Confiar cegamente no CR:</strong> o Challenge Rating é um
@@ -1431,11 +1447,10 @@ export function BlogPost7() {
         </Li>
       </Ul>
 
-      <H2>Conclusão</H2>
+      <H2>Matemática é o começo. Sua mesa é a resposta.</H2>
       <P>
-        Montar um encontro balanceado no D&D 5e é uma combinação de matemática,
-        intuição e conhecimento do seu grupo. O método do XP Budget fornece a
-        base numérica. O Lazy Encounter Benchmark de{" "}
+        Encontro balanceado é uma combinação de números, intuição e conhecer
+        seu grupo. O XP Budget dá a base. O Lazy Benchmark do{" "}
         <ExtLink href="https://slyflourish.com/the_lazy_encounter_benchmark.html">
           Sly Flourish
         </ExtLink>{" "}
@@ -1471,10 +1486,11 @@ export function BlogPost8() {
   return (
     <>
       <P>
-        Se você já tentou montar um encontro no D&D 5e e ficou confuso com o
-        sistema de Challenge Rating, você não está sozinho. O CR é uma das
-        mecânicas mais mal-entendidas do jogo — e ao mesmo tempo uma das mais
-        úteis quando você entende como realmente funciona. Como{" "}
+        "Um monstro CR 5 contra um grupo de nível 5 é um encontro justo,
+        certo?" Mais ou menos. Na verdade, depende de umas 8 variáveis que
+        o número do CR não mostra. O Challenge Rating é a mecânica mais
+        mal-entendida do D&D 5e — e, paradoxalmente, uma das mais úteis
+        quando você para de tratar como ciência exata. Como{" "}
         <ExtLink href="https://slyflourish.com/what_does_cr_mean.html">
           Sly Flourish explica
         </ExtLink>, o CR é um ponto de partida, não uma resposta absoluta. E como{" "}
@@ -1484,12 +1500,12 @@ export function BlogPost8() {
         que separa um mestre mediano de um mestre preparado.
       </P>
       <P>
-        Neste guia, vamos destrinchar o sistema de Challenge Rating do D&D 5e:
-        como funciona, quando mente, e quais atalhos práticos usar para montar
-        encontros melhores sem depender de planilhas.
+        Vamos destrinchar o CR: como funciona, onde mente descaradamente, e
+        os atalhos que mestres experientes usam pra não ficar dependendo de
+        planilha.
       </P>
 
-      <H2>O Que É Challenge Rating?</H2>
+      <H2>CR em 60 segundos</H2>
       <P>
         Challenge Rating é um número que representa a dificuldade relativa de um
         monstro. Em teoria, um monstro com CR X deveria ser um desafio
@@ -1513,12 +1529,11 @@ export function BlogPost8() {
         grupo para determinar a dificuldade.
       </P>
 
-      <H2>Tabela de Limiares de XP por Nível</H2>
+      <H2>A tabela que você vai consultar toda sessão</H2>
       <P>
-        Esta tabela mostra o limiar de XP <strong>por personagem</strong> em cada
-        nível. Multiplique pelo número de jogadores para obter o orçamento do
-        grupo. Se um encontro ultrapassa o limiar {'"'}Mortal{'"'}, há risco
-        real de morte de personagem.
+        Limiares de XP <strong>por personagem</strong>. Multiplique pelo
+        número de jogadores pro orçamento do grupo. Passou do "Mortal"?
+        Alguém pode virar estátua.
       </P>
       <div className="overflow-x-auto my-8 rounded-xl border border-white/[0.08]">
         <table className="w-full text-sm text-left">
@@ -1562,12 +1577,11 @@ export function BlogPost8() {
         (500 x 6), não 2.000.
       </Tip>
 
-      <H2>Multiplicadores de Monstros</H2>
+      <H2>O multiplicador que pega todo mundo de surpresa</H2>
       <P>
-        O DMG aplica um multiplicador ao XP total dos monstros com base na
-        quantidade de criaturas no encontro. Isso reflete o fato de que mais
-        monstros têm mais ações — e economia de ações é o fator mais poderoso
-        do combate no D&D 5e.
+        Mais monstros = mais ações por rodada = encontro muito mais perigoso
+        do que a soma bruta de XP sugere. O DMG compensa isso com um
+        multiplicador:
       </P>
       <div className="overflow-x-auto my-8 rounded-xl border border-white/[0.08]">
         <table className="w-full text-sm text-left">
@@ -1600,11 +1614,10 @@ export function BlogPost8() {
         exemplo acima, 150 XP / 4 = 37 XP cada).
       </Tip>
 
-      <H2>Quando o CR Mente</H2>
+      <H2>Quando o CR mente na sua cara</H2>
       <P>
-        O CR é calculado a partir de médias estatísticas, mas o combate no D&D 5e
-        é tudo menos médio. Existem situações em que o CR subestima ou
-        superestima drasticamente a dificuldade real de um monstro.
+        O CR é baseado em médias. O combate real no D&D 5e é tudo menos médio.
+        Aqui estão as situações em que o número mente descaradamente:
       </P>
 
       <H3>1. Habilidades de Controle</H3>
@@ -1657,11 +1670,11 @@ export function BlogPost8() {
         o CR prevê.
       </P>
 
-      <H2>Atalhos Práticos</H2>
+      <H2>Atalhos pra quem não quer fazer conta</H2>
       <P>
-        Se o sistema oficial parece trabalhoso demais, existem alternativas
-        comprovadas que simplificam drasticamente o processo sem perder a
-        precisão.
+        Tabelas e multiplicadores são úteis — na preparação. Na hora de
+        improvisar um encontro no meio da sessão, você precisa de algo mais
+        rápido:
       </P>
 
       <H3>Lazy Encounter Benchmark (Sly Flourish)</H3>
@@ -1702,11 +1715,10 @@ export function BlogPost8() {
         monstros ou coloque os inimigos em terreno vantajoso.
       </P>
 
-      <H2>Como Ajustar em Tempo Real</H2>
+      <H2>Ajuste na hora: 4 truques de mestre veterano</H2>
       <P>
-        Mesmo o melhor planejamento pode resultar em um encontro que não funciona
-        na mesa. A habilidade de ajustar em tempo real é o que realmente separa
-        um bom mestre. Veja quatro técnicas essenciais:
+        Planejamento é planejamento. Mesa é mesa. Quando o encontro sai dos
+        trilhos (e vai sair), estas técnicas salvam:
       </P>
 
       <H3>Ajustar HP</H3>
@@ -1754,10 +1766,10 @@ export function BlogPost8() {
         reescrever no papel.
       </Tip>
 
-      <H2>Referência Rápida: CR por Dificuldade</H2>
+      <H2>Cole isso na sua tela: CR por dificuldade (4 PCs)</H2>
       <P>
-        Tabela de referência rápida para um grupo de 4 PCs. Use como ponto de
-        partida e ajuste conforme necessário.
+        Tabela de bolso. Grupo de 4. Use como ponto de partida e ajuste pro
+        seu grupo real:
       </P>
       <div className="overflow-x-auto my-8 rounded-xl border border-white/[0.08]">
         <table className="w-full text-sm text-left">
@@ -1781,7 +1793,7 @@ export function BlogPost8() {
         </table>
       </div>
 
-      <H2>Erros Comuns</H2>
+      <H2>Erros que custam sessões</H2>
       <Ul>
         <Li>
           <strong>Confiar cegamente no CR:</strong> O CR é um ponto de partida.
@@ -1811,15 +1823,13 @@ export function BlogPost8() {
         </Li>
       </Ul>
 
-      <H2>Conclusão</H2>
+      <H2>CR não é perfeito. Mas é útil.</H2>
       <P>
-        O Challenge Rating do D&D 5e não é perfeito — nenhum sistema de
-        balanceamento automático pode capturar todas as variáveis de uma mesa
-        real. Mas quando você entende como funciona, onde falha e quais atalhos
-        usar, o CR se torna uma ferramenta poderosa em vez de uma fonte de
-        frustração. Use as tabelas como ponto de partida, o Lazy Encounter
-        Benchmark como atalho do dia a dia, e sua intuição de mestre como a
-        decisão final.
+        Nenhum número vai capturar todas as variáveis de uma mesa real. Mas
+        quando você entende o que o CR faz e onde ele falha, ele vira uma
+        ferramenta em vez de uma frustração. Tabelas pra preparação, Lazy
+        Benchmark pra improviso, intuição pra decisão final. Os três juntos
+        cobrem 95% dos cenários.
       </P>
       <P>
         Para montar encontros na prática, use a{" "}
@@ -1856,24 +1866,19 @@ export function BlogPost9() {
   return (
     <>
       <P>
-        Existem centenas de monstros no bestiário do D&D 5e. Só no SRD (System
-        Reference Document) são mais de 400 criaturas, e quando você junta
-        suplementos oficiais, esse número ultrapassa mil. Para um mestre que
-        está começando — ou mesmo um veterano buscando variedade —
-        a quantidade de opções pode paralisar. Qual monstro vale o tempo de
-        preparo? Qual vai criar aquele momento inesquecível na mesa?
+        O SRD tem 400+ monstros. Suplementos oficiais passam de mil. E quando
+        chega a hora de montar o encontro de sábado, você abre o bestiário e
+        congela. Pra onde olhar primeiro?
       </P>
       <P>
-        Esta lista reúne 10 monstros que consideramos essenciais no arsenal de
-        qualquer mestre de D&D 5e. Não são necessariamente os mais fortes, mas
-        os mais <em>versáteis</em>: criaturas que funcionam em múltiplos
-        contextos, geram momentos memoráveis e ensinam lições valiosas sobre
-        design de encontros. A seleção cobre do nível 1 ao 20, então tem
-        ferramenta aqui para qualquer estágio de campanha.
+        Essa lista não é sobre os monstros mais fortes. É sobre os mais{" "}
+        <em>versáteis</em> — criaturas que funcionam em múltiplos contextos,
+        geram as melhores histórias e ensinam coisas sobre combate que nenhum
+        tutorial explica. Do nível 1 ao 20. Se você dominar esses 10, vai
+        rodar mesas melhores pelo resto da vida.
       </P>
       <P>
-        Para cada monstro, incluímos por que ele merece seu lugar na mesa, uma
-        dica tática baseada em referências como{" "}
+        Pra cada monstro: por que ele é especial, uma dica tática roubada de{" "}
         <ExtLink href="https://www.themonstersknow.com/">The Monsters Know What They{"'"}re Doing</ExtLink>{" "}
         e{" "}
         <ExtLink href="https://slyflourish.com/making_monsters_interesting.html">Sly Flourish</ExtLink>,
@@ -2183,11 +2188,10 @@ export function BlogPost9() {
       </P>
 
       {/* ── CONCLUSÃO & DICAS GERAIS ──────────────────────────────── */}
-      <H2>Como Tirar o Máximo desses Monstros</H2>
+      <H2>Ter a lista é fácil. Usar bem é outra história.</H2>
       <P>
-        Ter a lista é o primeiro passo. Mas usar esses monstros de forma
-        eficiente exige algumas práticas que separam uma sessão boa de uma
-        sessão <em>inesquecível</em>.
+        Saber quais monstros usar é metade. A outra metade é rodar eles de um
+        jeito que os jogadores lembrem semanas depois.
       </P>
       <H3>Leia a motivação, não só o stat block</H3>
       <P>
@@ -2257,31 +2261,29 @@ export function BlogPost10() {
   return (
     <>
       <P>
-        Você leu o Livro do Jogador, assistiu sessões no YouTube, montou uma ficha
-        de personagem e agora alguém precisa sentar atrás do escudo do mestre.
-        Talvez ninguém do grupo tenha se voluntariado. Talvez tenha sido você mesmo
-        que sentiu a vontade. De qualquer forma, a pergunta é a mesma:{" "}
-        <strong>como mestrar D&amp;D pela primeira vez sem travar, sem esquecer
-        metade das regras e sem que a sessão vire um desastre?</strong>
+        Alguém do grupo disse "eu mestro" — e esse alguém foi você. Ou
+        ninguém disse, e você ficou com pena da mesa morrer antes de nascer.
+        De qualquer jeito, agora tá aqui, nervoso, pensando:{" "}
+        <strong>"e se eu esquecer as regras? E se eu travar? E se a sessão
+        for um desastre?"</strong>
       </P>
       <P>
-        A boa notícia: mestrar é mais fácil do que parece. Milhares de mestres
-        iniciantes rodam ótimas sessões toda semana, e a grande maioria aprendeu
-        fazendo. Este guia reúne conselhos práticos de referências como{" "}
+        Resposta curta: vai dar certo. Mestrar é mais simples do que parece, e
+        todo mestre bom que você admira já foi péssimo na primeira vez. Este
+        guia junta o que aprendi + conselhos de gente muito melhor que eu:{" "}
         <ExtLink href="https://slyflourish.com/lazydm/">Sly Flourish</ExtLink>,{" "}
         <ExtLink href="https://mcdm.fandom.com/wiki/Running_the_Game">Matt Colville</ExtLink> e{" "}
         <ExtLink href="https://thealexandrian.net/gamemastery-101">The Alexandrian</ExtLink>{" "}
         para te ajudar a preparar e rodar sua primeira sessão com confiança.
       </P>
 
-      <H2>O que o Mestre realmente faz?</H2>
+      <H2>O que o mestre faz de verdade (spoiler: menos do que você pensa)</H2>
       <P>
-        Se você já jogou como jogador, sabe que o mestre descreve o mundo, interpreta
-        os NPCs e arbitra as regras. Mas o papel vai além disso. O mestre é o{" "}
-        <strong>facilitador da diversão</strong>. Seu trabalho não é contar uma história
-        perfeita — é criar situações interessantes e deixar os jogadores reagirem a
-        elas. Como Matt Colville costuma dizer: o DM cria o cenário, mas são os
-        jogadores que escrevem a história.
+        Você não precisa ser ator, escritor ou ter decorado o livro inteiro.
+        O mestre é um <strong>facilitador de diversão</strong>. Você cria
+        situações interessantes; os jogadores decidem o que acontece. Como
+        Matt Colville diz: o DM monta o cenário, mas são os jogadores que
+        escrevem a história.
       </P>
       <P>
         Na prática, suas responsabilidades incluem:
@@ -2316,12 +2318,12 @@ export function BlogPost10() {
         improvisar. O resto vem com a prática.
       </Tip>
 
-      <H2>Preparação: o método do Mestre Preguiçoso</H2>
+      <H2>O erro #1: preparar demais</H2>
       <P>
-        O maior erro de mestres iniciantes é preparar demais. Você gasta horas
-        escrevendo diálogos, desenhando mapas e planejando cada encontro — e na
-        hora da sessão, os jogadores vão para o lado oposto do que você imaginou.
-        Toda aquela preparação vira desperdício.
+        Você vai gastar 4 horas escrevendo diálogos, desenhando um mapa bonito
+        e planejando cada cena. Na sessão, os jogadores vão ignorar o mapa,
+        matar o NPC que tinha 3 páginas de diálogo e ir na direção oposta.
+        Toda aquela preparação? No lixo.
       </P>
       <P>
         O{" "}
@@ -2434,12 +2436,11 @@ export function BlogPost10() {
         Sinta o ritmo da mesa.
       </P>
 
-      <H2>Gerenciando combate sem travar</H2>
+      <H2>Combate: onde todo mestre iniciante trava (e como destavar)</H2>
       <P>
-        O combate é onde mestres iniciantes mais travam. São muitas regras
-        simultâneas: iniciativa, ataques, dano, magias, condições, reações,
-        ataques de oportunidade. A boa notícia é que você não precisa lembrar
-        de tudo — precisa de um sistema que lembre por você.
+        Iniciativa, ataques, dano, magias, condições, reações, ataques de
+        oportunidade... é muita coisa ao mesmo tempo. Mas você NÃO precisa
+        lembrar de tudo. Precisa de um sistema que lembre por você.
       </P>
 
       <H3>Passo 1: Iniciativa e ordem de turnos</H3>
@@ -2484,12 +2485,12 @@ export function BlogPost10() {
         Encerre combates que já perderam a tensão — seus jogadores vão agradecer.
       </Tip>
 
-      <H2>A arte da improvisação</H2>
+      <H2>Quando o plano morre (e o jogo fica bom de verdade)</H2>
       <P>
-        Não importa o quanto você prepare: os jogadores vão fazer algo
-        inesperado. Isso não é um problema — <strong>é o melhor do RPG</strong>.
-        Improvisação não é inventar coisas do nada; é reagir de forma criativa
-        ao inesperado usando os elementos que você já preparou.
+        Os jogadores VÃO fazer algo que você não previu. Isso não é um
+        problema — <strong>é o melhor do RPG</strong>. Improvisação não é
+        inventar do nada. É reagir ao inesperado usando os elementos que
+        você já preparou, só que numa ordem diferente.
       </P>
 
       <H3>Diga "sim, e..." ou "sim, mas..."</H3>
@@ -2523,10 +2524,11 @@ export function BlogPost10() {
         sessão. Essas anotações viram o material mais rico para as próximas sessões.
       </Tip>
 
-      <H2>Erros comuns de mestres iniciantes</H2>
+      <H2>Erros que eu cometi (e você provavelmente vai cometer também)</H2>
       <P>
-        Todo mestre passa por esses erros. Reconhecê-los é metade do caminho
-        para evitá-los:
+        Reconhecer esses erros antecipadamente não significa que você vai
+        evitar todos. Mas pelo menos vai saber o nome do monstro que te
+        mordeu:
       </P>
 
       <H3>1. Preparar demais (e sofrer quando os jogadores desviam)</H3>
@@ -2575,11 +2577,10 @@ export function BlogPost10() {
         tempo sobra para narrar, interpretar e se divertir.
       </P>
 
-      <H2>Ferramentas que ajudam o mestre iniciante</H2>
+      <H2>O kit de sobrevivência do mestre iniciante</H2>
       <P>
-        Você não precisa mestrar com caneta e papel se não quiser. Ferramentas
-        digitais existem para simplificar a parte mecânica e te deixar focar no
-        que importa: a narrativa e a diversão.
+        Caneta e papel funcionam. Mas se ferramentas digitais podem tirar peso
+        das suas costas pra você focar na narrativa, por que não?
       </P>
       <Ul>
         <Li>
@@ -2700,9 +2701,9 @@ export function BlogPost11() {
         5 minutos para preparar e funciona em qualquer mesa presencial.
       </P>
 
-      <H2>Por Que Música Importa na Sua Mesa de RPG?</H2>
+      <H2>Por que isso faz tanta diferença?</H2>
       <P>
-        O blog{" "}
+        O{" "}
         <ExtLink href="https://slyflourish.com/three_ways_to_use_music_in_your_game.html">
           Sly Flourish
         </ExtLink>{" "}
@@ -2729,10 +2730,10 @@ export function BlogPost11() {
         triunfante. A transição musical diz mais que mil palavras.
       </Tip>
 
-      <H2>Os Três Pilares: Organize Sua Trilha em Categorias</H2>
+      <H2>3 playlists cobrem 90% da sessão</H2>
       <P>
-        A dica mais prática que posso dar é: não tente ter uma trilha para cada
-        cena específica. Em vez disso, monte{" "}
+        Não tente ter uma trilha diferente pra cada cena. Você vai enlouquecer.
+        Monte{" "}
         <strong>três playlists base</strong> que cobrem 90% de tudo que acontece
         numa sessão. Essa abordagem vem diretamente do Sly Flourish e funciona
         incrivelmente bem:
@@ -2790,10 +2791,9 @@ export function BlogPost11() {
         na hora certa é um dos momentos mais satisfatórios da mesa.
       </Tip>
 
-      <H2>Trilhas Para Cenas Específicas</H2>
+      <H2>Playlists extras pra momentos que merecem</H2>
       <P>
-        Além dos três pilares, vale ter algumas trilhas extras para momentos
-        recorrentes:
+        Além das 3 base, vale ter algo separado pra momentos que se repetem:
       </P>
 
       <H3>Taverna e Cidade</H3>
@@ -2827,10 +2827,10 @@ export function BlogPost11() {
         <em>Spirited Away</em> são ouro puro aqui.
       </P>
 
-      <H2>Fontes Gratuitas: Onde Encontrar Música para RPG</H2>
+      <H2>De graça e profissional: onde achar música boa</H2>
       <P>
-        Você não precisa gastar nada para ter uma trilha sonora incrível.
-        Estas são as melhores fontes gratuitas que eu uso e recomendo:
+        Não precisa gastar um centavo. Essas são as fontes que eu uso e
+        confio:
       </P>
 
       <H3>Tabletop Audio</H3>
@@ -2896,7 +2896,7 @@ export function BlogPost11() {
         com bloqueador de anúncios ou o Tabletop Audio, que é 100% sem ads.
       </Tip>
 
-      <H2>Ferramentas Pagas: Quando Vale o Investimento</H2>
+      <H2>Pago: quando vale investir</H2>
 
       <H3>Syrinscape</H3>
       <P>
@@ -2922,10 +2922,9 @@ export function BlogPost11() {
         acessível que o Syrinscape e com qualidade excepcional.
       </P>
 
-      <H2>O Setup Prático: Como Usar na Mesa</H2>
+      <H2>Na prática: o setup de 5 minutos</H2>
       <P>
-        A teoria é bonita, mas o que importa é como colocar em prática sem
-        complicar sua vida de mestre. Aqui está o setup que recomendo:
+        Chega de teoria. Aqui vai como montar isso na mesa sem complicar:
       </P>
 
       <H3>Equipamento Mínimo</H3>
@@ -2970,10 +2969,10 @@ export function BlogPost11() {
         aplicativos durante a sessão.
       </Tip>
 
-      <H2>Volume: A Regra de Ouro</H2>
+      <H2>A regra de ouro do volume (que todo mundo quebra)</H2>
       <P>
-        O erro número um de todo mestre que começa a usar música é colocar
-        volume alto demais. A regra é simples:{" "}
+        O erro #1 de quem começa a usar música na mesa: volume alto demais.
+        A regra é uma só:{" "}
         <strong>
           se você precisa levantar a voz para ser ouvido acima da música,
           está alto demais
@@ -3006,7 +3005,7 @@ export function BlogPost11() {
         depois de incomodar já quebrou a imersão.
       </P>
 
-      <H2>Quando NÃO Usar Música</H2>
+      <H2>Silêncio também é uma ferramenta</H2>
       <P>
         Música ambiente não é obrigatória em toda cena, e saber quando{" "}
         <em>não</em> usar é tão importante quanto saber quando usar.
@@ -3044,10 +3043,9 @@ export function BlogPost11() {
         é devastador.
       </Tip>
 
-      <H2>Checklist Rápido: Música para Sua Próxima Sessão</H2>
+      <H2>Nunca usou? Comece assim (leva 5 minutos)</H2>
       <P>
-        Se você nunca usou música na mesa e quer começar hoje, siga este
-        passo a passo mínimo:
+        Se você nunca colocou música na mesa e quer testar na próxima sessão:
       </P>
       <Ul>
         <Li>
@@ -3076,26 +3074,22 @@ export function BlogPost11() {
         </Li>
       </Ul>
 
-      <H2>Conclusão</H2>
       <P>
-        Música ambiente para RPG não precisa ser complicada. Com três playlists
-        base, uma caixa de som barata e a consciência de quando subir, baixar
-        ou pausar a trilha, você adiciona uma camada de imersão que seus
-        jogadores vão lembrar por muito tempo. Comece simples, experimente, e
-        aos poucos descubra o estilo sonoro da <em>sua</em> mesa.
+        Três playlists, uma caixinha de som, e a consciência de quando subir,
+        baixar ou silenciar. É isso. Comece simples, experimente por 2-3
+        sessões, e vá refinando. Cada mesa tem sua personalidade sonora —
+        você vai encontrar a da sua.
       </P>
       <P>
-        E se você quer uma ferramenta que integra combate e ambientação
-        sonora num só lugar, experimente o{" "}
-        <ProdLink href="/try">Pocket DM</ProdLink> — combat tracker
-        gratuito para D&D 5e com soundboard embutido, ideal para mestres
-        que jogam presencialmente. Confira também nosso guia sobre{" "}
+        Se quiser combate + música no mesmo lugar, o{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink> tem soundboard embutido
+        no tracker — sem trocar de app. Veja também as{" "}
         <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">
-          ferramentas essenciais para mestres
+          ferramentas essenciais pra mestres
         </IntLink>{" "}
         e as{" "}
         <IntLink slug="como-agilizar-combate-dnd-5e">
-          10 dicas para agilizar o combate
+          10 dicas pra agilizar combate
         </IntLink>.
       </P>
 
@@ -3111,13 +3105,12 @@ export function BlogPost12() {
   return (
     <>
       <P>
-        Uma das decisões mais fundamentais que um mestre de D&D 5e precisa tomar
-        é como representar o combate na mesa: teatro da mente ou grid com
-        miniaturas? Ambos os estilos são perfeitamente válidos — o próprio
-        D&D 5e foi projetado para funcionar com qualquer abordagem. Mas cada um
-        tem vantagens, limitações e situações onde brilha mais. Neste guia,
-        vamos comparar os dois estilos, explorar a abordagem híbrida de zonas,
-        e ajudar você a decidir qual funciona melhor para sua mesa.
+        "A gente joga com mapa ou sem mapa?" — essa discussão surge em toda
+        mesa nova. Tem gente que jura que grid é essencial, tem gente que
+        nunca usou uma miniatura na vida e roda sessões incríveis só na
+        narração. A verdade? Depende da mesa, do combate e do quanto você
+        quer preparar. Vamos comparar os dois, mais uma terceira opção que
+        pouca gente conhece.
       </P>
       <P>
         E o melhor: o{" "}
@@ -3129,7 +3122,7 @@ export function BlogPost12() {
         de batalha.
       </P>
 
-      <H2>O Que É Teatro da Mente?</H2>
+      <H2>Teatro da Mente: tudo na imaginação</H2>
       <P>
         No teatro da mente (<em>Theater of the Mind</em>, ou TotM), o combate
         acontece inteiramente na imaginação dos jogadores e do mestre. Não há
@@ -3158,7 +3151,7 @@ export function BlogPost12() {
         uns 60 pés na beira da floresta{'"'}.
       </P>
 
-      <H2>O Que É Combate com Grid?</H2>
+      <H2>Grid: tudo no mapa</H2>
       <P>
         No combate com grid, a batalha acontece sobre um mapa quadriculado (ou
         hexagonal) onde cada quadrado representa 5 pés. Os personagens e monstros
@@ -3180,7 +3173,7 @@ export function BlogPost12() {
         <em>Fireball</em> ou quem tem cobertura parcial.
       </P>
 
-      <H2>Comparação Direta</H2>
+      <H2>Lado a lado</H2>
       <div className="overflow-x-auto my-8 rounded-xl border border-white/[0.08]">
         <table className="w-full text-sm text-left">
           <thead>
@@ -3235,7 +3228,7 @@ export function BlogPost12() {
         </table>
       </div>
 
-      <H2>Prós do Teatro da Mente</H2>
+      <H2>Por que teatro da mente funciona tão bem</H2>
 
       <H3>Zero Preparação</H3>
       <P>
@@ -3273,7 +3266,7 @@ export function BlogPost12() {
         jogam em locais diferentes (bares, parques, casas de amigos).
       </P>
 
-      <H2>Prós do Combate com Grid</H2>
+      <H2>Por que grid é insubstituível em certas mesas</H2>
 
       <H3>Clareza Total</H3>
       <P>
@@ -3310,10 +3303,10 @@ export function BlogPost12() {
         {'"'}especial{'"'}.
       </P>
 
-      <H2>Abordagem Híbrida: Zonas de Combate</H2>
+      <H2>O meio-termo que quase ninguém conhece: Zonas</H2>
       <P>
-        E se existisse um meio-termo? Existe, e é cada vez mais popular: o
-        combate baseado em <strong>zonas</strong>. Em vez de quadrados precisos,
+        Existe uma terceira opção que resolve 80% das brigas entre os dois
+        campos: combate baseado em <strong>zonas</strong>. Em vez de quadrados precisos,
         o campo de batalha é dividido em zonas abstratas — {'"'}entrada da
         caverna{'"'}, {'"'}rio de lava{'"'}, {'"'}ponte estreita{'"'},
         {'"'}altar do dragão{'"'}. Mover-se dentro da mesma zona custa pouco
@@ -3343,7 +3336,7 @@ export function BlogPost12() {
         30 segundos.
       </Tip>
 
-      <H2>Quando Usar Cada Estilo</H2>
+      <H2>Guia rápido: qual usar quando</H2>
 
       <H3>Use Teatro da Mente Quando...</H3>
       <Ul>
@@ -3371,7 +3364,7 @@ export function BlogPost12() {
         <Li>O grupo é misto — alguns querem tática, outros querem narrativa</Li>
       </Ul>
 
-      <H2>Como o Pocket DM Funciona com Qualquer Estilo</H2>
+      <H2>O tracker funciona com qualquer estilo (de verdade)</H2>
       <P>
         O{" "}
         <Link href="/try" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
@@ -3410,13 +3403,12 @@ export function BlogPost12() {
         algo que fica confuso no papel independente do estilo de combate.
       </P>
 
-      <H2>Conclusão</H2>
+      <H2>Não existe resposta certa. Existe a SUA mesa.</H2>
       <P>
-        Não existe estilo {'"'}certo{'"'} de combate no D&D 5e. Teatro da
-        mente é rápido, imersivo e barato. Grid é preciso, visual e tátil.
-        Zonas são o meio-termo elegante. A melhor abordagem é ser flexível: use
-        TotM para encontros simples, grid para boss fights e zonas para tudo que
-        fica no meio. Como{" "}
+        Teatro da mente é rápido e barato. Grid é preciso e satisfatório.
+        Zonas são o meio-termo que ninguém esperava. A melhor abordagem?
+        Ser flexível. TotM pra encontros simples, grid pra boss fights,
+        zonas pro resto. Como{" "}
         <ExtLink href="https://theangrygm.com/fighting-with-your-voice-1/">
           The Angry GM argumenta
         </ExtLink>, o estilo de combate deve servir à experiência na mesa, não
@@ -3467,7 +3459,7 @@ export function BlogPost13() {
         e uma das builds de suporte mais eficientes do D&amp;D 5e.
       </P>
 
-      <H2>Resumo da Build</H2>
+      <H2>A ficha em 30 segundos</H2>
 
       <div className="overflow-x-auto mb-6">
         <table className="w-full text-sm text-foreground/80 border-collapse">
@@ -3696,7 +3688,7 @@ export function BlogPost13() {
         </div>
       </div>
 
-      <H2>Por Que Essas Escolhas?</H2>
+      <H2>Por que cada peça existe</H2>
 
       <H3>Raça: Half-Elf (Drow)</H3>
       <P>
@@ -3773,7 +3765,7 @@ export function BlogPost13() {
         </Li>
       </Ul>
 
-      <H2>Combate — O Que Essa Build Faz de Melhor</H2>
+      <H2>Na mesa: o que essa build faz de melhor</H2>
 
       <H3>Rotação típica</H3>
       <Ul>
@@ -3815,11 +3807,11 @@ export function BlogPost13() {
         <Li>Início lento — níveis 1-4 antes de Metamagic e magias de 3º nível</Li>
       </Ul>
 
-      <H2>Comparação com Builds Populares</H2>
+      <H2>Como se compara com o meta?</H2>
 
       <P>
-        O Order Cleric 1 / Divine Soul Sorcerer é considerado pela comunidade de
-        otimização (RPGBot, TabletopBuilds, Treantmonk, r/3d6) como{" "}
+        Nos fóruns de otimização (RPGBot, TabletopBuilds, Treantmonk, r/3d6),
+        o Order Cleric 1 / Divine Soul Sorcerer é consistentemente listado como{" "}
         <strong>uma das builds de suporte mais eficientes do 5e</strong>. A
         Divine Soul Sorcerer sozinha já é avaliada como tier S entre subclasses de
         Sorcerer, e o dip de Order Cleric é amplamente reconhecido como um dos
@@ -3844,7 +3836,7 @@ export function BlogPost13() {
         preparação e versatilidade sobre raw output.
       </P>
 
-      <H2>Progressão — Para Onde Ir nos Próximos Níveis</H2>
+      <H2>Depois do nível 10: pra onde crescer</H2>
 
       <Ul>
         <Li>
@@ -3868,7 +3860,7 @@ export function BlogPost13() {
         </Li>
       </Ul>
 
-      <H2>Quem Foi Capa Barsavi</H2>
+      <H2>A história por trás da ficha</H2>
 
       {/* Character Portrait — with gold glow + hover effect */}
       <div className="my-10 flex justify-center">
@@ -3998,7 +3990,7 @@ export function BlogPost14() {
         efficient support builds in D&amp;D 5e.
       </P>
 
-      <H2>Build Summary</H2>
+      <H2>The sheet in 30 seconds</H2>
 
       <div className="overflow-x-auto mb-6">
         <table className="w-full text-sm text-foreground/80 border-collapse">
@@ -4229,7 +4221,7 @@ export function BlogPost14() {
         </div>
       </div>
 
-      <H2>Why These Choices?</H2>
+      <H2>Why each piece exists</H2>
 
       <H3>Race: Half-Elf (Drow)</H3>
       <P>
@@ -4306,7 +4298,7 @@ export function BlogPost14() {
         </Li>
       </Ul>
 
-      <H2>Combat — What This Build Does Best</H2>
+      <H2>At the table: what this build actually does</H2>
 
       <H3>Typical rotation</H3>
       <Ul>
@@ -4348,11 +4340,12 @@ export function BlogPost14() {
         <Li>Slow start — levels 1-4 before Metamagic and 3rd-level spells feel weak</Li>
       </Ul>
 
-      <H2>Community Tier Rating</H2>
+      <H2>How it stacks up against the meta</H2>
 
       <P>
-        The Order Cleric 1 / Divine Soul Sorcerer is considered by the
-        optimization community (RPGBot, TabletopBuilds, Treantmonk, r/3d6) as{" "}
+        In the optimization community (RPGBot, TabletopBuilds, Treantmonk,
+        r/3d6), the Order Cleric 1 / Divine Soul Sorcerer is consistently
+        rated as{" "}
         <strong>one of the most efficient support builds in 5e</strong>. Divine
         Soul Sorcerer alone is rated S-tier among Sorcerer subclasses, and the
         Order Cleric dip is widely recognized as one of the best 1-level
@@ -4377,7 +4370,7 @@ export function BlogPost14() {
         preparation and versatility over raw output.
       </P>
 
-      <H2>Progression — Where to Go Next</H2>
+      <H2>After level 10: where to grow</H2>
 
       <Ul>
         <Li>
@@ -4401,7 +4394,7 @@ export function BlogPost14() {
         </Li>
       </Ul>
 
-      <H2>Who Was Capa Barsavi</H2>
+      <H2>The story behind the sheet</H2>
 
       {/* Character Portrait — with gold glow + hover effect */}
       <div className="my-10 flex justify-center">
@@ -4596,7 +4589,7 @@ export function BlogPost15() {
       </P>
 
       {/* ── ERA 1 ── */}
-      <H2>Pesquisa e Decisões &mdash; Semanas de Planejamento</H2>
+      <H2>Antes do Código &mdash; Semanas de "Será que alguém precisa disso?"</H2>
       <P>
         Antes de escrever uma linha de código, o Pocket DM viveu em documentos,
         rabiscos e discussões. Quais features existem nos concorrentes? O que
@@ -4654,7 +4647,7 @@ export function BlogPost15() {
       </Tip>
 
       {/* ── ERA 3 ── */}
-      <H2>O Combat Tracker Cresce</H2>
+      <H2>De tabela glorificada a combat tracker de verdade</H2>
       <P>
         A primeira versão do tracker funcionava, mas era basicamente uma tabela
         glorificada. Nessa fase, ele ganhou alma: barras de HP com cores por
@@ -4692,7 +4685,7 @@ export function BlogPost15() {
       </Ul>
 
       {/* ── ERA 4 ── */}
-      <H2>Identidade e Experiência</H2>
+      <H2>Quando o Pocket DM virou o Pocket DM</H2>
       <P>
         O logo da coroa d20 nasceu aqui. A paleta dark + gold. O nome
         &ldquo;Pocket DM&rdquo;. A landing page com comparativos. O soundboard
