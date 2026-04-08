@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Command } from "cmdk";
-import { ChevronDown, Check, Search } from "lucide-react";
+import { ChevronDown, Check, Search, SearchX } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -95,7 +95,7 @@ export function RaceCombobox({ value, onChange }: RaceComboboxProps) {
         </button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[var(--radix-popover-trigger-width)] p-0 border-amber-400/20 bg-card shadow-xl shadow-black/40"
+        className="w-[var(--radix-popover-trigger-width)] p-0 border-amber-400/20 bg-card shadow-xl shadow-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-1 data-[state=open]:duration-150"
         align="start"
         sideOffset={4}
         onOpenAutoFocus={(e) => {
@@ -120,11 +120,13 @@ export function RaceCombobox({ value, onChange }: RaceComboboxProps) {
             />
           </div>
 
+          <div className="relative">
           <Command.List className="max-h-[240px] overflow-y-auto p-1">
             {/* Empty state */}
             {filtered.length === 0 && (
-              <Command.Empty className="px-4 py-6 text-center text-sm text-muted-foreground">
-                {t("race_no_results")}
+              <Command.Empty className="px-4 py-6 text-center">
+                <SearchX className="w-6 h-6 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">{t("race_no_results")}</p>
               </Command.Empty>
             )}
 
@@ -183,6 +185,9 @@ export function RaceCombobox({ value, onChange }: RaceComboboxProps) {
               </Command.Group>
             ))}
           </Command.List>
+          {/* Scroll indicator gradient at bottom */}
+          <div className="absolute bottom-0 inset-x-0 h-4 pointer-events-none bg-gradient-to-t from-card to-transparent" />
+          </div>
         </Command>
       </PopoverContent>
     </Popover>

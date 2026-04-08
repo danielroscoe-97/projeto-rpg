@@ -59,14 +59,14 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
       {/* Session scratch pad — always visible above sub-tabs */}
       <ScratchPad characterId={characterId} />
 
-      {/* Privacy badge */}
+      {/* Privacy badge — inline text (mobile-friendly, no hover tooltip) */}
       <div className="inline-flex items-center gap-1.5 text-xs text-amber-400/70 bg-amber-400/5 border border-amber-400/15 rounded-full px-2.5 py-1">
-        <Lock className="w-3 h-3" />
+        <Lock className="w-3 h-3" aria-hidden="true" />
         <span>{t("privacy_notice")}</span>
       </div>
 
-      {/* I-5: Sub-tabs with ARIA tablist semantics — underline style matching main tab bar */}
-      <div className="flex border-b border-border" role="tablist" aria-label={t("tab_quick")}>
+      {/* Sub-tabs with ARIA tablist semantics */}
+      <div className="flex border-b border-border" role="tablist" aria-label={t("notes_tablist_label")}>
         {tabs.map(({ key, icon: Icon, label }) => (
           <button
             key={key}
@@ -108,7 +108,7 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
       {!loading && activeTab === "journal" && (
         <div className="space-y-3">
           {showJournalForm ? (
-            <div className="bg-white/5 rounded-lg p-3 space-y-2 border border-border/50">
+            <div className="bg-rpg-parchment rounded-lg p-3 space-y-2 border border-amber-400/10">
               <input
                 type="text"
                 value={journalDraft.title}
@@ -154,9 +154,12 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
           )}
 
           {journalEntries.length === 0 && !showJournalForm && (
-            <p className="text-sm text-muted-foreground py-4 text-center">
-              {t("no_journal_entries")}
-            </p>
+            <div className="py-6 text-center">
+              <BookOpen className="w-7 h-7 text-amber-400/20 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground/70 italic">
+                {t("no_journal_entries")}
+              </p>
+            </div>
           )}
 
           {journalEntries.map((entry) => (

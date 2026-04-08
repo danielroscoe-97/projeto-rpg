@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft } from "lucide-react";
+import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft, type LucideIcon } from "lucide-react";
 import { ClassIcon } from "@/components/character/ClassIcon";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
@@ -23,6 +23,81 @@ import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 
 type Tab = "map" | "sheet" | "resources" | "inventory" | "notes" | "quests";
+
+const TABS: Array<{ key: Tab; icon: LucideIcon; labelKey: string }> = [
+  { key: "map", icon: Network, labelKey: "tabs.map" },
+  { key: "sheet", icon: Heart, labelKey: "tabs.sheet" },
+  { key: "resources", icon: Sparkles, labelKey: "tabs.resources" },
+  { key: "inventory", icon: Package, labelKey: "tabs.inventory" },
+  { key: "notes", icon: ScrollText, labelKey: "tabs.notes" },
+  { key: "quests", icon: Map, labelKey: "tabs.quests" },
+];
+
+function TabBar({
+  activeTab,
+  onTabChange,
+  t,
+}: {
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
+  t: ReturnType<typeof useTranslations<"player_hq">>;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showFade, setShowFade] = useState(false);
+
+  const checkOverflow = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setShowFade(el.scrollWidth > el.clientWidth && el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    checkOverflow();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkOverflow, { passive: true });
+    window.addEventListener("resize", checkOverflow);
+    return () => {
+      el.removeEventListener("scroll", checkOverflow);
+      window.removeEventListener("resize", checkOverflow);
+    };
+  }, [checkOverflow]);
+
+  return (
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        className="flex border-b border-border overflow-x-auto scrollbar-hide"
+        role="tablist"
+        aria-label={t("tabs.aria_tablist")}
+      >
+        {TABS.map(({ key, icon: Icon, labelKey }) => (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            id={`tab-${key}`}
+            aria-selected={activeTab === key}
+            aria-controls={`panel-${key}`}
+            onClick={() => onTabChange(key)}
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === key
+                ? "border-amber-400 text-amber-400"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Icon className="w-4 h-4" />
+            {t(labelKey)}
+          </button>
+        ))}
+      </div>
+      {/* Scroll fade indicator (right edge) */}
+      {showFade && (
+        <div className="absolute right-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-l from-background to-transparent" />
+      )}
+    </div>
+  );
+}
 
 interface PlayerHqShellProps {
   characterId: string;
@@ -131,84 +206,11 @@ export function PlayerHqShell({
         />
       </div>
 
-      {/* Tab bar */}
-      <div className="flex border-b border-border overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setActiveTab("map")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "map"
-              ? "border-amber-400 text-amber-400"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Network className="w-4 h-4" />
-          {t("tabs.map")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("sheet")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "sheet"
-              ? "border-amber-400 text-amber-400"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Heart className="w-4 h-4" />
-          {t("tabs.sheet")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("resources")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "resources"
-              ? "border-amber-400 text-amber-400"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          {t("tabs.resources")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("inventory")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "inventory"
-              ? "border-amber-400 text-amber-400"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Package className="w-4 h-4" />
-          {t("tabs.inventory")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("notes")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "notes"
-              ? "border-amber-400 text-amber-400"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <ScrollText className="w-4 h-4" />
-          {t("tabs.notes")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("quests")}
-          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "quests"
-              ? "border-amber-400 text-amber-400"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Map className="w-4 h-4" />
-          {t("tabs.quests")}
-        </button>
-      </div>
+      {/* Tab bar with ARIA roles + mobile scroll fade */}
+      <TabBar activeTab={activeTab} onTabChange={setActiveTab} t={t} />
 
       {/* Tab content */}
-      <div key={activeTab} className="animate-in fade-in-0 duration-150">
+      <div key={activeTab} id={`panel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="animate-in fade-in-0 duration-150">
       {activeTab === "map" && (
         <PlayerMindMap
           campaignId={campaignId}

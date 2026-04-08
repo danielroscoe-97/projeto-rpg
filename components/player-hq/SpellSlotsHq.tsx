@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Plus } from "lucide-react";
+import { Plus, Wand2, Pencil } from "lucide-react";
 import { ResourceDots } from "./ResourceDots";
 
 interface SpellSlotsHqProps {
@@ -100,6 +100,7 @@ export function SpellSlotsHq({
 
       {levels.length === 0 ? (
         <div className="py-4 text-center">
+          <Wand2 className="w-7 h-7 text-amber-400/20 mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">{t("spell_slots_empty")}</p>
           {!readOnly && (
             <button
@@ -112,7 +113,7 @@ export function SpellSlotsHq({
           )}
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {levels.map(([level, { max, used }]) => (
             <div key={level} className="flex items-center gap-3">
               <span className="text-xs font-semibold text-amber-400 w-8 shrink-0 text-right">
@@ -149,10 +150,11 @@ export function SpellSlotsHq({
                   <button
                     type="button"
                     onClick={() => setEditingMax(level)}
-                    className="text-[10px] text-muted-foreground hover:text-foreground tabular-nums w-10 text-center"
+                    className="group/max text-[10px] text-muted-foreground hover:text-foreground tabular-nums w-10 text-center inline-flex items-center justify-center gap-0.5"
                     title={t("spell_slots_edit_max")}
                   >
                     max:{max}
+                    <Pencil className="w-2 h-2 opacity-0 group-hover/max:opacity-100 transition-opacity" />
                   </button>
                 )
               )}

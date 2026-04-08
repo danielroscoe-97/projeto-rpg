@@ -89,7 +89,7 @@ export function ResourceDots({
           >
             <span
               className={`${sizeStyle.dot} rounded-full border transition-transform duration-200 ${
-                isFilled ? color : "bg-white/10 border-white/10"
+                isFilled ? color : "bg-white/[0.15] border-white/[0.08]"
               } ${bouncingDot === i ? "scale-125" : "scale-100"}`}
             />
           </button>

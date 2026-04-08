@@ -51,7 +51,7 @@ export function PlayerCampaignCard({
   return (
     <Link
       href={href}
-      className="block relative bg-card border border-border rounded-xl overflow-hidden hover:border-white/20 transition-all duration-[250ms] group h-[200px] sm:h-[240px]"
+      className="block relative bg-card border border-border rounded-xl overflow-hidden hover:border-white/20 transition-all duration-[250ms] group min-h-[200px] sm:min-h-[240px]"
     >
       {/* Hero image / gradient background */}
       <div className="absolute inset-0">

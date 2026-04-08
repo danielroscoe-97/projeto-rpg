@@ -16,7 +16,7 @@ import {
   type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Plus } from "lucide-react";
+import { Plus, Network } from "lucide-react";
 
 import { usePlayerMindMap, type PlayerMindMapNode } from "@/lib/hooks/usePlayerMindMap";
 import { usePlayerPins, type PinColor } from "@/lib/hooks/usePlayerPins";
@@ -244,8 +244,15 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[400px] text-muted-foreground text-sm">
-        {t("loading")}
+      <div className="h-[400px] w-full rounded-lg border border-border bg-surface-overlay flex items-center justify-center">
+        {/* Skeleton: 3 pulsing circles with connector lines */}
+        <svg width="200" height="120" className="animate-pulse" aria-hidden="true">
+          <line x1="60" y1="60" x2="140" y2="30" stroke="currentColor" className="text-white/5" strokeWidth="2" />
+          <line x1="60" y1="60" x2="140" y2="90" stroke="currentColor" className="text-white/5" strokeWidth="2" />
+          <circle cx="60" cy="60" r="16" className="fill-white/5" />
+          <circle cx="140" cy="30" r="12" className="fill-white/5" />
+          <circle cx="140" cy="90" r="12" className="fill-white/5" />
+        </svg>
       </div>
     );
   }
@@ -295,10 +302,11 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
         onMarkAllViewed={markAllViewed}
       />
 
-      {/* Empty state when all filters off */}
+      {/* Empty state when all filters off or no nodes */}
       {nodes.length <= 1 && !loading && (
-        <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
-          {t("empty_filters")}
+        <div className="flex flex-col items-center justify-center h-32 gap-2">
+          <Network className="w-6 h-6 text-muted-foreground/30" />
+          <p className="text-muted-foreground text-sm">{t("empty_filters")}</p>
         </div>
       )}
 
@@ -327,7 +335,7 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
             variant={BackgroundVariant.Dots}
             gap={20}
             size={1}
-            color="#ffffff10"
+            color="#ffffff18"
           />
           <Controls
             showInteractive={false}

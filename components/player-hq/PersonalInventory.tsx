@@ -102,7 +102,7 @@ function PersonalItemCard({
 
   return (
     <div
-      className={`bg-card border rounded-xl transition-colors ${
+      className={`bg-card border rounded-xl transition-all duration-200 ${
         item.equipped
           ? "border-l-2 border-l-amber-400 border-t-border border-r-border border-b-border"
           : "border-border"
@@ -224,7 +224,7 @@ function InlineAddItem({
         onChange={(e) => setName(e.target.value)}
         placeholder={t("item_name_placeholder")}
         autoFocus
-        className="flex-1 min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+        className="flex-1 min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400/30 rounded"
       />
       <input
         type="number"
@@ -349,6 +349,7 @@ export function PersonalInventory({
       {/*  SECTION — Currency grid                                      */}
       {/* ============================================================ */}
       <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 py-3">
+        <GoldLabel>{t("currency_label")}</GoldLabel>
         <div className="flex gap-2 justify-center">
           {(["cp", "sp", "ep", "gp", "pp"] as const).map((coin) => (
             <CoinField

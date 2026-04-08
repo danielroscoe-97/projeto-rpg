@@ -83,7 +83,7 @@ export function RestResetPanel({
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "short"
             ? "border-blue-400 bg-blue-400/10 text-blue-300"
-            : "border-blue-500/20 text-muted-foreground hover:border-blue-500/40 disabled:opacity-30"
+            : "border-blue-500/20 text-muted-foreground hover:border-blue-500/40 disabled:opacity-20"
         }`}
         aria-label={t("short_rest")}
       >
@@ -104,7 +104,7 @@ export function RestResetPanel({
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "long"
             ? "border-amber-400 bg-amber-400/10 text-amber-400"
-            : "border-amber-500/20 text-muted-foreground hover:border-amber-500/40 disabled:opacity-30"
+            : "border-amber-500/20 text-muted-foreground hover:border-amber-500/40 disabled:opacity-20"
         }`}
         aria-label={t("long_rest")}
       >
@@ -117,22 +117,22 @@ export function RestResetPanel({
         )}
       </button>
 
-      {/* Dawn */}
+      {/* Dawn — distinct orange color */}
       <button
         type="button"
         onClick={() => handleRest("dawn")}
         disabled={dawnCount === 0}
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "dawn"
-            ? "border-amber-500 bg-amber-500/10 text-amber-300"
-            : "border-amber-600/20 text-muted-foreground hover:border-amber-600/40 disabled:opacity-30"
+            ? "border-orange-400 bg-orange-400/10 text-orange-300"
+            : "border-orange-500/20 text-muted-foreground hover:border-orange-500/40 disabled:opacity-20"
         }`}
         aria-label={t("dawn")}
       >
         <Sun className="w-3.5 h-3.5" />
         {confirming === "dawn" ? t("reset_confirm") : t("dawn")}
         {dawnCount > 0 && (
-          <span className="bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full text-[10px]">
+          <span className="bg-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded-full text-[10px]">
             {dawnCount}
           </span>
         )}

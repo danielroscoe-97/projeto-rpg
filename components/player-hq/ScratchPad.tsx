@@ -136,29 +136,34 @@ export function ScratchPad({ characterId, readOnly }: ScratchPadProps) {
         )}
       </div>
 
-      {/* Content */}
-      {expanded && (
-        <div className="mt-2 space-y-1">
-          <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={handleChange}
-            readOnly={readOnly}
-            placeholder={t("scratch_pad_placeholder")}
-            maxLength={MAX_CHARS}
-            className="w-full bg-transparent text-sm text-foreground/90 placeholder:text-amber-400/20 placeholder:italic resize-none focus:outline-none min-h-[40px]"
-            style={{ maxHeight: 200 }}
-            rows={1}
-          />
-          {text.length > 0 && (
-            <div className={`text-right text-[10px] tabular-nums transition-colors ${
-              text.length > MAX_CHARS * 0.8 ? "text-amber-400" : "text-muted-foreground/50"
-            }`}>
-              {text.length}/{MAX_CHARS}
-            </div>
-          )}
+      {/* Content — animated expand/collapse via grid-rows */}
+      <div
+        className="grid transition-[grid-template-rows] duration-200 ease-out"
+        style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          <div className="mt-2 space-y-1">
+            <textarea
+              ref={textareaRef}
+              value={text}
+              onChange={handleChange}
+              readOnly={readOnly}
+              placeholder={t("scratch_pad_placeholder")}
+              maxLength={MAX_CHARS}
+              className="w-full bg-transparent text-sm text-foreground/90 placeholder:text-amber-400/20 placeholder:italic resize-none focus:outline-none min-h-[40px]"
+              style={{ maxHeight: 200 }}
+              rows={1}
+            />
+            {text.length > 0 && (
+              <div className={`text-right text-[10px] tabular-nums transition-colors ${
+                text.length > MAX_CHARS * 0.8 ? "text-amber-400" : "text-muted-foreground/50"
+              }`}>
+                {text.length}/{MAX_CHARS}
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

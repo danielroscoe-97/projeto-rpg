@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Package, Plus, Search } from "lucide-react";
+import { Package, Plus, Search, FlaskConical, Cherry, Gem, Coins, type LucideIcon } from "lucide-react";
 import { BagOfHoldingItem } from "./BagOfHoldingItem";
 import { AddItemForm } from "./AddItemForm";
 import { useBagOfHolding } from "@/lib/hooks/useBagOfHolding";
@@ -63,15 +63,15 @@ function EssentialField({
 /* ------------------------------------------------------------------ */
 
 function SectionHeader({
-  emoji,
+  icon: Icon,
   label,
 }: {
-  emoji: string;
+  icon: LucideIcon;
   label: string;
 }) {
   return (
     <h4 className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5 mb-2">
-      <span>{emoji}</span>
+      <Icon className="w-3.5 h-3.5" />
       {label}
     </h4>
   );
@@ -206,7 +206,7 @@ export function BagOfHolding({
           <div className="space-y-4">
             {/* ---- Healing Potions ---- */}
             <div>
-              <SectionHeader emoji="🧪" label={t("essentials.potions")} />
+              <SectionHeader icon={FlaskConical} label={t("essentials.potions")} />
               <div className="grid grid-cols-2 gap-2">
                 <EssentialField
                   label={t("essentials.potion_small")}
@@ -241,7 +241,7 @@ export function BagOfHolding({
               <div className="space-y-4">
                 {/* Consumables */}
                 <div>
-                  <SectionHeader emoji="🫐" label={t("essentials.consumables")} />
+                  <SectionHeader icon={Cherry} label={t("essentials.consumables")} />
                   <div className="grid grid-cols-2 gap-2">
                     <EssentialField
                       label={t("essentials.goodberries")}
@@ -254,7 +254,7 @@ export function BagOfHolding({
 
                 {/* Components */}
                 <div>
-                  <SectionHeader emoji="💎" label={t("essentials.components_title")} />
+                  <SectionHeader icon={Gem} label={t("essentials.components_title")} />
                   <div className="grid grid-cols-2 gap-2">
                     <EssentialField
                       label={t("essentials.diamonds")}
@@ -274,7 +274,7 @@ export function BagOfHolding({
 
               {/* Right column: Currency */}
               <div>
-                <SectionHeader emoji="💰" label={t("essentials.currency")} />
+                <SectionHeader icon={Coins} label={t("essentials.currency")} />
                 <div className="grid grid-cols-1 gap-2">
                   <EssentialField
                     label={t("essentials.gold")}

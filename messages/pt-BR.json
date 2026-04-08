@@ -621,7 +621,8 @@
       "inventory": "Inventário",
       "notes": "Notas",
       "quests": "Quests",
-      "map": "Mapa"
+      "map": "Mapa",
+      "aria_tablist": "Abas do personagem"
     },
     "npc_drawer": {
       "relationship": "Relação",
@@ -700,6 +701,7 @@
       "condition_stunned": "Atordoado",
       "condition_unconscious": "Inconsciente",
       "condition_exhaustion": "Exaustão",
+      "conditions_all_clear": "Nenhuma condição ativa",
       "ac_label": "CA",
       "init_label": "INIC",
       "speed_label": "DESL",
@@ -817,6 +819,7 @@
       "add_item": "Adicionar Item",
       "item_name_placeholder": "Nome do item...",
       "shared_inventory": "Inventário Compartilhado",
+      "currency_label": "Moedas",
       "currency_cp": "CP",
       "currency_sp": "SP",
       "currency_ep": "EP",
@@ -863,6 +866,7 @@
     },
     "notes": {
       "privacy_notice": "Suas notas são privadas — o mestre não pode ver",
+      "notes_tablist_label": "Notas do personagem",
       "tab_quick": "Rápidas",
       "tab_journal": "Diário",
       "tab_npcs": "NPCs",

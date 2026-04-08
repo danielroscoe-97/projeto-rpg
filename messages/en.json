@@ -621,7 +621,8 @@
       "inventory": "Inventory",
       "notes": "Notes",
       "quests": "Quests",
-      "map": "Map"
+      "map": "Map",
+      "aria_tablist": "Character tabs"
     },
     "npc_drawer": {
       "relationship": "Relationship",
@@ -700,6 +701,7 @@
       "condition_stunned": "Stunned",
       "condition_unconscious": "Unconscious",
       "condition_exhaustion": "Exhaustion",
+      "conditions_all_clear": "No active conditions",
       "ac_label": "AC",
       "init_label": "INIT",
       "speed_label": "SPEED",
@@ -817,6 +819,7 @@
       "add_item": "Add Item",
       "item_name_placeholder": "Item name...",
       "shared_inventory": "Shared Inventory",
+      "currency_label": "Coins",
       "currency_cp": "CP",
       "currency_sp": "SP",
       "currency_ep": "EP",
@@ -863,6 +866,7 @@
     },
     "notes": {
       "privacy_notice": "Your notes are private — the DM cannot see them",
+      "notes_tablist_label": "Character notes",
       "tab_quick": "Quick",
       "tab_journal": "Journal",
       "tab_npcs": "NPCs",

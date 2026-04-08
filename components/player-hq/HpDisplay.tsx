@@ -89,28 +89,28 @@ export function HpDisplay({
             <button
               type="button"
               onClick={() => adjustHp(-5)}
-              className="px-2 py-1 text-xs font-medium rounded-md bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
+              className="px-2 py-1 text-xs font-medium rounded-md bg-red-900/30 text-red-300 border border-red-500/20 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               -5
             </button>
             <button
               type="button"
               onClick={() => adjustHp(-1)}
-              className="px-3 py-1 rounded-md bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
+              className="px-3 py-1 rounded-md bg-red-900/30 text-red-300 border border-red-500/20 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               <Minus className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => adjustHp(1)}
-              className="px-3 py-1 rounded-md bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
+              className="px-3 py-1 rounded-md bg-emerald-900/30 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               <Plus className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => adjustHp(5)}
-              className="px-2 py-1 text-xs font-medium rounded-md bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
+              className="px-2 py-1 text-xs font-medium rounded-md bg-emerald-900/30 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               +5
             </button>
