@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import {
   Shield,
   Users,
@@ -10,9 +11,14 @@ import {
   Zap,
   Loader2,
   MapPin,
+  Sparkles,
 } from "lucide-react";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { InlineDifficultyVote } from "@/components/combat/InlineDifficultyVote";
+import { CharacterWizard, type WizardCharacterData } from "@/components/character/wizard/CharacterWizard";
+import { createCampaignCharacterAction } from "@/app/app/dashboard/characters/actions";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { getHpBarColor } from "@/lib/utils/hp-status";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -103,6 +109,8 @@ interface PlayerCampaignViewProps {
     yourVote?: string;
     voteAvg?: string;
     voteError?: string;
+    createCharacter?: string;
+    createCharacterDesc?: string;
   };
 }
 
@@ -370,14 +378,13 @@ export function PlayerCampaignView({
             </Link>
           </div>
         ) : (
-          <div className="text-center py-6">
-            <p className="text-muted-foreground text-sm font-medium">
-              {t.noCharacter}
-            </p>
-            <p className="text-muted-foreground/60 text-xs mt-1">
-              {t.noCharacterDesc}
-            </p>
-          </div>
+          <NoCharacterCta
+            campaignId={campaignId}
+            campaignName={campaignName}
+            createLabel={t.createCharacter ?? "Create Character"}
+            createDesc={t.createCharacterDesc ?? "Set up in 15 seconds"}
+            noCharacter={t.noCharacter}
+          />
         )}
       </CollapsibleSection>
 
@@ -553,5 +560,79 @@ export function PlayerCampaignView({
         <QuestBoard campaignId={campaignId} isEditable={false} />
       </CollapsibleSection>
     </div>
+  );
+}
+
+// ─── S2.1: Replace dead end "no character" with wizard CTA ───────────────────
+
+function NoCharacterCta({
+  campaignId,
+  campaignName,
+  createLabel,
+  createDesc,
+  noCharacter,
+}: {
+  campaignId: string;
+  campaignName: string;
+  createLabel: string;
+  createDesc: string;
+  noCharacter: string;
+}) {
+  const [wizardOpen, setWizardOpen] = useState(false);
+
+  const handleWizardComplete = useCallback(async (data: WizardCharacterData) => {
+    await createCampaignCharacterAction(campaignId, {
+      name: data.name,
+      characterClass: data.characterClass,
+      race: data.race,
+      level: data.level,
+      maxHp: data.maxHp,
+      ac: data.ac,
+      spellSaveDc: data.spellSaveDc,
+    });
+    toast.success(noCharacter.includes("personagem") ? "Personagem criado!" : "Character created!");
+    setWizardOpen(false);
+    // Page will revalidate and show the character
+    window.location.reload();
+  }, [campaignId, noCharacter]);
+
+  return (
+    <>
+      <div className="flex flex-col items-center gap-3 py-6 text-center">
+        <Image
+          src="/art/icons/chibi-knight.png"
+          alt=""
+          width={64}
+          height={64}
+          className="pixel-art opacity-70"
+          unoptimized
+        />
+        <div>
+          <p className="text-foreground text-sm font-semibold">
+            {createDesc}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setWizardOpen(true)}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-400/15 text-amber-400 font-semibold text-sm border border-amber-400/30 hover:bg-amber-400/25 hover:shadow-[0_0_12px_rgba(251,191,36,0.15)] transition-all"
+        >
+          <Sparkles className="w-4 h-4" />
+          {createLabel}
+        </button>
+      </div>
+
+      <Dialog open={wizardOpen} onOpenChange={setWizardOpen}>
+        <DialogContent className="max-w-md p-0 overflow-hidden">
+          <DialogTitle className="sr-only">{createLabel}</DialogTitle>
+          <CharacterWizard
+            campaignId={campaignId}
+            campaignName={campaignName}
+            onComplete={handleWizardComplete}
+            onCancel={() => setWizardOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

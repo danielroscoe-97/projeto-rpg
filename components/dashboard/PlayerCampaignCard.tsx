@@ -16,6 +16,7 @@ interface PlayerCampaignCardProps {
     levelAbbrev?: string;
     sessionLive?: string;
     sessionJoin?: string;
+    createCharacter?: string;
   };
 }
 
@@ -135,6 +136,13 @@ export function PlayerCampaignCard({
               )}
             </div>
           </div>
+        )}
+
+        {/* S2.2: Create character CTA when no character */}
+        {!hasCharacter && !hasActiveSession && (
+          <span className="mt-2 block w-full text-center text-xs font-semibold py-2 px-3 rounded-lg bg-amber-400/10 text-amber-400 border border-amber-400/20 group-hover:bg-amber-400/20 transition-all">
+            {t.createCharacter ?? "Create Character"}
+          </span>
         )}
 
         {/* JO-10: Join session CTA — shown when session is active */}

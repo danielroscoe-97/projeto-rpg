@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+  <!-- Rogue: Dagger -->
+  <path d="M12 2l2.5 2.5-6.5 6.5 1 1 6.5-6.5L18 8l1-6-7 0z" opacity="0.3"/>
+  <path d="M14.5 4.5L8 11l-1.5 5L12 14.5l-2.5 2.5 1.5 1.5L14 16l2-2"/>
+  <path d="M12 2l3 3-7 7 2 2 7-7 3 3 1-8-9 0z"/>
+  <path d="M5 16l-2 5 5-2-1.5-1.5L5 16z"/>
+  <path d="M8 11l-3 5 5-2-2-3z" opacity="0.5"/>
+</svg>

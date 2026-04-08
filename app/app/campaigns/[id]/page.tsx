@@ -202,6 +202,8 @@ export default async function CampaignPage({
           yourVote: t("your_vote"),
           voteAvg: t("vote_avg"),
           voteError: t("vote_error"),
+          createCharacter: t("create_character_cta"),
+          createCharacterDesc: t("create_character_desc"),
         }}
       />
     )

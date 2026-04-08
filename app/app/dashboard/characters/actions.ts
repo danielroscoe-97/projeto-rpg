@@ -91,6 +91,44 @@ export async function updateCharacterAction(id: string, data: CharacterData) {
   revalidatePath("/app/dashboard/characters");
 }
 
+export async function createCampaignCharacterAction(campaignId: string, data: CharacterData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const service = createServiceClient();
+
+  const maxHp = Math.max(1, data.maxHp ?? 10);
+  const { error } = await service
+    .from("player_characters")
+    .insert({
+      campaign_id: campaignId,
+      user_id: user.id,
+      name: data.name.trim(),
+      race: data.race?.trim() || null,
+      class: data.characterClass?.trim() || null,
+      level: data.level || null,
+      max_hp: maxHp,
+      current_hp: maxHp,
+      ac: data.ac ?? 10,
+      spell_save_dc: data.spellSaveDc || null,
+      str: data.str || null,
+      dex: data.dex || null,
+      con: data.con || null,
+      int_score: data.intScore || null,
+      wis: data.wis || null,
+      cha_score: data.chaScore || null,
+      token_url: data.tokenUrl || null,
+    });
+
+  if (error) {
+    console.error("[createCampaignCharacter]", error.message, error.code, error.details, error.hint);
+    throw new Error(`Erro ao criar personagem: ${error.message}`);
+  }
+
+  revalidatePath(`/app/campaigns/${campaignId}`);
+}
+
 export async function deleteCharacterAction(id: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

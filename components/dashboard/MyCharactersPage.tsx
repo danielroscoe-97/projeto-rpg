@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { CharacterWizard, type WizardCharacterData } from "@/components/character/wizard/CharacterWizard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -264,24 +265,21 @@ function CharacterForm({
 function CreateCharacterDialog({ onCreated }: { onCreated: () => void }) {
   const tc = useTranslations("characters_page");
   const [open, setOpen] = useState(false);
-  const [fields, setFields] = useState(emptyForm());
-  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      await createStandaloneCharacterAction(buildCharacterData(fields));
-      toast.success(tc("created_success"));
-      setOpen(false);
-      setFields(emptyForm());
-      onCreated();
-    } catch {
-      toast.error(tc("create_error"));
-    } finally {
-      setSubmitting(false);
-    }
-  }, [fields, onCreated]);
+  const handleWizardComplete = useCallback(async (data: WizardCharacterData) => {
+    await createStandaloneCharacterAction({
+      name: data.name,
+      characterClass: data.characterClass,
+      race: data.race,
+      level: data.level,
+      maxHp: data.maxHp,
+      ac: data.ac,
+      spellSaveDc: data.spellSaveDc,
+    });
+    toast.success(tc("created_success"));
+    setOpen(false);
+    onCreated();
+  }, [onCreated, tc]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -291,16 +289,11 @@ function CreateCharacterDialog({ onCreated }: { onCreated: () => void }) {
           {tc("create_character")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>{tc("new_character")}</DialogTitle>
-        </DialogHeader>
-        <CharacterForm
-          fields={fields}
-          onChange={setFields}
-          onSubmit={handleSubmit}
-          submitLabel={tc("create_character")}
-          submitting={submitting}
+      <DialogContent className="max-w-md p-0 overflow-hidden">
+        <DialogTitle className="sr-only">{tc("create_character")}</DialogTitle>
+        <CharacterWizard
+          onComplete={handleWizardComplete}
+          onCancel={() => setOpen(false)}
         />
       </DialogContent>
     </Dialog>
