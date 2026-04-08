@@ -31,10 +31,10 @@ interface PersonalInventoryProps {
 
 const COIN_COLORS: Record<keyof Currency, string> = {
   cp: "bg-amber-800 text-amber-200",
-  sp: "bg-slate-400 text-slate-900",
-  ep: "bg-blue-300 text-blue-900",
+  sp: "bg-zinc-400 text-zinc-900",
+  ep: "bg-amber-200 text-amber-900",
   gp: "bg-amber-400 text-amber-900",
-  pp: "bg-slate-200 text-slate-800",
+  pp: "bg-zinc-200 text-zinc-800",
 };
 
 function CoinField({
@@ -408,9 +408,9 @@ export function PersonalInventory({
       {/*  Empty state                                                  */}
       {/* ============================================================ */}
       {!hasItems && !showAdd && (
-        <div className="py-4 text-center">
-          <Package className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1.5" />
-          <p className="text-sm text-muted-foreground">
+        <div className="py-6 text-center">
+          <Backpack className="w-8 h-8 text-amber-400/20 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground/70 italic">
             {t("no_personal_items")}
           </p>
         </div>
@@ -433,7 +433,7 @@ export function PersonalInventory({
             <button
               type="button"
               onClick={() => setShowAdd(true)}
-              className="w-full flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-dashed border-white/[0.08] text-sm text-muted-foreground hover:text-amber-400 hover:border-amber-400/30 transition-colors"
+              className="w-full flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-dashed border-white/[0.08] text-sm text-muted-foreground hover:text-amber-400 hover:border-amber-400/30 active:scale-[0.98] transition-all"
             >
               <Plus className="w-4 h-4" />
               {t("add_item")}

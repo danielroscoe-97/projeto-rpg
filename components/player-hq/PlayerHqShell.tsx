@@ -208,6 +208,7 @@ export function PlayerHqShell({
       </div>
 
       {/* Tab content */}
+      <div key={activeTab} className="animate-in fade-in-0 duration-150">
       {activeTab === "map" && (
         <PlayerMindMap
           campaignId={campaignId}
@@ -277,7 +278,7 @@ export function PlayerHqShell({
           <PersonalInventory characterId={characterId} />
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
+          <div className="flex items-center gap-3 my-4">
             <div className="flex-1 h-px bg-border" />
             <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider flex items-center gap-1.5">
               <Package className="w-3.5 h-3.5" />
@@ -319,6 +320,7 @@ export function PlayerHqShell({
           userId={userId}
         />
       )}
+      </div>
     </div>
   );
 }

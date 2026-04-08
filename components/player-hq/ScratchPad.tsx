@@ -103,7 +103,7 @@ export function ScratchPad({ characterId, readOnly }: ScratchPadProps) {
   }, [confirmClear]);
 
   return (
-    <div className="bg-[#2a2520] border border-amber-400/10 rounded-xl p-3">
+    <div className="bg-rpg-parchment border border-amber-400/10 rounded-xl p-3">
       {/* Header row */}
       <div className="flex items-center gap-2">
         <button
@@ -126,7 +126,9 @@ export function ScratchPad({ characterId, readOnly }: ScratchPadProps) {
           <button
             type="button"
             onClick={handleClear}
-            className="flex items-center gap-1 min-h-[44px] min-w-[44px] justify-center px-2 text-xs text-muted-foreground hover:text-red-400 transition-colors"
+            className={`flex items-center gap-1 min-h-[44px] min-w-[44px] justify-center px-2 text-xs transition-colors ${
+              confirmClear ? "text-red-400" : "text-muted-foreground hover:text-red-400"
+            }`}
           >
             <Eraser className="w-3.5 h-3.5" />
             <span>{confirmClear ? t("scratch_pad_clear_confirm") : t("scratch_pad_clear")}</span>
@@ -144,13 +146,17 @@ export function ScratchPad({ characterId, readOnly }: ScratchPadProps) {
             readOnly={readOnly}
             placeholder={t("scratch_pad_placeholder")}
             maxLength={MAX_CHARS}
-            className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px]"
+            className="w-full bg-transparent text-sm text-foreground/90 placeholder:text-amber-400/20 placeholder:italic resize-none focus:outline-none min-h-[40px]"
             style={{ maxHeight: 200 }}
             rows={1}
           />
-          <div className="text-right text-[10px] text-muted-foreground tabular-nums">
-            {text.length}/{MAX_CHARS}
-          </div>
+          {text.length > 0 && (
+            <div className={`text-right text-[10px] tabular-nums transition-colors ${
+              text.length > MAX_CHARS * 0.8 ? "text-amber-400" : "text-muted-foreground/50"
+            }`}>
+              {text.length}/{MAX_CHARS}
+            </div>
+          )}
         </div>
       )}
     </div>
