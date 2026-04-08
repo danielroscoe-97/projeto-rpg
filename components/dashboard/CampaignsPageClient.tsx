@@ -36,6 +36,11 @@ interface CampaignsPageClientProps {
     campaigns_players_singular: string;
     campaigns_players_plural: string;
     dm_label: string;
+    hp_full: string;
+    hp_light: string;
+    hp_moderate: string;
+    hp_heavy: string;
+    hp_critical: string;
   };
 }
 
@@ -99,6 +104,11 @@ export function CampaignsPageClient({
                   playersSingular: t.campaigns_players_singular,
                   playersPlural: t.campaigns_players_plural,
                   dmLabel: t.dm_label,
+                  hp_full: t.hp_full,
+                  hp_light: t.hp_light,
+                  hp_moderate: t.hp_moderate,
+                  hp_heavy: t.hp_heavy,
+                  hp_critical: t.hp_critical,
                 }}
               />
             ))}

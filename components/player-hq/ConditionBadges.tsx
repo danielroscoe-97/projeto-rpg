@@ -64,7 +64,7 @@ export function ConditionBadges({
               type="button"
               onClick={() => handleToggle(condition)}
               disabled={readOnly}
-              className={`px-2 py-1 min-h-[44px] text-[11px] rounded-full border transition-all duration-200 ${
+              className={`px-3 py-1.5 text-xs rounded-full border transition-all duration-200 ${
                 isActive
                   ? "bg-red-500/25 border-red-500/60 text-red-200 font-semibold shadow-[0_0_6px_rgba(239,68,68,0.15)]"
                   : "bg-transparent border-border text-muted-foreground hover:border-white/20"

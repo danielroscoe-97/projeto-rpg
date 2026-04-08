@@ -67,6 +67,11 @@ export default async function CampaignsPage() {
     campaigns_players_singular: t("campaigns_players_singular"),
     campaigns_players_plural: t("campaigns_players_plural"),
     dm_label: t("dm_label"),
+    hp_full: t("sheet.hp_full"),
+    hp_light: t("sheet.hp_light"),
+    hp_moderate: t("sheet.hp_moderate"),
+    hp_heavy: t("sheet.hp_heavy"),
+    hp_critical: t("sheet.hp_critical"),
   };
 
   return (

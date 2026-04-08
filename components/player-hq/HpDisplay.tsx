@@ -131,14 +131,14 @@ export function HpDisplay({
               type="button"
               onClick={() => adjustTemp(-1)}
               disabled={hpTemp <= 0}
-              className="w-6 h-6 min-w-[44px] min-h-[44px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 transition-colors disabled:opacity-30 text-xs flex items-center justify-center"
+              className="min-w-[36px] min-h-[36px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 border border-blue-500/20 transition-colors disabled:opacity-40 text-xs flex items-center justify-center"
             >
               <Minus className="w-3 h-3" />
             </button>
             <button
               type="button"
               onClick={() => adjustTemp(1)}
-              className="w-6 h-6 min-w-[44px] min-h-[44px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 transition-colors text-xs flex items-center justify-center"
+              className="min-w-[36px] min-h-[36px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 border border-blue-500/20 transition-colors text-xs flex items-center justify-center"
             >
               <Plus className="w-3 h-3" />
             </button>

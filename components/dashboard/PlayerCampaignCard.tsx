@@ -19,6 +19,11 @@ interface PlayerCampaignCardProps {
     sessionLive?: string;
     sessionJoin?: string;
     createCharacter?: string;
+    hp_full?: string;
+    hp_light?: string;
+    hp_moderate?: string;
+    hp_heavy?: string;
+    hp_critical?: string;
   };
 }
 
@@ -58,7 +63,7 @@ export function PlayerCampaignCard({
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-amber-900/30 via-background to-purple-900/20" />
+          <div className="w-full h-full bg-gradient-to-br from-amber-900/20 via-background to-amber-800/10" />
         )}
         {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
@@ -128,7 +133,7 @@ export function PlayerCampaignCard({
               {hpStyle && (
                 <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${hpStyle.bgClass} ${hpStyle.colorClass}`}>
                   <Heart className="w-2.5 h-2.5" />
-                  {hpStatus}
+                  {hpStyle.labelKey && (t as Record<string, string>)[hpStyle.labelKey] ? (t as Record<string, string>)[hpStyle.labelKey] : hpStatus}
                 </span>
               )}
 
@@ -158,7 +163,7 @@ export function PlayerCampaignCard({
         )}
 
         {/* Footer */}
-        <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
+        <div className="mt-2 flex items-center justify-between text-[10px] text-white/60">
           <span>
             {membership.player_count} {membership.player_count === 1 ? t.playersSingular : t.playersPlural}
           </span>
