@@ -141,10 +141,10 @@ const MINIMAP_COLORS: Record<string, string> = {
   npc: "#a78bfa",
   note: "#60a5fa",
   player: "#34d399",
-  session: "#ef4444",
+  session: "#60a5fa",
   quest: "#eab308",
   bag: "#f97316",
-  location: "#22d3ee",
+  location: "#4ade80",
   faction: "#fb7185",
   group: "#6b7280",
 };
@@ -153,10 +153,10 @@ const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string
   { key: "npc", color: "border-purple-400/20 text-purple-400/50 line-through", activeColor: "border-purple-400 bg-purple-400/20 text-purple-300" },
   { key: "note", color: "border-blue-400/20 text-blue-400/50 line-through", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
   { key: "player", color: "border-emerald-400/20 text-emerald-400/50 line-through", activeColor: "border-emerald-400 bg-emerald-400/20 text-emerald-300" },
-  { key: "session", color: "border-red-400/20 text-red-400/50 line-through", activeColor: "border-red-400 bg-red-400/20 text-red-300" },
+  { key: "session", color: "border-blue-400/20 text-blue-400/50 line-through", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
   { key: "quest", color: "border-yellow-400/20 text-yellow-400/50 line-through", activeColor: "border-yellow-400 bg-yellow-400/20 text-yellow-300" },
   { key: "bag", color: "border-orange-400/20 text-orange-400/50 line-through", activeColor: "border-orange-400 bg-orange-400/20 text-orange-300" },
-  { key: "location", color: "border-cyan-400/20 text-cyan-400/50 line-through", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
+  { key: "location", color: "border-green-400/20 text-green-400/50 line-through", activeColor: "border-green-400 bg-green-400/20 text-green-300" },
   { key: "faction", color: "border-rose-400/20 text-rose-400/50 line-through", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
 ];
 

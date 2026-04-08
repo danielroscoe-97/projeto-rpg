@@ -44,6 +44,7 @@ export interface CampaignMemberWithUser {
   email: string;
   character_name: string | null;
   character_id: string | null;
+  character_class: string | null;
 }
 
 export interface CampaignInviteWithDetails {

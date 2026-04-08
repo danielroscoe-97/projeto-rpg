@@ -19,7 +19,7 @@ const SECTION_ICON_COLOR: Record<string, string> = {
   quests: "text-amber-400",
   players: "text-emerald-400",
   npcs: "text-purple-400",
-  locations: "text-cyan-400",
+  locations: "text-green-400",
   factions: "text-rose-400",
   notes: "text-blue-400",
   inventory: "text-amber-400",

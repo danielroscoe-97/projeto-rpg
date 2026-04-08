@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Moon, RotateCcw, Sun } from "lucide-react";
+import { Moon, MoonStar, Sun } from "lucide-react";
 import { toast } from "sonner";
 
 interface RestResetPanelProps {
@@ -82,15 +82,15 @@ export function RestResetPanel({
         disabled={shortRestCount === 0}
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "short"
-            ? "border-amber-400 bg-amber-400/10 text-amber-400"
-            : "border-border text-muted-foreground hover:border-white/20 disabled:opacity-30"
+            ? "border-blue-400 bg-blue-400/10 text-blue-300"
+            : "border-blue-500/20 text-muted-foreground hover:border-blue-500/40 disabled:opacity-30"
         }`}
         aria-label={t("short_rest")}
       >
-        <RotateCcw className="w-3.5 h-3.5" />
+        <MoonStar className="w-3.5 h-3.5" />
         {confirming === "short" ? t("reset_confirm") : t("short_rest")}
         {shortRestCount > 0 && (
-          <span className="bg-amber-400/20 text-amber-400 px-1.5 py-0.5 rounded-full text-[10px]">
+          <span className="bg-blue-400/20 text-blue-400 px-1.5 py-0.5 rounded-full text-[10px]">
             {shortRestCount}
           </span>
         )}
@@ -103,15 +103,15 @@ export function RestResetPanel({
         disabled={longRestCount === 0 && usedSlotCount === 0}
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "long"
-            ? "border-blue-400 bg-blue-400/10 text-blue-400"
-            : "border-border text-muted-foreground hover:border-white/20 disabled:opacity-30"
+            ? "border-amber-400 bg-amber-400/10 text-amber-400"
+            : "border-amber-500/20 text-muted-foreground hover:border-amber-500/40 disabled:opacity-30"
         }`}
         aria-label={t("long_rest")}
       >
         <Moon className="w-3.5 h-3.5" />
         {confirming === "long" ? t("reset_confirm") : t("long_rest")}
         {(longRestCount > 0 || usedSlotCount > 0) && (
-          <span className="bg-blue-400/20 text-blue-400 px-1.5 py-0.5 rounded-full text-[10px]">
+          <span className="bg-amber-400/20 text-amber-400 px-1.5 py-0.5 rounded-full text-[10px]">
             {longRestCount + usedSlotCount}
           </span>
         )}
@@ -124,15 +124,15 @@ export function RestResetPanel({
         disabled={dawnCount === 0}
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "dawn"
-            ? "border-orange-400 bg-orange-400/10 text-orange-400"
-            : "border-border text-muted-foreground hover:border-white/20 disabled:opacity-30"
+            ? "border-amber-500 bg-amber-500/10 text-amber-300"
+            : "border-amber-600/20 text-muted-foreground hover:border-amber-600/40 disabled:opacity-30"
         }`}
         aria-label={t("dawn")}
       >
         <Sun className="w-3.5 h-3.5" />
         {confirming === "dawn" ? t("reset_confirm") : t("dawn")}
         {dawnCount > 0 && (
-          <span className="bg-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded-full text-[10px]">
+          <span className="bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full text-[10px]">
             {dawnCount}
           </span>
         )}

@@ -56,13 +56,13 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
   return (
     <div className="space-y-3">
       {/* Privacy badge */}
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <div className="inline-flex items-center gap-1.5 text-xs text-amber-400/70 bg-amber-400/5 border border-amber-400/15 rounded-full px-2.5 py-1">
         <Lock className="w-3 h-3" />
         <span>{t("privacy_notice")}</span>
       </div>
 
-      {/* I-5: Sub-tabs with ARIA tablist semantics */}
-      <div className="flex gap-1 bg-white/5 rounded-lg p-1" role="tablist" aria-label={t("tab_quick")}>
+      {/* I-5: Sub-tabs with ARIA tablist semantics — underline style matching main tab bar */}
+      <div className="flex border-b border-border" role="tablist" aria-label={t("tab_quick")}>
         {tabs.map(({ key, icon: Icon, label }) => (
           <button
             key={key}
@@ -70,10 +70,10 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
             role="tab"
             aria-selected={activeTab === key}
             onClick={() => setActiveTab(key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 min-h-[44px] text-xs font-medium rounded-md transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] text-xs font-medium border-b-2 transition-colors ${
               activeTab === key
-                ? "bg-amber-400/10 text-amber-400"
-                : "text-muted-foreground hover:text-foreground"
+                ? "border-amber-400 text-amber-400"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <Icon className="w-3.5 h-3.5" />

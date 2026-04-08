@@ -28,7 +28,7 @@ interface ResourceDotsProps {
 export function ResourceDots({
   usedCount,
   max,
-  color = "bg-purple-400 border-purple-400",
+  color = "bg-amber-400 border-amber-400",
   size = "md",
   readOnly = false,
   onToggle,
@@ -89,8 +89,8 @@ export function ResourceDots({
           >
             <span
               className={`${sizeStyle.dot} rounded-full border transition-transform duration-200 ${
-                isFilled ? color : "bg-transparent border-muted-foreground/30"
-              } ${bouncingDot === i ? "scale-[1.3]" : ""}`}
+                isFilled ? color : "bg-white/10 border-white/10"
+              } ${bouncingDot === i ? "scale-125" : "scale-100"}`}
             />
           </button>
         );

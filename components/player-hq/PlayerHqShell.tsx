@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft } from "lucide-react";
+import { ClassIcon } from "@/components/character/ClassIcon";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
 import { CharacterEditSheet } from "./CharacterEditSheet";
@@ -86,7 +87,8 @@ export function PlayerHqShell({
           <ChevronLeft className="w-5 h-5" />
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="text-lg font-semibold text-foreground truncate">
+          <h1 className="text-lg font-semibold text-foreground truncate flex items-center gap-1.5">
+            <ClassIcon characterClass={character.class} size={20} className="text-amber-400 flex-shrink-0" />
             {character.name}
           </h1>
           <p className="text-xs text-muted-foreground truncate">

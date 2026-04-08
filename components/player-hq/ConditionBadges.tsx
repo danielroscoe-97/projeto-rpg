@@ -51,7 +51,7 @@ export function ConditionBadges({
 
   return (
     <div className="space-y-2">
-      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+      <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
         {t("conditions_label")}
       </span>
 
@@ -64,9 +64,9 @@ export function ConditionBadges({
               type="button"
               onClick={() => handleToggle(condition)}
               disabled={readOnly}
-              className={`px-2 py-1 text-[11px] rounded-full border transition-all duration-200 ${
+              className={`px-2 py-1 min-h-[44px] text-[11px] rounded-full border transition-all duration-200 ${
                 isActive
-                  ? "bg-red-500/20 border-red-500/40 text-red-300 font-medium"
+                  ? "bg-red-500/25 border-red-500/60 text-red-200 font-semibold shadow-[0_0_6px_rgba(239,68,68,0.15)]"
                   : "bg-transparent border-border text-muted-foreground hover:border-white/20"
               } ${readOnly ? "cursor-default" : "cursor-pointer"}`}
               aria-pressed={isActive}
@@ -78,8 +78,20 @@ export function ConditionBadges({
       </div>
 
       {/* Exhaustion dropdown (6 levels) */}
-      <div className="flex items-center gap-2 mt-1">
-        <span className="text-[11px] text-muted-foreground">
+      <div className={`flex items-center gap-2 mt-1 px-2 py-1.5 rounded-md transition-colors ${
+        exhaustionLevel >= 4
+          ? "bg-red-900/20 border border-red-500/30"
+          : exhaustionLevel >= 2
+            ? "bg-orange-900/15 border border-orange-500/20"
+            : ""
+      }`}>
+        <span className={`text-[11px] font-medium ${
+          exhaustionLevel >= 4
+            ? "text-red-400"
+            : exhaustionLevel >= 2
+              ? "text-orange-400"
+              : "text-muted-foreground"
+        }`}>
           {t("condition_exhaustion")}
         </span>
         <select
@@ -89,7 +101,13 @@ export function ConditionBadges({
             onExhaustionChange?.(Number(e.target.value));
           }}
           disabled={readOnly}
-          className="bg-background border border-border rounded px-2 py-0.5 text-xs text-foreground disabled:opacity-50"
+          className={`bg-background border rounded px-2 py-0.5 text-xs disabled:opacity-50 ${
+            exhaustionLevel >= 4
+              ? "border-red-500/40 text-red-300"
+              : exhaustionLevel >= 2
+                ? "border-orange-500/30 text-orange-300"
+                : "border-border text-foreground"
+          }`}
           aria-label={t("condition_exhaustion")}
         >
           {EXHAUSTION_LEVELS.map((level) => (

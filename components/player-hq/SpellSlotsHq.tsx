@@ -83,14 +83,14 @@ export function SpellSlotsHq({
   return (
     <div className="space-y-2 bg-card border border-border rounded-xl p-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
           {t("spell_slots_title")}
         </h3>
         {!readOnly && Object.keys(slots).length < 9 && (
           <button
             type="button"
             onClick={addLevel}
-            className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+            className="flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
           >
             <Plus className="w-3 h-3" />
             {t("spell_slots_add_level")}
@@ -105,7 +105,7 @@ export function SpellSlotsHq({
             <button
               type="button"
               onClick={addLevel}
-              className="mt-2 text-xs text-purple-400 hover:text-purple-300"
+              className="mt-2 text-xs text-amber-400 hover:text-amber-300"
             >
               {t("spell_slots_add_first")}
             </button>
@@ -115,14 +115,14 @@ export function SpellSlotsHq({
         <div className="space-y-2">
           {levels.map(([level, { max, used }]) => (
             <div key={level} className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground w-8 shrink-0 text-right">
+              <span className="text-xs font-semibold text-amber-400 w-8 shrink-0 text-right">
                 {level}°
               </span>
               <div className="flex-1">
                 <ResourceDots
                   usedCount={used}
                   max={max}
-                  color="bg-purple-400 border-purple-400"
+                  color="bg-amber-400 border-amber-400"
                   size="md"
                   readOnly={readOnly}
                   onToggle={(idx) => handleToggle(level, idx)}

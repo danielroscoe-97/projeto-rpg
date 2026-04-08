@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Heart, Shield } from "lucide-react";
 import { getHpBarColor, getHpStatus, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
+import { ClassBadge } from "@/components/character/ClassBadge";
+import { ClassIcon } from "@/components/character/ClassIcon";
 import type { UserMembership } from "@/lib/types/campaign-membership";
 
 interface PlayerCampaignCardProps {
@@ -89,8 +91,11 @@ export function PlayerCampaignCard({
               <p className="text-sm text-white/90 font-medium truncate">
                 {membership.character_name}
               </p>
-              {membership.character_race && (
-                <span className="text-[10px] text-white/50">
+              {(membership.character_race || membership.character_class) && (
+                <span className="inline-flex items-center gap-1 text-[10px] text-white/50">
+                  {membership.character_class && (
+                    <ClassBadge characterClass={membership.character_class} size="sm" />
+                  )}
                   {membership.character_race}
                   {membership.character_class ? ` ${membership.character_class}` : ""}
                 </span>

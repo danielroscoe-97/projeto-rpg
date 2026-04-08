@@ -89,28 +89,28 @@ export function HpDisplay({
             <button
               type="button"
               onClick={() => adjustHp(-5)}
-              className="px-2 py-1 text-xs font-medium rounded-md bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors min-h-[36px]"
+              className="px-2 py-1 text-xs font-medium rounded-md bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               -5
             </button>
             <button
               type="button"
               onClick={() => adjustHp(-1)}
-              className="px-3 py-1 rounded-md bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors min-h-[36px]"
+              className="px-3 py-1 rounded-md bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               <Minus className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => adjustHp(1)}
-              className="px-3 py-1 rounded-md bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors min-h-[36px]"
+              className="px-3 py-1 rounded-md bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               <Plus className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => adjustHp(5)}
-              className="px-2 py-1 text-xs font-medium rounded-md bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors min-h-[36px]"
+              className="px-2 py-1 text-xs font-medium rounded-md bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
             >
               +5
             </button>
@@ -131,14 +131,14 @@ export function HpDisplay({
               type="button"
               onClick={() => adjustTemp(-1)}
               disabled={hpTemp <= 0}
-              className="w-6 h-6 rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 transition-colors disabled:opacity-30 text-xs flex items-center justify-center"
+              className="w-6 h-6 min-w-[44px] min-h-[44px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 transition-colors disabled:opacity-30 text-xs flex items-center justify-center"
             >
               <Minus className="w-3 h-3" />
             </button>
             <button
               type="button"
               onClick={() => adjustTemp(1)}
-              className="w-6 h-6 rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 transition-colors text-xs flex items-center justify-center"
+              className="w-6 h-6 min-w-[44px] min-h-[44px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 transition-colors text-xs flex items-center justify-center"
             >
               <Plus className="w-3 h-3" />
             </button>

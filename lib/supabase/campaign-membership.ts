@@ -542,17 +542,17 @@ export async function getCampaignMembers(
     .filter((m: Record<string, unknown>) => m.role === "player")
     .map((m: Record<string, unknown>) => m.user_id as string);
 
-  const characterMap: Record<string, { name: string; id: string }> = {};
+  const characterMap: Record<string, { name: string; id: string; characterClass: string | null }> = {};
   if (playerUserIds.length > 0) {
     const { data: characters } = await supabase
       .from("player_characters")
-      .select("id, user_id, name")
+      .select("id, user_id, name, class")
       .eq("campaign_id", campaignId)
       .in("user_id", playerUserIds);
 
     for (const pc of characters ?? []) {
       if (!characterMap[pc.user_id]) {
-        characterMap[pc.user_id] = { name: pc.name, id: pc.id };
+        characterMap[pc.user_id] = { name: pc.name, id: pc.id, characterClass: pc.class };
       }
     }
   }
@@ -573,6 +573,7 @@ export async function getCampaignMembers(
         email: (user?.email as string) ?? "",
         character_name: characterMap[userId]?.name ?? null,
         character_id: characterMap[userId]?.id ?? null,
+        character_class: characterMap[userId]?.characterClass ?? null,
       };
     }
   );

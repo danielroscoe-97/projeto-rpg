@@ -23,13 +23,13 @@ export function PlayerLocationDrawer({
     <DrawerShell
       title={isDiscovered ? locationName : "???"}
       icon={isDiscovered ? <MapPin className="w-5 h-5" /> : <HelpCircle className="w-5 h-5" />}
-      iconColor="text-cyan-400"
+      iconColor="text-green-400"
       onClose={onClose}
     >
       {isDiscovered ? (
         <>
           <div>
-            <span className="text-xs px-2 py-0.5 rounded bg-cyan-900/40 text-cyan-300 font-medium">
+            <span className="text-xs px-2 py-0.5 rounded bg-green-900/40 text-green-300 font-medium">
               {locationType}
             </span>
           </div>
@@ -37,7 +37,7 @@ export function PlayerLocationDrawer({
         </>
       ) : (
         <div className="flex flex-col items-center py-8 gap-3">
-          <HelpCircle className="w-12 h-12 text-cyan-400/30" />
+          <HelpCircle className="w-12 h-12 text-green-400/30" />
           <p className="text-sm text-muted-foreground italic text-center">
             {t("undiscovered")}
           </p>

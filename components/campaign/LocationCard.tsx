@@ -115,7 +115,7 @@ export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleV
               <span
                 className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ${
                   location.is_discovered
-                    ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                    ? "bg-green-500/10 text-green-400 border border-green-500/20"
                     : "bg-zinc-800/30 text-zinc-400 border border-zinc-500/20"
                 }`}
               >

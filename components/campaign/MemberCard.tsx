@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Trash2, User } from "lucide-react";
+import { ClassBadge } from "@/components/character/ClassBadge";
+import { ClassIcon } from "@/components/character/ClassIcon";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -74,7 +76,11 @@ export function MemberCard({ member, isOwner, onRemoved }: MemberCardProps) {
         className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white/10 text-foreground text-sm font-medium"
         aria-hidden="true"
       >
-        {initials || <User className="w-4 h-4" />}
+        {member.character_class ? (
+          <ClassIcon characterClass={member.character_class} size={20} className="text-amber-400/60" />
+        ) : (
+          initials || <User className="w-4 h-4" />
+        )}
       </div>
 
       {/* Info */}
@@ -99,8 +105,11 @@ export function MemberCard({ member, isOwner, onRemoved }: MemberCardProps) {
           {member.email}
         </p>
         {member.character_name && (
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1 inline-flex items-center gap-1.5">
             <span className="text-foreground/70">{t("character")}:</span>{" "}
+            {member.character_class && (
+              <ClassBadge characterClass={member.character_class} size="sm" />
+            )}
             {member.character_name}
           </p>
         )}

@@ -34,7 +34,7 @@ const noteTypeConfig: Record<
 > = {
   general: { icon: FileText, border: "border-blue-400/60", text: "text-blue-400" },
   lore: { icon: BookOpen, border: "border-indigo-400/60", text: "text-indigo-400" },
-  location: { icon: MapPin, border: "border-cyan-400/60", text: "text-cyan-400" },
+  location: { icon: MapPin, border: "border-green-400/60", text: "text-green-400" },
   npc: { icon: UserCircle, border: "border-purple-400/60", text: "text-purple-400" },
   session_recap: { icon: Scroll, border: "border-orange-400/60", text: "text-orange-400" },
   secret: { icon: EyeOff, border: "border-gray-600/60", text: "text-gray-400" },

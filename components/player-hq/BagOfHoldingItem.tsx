@@ -32,9 +32,9 @@ export function BagOfHoldingItem({
     <div
       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors ${
         isPending
-          ? "border-amber-500/30 bg-amber-500/5"
+          ? "border-dashed border-amber-400/50 bg-amber-500/5"
           : removed
-            ? "border-border/50 bg-transparent"
+            ? "border-border/30 bg-transparent opacity-50 grayscale"
             : "border-border bg-card hover:border-white/10"
       }`}
     >

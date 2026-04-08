@@ -62,10 +62,10 @@ const FILTER_CONFIG: Array<{ key: NodeFilter; color: string; activeColor: string
   { key: "npc", color: "border-purple-400/40 text-purple-400/60", activeColor: "border-purple-400 bg-purple-400/20 text-purple-300" },
   { key: "note", color: "border-blue-400/40 text-blue-400/60", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
   { key: "player", color: "border-emerald-400/40 text-emerald-400/60", activeColor: "border-emerald-400 bg-emerald-400/20 text-emerald-300" },
-  { key: "session", color: "border-red-400/40 text-red-400/60", activeColor: "border-red-400 bg-red-400/20 text-red-300" },
+  { key: "session", color: "border-blue-400/40 text-blue-400/60", activeColor: "border-blue-400 bg-blue-400/20 text-blue-300" },
   { key: "quest", color: "border-yellow-400/40 text-yellow-400/60", activeColor: "border-yellow-400 bg-yellow-400/20 text-yellow-300" },
   { key: "bag", color: "border-orange-400/40 text-orange-400/60", activeColor: "border-orange-400 bg-orange-400/20 text-orange-300" },
-  { key: "location", color: "border-cyan-400/40 text-cyan-400/60", activeColor: "border-cyan-400 bg-cyan-400/20 text-cyan-300" },
+  { key: "location", color: "border-green-400/40 text-green-400/60", activeColor: "border-green-400 bg-green-400/20 text-green-300" },
   { key: "faction", color: "border-rose-400/40 text-rose-400/60", activeColor: "border-rose-400 bg-rose-400/20 text-rose-300" },
   { key: "pin", color: "border-amber-400/40 text-amber-400/60", activeColor: "border-amber-400 bg-amber-400/20 text-amber-300" },
 ];
@@ -75,10 +75,10 @@ const MINIMAP_COLORS: Record<string, string> = {
   npc: "#a78bfa",
   note: "#60a5fa",
   player: "#34d399",
-  session: "#ef4444",
+  session: "#60a5fa",
   quest: "#eab308",
   bag: "#f97316",
-  location: "#22d3ee",
+  location: "#4ade80",
   faction: "#fb7185",
   pin: "#f59e0b",
 };
@@ -335,8 +335,8 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
           />
           <MiniMap
             nodeColor={minimapNodeColor}
-            maskColor="rgba(0, 0, 0, 0.7)"
-            className="!bg-surface-deep !border-border"
+            maskColor="rgba(0, 0, 0, 0.8)"
+            className="!bg-surface-deep/80 !border-border/50 !opacity-60 hover:!opacity-100 !transition-opacity !duration-300"
             pannable
             zoomable
           />

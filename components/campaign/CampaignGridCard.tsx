@@ -24,8 +24,8 @@ const SECTION_STYLE: Record<string, { iconClass: string; glowClass: string }> = 
     glowClass: "bg-purple-400/10 ring-1 ring-purple-400/20",
   },
   locations: {
-    iconClass: "text-cyan-400",
-    glowClass: "bg-cyan-400/10 ring-1 ring-cyan-400/20",
+    iconClass: "text-green-400",
+    glowClass: "bg-green-400/10 ring-1 ring-green-400/20",
   },
   factions: {
     iconClass: "text-rose-400",

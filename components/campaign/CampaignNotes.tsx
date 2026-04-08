@@ -32,7 +32,7 @@ const NOTE_TYPE_CONFIG: Array<{
 }> = [
   { key: "general", icon: FileText, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-blue-400 border-blue-400 bg-blue-400/10", dotColor: "bg-blue-400" },
   { key: "lore", icon: BookOpen, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-indigo-400 border-indigo-400 bg-indigo-400/10", dotColor: "bg-indigo-400" },
-  { key: "location", icon: MapPin, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-cyan-400 border-cyan-400 bg-cyan-400/10", dotColor: "bg-cyan-400" },
+  { key: "location", icon: MapPin, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-green-400 border-green-400 bg-green-400/10", dotColor: "bg-green-400" },
   { key: "npc", icon: UserCircle, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-purple-400 border-purple-400 bg-purple-400/10", dotColor: "bg-purple-400" },
   { key: "session_recap", icon: Scroll, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-orange-400 border-orange-400 bg-orange-400/10", dotColor: "bg-orange-400" },
   { key: "secret", icon: EyeOff, color: "text-muted-foreground/60 border-white/[0.04]", activeColor: "text-gray-400 border-gray-500 bg-gray-500/10", dotColor: "bg-gray-400" },

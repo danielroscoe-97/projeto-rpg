@@ -37,10 +37,10 @@ const groupConfig: Record<
   npc: { icon: Users, color: "text-purple-400", handle: "!bg-purple-400", border: "border-purple-400/40" },
   note: { icon: FileText, color: "text-blue-400", handle: "!bg-blue-400", border: "border-blue-400/40" },
   player: { icon: User, color: "text-emerald-400", handle: "!bg-emerald-400", border: "border-emerald-400/40" },
-  session: { icon: Scroll, color: "text-red-400", handle: "!bg-red-400", border: "border-red-400/40" },
+  session: { icon: Scroll, color: "text-blue-400", handle: "!bg-blue-400", border: "border-blue-400/40" },
   quest: { icon: Target, color: "text-yellow-400", handle: "!bg-yellow-400", border: "border-yellow-400/40" },
   bag: { icon: Backpack, color: "text-orange-400", handle: "!bg-orange-400", border: "border-orange-400/40" },
-  location: { icon: MapPin, color: "text-cyan-400", handle: "!bg-cyan-400", border: "border-cyan-400/40" },
+  location: { icon: MapPin, color: "text-green-400", handle: "!bg-green-400", border: "border-green-400/40" },
   faction: { icon: Flag, color: "text-rose-400", handle: "!bg-rose-400", border: "border-rose-400/40" },
 };
 

@@ -13,6 +13,8 @@ import {
   Sparkles,
   Swords,
 } from "lucide-react";
+import { ClassBadge } from "@/components/character/ClassBadge";
+import { ClassIcon } from "@/components/character/ClassIcon";
 import { Button } from "@/components/ui/button";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
@@ -78,12 +80,14 @@ export function CharacterCard({
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400/15 to-amber-600/10 ring-2 ring-amber-400/25 flex items-center justify-center shadow-inner">
-                <User className="w-5 h-5 text-amber-400/70" />
+                <ClassIcon characterClass={character.class} size={20} className="text-amber-400/60" />
               </div>
             )}
-            {/* Linked account dot */}
-            {member && (
+            {/* Linked account dot or class badge */}
+            {member ? (
               <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card bg-emerald-400" />
+            ) : (
+              <ClassBadge characterClass={character.class} size="sm" className="absolute -bottom-0.5 -right-0.5" />
             )}
           </div>
 

@@ -1,10 +1,10 @@
 "use client";
 
 import { ResourceDots } from "./ResourceDots";
-import { RotateCcw, Sun, Moon, RefreshCw } from "lucide-react";
+import { RotateCcw, Sun, Moon, MoonStar, RefreshCw } from "lucide-react";
 
 const RESET_ICONS: Record<string, typeof Moon> = {
-  short_rest: RotateCcw,
+  short_rest: MoonStar,
   long_rest: Moon,
   dawn: Sun,
   manual: RefreshCw,
@@ -21,7 +21,7 @@ const DOT_COLORS: Record<string, string> = {
   short_rest: "bg-amber-400 border-amber-400",
   long_rest: "bg-blue-400 border-blue-400",
   dawn: "bg-orange-400 border-orange-400",
-  manual: "bg-purple-400 border-purple-400",
+  manual: "bg-amber-400 border-amber-400",
 };
 
 interface ResourceTrackerRowProps {
@@ -47,7 +47,7 @@ export function ResourceTrackerRow({
 }: ResourceTrackerRowProps) {
   const ResetIcon = RESET_ICONS[resetType] ?? RefreshCw;
   const resetColor = RESET_COLORS[resetType] ?? "text-muted-foreground";
-  const dotColor = DOT_COLORS[resetType] ?? "bg-purple-400 border-purple-400";
+  const dotColor = DOT_COLORS[resetType] ?? "bg-amber-400 border-amber-400";
 
   return (
     <div className="flex items-center gap-3 py-2 group">

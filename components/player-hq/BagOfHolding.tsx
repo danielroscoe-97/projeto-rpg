@@ -422,7 +422,7 @@ export function BagOfHolding({
                     : t("show_removed", { count: removedItems.length })}
                 </button>
                 {showRemoved && (
-                  <div className="mt-2 space-y-1 opacity-50">
+                  <div className="mt-2 space-y-1">
                     {removedItems.map((item) => (
                       <BagOfHoldingItem
                         key={item.id}
