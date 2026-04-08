@@ -20,9 +20,10 @@ export default async function PlayerHqSheetPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const [membership, { data: campaign }] = await Promise.all([
+  const [membership, { data: campaign }, { data: onboarding }] = await Promise.all([
     getCampaignMembership(id, user.id),
     supabase.from("campaigns").select("id, name").eq("id", id).single(),
+    supabase.from("user_onboarding").select("player_hq_tour_completed").eq("user_id", user.id).maybeSingle(),
   ]);
 
   if (!campaign) redirect("/app/dashboard");
@@ -45,6 +46,7 @@ export default async function PlayerHqSheetPage({
       campaignId={id}
       campaignName={campaign.name}
       userId={user.id}
+      playerHqTourCompleted={onboarding?.player_hq_tour_completed ?? false}
     />
   );
 }

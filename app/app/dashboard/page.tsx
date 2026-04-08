@@ -19,6 +19,7 @@ export default async function DashboardPage() {
   const t = await getTranslations("dashboard");
   const ts = await getTranslations("sidebar");
   const tm = await getTranslations("methodology");
+  const tpc = await getTranslations("player_checklist");
   const supabase = await createClient();
   const {
     data: { user },
@@ -222,7 +223,46 @@ export default async function DashboardPage() {
     checklist_legendary: t("checklist_legendary"),
     checklist_recap: t("checklist_recap"),
     checklist_all_complete: t("checklist_all_complete"),
+    // Player checklist
+    player_checklist_title: tpc("title"),
+    player_checklist_progress: tpc("progress"),
+    player_checklist_dismiss: tpc("dismiss"),
+    player_checklist_account: tpc("item_account"),
+    player_checklist_campaign: tpc("item_campaign"),
+    player_checklist_character: tpc("item_character"),
+    player_checklist_session: tpc("item_session"),
+    player_checklist_all_complete: tpc("all_complete"),
+    player_checklist_cta_invites: tpc("cta_invites"),
+    player_checklist_cta_campaigns: tpc("cta_campaigns"),
+    player_checklist_cta_waiting: tpc("cta_waiting"),
   };
+
+  // Player checklist data
+  const playerMemberships = memberships.filter((m) => m.role === "player");
+  const playerChecklistStatus = {
+    hasAccount: true,
+    hasCampaign: playerMemberships.length > 0,
+    hasCharacter: false,
+    hasAttendedSession: false,
+  };
+  if (userRole === "player" || userRole === "both") {
+    if (playerMemberships.length > 0) {
+      const campaignIds = playerMemberships.map((m) => m.campaign_id);
+      const [charRes, sessionRes] = await Promise.all([
+        supabase
+          .from("player_characters")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .in("campaign_id", campaignIds),
+        supabase
+          .from("session_tokens")
+          .select("id", { count: "exact", head: true })
+          .eq("player_user_id", user.id),
+      ]);
+      playerChecklistStatus.hasCharacter = (charRes.count ?? 0) > 0;
+      playerChecklistStatus.hasAttendedSession = (sessionRes.count ?? 0) > 0;
+    }
+  }
 
   // F6: Streak counter
   const streakWeeks = userRole !== "player" ? await computeStreak(supabase, user.id) : 0;
@@ -241,6 +281,7 @@ export default async function DashboardPage() {
         streakWeeks={streakWeeks}
         hasUsedCombat={hasUsedCombat}
         checklistStatus={checklistStatus}
+        playerChecklistStatus={playerChecklistStatus}
       />
     </div>
   );

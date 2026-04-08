@@ -21,6 +21,7 @@ import { PlayerMindMap } from "./PlayerMindMap";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 import { useNotifications } from "@/lib/hooks/useNotifications";
+import { PlayerHqTourProvider } from "@/components/tour/PlayerHqTourProvider";
 
 type Tab = "map" | "sheet" | "resources" | "inventory" | "notes" | "quests";
 
@@ -79,6 +80,7 @@ function TabBar({
             id={`tab-${key}`}
             aria-selected={activeTab === key}
             aria-controls={`panel-${key}`}
+            data-tour-id={`hq-tab-${key}`}
             onClick={() => onTabChange(key)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === key
@@ -104,6 +106,8 @@ interface PlayerHqShellProps {
   campaignId: string;
   campaignName: string;
   userId: string;
+  /** Whether the HQ tour has been completed — false triggers the tour */
+  playerHqTourCompleted?: boolean;
 }
 
 export function PlayerHqShell({
@@ -111,6 +115,7 @@ export function PlayerHqShell({
   campaignId,
   campaignName,
   userId,
+  playerHqTourCompleted = true,
 }: PlayerHqShellProps) {
   const t = useTranslations("player_hq");
   const [activeTab, setActiveTab] = useState<Tab>("map");
@@ -154,8 +159,11 @@ export function PlayerHqShell({
 
   return (
     <div className="space-y-4 pb-20">
+      {/* Player HQ Tour — triggers on first visit */}
+      <PlayerHqTourProvider shouldAutoStart={!playerHqTourCompleted} />
+
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3" data-tour-id="hq-header">
         <Link
           href={`/app/campaigns/${campaignId}`}
           className="text-muted-foreground hover:text-foreground transition-colors"

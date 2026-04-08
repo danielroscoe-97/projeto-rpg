@@ -97,8 +97,31 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     audience: "all",
   },
 
-  // ── Player first-campaign tour (3 steps) ───────────────────────────────────
-  // Step P1 — Their campaign card
+  // ── Player first-campaign tour (5 steps) ───────────────────────────────────
+  // Step P1 — Welcome modal
+  {
+    id: "player-welcome",
+    targetSelector: '[data-tour-id="dash-overview"]',
+    titleKey: "dashboard_tour.player_welcome_title",
+    descriptionKey: "dashboard_tour.player_welcome_desc",
+    type: "info",
+    position: "bottom",
+    phase: "setup",
+    modal: true,
+    audience: "player",
+  },
+  // Step P2 — Pending invites (conditional — only shown if element exists in DOM)
+  {
+    id: "player-invites",
+    targetSelector: '[data-tour-id="dash-pending-invites"]',
+    titleKey: "dashboard_tour.player_invites_title",
+    descriptionKey: "dashboard_tour.player_invites_desc",
+    type: "info",
+    position: "bottom",
+    phase: "setup",
+    audience: "player",
+  },
+  // Step P3 — Their campaign cards
   {
     id: "player-campaign",
     targetSelector: '[data-tour-id="dash-player-campaigns"]',
@@ -109,7 +132,7 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     phase: "setup",
     audience: "player",
   },
-  // Step P2 — Compendium nav item
+  // Step P4 — Compendium nav item
   {
     id: "player-compendium",
     targetSelector: '[data-tour-id="dash-nav-compendium"]',
@@ -122,7 +145,7 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     phase: "setup",
     audience: "player",
   },
-  // Step P3 — Ready to join (modal)
+  // Step P5 — Ready to join (modal)
   {
     id: "player-join",
     targetSelector: '[data-tour-id="dash-player-campaigns"]',

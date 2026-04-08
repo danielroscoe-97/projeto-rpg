@@ -21,6 +21,8 @@ import { CombatHistoryCard } from "@/components/dashboard/CombatHistoryCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { ActivationChecklist } from "@/components/dashboard/ActivationChecklist";
 import type { ChecklistStatus } from "@/components/dashboard/ActivationChecklist";
+import { PlayerActivationChecklist } from "@/components/dashboard/PlayerActivationChecklist";
+import type { PlayerChecklistStatus } from "@/components/dashboard/PlayerActivationChecklist";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { Button } from "@/components/ui/button";
 import type { UserRole, ActiveView } from "@/lib/stores/role-store";
@@ -102,6 +104,18 @@ interface DashboardOverviewProps {
     methodology_researcher_subtitle: string;
     campaign_joined_success: string;
     methodology_researcher_link: string;
+    // Player checklist
+    player_checklist_title: string;
+    player_checklist_progress: string;
+    player_checklist_dismiss: string;
+    player_checklist_account: string;
+    player_checklist_campaign: string;
+    player_checklist_character: string;
+    player_checklist_session: string;
+    player_checklist_all_complete: string;
+    player_checklist_cta_invites: string;
+    player_checklist_cta_campaigns: string;
+    player_checklist_cta_waiting: string;
     // JO-09: Player empty state
     player_empty_title: string;
     player_empty_desc: string;
@@ -126,6 +140,7 @@ interface DashboardOverviewProps {
   streakWeeks?: number;
   hasUsedCombat?: boolean;
   checklistStatus?: ChecklistStatus;
+  playerChecklistStatus?: PlayerChecklistStatus;
 }
 
 export function DashboardOverview({
@@ -139,6 +154,7 @@ export function DashboardOverview({
   streakWeeks = 0,
   hasUsedCombat = false,
   checklistStatus,
+  playerChecklistStatus,
 }: DashboardOverviewProps) {
   const router = useRouter();
   const { activeView, initialized, loadRole } = useRoleStore();
@@ -236,19 +252,21 @@ export function DashboardOverview({
   const showInvitesAtTop = isPlayerWaitingForCampaign && pendingInvites.length > 0;
 
   const pendingInvitesBlock = (
-    <PendingInvites
-      initialInvites={pendingInvites}
-      highlighted={showInvitesAtTop}
-      translations={{
-        title: t.pending_invites,
-        invitedBy: t.invited_by,
-        accept: t.accept_invite,
-        decline: t.decline_invite,
-        acceptError: t.invite_accept_error,
-        declineError: t.invite_decline_error,
-        acceptedRedirect: t.invite_accepted_redirect,
-      }}
-    />
+    <div data-tour-id="dash-pending-invites">
+      <PendingInvites
+        initialInvites={pendingInvites}
+        highlighted={showInvitesAtTop}
+        translations={{
+          title: t.pending_invites,
+          invitedBy: t.invited_by,
+          accept: t.accept_invite,
+          decline: t.decline_invite,
+          acceptError: t.invite_accept_error,
+          declineError: t.invite_decline_error,
+          acceptedRedirect: t.invite_accepted_redirect,
+        }}
+      />
+    </div>
   );
 
   return (
@@ -311,6 +329,26 @@ export function DashboardOverview({
             item_legendary: t.checklist_legendary,
             item_recap: t.checklist_recap,
             all_complete: t.checklist_all_complete,
+          }}
+        />
+      )}
+
+      {/* Player Activation Checklist */}
+      {!isDmRole && playerChecklistStatus && (
+        <PlayerActivationChecklist
+          status={playerChecklistStatus}
+          translations={{
+            title: t.player_checklist_title,
+            progress: t.player_checklist_progress,
+            dismiss: t.player_checklist_dismiss,
+            item_account: t.player_checklist_account,
+            item_campaign: t.player_checklist_campaign,
+            item_character: t.player_checklist_character,
+            item_session: t.player_checklist_session,
+            all_complete: t.player_checklist_all_complete,
+            cta_invites: t.player_checklist_cta_invites,
+            cta_campaigns: t.player_checklist_cta_campaigns,
+            cta_waiting: t.player_checklist_cta_waiting,
           }}
         />
       )}

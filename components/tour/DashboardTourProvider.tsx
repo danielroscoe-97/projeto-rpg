@@ -183,9 +183,20 @@ export function DashboardTourProvider({
         setTimeout(() => setTargetRect(target.getBoundingClientRect()), 400);
       }
     } else {
-      setTargetRect(null);
+      // Auto-skip steps whose DOM target doesn't exist — find next valid step in one pass
+      let nextValid = currentStep + 1;
+      while (nextValid < effectiveSteps.length) {
+        const nextStep = effectiveSteps[nextValid];
+        if (nextStep.modal || document.querySelector(nextStep.targetSelector)) break;
+        nextValid++;
+      }
+      if (nextValid < effectiveSteps.length) {
+        goToStep(nextValid);
+      } else {
+        setTargetRect(null);
+      }
     }
-  }, [isActive, currentStep, effectiveSteps]);
+  }, [isActive, currentStep, effectiveSteps, goToStep]);
 
   useEffect(() => {
     if (!isActive) return;

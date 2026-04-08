@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, CheckCircle, Swords, Shield, Users, Copy, Check, ChevronDown } from "lucide-react";
+import { Loader2, CheckCircle, Swords, Shield, Users, Copy, Check, ChevronDown, Mail, Link2, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -50,7 +50,7 @@ interface PlayerInput {
 }
 
 type UserRole = "player" | "dm" | "both";
-type WizardStep = "role" | "welcome" | "choose" | "express" | 1 | 2 | 3 | 4 | "done";
+type WizardStep = "role" | "welcome" | "choose" | "express" | "player_entry" | "player_waiting" | 1 | 2 | 3 | 4 | "done";
 
 interface WizardState {
   step: WizardStep;
@@ -195,7 +195,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     writeSessionStorage(newState);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      if (newState.step === "done" || newState.step === "welcome" || newState.step === "role") return;
+      if (newState.step === "done" || newState.step === "welcome" || newState.step === "role" || newState.step === "player_entry" || newState.step === "player_waiting") return;
       try {
         const supabase = createClient();
         await supabase
@@ -501,16 +501,27 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       }
 
       if (selectedRole === "player") {
-        // P3: Check error on upsert before redirecting
-        const { error: onboardingErr } = await supabase
-          .from("user_onboarding")
-          .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
-        if (onboardingErr) {
-          captureError(onboardingErr, { component: "OnboardingWizard", action: "markWizardDone", category: "database" });
-          toast.error(t("role_save_error"));
-          return;
-        }
-        router.push("/app/dashboard");
+        // Check if there's a pending invite/code in localStorage — auto-process it
+        try {
+          const pendingInvite = localStorage.getItem("pendingInvite");
+          const pendingCode = localStorage.getItem("pendingJoinCode");
+          if (pendingInvite || pendingCode) {
+            // Mark wizard completed and redirect — the dashboard will handle the pending token
+            const { error: onboardingErr } = await supabase
+              .from("user_onboarding")
+              .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
+            if (onboardingErr) {
+              captureError(onboardingErr, { component: "OnboardingWizard", action: "markWizardDone", category: "database" });
+              toast.error(t("role_save_error"));
+              return;
+            }
+            router.push("/app/dashboard");
+            return;
+          }
+        } catch { /* localStorage unavailable */ }
+
+        // No pending invite — show player entry step
+        setState((s) => ({ ...s, step: "player_entry" }));
         return;
       }
 
@@ -595,6 +606,47 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           }
         }}
       />
+    );
+  }
+
+  // ── Player Entry Step ────────────────────────────────────────────
+  if (state.step === "player_entry") {
+    return <PlayerEntryStep userId={userId} router={router} t={t} setState={setState} />;
+  }
+
+  // ── Player Waiting Step ─────────────────────────────────────────
+  if (state.step === "player_waiting") {
+    return (
+      <div className="w-full max-w-md text-center">
+        <Image
+          src="/art/icons/pet-cat.png"
+          alt=""
+          width={72}
+          height={72}
+          className="pixel-art mx-auto mb-4 opacity-70"
+          aria-hidden="true"
+          unoptimized
+        />
+        <h1 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+          {t("player_done_title")}
+        </h1>
+        <p className="text-muted-foreground text-sm mb-6">
+          {t("player_done_subtitle")}
+        </p>
+        <div className="space-y-3">
+          <Button variant="gold" className="w-full" asChild>
+            <Link href="/app/dashboard">{t("player_done_dashboard")}</Link>
+          </Button>
+          <div className="flex gap-3">
+            <Button variant="goldOutline" className="flex-1" asChild>
+              <Link href="/app/compendium">{t("player_done_compendium")}</Link>
+            </Button>
+            <Button variant="goldOutline" className="flex-1" asChild>
+              <Link href="/try">{t("player_done_try")}</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -1487,6 +1539,232 @@ function CelebrationStep({
       <p className="text-xs text-muted-foreground text-center">
         {t("launch_share_hint")}
       </p>
+    </div>
+  );
+}
+
+// ── Player Entry Step (extracted component to manage local state) ────
+function PlayerEntryStep({
+  userId,
+  router,
+  t,
+  setState,
+}: {
+  userId: string;
+  router: ReturnType<typeof useRouter>;
+  t: ReturnType<typeof useTranslations<"onboarding">>;
+  setState: React.Dispatch<React.SetStateAction<WizardState>>;
+}) {
+  const [mode, setMode] = useState<"choose" | "invite" | "code">("choose");
+  const [inputValue, setInputValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  function parseInviteInput(raw: string): { type: "invite" | "code"; value: string } | null {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+
+    // Check for invite URL pattern: /invite/TOKEN or full URL
+    const inviteMatch = trimmed.match(/\/invite\/([a-zA-Z0-9_-]+)/);
+    if (inviteMatch) return { type: "invite", value: inviteMatch[1] };
+
+    // Check for join-campaign URL pattern
+    const joinMatch = trimmed.match(/\/join-campaign\/([a-zA-Z0-9_-]+)/);
+    if (joinMatch) return { type: "code", value: joinMatch[1] };
+
+    // Plain code (alphanumeric + hyphens, min 3 chars)
+    const codeMatch = trimmed.match(/^[a-zA-Z0-9_-]{3,}$/);
+    if (codeMatch) return { type: "code", value: trimmed };
+
+    return null;
+  }
+
+  async function markWizardCompleted(): Promise<boolean> {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("user_onboarding")
+        .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
+      if (error) {
+        captureError(error, { component: "PlayerEntryStep", action: "markWizardDone", category: "database" });
+        toast.error(t("role_save_error"));
+        return false;
+      }
+      return true;
+    } catch (err) {
+      captureError(err, { component: "PlayerEntryStep", action: "markWizardDone", category: "database" });
+      toast.error(t("role_save_error"));
+      return false;
+    }
+  }
+
+  async function handleInviteSubmit() {
+    const parsed = parseInviteInput(inputValue);
+    if (!parsed) {
+      setError(t("player_invalid_link"));
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const ok = await markWizardCompleted();
+      if (!ok) return;
+      if (parsed.type === "invite") {
+        router.push(`/invite/${parsed.value}`);
+      } else {
+        router.push(`/join-campaign/${parsed.value}`);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleCodeSubmit() {
+    const code = inputValue.trim().replace(/[^a-zA-Z0-9_-]/g, "");
+    if (!code || code.length < 3) {
+      setError(t("player_invalid_link"));
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const ok = await markWizardCompleted();
+      if (!ok) return;
+      router.push(`/join-campaign/${encodeURIComponent(code)}`);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleNoInvite() {
+    setSubmitting(true);
+    try {
+      const ok = await markWizardCompleted();
+      if (!ok) return;
+      setState((s) => ({ ...s, step: "player_waiting" }));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (mode === "invite") {
+    return (
+      <div className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <Mail className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+          <h1 className="text-xl font-bold text-foreground">{t("player_has_invite")}</h1>
+        </div>
+        <form
+          onSubmit={(e) => { e.preventDefault(); handleInviteSubmit(); }}
+          className="space-y-4"
+        >
+          <Input
+            value={inputValue}
+            onChange={(e) => { setInputValue(e.target.value); setError(null); }}
+            placeholder={t("player_invite_placeholder")}
+            autoFocus
+            className={error ? "border-red-500" : ""}
+          />
+          {error && <p className="text-xs text-red-400">{error}</p>}
+          <Button type="submit" variant="gold" className="w-full" disabled={submitting}>
+            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("player_submit")}
+          </Button>
+          <button
+            type="button"
+            onClick={() => { setMode("choose"); setInputValue(""); setError(null); }}
+            className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← {t("role_continue").toLowerCase() === "continuar" ? "Voltar" : "Back"}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  if (mode === "code") {
+    return (
+      <div className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <Link2 className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+          <h1 className="text-xl font-bold text-foreground">{t("player_has_code")}</h1>
+        </div>
+        <form
+          onSubmit={(e) => { e.preventDefault(); handleCodeSubmit(); }}
+          className="space-y-4"
+        >
+          <Input
+            value={inputValue}
+            onChange={(e) => { setInputValue(e.target.value); setError(null); }}
+            placeholder={t("player_code_placeholder")}
+            autoFocus
+            className={error ? "border-red-500" : ""}
+          />
+          {error && <p className="text-xs text-red-400">{error}</p>}
+          <Button type="submit" variant="gold" className="w-full" disabled={submitting}>
+            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("player_submit")}
+          </Button>
+          <button
+            type="button"
+            onClick={() => { setMode("choose"); setInputValue(""); setError(null); }}
+            className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← {t("role_continue").toLowerCase() === "continuar" ? "Voltar" : "Back"}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // mode === "choose" — main selection
+  return (
+    <div className="w-full max-w-md">
+      <div className="text-center mb-8">
+        <Image
+          src="/art/icons/pet-cat.png"
+          alt=""
+          width={56}
+          height={56}
+          className="pixel-art mx-auto mb-3 opacity-80"
+          aria-hidden="true"
+          unoptimized
+        />
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          {t("player_entry_title")}
+        </h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          {t("player_entry_subtitle")}
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <Button
+          variant="gold"
+          className="w-full min-h-[48px] text-base"
+          onClick={() => setMode("invite")}
+        >
+          <Mail className="mr-2 w-5 h-5" />
+          {t("player_has_invite")}
+        </Button>
+
+        <Button
+          variant="goldOutline"
+          className="w-full min-h-[48px] text-base"
+          onClick={() => setMode("code")}
+        >
+          <Link2 className="mr-2 w-5 h-5" />
+          {t("player_has_code")}
+        </Button>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleNoInvite}
+        disabled={submitting}
+        className="mt-6 w-full text-center text-sm text-muted-foreground/70 hover:text-foreground transition-colors flex items-center justify-center gap-1"
+      >
+        {t("player_no_invite")}
+        <ArrowRight className="w-3.5 h-3.5" />
+      </button>
     </div>
   );
 }
