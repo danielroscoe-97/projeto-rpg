@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { CustomSoundCard, type CustomSound } from "@/components/audio/CustomSoundCard";
 import { CustomSoundUploader } from "@/components/audio/CustomSoundUploader";
@@ -9,11 +9,21 @@ import {
   getMusicPresets,
   getSfxPresets,
 } from "@/lib/utils/audio-presets";
+import type { AudioPreset } from "@/lib/types/audio";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
-import { Play, Square, X } from "lucide-react";
+import { Play, Square, X, Search } from "lucide-react";
 
-type PresetTab = "ambient" | "music" | "sfx";
+const DM_PAGE_TABS = [
+  { key: "ambient", icon: "🌿", categories: ["ambient"] as string[], isLoop: true },
+  { key: "music", icon: "🎵", categories: ["music"] as string[], isLoop: true },
+  { key: "attacks", icon: "⚔️", categories: ["attack", "defense"] as string[], isLoop: false },
+  { key: "magic", icon: "✨", categories: ["magic"] as string[], isLoop: false },
+  { key: "epic", icon: "🎭", categories: ["dramatic", "monster"] as string[], isLoop: false },
+  { key: "world", icon: "🚪", categories: ["interaction"] as string[], isLoop: false },
+] as const;
+
+type PresetTab = (typeof DM_PAGE_TABS)[number]["key"];
 
 export function SoundboardPageClient({ title }: { title: string }) {
   const t = useTranslations("soundboard");
@@ -21,6 +31,7 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const [customSounds, setCustomSounds] = useState<CustomSound[]>([]);
   const [loading, setLoading] = useState(true);
   const [presetTab, setPresetTab] = useState<PresetTab>("ambient");
+  const [search, setSearch] = useState("");
 
   const isLoopActive = useAudioStore((s) => s.isLoopActive);
   const activeLoops = useAudioStore((s) => s.activeLoops);
@@ -34,11 +45,34 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const musicPresets = getMusicPresets();
   const sfxPresets = getSfxPresets();
 
-  const presetsByTab = {
-    ambient: ambientPresets,
-    music: musicPresets,
-    sfx: sfxPresets,
-  };
+  const allPresets = useMemo(
+    () => [...ambientPresets, ...musicPresets, ...sfxPresets],
+    [ambientPresets, musicPresets, sfxPresets]
+  );
+
+  const presetsByTab = useMemo(() => {
+    const map = new Map<PresetTab, AudioPreset[]>();
+    for (const tab of DM_PAGE_TABS) {
+      map.set(
+        tab.key,
+        allPresets.filter((p) => tab.categories.includes(p.category))
+      );
+    }
+    return map;
+  }, [allPresets]);
+
+  const activeTabDef = DM_PAGE_TABS.find((t) => t.key === presetTab)!;
+
+  const filteredPresets = useMemo(() => {
+    const tabPresets = presetsByTab.get(presetTab) ?? [];
+    const trimmed = search.trim();
+    if (!trimmed) return tabPresets;
+    const q = trimmed.toLowerCase();
+    return tabPresets.filter((p) => {
+      const name = tAudio(p.name_key.replace("audio.", "") as Parameters<typeof tAudio>[0]);
+      return name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
+    });
+  }, [presetTab, presetsByTab, search, tAudio]);
 
   const loadSounds = useCallback(async () => {
     try {
@@ -65,12 +99,6 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const handleSoundDeleted = (id: string) => {
     setCustomSounds((prev) => prev.filter((s) => s.id !== id));
   };
-
-  const presetTabs: { id: PresetTab; label: string }[] = [
-    { id: "ambient", label: t("tab_ambient") },
-    { id: "music", label: t("tab_music") },
-    { id: "sfx", label: t("tab_sfx") },
-  ];
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -147,21 +175,34 @@ export function SoundboardPageClient({ title }: { title: string }) {
         </div>
 
         {/* Preset tabs */}
-        <div className="flex gap-2 mb-4">
-          {presetTabs.map((tab) => (
+        <div className="flex gap-1 mb-4 flex-wrap">
+          {DM_PAGE_TABS.map((tab) => (
             <button
-              key={tab.id}
+              key={tab.key}
               type="button"
-              onClick={() => setPresetTab(tab.id)}
-              className={`px-3 py-1.5 text-sm rounded-md transition-all min-h-[36px] ${
-                presetTab === tab.id
+              onClick={() => { setPresetTab(tab.key); setSearch(""); }}
+              className={`px-3 py-1.5 text-sm rounded-md transition-all min-h-[36px] flex items-center gap-1.5 ${
+                presetTab === tab.key
                   ? "bg-gold/15 text-gold border border-gold/30"
                   : "text-muted-foreground border border-border hover:text-foreground hover:border-white/20"
               }`}
             >
-              {tab.label}
+              <span>{tab.icon}</span>
+              {tAudio(`tab_${tab.key}` as Parameters<typeof tAudio>[0])}
             </button>
           ))}
+        </div>
+
+        {/* Search */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={tAudio("search_sfx")}
+            className="w-full bg-white/[0.06] border border-border rounded-lg pl-8 pr-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-gold/50"
+          />
         </div>
 
         {/* Now Playing bar */}
@@ -201,48 +242,57 @@ export function SoundboardPageClient({ title }: { title: string }) {
         )}
 
         {/* Preset grid */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-          {presetsByTab[presetTab].map((preset) => {
-            const isActive = isLoopActive(preset.id);
-            const isSfx = presetTab === "sfx";
+        {filteredPresets.length > 0 ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {filteredPresets.map((preset) => {
+              const isLoop = activeTabDef.isLoop;
+              const isActive = isLoop && isLoopActive(preset.id);
+              const activeColor = presetTab === "music"
+                ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                : "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400";
 
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => {
-                  if (isSfx) {
-                    playSound(preset.id, "preset", "DM");
-                  } else {
-                    playAmbient(preset.id);
-                  }
-                }}
-                className={`relative flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all min-h-[80px] ${
-                  isActive
-                    ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                    : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
-                }`}
-              >
-                <span className="text-xl leading-none">{preset.icon}</span>
-                <span className="text-[11px] text-center truncate w-full">
-                  {tAudio(preset.name_key.replace("audio.", "") as Parameters<typeof tAudio>[0])}
-                </span>
-                {isActive && (
-                  <div className="absolute top-1.5 right-1.5 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  </div>
-                )}
-                <div className="mt-auto">
-                  {isActive ? (
-                    <Square className="w-3 h-3 text-emerald-400" />
-                  ) : (
-                    <Play className="w-3 h-3 text-muted-foreground" />
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => {
+                    if (isLoop) {
+                      playAmbient(preset.id);
+                    } else {
+                      playSound(preset.id, "preset", "DM");
+                    }
+                  }}
+                  className={`relative flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all min-h-[80px] ${
+                    isActive
+                      ? activeColor
+                      : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
+                  }`}
+                >
+                  <span className="text-xl leading-none">{preset.icon}</span>
+                  <span className="text-[11px] text-center truncate w-full">
+                    {tAudio(preset.name_key.replace("audio.", "") as Parameters<typeof tAudio>[0])}
+                  </span>
+                  {isActive && (
+                    <div className="absolute top-1.5 right-1.5 flex items-center gap-1">
+                      <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                        presetTab === "music" ? "bg-amber-400" : "bg-emerald-400"
+                      }`} />
+                    </div>
                   )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+                  <div className="mt-auto">
+                    {isActive ? (
+                      <Square className={`w-3 h-3 ${presetTab === "music" ? "text-amber-400" : "text-emerald-400"}`} />
+                    ) : (
+                      <Play className="w-3 h-3 text-muted-foreground" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-muted-foreground/50 text-xs text-center py-6">—</p>
+        )}
       </section>
     </div>
   );
