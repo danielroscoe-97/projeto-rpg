@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-  <!-- Cleric: Radiant sun / holy symbol -->
-  <circle cx="12" cy="12" r="4.5"/>
-  <path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>
-  <path d="M4.6 4.6l2.8 2.8M16.6 16.6l2.8 2.8M4.6 19.4l2.8-2.8M16.6 7.4l2.8-2.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-  <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.3"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v4m0 13v4M1.5 12h4m13 0h4"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m4.6 4.6 2.8 2.8m9.2 9.2 2.8 2.8m-14.8 0 2.8-2.8m9.2-9.2 2.8-2.8"/><circle cx="12" cy="12" r="2" opacity=".3"/></svg>

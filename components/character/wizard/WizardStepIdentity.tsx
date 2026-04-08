@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+import { Swords } from "lucide-react";
 import { ClassIconGrid } from "@/components/character/ClassIconGrid";
 import { SRD_RACES } from "@/lib/data/races";
 import type { WizardCharacterData } from "./CharacterWizard";
@@ -36,14 +36,9 @@ export function WizardStepIdentity({
     <div className="space-y-6">
       {/* Hero illustration */}
       <div className="text-center">
-        <Image
-          src="/art/icons/chibi-knight.png"
-          alt=""
-          width={64}
-          height={64}
-          className="mx-auto mb-3 pixel-art opacity-80"
-          unoptimized
-        />
+        <div className="mx-auto mb-3 w-14 h-14 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center">
+          <Swords className="w-7 h-7 text-amber-400" />
+        </div>
         <h2 className="text-xl font-bold text-foreground tracking-tight">
           {t("step1_title")}
         </h2>

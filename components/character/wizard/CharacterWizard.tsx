@@ -120,13 +120,7 @@ export function CharacterWizard({
               {campaignName || t("standalone")}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-muted-foreground hover:text-foreground text-xs px-2 py-1"
-          >
-            {t("cancel")}
-          </button>
+          <div className="w-5" />
         </div>
 
         {/* Step indicator */}

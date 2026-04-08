@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { Heart, Shield, Zap } from "lucide-react";
 import type { WizardCharacterData } from "./CharacterWizard";
 
@@ -18,14 +17,9 @@ export function WizardStepStats({ data, onChange, isCaster }: WizardStepStatsPro
     <div className="space-y-6">
       {/* Hero */}
       <div className="text-center">
-        <Image
-          src="/art/icons/shield.png"
-          alt=""
-          width={56}
-          height={56}
-          className="mx-auto mb-3 pixel-art opacity-80"
-          unoptimized
-        />
+        <div className="mx-auto mb-3 w-14 h-14 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center">
+          <Shield className="w-7 h-7 text-amber-400" />
+        </div>
         <h2 className="text-xl font-bold text-foreground tracking-tight">
           {t("step2_title")}
         </h2>

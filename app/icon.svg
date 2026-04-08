@@ -1,18 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Pocket DM — Crown d20 Favicon (simplified for 32x32) -->
-  <rect width="32" height="32" rx="6" fill="none"/>
-  <g transform="translate(2, 1.5) scale(0.055)" stroke="#D4A853" fill="none" stroke-linejoin="round" stroke-linecap="round">
-    <!-- D20 hexagon -->
-    <polygon points="256,110 379,185 379,335 256,410 133,335 133,185" stroke-width="22"/>
-    <!-- Internal lines (simplified for favicon) -->
-    <line x1="256" y1="110" x2="176" y2="326" stroke-width="14" opacity="0.5"/>
-    <line x1="256" y1="110" x2="336" y2="326" stroke-width="14" opacity="0.5"/>
-    <line x1="256" y1="410" x2="176" y2="326" stroke-width="14" opacity="0.5"/>
-    <line x1="256" y1="410" x2="336" y2="326" stroke-width="14" opacity="0.5"/>
-  </g>
-  <!-- Crown (filled, on top) -->
-  <g transform="translate(2, 1.5) scale(0.055)">
-    <path d="M 130,174 L 110,37 L 195,92 L 256,4 L 317,92 L 402,37 L 382,174 L 256,92 Z"
-      fill="#D4A853" stroke="#D4A853" stroke-width="4" stroke-linejoin="round"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32"><rect width="32" height="32" rx="6"/><g stroke="#d4a853" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="1.21" d="m16.08 7.55 6.765 4.125v8.25L16.08 24.05l-6.765-4.125v-8.25z"/><path stroke-width=".77" d="m16.08 7.55-4.4 11.88m4.4-11.88 4.4 11.88m-4.4 4.62-4.4-4.62m4.4 4.62 4.4-4.62" opacity=".5"/></g><path fill="#d4a853" stroke="#d4a853" stroke-linejoin="round" stroke-width=".22" d="m9.15 11.07-1.1-7.535 4.675 3.025 3.355-4.84 3.355 4.84 4.675-3.025-1.1 7.535-6.93-4.51Z"/></svg>
