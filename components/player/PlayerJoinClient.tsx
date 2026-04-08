@@ -2211,10 +2211,10 @@ export function PlayerJoinClient({
               <button
                 type="button"
                 onClick={() => setShowOracle(false)}
-                className="text-muted-foreground hover:text-foreground/80 text-sm min-h-[44px] min-w-[44px] flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md min-h-[44px] min-w-[44px] flex items-center justify-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 aria-label={t("spell_oracle_close")}
               >
-                ✕
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               </button>
             </div>
             <Suspense fallback={<p className="text-muted-foreground text-xs">{t("spell_loading")}</p>}>
