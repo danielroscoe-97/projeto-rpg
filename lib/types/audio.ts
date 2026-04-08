@@ -5,6 +5,8 @@ export interface AudioPreset {
   file: string;
   icon: string;
   category: "attack" | "magic" | "defense" | "dramatic" | "ambient" | "monster" | "interaction" | "ui" | "music";
+  /** If true, only DM can see/use this preset (hidden from player soundboard) */
+  dmOnly?: boolean;
 }
 
 /** Player-uploaded audio file record from the database */

@@ -1,13 +1,22 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { getSfxPresets } from "@/lib/utils/audio-presets";
-import type { PlayerAudioFile } from "@/lib/types/audio";
+import { getPlayerSfxPresets } from "@/lib/utils/audio-presets";
+import type { AudioPreset, PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 const COOLDOWN_MS = 2000;
+
+const PLAYER_TABS = [
+  { key: "attacks", icon: "⚔️", categories: ["attack", "defense"] },
+  { key: "magic", icon: "✨", categories: ["magic"] },
+  { key: "epic", icon: "🎭", categories: ["dramatic", "monster"] },
+  { key: "world", icon: "🚪", categories: ["interaction"] },
+] as const;
+
+type TabKey = (typeof PLAYER_TABS)[number]["key"];
 
 interface PlayerSoundboardProps {
   isPlayerTurn: boolean;
@@ -30,6 +39,8 @@ export function PlayerSoundboard({
 }: PlayerSoundboardProps) {
   const t = useTranslations("audio");
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>("attacks");
+  const [search, setSearch] = useState("");
   const [cooldownId, setCooldownId] = useState<string | null>(null);
   const lastTriggerRef = useRef<number>(0);
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -48,12 +59,10 @@ export function PlayerSoundboard({
       if (now - lastTriggerRef.current < COOLDOWN_MS) return;
       lastTriggerRef.current = now;
 
-      // Anti-spam cooldown visual
       setCooldownId(soundId);
       if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
       cooldownTimerRef.current = setTimeout(() => setCooldownId(null), COOLDOWN_MS);
 
-      // Broadcast via channelRef (player → DM)
       channelRef.current?.send({
         type: "broadcast",
         event: "audio:play_sound",
@@ -68,9 +77,32 @@ export function PlayerSoundboard({
     [isPlayerTurn, playerName, channelRef]
   );
 
-  const presets = getSfxPresets();
+  const allPresets = useMemo(() => getPlayerSfxPresets(), []);
 
-  // Derive loading state for custom sounds specifically
+  // Group presets by tab
+  const presetsByTab = useMemo(() => {
+    const map = new Map<TabKey, AudioPreset[]>();
+    for (const tab of PLAYER_TABS) {
+      map.set(
+        tab.key,
+        allPresets.filter((p) => (tab.categories as readonly string[]).includes(p.category))
+      );
+    }
+    return map;
+  }, [allPresets]);
+
+  // Filter by active tab + search
+  const filteredPresets = useMemo(() => {
+    const tabPresets = presetsByTab.get(activeTab) ?? [];
+    const trimmed = search.trim();
+    if (!trimmed) return tabPresets;
+    const q = trimmed.toLowerCase();
+    return tabPresets.filter((p) => {
+      const name = t(p.name_key.replace("audio.", "") as Parameters<typeof t>[0]);
+      return name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
+    });
+  }, [activeTab, presetsByTab, search, t]);
+
   const hasCustomFiles = customAudioFiles.length > 0;
   const customUrlsReady = Object.keys(customAudioUrls).length > 0;
   const isCustomLoading = isLoadingAudio || (hasCustomFiles && !customUrlsReady);
@@ -112,87 +144,67 @@ export function PlayerSoundboard({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-40 right-4 left-4 z-40 bg-card border border-border rounded-xl p-4 shadow-2xl max-w-md mx-auto max-h-[60vh] overflow-y-auto"
+            className="fixed bottom-40 right-4 left-4 z-40 bg-card border border-border rounded-xl shadow-2xl max-w-md mx-auto max-h-[60vh] flex flex-col overflow-hidden"
             data-testid="soundboard-drawer"
           >
-            {/* Presets Section */}
-            <h3 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
-              {t("presets")}
-            </h3>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4">
-              {presets.map((preset) => {
-                const isCooling = cooldownId === preset.id;
-                return (
-                  <motion.button
-                    key={preset.id}
-                    type="button"
-                    disabled={isCooling}
-                    onClick={() => handlePlaySound(preset.id, "preset")}
-                    whileTap={!isCooling ? { scale: 0.9 } : undefined}
-                    className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                      isCooling
-                        ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
-                        : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
-                    }`}
-                    data-testid={`preset-btn-${preset.id}`}
-                  >
-                    <span className="text-lg leading-none">{preset.icon}</span>
-                    <span className="text-[10px] leading-tight text-center truncate w-full">
-                      {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                    </span>
-                    {/* Cooldown overlay */}
-                    {isCooling && (
-                      <div className="absolute inset-0 rounded-lg overflow-hidden">
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_2s_linear_forwards]" />
-                      </div>
-                    )}
-                  </motion.button>
-                );
-              })}
+            {/* Tabs */}
+            <div className="flex border-b border-border shrink-0">
+              {PLAYER_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => { setActiveTab(tab.key); setSearch(""); }}
+                  className={`flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium transition-colors ${
+                    activeTab === tab.key
+                      ? "text-gold border-b-2 border-gold bg-white/[0.04]"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  data-testid={`tab-${tab.key}`}
+                >
+                  <span className="text-sm">{tab.icon}</span>
+                  <span className="hidden xs:inline">{t(`tab_${tab.key}` as Parameters<typeof t>[0])}</span>
+                </button>
+              ))}
             </div>
 
-            {/* Custom Sounds Section */}
-            {hasCustomFiles && (
-              <>
-                <h3 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
-                  {t("my_sounds")}
-                </h3>
+            {/* Search */}
+            <div className="px-3 pt-3 pb-2 shrink-0">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("search_sfx")}
+                className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-gold/50"
+                data-testid="sfx-search"
+              />
+            </div>
+
+            {/* Scrollable grid */}
+            <div className="flex-1 overflow-y-auto px-3 pb-3">
+              {/* Presets Grid */}
+              {filteredPresets.length > 0 ? (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {customAudioFiles.map((file) => {
-                    const isCooling = cooldownId === file.id;
-                    const signedUrl = customAudioUrls[file.id];
-                    const isLoading = isCustomLoading && !signedUrl;
+                  {filteredPresets.map((preset) => {
+                    const isCooling = cooldownId === preset.id;
                     return (
                       <motion.button
-                        key={file.id}
+                        key={preset.id}
                         type="button"
-                        disabled={isCooling || !signedUrl}
-                        onClick={() => handlePlaySound(file.id, "custom", signedUrl)}
-                        whileTap={!isCooling && signedUrl ? { scale: 0.9 } : undefined}
+                        disabled={isCooling}
+                        onClick={() => handlePlaySound(preset.id, "preset")}
+                        whileTap={!isCooling ? { scale: 0.9 } : undefined}
                         className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                          isLoading
-                            ? "bg-purple-900/10 animate-pulse"
-                            : isCooling
-                              ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
-                              : "bg-purple-900/20 text-foreground active:bg-purple-900/40 hover:bg-purple-900/30"
+                          isCooling
+                            ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
+                            : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
                         }`}
-                        data-testid={`custom-btn-${file.id}`}
+                        data-testid={`preset-btn-${preset.id}`}
                       >
-                        {isLoading ? (
-                          <>
-                            <span className="w-5 h-5 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-                            <span className="text-[10px] leading-tight text-center truncate w-full text-muted-foreground/50">
-                              {file.file_name.replace(/\.mp3$/i, "")}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-lg leading-none">🎵</span>
-                            <span className="text-[10px] leading-tight text-center truncate w-full">
-                              {file.file_name.replace(/\.mp3$/i, "")}
-                            </span>
-                          </>
-                        )}
+                        <span className="text-lg leading-none">{preset.icon}</span>
+                        <span className="text-[10px] leading-tight text-center truncate w-full">
+                          {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
+                        </span>
+                        {/* Cooldown overlay */}
                         {isCooling && (
                           <div className="absolute inset-0 rounded-lg overflow-hidden">
                             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_2s_linear_forwards]" />
@@ -202,8 +214,66 @@ export function PlayerSoundboard({
                     );
                   })}
                 </div>
-              </>
-            )}
+              ) : (
+                <p className="text-muted-foreground/50 text-xs text-center py-6">
+                  —
+                </p>
+              )}
+
+              {/* Custom Sounds Section */}
+              {hasCustomFiles && (
+                <>
+                  <h3 className="text-muted-foreground text-xs font-medium mt-4 mb-2 uppercase tracking-wider">
+                    {t("my_sounds")}
+                  </h3>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {customAudioFiles.map((file) => {
+                      const isCooling = cooldownId === file.id;
+                      const signedUrl = customAudioUrls[file.id];
+                      const isLoading = isCustomLoading && !signedUrl;
+                      return (
+                        <motion.button
+                          key={file.id}
+                          type="button"
+                          disabled={isCooling || !signedUrl}
+                          onClick={() => handlePlaySound(file.id, "custom", signedUrl)}
+                          whileTap={!isCooling && signedUrl ? { scale: 0.9 } : undefined}
+                          className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                            isLoading
+                              ? "bg-purple-900/10 animate-pulse"
+                              : isCooling
+                                ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
+                                : "bg-purple-900/20 text-foreground active:bg-purple-900/40 hover:bg-purple-900/30"
+                          }`}
+                          data-testid={`custom-btn-${file.id}`}
+                        >
+                          {isLoading ? (
+                            <>
+                              <span className="w-5 h-5 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
+                              <span className="text-[10px] leading-tight text-center truncate w-full text-muted-foreground/50">
+                                {file.file_name.replace(/\.mp3$/i, "")}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-lg leading-none">🎵</span>
+                              <span className="text-[10px] leading-tight text-center truncate w-full">
+                                {file.file_name.replace(/\.mp3$/i, "")}
+                              </span>
+                            </>
+                          )}
+                          {isCooling && (
+                            <div className="absolute inset-0 rounded-lg overflow-hidden">
+                              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_2s_linear_forwards]" />
+                            </div>
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

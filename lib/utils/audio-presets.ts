@@ -154,6 +154,29 @@ const PRESETS: AudioPreset[] = [
   { id: "potion", name_key: "audio.preset_potion", file: "/sounds/sfx/potion.mp3", icon: "🧪", category: "interaction" },
 
   // ═══════════════════════════════════════════════════════════════
+  // SFX — MAGIC: HoMM3 BUFFS / DEBUFFS
+  // ═══════════════════════════════════════════════════════════════
+  { id: "bloodlust", name_key: "audio.preset_bloodlust", file: "/sounds/sfx/bloodlust.mp3", icon: "🩸", category: "magic" },
+  { id: "bless-homm3", name_key: "audio.preset_bless_homm3", file: "/sounds/sfx/bless-homm3.mp3", icon: "✨", category: "magic" },
+  { id: "reanimation", name_key: "audio.preset_reanimation", file: "/sounds/sfx/reanimation.mp3", icon: "🧟", category: "magic" },
+  { id: "frost-ring", name_key: "audio.preset_frost_ring", file: "/sounds/sfx/frost-ring.mp3", icon: "❄️", category: "magic" },
+  { id: "disrupting-ray", name_key: "audio.preset_disrupting_ray", file: "/sounds/sfx/disrupting-ray.mp3", icon: "💫", category: "magic" },
+  { id: "blinding-homm3", name_key: "audio.preset_blinding_homm3", file: "/sounds/sfx/blinding-homm3.mp3", icon: "👁️", category: "magic" },
+  { id: "curse-homm3", name_key: "audio.preset_curse_homm3", file: "/sounds/sfx/curse-homm3.mp3", icon: "💀", category: "magic" },
+  { id: "root-binding", name_key: "audio.preset_root_binding", file: "/sounds/sfx/root-binding.mp3", icon: "🌿", category: "magic" },
+  { id: "lich-death-cloud", name_key: "audio.preset_lich_death_cloud", file: "/sounds/sfx/lich-death-cloud.mp3", icon: "☠️", category: "magic" },
+
+  // ═══════════════════════════════════════════════════════════════
+  // SFX — INTERACTION: HoMM3
+  // ═══════════════════════════════════════════════════════════════
+  { id: "treasure-chest-homm3", name_key: "audio.preset_treasure_chest_homm3", file: "/sounds/sfx/treasure-chest-homm3.mp3", icon: "💎", category: "interaction" },
+  { id: "fountain-of-luck", name_key: "audio.preset_fountain_of_luck", file: "/sounds/sfx/fountain-of-luck.mp3", icon: "🍀", category: "interaction" },
+  { id: "fountain-of-youth", name_key: "audio.preset_fountain_of_youth", file: "/sounds/sfx/fountain-of-youth.mp3", icon: "⛲", category: "interaction" },
+  { id: "castle-gates", name_key: "audio.preset_castle_gates", file: "/sounds/sfx/castle-gates.mp3", icon: "🏰", category: "interaction" },
+  { id: "dungeon-enter", name_key: "audio.preset_dungeon_enter", file: "/sounds/sfx/dungeon-enter.mp3", icon: "🕳️", category: "interaction" },
+  { id: "quicksand", name_key: "audio.preset_quicksand", file: "/sounds/sfx/quicksand.mp3", icon: "⏳", category: "interaction" },
+
+  // ═══════════════════════════════════════════════════════════════
   // SFX — DRAMATIC & SPECIAL (RO)
   // ═══════════════════════════════════════════════════════════════
   { id: "asura-strike", name_key: "audio.preset_asura_strike", file: "/sounds/sfx/asura-strike.mp3", icon: "💣", category: "dramatic" },
@@ -165,6 +188,24 @@ const PRESETS: AudioPreset[] = [
   { id: "death", name_key: "audio.preset_death", file: "/sounds/sfx/death.mp3", icon: "💀", category: "dramatic" },
   { id: "thunder", name_key: "audio.preset_thunder", file: "/sounds/sfx/thunder.mp3", icon: "⛈️", category: "dramatic" },
   { id: "war-cry", name_key: "audio.preset_war_cry", file: "/sounds/sfx/war-cry.mp3", icon: "📯", category: "dramatic" },
+
+  // ── HoMM3 Combat Starters (DM-only) ──
+  { id: "combat-start-1", name_key: "audio.preset_combat_start_1", file: "/sounds/sfx/combat-start-1.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-2", name_key: "audio.preset_combat_start_2", file: "/sounds/sfx/combat-start-2.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-3", name_key: "audio.preset_combat_start_3", file: "/sounds/sfx/combat-start-3.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-4", name_key: "audio.preset_combat_start_4", file: "/sounds/sfx/combat-start-4.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-5", name_key: "audio.preset_combat_start_5", file: "/sounds/sfx/combat-start-5.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-6", name_key: "audio.preset_combat_start_6", file: "/sounds/sfx/combat-start-6.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-7", name_key: "audio.preset_combat_start_7", file: "/sounds/sfx/combat-start-7.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+  { id: "combat-start-8", name_key: "audio.preset_combat_start_8", file: "/sounds/sfx/combat-start-8.mp3", icon: "⚔️", category: "dramatic", dmOnly: true },
+
+  // ── HoMM3 Misc Dramatic ──
+  { id: "fear-azure-dragon", name_key: "audio.preset_fear_azure_dragon", file: "/sounds/sfx/fear-azure-dragon.mp3", icon: "🐲", category: "dramatic" },
+  { id: "high-luck", name_key: "audio.preset_high_luck", file: "/sounds/sfx/high-luck.mp3", icon: "🍀", category: "dramatic" },
+  { id: "high-morale", name_key: "audio.preset_high_morale", file: "/sounds/sfx/high-morale.mp3", icon: "📣", category: "dramatic" },
+  { id: "negative-luck", name_key: "audio.preset_negative_luck", file: "/sounds/sfx/negative-luck.mp3", icon: "🪦", category: "dramatic" },
+  { id: "negative-morale", name_key: "audio.preset_negative_morale", file: "/sounds/sfx/negative-morale.mp3", icon: "😨", category: "dramatic" },
+  { id: "wilhelm-scream", name_key: "audio.preset_wilhelm_scream", file: "/sounds/sfx/wilhelm-scream.mp3", icon: "😱", category: "dramatic" },
 
   // ═══════════════════════════════════════════════════════════════
   // SFX — MONSTERS (Kenney CC0)
@@ -222,4 +263,9 @@ export function getMusicPresets(): AudioPreset[] {
 
 export function getSfxPresets(): AudioPreset[] {
   return PRESETS.filter((p) => p.category !== "ambient" && p.category !== "music");
+}
+
+/** Player-visible SFX only (excludes ambient, music, and dmOnly presets) */
+export function getPlayerSfxPresets(): AudioPreset[] {
+  return getSfxPresets().filter((p) => !p.dmOnly);
 }
