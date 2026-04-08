@@ -31,7 +31,7 @@ const PERSIST_DEBOUNCE_MS = 1000;
 
 const STEP_ICONS: Record<number, string> = {
   1: "/art/icons/carta.png",
-  2: "/art/icons/team-chibi-1.png",
+  2: "/art/icons/shield.png",
   3: "/art/icons/potion.png",
   4: "/art/icons/mvp-crown.png",
 };

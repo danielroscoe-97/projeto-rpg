@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import {
   Shield,
   Users,
@@ -12,6 +11,7 @@ import {
   Loader2,
   MapPin,
   Sparkles,
+  Swords,
 } from "lucide-react";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { InlineDifficultyVote } from "@/components/combat/InlineDifficultyVote";
@@ -599,14 +599,9 @@ function NoCharacterCta({
   return (
     <>
       <div className="flex flex-col items-center gap-3 py-6 text-center">
-        <Image
-          src="/art/icons/chibi-knight.png"
-          alt=""
-          width={64}
-          height={64}
-          className="pixel-art opacity-70"
-          unoptimized
-        />
+        <div className="w-14 h-14 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center">
+          <Swords className="w-7 h-7 text-amber-400" />
+        </div>
         <div>
           <p className="text-foreground text-sm font-semibold">
             {createDesc}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Swords, Zap, ChevronRight, ArrowRight } from "lucide-react";
+import { Swords, Zap, ChevronRight, ArrowRight, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { toast } from "sonner";
@@ -473,15 +473,7 @@ export function DashboardOverview({
       {/* DM nudge: has campaigns but never used combat and no players registered (JO-07) */}
       {isDmRole && hasDmCampaigns && !hasUsedCombat && campaigns.every((c) => c.player_count === 0) && (
         <div className="mb-6 p-4 rounded-lg border border-gold/20 bg-gold/[0.04] flex items-start gap-3" data-testid="dm-nudge-invite">
-          <Image
-            src="/art/icons/team-chibi-1.png"
-            alt=""
-            width={40}
-            height={40}
-            className="pixel-art opacity-70 shrink-0"
-            aria-hidden="true"
-            unoptimized
-          />
+          <Users className="w-8 h-8 text-amber-400/70 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground">{t.dm_nudge_invite}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{t.dm_nudge_invite_desc}</p>
