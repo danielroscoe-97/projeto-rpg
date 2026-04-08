@@ -2430,6 +2430,8 @@
     "error_limit": "6 audio limit reached. Remove one to add another.",
     "cooldown": "Wait...",
     "disabled_not_turn": "Available only on your turn",
+    "tab_ambient": "Ambient",
+    "tab_music": "Music",
     "tab_attacks": "Attacks",
     "tab_magic": "Magic",
     "tab_epic": "Epic",
@@ -3190,6 +3192,9 @@
     "unnamed": "Unnamed",
     "no_details": "No details",
     "back": "Back",
-    "level_badge": "Lv.{level}"
+    "level_badge": "Lv.{level}",
+    "race_placeholder": "Search race...",
+    "race_search_placeholder": "Search race...",
+    "race_no_results": "No races found."
   }
 }

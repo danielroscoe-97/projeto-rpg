@@ -3,18 +3,8 @@
 import { useTranslations } from "next-intl";
 import { Swords } from "lucide-react";
 import { ClassIconGrid } from "@/components/character/ClassIconGrid";
-import { SRD_RACES } from "@/lib/data/races";
+import { RaceCombobox } from "@/components/character/RaceCombobox";
 import type { WizardCharacterData } from "./CharacterWizard";
-
-/** Deduplicated race names (merge 2014/2024 duplicates) — module-level constant */
-const UNIQUE_RACES = (() => {
-  const seen = new Set<string>();
-  return SRD_RACES.filter((r) => {
-    if (seen.has(r.name)) return false;
-    seen.add(r.name);
-    return true;
-  });
-})();
 
 interface WizardStepIdentityProps {
   data: WizardCharacterData;
@@ -30,7 +20,6 @@ export function WizardStepIdentity({
   onClearNameError,
 }: WizardStepIdentityProps) {
   const t = useTranslations("character_wizard");
-  const races = UNIQUE_RACES;
 
   return (
     <div className="space-y-6">
@@ -90,25 +79,10 @@ export function WizardStepIdentity({
         <label className="text-xs font-semibold text-amber-400 uppercase tracking-wider block mb-1.5">
           {t("race_label")}
         </label>
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-          {races.map((race) => {
-            const isSelected = data.race === race.name;
-            return (
-              <button
-                key={race.id}
-                type="button"
-                onClick={() => onChange({ race: race.name })}
-                className={`px-2 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${
-                  isSelected
-                    ? "border-amber-400 bg-amber-400/10 text-amber-400"
-                    : "border-border bg-card text-muted-foreground hover:border-amber-400/30 hover:text-foreground"
-                }`}
-              >
-                {race.name}
-              </button>
-            );
-          })}
-        </div>
+        <RaceCombobox
+          value={data.race}
+          onChange={(raceName) => onChange({ race: raceName })}
+        />
       </div>
     </div>
   );

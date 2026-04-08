@@ -2430,6 +2430,8 @@
     "error_limit": "Limite de 6 áudios atingido. Remova um para adicionar outro.",
     "cooldown": "Aguarde...",
     "disabled_not_turn": "Disponível apenas no seu turno",
+    "tab_ambient": "Ambiente",
+    "tab_music": "Músicas",
     "tab_attacks": "Ataques",
     "tab_magic": "Magias",
     "tab_epic": "Épico",
@@ -3190,6 +3192,9 @@
     "unnamed": "Sem nome",
     "no_details": "Sem detalhes",
     "back": "Voltar",
-    "level_badge": "Nv.{level}"
+    "level_badge": "Nv.{level}",
+    "race_placeholder": "Buscar raça...",
+    "race_search_placeholder": "Buscar raça...",
+    "race_no_results": "Nenhuma raça encontrada."
   }
 }
