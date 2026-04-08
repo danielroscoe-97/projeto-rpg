@@ -929,6 +929,33 @@ export interface Database {
           is_ritual?: boolean;
         };
       };
+      character_inventory_items: {
+        Row: {
+          id: string;
+          player_character_id: string;
+          item_name: string;
+          quantity: number;
+          equipped: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          player_character_id: string;
+          item_name: string;
+          quantity?: number;
+          equipped?: boolean;
+          notes?: string | null;
+        };
+        Update: {
+          item_name?: string;
+          quantity?: number;
+          equipped?: boolean;
+          notes?: string | null;
+          updated_at?: string;
+        };
+      };
       session_tokens: {
         Row: {
           id: string;
@@ -995,3 +1022,6 @@ export type PlayerQuestNote = Database["public"]["Tables"]["player_quest_notes"]
 export type CharacterSpell = Database["public"]["Tables"]["character_spells"]["Row"];
 export type CharacterSpellInsert = Database["public"]["Tables"]["character_spells"]["Insert"];
 export type SpellStatus = CharacterSpell["status"];
+export type CharacterInventoryItem = Database["public"]["Tables"]["character_inventory_items"]["Row"];
+export type CharacterInventoryItemInsert = Database["public"]["Tables"]["character_inventory_items"]["Insert"];
+export type Currency = { cp: number; sp: number; ep: number; gp: number; pp: number };

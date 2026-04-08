@@ -810,6 +810,23 @@
         "custom_add": "Adicionar Item"
       }
     },
+    "personal": {
+      "personal_items": "Meus Itens",
+      "equipped_label": "Equipado",
+      "backpack_label": "Mochila",
+      "add_item": "Adicionar Item",
+      "item_name_placeholder": "Nome do item...",
+      "shared_inventory": "Inventário Compartilhado",
+      "currency_cp": "CP",
+      "currency_sp": "SP",
+      "currency_ep": "EP",
+      "currency_gp": "GP",
+      "currency_pp": "PP",
+      "no_personal_items": "Nenhum item pessoal ainda",
+      "equip": "Equipar",
+      "unequip": "Desequipar",
+      "remove_item": "Remover"
+    },
     "edit": {
       "edit_character": "Editar Personagem",
       "identity": "Identidade",
@@ -879,7 +896,11 @@
       "relationship_ally": "Aliado",
       "relationship_enemy": "Inimigo",
       "relationship_neutral": "Neutro",
-      "relationship_unknown": "Desconhecido"
+      "relationship_unknown": "Desconhecido",
+      "scratch_pad_label": "Rascunho de Sessão",
+      "scratch_pad_placeholder": "Anote algo rápido...",
+      "scratch_pad_clear": "Limpar",
+      "scratch_pad_clear_confirm": "Limpar rascunho?"
     },
     "quests": {
       "empty": "Nenhuma quest ainda. O mestre criará as quests da campanha.",

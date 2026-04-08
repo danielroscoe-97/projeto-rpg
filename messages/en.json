@@ -810,6 +810,23 @@
         "custom_add": "Add Item"
       }
     },
+    "personal": {
+      "personal_items": "My Items",
+      "equipped_label": "Equipped",
+      "backpack_label": "Backpack",
+      "add_item": "Add Item",
+      "item_name_placeholder": "Item name...",
+      "shared_inventory": "Shared Inventory",
+      "currency_cp": "CP",
+      "currency_sp": "SP",
+      "currency_ep": "EP",
+      "currency_gp": "GP",
+      "currency_pp": "PP",
+      "no_personal_items": "No personal items yet",
+      "equip": "Equip",
+      "unequip": "Unequip",
+      "remove_item": "Remove"
+    },
     "edit": {
       "edit_character": "Edit Character",
       "identity": "Identity",
@@ -879,7 +896,11 @@
       "relationship_ally": "Ally",
       "relationship_enemy": "Enemy",
       "relationship_neutral": "Neutral",
-      "relationship_unknown": "Unknown"
+      "relationship_unknown": "Unknown",
+      "scratch_pad_label": "Session Scratch Pad",
+      "scratch_pad_placeholder": "Quick note...",
+      "scratch_pad_clear": "Clear",
+      "scratch_pad_clear_confirm": "Clear scratch pad?"
     },
     "quests": {
       "empty": "No quests yet. The DM will create campaign quests.",

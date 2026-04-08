@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { StickyNote, BookOpen, Users, Lock, Plus } from "lucide-react";
+import { ScratchPad } from "./ScratchPad";
 import { QuickNotesList } from "./QuickNotesList";
 import { JournalEntryCard } from "./JournalEntryCard";
 import { NpcJournal } from "./NpcJournal";
@@ -55,6 +56,9 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
 
   return (
     <div className="space-y-3">
+      {/* Session scratch pad — always visible above sub-tabs */}
+      <ScratchPad characterId={characterId} />
+
       {/* Privacy badge */}
       <div className="inline-flex items-center gap-1.5 text-xs text-amber-400/70 bg-amber-400/5 border border-amber-400/15 rounded-full px-2.5 py-1">
         <Lock className="w-3 h-3" />

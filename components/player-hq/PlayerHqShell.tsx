@@ -13,6 +13,7 @@ import { SpellSlotsHq } from "./SpellSlotsHq";
 import { RestResetPanel } from "./RestResetPanel";
 import { SpellListSection } from "./SpellListSection";
 import { BagOfHolding } from "./BagOfHolding";
+import { PersonalInventory } from "./PersonalInventory";
 import { NotificationFeed } from "./NotificationFeed";
 import { PlayerNotesSection } from "./PlayerNotesSection";
 import { PlayerQuestBoard } from "./PlayerQuestBoard";
@@ -272,6 +273,20 @@ export function PlayerHqShell({
       )}
       {activeTab === "inventory" && (
         <div className="space-y-4">
+          {/* Personal inventory */}
+          <PersonalInventory characterId={characterId} />
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider flex items-center gap-1.5">
+              <Package className="w-3.5 h-3.5" />
+              {t("personal.shared_inventory")}
+            </span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
+          {/* Shared Bag of Holding */}
           <BagOfHolding
             campaignId={campaignId}
             userId={userId}
