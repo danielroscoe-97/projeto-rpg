@@ -1,14 +1,26 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Volume2, Square, X } from "lucide-react";
+import { Volume2, Square, X, Search } from "lucide-react";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getAmbientPresets, getMusicPresets, getSfxPresets } from "@/lib/utils/audio-presets";
+import type { AudioPreset } from "@/lib/types/audio";
 import { isTurnSfxEnabled, setTurnSfxEnabled } from "@/lib/utils/turn-sfx";
 
 const SFX_COOLDOWN_MS = 1500;
+
+const DM_TABS = [
+  { key: "ambient", icon: "🌿", categories: ["ambient"] as string[], isLoop: true },
+  { key: "music", icon: "🎵", categories: ["music"] as string[], isLoop: true },
+  { key: "attacks", icon: "⚔️", categories: ["attack", "defense"] as string[], isLoop: false },
+  { key: "magic", icon: "✨", categories: ["magic"] as string[], isLoop: false },
+  { key: "epic", icon: "🎭", categories: ["dramatic", "monster"] as string[], isLoop: false },
+  { key: "world", icon: "🚪", categories: ["interaction"] as string[], isLoop: false },
+] as const;
+
+type DmTabKey = (typeof DM_TABS)[number]["key"];
 
 interface DmSoundboardProps {
   /** Callback to broadcast events to players (combat mode). If omitted, sounds play locally only (dashboard). */
@@ -20,6 +32,8 @@ interface DmSoundboardProps {
 export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardProps) {
   const t = useTranslations("audio");
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<DmTabKey>("ambient");
+  const [search, setSearch] = useState("");
   const [cooldownId, setCooldownId] = useState<string | null>(null);
   const lastTriggerRef = useRef<number>(0);
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -35,6 +49,35 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
   const ambientPresets = getAmbientPresets();
   const musicPresets = getMusicPresets();
   const sfxPresets = getSfxPresets();
+
+  const allDmPresets = useMemo(
+    () => [...ambientPresets, ...musicPresets, ...sfxPresets],
+    [ambientPresets, musicPresets, sfxPresets]
+  );
+
+  const presetsByTab = useMemo(() => {
+    const map = new Map<DmTabKey, AudioPreset[]>();
+    for (const tab of DM_TABS) {
+      map.set(
+        tab.key,
+        allDmPresets.filter((p) => tab.categories.includes(p.category))
+      );
+    }
+    return map;
+  }, [allDmPresets]);
+
+  const activeTabDef = DM_TABS.find((t) => t.key === activeTab)!;
+
+  const filteredPresets = useMemo(() => {
+    const tabPresets = presetsByTab.get(activeTab) ?? [];
+    const trimmed = search.trim();
+    if (!trimmed) return tabPresets;
+    const q = trimmed.toLowerCase();
+    return tabPresets.filter((p) => {
+      const name = t(p.name_key.replace("audio.", "") as Parameters<typeof t>[0]);
+      return name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
+    });
+  }, [activeTab, presetsByTab, search, t]);
 
   const [turnSfx, setTurnSfx] = useState(isTurnSfxEnabled);
 
@@ -279,97 +322,83 @@ export function DmSoundboard({ onBroadcast, ambientOnly = false }: DmSoundboardP
               </div>
             )}
 
-            {/* Ambient Section */}
-            <h4 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wider">
-              {t("dm_ambient_section")}
-            </h4>
-            <div className="grid grid-cols-3 gap-2 mb-1">
-              {ambientPresets.map((preset) => {
-                const isActive = isLoopActive(preset.id);
-                return (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => handleAmbientToggle(preset.id)}
-                    className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                      isActive
-                        ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                        : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
-                    }`}
-                  >
-                    <span className="text-lg leading-none">{preset.icon}</span>
-                    <span className="text-[10px] leading-tight text-center truncate w-full">
-                      {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                    </span>
-                    {isActive && (
-                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    )}
-                  </button>
-                );
-              })}
+            {/* Tabs */}
+            <div className="flex border-b border-border -mx-4 px-1 mb-2">
+              {DM_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => { setActiveTab(tab.key); setSearch(""); }}
+                  className={`flex-1 flex items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors ${
+                    activeTab === tab.key
+                      ? "text-gold border-b-2 border-gold bg-white/[0.04]"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className="text-sm">{tab.icon}</span>
+                  <span className="hidden sm:inline">{t(`tab_${tab.key}` as Parameters<typeof t>[0])}</span>
+                </button>
+              ))}
             </div>
 
-            {/* Music Section */}
-            <h4 className="text-muted-foreground text-xs font-medium mb-2 mt-3 uppercase tracking-wider">
-              {t("dm_music_section")}
-            </h4>
-            <div className="grid grid-cols-3 gap-2 mb-3">
-              {musicPresets.map((preset) => {
-                const isActive = isLoopActive(preset.id);
-                return (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => handleAmbientToggle(preset.id)}
-                    className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                      isActive
-                        ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
-                        : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
-                    }`}
-                  >
-                    <span className="text-lg leading-none">{preset.icon}</span>
-                    <span className="text-[10px] leading-tight text-center truncate w-full">
-                      {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                    </span>
-                    {isActive && (
-                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                    )}
-                  </button>
-                );
-              })}
+            {/* Search */}
+            <div className="relative mb-2">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground/50" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("search_sfx")}
+                className="w-full bg-white/[0.06] border border-border rounded-lg pl-7 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-gold/50"
+              />
             </div>
 
-            {/* SFX Section */}
-            <h4 className="text-muted-foreground text-xs font-medium mb-2 mt-3 uppercase tracking-wider">
-              {t("dm_sfx_section")}
-            </h4>
-            <div className="grid grid-cols-3 gap-2">
-              {sfxPresets.map((preset) => {
-                const isCooling = cooldownId === preset.id;
-                return (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    disabled={isCooling}
-                    onClick={() => handleSfxPlay(preset.id)}
-                    className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
-                      isCooling
-                        ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
-                        : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
-                    }`}
-                  >
-                    <span className="text-lg leading-none">{preset.icon}</span>
-                    <span className="text-[10px] leading-tight text-center truncate w-full">
-                      {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
-                    </span>
-                    {isCooling && (
-                      <div className="absolute inset-0 rounded-lg overflow-hidden">
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_1.5s_linear_forwards]" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
+            {/* Scrollable grid */}
+            <div className="overflow-y-auto max-h-[40vh] -mx-1 px-1">
+              {filteredPresets.length > 0 ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {filteredPresets.map((preset) => {
+                    const isLoop = activeTabDef.isLoop;
+                    const isActive = isLoop && isLoopActive(preset.id);
+                    const isCooling = !isLoop && cooldownId === preset.id;
+                    const activeColor = activeTab === "music"
+                      ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                      : "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400";
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        disabled={isCooling}
+                        onClick={() => isLoop ? handleAmbientToggle(preset.id) : handleSfxPlay(preset.id)}
+                        className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                          isActive
+                            ? activeColor
+                            : isCooling
+                              ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
+                              : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08] border border-transparent"
+                        }`}
+                      >
+                        <span className="text-lg leading-none">{preset.icon}</span>
+                        <span className="text-[10px] leading-tight text-center truncate w-full">
+                          {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
+                        </span>
+                        {isActive && (
+                          <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full animate-pulse ${
+                            activeTab === "music" ? "bg-amber-400" : "bg-emerald-400"
+                          }`} />
+                        )}
+                        {isCooling && (
+                          <div className="absolute inset-0 rounded-lg overflow-hidden">
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gold/30 animate-[shrink_1.5s_linear_forwards]" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-muted-foreground/50 text-xs text-center py-6">—</p>
+              )}
             </div>
           </motion.div>
         )}
