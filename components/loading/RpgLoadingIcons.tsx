@@ -3,12 +3,25 @@
 export function D20Icon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="32,2 58,18 58,46 32,62 6,46 6,18" stroke="currentColor" strokeWidth="2.5" fill="none" />
-      <polygon points="32,2 58,18 32,34 6,18" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.08" />
-      <line x1="32" y1="34" x2="32" y2="62" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="32" y1="34" x2="58" y2="46" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="32" y1="34" x2="6" y2="46" stroke="currentColor" strokeWidth="1.5" />
-      <text x="32" y="28" textAnchor="middle" fontSize="14" fontWeight="bold" fill="currentColor" fontFamily="system-ui">20</text>
+      {/* Hexagonal d20 outline */}
+      <polygon points="32,5 55,19 55,43 32,57 9,43 9,19" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
+      {/* Front face triangle */}
+      <polygon points="32,20 18,42 46,42" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.08" opacity="0.55" />
+      {/* Top vertex to front face bottom corners */}
+      <line x1="32" y1="5" x2="18" y2="42" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+      <line x1="32" y1="5" x2="46" y2="42" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+      {/* Bottom vertex to front face bottom corners */}
+      <line x1="32" y1="57" x2="18" y2="42" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+      <line x1="32" y1="57" x2="46" y2="42" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+      {/* Side vertices to front face top */}
+      <line x1="9" y1="19" x2="32" y2="20" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+      <line x1="55" y1="19" x2="32" y2="20" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+      {/* Side vertices to front face bottom corners */}
+      <line x1="9" y1="19" x2="18" y2="42" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+      <line x1="55" y1="19" x2="46" y2="42" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+      {/* Bottom side to front face bottom corners */}
+      <line x1="9" y1="43" x2="18" y2="42" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+      <line x1="55" y1="43" x2="46" y2="42" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
     </svg>
   );
 }
