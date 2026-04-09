@@ -54,6 +54,8 @@ function toSlug(name: string): string {
 
 interface MonsterEntry {
   name: string;
+  nameEn?: string;
+  namePt?: string;
   cr: string;
   type: string;
   isMAD?: boolean;
@@ -65,6 +67,7 @@ interface MonsterEntry {
 interface PublicMonsterGridProps {
   monsters: MonsterEntry[];
   basePath?: string;
+  locale?: "en" | "pt-BR";
   labels?: {
     searchPlaceholder?: string;
     crLabel?: string;
@@ -77,7 +80,7 @@ interface PublicMonsterGridProps {
   };
 }
 
-export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {} }: PublicMonsterGridProps) {
+export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "en", labels = {} }: PublicMonsterGridProps) {
   const {
     searchPlaceholder = "Search monsters by name...",
     crLabel = "CR:",
@@ -88,6 +91,13 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
     monsters: monstersLabel = "monsters",
     filters: filtersLabel = "Filters",
   } = labels;
+  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const isPt = descLang === "pt-BR";
+  const displayName = (m: MonsterEntry) => isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name);
+  const subtitleName = (m: MonsterEntry) => {
+    if (!m.nameEn || !m.namePt || m.nameEn.toLowerCase() === m.namePt.toLowerCase()) return null;
+    return isPt ? m.nameEn : m.namePt;
+  };
   const [query, setQuery] = useState("");
   const [crFilter, setCrFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
@@ -108,7 +118,11 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
 
     if (query) {
       const q = query.toLowerCase();
-      result = result.filter((m) => m.name.toLowerCase().includes(q));
+      result = result.filter((m) =>
+        m.name.toLowerCase().includes(q) ||
+        (m.nameEn && m.nameEn.toLowerCase().includes(q)) ||
+        (m.namePt && m.namePt.toLowerCase().includes(q))
+      );
     }
 
     if (crFilter) {
@@ -131,16 +145,25 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
     return result;
   }, [monsters, query, crFilter, typeFilter]);
 
-  // Group by first letter
+  // Group by first letter (of display name)
   const grouped = useMemo(() => {
     const map = new Map<string, MonsterEntry[]>();
     for (const m of filtered) {
-      const letter = m.name[0]?.toUpperCase() || "#";
+      const dn = isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name);
+      const letter = dn[0]?.toUpperCase() || "#";
       if (!map.has(letter)) map.set(letter, []);
       map.get(letter)!.push(m);
     }
-    return map;
-  }, [filtered]);
+    // Sort entries within each letter by display name
+    for (const [, group] of map) {
+      group.sort((a, b) => {
+        const an = isPt ? (a.namePt ?? a.name) : (a.nameEn ?? a.name);
+        const bn = isPt ? (b.namePt ?? b.name) : (b.nameEn ?? b.name);
+        return an.localeCompare(bn);
+      });
+    }
+    return new Map([...map.entries()].sort(([a], [b]) => a.localeCompare(b)));
+  }, [filtered, isPt]);
 
   const hasFilters = !!(query || crFilter || typeFilter);
 
@@ -243,11 +266,29 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
           </div>
         </div>
 
-        {/* Result count — always visible */}
-        <div className="text-xs text-gray-500">
-          {hasFilters
-            ? `${filtered.length} ${of} ${monsters.length} ${monstersLabel}`
-            : `${monsters.length} ${monstersLabel}`}
+        {/* Result count + language toggle — always visible */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">
+            {hasFilters
+              ? `${filtered.length} ${of} ${monsters.length} ${monstersLabel}`
+              : `${monsters.length} ${monstersLabel}`}
+          </span>
+          <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setDescLang("en")}
+              className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "en" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              onClick={() => setDescLang("pt-BR")}
+              className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "pt-BR" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+            >
+              PT
+            </button>
+          </div>
         </div>
       </div>
 
@@ -293,8 +334,13 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", labels = {
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="text-gray-200 group-hover:text-white text-sm font-medium block truncate">
-                      {m.name}
+                      {displayName(m)}
                     </span>
+                    {subtitleName(m) && (
+                      <span className="text-[11px] text-gray-500 italic block truncate">
+                        {subtitleName(m)}
+                      </span>
+                    )}
                   </span>
                   <span className="text-gray-500 text-xs whitespace-nowrap">
                     CR {m.cr}

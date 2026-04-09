@@ -78,18 +78,24 @@ function toSlug(name: string): string {
 
 interface SpellEntry {
   name: string;
+  nameEn?: string;
+  namePt?: string;
   level: number;
   school: string;
   classes: string[];
   concentration: boolean;
   ritual: boolean;
   slug?: string;
+  slugEn?: string;
+  slugPt?: string;
   ruleset_version?: string;
   casting_time?: string;
   range?: string;
   components?: string;
   duration?: string;
   description?: string;
+  descriptionEn?: string;
+  descriptionPt?: string;
 }
 
 interface PublicSpellGridProps {
@@ -146,6 +152,8 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
   const schoolDisplay = (s: string) => isPt ? (SPELL_SCHOOLS_PT[s] ?? s) : s;
   const classDisplay = (c: string) => isPt ? (SPELL_CLASSES_PT[c] ?? c) : c;
   const schoolAbbr = (s: string) => isPt ? (SPELL_SCHOOLS_PT[s] ?? s).slice(0, 4) : s.slice(0, 4);
+  const displayName = (s: SpellEntry) => isPt ? (s.namePt ?? s.name) : (s.nameEn ?? s.name);
+  const displayDesc = (s: SpellEntry) => isPt ? (s.descriptionPt ?? s.description) : (s.descriptionEn ?? s.description);
   const levelHeading = (level: number) => {
     if (isPt) return level === 0 ? "Truques" : `Magias de ${level}º Nível`;
     return level === 0 ? "Cantrips" : `${level}${["st","nd","rd"][level-1]||"th"}-Level Spells`;
@@ -160,7 +168,11 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
     if (editionFilter) result = result.filter((s) => s.ruleset_version === editionFilter);
     if (query) {
       const q = query.toLowerCase();
-      result = result.filter((s) => s.name.toLowerCase().includes(q));
+      result = result.filter((s) =>
+        s.name.toLowerCase().includes(q) ||
+        (s.nameEn && s.nameEn.toLowerCase().includes(q)) ||
+        (s.namePt && s.namePt.toLowerCase().includes(q))
+      );
     }
     if (levelFilter !== null) result = result.filter((s) => s.level === levelFilter);
     if (schoolFilter) result = result.filter((s) => s.school === schoolFilter);
@@ -173,9 +185,12 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
   // Detect duplicate names (e.g. Acid Splash 2014 + 2024) for version badge
   const duplicateNames = useMemo(() => {
     const counts = new Map<string, number>();
-    for (const s of spells) counts.set(s.name, (counts.get(s.name) ?? 0) + 1);
+    for (const s of spells) {
+      const dn = isPt ? (s.namePt ?? s.name) : (s.nameEn ?? s.name);
+      counts.set(dn, (counts.get(dn) ?? 0) + 1);
+    }
     return new Set(Array.from(counts.entries()).filter(([, c]) => c > 1).map(([n]) => n));
-  }, [spells]);
+  }, [spells, isPt]);
 
   // Group by level
   const byLevel = useMemo(() => {
@@ -390,13 +405,20 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                 <Link href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
                   className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
                 >
-                  <span className="flex-1 min-w-0 flex items-center gap-1.5">
-                    <span className="text-gray-200 group-hover:text-white text-sm font-medium truncate">
-                      {s.name}
+                  <span className="flex-1 min-w-0 flex flex-col">
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-gray-200 group-hover:text-white text-sm font-medium truncate">
+                        {displayName(s)}
+                      </span>
+                      {s.ruleset_version && duplicateNames.has(displayName(s)) && (
+                        <span className="inline-flex items-center rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-gray-400 shrink-0">
+                          {s.ruleset_version}
+                        </span>
+                      )}
                     </span>
-                    {s.ruleset_version && duplicateNames.has(s.name) && (
-                      <span className="inline-flex items-center rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-gray-400 shrink-0">
-                        {s.ruleset_version}
+                    {s.nameEn && s.namePt && s.nameEn.toLowerCase() !== s.namePt.toLowerCase() && (
+                      <span className="text-[11px] text-gray-500 italic truncate">
+                        {isPt ? s.nameEn : s.namePt}
                       </span>
                     )}
                   </span>
@@ -412,7 +434,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                 {s.description && (
                   <div className={`hidden lg:block absolute left-0 z-50 w-96 rounded-lg border border-[#D4A853]/20 bg-gray-900 shadow-xl shadow-black/40 p-4 transition-opacity duration-150 ${isHovered ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} ${flipUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">{s.name}</span>
+                      <span className="text-sm font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">{displayName(s)}</span>
                       <span className={`text-xs ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>{schoolDisplay(s.school)}</span>
                     </div>
                     <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-gray-400 mb-2">
@@ -422,7 +444,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                       {s.components && <span>{isPt ? "Componentes" : "Components"}: {s.components}</span>}
                     </div>
                     <div className="text-xs text-gray-300 space-y-1.5 max-h-[45vh] overflow-y-auto pr-1">
-                      {s.description.split("\n").filter(Boolean).map((para, i) => (
+                      {(displayDesc(s) ?? "").split("\n").filter(Boolean).map((para, i) => (
                         <p key={i}>{para}</p>
                       ))}
                     </div>

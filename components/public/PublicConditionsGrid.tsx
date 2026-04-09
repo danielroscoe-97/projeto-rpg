@@ -90,7 +90,7 @@ const CONDITION_NAMES_PT: Record<string, string> = {
   unconscious: "Inconsciente",
 };
 
-const CONDITION_DESCRIPTIONS_PT: Record<string, string> = {
+const CONDITION_DESCRIPTIONS_PT_2014: Record<string, string> = {
   blinded: "Uma criatura cega não pode ver e falha automaticamente em qualquer teste de habilidade que requeira visão. Jogadas de ataque contra a criatura têm vantagem, e as jogadas de ataque da criatura têm desvantagem.",
   charmed: "Uma criatura encantada não pode atacar o encantador ou alvo o encantador com habilidades ou efeitos mágicos prejudiciais. O encantador tem vantagem em qualquer teste de habilidade para interagir socialmente com a criatura.",
   deafened: "Uma criatura surda não pode ouvir e falha automaticamente em qualquer teste de habilidade que requeira audição.",
@@ -106,6 +106,24 @@ const CONDITION_DESCRIPTIONS_PT: Record<string, string> = {
   restrained: "A velocidade de uma criatura contida se torna 0, e ela não pode se beneficiar de nenhum bônus em sua velocidade. Jogadas de ataque contra a criatura têm vantagem, e as jogadas de ataque da criatura têm desvantagem. A criatura tem desvantagem em testes de resistência de Destreza.",
   stunned: "Uma criatura atordoada está incapacitada, não pode se mover e pode falar apenas com dificuldade. A criatura falha automaticamente em testes de resistência de Força e Destreza. Jogadas de ataque contra a criatura têm vantagem.",
   unconscious: "Uma criatura inconsciente está incapacitada, não pode se mover ou falar e não tem consciência do que acontece ao seu redor. A criatura larga o que estiver segurando e cai em posição de caído. A criatura falha automaticamente em testes de resistência de Força e Destreza. Jogadas de ataque contra a criatura têm vantagem. Qualquer ataque que acerte a criatura é um acerto crítico se o atacante estiver a até 1,5 metro dela.",
+};
+
+const CONDITION_DESCRIPTIONS_PT_2024: Record<string, string> = {
+  blinded: "Enquanto você tem a condição Cego, você sofre os seguintes efeitos.\nNão Pode Ver. Você não pode ver e falha automaticamente em qualquer teste de habilidade que requeira visão.\nAtaques Afetados. Jogadas de ataque contra você têm Vantagem, e suas jogadas de ataque têm Desvantagem.",
+  charmed: "Enquanto você tem a condição Encantado, você sofre os seguintes efeitos.\nNão Pode Prejudicar o Encantador. Você não pode atacar o encantador ou alvejá-lo com habilidades prejudiciais ou Efeitos Mágicos.\nVantagem Social. O encantador tem Vantagem em qualquer teste de habilidade para interagir com você socialmente.",
+  deafened: "Enquanto você tem a condição Surdo, você sofre o seguinte efeito.\nNão Pode Ouvir. Você não pode ouvir e falha automaticamente em qualquer teste de habilidade que requeira audição.",
+  exhaustion: "Enquanto você tem a condição Exaustão, você sofre os seguintes efeitos.\nNíveis de Exaustão. Esta condição é cumulativa. Cada vez que você a recebe, ganha 1 nível de Exaustão. Você morre se seu nível de Exaustão chegar a 6.\nTestes d20 Afetados. Quando você faz um Teste d20, a rolagem é reduzida em 2 vezes seu nível de Exaustão.\nVelocidade Reduzida. Sua Velocidade é reduzida em um número de pés igual a 5 vezes seu nível de Exaustão.\nRemovendo Níveis. Completar um Descanso Longo remove 1 nível de Exaustão.",
+  frightened: "Enquanto você tem a condição Amedrontado, você sofre os seguintes efeitos.\nTestes e Ataques Afetados. Você tem Desvantagem em testes de habilidade e jogadas de ataque enquanto a fonte do medo estiver em sua linha de visão.\nNão Pode se Aproximar. Você não pode se mover voluntariamente para mais perto da fonte do medo.",
+  grappled: "Enquanto você tem a condição Agarrado, você sofre os seguintes efeitos.\nVelocidade 0. Sua Velocidade é 0 e não pode aumentar.\nAtaques Afetados. Você tem Desvantagem em jogadas de ataque contra qualquer alvo que não seja o agarrador.\nMóvel. O agarrador pode arrastar ou carregar você quando se move, mas cada pé de movimento custa 1 pé extra, a menos que você seja Miúdo ou dois ou mais tamanhos menor.",
+  incapacitated: "Enquanto você tem a condição Incapacitado, você sofre os seguintes efeitos.\nInativo. Você não pode realizar nenhuma Ação, Ação Bônus ou Reação.\nSem Concentração. Sua Concentração é quebrada.\nSem Fala. Você não pode falar.\nSurpreso. Se você estiver Incapacitado quando rolar Iniciativa, você tem Desvantagem na rolagem.",
+  invisible: "Enquanto você tem a condição Invisível, você sofre os seguintes efeitos.\nSurpresa. Se você estiver Invisível quando rolar Iniciativa, você tem Vantagem na rolagem.\nOculto. Você não é afetado por nenhum efeito que requeira que o alvo seja visto, a menos que o criador do efeito possa de alguma forma vê-lo. Qualquer equipamento que esteja vestindo ou carregando também fica oculto.\nAtaques Afetados. Jogadas de ataque contra você têm Desvantagem, e suas jogadas de ataque têm Vantagem. Se uma criatura puder de alguma forma vê-lo, você não ganha esse benefício contra ela.",
+  paralyzed: "Enquanto você tem a condição Paralisado, você sofre os seguintes efeitos.\nIncapacitado. Você tem a condição Incapacitado.\nVelocidade 0. Sua Velocidade é 0 e não pode aumentar.\nTestes de Resistência Afetados. Você falha automaticamente em Testes de Resistência de Força e Destreza.\nAtaques Afetados. Jogadas de ataque contra você têm Vantagem.\nAcertos Críticos Automáticos. Qualquer jogada de ataque que acerte você é um Acerto Crítico se o atacante estiver a até 1,5 metro.",
+  petrified: "Enquanto você tem a condição Petrificado, você sofre os seguintes efeitos.\nTransformado em Substância Inanimada. Você é transformado, junto com quaisquer objetos não mágicos que esteja vestindo e carregando, em uma substância sólida inanimada (geralmente pedra). Seu peso aumenta por um fator de dez e você para de envelhecer.\nIncapacitado. Você tem a condição Incapacitado.\nVelocidade 0. Sua Velocidade é 0 e não pode aumentar.\nAtaques Afetados. Jogadas de ataque contra você têm Vantagem.\nTestes de Resistência Afetados. Você falha automaticamente em Testes de Resistência de Força e Destreza.\nResistência a Dano. Você tem Resistência a todos os tipos de dano.\nImunidade a Veneno. Você tem Imunidade à condição Envenenado.",
+  poisoned: "Enquanto você tem a condição Envenenado, você sofre o seguinte efeito.\nTestes e Ataques Afetados. Você tem Desvantagem em jogadas de ataque e testes de habilidade.",
+  prone: "Enquanto você tem a condição Caído, você sofre os seguintes efeitos.\nMovimento Restrito. Suas únicas opções de movimento são Rastejar ou gastar uma quantidade de movimento igual a metade da sua Velocidade (arredondado para baixo) para se levantar e encerrar a condição. Se sua Velocidade for 0, você não pode se levantar.\nAtaques Afetados. Você tem Desvantagem em jogadas de ataque. Uma jogada de ataque contra você tem Vantagem se o atacante estiver a até 1,5 metro. Caso contrário, a jogada tem Desvantagem.",
+  restrained: "Enquanto você tem a condição Contido, você sofre os seguintes efeitos.\nVelocidade 0. Sua Velocidade é 0 e não pode aumentar.\nAtaques Afetados. Jogadas de ataque contra você têm Vantagem, e suas jogadas de ataque têm Desvantagem.\nTestes de Resistência Afetados. Você tem Desvantagem em Testes de Resistência de Destreza.",
+  stunned: "Enquanto você tem a condição Atordoado, você sofre os seguintes efeitos.\nIncapacitado. Você tem a condição Incapacitado.\nTestes de Resistência Afetados. Você falha automaticamente em Testes de Resistência de Força e Destreza.\nAtaques Afetados. Jogadas de ataque contra você têm Vantagem.",
+  unconscious: "Enquanto você tem a condição Inconsciente, você sofre os seguintes efeitos.\nInerte. Você tem as condições Incapacitado e Caído, e larga o que estiver segurando. Quando esta condição termina, você permanece Caído.\nVelocidade 0. Sua Velocidade é 0 e não pode aumentar.\nAtaques Afetados. Jogadas de ataque contra você têm Vantagem.\nTestes de Resistência Afetados. Você falha automaticamente em Testes de Resistência de Força e Destreza.\nAcertos Críticos Automáticos. Qualquer jogada de ataque que acerte você é um Acerto Crítico se o atacante estiver a até 1,5 metro.\nInconsciente. Você não tem consciência do que acontece ao seu redor.",
 };
 
 const LABELS = {
@@ -198,12 +216,13 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
         });
 
   // Apply search filter (bilingual — matches EN name, PT name, EN description, or PT description)
+  const activePtDescs = version === "2024" ? CONDITION_DESCRIPTIONS_PT_2024 : CONDITION_DESCRIPTIONS_PT_2014;
   const filtered = search.trim()
     ? categoryFiltered.filter((c) => {
         const q = search.toLowerCase();
         const baseName = c.name.toLowerCase();
         const ptName = (CONDITION_NAMES_PT[baseName] ?? "").toLowerCase();
-        const ptDesc = (CONDITION_DESCRIPTIONS_PT[baseName] ?? "").toLowerCase();
+        const ptDesc = (activePtDescs[baseName] ?? "").toLowerCase();
         return (
           baseName.includes(q) ||
           ptName.includes(q) ||
@@ -319,8 +338,9 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
           const ptName = CONDITION_NAMES_PT[baseName] ?? cond.name;
           const displayName = descLang === "pt-BR" ? ptName : cond.name;
           const subtitleName = descLang === "pt-BR" ? cond.name : (locale === "pt-BR" ? ptName : null);
+          const ptDescs = version === "2024" ? CONDITION_DESCRIPTIONS_PT_2024 : CONDITION_DESCRIPTIONS_PT_2014;
           const displayDescription = descLang === "pt-BR"
-            ? (CONDITION_DESCRIPTIONS_PT[baseName] ?? cond.description)
+            ? (ptDescs[baseName] ?? cond.description)
             : cond.description;
           const isExpanded = expanded === cond.id;
           const cat = CATEGORY_MAP[baseName] ?? "debuff";

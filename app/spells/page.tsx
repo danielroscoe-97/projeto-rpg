@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSrdSpells, spellSlug } from "@/lib/srd/srd-data-server";
+import { getSrdSpells, spellSlug, toSlug, getSpellNamePt, getSpellDescriptionPt } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
@@ -38,20 +38,29 @@ export const revalidate = 86400;
 export default function SpellsIndexPage() {
   const spells = getSrdSpells()
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name))
-    .map((s) => ({
-      name: s.name,
-      level: s.level,
-      school: s.school,
-      classes: s.classes ?? [],
-      concentration: s.concentration,
-      ritual: s.ritual,
-      slug: spellSlug(s),
-      ruleset_version: s.ruleset_version,
-      casting_time: s.casting_time,
-      range: s.range,
-      duration: s.duration,
-      description: s.description?.slice(0, 200),
-    }));
+    .map((s) => {
+      const enSlug = toSlug(s.name);
+      const ptName = getSpellNamePt(enSlug, s.name);
+      const ptDesc = getSpellDescriptionPt(enSlug);
+      return {
+        name: s.name,
+        nameEn: s.name,
+        namePt: ptName,
+        level: s.level,
+        school: s.school,
+        classes: s.classes ?? [],
+        concentration: s.concentration,
+        ritual: s.ritual,
+        slug: spellSlug(s),
+        ruleset_version: s.ruleset_version,
+        casting_time: s.casting_time,
+        range: s.range,
+        duration: s.duration,
+        description: s.description?.slice(0, 200),
+        descriptionEn: s.description?.slice(0, 200),
+        descriptionPt: ptDesc?.slice(0, 300),
+      };
+    });
 
   const jsonLd = {
     "@context": "https://schema.org",

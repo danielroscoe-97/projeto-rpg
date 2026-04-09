@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getSrdMonstersDeduped, toSlug } from "@/lib/srd/srd-data-server";
+import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
 import { PublicFooter } from "@/components/public/PublicFooter";
@@ -36,17 +37,23 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 export default function MonstersIndexPage() {
+  const ptNames = monsterNamesPt as Record<string, { name?: string }>;
   const monsters = getSrdMonstersDeduped()
     .sort((a, b) => a.name.localeCompare(b.name))
-    .map((m) => ({
-      name: m.name,
-      cr: m.cr,
-      type: m.type,
-      isMAD: !!m.monster_a_day_url,
-      slug: toSlug(m.name),
-      tokenUrl: m.token_url,
-      fallbackTokenUrl: m.fallback_token_url,
-    }));
+    .map((m) => {
+      const enSlug = toSlug(m.name);
+      return {
+        name: m.name,
+        nameEn: m.name,
+        namePt: ptNames[enSlug]?.name ?? m.name,
+        cr: m.cr,
+        type: m.type,
+        isMAD: !!m.monster_a_day_url,
+        slug: toSlug(m.name),
+        tokenUrl: m.token_url,
+        fallbackTokenUrl: m.fallback_token_url,
+      };
+    });
 
   const jsonLd = {
     "@context": "https://schema.org",

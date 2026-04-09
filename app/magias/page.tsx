@@ -44,6 +44,8 @@ export default function MagiasIndexPage() {
       const ptDesc = getSpellDescriptionPt(enSlug);
       return {
         name: ptName,
+        nameEn: s.name,
+        namePt: ptName,
         level: s.level,
         school: s.school,
         classes: s.classes ?? [],
@@ -56,6 +58,8 @@ export default function MagiasIndexPage() {
         components: s.components,
         duration: s.duration,
         description: ptDesc?.slice(0, 300) ?? s.description?.slice(0, 200),
+        descriptionEn: s.description?.slice(0, 300),
+        descriptionPt: ptDesc?.slice(0, 300) ?? s.description?.slice(0, 200),
       };
     });
 

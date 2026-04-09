@@ -46,8 +46,11 @@ export default function MonstrosIndexPage() {
   const ptNames = monsterNamesPt as Record<string, { name?: string }>;
   const monsters = deduped.map((m) => {
     const enSlug = toSlug(m.name);
+    const ptName = ptNames[enSlug]?.name ?? m.name;
     return {
-      name: ptNames[enSlug]?.name ?? m.name,
+      name: ptName,
+      nameEn: m.name,
+      namePt: ptName,
       cr: m.cr,
       type: m.type,
       isMAD: !!m.monster_a_day_url,
@@ -108,6 +111,7 @@ export default function MonstrosIndexPage() {
         <PublicMonsterGrid
           monsters={monsters}
           basePath="/monstros"
+          locale="pt-BR"
           labels={{
             searchPlaceholder: "Buscar monstros pelo nome...",
             crLabel: "CR:",
