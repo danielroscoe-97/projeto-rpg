@@ -55,7 +55,7 @@ export function LandingLoggedInNav({ displayName }: Props) {
         >
           <DropdownMenuItem asChild>
             <Link
-              href="/app/dashboard"
+              href="/app/dashboard?welcome=1"
               className="flex items-center gap-2 text-foreground/80 hover:text-foreground"
             >
               <Home className="w-4 h-4 opacity-60" />

@@ -42,14 +42,16 @@ export function DashboardLoadingScreen() {
       hasShownInSession = false;
     }
 
-    // Clean ?welcome param if present (legacy from auth/confirm redirect)
     const url = new URL(window.location.href);
-    if (url.searchParams.has("welcome")) {
+    const forceWelcome = url.searchParams.has("welcome");
+
+    // Clean ?welcome param from URL bar
+    if (forceWelcome) {
       url.searchParams.delete("welcome");
       window.history.replaceState({}, "", url.pathname + url.search);
     }
 
-    if (hasShownInSession) {
+    if (hasShownInSession && !forceWelcome) {
       return;
     }
 
