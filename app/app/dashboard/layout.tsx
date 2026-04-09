@@ -39,7 +39,6 @@ export default async function DashboardRouteLayout({
       { count: dmMembershipCount },
       { count: ownedCampaignCount },
       { data: userRoleData },
-      { count: playerMembershipCount },
     ] = await Promise.all([
       supabase
         .from("user_onboarding")
@@ -61,12 +60,6 @@ export default async function DashboardRouteLayout({
         .select("role")
         .eq("id", user.id)
         .maybeSingle(),
-      supabase
-        .from("campaign_members")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("role", "player")
-        .eq("status", "active"),
     ]);
 
     const userDbRole = userRoleData?.role ?? "both";
@@ -82,10 +75,9 @@ export default async function DashboardRouteLayout({
     tourSource = onboarding?.source;
     hasDmAccess = dmAccess;
 
-    // JO-12: Player first-campaign tour — triggers for pure players on their first membership
+    // JO-12: Player tour — triggers for any pure player who hasn't completed the tour
     isPlayerFirstCampaign = (
       !hasDmAccess &&
-      (playerMembershipCount ?? 0) === 1 &&
       !(onboarding?.dashboard_tour_completed ?? false)
     );
   }

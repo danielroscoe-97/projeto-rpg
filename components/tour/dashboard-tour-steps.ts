@@ -133,20 +133,7 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     phase: "setup",
     audience: "player",
   },
-  // Step P4 — Compendium nav item
-  {
-    id: "player-compendium",
-    targetSelector: '[data-tour-id="dash-nav-compendium"]',
-    mobileSelector: '[data-tour-id="dash-bottom-nav"]',
-    titleKey: "dashboard_tour.player_compendium_title",
-    descriptionKey: "dashboard_tour.player_compendium_desc",
-    type: "info",
-    position: "right",
-    mobilePosition: "top",
-    phase: "setup",
-    audience: "player",
-  },
-  // Step P5 — Ready to join (modal)
+  // Step P4 — Ready to join (modal)
   {
     id: "player-join",
     targetSelector: '[data-tour-id="dash-player-campaigns"]',

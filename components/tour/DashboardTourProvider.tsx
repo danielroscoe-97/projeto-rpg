@@ -62,6 +62,8 @@ export function DashboardTourProvider({
 
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [mounted, setMounted] = useState(false);
+  // Steps resolved once at tour start — filtered by DOM existence for accurate progress
+  const [resolvedSteps, setResolvedSteps] = useState<TourStepConfig[]>([]);
 
   const effectiveSteps = useMemo(() => {
     let steps = DASHBOARD_TOUR_STEPS;
@@ -97,20 +99,29 @@ export function DashboardTourProvider({
     const effectiveDelay = fromWizard ? 800 : delayMs;
 
     // Use a page-content element as a proxy for "page content is ready".
-    // It lives inside DashboardOverview (the actual page), not the layout shell.
-    // Player tour targets a different element because dash-quick-actions is DM-only.
+    // Player tour uses the dashboard header (always present) instead of
+    // dash-player-campaigns which doesn't exist for new players with 0 campaigns.
     const CONTENT_READY_SELECTOR = isPlayerFirstCampaign
-      ? '[data-tour-id="dash-player-campaigns"]'
+      ? '[data-testid="dashboard-overview"]'
       : '[data-tour-id="dash-quick-actions"]';
     const MAX_EXTRA_WAIT_MS = 8000;
 
     let pollInterval: ReturnType<typeof setInterval> | null = null;
 
+    /** Resolve visible steps: keep modal steps + steps whose DOM target exists */
+    const resolveAndStart = () => {
+      const visible = effectiveSteps.filter(
+        (s) => s.modal === true || document.querySelector(s.targetSelector) !== null
+      );
+      setResolvedSteps(visible.length > 0 ? visible : effectiveSteps);
+      startTour();
+    };
+
     const tryStart = () => {
       const { isCompleted: done, isActive: active } = useDashboardTourStore.getState();
       if (done || active) return true;
       if (document.querySelector(CONTENT_READY_SELECTOR)) {
-        startTour();
+        resolveAndStart();
         return true;
       }
       return false;
@@ -127,9 +138,9 @@ export function DashboardTourProvider({
           } else if (Date.now() - pollStart >= MAX_EXTRA_WAIT_MS) {
             clearInterval(pollInterval!);
             pollInterval = null;
-            // Timeout fallback: start tour even if content selector never appeared
+            // Timeout fallback: resolve steps and start even without content selector
             const { isCompleted: done, isActive: active } = useDashboardTourStore.getState();
-            if (!done && !active) startTour();
+            if (!done && !active) resolveAndStart();
           }
         }, 200);
       }
@@ -163,10 +174,13 @@ export function DashboardTourProvider({
     }
   }
 
+  // The steps used for navigation/rendering — resolvedSteps once available, otherwise effectiveSteps
+  const activeSteps = resolvedSteps.length > 0 ? resolvedSteps : effectiveSteps;
+
   // Update target rect when step changes
   const updateTargetRect = useCallback(() => {
-    if (!isActive || currentStep >= effectiveSteps.length) return;
-    const step = effectiveSteps[currentStep];
+    if (!isActive || currentStep >= activeSteps.length) return;
+    const step = activeSteps[currentStep];
 
     if (step.modal) {
       const target = document.querySelector(step.targetSelector);
@@ -184,20 +198,20 @@ export function DashboardTourProvider({
         setTimeout(() => setTargetRect(target.getBoundingClientRect()), 400);
       }
     } else {
-      // Auto-skip steps whose DOM target doesn't exist — find next valid step in one pass
+      // Fallback: skip to next valid step if target disappeared after resolve
       let nextValid = currentStep + 1;
-      while (nextValid < effectiveSteps.length) {
-        const nextStep = effectiveSteps[nextValid];
+      while (nextValid < activeSteps.length) {
+        const nextStep = activeSteps[nextValid];
         if (nextStep.modal || document.querySelector(nextStep.targetSelector)) break;
         nextValid++;
       }
-      if (nextValid < effectiveSteps.length) {
+      if (nextValid < activeSteps.length) {
         goToStep(nextValid);
       } else {
         setTargetRect(null);
       }
     }
-  }, [isActive, currentStep, effectiveSteps, goToStep]);
+  }, [isActive, currentStep, activeSteps, goToStep]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -219,16 +233,24 @@ export function DashboardTourProvider({
 
   const handleNext = useCallback(() => {
     const next = currentStep + 1;
-    if (next >= effectiveSteps.length) {
+    if (next >= activeSteps.length) {
       handleComplete();
     } else {
       goToStep(next);
     }
-  }, [currentStep, effectiveSteps.length, goToStep]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentStep, activeSteps.length, goToStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBack = useCallback(() => {
-    if (currentStep > 0) goToStep(currentStep - 1);
-  }, [currentStep, goToStep]);
+    if (currentStep <= 0) return;
+    // Find previous step with a valid DOM target (skip missing ones)
+    let prev = currentStep - 1;
+    while (prev >= 0) {
+      const step = activeSteps[prev];
+      if (step.modal || document.querySelector(step.targetSelector)) break;
+      prev--;
+    }
+    if (prev >= 0) goToStep(prev);
+  }, [currentStep, activeSteps, goToStep]);
 
   const handleSkip = useCallback(() => {
     skipTour();
@@ -257,9 +279,9 @@ export function DashboardTourProvider({
     });
   }, [completeTour, source, currentStep]);
 
-  if (!mounted || !isActive || currentStep >= effectiveSteps.length) return null;
+  if (!mounted || !isActive || currentStep >= activeSteps.length) return null;
 
-  const step = effectiveSteps[currentStep];
+  const step = activeSteps[currentStep];
   const isModal = step.modal === true;
 
   return (
@@ -274,7 +296,7 @@ export function DashboardTourProvider({
       <TourTooltip
         step={step}
         stepIndex={currentStep}
-        totalSteps={effectiveSteps.length}
+        totalSteps={activeSteps.length}
         targetRect={targetRect}
         onNext={handleNext}
         onBack={handleBack}

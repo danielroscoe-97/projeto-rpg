@@ -1089,6 +1089,8 @@
     "player_waiting_try": "Testar combate de treino",
     "player_done_title": "Tudo pronto!",
     "player_done_subtitle": "Sua conta está criada. Aguardando convite do seu Mestre.",
+    "player_done_xp_earned": "+15 XP — Conta criada!",
+    "player_done_rank": "Aventureiro Novato",
     "player_done_compendium": "Explorar compêndio",
     "player_done_try": "Combate de treino",
     "player_done_dashboard": "Ir para o Dashboard"

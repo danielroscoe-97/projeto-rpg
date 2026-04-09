@@ -322,8 +322,9 @@ export function TourTooltip({
                       {stepIndex > 0 && (
                         <button
                           type="button"
-                          disabled
-                          className="px-3 py-2 text-[13px] text-muted-foreground/30 border border-border/30 rounded-md min-h-[44px] cursor-not-allowed"
+                          onClick={onBack}
+                          data-testid="tour-back"
+                          className="px-3 py-2 text-[13px] text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
                         >
                           {t("back")}
                         </button>

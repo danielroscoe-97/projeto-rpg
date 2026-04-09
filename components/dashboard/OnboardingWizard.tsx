@@ -418,23 +418,90 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   // ── Player Waiting Step ─────────────────────────────────────────
   if (state.step === "player_waiting") {
     return (
-      <div className="w-full max-w-md text-center">
-        <Image
-          src="/art/icons/pet-cat.png"
-          alt=""
-          width={72}
-          height={72}
-          className="pixel-art mx-auto mb-4 opacity-70"
-          aria-hidden="true"
-          unoptimized
-        />
-        <h1 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+      <motion.div
+        className="w-full max-w-md text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        {/* Logo + glow */}
+        <motion.div
+          className="mx-auto mb-6"
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+        >
+          <img
+            src="/art/brand/logo-icon.svg"
+            alt="Pocket DM"
+            width={64}
+            height={64}
+            className="mx-auto glow-pulse drop-shadow-[0_0_20px_rgba(212,168,83,0.4)]"
+          />
+        </motion.div>
+
+        <motion.h1
+          className="text-2xl font-bold text-foreground tracking-tight mb-2 font-[family-name:var(--font-cinzel)]"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
           {t("player_done_title")}
-        </h1>
-        <p className="text-muted-foreground text-sm mb-6">
+        </motion.h1>
+
+        <motion.p
+          className="text-muted-foreground text-sm mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+        >
           {t("player_done_subtitle")}
-        </p>
-        <div className="space-y-3">
+        </motion.p>
+
+        {/* XP reward animation */}
+        <motion.div
+          className="mb-6 rounded-xl border border-gold/15 bg-gold/[0.02] p-4"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7, duration: 0.4 }}
+        >
+          <motion.p
+            className="text-gold text-sm font-semibold mb-2"
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.3 }}
+          >
+            {t("player_done_xp_earned")}
+          </motion.p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-base leading-none">🗡️</span>
+            <span className="text-xs text-foreground/50">{t("player_done_rank")}</span>
+          </div>
+          {/* XP bar */}
+          <div className="relative h-5 rounded-full bg-white/[0.06] border border-white/[0.08] overflow-hidden">
+            <motion.div
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gold-dark via-gold to-gold-light"
+              initial={{ width: 0 }}
+              animate={{ width: "20%" }}
+              transition={{ delay: 1.0, duration: 1.2, ease: "easeOut" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent opacity-60 animate-[shimmer-sweep_2.5s_ease-in-out_infinite]" />
+            </motion.div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-[11px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] tabular-nums">
+                15 / 75 XP
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA buttons */}
+        <motion.div
+          className="space-y-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.4 }}
+        >
           <Button variant="gold" className="w-full" asChild>
             <Link href="/app/dashboard">{t("player_done_dashboard")}</Link>
           </Button>
@@ -446,8 +513,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               <Link href="/try">{t("player_done_try")}</Link>
             </Button>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     );
   }
 
