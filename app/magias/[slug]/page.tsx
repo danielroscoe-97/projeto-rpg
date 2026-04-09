@@ -55,9 +55,8 @@ export async function generateMetadata({
       description,
       type: "article",
       url: `https://pocketdm.com.br/magias/${slug}`,
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }],
     },
-    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description, images: ["/opengraph-image"] },
+    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
     alternates: {
       canonical: `https://pocketdm.com.br/magias/${slug}`,
       languages: {
@@ -76,8 +75,14 @@ function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<ty
     name: `${ptName} — Magia D&D 5e`,
     headline: `${ptName} — Magia D&D 5e`,
     description: `${ptName}. ${spell.description.slice(0, 200)}`,
+    image: `https://pocketdm.com.br/magias/${slug}/opengraph-image`,
     author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: {
+      "@type": "Organization",
+      name: "Pocket DM",
+      url: "https://pocketdm.com.br",
+      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
+    },
     inLanguage: "pt-BR",
   };
 

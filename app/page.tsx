@@ -1432,13 +1432,31 @@ export default async function LandingPage() {
     authFailed = true;
   }
 
+  const jsonLdWebSite = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Pocket DM",
+    alternateName: "Pocket DM — Combat Tracker D&D 5e",
+    url: "https://pocketdm.com.br",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://pocketdm.com.br/monsters?q={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   const jsonLdOrganization = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Pocket DM",
     url: "https://pocketdm.com.br",
-    logo: "https://pocketdm.com.br/icons/icon-512x512.png",
-    sameAs: [],
+    logo: "https://pocketdm.com.br/icons/icon-512.png",
+    sameAs: [
+      "https://www.instagram.com/pocket.dm",
+    ],
     description:
       "Rastreador de combate e ferramentas para mestres de D&D 5e. Combat tracker gratuito para RPG presencial.",
   };
@@ -1516,6 +1534,10 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}

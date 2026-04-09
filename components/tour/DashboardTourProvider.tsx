@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDashboardTourStore } from "@/lib/stores/dashboard-tour-store";
 import { createClient } from "@/lib/supabase/client";
 import { trackEvent } from "@/lib/analytics/track";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 import { TourOverlay } from "./TourOverlay";
 import { TourTooltip } from "./TourTooltip";
 import { DASHBOARD_TOUR_STEPS } from "./dashboard-tour-steps";
@@ -150,6 +151,9 @@ export function DashboardTourProvider({
         .from("user_onboarding")
         .update({ dashboard_tour_completed: true })
         .eq("user_id", user.id);
+
+      // XP: Tour completed (use actual role)
+      requestXpGrant("tour_completed", hasDmAccess ? "dm" : "player");
     } catch {
       // best-effort
     }
@@ -244,6 +248,15 @@ export function DashboardTourProvider({
     });
   }, [completeTour, source, currentStep]);
 
+  const handleDismiss = useCallback(() => {
+    completeTour();
+    persistTourCompleted(false);
+    trackEvent("onboarding:tour_dismissed", {
+      source: source ?? "unknown",
+      steps_viewed: currentStep + 1,
+    });
+  }, [completeTour, source, currentStep]);
+
   if (!mounted || !isActive || currentStep >= effectiveSteps.length) return null;
 
   const step = effectiveSteps[currentStep];
@@ -267,8 +280,9 @@ export function DashboardTourProvider({
         onBack={handleBack}
         onSkip={handleSkip}
         onComplete={handleComplete}
+        onDismiss={handleDismiss}
         translationNamespace="dashboard_tour"
-        secondaryCTA={{ labelKey: "dashboard_tour.create_campaign", href: "/app/campaigns/new" }}
+        secondaryCTA={{ labelKey: "dashboard_tour.create_campaign", href: "/app/dashboard/campaigns" }}
       />
     </>
   );

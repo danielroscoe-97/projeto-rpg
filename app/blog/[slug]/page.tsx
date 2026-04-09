@@ -144,9 +144,10 @@ export default async function BlogPostPage({
       name: "Pocket DM",
       logo: {
         "@type": "ImageObject",
-        url: `${BASE_URL}/icons/icon-512x512.png`,
+        url: `${BASE_URL}/icons/icon-512.png`,
       },
     },
+    image: `${BASE_URL}/blog/${post.slug}/opengraph-image`,
     mainEntityOfPage: `${BASE_URL}/blog/${post.slug}`,
     inLanguage: slug.endsWith("-en") ? "en-US" : "pt-BR",
   };

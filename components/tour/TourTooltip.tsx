@@ -16,6 +16,8 @@ interface TourTooltipProps {
   onBack: () => void;
   onSkip: () => void;
   onComplete: () => void;
+  /** Dismiss-only handler for "Entendido!" — closes tour without redirect */
+  onDismiss?: () => void;
   /** Brief shake animation when an action is blocked */
   shake?: boolean;
   /** Translation namespace — defaults to "tour" */
@@ -32,7 +34,7 @@ function computePosition(
 ): { position: Position; style: React.CSSProperties } {
   const padding = 12;
   const isMobile = window.innerWidth < 768;
-  const tooltipWidth = isMobile ? window.innerWidth - 24 : Math.min(380, window.innerWidth - 32);
+  const tooltipWidth = isMobile ? window.innerWidth - 24 : Math.min(420, window.innerWidth - 32);
   const safeMargin = 16;
 
   // Bottom-sheet fallback: only when target is too tall (>50% viewport).
@@ -167,6 +169,7 @@ export function TourTooltip({
   shake,
   translationNamespace = "tour",
   secondaryCTA,
+  onDismiss,
 }: TourTooltipProps) {
   const t = useTranslations(translationNamespace);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -289,6 +292,7 @@ export function TourTooltip({
                 {secondaryCTA !== false && (
                   <Link
                     href={secondaryCTA?.href ?? "/auth/sign-up"}
+                    onClick={() => (onDismiss ?? onComplete)()}
                     className="block w-full text-center px-4 py-2.5 border border-gold/40 text-gold text-[15px] font-semibold rounded-md hover:bg-gold/10 transition-all duration-200 min-h-[44px]"
                   >
                     {t(secondaryCTA?.labelKey ? stripNs(secondaryCTA.labelKey) : "create_account")}
@@ -326,7 +330,7 @@ export function TourTooltip({
                       )}
                       <button
                         type="button"
-                        onClick={onComplete}
+                        onClick={onDismiss ?? onComplete}
                         data-testid="tour-finish"
                         className="text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
                       >
@@ -391,7 +395,7 @@ export function TourTooltip({
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
         data-testid="tour-tooltip"
-        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-4 overflow-y-auto"
+        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-5 overflow-y-auto"
         style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={shake ? { opacity: 1, x: [0, -6, 6, -4, 4, 0], y: 0 } : { opacity: 1, x: 0, y: 0 }}

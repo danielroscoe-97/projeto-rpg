@@ -45,13 +45,11 @@ export async function generateMetadata({
       description,
       type: "article",
       url: `https://pocketdm.com.br/monsters/${slug}`,
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} | Pocket DM`,
       description,
-      images: ["/opengraph-image"],
     },
     alternates: {
       canonical: `https://pocketdm.com.br/monsters/${slug}`,
@@ -71,11 +69,13 @@ function MonsterJsonLd({ monster, slug }: { monster: NonNullable<ReturnType<type
     name: `${monster.name} — D&D 5e Stat Block`,
     headline: `${monster.name} — D&D 5e Stat Block`,
     description: `${monster.name}, ${monster.size} ${monster.type}, CR ${monster.cr}. AC ${monster.armor_class}, HP ${monster.hit_points}.`,
+    image: `https://pocketdm.com.br/monsters/${slug}/opengraph-image`,
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
       url: "https://pocketdm.com.br",
+      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
     },
   };
 

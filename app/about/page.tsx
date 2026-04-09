@@ -19,7 +19,7 @@ export default function AboutPage() {
     "@type": "Organization",
     name: "Pocket DM",
     url: "https://pocketdm.com.br",
-    logo: "https://pocketdm.com.br/icons/icon-512x512.png",
+    logo: "https://pocketdm.com.br/icons/icon-512.png",
     foundingDate: "2026",
     description:
       "Pocket DM é o combat tracker gratuito para D&D 5e focado em mesas presenciais. Criado no Brasil para mestres e jogadores de RPG de todo o mundo.",
@@ -31,7 +31,9 @@ export default function AboutPage() {
       "D&D 5e Monsters",
       "D&D 5e Spells",
     ],
-    sameAs: [],
+    sameAs: [
+      "https://www.instagram.com/pocket.dm",
+    ],
   };
 
   const jsonLdWebPage = {

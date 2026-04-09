@@ -1,31 +1,35 @@
 import { ImageResponse } from "next/og";
-import { BLOG_POSTS, getPostBySlug } from "@/lib/blog/posts";
+import {
+  getSrdSpellStaticParams,
+  getSpellBySlug,
+} from "@/lib/srd/srd-data-server";
 
-// Note: no "edge" runtime — incompatible with generateStaticParams in Next.js 16
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({ slug: post.slug }));
+  return getSrdSpellStaticParams();
 }
 
-export function generateImageMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  return [{ id: "og", alt: `${params.slug} | Pocket DM Blog` }];
-}
-
-export default async function BlogOgImage({
+export default async function SpellOgImage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
-  const title = post?.title ?? "Blog | Pocket DM";
-  const readingTime = post?.readingTime ?? "";
+  const spell = getSpellBySlug(slug);
+  const name = spell?.name ?? "Spell";
+  const levelStr = spell
+    ? spell.level === 0
+      ? "Cantrip"
+      : `Level ${spell.level}`
+    : "";
+  const school = spell?.school ?? "";
+  const castingTime = spell?.casting_time ?? "";
+  const range = spell?.range ?? "";
+  const duration = spell?.duration ?? "";
+
+  const pills = [levelStr, school, castingTime, range, duration].filter(Boolean);
 
   return new ImageResponse(
     (
@@ -55,7 +59,7 @@ export default async function BlogOgImage({
             height: 400,
             borderRadius: "50%",
             background:
-              "radial-gradient(ellipse, rgba(212,168,83,0.1) 0%, transparent 70%)",
+              "radial-gradient(ellipse, rgba(120,80,220,0.12) 0%, transparent 70%)",
           }}
         />
 
@@ -70,13 +74,7 @@ export default async function BlogOgImage({
         />
 
         {/* Top: brand + category */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div
             style={{
               fontSize: 28,
@@ -103,50 +101,48 @@ export default async function BlogOgImage({
               textTransform: "uppercase" as const,
             }}
           >
-            Blog
+            Spell Compendium
           </div>
-          {readingTime && (
-            <>
-              <div
-                style={{
-                  width: 2,
-                  height: 20,
-                  background: "rgba(212,168,83,0.3)",
-                  borderRadius: 1,
-                }}
-              />
-              <div
-                style={{
-                  fontSize: 16,
-                  color: "#6b6860",
-                }}
-              >
-                {readingTime} de leitura
-              </div>
-            </>
-          )}
         </div>
 
-        {/* Center: title */}
+        {/* Center: spell name */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             flex: 1,
-            paddingRight: 80,
+            gap: 20,
           }}
         >
           <div
             style={{
-              fontSize: title.length > 50 ? 42 : 52,
+              fontSize: name.length > 30 ? 48 : 60,
               fontWeight: 700,
               color: "#D4A853",
-              lineHeight: 1.2,
+              lineHeight: 1.15,
               textShadow: "0 0 60px rgba(212,168,83,0.2)",
             }}
           >
-            {title}
+            {name}
+          </div>
+          {/* Stat pills */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {pills.map((label) => (
+              <div
+                key={label}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: 6,
+                  border: "1px solid rgba(212,168,83,0.2)",
+                  background: "rgba(212,168,83,0.05)",
+                  fontSize: 15,
+                  color: "#a89860",
+                }}
+              >
+                {label}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -165,7 +161,7 @@ export default async function BlogOgImage({
               letterSpacing: 1.5,
             }}
           >
-            pocketdm.com.br/blog
+            pocketdm.com.br/spells
           </div>
           <div
             style={{
@@ -177,7 +173,7 @@ export default async function BlogOgImage({
               color: "#c4b890",
             }}
           >
-            D&D 5e &bull; Combat Tracker
+            D&D 5e &bull; SRD Spells
           </div>
         </div>
       </div>

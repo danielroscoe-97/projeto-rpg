@@ -55,7 +55,7 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     titleKey: "dashboard_tour.campaigns_title",
     descriptionKey: "dashboard_tour.campaigns_desc",
     type: "info",
-    position: "right",
+    position: "top",
     phase: "setup",
     audience: "all",
   },
