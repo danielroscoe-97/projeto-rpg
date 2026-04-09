@@ -37,6 +37,19 @@ export default async function OnboardingPage() {
       .maybeSingle(),
   ]);
 
+  // Safety: ensure users row exists for legacy accounts created before the trigger
+  if (!userData) {
+    await supabase.from("users").upsert(
+      {
+        id: user.id,
+        email: user.email ?? "",
+        display_name: user.user_metadata?.display_name ?? user.email?.split("@")[0] ?? "User",
+        is_admin: false,
+      },
+      { onConflict: "id" }
+    );
+  }
+
   const source: OnboardingSource = (onboardingData?.source as OnboardingSource) ?? "fresh";
   const savedStep = onboardingData?.wizard_step ?? null;
   const userRole = (userData?.role as string | null) ?? null;

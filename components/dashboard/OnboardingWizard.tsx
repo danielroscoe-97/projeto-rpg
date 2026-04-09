@@ -287,13 +287,12 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     try {
       const supabase = createClient();
 
-      // P2: Check error on role write — don't advance if it fails or RLS silently blocks
-      const { data: roleData, error: roleErr } = await supabase
+      // P2: Check error on role write — server-side ensures users row exists (see onboarding/page.tsx)
+      const { error: roleErr } = await supabase
         .from("users")
         .update({ role: selectedRole })
-        .eq("id", userId)
-        .select("id");
-      if (roleErr || !roleData?.length) {
+        .eq("id", userId);
+      if (roleErr) {
         captureError(roleErr, { component: "OnboardingWizard", action: "saveRole", category: "database" });
         toast.error(t("role_save_error"));
         return;
