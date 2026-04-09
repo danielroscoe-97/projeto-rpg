@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
 import { getFireStepColor } from "@/lib/design/rpg-tokens";
 import { StepMockup } from "@/components/marketing/HowItWorksMockups";
+import { CompendiumMockup } from "@/components/marketing/CompendiumMockups";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
 function ArrowRight({ className }: { className?: string }) {
@@ -416,28 +417,26 @@ function FeaturesSection() {
 
 // ── Compendium Showcase ─────────────────────────────────────────────────────
 function CompendiumShowcaseSection() {
-  const cards = [
+  const cards: { title: string; count: number; suffix: string; description: string; href: string; mockup: "monsters" | "spells" | "classes" | "races"; borderHover: string; gradient: string }[] = [
     {
       title: "Monstros",
       count: 1100,
       suffix: "+",
       description: "Stat blocks prontos para combate — SRD 5.1, SRD 2024 e Monster-a-Day",
-      href: "/monsters",
-      gradient: "from-red-500/20 via-orange-500/10 to-transparent",
-      iconBg: "bg-red-500/10",
-      icon: "🐉",
+      href: "/monstros",
+      mockup: "monsters",
       borderHover: "hover:border-red-500/30",
+      gradient: "from-red-500/20 via-orange-500/10 to-transparent",
     },
     {
       title: "Magias",
       count: 600,
       suffix: "+",
       description: "Todas as magias SRD com filtros por nível, escola e classe",
-      href: "/spells",
-      gradient: "from-purple-500/20 via-violet-500/10 to-transparent",
-      iconBg: "bg-purple-500/10",
-      icon: "✨",
+      href: "/magias",
+      mockup: "spells",
       borderHover: "hover:border-purple-500/30",
+      gradient: "from-purple-500/20 via-violet-500/10 to-transparent",
     },
     {
       title: "Classes",
@@ -445,26 +444,24 @@ function CompendiumShowcaseSection() {
       suffix: "",
       description: "Hit dice, habilidades, subclasses e proficiências de cada classe SRD",
       href: "/classes",
-      gradient: "from-amber-500/20 via-gold/10 to-transparent",
-      iconBg: "bg-amber-500/10",
-      icon: "⚔️",
+      mockup: "classes",
       borderHover: "hover:border-gold/30",
+      gradient: "from-amber-500/20 via-gold/10 to-transparent",
     },
     {
       title: "Raças",
       count: 9,
       suffix: "",
       description: "Traços raciais, bônus de atributo e habilidades especiais",
-      href: "/races",
-      gradient: "from-emerald-500/20 via-green-500/10 to-transparent",
-      iconBg: "bg-emerald-500/10",
-      icon: "🛡️",
+      href: "/racas",
+      mockup: "races",
       borderHover: "hover:border-emerald-500/30",
+      gradient: "from-emerald-500/20 via-green-500/10 to-transparent",
     },
   ];
 
   return (
-    <section data-section="compendium-showcase" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden">
+    <section data-section="compendium-showcase" id="compendio" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/[0.03] rounded-full blur-[120px]" />
@@ -484,41 +481,42 @@ function CompendiumShowcaseSection() {
           </p>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+        {/* Cards grid — 2 cols mobile, 4 cols desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
           {cards.map((card, i) => (
             <Link
               key={card.href}
               href={card.href}
-              className={`group relative border border-border rounded-xl p-5 md:p-6 transition-all duration-300 ${card.borderHover} hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] animate-fade-in-up overflow-hidden`}
+              className={`group relative border border-border rounded-xl transition-all duration-300 ${card.borderHover} hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] animate-fade-in-up overflow-hidden`}
               style={{ animationDelay: `${i * 0.1}s` }}
             >
               {/* Card gradient bg on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
               <div className="relative">
-                {/* Icon */}
-                <div className={`${card.iconBg} rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl mb-3`}>
-                  {card.icon}
-                </div>
+                {/* Mockup illustration */}
+                <CompendiumMockup type={card.mockup} />
 
-                {/* Counter */}
-                <div className="font-display text-2xl md:text-3xl text-foreground mb-1">
-                  <AnimatedCounter target={card.count} suffix={card.suffix} duration={1800} />
-                </div>
+                {/* Text overlay below mockup */}
+                <div className="px-4 pb-4 pt-3">
+                  {/* Counter + Title */}
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="font-display text-xl md:text-2xl text-foreground">
+                      <AnimatedCounter target={card.count} suffix={card.suffix} duration={1800} />
+                    </span>
+                    <h3 className="font-display text-gold text-sm">{card.title}</h3>
+                  </div>
 
-                {/* Title */}
-                <h3 className="font-display text-gold text-sm md:text-base mb-1.5">{card.title}</h3>
+                  {/* Description */}
+                  <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-2">
+                    {card.description}
+                  </p>
 
-                {/* Description */}
-                <p className="text-muted-foreground text-[11px] md:text-xs leading-relaxed line-clamp-2">
-                  {card.description}
-                </p>
-
-                {/* Arrow CTA */}
-                <div className="mt-3 flex items-center gap-1 text-gold/60 group-hover:text-gold text-xs transition-colors">
-                  <span>Explorar</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  {/* Arrow CTA */}
+                  <div className="mt-2 flex items-center gap-1 text-gold/60 group-hover:text-gold text-xs transition-colors">
+                    <span>Explorar</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </div>
             </Link>
@@ -1334,6 +1332,7 @@ export default async function LandingPage() {
           { href: "#features", label: "Features" },
           { href: "#como-funciona", label: "Como Funciona" },
           { href: "#comparativo", label: "Comparativo" },
+          { href: "#compendio", label: "Compêndio" },
           { href: "#alem-do-combate", label: "Metodologia" },
           { href: "#precos", label: "Preços" },
         ]}
@@ -1365,11 +1364,11 @@ export default async function LandingPage() {
       <SectionDivider />
       <FeaturesSection />
       <SectionDivider />
-      <CompendiumShowcaseSection />
-      <SectionDivider />
       <HowItWorksSection isLoggedIn={isLoggedIn} />
       <SectionDivider />
       <ComparisonSection />
+      <SectionDivider />
+      <CompendiumShowcaseSection />
       <SocialProofSection />
       <SectionDivider />
       <BeyondCombatSection />

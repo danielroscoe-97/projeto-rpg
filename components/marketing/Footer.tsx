@@ -83,13 +83,13 @@ export async function Footer() {
                 {t("footer_compendium")}
               </span>
               <Link
-                href="/monsters"
+                href="/monstros"
                 className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
               >
                 {t("footer_monsters")}
               </Link>
               <Link
-                href="/spells"
+                href="/magias"
                 className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
               >
                 {t("footer_spells")}
@@ -101,7 +101,7 @@ export async function Footer() {
                 {t("footer_classes")}
               </Link>
               <Link
-                href="/races"
+                href="/racas"
                 className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
               >
                 {t("footer_races")}
