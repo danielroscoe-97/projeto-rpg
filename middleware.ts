@@ -3,16 +3,6 @@ import { updateSession } from "@/lib/supabase/proxy";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  // ── www → non-www redirect (SEO canonical) ────────────────────────
-  // Skip API routes (webhooks, sendBeacon, etc.) to avoid POST→GET downgrade
-  const { pathname } = request.nextUrl;
-  const host = request.headers.get("host") || "";
-  if (host.startsWith("www.") && !pathname.startsWith("/api/")) {
-    const newUrl = new URL(request.url);
-    newUrl.host = host.replace(/^www\./, "");
-    return NextResponse.redirect(newUrl, 308);
-  }
-
   // Run Supabase session refresh + auth guards first
   const response = await updateSession(request);
 
