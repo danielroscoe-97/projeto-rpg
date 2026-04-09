@@ -622,7 +622,7 @@ function CompendiumShowcaseSection() {
   ];
 
   return (
-    <section data-section="compendium-showcase" id="compendio" className="py-14 md:py-28 px-4 md:px-6 relative overflow-hidden">
+    <section data-section="compendium-showcase" id="compendio" className="py-14 md:py-28 px-4 md:px-6 relative overflow-x-clip overflow-y-visible md:overflow-visible">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/[0.03] rounded-full blur-[120px]" />
