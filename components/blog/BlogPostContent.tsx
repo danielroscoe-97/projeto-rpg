@@ -1,5 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
+import {
+  type FeatureKey,
+  resolveFeatureHref,
+  CATEGORY_CTA,
+} from "@/lib/blog/feature-links";
 
 /* ─── Shared styling helpers ───────────────────────────────────── */
 function Img({ src, alt }: { src: string; alt: string }) {
@@ -41,10 +46,23 @@ function IntLink({ slug, children }: { slug: string; children: React.ReactNode }
     </Link>
   );
 }
-function ProdLink({ href, children }: { href: string; children: React.ReactNode }) {
+function ProdLink({
+  href,
+  feature,
+  lang,
+  children,
+}: {
+  href?: string;
+  feature?: FeatureKey;
+  lang?: "pt" | "en";
+  children: React.ReactNode;
+}) {
+  const resolved = feature
+    ? resolveFeatureHref(feature, lang ?? "pt")
+    : href ?? "/try";
   return (
     <Link
-      href={href}
+      href={resolved}
       className="text-gold/90 underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors"
     >
       {children}
@@ -81,7 +99,15 @@ function Li({ children }: { children: React.ReactNode }) {
 function Ul({ children }: { children: React.ReactNode }) {
   return <ul className="space-y-3 mb-5 ml-1 pl-1">{children}</ul>;
 }
-function Tip({ children }: { children: React.ReactNode }) {
+function Tip({
+  children,
+  linkHref,
+  linkText,
+}: {
+  children: React.ReactNode;
+  linkHref?: string;
+  linkText?: string;
+}) {
   return (
     <div className="rounded-xl border border-gold/25 bg-gold/[0.05] p-5 my-8 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
@@ -89,21 +115,43 @@ function Tip({ children }: { children: React.ReactNode }) {
         <strong className="text-gold font-display text-xs uppercase tracking-wider">Dica do Mestre</strong>
         <br />
         <span className="mt-1 block">{children}</span>
+        {linkHref && linkText && (
+          <Link
+            href={linkHref}
+            className="mt-2 inline-flex items-center gap-1 text-gold/80 text-xs hover:text-gold transition-colors"
+          >
+            {linkText} <span aria-hidden="true">&rarr;</span>
+          </Link>
+        )}
       </p>
     </div>
   );
 }
-function CTA() {
+function CTA({
+  message,
+  buttonText,
+  href,
+  category,
+  lang = "pt",
+}: {
+  message?: string;
+  buttonText?: string;
+  href?: string;
+  category?: string;
+  lang?: "pt" | "en";
+} = {}) {
+  const preset = category ? CATEGORY_CTA[category]?.[lang] : undefined;
+  const msg = message ?? preset?.msg ?? "Quer testar um combat tracker gratuito agora?";
+  const btn = buttonText ?? preset?.btn ?? "Experimentar o Pocket DM \u2192";
+  const dest = href ?? preset?.href ?? "/try";
   return (
     <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-5 my-8 text-center">
-      <p className="text-sm text-foreground/70 mb-3">
-        Quer testar um combat tracker gratuito agora?
-      </p>
+      <p className="text-sm text-foreground/70 mb-3">{msg}</p>
       <Link
-        href="/try"
+        href={dest}
         className="inline-flex items-center gap-1 bg-gold text-surface-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:shadow-gold-glow transition-all duration-200"
       >
-        Experimentar o Pocket DM →
+        {btn}
       </Link>
     </div>
   );
@@ -234,7 +282,7 @@ export function BlogPost1() {
         <ProdLink href="/try">Pocket DM</ProdLink>? Não tem argumento contra.
       </P>
 
-      <CTA />
+      <CTA category="tutorial" />
 
       <H2>Então vale a pena?</H2>
       <P>
@@ -333,7 +381,7 @@ export function BlogPost2() {
         espalhados pela mesa inteira.
       </P>
 
-      <Tip>
+      <Tip linkHref="/try" linkText="Experimentar grátis">
         O Pocket DM integra todas essas 5 ferramentas em uma única interface
         gratuita. Bestiário, magias, música, dados e combat tracker — tudo no
         mesmo lugar.
@@ -359,7 +407,7 @@ export function BlogPost2() {
         </Li>
       </Ul>
 
-      <CTA />
+      <CTA category="lista" />
 
       <H2>Menos é mais (de verdade)</H2>
       <P>
@@ -500,7 +548,7 @@ export function BlogPost3() {
         diferentes.
       </Tip>
 
-      <CTA />
+      <CTA category="comparativo" />
 
       <H2>Resumindo</H2>
       <P>
@@ -659,7 +707,7 @@ export function BlogPost4() {
         do combate.
       </P>
 
-      <CTA />
+      <CTA category="guia" />
     </>
   );
 }
@@ -764,13 +812,13 @@ export function BlogPost5() {
         Resolve com um teste de habilidade e segue a história.
       </P>
 
-      <Tip>
+      <Tip linkHref="/try" linkText="Testar o Pocket DM">
         O Pocket DM combina as dicas 3, 4 e 6 automaticamente: combat tracker
         digital, iniciativa visual para todos e jogadores acompanhando no
         celular. Três otimizações de uma vez.
       </Tip>
 
-      <CTA />
+      <CTA category="tutorial" />
 
       <H2>A diferença entre rápido e superficial</H2>
       <P>
@@ -965,14 +1013,12 @@ export function BlogPost6() {
         </Li>
         <Li>
           <strong>Explore o bestiário fora do combate</strong> — em{" "}
-          <Link href="/monsters" className="text-gold/80 underline underline-offset-2 decoration-gold/30 hover:text-gold transition-colors">
-            pocketdm.com.br/monsters
-          </Link>{" "}
+          <ProdLink href="/monstros">pocketdm.com.br/monstros</ProdLink>{" "}
           você pode navegar todos os monstros SRD com stat blocks completos.
         </Li>
       </Ul>
 
-      <CTA />
+      <CTA category="tutorial" />
 
       <H2>Agora é com você</H2>
       <P>
@@ -1049,10 +1095,10 @@ export function BlogPost7() {
       <P>
         Escolha os monstros que fazem sentido para a história e some o XP
         base de cada um. Use o{" "}
-        <a href="/monsters">bestiário do Pocket DM</a>{" "}
+        <ProdLink href="/monstros">bestiário do Pocket DM</ProdLink>{" "}
         para encontrar monstros por CR, tipo e ambiente. Você também pode
         consultar nosso{" "}
-        <a href="/monstros">compêndio de monstros</a>{" "}
+        <ProdLink href="/monstros">compêndio de monstros</ProdLink>{" "}
         para ver detalhes completos de cada criatura.
       </P>
 
@@ -1079,7 +1125,7 @@ export function BlogPost7() {
 
       <Tip>
         Use a{" "}
-        <a href="/calculadora-encontro">Calculadora de Encontros do Pocket DM</a>{" "}
+        <ProdLink href="/calculadora-encontro">Calculadora de Encontros do Pocket DM</ProdLink>{" "}
         para automatizar esses cálculos. Adicione os monstros, informe o nível
         do grupo, e a ferramenta faz o cálculo do XP ajustado e indica a faixa
         de dificuldade instantaneamente.
@@ -1366,7 +1412,7 @@ export function BlogPost7() {
 
       <P>
         Um{" "}
-        <a href="/calculadora-encontro">calculador de encontros</a>{" "}
+        <ProdLink href="/calculadora-encontro">calculador de encontros</ProdLink>{" "}
         ajuda no preparo, mas na mesa, sua intuição como mestre é a
         ferramenta mais valiosa. Preste atenção nos rostos dos jogadores:
         tensão é bom, desespero silencioso não.
@@ -1384,7 +1430,7 @@ export function BlogPost7() {
         </Li>
         <Li>
           <strong>2. Escolha os monstros pela história:</strong> use o{" "}
-          <a href="/monsters">bestiário</a>{" "}
+          <ProdLink href="/monstros">bestiário</ProdLink>{" "}
           para encontrar criaturas que façam sentido no cenário. Depois
           verifique se os números funcionam.
         </Li>
@@ -1392,7 +1438,7 @@ export function BlogPost7() {
           <strong>3. Calcule a dificuldade:</strong> use o método do XP
           Budget ou o Lazy Encounter Benchmark para verificar se o encontro
           está na faixa desejada. A{" "}
-          <a href="/calculadora-encontro">Calculadora de Encontros</a>{" "}
+          <ProdLink href="/calculadora-encontro">Calculadora de Encontros</ProdLink>{" "}
           faz isso em segundos.
         </Li>
         <Li>
@@ -1474,7 +1520,7 @@ export function BlogPost7() {
         <IntLink slug="melhores-monstros-dnd-5e">10 monstros essenciais para mestres</IntLink>.
       </P>
 
-      <CTA />
+      <CTA category="tutorial" />
     </>
   );
 }
@@ -1758,9 +1804,7 @@ export function BlogPost8() {
 
       <Tip>
         Use o{" "}
-        <Link href="/try" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          Pocket DM
-        </Link>{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>{" "}
         para rastrear HP em tempo real e fazer esses ajustes sem que os jogadores
         percebam. É muito mais fácil ajustar HP digitalmente do que riscar e
         reescrever no papel.
@@ -1833,17 +1877,11 @@ export function BlogPost8() {
       </P>
       <P>
         Para montar encontros na prática, use a{" "}
-        <Link href="/calculadora-encontro" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          Calculadora de Encontros
-        </Link>{" "}
+        <ProdLink href="/calculadora-encontro">Calculadora de Encontros</ProdLink>{" "}
         do Pocket DM, explore o{" "}
-        <Link href="/monstros" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          Compêndio de Monstros
-        </Link>{" "}
+        <ProdLink href="/monstros">Compêndio de Monstros</ProdLink>{" "}
         gratuito com fichas SRD completas, ou{" "}
-        <Link href="/try" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          teste o combat tracker
-        </Link>{" "}
+        <ProdLink href="/try">teste o combat tracker</ProdLink>{" "}
         direto no navegador. E se quiser aprofundar, leia nosso guia sobre{" "}
         <IntLink slug="como-montar-encontro-balanceado-dnd-5e">
           como montar encontros balanceados
@@ -1854,7 +1892,7 @@ export function BlogPost8() {
         </IntLink>.
       </P>
 
-      <CTA />
+      <CTA category="guia" />
     </>
   );
 }
@@ -1912,7 +1950,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/goblin">Goblin no Compêndio</a>.
+        <ProdLink href="/monstros/goblin">Goblin no Compêndio</ProdLink>.
       </P>
 
       {/* ── 2. DIRE WOLF ──────────────────────────────────────────── */}
@@ -1942,7 +1980,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/lobo-terrivel">Dire Wolf no Compêndio</a>.
+        <ProdLink href="/monstros/lobo-terrivel">Dire Wolf no Compêndio</ProdLink>.
       </P>
 
       {/* ── 3. OWLBEAR ────────────────────────────────────────────── */}
@@ -1974,7 +2012,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/urso-coruja">Owlbear no Compêndio</a>.
+        <ProdLink href="/monstros/urso-coruja">Owlbear no Compêndio</ProdLink>.
       </P>
 
       {/* ── 4. MIMIC ──────────────────────────────────────────────── */}
@@ -2004,7 +2042,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/mimico">Mimic no Compêndio</a>.
+        <ProdLink href="/monstros/mimico">Mimic no Compêndio</ProdLink>.
       </P>
 
       {/* ── 5. BASILISK ───────────────────────────────────────────── */}
@@ -2034,7 +2072,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/basilisco">Basilisk no Compêndio</a>.
+        <ProdLink href="/monstros/basilisco">Basilisk no Compêndio</ProdLink>.
       </P>
 
       {/* ── 6. MANTICORE ──────────────────────────────────────────── */}
@@ -2063,7 +2101,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/manticora">Manticore no Compêndio</a>.
+        <ProdLink href="/monstros/manticora">Manticore no Compêndio</ProdLink>.
       </P>
 
       {/* ── 7. YOUNG GREEN DRAGON ─────────────────────────────────── */}
@@ -2094,7 +2132,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/dragao-verde-jovem">Young Green Dragon no Compêndio</a>.
+        <ProdLink href="/monstros/dragao-verde-jovem">Young Green Dragon no Compêndio</ProdLink>.
       </P>
 
       {/* ── 8. MIND FLAYER ────────────────────────────────────────── */}
@@ -2184,7 +2222,7 @@ export function BlogPost9() {
       </Tip>
       <P>
         Veja a ficha completa:{" "}
-        <a href="/monstros/lich">Lich no Compêndio</a>.
+        <ProdLink href="/monstros/lich">Lich no Compêndio</ProdLink>.
       </P>
 
       {/* ── CONCLUSÃO & DICAS GERAIS ──────────────────────────────── */}
@@ -2220,7 +2258,7 @@ export function BlogPost9() {
         tabelas.
       </P>
 
-      <CTA />
+      <CTA category="lista" />
 
       <H2>Referências e Leitura Adicional</H2>
       <Ul>
@@ -2249,7 +2287,7 @@ export function BlogPost9() {
         melhores no seu arsenal.
       </P>
 
-      <CTA />
+      <CTA category="lista" />
     </>
   );
 }
@@ -2304,7 +2342,7 @@ export function BlogPost10() {
         <Li>
           <strong>Gerenciar o combate</strong> — controlar iniciativa, HP dos monstros,
           condições e turnos. Esta é a parte mais mecânica e onde ferramentas como
-          o <a href="/try">Pocket DM</a> fazem a maior diferença.
+          o <ProdLink href="/try">Pocket DM</ProdLink> fazem a maior diferença.
         </Li>
         <Li>
           <strong>Garantir que todo mundo se divirta</strong> — inclusive você. Se
@@ -2393,9 +2431,9 @@ export function BlogPost10() {
       <P>
         Escolha 2-3 combates possíveis e tenha os stats dos monstros à mão. Você
         não precisa decorar — basta ter acesso rápido. Um{" "}
-        <a href="/monstros">bestiário digital</a> resolve isso: busque o monstro
+        <ProdLink href="/monstros">bestiário digital</ProdLink> resolve isso: busque o monstro
         por nome, veja HP, CA e ataques. A{" "}
-        <a href="/calculadora-encontro">calculadora de encontros</a> ajuda a
+        <ProdLink href="/calculadora-encontro">calculadora de encontros</ProdLink> ajuda a
         balancear a dificuldade para o nível do grupo.
       </P>
 
@@ -2447,7 +2485,7 @@ export function BlogPost10() {
       <P>
         Peça para cada jogador rolar iniciativa (d20 + modificador de Destreza)
         e anote os resultados. Ordene do maior para o menor. Num{" "}
-        <a href="/try">combat tracker como o Pocket DM</a>, você adiciona os
+        <ProdLink href="/try">combat tracker como o Pocket DM</ProdLink>, você adiciona os
         personagens e monstros, rola iniciativa com um clique e a ordem se
         organiza automaticamente.
       </P>
@@ -2463,7 +2501,7 @@ export function BlogPost10() {
       <H3>Passo 3: Rastreie HP e condições</H3>
       <P>
         Acompanhe os pontos de vida dos monstros e as{" "}
-        <a href="/condicoes">condições ativas</a> (envenenado, atordoado, caído).
+        <ProdLink href="/condicoes">condições ativas</ProdLink> (envenenado, atordoado, caído).
         Esquecer uma condição é um dos erros mais comuns e pode mudar o resultado
         de um combate inteiro. Usar uma ferramenta digital para isso elimina o
         problema — o tracker mostra visualmente quem está com qual condição.
@@ -2561,7 +2599,7 @@ export function BlogPost10() {
       <P>
         Um combate muito fácil é entediante; muito difícil pode matar o grupo
         sem chance. Use a{" "}
-        <a href="/calculadora-encontro">calculadora de encontros</a> para ter
+        <ProdLink href="/calculadora-encontro">calculadora de encontros</ProdLink> para ter
         uma ideia da dificuldade antes da sessão. E lembre-se: você pode ajustar
         HP dos monstros durante o combate se perceber que errou a mão.
       </P>
@@ -2570,9 +2608,9 @@ export function BlogPost10() {
       <P>
         Mestrar é trabalho, mas também é diversão. Se você está se sentindo
         sobrecarregado, simplifique. Use ferramentas que tirem peso de cima de
-        você: um <a href="/try">combat tracker</a> para gerenciar combate, um{" "}
-        <a href="/monstros">bestiário digital</a> para consultar stats, um{" "}
-        <a href="/magias">oráculo de magias</a> para resolver dúvidas dos
+        você: um <ProdLink href="/try">combat tracker</ProdLink> para gerenciar combate, um{" "}
+        <ProdLink href="/monstros">bestiário digital</ProdLink> para consultar stats, um{" "}
+        <ProdLink href="/magias">oráculo de magias</ProdLink> para resolver dúvidas dos
         jogadores. Quanto menos tempo você gasta com burocracia mecânica, mais
         tempo sobra para narrar, interpretar e se divertir.
       </P>
@@ -2585,27 +2623,27 @@ export function BlogPost10() {
       <Ul>
         <Li>
           <strong>Combat tracker</strong> — gerencia iniciativa, HP, condições e
-          turnos. O <a href="/try">Pocket DM</a> é gratuito, funciona no celular
+          turnos. O <ProdLink href="/try">Pocket DM</ProdLink> é gratuito, funciona no celular
           e não exige que seus jogadores criem conta.
         </Li>
         <Li>
           <strong>Bestiário digital</strong> — consulte stats de{" "}
-          <a href="/monstros">monstros SRD</a> instantaneamente em vez de
+          <ProdLink href="/monstros">monstros SRD</ProdLink> instantaneamente em vez de
           folhear o livro.
         </Li>
         <Li>
           <strong>Oráculo de magias</strong> — quando o jogador perguntar "o que
           Fireball faz mesmo?", basta buscar em{" "}
-          <a href="/magias">magias</a> e ler a descrição em segundos.
+          <ProdLink href="/magias">magias</ProdLink> e ler a descrição em segundos.
         </Li>
         <Li>
           <strong>Calculadora de encontros</strong> — use a{" "}
-          <a href="/calculadora-encontro">calculadora</a> para verificar se o
+          <ProdLink href="/calculadora-encontro">calculadora</ProdLink> para verificar se o
           combate que você planejou está no nível certo de dificuldade.
         </Li>
         <Li>
           <strong>Referência de condições</strong> — tenha a lista de{" "}
-          <a href="/condicoes">condições do D&amp;D 5e</a> sempre à mão para
+          <ProdLink href="/condicoes">condições do D&amp;D 5e</ProdLink> sempre à mão para
           não esquecer o que cada uma faz.
         </Li>
       </Ul>
@@ -2673,7 +2711,7 @@ export function BlogPost10() {
         Agora é com você: reúna o grupo, prepare um começo forte e jogue.
       </P>
 
-      <CTA />
+      <CTA category="tutorial" />
     </>
   );
 }
@@ -2961,7 +2999,7 @@ export function BlogPost11() {
         </Li>
       </Ul>
 
-      <Tip>
+      <Tip linkHref="/try" linkText="Ver soundboard do Pocket DM">
         O Pocket DM tem um recurso de soundboard integrado que permite
         controlar ambientação sonora direto da mesma tela onde você gerencia
         o combate. Sem trocar de app, sem perder o foco — tudo num lugar só.
@@ -3093,7 +3131,7 @@ export function BlogPost11() {
         </IntLink>.
       </P>
 
-      <CTA />
+      <CTA category="guia" />
     </>
   );
 }
@@ -3114,9 +3152,7 @@ export function BlogPost12() {
       </P>
       <P>
         E o melhor: o{" "}
-        <Link href="/try" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          Pocket DM
-        </Link>{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>{" "}
         funciona perfeitamente com qualquer estilo de combate. Ele rastreia
         iniciativa, HP e condições independente de como você representa o campo
         de batalha.
@@ -3367,9 +3403,7 @@ export function BlogPost12() {
       <H2>O tracker funciona com qualquer estilo (de verdade)</H2>
       <P>
         O{" "}
-        <Link href="/try" className="text-gold underline underline-offset-2 decoration-gold/30 hover:text-gold hover:decoration-gold/60 transition-colors">
-          Pocket DM
-        </Link>{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>{" "}
         foi projetado como um <strong>combat tracker</strong>, não como um VTT.
         Isso significa que ele rastreia o que importa independente de como você
         representa o campo de batalha: iniciativa, HP, condições, ações
@@ -3431,7 +3465,7 @@ export function BlogPost12() {
         </IntLink>.
       </P>
 
-      <CTA />
+      <CTA category="comparativo" />
     </>
   );
 }

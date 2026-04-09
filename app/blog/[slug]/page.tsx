@@ -25,8 +25,9 @@ import {
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
 import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
+import { CATEGORY_CTA } from "@/lib/blog/feature-links";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
@@ -310,32 +311,42 @@ export default async function BlogPostPage({
               </div>
             )}
 
-            {/* CTA */}
-            <div className="mt-12 p-8 sm:p-10 rounded-xl border border-gold/25 bg-gradient-to-br from-gold/[0.06] to-transparent text-center relative overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-gold/[0.08] rounded-full blur-[80px]" aria-hidden="true" />
-              <div className="relative">
-                <p className="font-display text-xl sm:text-2xl text-gold mb-2">
-                  Experimente o Pocket DM
-                </p>
-                <p className="text-muted-foreground text-sm sm:text-base mb-6">
-                  Combat tracker gratuito para D&D 5e — sem cadastro, sem download.
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Link
-                    href="/try"
-                    className="bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200 text-sm"
-                  >
-                    Testar Grátis
-                  </Link>
-                  <Link
-                    href="/blog"
-                    className="border border-white/10 text-foreground/80 font-medium px-6 py-3 rounded-lg hover:border-white/20 hover:text-foreground transition-all duration-200 text-sm"
-                  >
-                    Mais artigos
-                  </Link>
+            {/* CTA — contextual per post category */}
+            {(() => {
+              const lang = slug.endsWith("-en") ? "en" : "pt";
+              const preset = CATEGORY_CTA[post.category]?.[lang];
+              const ctaHref = preset?.href ?? "/try";
+              const ctaBtn = preset?.btn ?? (lang === "en" ? "Try Free \u2192" : "Testar Grátis");
+              return (
+                <div className="mt-12 p-8 sm:p-10 rounded-xl border border-gold/25 bg-gradient-to-br from-gold/[0.06] to-transparent text-center relative overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-gold/[0.08] rounded-full blur-[80px]" aria-hidden="true" />
+                  <div className="relative">
+                    <p className="font-display text-xl sm:text-2xl text-gold mb-2">
+                      {lang === "en" ? "Try Pocket DM" : "Experimente o Pocket DM"}
+                    </p>
+                    <p className="text-muted-foreground text-sm sm:text-base mb-6">
+                      {preset?.msg ?? (lang === "en"
+                        ? "Free combat tracker for D&D 5e \u2014 no signup, no download."
+                        : "Combat tracker gratuito para D&D 5e \u2014 sem cadastro, sem download.")}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-4">
+                      <Link
+                        href={ctaHref}
+                        className="bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200 text-sm"
+                      >
+                        {ctaBtn}
+                      </Link>
+                      <Link
+                        href="/blog"
+                        className="border border-white/10 text-foreground/80 font-medium px-6 py-3 rounded-lg hover:border-white/20 hover:text-foreground transition-all duration-200 text-sm"
+                      >
+                        {lang === "en" ? "More articles" : "Mais artigos"}
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
           </article>
 
           {/* TOC Sidebar — desktop only */}
