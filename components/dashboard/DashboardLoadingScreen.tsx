@@ -87,7 +87,7 @@ export function DashboardLoadingScreen() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999]"
+      className="fixed inset-0 z-[10010]"
       style={{ pointerEvents: showLoader ? "auto" : "none" }}
       aria-hidden={!showLoader}
     >

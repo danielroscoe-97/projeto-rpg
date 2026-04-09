@@ -110,7 +110,7 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
           before framer-motion's exit animation completes */}
       <div
         data-testid="srd-loading"
-        className="fixed inset-0 z-[9999]"
+        className="fixed inset-0 z-[10010]"
         style={{ pointerEvents: showLoader ? "auto" : "none" }}
         aria-hidden={!showLoader}
       >
