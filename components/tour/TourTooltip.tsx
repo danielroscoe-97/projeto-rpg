@@ -247,7 +247,7 @@ export function TourTooltip({
           <div className="space-y-3 relative">
             {/* Phase badge */}
             <div className="flex items-center gap-2">
-              <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+              <span className={`text-[11px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
                 step.phase === "setup"
                   ? "bg-emerald-900/30 text-emerald-400"
                   : step.phase === "combat"
@@ -258,14 +258,14 @@ export function TourTooltip({
               </span>
             </div>
 
-            <h3 className="text-base font-semibold text-gold">
+            <h3 className="text-[17px] font-semibold text-gold">
               {t(titleKey)}
             </h3>
-            <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
+            <p id={`tour-step-desc-${step.id}`} className="text-[15px] text-foreground/80 leading-relaxed">
               {t(descKey)}
             </p>
             {extraDescKey && (
-              <p className="text-xs text-gold leading-relaxed">
+              <p className="text-[13px] text-gold leading-relaxed">
                 {t(extraDescKey)}
               </p>
             )}
@@ -278,14 +278,14 @@ export function TourTooltip({
                   type="button"
                   onClick={onComplete}
                   data-testid="tour-got-it"
-                  className="block w-full text-center px-4 py-3 bg-gold text-surface-primary text-sm font-bold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                  className="block w-full text-center px-4 py-3 bg-gold text-surface-primary text-[15px] font-bold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                 >
                   {t("got_it_create")}
                 </button>
                 {/* Secondary: create account */}
                 <Link
                   href="/auth/sign-up"
-                  className="block w-full text-center px-4 py-2.5 border border-gold/40 text-gold text-sm font-semibold rounded-md hover:bg-gold/10 transition-all duration-200 min-h-[44px]"
+                  className="block w-full text-center px-4 py-2.5 border border-gold/40 text-gold text-[15px] font-semibold rounded-md hover:bg-gold/10 transition-all duration-200 min-h-[44px]"
                 >
                   {t("create_account")}
                 </Link>
@@ -301,7 +301,7 @@ export function TourTooltip({
                     type="button"
                     onClick={onSkip}
                     data-testid="tour-skip"
-                    className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30 rounded"
+                    className="text-[11px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30 rounded"
                   >
                     {t("skip")}
                   </button>
@@ -313,7 +313,7 @@ export function TourTooltip({
                       type="button"
                       onClick={onComplete}
                       data-testid="tour-finish"
-                      className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
+                      className="text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
                     >
                       {t("finish")}
                     </button>
@@ -324,7 +324,7 @@ export function TourTooltip({
                           type="button"
                           onClick={onBack}
                           data-testid="tour-back"
-                          className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                          className="px-3 py-2 text-[13px] text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
                         >
                           {t("back")}
                         </button>
@@ -333,7 +333,7 @@ export function TourTooltip({
                         type="button"
                         onClick={onNext}
                         data-testid="tour-next"
-                        className="px-4 py-2 bg-gold text-surface-primary text-sm font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                        className="px-4 py-2 bg-gold text-surface-primary text-[15px] font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                       >
                         {t("next")}
                       </button>
@@ -389,7 +389,7 @@ export function TourTooltip({
         <div className="space-y-3">
           {/* Phase badge */}
           <div className="flex items-center gap-2">
-            <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+            <span className={`text-[11px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
               step.phase === "setup"
                 ? "bg-emerald-900/30 text-emerald-400"
                 : step.phase === "combat"
@@ -400,14 +400,14 @@ export function TourTooltip({
             </span>
           </div>
 
-          <h3 className="text-sm font-semibold text-gold">
+          <h3 className="text-[15px] font-semibold text-gold">
             {t(titleKey)}
           </h3>
-          <p id={`tour-step-desc-${step.id}`} className="text-sm text-foreground/80 leading-relaxed">
+          <p id={`tour-step-desc-${step.id}`} className="text-[15px] text-foreground/80 leading-relaxed">
             {t(descKey)}
           </p>
           {extraDescKey && (
-            <p className="text-xs text-gold leading-relaxed">
+            <p className="text-[13px] text-gold leading-relaxed">
               {t(extraDescKey)}
             </p>
           )}
@@ -420,7 +420,7 @@ export function TourTooltip({
                 type="button"
                 onClick={onSkip}
                 data-testid="tour-skip"
-                className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30 rounded"
+                className="text-[11px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors px-1 py-1 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground/30 rounded"
               >
                 {t("skip")}
               </button>
@@ -430,7 +430,7 @@ export function TourTooltip({
                     type="button"
                     onClick={onBack}
                     data-testid="tour-back"
-                    className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
+                    className="px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground border border-border rounded-md transition-all duration-200 min-h-[44px]"
                   >
                     {t("back")}
                   </button>
@@ -439,7 +439,7 @@ export function TourTooltip({
                   type="button"
                   onClick={onNext}
                   data-testid="tour-next"
-                  className="px-3 py-1.5 bg-gold text-surface-primary text-xs font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
+                  className="px-3 py-1.5 bg-gold text-surface-primary text-[13px] font-semibold rounded-md hover:shadow-gold-glow transition-all duration-200 min-h-[44px]"
                 >
                   {t("next")}
                 </button>

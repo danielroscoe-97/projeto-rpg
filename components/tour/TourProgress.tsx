@@ -9,7 +9,7 @@ export function TourProgress({ currentStep, totalSteps }: TourProgressProps) {
   const compact = totalSteps > 8;
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] text-muted-foreground/60 font-mono tabular-nums">
+      <span className="text-[11px] text-muted-foreground/60 font-mono tabular-nums">
         {currentStep + 1}/{totalSteps}
       </span>
       <div className={`flex items-center ${compact ? "gap-0.5" : "gap-1"}`} aria-label={`Step ${currentStep + 1} of ${totalSteps}`}>
