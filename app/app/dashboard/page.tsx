@@ -197,10 +197,10 @@ export default async function DashboardPage() {
     combats_empty_cta: t("combats_empty_cta"),
     // Methodology hooks
     methodology_lab_tooltip: tm("lab_badge_tooltip"),
-    methodology_milestone_toast: tm("milestone_toast"),
+    methodology_milestone_toast: tm("milestone_toast", { count: 0 }),
     methodology_milestone_link: tm("milestone_link"),
     methodology_researcher_title: tm("researcher_title"),
-    methodology_researcher_subtitle: tm("researcher_subtitle"),
+    methodology_researcher_subtitle: tm("researcher_subtitle", { count: 0 }),
     methodology_researcher_link: tm("researcher_link"),
     campaign_joined_success: t("campaign_joined_success"),
     // JO-09: Player empty state
@@ -225,7 +225,7 @@ export default async function DashboardPage() {
     checklist_all_complete: t("checklist_all_complete"),
     // Player checklist
     player_checklist_title: tpc("title"),
-    player_checklist_progress: tpc("progress"),
+    player_checklist_progress: tpc("progress", { done: 0, total: 0 }),
     player_checklist_dismiss: tpc("dismiss"),
     player_checklist_account: tpc("item_account"),
     player_checklist_campaign: tpc("item_campaign"),
