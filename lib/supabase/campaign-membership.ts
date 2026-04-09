@@ -271,13 +271,13 @@ export async function acceptCampaignInvite(
   });
 
   // XP: Player joined campaign + DM gets XP for player invited
-  const userSupabase = await createClient();
-  const { data: { user: currentUser } } = await userSupabase.auth.getUser();
+  // Reuse the supabase client from line 246 — no extra createClient()
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
   if (currentUser) {
     grantXpAsync(currentUser.id, "player_campaign_joined", "player", { campaign_id: result.campaign_id });
     // Grant XP to DM who owns the campaign
     if (result.campaign_id) {
-      const { data: campaign } = await userSupabase
+      const { data: campaign } = await supabase
         .from("campaigns")
         .select("owner_id")
         .eq("id", result.campaign_id)

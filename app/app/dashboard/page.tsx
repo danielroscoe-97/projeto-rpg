@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
 import { computeStreak } from "@/lib/utils/streak";
-import { grantXpAsync } from "@/lib/xp/grant-xp";
+import { grantXpAsync, getCooldownStart } from "@/lib/xp/grant-xp";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 import type { UserRole } from "@/lib/stores/role-store";
 import type { UserOnboarding } from "@/lib/types/database";
@@ -268,9 +268,18 @@ export default async function DashboardPage() {
   // F6: Streak counter
   const streakWeeks = userRole !== "player" ? await computeStreak(supabase, user.id) : 0;
 
-  // XP: Weekly streak bonus (fire-and-forget, cooldown 1/week handles dedup)
+  // XP: Weekly streak bonus — pre-check cooldown to avoid wasting 3+ queries on every render
   if (streakWeeks >= 2) {
-    grantXpAsync(user.id, "dm_streak_weekly", "dm", { streak_weeks: streakWeeks });
+    const weekStart = getCooldownStart("week");
+    const { count } = await supabase
+      .from("xp_ledger")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("action_key", "dm_streak_weekly")
+      .gte("created_at", weekStart);
+    if ((count ?? 0) === 0) {
+      grantXpAsync(user.id, "dm_streak_weekly", "dm", { streak_weeks: streakWeeks });
+    }
   }
 
   return (
