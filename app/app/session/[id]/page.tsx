@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { CombatSessionClient } from "@/components/session/CombatSessionClient";
 import { ShareSessionButton } from "@/components/session/ShareSessionButton";
+import { AuthCombatTourProvider } from "@/components/tour/AuthCombatTourProvider";
 import type { Combatant } from "@/lib/types/combat";
 
 interface SessionPageProps {
@@ -19,6 +20,15 @@ export default async function SessionPage({ params }: SessionPageProps) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
+
+  // Fetch onboarding state for combat tour
+  const { data: onboardingData } = await supabase
+    .from("user_onboarding")
+    .select("combat_tour_completed")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const combatTourCompleted = (onboardingData as { combat_tour_completed?: boolean } | null)?.combat_tour_completed ?? false;
 
   // Fetch session
   const { data: session, error: sessionError } = await supabase
@@ -130,6 +140,9 @@ export default async function SessionPage({ params }: SessionPageProps) {
         currentTurnIndex={encounter?.current_turn_index ?? 0}
         campaignId={session.campaign_id ?? null}
       />
+
+      {/* Authenticated combat tour — auto-starts on first visit */}
+      <AuthCombatTourProvider shouldAutoStart={!combatTourCompleted} />
     </div>
   );
 }

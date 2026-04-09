@@ -36,7 +36,7 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://www.pocketdm.com.br/races/${slug}`,
+      url: `https://pocketdm.com.br/races/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -44,10 +44,10 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://www.pocketdm.com.br/races/${slug}`,
+      canonical: `https://pocketdm.com.br/races/${slug}`,
       languages: {
-        en: `https://www.pocketdm.com.br/races/${slug}`,
-        "pt-BR": `https://www.pocketdm.com.br/racas/${slug}`,
+        en: `https://pocketdm.com.br/races/${slug}`,
+        "pt-BR": `https://pocketdm.com.br/racas/${slug}`,
       },
     },
   };
@@ -65,7 +65,7 @@ function RaceJsonLd({ race }: { race: NonNullable<ReturnType<typeof getRaceData>
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -130,7 +130,7 @@ export default async function RaceDetailPage({
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

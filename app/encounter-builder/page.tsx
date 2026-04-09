@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Free encounter builder with 1,100+ SRD monsters and instant difficulty calculation.",
     type: "website",
-    url: "https://www.pocketdm.com.br/encounter-builder",
+    url: "https://pocketdm.com.br/encounter-builder",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
       "Free encounter builder with 1,100+ SRD monsters and instant difficulty calculation.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/encounter-builder",
+    canonical: "https://pocketdm.com.br/encounter-builder",
     languages: {
-      en: "https://www.pocketdm.com.br/encounter-builder",
-      "pt-BR": "https://www.pocketdm.com.br/calculadora-encontro",
+      en: "https://pocketdm.com.br/encounter-builder",
+      "pt-BR": "https://pocketdm.com.br/calculadora-encontro",
     },
   },
 };
@@ -51,7 +51,7 @@ function EncounterBuilderJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -104,7 +104,7 @@ export default function EncounterBuilderPage() {
             . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of the Coast.
           </p>
           <p className="mt-1">
-            <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
               Pocket DM
             </a>
             {" "}— The combat tracker for D&amp;D 5e

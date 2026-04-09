@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description:
       "Calculadora de encontro grátis com 1.100+ monstros SRD e cálculo de dificuldade instantâneo.",
     type: "website",
-    url: "https://www.pocketdm.com.br/calculadora-encontro",
+    url: "https://pocketdm.com.br/calculadora-encontro",
   },
   twitter: {
     card: "summary_large_image",
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
       "Calculadora de encontro grátis com 1.100+ monstros SRD e cálculo de dificuldade instantâneo.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/calculadora-encontro",
+    canonical: "https://pocketdm.com.br/calculadora-encontro",
     languages: {
-      en: "https://www.pocketdm.com.br/encounter-builder",
-      "pt-BR": "https://www.pocketdm.com.br/calculadora-encontro",
+      en: "https://pocketdm.com.br/encounter-builder",
+      "pt-BR": "https://pocketdm.com.br/calculadora-encontro",
     },
   },
 };
@@ -52,7 +52,7 @@ function EncounterBuilderJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
     inLanguage: "pt-BR",
   };
@@ -115,7 +115,7 @@ export default function CalculadoraEncontroPage() {
             . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
           </p>
           <p className="mt-1">
-            <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
               Pocket DM
             </a>
             {" "}— O rastreador de combate para D&amp;D 5e

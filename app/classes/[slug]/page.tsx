@@ -44,7 +44,7 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://www.pocketdm.com.br/classes/${slug}`,
+      url: `https://pocketdm.com.br/classes/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -52,7 +52,7 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://www.pocketdm.com.br/classes/${slug}`,
+      canonical: `https://pocketdm.com.br/classes/${slug}`,
     },
   };
 }
@@ -69,7 +69,7 @@ function ClassJsonLd({ cls }: { cls: SrdClass }) {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -127,7 +127,7 @@ export default async function ClassDetailPage({
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

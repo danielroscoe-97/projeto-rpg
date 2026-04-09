@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description:
       "Free online dice roller with advantage, critical, presets, and roll history.",
     type: "website",
-    url: "https://www.pocketdm.com.br/dice",
+    url: "https://pocketdm.com.br/dice",
   },
   twitter: {
     card: "summary_large_image",
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
       "Free online dice roller with advantage, critical, presets, and roll history.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/dice",
+    canonical: "https://pocketdm.com.br/dice",
     languages: {
-      en: "https://www.pocketdm.com.br/dice",
-      "pt-BR": "https://www.pocketdm.com.br/dados",
+      en: "https://pocketdm.com.br/dice",
+      "pt-BR": "https://pocketdm.com.br/dados",
     },
   },
 };
@@ -48,7 +48,7 @@ function DiceRollerJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -80,7 +80,7 @@ export default function DicePage() {
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

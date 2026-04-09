@@ -53,15 +53,15 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://www.pocketdm.com.br/magias/${slug}`,
+      url: `https://pocketdm.com.br/magias/${slug}`,
       images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }],
     },
     twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description, images: ["/opengraph-image"] },
     alternates: {
-      canonical: `https://www.pocketdm.com.br/magias/${slug}`,
+      canonical: `https://pocketdm.com.br/magias/${slug}`,
       languages: {
-        "en": `https://www.pocketdm.com.br/spells/${enSlug}`,
-        "pt-BR": `https://www.pocketdm.com.br/magias/${slug}`,
+        "en": `https://pocketdm.com.br/spells/${enSlug}`,
+        "pt-BR": `https://pocketdm.com.br/magias/${slug}`,
       },
     },
   };
@@ -76,7 +76,7 @@ function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<ty
     headline: `${ptName} — Magia D&D 5e`,
     description: `${ptName}. ${spell.description.slice(0, 200)}`,
     author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
     inLanguage: "pt-BR",
   };
 
@@ -84,9 +84,9 @@ function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<ty
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: "https://www.pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Magias", item: "https://www.pocketdm.com.br/magias" },
-      { "@type": "ListItem", position: 3, name: ptName, item: `https://www.pocketdm.com.br/magias/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Início", item: "https://pocketdm.com.br" },
+      { "@type": "ListItem", position: 2, name: "Magias", item: "https://pocketdm.com.br/magias" },
+      { "@type": "ListItem", position: 3, name: ptName, item: `https://pocketdm.com.br/magias/${slug}` },
     ],
   };
 
@@ -215,7 +215,7 @@ export default async function MagiaPage({
             . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
           </p>
           <p className="mt-1">
-            <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
               Pocket DM
             </a>
             {" "}— O rastreador de combate para D&amp;D 5e

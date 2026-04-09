@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa das 9 raças SRD do D&D 5ª Edição com atributos e traços.",
     type: "website",
-    url: "https://www.pocketdm.com.br/racas",
+    url: "https://pocketdm.com.br/racas",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
       "Referência completa das 9 raças SRD do D&D 5ª Edição.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/racas",
+    canonical: "https://pocketdm.com.br/racas",
     languages: {
-      en: "https://www.pocketdm.com.br/races",
-      "pt-BR": "https://www.pocketdm.com.br/racas",
+      en: "https://pocketdm.com.br/races",
+      "pt-BR": "https://pocketdm.com.br/racas",
     },
   },
 };
@@ -78,13 +78,13 @@ function RacesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
-      url: `https://www.pocketdm.com.br/racas/${RACE_SLUGS[i]}`,
+      url: `https://pocketdm.com.br/racas/${RACE_SLUGS[i]}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
     inLanguage: "pt-BR",
   };
@@ -137,7 +137,7 @@ export default function RacasPage() {
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

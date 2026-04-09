@@ -114,6 +114,25 @@ const TEST_ACCOUNTS: TestAccount[] = [
     description: "Jogador para teste de áudio — upload de 6 MP3s (limite), delete, re-upload",
   },
 
+  // ── First Access Accounts (empty state, onboarding) ──
+  {
+    email: "dm.fresh@test-pocketdm.com",
+    password: "TestDM_Fresh!4",
+    display_name: "DM Novato",
+    role: "dm" as const,
+    language: "pt-BR" as const,
+    plan: "free" as const,
+    description: "DM primeiro acesso — dashboard vazio, sem campanhas, sem sessões, testa onboarding DM",
+  },
+  {
+    email: "player.newbie@test-pocketdm.com",
+    password: "TestPlayer_New!8",
+    display_name: "Player Novato",
+    role: "player" as const,
+    language: "pt-BR" as const,
+    description: "Player primeiro acesso — sem campanhas, sem personagens, testa onboarding player completo",
+  },
+
   // ── Edge Case Accounts ──
   {
     email: "player.trial@test-pocketdm.com",

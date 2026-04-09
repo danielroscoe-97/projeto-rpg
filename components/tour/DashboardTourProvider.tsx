@@ -153,12 +153,9 @@ export function DashboardTourProvider({
     } catch {
       // best-effort
     }
-    // Quick Combat path: redirect to session/new only on tour completion (not skip)
-    if (shouldRedirect && typeof window !== "undefined") {
-      const next = new URLSearchParams(window.location.search).get("next");
-      if (next === "session") {
-        router.push("/app/session/new");
-      }
+    // Redirect to quick combat on tour completion (not skip)
+    if (shouldRedirect) {
+      router.push("/app/session/new");
     }
   }
 
@@ -271,6 +268,7 @@ export function DashboardTourProvider({
         onSkip={handleSkip}
         onComplete={handleComplete}
         translationNamespace="dashboard_tour"
+        secondaryCTA={{ labelKey: "dashboard_tour.create_campaign", href: "/app/campaigns/new" }}
       />
     </>
   );

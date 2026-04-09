@@ -48,15 +48,15 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://www.pocketdm.com.br/monstros/${slug}`,
+      url: `https://pocketdm.com.br/monstros/${slug}`,
       images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }],
     },
     twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description, images: ["/opengraph-image"] },
     alternates: {
-      canonical: `https://www.pocketdm.com.br/monstros/${slug}`,
+      canonical: `https://pocketdm.com.br/monstros/${slug}`,
       languages: {
-        "en": `https://www.pocketdm.com.br/monsters/${enSlug}`,
-        "pt-BR": `https://www.pocketdm.com.br/monstros/${slug}`,
+        "en": `https://pocketdm.com.br/monsters/${enSlug}`,
+        "pt-BR": `https://pocketdm.com.br/monstros/${slug}`,
       },
     },
   };
@@ -71,7 +71,7 @@ function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnT
     headline: `${ptName} — Ficha D&D 5e`,
     description: `${ptName}, ${monster.size} ${monster.type}, CR ${monster.cr}.`,
     author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
     inLanguage: "pt-BR",
   };
 
@@ -79,9 +79,9 @@ function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnT
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: "https://www.pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Monstros", item: "https://www.pocketdm.com.br/monstros" },
-      { "@type": "ListItem", position: 3, name: ptName, item: `https://www.pocketdm.com.br/monstros/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Início", item: "https://pocketdm.com.br" },
+      { "@type": "ListItem", position: 2, name: "Monstros", item: "https://pocketdm.com.br/monstros" },
+      { "@type": "ListItem", position: 3, name: ptName, item: `https://pocketdm.com.br/monstros/${slug}` },
     ],
   };
 
@@ -185,7 +185,7 @@ export default async function MonstroPage({
             . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
           </p>
           <p className="mt-1">
-            <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
               Pocket DM
             </a>
             {" "}— O rastreador de combate para D&amp;D 5e

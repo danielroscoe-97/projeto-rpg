@@ -22,11 +22,18 @@ export const metadata: Metadata = {
     "monstros dungeons and dragons",
   ],
   alternates: {
-    canonical: "https://www.pocketdm.com.br/monstros",
+    canonical: "https://pocketdm.com.br/monstros",
     languages: {
-      "en": "https://www.pocketdm.com.br/monsters",
-      "pt-BR": "https://www.pocketdm.com.br/monstros",
+      "en": "https://pocketdm.com.br/monsters",
+      "pt-BR": "https://pocketdm.com.br/monstros",
     },
+  },
+  openGraph: {
+    title: "Bestiário D&D 5e — Lista de Monstros SRD | Pocket DM",
+    description:
+      "Bestiário completo do D&D 5e com blocos de estatísticas interativos e roladores de dados. Filtre por CR, tipo e muito mais.",
+    type: "website",
+    url: "https://pocketdm.com.br/monstros",
   },
 };
 
@@ -49,7 +56,29 @@ export default function MonstrosIndexPage() {
 
   const total = getSrdMonsters().length;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Bestiário D&D 5e — Monstros SRD",
+    description: "Bestiário completo do D&D 5e com blocos de estatísticas interativos e roladores de dados.",
+    url: "https://pocketdm.com.br/monstros",
+    inLanguage: "pt-BR",
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: monsters.length,
+      itemListElement: monsters.slice(0, 10).map((m, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://pocketdm.com.br/monstros/${m.slug}`,
+        name: m.name,
+      })),
+    },
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
       <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Monstros" }]} />
 
@@ -135,12 +164,13 @@ export default function MonstrosIndexPage() {
           . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
         </p>
         <p className="mt-1">
-          <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+          <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
             Pocket DM
           </a>
           {" "}— O rastreador de combate para D&amp;D 5e
         </p>
       </footer>
     </div>
+    </>
   );
 }

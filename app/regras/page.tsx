@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa de regras D&D 5e com diagramas visuais, rastreador de testes contra a morte interativo e guia de cobertura. Conteúdo gratuito do SRD 5.1.",
     type: "website",
-    url: "https://www.pocketdm.com.br/regras",
+    url: "https://pocketdm.com.br/regras",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
       "Referência completa de regras D&D 5e com diagramas visuais e ferramentas interativas. Conteúdo gratuito do SRD 5.1.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/regras",
+    canonical: "https://pocketdm.com.br/regras",
     languages: {
-      en: "https://www.pocketdm.com.br/rules",
-      "pt-BR": "https://www.pocketdm.com.br/regras",
+      en: "https://pocketdm.com.br/rules",
+      "pt-BR": "https://pocketdm.com.br/regras",
     },
   },
 };
@@ -84,7 +84,7 @@ function RulesJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
     inLanguage: "pt-BR",
   };
@@ -140,7 +140,7 @@ export default function RegrasPage() {
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

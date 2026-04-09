@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description:
       "All six ability scores explained with interactive modifier calculator, associated skills, saving throws, and common uses.",
     type: "website",
-    url: "https://www.pocketdm.com.br/ability-scores",
+    url: "https://pocketdm.com.br/ability-scores",
   },
   twitter: {
     card: "summary_large_image",
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
       "All six ability scores explained with interactive modifier calculator, associated skills, saving throws, and common uses.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/ability-scores",
+    canonical: "https://pocketdm.com.br/ability-scores",
     languages: {
-      en: "https://www.pocketdm.com.br/ability-scores",
-      "pt-BR": "https://www.pocketdm.com.br/atributos",
+      en: "https://pocketdm.com.br/ability-scores",
+      "pt-BR": "https://pocketdm.com.br/atributos",
     },
   },
 };
@@ -59,7 +59,7 @@ function AbilityScoresJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -104,7 +104,7 @@ export default function AbilityScoresPage() {
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

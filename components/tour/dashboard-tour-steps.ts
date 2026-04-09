@@ -13,7 +13,7 @@ export interface DashboardTourStepConfig extends TourStepConfig {
 }
 
 export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
-  // Step 0 — Welcome modal (all users)
+  // Step 0 — Welcome (all users) — highlights the full dashboard content area
   {
     id: "dash-welcome",
     targetSelector: '[data-tour-id="dash-overview"]',
@@ -22,7 +22,6 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "setup",
-    modal: true,
     audience: "all",
   },
   // Step 1 — Sidebar / bottom nav (DM only — players don't need nav tour)
@@ -64,6 +63,7 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
   {
     id: "dash-combats",
     targetSelector: '[data-tour-id="dash-nav-combats"]',
+    mobileSelector: '[data-tour-id="dash-bottom-nav"]',
     titleKey: "dashboard_tour.combats_title",
     descriptionKey: "dashboard_tour.combats_desc",
     type: "info",
@@ -76,6 +76,7 @@ export const DASHBOARD_TOUR_STEPS: DashboardTourStepConfig[] = [
   {
     id: "dash-soundboard",
     targetSelector: '[data-tour-id="dash-nav-soundboard"]',
+    mobileSelector: '[data-tour-id="dash-bottom-nav"]',
     titleKey: "dashboard_tour.soundboard_title",
     descriptionKey: "dashboard_tour.soundboard_desc",
     type: "info",

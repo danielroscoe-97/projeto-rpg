@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "All 12 SRD classes with hit dice, proficiencies, and subclasses. Free reference.",
     type: "website",
-    url: "https://www.pocketdm.com.br/classes",
+    url: "https://pocketdm.com.br/classes",
   },
   twitter: {
     card: "summary_large_image",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       "All 12 SRD classes with hit dice, proficiencies, and subclasses.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/classes",
+    canonical: "https://pocketdm.com.br/classes",
   },
 };
 
@@ -53,13 +53,13 @@ function ClassesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name: c.name,
-      url: `https://www.pocketdm.com.br/classes/${c.id}`,
+      url: `https://pocketdm.com.br/classes/${c.id}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -106,7 +106,7 @@ export default function ClassesIndexPage() {
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

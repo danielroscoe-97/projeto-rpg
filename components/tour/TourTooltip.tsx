@@ -20,6 +20,8 @@ interface TourTooltipProps {
   shake?: boolean;
   /** Translation namespace — defaults to "tour" */
   translationNamespace?: string;
+  /** Optional secondary CTA for the complete step. false = hidden, { labelKey, href } = custom link */
+  secondaryCTA?: false | { labelKey: string; href: string };
 }
 
 type Position = "top" | "bottom" | "left" | "right";
@@ -164,6 +166,7 @@ export function TourTooltip({
   onComplete,
   shake,
   translationNamespace = "tour",
+  secondaryCTA,
 }: TourTooltipProps) {
   const t = useTranslations(translationNamespace);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -252,7 +255,7 @@ export function TourTooltip({
                   ? "bg-emerald-900/30 text-emerald-400"
                   : step.phase === "combat"
                     ? "bg-red-900/30 text-red-400"
-                    : "bg-gold/20 text-gold"
+                    : "bg-emerald-900/30 text-emerald-400"
               }`}>
                 {t(`phase_${step.phase}`)}
               </span>
@@ -273,7 +276,7 @@ export function TourTooltip({
             {/* Completion CTAs */}
             {isCompleteStep && (
               <div className="space-y-2 pt-1">
-                {/* Primary: dismiss and create combat */}
+                {/* Primary: dismiss and go */}
                 <button
                   type="button"
                   onClick={onComplete}
@@ -282,13 +285,15 @@ export function TourTooltip({
                 >
                   {t("got_it_create")}
                 </button>
-                {/* Secondary: create account */}
-                <Link
-                  href="/auth/sign-up"
-                  className="block w-full text-center px-4 py-2.5 border border-gold/40 text-gold text-[15px] font-semibold rounded-md hover:bg-gold/10 transition-all duration-200 min-h-[44px]"
-                >
-                  {t("create_account")}
-                </Link>
+                {/* Secondary CTA: configurable, defaults to sign-up */}
+                {secondaryCTA !== false && (
+                  <Link
+                    href={secondaryCTA?.href ?? "/auth/sign-up"}
+                    className="block w-full text-center px-4 py-2.5 border border-gold/40 text-gold text-[15px] font-semibold rounded-md hover:bg-gold/10 transition-all duration-200 min-h-[44px]"
+                  >
+                    {t(secondaryCTA?.labelKey ? stripNs(secondaryCTA.labelKey) : "create_account")}
+                  </Link>
+                )}
               </div>
             )}
 
@@ -309,14 +314,25 @@ export function TourTooltip({
 
                 <div className="flex items-center gap-2">
                   {isCompleteStep ? (
-                    <button
-                      type="button"
-                      onClick={onComplete}
-                      data-testid="tour-finish"
-                      className="text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
-                    >
-                      {t("finish")}
-                    </button>
+                    <>
+                      {stepIndex > 0 && (
+                        <button
+                          type="button"
+                          disabled
+                          className="px-3 py-2 text-[13px] text-muted-foreground/30 border border-border/30 rounded-md min-h-[44px] cursor-not-allowed"
+                        >
+                          {t("back")}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={onComplete}
+                        data-testid="tour-finish"
+                        className="text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors px-2 py-1 min-h-[44px]"
+                      >
+                        {t("finish")}
+                      </button>
+                    </>
                   ) : (
                     <>
                       {stepIndex > 0 && (
@@ -394,7 +410,7 @@ export function TourTooltip({
                 ? "bg-emerald-900/30 text-emerald-400"
                 : step.phase === "combat"
                   ? "bg-red-900/30 text-red-400"
-                  : "bg-gold/20 text-gold"
+                  : "bg-emerald-900/30 text-emerald-400"
             }`}>
               {t(`phase_${step.phase}`)}
             </span>

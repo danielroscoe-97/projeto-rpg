@@ -21,62 +21,93 @@ export async function Footer() {
           </div>
 
           {/* Links */}
-          <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link
-              href="/about"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("footer_about")}
-            </Link>
-            <Link
-              href="/faq"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("footer_faq")}
-            </Link>
-            <Link
-              href="/blog"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("footer_blog")}
-            </Link>
-            <Link
-              href="/auth/sign-up"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("footer_signup")}
-            </Link>
-            <Link
-              href="/pricing"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("footer_pricing")}
-            </Link>
-            <Link
-              href="/methodology"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("footer_methodology")}
-            </Link>
-            <Link
-              href="/legal/attribution"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("attribution")}
-            </Link>
-            <Link
-              href="/legal/privacy"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("privacy")}
-            </Link>
-            <Link
-              href="/legal/terms"
-              className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
-            >
-              {t("terms")}
-            </Link>
-          </nav>
+          <div className="flex flex-col gap-4">
+            <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <Link
+                href="/about"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_about")}
+              </Link>
+              <Link
+                href="/faq"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_faq")}
+              </Link>
+              <Link
+                href="/blog"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_blog")}
+              </Link>
+              <Link
+                href="/auth/sign-up"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_signup")}
+              </Link>
+              <Link
+                href="/pricing"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_pricing")}
+              </Link>
+              <Link
+                href="/methodology"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_methodology")}
+              </Link>
+              <Link
+                href="/legal/attribution"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("attribution")}
+              </Link>
+              <Link
+                href="/legal/privacy"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("privacy")}
+              </Link>
+              <Link
+                href="/legal/terms"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("terms")}
+              </Link>
+            </nav>
+            <nav aria-label="Compendium navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <span className="text-muted-foreground/50 text-xs font-semibold uppercase tracking-wider inline-flex items-center min-h-[44px]">
+                {t("footer_compendium")}
+              </span>
+              <Link
+                href="/monsters"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_monsters")}
+              </Link>
+              <Link
+                href="/spells"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_spells")}
+              </Link>
+              <Link
+                href="/classes"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_classes")}
+              </Link>
+              <Link
+                href="/races"
+                className="text-muted-foreground hover:text-foreground transition-all duration-[250ms] min-h-[44px] inline-flex items-center"
+              >
+                {t("footer_races")}
+              </Link>
+            </nav>
+          </div>
         </div>
 
         {/* Attribution + copyright + Pipers */}

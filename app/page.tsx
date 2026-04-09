@@ -414,6 +414,121 @@ function FeaturesSection() {
   );
 }
 
+// ── Compendium Showcase ─────────────────────────────────────────────────────
+function CompendiumShowcaseSection() {
+  const cards = [
+    {
+      title: "Monstros",
+      count: 1100,
+      suffix: "+",
+      description: "Stat blocks prontos para combate — SRD 5.1, SRD 2024 e Monster-a-Day",
+      href: "/monsters",
+      gradient: "from-red-500/20 via-orange-500/10 to-transparent",
+      iconBg: "bg-red-500/10",
+      icon: "🐉",
+      borderHover: "hover:border-red-500/30",
+    },
+    {
+      title: "Magias",
+      count: 600,
+      suffix: "+",
+      description: "Todas as magias SRD com filtros por nível, escola e classe",
+      href: "/spells",
+      gradient: "from-purple-500/20 via-violet-500/10 to-transparent",
+      iconBg: "bg-purple-500/10",
+      icon: "✨",
+      borderHover: "hover:border-purple-500/30",
+    },
+    {
+      title: "Classes",
+      count: 12,
+      suffix: "",
+      description: "Hit dice, habilidades, subclasses e proficiências de cada classe SRD",
+      href: "/classes",
+      gradient: "from-amber-500/20 via-gold/10 to-transparent",
+      iconBg: "bg-amber-500/10",
+      icon: "⚔️",
+      borderHover: "hover:border-gold/30",
+    },
+    {
+      title: "Raças",
+      count: 9,
+      suffix: "",
+      description: "Traços raciais, bônus de atributo e habilidades especiais",
+      href: "/races",
+      gradient: "from-emerald-500/20 via-green-500/10 to-transparent",
+      iconBg: "bg-emerald-500/10",
+      icon: "🛡️",
+      borderHover: "hover:border-emerald-500/30",
+    },
+  ];
+
+  return (
+    <section data-section="compendium-showcase" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/[0.03] rounded-full blur-[120px]" />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto">
+        {/* Heading */}
+        <div className="text-center mb-8 md:mb-14 animate-fade-in">
+          <span className="inline-block text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gold/80 bg-gold/10 border border-gold/20 rounded-full px-3 py-1 mb-3 md:mb-4">
+            100% Gratuito
+          </span>
+          <h2 className="text-2xl md:text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
+            Compêndio SRD 5e
+          </h2>
+          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+            Consulte monstros, magias, classes e raças direto na mesa — tudo licenciado e gratuito.
+          </p>
+        </div>
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+          {cards.map((card, i) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              className={`group relative border border-border rounded-xl p-5 md:p-6 transition-all duration-300 ${card.borderHover} hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] animate-fade-in-up overflow-hidden`}
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              {/* Card gradient bg on hover */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+              <div className="relative">
+                {/* Icon */}
+                <div className={`${card.iconBg} rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl mb-3`}>
+                  {card.icon}
+                </div>
+
+                {/* Counter */}
+                <div className="font-display text-2xl md:text-3xl text-foreground mb-1">
+                  <AnimatedCounter target={card.count} suffix={card.suffix} duration={1800} />
+                </div>
+
+                {/* Title */}
+                <h3 className="font-display text-gold text-sm md:text-base mb-1.5">{card.title}</h3>
+
+                {/* Description */}
+                <p className="text-muted-foreground text-[11px] md:text-xs leading-relaxed line-clamp-2">
+                  {card.description}
+                </p>
+
+                {/* Arrow CTA */}
+                <div className="mt-3 flex items-center gap-1 text-gold/60 group-hover:text-gold text-xs transition-colors">
+                  <span>Explorar</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Social Proof ─────────────────────────────────────────────────────────────
 function SocialProofSection() {
   const testimonials = [
@@ -1249,6 +1364,8 @@ export default async function LandingPage() {
       <HeroSection isLoggedIn={isLoggedIn} />
       <SectionDivider />
       <FeaturesSection />
+      <SectionDivider />
+      <CompendiumShowcaseSection />
       <SectionDivider />
       <HowItWorksSection isLoggedIn={isLoggedIn} />
       <SectionDivider />

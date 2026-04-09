@@ -35,14 +35,14 @@ export function WelcomeScreen({ source, guestPreview, onContinue }: WelcomeScree
       className="w-full max-w-md mx-auto flex flex-col items-center text-center gap-6 py-8 px-4"
       data-testid="welcome-screen"
     >
-      <Image
-        src="/art/icons/mvp-crown.png"
-        alt=""
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/art/brand/logo-icon.svg"
+        alt="Pocket DM"
         width={72}
         height={72}
-        className="pixel-art opacity-90"
+        className="drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]"
         aria-hidden="true"
-        unoptimized
       />
 
       <div className="space-y-3">

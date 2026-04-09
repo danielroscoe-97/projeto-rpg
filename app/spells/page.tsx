@@ -17,7 +17,18 @@ export const metadata: Metadata = {
     "magias D&D 5e",
   ],
   alternates: {
-    canonical: "https://www.pocketdm.com.br/spells",
+    canonical: "https://pocketdm.com.br/spells",
+    languages: {
+      en: "https://pocketdm.com.br/spells",
+      "pt-BR": "https://pocketdm.com.br/magias",
+    },
+  },
+  openGraph: {
+    title: "D&D 5e Spell Compendium — SRD Spell List | Pocket DM",
+    description:
+      "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Filter by level, school, and class.",
+    type: "website",
+    url: "https://pocketdm.com.br/spells",
   },
 };
 
@@ -41,7 +52,29 @@ export default function SpellsIndexPage() {
       description: s.description?.slice(0, 200),
     }));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "D&D 5e Spell Compendium",
+    description: "Complete D&D 5e SRD spell compendium with descriptions, damage, range, and components.",
+    url: "https://pocketdm.com.br/spells",
+    inLanguage: "en",
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: spells.length,
+      itemListElement: spells.slice(0, 10).map((s, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://pocketdm.com.br/spells/${s.slug}`,
+        name: s.name,
+      })),
+    },
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
       <PublicNav breadcrumbs={[{ label: "Spells" }]} />
 
@@ -108,12 +141,13 @@ export default function SpellsIndexPage() {
           . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of the Coast.
         </p>
         <p className="mt-1">
-          <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+          <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
             Pocket DM
           </a>
           {" "}— The combat tracker for D&amp;D 5e
         </p>
       </footer>
     </div>
+    </>
   );
 }

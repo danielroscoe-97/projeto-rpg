@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description:
       "Complete reference for all D&D 5e combat actions with 2014/2024 comparison.",
     type: "website",
-    url: "https://www.pocketdm.com.br/actions",
+    url: "https://pocketdm.com.br/actions",
   },
   twitter: {
     card: "summary_large_image",
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
       "Complete reference for all D&D 5e combat actions with 2014/2024 comparison.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/actions",
+    canonical: "https://pocketdm.com.br/actions",
     languages: {
-      en: "https://www.pocketdm.com.br/actions",
-      "pt-BR": "https://www.pocketdm.com.br/acoes-em-combate",
+      en: "https://pocketdm.com.br/actions",
+      "pt-BR": "https://pocketdm.com.br/acoes-em-combate",
     },
   },
 };
@@ -63,7 +63,7 @@ function ActionsJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -108,7 +108,7 @@ export default function ActionsPage() {
           </p>
           <p className="mt-1">
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

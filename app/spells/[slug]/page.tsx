@@ -42,13 +42,13 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title: `${title} | Pocket DM`, description, type: "article", url: `https://www.pocketdm.com.br/spells/${slug}`, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }] },
+    openGraph: { title: `${title} | Pocket DM`, description, type: "article", url: `https://pocketdm.com.br/spells/${slug}`, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }] },
     twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description, images: ["/opengraph-image"] },
     alternates: {
-      canonical: `https://www.pocketdm.com.br/spells/${slug}`,
+      canonical: `https://pocketdm.com.br/spells/${slug}`,
       languages: {
-        en: `https://www.pocketdm.com.br/spells/${slug}`,
-        "pt-BR": `https://www.pocketdm.com.br/magias/${toSpellSlugPt(toSlug(spell.name))}`,
+        en: `https://pocketdm.com.br/spells/${slug}`,
+        "pt-BR": `https://pocketdm.com.br/magias/${toSpellSlugPt(toSlug(spell.name))}`,
       },
     },
   };
@@ -63,16 +63,16 @@ function SpellJsonLd({ spell, slug }: { spell: NonNullable<ReturnType<typeof get
     headline: `${spell.name} — D&D 5e Spell`,
     description: `${spell.name}. ${spell.description.slice(0, 200)}`,
     author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
   };
 
   const jsonLdBreadcrumb = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Spells", item: "https://www.pocketdm.com.br/spells" },
-      { "@type": "ListItem", position: 3, name: spell.name, item: `https://www.pocketdm.com.br/spells/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
+      { "@type": "ListItem", position: 2, name: "Spells", item: "https://pocketdm.com.br/spells" },
+      { "@type": "ListItem", position: 3, name: spell.name, item: `https://pocketdm.com.br/spells/${slug}` },
     ],
   };
 
@@ -175,7 +175,7 @@ export default async function SpellPage({
             . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of the Coast.
           </p>
           <p className="mt-1">
-            <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
               Pocket DM
             </a>
             {" "}— The combat tracker for D&amp;D 5e

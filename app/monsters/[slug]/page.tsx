@@ -42,7 +42,7 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://www.pocketdm.com.br/monsters/${slug}`,
+      url: `https://pocketdm.com.br/monsters/${slug}`,
       images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pocket DM" }],
     },
     twitter: {
@@ -52,10 +52,10 @@ export async function generateMetadata({
       images: ["/opengraph-image"],
     },
     alternates: {
-      canonical: `https://www.pocketdm.com.br/monsters/${slug}`,
+      canonical: `https://pocketdm.com.br/monsters/${slug}`,
       languages: {
-        en: `https://www.pocketdm.com.br/monsters/${slug}`,
-        "pt-BR": `https://www.pocketdm.com.br/monstros/${ptSlug}`,
+        en: `https://pocketdm.com.br/monsters/${slug}`,
+        "pt-BR": `https://pocketdm.com.br/monstros/${ptSlug}`,
       },
     },
   };
@@ -73,7 +73,7 @@ function MonsterJsonLd({ monster, slug }: { monster: NonNullable<ReturnType<type
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
   };
 
@@ -81,9 +81,9 @@ function MonsterJsonLd({ monster, slug }: { monster: NonNullable<ReturnType<type
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Monsters", item: "https://www.pocketdm.com.br/monsters" },
-      { "@type": "ListItem", position: 3, name: monster.name, item: `https://www.pocketdm.com.br/monsters/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
+      { "@type": "ListItem", position: 2, name: "Monsters", item: "https://pocketdm.com.br/monsters" },
+      { "@type": "ListItem", position: 3, name: monster.name, item: `https://pocketdm.com.br/monsters/${slug}` },
     ],
   };
 
@@ -168,7 +168,7 @@ export default async function MonsterPage({
             . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of the Coast.
           </p>
           <p className="mt-1">
-            <a href="https://www.pocketdm.com.br" className="underline hover:text-gray-300">
+            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
               Pocket DM
             </a>
             {" "}— The combat tracker for D&amp;D 5e

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Rolador de dados grátis com vantagem, crítico, presets e histórico.",
     type: "website",
-    url: "https://www.pocketdm.com.br/dados",
+    url: "https://pocketdm.com.br/dados",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
       "Rolador de dados grátis com vantagem, crítico, presets e histórico.",
   },
   alternates: {
-    canonical: "https://www.pocketdm.com.br/dados",
+    canonical: "https://pocketdm.com.br/dados",
     languages: {
-      en: "https://www.pocketdm.com.br/dice",
-      "pt-BR": "https://www.pocketdm.com.br/dados",
+      en: "https://pocketdm.com.br/dice",
+      "pt-BR": "https://pocketdm.com.br/dados",
     },
   },
 };
@@ -49,7 +49,7 @@ function DiceRollerJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
     inLanguage: "pt-BR",
   };
@@ -92,7 +92,7 @@ export default function DadosPage() {
         <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
           <p>
             <a
-              href="https://www.pocketdm.com.br"
+              href="https://pocketdm.com.br"
               className="underline hover:text-gray-300"
             >
               Pocket DM

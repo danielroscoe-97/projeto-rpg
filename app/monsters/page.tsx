@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getSrdMonsters } from "@/lib/srd/srd-data-server";
+import { getSrdMonstersDeduped, toSlug } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
 
@@ -17,25 +17,59 @@ export const metadata: Metadata = {
     "5e monster list",
   ],
   alternates: {
-    canonical: "https://www.pocketdm.com.br/monsters",
+    canonical: "https://pocketdm.com.br/monsters",
+    languages: {
+      en: "https://pocketdm.com.br/monsters",
+      "pt-BR": "https://pocketdm.com.br/monstros",
+    },
+  },
+  openGraph: {
+    title: "D&D 5e Monster Compendium — SRD Bestiary | Pocket DM",
+    description:
+      "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers. Search by CR, creature type, and name.",
+    type: "website",
+    url: "https://pocketdm.com.br/monsters",
   },
 };
 
 export const revalidate = 86400;
 
 export default function MonstersIndexPage() {
-  const monsters = getSrdMonsters()
+  const monsters = getSrdMonstersDeduped()
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((m) => ({
       name: m.name,
       cr: m.cr,
       type: m.type,
       isMAD: !!m.monster_a_day_url,
+      slug: toSlug(m.name),
       tokenUrl: m.token_url,
       fallbackTokenUrl: m.fallback_token_url,
     }));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "D&D 5e Monster Compendium",
+    description: "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers.",
+    url: "https://pocketdm.com.br/monsters",
+    inLanguage: "en",
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: monsters.length,
+      itemListElement: monsters.slice(0, 10).map((m, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://pocketdm.com.br/monsters/${m.slug}`,
+        name: m.name,
+      })),
+    },
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
       <PublicNav breadcrumbs={[{ label: "Monsters" }]} />
 
@@ -107,7 +141,7 @@ export default function MonstersIndexPage() {
         </p>
         <p className="mt-1">
           <a
-            href="https://www.pocketdm.com.br"
+            href="https://pocketdm.com.br"
             className="underline hover:text-gray-300"
           >
             Pocket DM
@@ -116,5 +150,6 @@ export default function MonstersIndexPage() {
         </p>
       </footer>
     </div>
+    </>
   );
 }

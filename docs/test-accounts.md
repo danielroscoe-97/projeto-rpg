@@ -199,6 +199,42 @@
 
 ---
 
+## First Access Accounts (Primeiro Acesso)
+
+### 11. DM Novato — DM Fresh
+
+| Campo | Valor |
+|-------|-------|
+| **Email** | `dm.fresh@test-pocketdm.com` |
+| **Senha** | `TestDM_Fresh!4` |
+| **Display Name** | DM Novato |
+| **Idioma** | pt-BR |
+| **Plano** | Free |
+
+**Cenários:**
+- Dashboard vazio — nenhuma campanha, sessão, ou jogador
+- Onboarding wizard do DM (primeiro acesso)
+- DM tour completo (tooltips, checklist)
+- Criar primeira campanha e sessão do zero
+
+### 12. Player Novato — Player Fresh
+
+| Campo | Valor |
+|-------|-------|
+| **Email** | `player.newbie@test-pocketdm.com` |
+| **Senha** | `TestPlayer_New!8` |
+| **Display Name** | Player Novato |
+| **Idioma** | pt-BR |
+| **Plano** | Free |
+
+**Cenários:**
+- Dashboard vazio — sem campanhas, convites, ou personagens
+- Onboarding wizard do Player (primeiro acesso)
+- Player tour completo
+- Aceitar primeiro convite de campanha
+
+---
+
 ## Player Anônimo (Sem Conta)
 
 | Campo | Valor |

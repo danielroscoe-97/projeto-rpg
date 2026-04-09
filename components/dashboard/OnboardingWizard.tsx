@@ -23,41 +23,21 @@ import {
 } from "@/components/ui/card";
 import { WelcomeScreen } from "@/components/dashboard/WelcomeScreen";
 import { getGuestEncounterData, getGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
+import QRCode from "qrcode";
 import type { OnboardingSource } from "@/lib/types/database";
 
-const MAX_PLAYERS = 8;
 const SESSION_STORAGE_KEY = "onboarding-wizard-state";
 const PERSIST_DEBOUNCE_MS = 1000;
 
-const STEP_ICONS: Record<number, string> = {
-  1: "/art/icons/carta.png",
-  2: "/art/icons/shield.png",
-  3: "/art/icons/potion.png",
-  4: "/art/icons/mvp-crown.png",
-};
-
-let _playerIdCounter = 0;
-function newPlayer(name = "", max_hp = 10, ac = 10): PlayerInput {
-  return { _id: ++_playerIdCounter, name, max_hp, ac, spell_save_dc: null };
-}
-
-interface PlayerInput {
-  _id: number;
-  name: string;
-  max_hp: number;
-  ac: number;
-  spell_save_dc: number | null;
-}
-
 type UserRole = "player" | "dm" | "both";
-type WizardStep = "role" | "welcome" | "choose" | "express" | "player_entry" | "player_waiting" | 1 | 2 | 3 | 4 | "done";
+type WizardStep = "role" | "welcome" | "choose" | "express" | "player_entry" | "player_waiting" | 1 | 2 | "done";
 
 interface WizardState {
   step: WizardStep;
   campaignName: string;
-  players: PlayerInput[];
-  encounterName: string;
-  sessionLink: string | null;
+  /** Set after campaign creation (step 1 → 2 transition) */
+  campaignId: string | null;
+  joinCode: string | null;
   isSubmitting: boolean;
   error: string | null;
   copyError: string | null;
@@ -98,8 +78,8 @@ function writeSessionStorage(state: Partial<WizardState>) {
     const toSave = {
       step: state.step,
       campaignName: state.campaignName,
-      players: state.players,
-      encounterName: state.encounterName,
+      campaignId: state.campaignId,
+      joinCode: state.joinCode,
     };
     sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(toSave));
   } catch {
@@ -159,13 +139,15 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     if (ss?.step && ss.step !== "done") {
       // P6: sessionStorage also must not bypass role step for users with no role
       if (!userRole && ss.step !== "role") return "role";
+      // Step 2 (players) was removed — redirect to step 1
+      if (ss.step === 2) return 1;
       return ss.step as WizardStep;
     }
     if (savedStep) {
       // savedStep comes from DB as string — convert numeric strings to numbers
       const num = Number(savedStep);
       const parsed: WizardStep = !isNaN(num) && num >= 1 && num <= 4 ? (num as WizardStep) : (savedStep as WizardStep);
-      if (["welcome", "choose", "role", 1, 2, 3, 4].includes(parsed as number | string)) {
+      if (["welcome", "choose", "role", 1, 3, 4].includes(parsed as number | string)) {
         // P6: Legacy users with ANY savedStep but no role set → force role first
         if (!userRole && parsed !== "role") return "role";
         return parsed;
@@ -182,6 +164,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       players: (ss?.players as PlayerInput[]) ?? initialPlayers,
       encounterName: (ss?.encounterName as string) ?? "First Encounter",
       sessionLink: null,
+      inviteLink: null,
+      sessionId: null,
       isSubmitting: false,
       error: null,
       copyError: null,
@@ -237,7 +221,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       return;
     }
     setState((s) => {
-      const next = { ...s, step: 2 as WizardStep, error: null, fieldErrors: new Set<string>() };
+      const next = { ...s, step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
       persistProgress(next);
       return next;
     });
@@ -355,7 +339,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     campaignName: string;
     encounterName: string;
     players: PlayerInput[];
-  }): Promise<string> {
+  }): Promise<{ sessionToken: string; inviteToken: string; sessionId: string }> {
     const supabase = createClient();
     const { campaignName, encounterName, players } = opts;
 
@@ -417,21 +401,38 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     }
 
     // 5. Generate Session Token
-    const token = crypto.randomUUID();
+    const sessionToken = crypto.randomUUID();
     const { error: tokenErr } = await supabase
       .from("session_tokens")
-      .insert({ session_id: session.id, token, is_active: true });
+      .insert({ session_id: session.id, token: sessionToken, is_active: true });
     if (tokenErr) {
       captureError(tokenErr, { component: "OnboardingWizard", action: "createToken", category: "database" });
       throw new Error(t("error_link"));
     }
 
-    // 6. Mark wizard_completed
+    // 6. Generate Campaign Invite (shareable link — no email)
+    const inviteToken = crypto.randomUUID();
+    const { error: inviteErr } = await supabase
+      .from("campaign_invites")
+      .insert({
+        campaign_id: campaign.id,
+        invited_by: userId,
+        token: inviteToken,
+        email: null,
+        status: "pending",
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+      });
+    if (inviteErr) {
+      captureError(inviteErr, { component: "OnboardingWizard", action: "createInvite", category: "database" });
+      // Non-critical — don't throw, fallback to session link
+    }
+
+    // 7. Mark wizard_completed
     await supabase
       .from("user_onboarding")
       .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
 
-    return token;
+    return { sessionToken, inviteToken: inviteErr ? sessionToken : inviteToken, sessionId: session.id };
   }
 
   // ── Step 4 submit ─────────────────────────────────────────────────
@@ -440,17 +441,19 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     setState((s) => ({ ...s, isSubmitting: true, error: null }));
 
     try {
-      const token = await createCampaignWithSession({
+      const result = await createCampaignWithSession({
         campaignName: state.campaignName.trim(),
         encounterName: state.encounterName.trim(),
-        players: state.players,
+        players: [], // Players are invited via link after campaign creation
       });
 
       try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
 
       setState((s) => ({
         ...s,
-        sessionLink: `${window.location.origin}/join/${token}`,
+        sessionLink: `${window.location.origin}/join/${result.sessionToken}`,
+        inviteLink: `${window.location.origin}/invite/${result.inviteToken}`,
+        sessionId: result.sessionId,
         step: "done",
         isSubmitting: false,
         showCelebration: true,
@@ -462,9 +465,10 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   }
 
   async function handleCopyLink(): Promise<boolean> {
-    if (!state.sessionLink) return false;
+    const link = state.inviteLink || state.sessionLink;
+    if (!link) return false;
     try {
-      await navigator.clipboard.writeText(state.sessionLink ?? "");
+      await navigator.clipboard.writeText(link);
       setState((s) => ({ ...s, copyError: null }));
       return true;
     } catch {
@@ -681,10 +685,10 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
                 const supabase = createClient();
                 await supabase
                   .from("user_onboarding")
-                  .upsert({ user_id: userId, wizard_completed: true, dashboard_tour_completed: false }, { onConflict: "user_id" });
+                  .upsert({ user_id: userId, wizard_completed: true, dashboard_tour_completed: true }, { onConflict: "user_id" });
               } catch { /* best-effort */ }
-              // Redirect to dashboard so the tour runs first, then session/new
-              router.push("/app/dashboard?from=wizard&next=session");
+              // Go straight to combat — skip dashboard tour for quick combat path
+              router.push("/app/session/new");
             }}
             className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 cursor-pointer"
           >
@@ -774,7 +778,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       setState((s) => ({ ...s, encounterName: encName, isSubmitting: true, error: null }));
 
       try {
-        const token = await createCampaignWithSession({
+        const result = await createCampaignWithSession({
           campaignName: trimmedCampaign,
           encounterName: encName,
           players: state.players,
@@ -784,7 +788,9 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
 
         setState((s) => ({
           ...s,
-          sessionLink: `${window.location.origin}/join/${token}`,
+          sessionLink: `${window.location.origin}/join/${result.sessionToken}`,
+          inviteLink: `${window.location.origin}/invite/${result.inviteToken}`,
+          sessionId: result.sessionId,
           step: "done",
           isSubmitting: false,
           showCelebration: true,
@@ -881,7 +887,12 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   }
 
   // ── Render Campaign Wizard (steps 1-4 + done) ───────────────────
-  const stepLabels = [t("step_campaign"), t("step_players"), t("step_encounter"), t("step_launch")];
+  // Steps: 1 (Campaign) → 3 (Encounter) → 4 (Launch). Display as 1, 2, 3.
+  const WIZARD_STEPS = [
+    { label: t("step_campaign"), internalStep: 1 },
+    { label: t("step_encounter"), internalStep: 3 },
+    { label: t("step_launch"), internalStep: 4 },
+  ];
 
   // Campaign name label/placeholder vary by source
   const campaignNameLabel = t("campaign_name_label");
@@ -893,12 +904,11 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     <Card className="max-w-lg w-full" data-testid="onboarding-wizard">
       <CardHeader>
         <div className="flex gap-2 mb-2" aria-label="Onboarding progress" role="group">
-          {stepLabels.map((label, i) => {
-            const num = i + 1;
+          {WIZARD_STEPS.map(({ label, internalStep }, i) => {
             const isActive =
-              state.step === num || (state.step === "done" && num === 4);
+              state.step === internalStep || (state.step === "done" && internalStep === 4);
             const isDone =
-              (typeof state.step === "number" && state.step > num) ||
+              (typeof state.step === "number" && state.step > internalStep) ||
               state.step === "done";
             return (
               <div key={label} className="flex items-center gap-1">
@@ -911,7 +921,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
                         : "bg-white/[0.06] text-muted-foreground"
                   }`}
                 >
-                  {num}
+                  {i + 1}
                 </span>
                 <span
                   className={`text-xs ${
@@ -920,14 +930,14 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
                 >
                   {label}
                 </span>
-                {i < stepLabels.length - 1 && (
+                {i < WIZARD_STEPS.length - 1 && (
                   <span className="text-muted-foreground/60 mx-1">›</span>
                 )}
               </div>
             );
           })}
         </div>
-        {typeof state.step === "number" && STEP_ICONS[state.step] && (
+        {typeof state.step === "number" && STEP_ICONS[state.step] ? (
           <Image
             src={STEP_ICONS[state.step]}
             alt=""
@@ -937,20 +947,18 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
             aria-hidden="true"
             unoptimized
           />
-        )}
+        ) : null}
         <CardTitle className="text-foreground">
           {state.step === 1 && t("campaign_name_title")}
-          {state.step === 2 && t("players_title")}
           {state.step === 3 && t("encounter_title")}
           {state.step === 4 && t("launch_title")}
           {state.step === "done" && t("launch_ready")}
         </CardTitle>
         <CardDescription className="text-muted-foreground">
           {state.step === 1 && t("campaign_name_description")}
-          {state.step === 2 && t("players_description")}
           {state.step === 3 && t("encounter_description")}
           {state.step === 4 && t("launch_description")}
-          {state.step === "done" && t("launch_share_description")}
+          {state.step === "done" && t("launch_invite_description")}
         </CardDescription>
       </CardHeader>
 
@@ -978,28 +986,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           </div>
         )}
 
-        {/* ── Step 2: Players (Simplified — JO-06) ── */}
-        {state.step === 2 && (
-          <PlayerStep
-            players={state.players}
-            fieldErrors={state.fieldErrors}
-            maxPlayers={MAX_PLAYERS}
-            onPlayerChange={handlePlayerChange}
-            onAddPlayer={handleAddPlayer}
-            onRemovePlayer={handleRemovePlayer}
-            onSkip={() => {
-              setState((s) => {
-                const next = { ...s, players: [], step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
-                persistProgress(next);
-                return next;
-              });
-            }}
-            t={t}
-            tc={tc}
-          />
-        )}
-
-        {/* ── Step 3: Encounter Name ── */}
+        {/* ── Step 2 (Encounter Name) — internal step 3 ── */}
         {state.step === 3 && (
           <div className="space-y-2">
             <Label htmlFor="encounter-name" className="text-foreground">
@@ -1032,19 +1019,6 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               <p className="text-foreground font-medium">{state.campaignName}</p>
             </div>
             <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                {t("launch_players_label")} ({state.players.length})
-              </p>
-              <ul className="space-y-1">
-                {state.players.map((p) => (
-                  <li key={p._id} className="text-sm text-foreground/80">
-                    {p.name} — HP {p.max_hp || 10} · AC {p.ac || 10}
-                    {p.spell_save_dc !== null ? ` · DC ${p.spell_save_dc}` : ""}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                 {t("launch_encounter_label")}
               </p>
@@ -1053,10 +1027,10 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           </div>
         )}
 
-        {/* ── Done: Session Link + Celebration (JO-08) ── */}
-        {state.step === "done" && state.sessionLink && (
+        {/* ── Done: Campaign Invite Link + Celebration (JO-08) ── */}
+        {state.step === "done" && (state.inviteLink || state.sessionLink) && (
           <CelebrationStep
-            sessionLink={state.sessionLink}
+            inviteLink={state.inviteLink || state.sessionLink!}
             showCelebration={state.showCelebration}
             onCopy={handleCopyLink}
             copyError={state.copyError}
@@ -1095,27 +1069,11 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
             </Button>
           </>
         )}
-        {state.step === 2 && (
-          <>
-            <Button
-              variant="goldOutline"
-              onClick={() => setState((s) => ({ ...s, step: 1, error: null }))}
-            >
-              {tc("back")}
-            </Button>
-            <Button
-              onClick={handleStep2Next}
-              variant="gold"
-            >
-              {tc("next")}
-            </Button>
-          </>
-        )}
         {state.step === 3 && (
           <>
             <Button
               variant="goldOutline"
-              onClick={() => setState((s) => ({ ...s, step: 2, error: null }))}
+              onClick={() => setState((s) => ({ ...s, step: 1, error: null }))}
             >
               {tc("back")}
             </Button>
@@ -1154,27 +1112,23 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         )}
         {state.step === "done" && (
           <div className="flex gap-2 w-full flex-col sm:flex-row">
-            {effectiveSource === "guest_combat" && (
-              <Button
-                variant="goldOutline"
-                onClick={() => {
-                  const imported = typeof window !== "undefined"
-                    ? sessionStorage.getItem("imported-encounter-id")
-                    : null;
-                  if (imported) {
-                    router.push(`/app/session/${imported}`);
-                  } else {
-                    router.push("/app/session/new");
-                  }
-                }}
-              >
-                {t("go_back_to_combat")}
-              </Button>
-            )}
             <Button
-              onClick={() => router.push("/app/dashboard?from=wizard")}
+              onClick={() => {
+                if (state.sessionId) {
+                  router.push(`/app/session/${state.sessionId}`);
+                } else {
+                  router.push("/app/session/new");
+                }
+              }}
               variant="gold"
-              className="flex-1 sm:flex-none"
+              className="flex-1"
+            >
+              {t("start_first_combat")}
+            </Button>
+            <Button
+              variant="goldOutline"
+              onClick={() => router.push("/app/dashboard?from=wizard")}
+              className="flex-1"
             >
               {t("go_to_dashboard")}
             </Button>
@@ -1372,13 +1326,13 @@ function PlayerStep({
 
 // ── CelebrationStep — Enhanced "done" step (JO-08) ──────────────────
 function CelebrationStep({
-  sessionLink,
+  inviteLink,
   showCelebration,
   onCopy,
   copyError,
   t,
 }: {
-  sessionLink: string;
+  inviteLink: string;
   showCelebration: boolean;
   onCopy: () => Promise<boolean> | void;
   copyError: string | null;
@@ -1386,6 +1340,7 @@ function CelebrationStep({
 }) {
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // P4: Clean up timeout on unmount to avoid state updates on unmounted component
   useEffect(() => {
@@ -1393,6 +1348,16 @@ function CelebrationStep({
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
     };
   }, []);
+
+  // Render QR code for campaign invite link
+  useEffect(() => {
+    if (!inviteLink || !qrCanvasRef.current) return;
+    QRCode.toCanvas(qrCanvasRef.current, inviteLink, {
+      width: 180,
+      margin: 2,
+      color: { dark: "#D4A853", light: "#13131E" },
+    }).catch(() => { /* silent fallback */ });
+  }, [inviteLink]);
 
   async function handleCopy() {
     const result = onCopy();
@@ -1461,14 +1426,13 @@ function CelebrationStep({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Image
-              src="/art/icons/mvp-crown.png"
-              alt=""
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/art/brand/logo-icon.svg"
+              alt="Pocket DM"
               width={56}
               height={56}
-              className="pixel-art mx-auto mb-2"
-              aria-hidden="true"
-              unoptimized
+              className="mx-auto mb-2 drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]"
             />
           </motion.div>
           <h3 className="text-lg font-bold text-gold">{t("celebration_title")}</h3>
@@ -1476,14 +1440,19 @@ function CelebrationStep({
         </motion.div>
       )}
 
-      {/* Session link card */}
+      {/* Campaign invite link card */}
       <div className="p-3 rounded-lg bg-white/[0.04] border border-gold/20">
         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-          {t("launch_session_link_label")}
+          {t("launch_invite_link_label")}
         </p>
         <p className="text-sm font-mono text-gold break-all">
-          {sessionLink}
+          {inviteLink}
         </p>
+      </div>
+
+      {/* QR Code */}
+      <div className="flex justify-center">
+        <canvas ref={qrCanvasRef} className="rounded-md" />
       </div>
 
       {/* Copy button with animated feedback */}
@@ -1528,13 +1497,10 @@ function CelebrationStep({
         <p className="text-xs text-red-400" role="alert">{copyError}</p>
       )}
 
-      {/* JO-08: "Go to Dashboard" CTA */}
-      <Link
-        href="/app/dashboard"
-        className="block w-full text-center px-4 py-2.5 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:text-foreground hover:bg-white/[0.05] transition-colors"
-      >
-        {t("go_to_dashboard")}
-      </Link>
+      {/* Hint text */}
+      <p className="text-[11px] text-muted-foreground/60 text-center">
+        {t("launch_invite_hint")}
+      </p>
 
       <p className="text-xs text-muted-foreground text-center">
         {t("launch_share_hint")}
