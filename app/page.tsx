@@ -622,7 +622,7 @@ function CompendiumShowcaseSection() {
   ];
 
   return (
-    <section data-section="compendium-showcase" id="compendio" className="py-14 md:py-28 px-4 md:px-6 relative overflow-visible">
+    <section data-section="compendium-showcase" id="compendio" className="py-14 md:py-28 px-4 md:px-6 relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/[0.03] rounded-full blur-[120px]" />
@@ -681,7 +681,7 @@ function CompendiumShowcaseSection() {
 
               <div className="relative">
                 {/* Mockup area — fixed height so all cards align */}
-                <div className="relative overflow-hidden min-h-[160px]">
+                <div className="relative overflow-hidden h-[160px]">
                   {/* Thematic SVG icon — visible by default, fades on hover */}
                   <div className="absolute inset-0 flex items-center justify-center p-6 transition-all duration-500 ease-out opacity-100 scale-100 group-hover:opacity-0 group-hover:scale-90 z-10 pointer-events-none">
                     <div className="w-16 h-16 md:w-20 md:h-20">
