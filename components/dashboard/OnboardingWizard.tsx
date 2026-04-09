@@ -61,11 +61,6 @@ function readSessionStorage(): Partial<WizardState> | null {
     const parsed = JSON.parse(raw);
     // Restore Set from array
     if (parsed.fieldErrors) parsed.fieldErrors = new Set(parsed.fieldErrors);
-    // Sync _playerIdCounter to avoid collisions with restored player _ids
-    if (Array.isArray(parsed.players)) {
-      const maxId = parsed.players.reduce((m: number, p: { _id?: number }) => Math.max(m, p._id ?? 0), 0);
-      if (maxId >= _playerIdCounter) _playerIdCounter = maxId;
-    }
     return parsed;
   } catch {
     return null;
@@ -115,40 +110,21 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   const effectiveSource: OnboardingSource =
     (source === "fresh" && guestPreview) ? "guest_combat" : source;
 
-  // Build initial players from guest data (PCs only — no monster_id)
-  const [initialPlayers] = useState<PlayerInput[]>(() => {
-    if (effectiveSource === "guest_combat" && guestData) {
-      const pcs = guestData.combatants.filter(
-        (c: { monster_id?: string | null; name: string; max_hp?: number; ac?: number }) => !c.monster_id
-      );
-      if (pcs.length > 0) {
-        return pcs.slice(0, MAX_PLAYERS).map((pc: { name: string; max_hp?: number; ac?: number }) =>
-          newPlayer(pc.name ?? "", pc.max_hp ?? 10, pc.ac ?? 10)
-        );
-      }
-    }
-    return [newPlayer()];
-  });
-
   const initialCampaignName = effectiveSource === "guest_combat" ? t("campaign_name_guest_default") : "";
 
   // Determine initial step: sessionStorage → savedStep → role (new first step)
-  // P6: If userRole is null (never set), force "role" step even if there's a savedStep
   const [initialStep] = useState<WizardStep>(() => {
     const ss = readSessionStorage();
     if (ss?.step && ss.step !== "done") {
-      // P6: sessionStorage also must not bypass role step for users with no role
       if (!userRole && ss.step !== "role") return "role";
-      // Step 2 (players) was removed — redirect to step 1
-      if (ss.step === 2) return 1;
+      // Legacy steps 3/4 no longer exist → redirect to step 1
+      if (ss.step === 3 || ss.step === 4) return 1;
       return ss.step as WizardStep;
     }
     if (savedStep) {
-      // savedStep comes from DB as string — convert numeric strings to numbers
       const num = Number(savedStep);
-      const parsed: WizardStep = !isNaN(num) && num >= 1 && num <= 4 ? (num as WizardStep) : (savedStep as WizardStep);
-      if (["welcome", "choose", "role", 1, 3, 4].includes(parsed as number | string)) {
-        // P6: Legacy users with ANY savedStep but no role set → force role first
+      const parsed: WizardStep = !isNaN(num) && num >= 1 && num <= 2 ? (num as WizardStep) : (savedStep as WizardStep);
+      if (["welcome", "choose", "role", 1, 2].includes(parsed as number | string)) {
         if (!userRole && parsed !== "role") return "role";
         return parsed;
       }
@@ -161,11 +137,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     return {
       step: initialStep,
       campaignName: (ss?.campaignName as string) ?? initialCampaignName,
-      players: (ss?.players as PlayerInput[]) ?? initialPlayers,
-      encounterName: (ss?.encounterName as string) ?? "First Encounter",
-      sessionLink: null,
-      inviteLink: null,
-      sessionId: null,
+      campaignId: (ss?.campaignId as string) ?? null,
+      joinCode: (ss?.joinCode as string) ?? null,
       isSubmitting: false,
       error: null,
       copyError: null,
@@ -210,7 +183,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     });
   }
 
-  function handleStep1Next() {
+  async function handleStep1Next() {
     const trimmed = state.campaignName.trim();
     if (!trimmed) {
       setState((s) => ({ ...s, error: t("campaign_name_required"), fieldErrors: new Set(["campaign-name"]) }));
@@ -220,243 +193,18 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       setState((s) => ({ ...s, error: t("campaign_name_max"), fieldErrors: new Set(["campaign-name"]) }));
       return;
     }
-    setState((s) => {
-      const next = { ...s, step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  // ── Step 2 ────────────────────────────────────────────────────────
-  function handlePlayerChange(index: number, field: keyof PlayerInput, value: string) {
-    setState((s) => {
-      const updated = s.players.map((p, i) => {
-        if (i !== index) return p;
-        if (field === "name") return { ...p, name: value };
-        if (field === "spell_save_dc")
-          return { ...p, spell_save_dc: value === "" ? null : parseInt(value, 10) };
-        return { ...p, [field]: parseInt(value, 10) };
-      });
-      const fe = new Set(s.fieldErrors);
-      const player = s.players[index];
-      fe.delete(`player-${field}-${player._id}`);
-      const next = { ...s, players: updated, error: null, fieldErrors: fe };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  function handleAddPlayer() {
-    if (state.players.length >= MAX_PLAYERS) return;
-    setState((s) => {
-      const next = { ...s, players: [...s.players, newPlayer()] };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  function handleRemovePlayer(index: number) {
-    setState((s) => {
-      const next = { ...s, players: s.players.filter((_, i) => i !== index) };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  function handleStep2Next() {
-    // Zero players is valid (JO-06) — skip validation
-    if (state.players.length === 0) {
-      setState((s) => {
-        const next = { ...s, step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
-        persistProgress(next);
-        return next;
-      });
-      return;
-    }
-    const errors = new Set<string>();
-    for (const p of state.players) {
-      if (!p.name.trim()) errors.add(`player-name-${p._id}`);
-      // HP/AC are optional — but if provided they must be valid numbers
-      if (p.max_hp && (isNaN(p.max_hp) || p.max_hp <= 0 || p.max_hp > 9999)) errors.add(`player-hp-${p._id}`);
-      if (p.ac && (isNaN(p.ac) || p.ac <= 0 || p.ac > 99)) errors.add(`player-ac-${p._id}`);
-      if (
-        p.spell_save_dc !== null &&
-        (isNaN(p.spell_save_dc) || p.spell_save_dc <= 0 || p.spell_save_dc > 99)
-      ) errors.add(`player-dc-${p._id}`);
-    }
-    if (errors.size > 0) {
-      const hasDcError = [...errors].some((e) => e.startsWith("player-dc-"));
-      setState((s) => ({
-        ...s,
-        error: hasDcError ? t("players_spell_dc_validation") : t("players_validation"),
-        fieldErrors: errors,
-      }));
-      return;
-    }
-    // Apply defaults for empty HP/AC
-    const playersWithDefaults = state.players.map((p) => ({
-      ...p,
-      max_hp: p.max_hp || 10,
-      ac: p.ac || 10,
-    }));
-    setState((s) => {
-      const next = { ...s, players: playersWithDefaults, step: 3 as WizardStep, error: null, fieldErrors: new Set<string>() };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  // ── Step 3 ────────────────────────────────────────────────────────
-  function handleEncounterNameChange(value: string) {
-    setState((s) => {
-      const fe = new Set(s.fieldErrors);
-      fe.delete("encounter-name");
-      const next = { ...s, encounterName: value, error: null, fieldErrors: fe };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  function handleStep3Next() {
-    const trimmed = state.encounterName.trim();
-    if (!trimmed) {
-      setState((s) => ({ ...s, error: t("encounter_name_required"), fieldErrors: new Set(["encounter-name"]) }));
-      return;
-    }
-    if (trimmed.length > 50) {
-      setState((s) => ({ ...s, error: t("encounter_name_max"), fieldErrors: new Set(["encounter-name"]) }));
-      return;
-    }
-    setState((s) => {
-      const next = { ...s, step: 4 as WizardStep, error: null, fieldErrors: new Set<string>() };
-      persistProgress(next);
-      return next;
-    });
-  }
-
-  // ── Shared campaign+session creation ────────────────────────────
-  async function createCampaignWithSession(opts: {
-    campaignName: string;
-    encounterName: string;
-    players: PlayerInput[];
-  }): Promise<{ sessionToken: string; inviteToken: string; sessionId: string }> {
-    const supabase = createClient();
-    const { campaignName, encounterName, players } = opts;
-
-    // 1. Create Campaign — delete any orphaned campaign first (retry-safe)
-    await supabase.from("campaigns").delete().eq("owner_id", userId);
-    const { data: campaign, error: campaignErr } = await supabase
-      .from("campaigns")
-      .insert({ owner_id: userId, name: campaignName })
-      .select("id")
-      .single();
-    if (campaignErr || !campaign) {
-      captureError(campaignErr, { component: "OnboardingWizard", action: "createCampaign", category: "database" });
-      throw new Error(t("error_campaign"));
-    }
-
-    // 2. Insert PlayerCharacters
-    const validPlayers = players.filter((p) => p.name.trim());
-    if (validPlayers.length > 0) {
-      const characters = validPlayers.map((p) => ({
-        campaign_id: campaign.id,
-        name: p.name.trim(),
-        max_hp: p.max_hp || 10,
-        current_hp: p.max_hp || 10,
-        ac: p.ac || 10,
-        spell_save_dc: p.spell_save_dc ?? null,
-      }));
-      const { error: pcErr } = await supabase.from("player_characters").insert(characters);
-      if (pcErr) {
-        captureError(pcErr, { component: "OnboardingWizard", action: "insertPlayers", category: "database" });
-        throw new Error(t("error_players"));
-      }
-    }
-
-    // 3. Create Session
-    const { data: session, error: sessionErr } = await supabase
-      .from("sessions")
-      .insert({
-        campaign_id: campaign.id,
-        owner_id: userId,
-        name: `${campaignName} - Session 1`,
-        ruleset_version: "2014" as const,
-      })
-      .select("id")
-      .single();
-    if (sessionErr || !session) {
-      captureError(sessionErr, { component: "OnboardingWizard", action: "createSession", category: "database" });
-      throw new Error(t("error_session"));
-    }
-
-    // 4. Create Encounter
-    const { error: encErr } = await supabase.from("encounters").insert({
-      session_id: session.id,
-      name: encounterName,
-      is_active: true,
-    });
-    if (encErr) {
-      captureError(encErr, { component: "OnboardingWizard", action: "createEncounter", category: "database" });
-      throw new Error(t("error_encounter"));
-    }
-
-    // 5. Generate Session Token
-    const sessionToken = crypto.randomUUID();
-    const { error: tokenErr } = await supabase
-      .from("session_tokens")
-      .insert({ session_id: session.id, token: sessionToken, is_active: true });
-    if (tokenErr) {
-      captureError(tokenErr, { component: "OnboardingWizard", action: "createToken", category: "database" });
-      throw new Error(t("error_link"));
-    }
-
-    // 6. Generate Campaign Invite (shareable link — no email)
-    const inviteToken = crypto.randomUUID();
-    const { error: inviteErr } = await supabase
-      .from("campaign_invites")
-      .insert({
-        campaign_id: campaign.id,
-        invited_by: userId,
-        token: inviteToken,
-        email: null,
-        status: "pending",
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-      });
-    if (inviteErr) {
-      captureError(inviteErr, { component: "OnboardingWizard", action: "createInvite", category: "database" });
-      // Non-critical — don't throw, fallback to session link
-    }
-
-    // 7. Mark wizard_completed
-    await supabase
-      .from("user_onboarding")
-      .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
-
-    return { sessionToken, inviteToken: inviteErr ? sessionToken : inviteToken, sessionId: session.id };
-  }
-
-  // ── Step 4 submit ─────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (state.isSubmitting) return;
+    // Create campaign and move to step 2 (invite)
     setState((s) => ({ ...s, isSubmitting: true, error: null }));
-
     try {
-      const result = await createCampaignWithSession({
-        campaignName: state.campaignName.trim(),
-        encounterName: state.encounterName.trim(),
-        players: [], // Players are invited via link after campaign creation
-      });
-
-      try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
-
+      const result = await createCampaign(state.campaignName.trim());
       setState((s) => ({
         ...s,
-        sessionLink: `${window.location.origin}/join/${result.sessionToken}`,
-        inviteLink: `${window.location.origin}/invite/${result.inviteToken}`,
-        sessionId: result.sessionId,
-        step: "done",
+        campaignId: result.campaignId,
+        joinCode: result.joinCode,
+        step: 2 as WizardStep,
         isSubmitting: false,
-        showCelebration: true,
+        error: null,
+        fieldErrors: new Set<string>(),
       }));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("error_generic");
@@ -464,9 +212,50 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     }
   }
 
-  async function handleCopyLink(): Promise<boolean> {
-    const link = state.inviteLink || state.sessionLink;
-    if (!link) return false;
+  // ── Campaign creation (no session/encounter — campaign-oriented) ─
+  async function createCampaign(campaignName: string): Promise<{ campaignId: string; joinCode: string }> {
+    const supabase = createClient();
+
+    // 1. Create Campaign (no destructive delete — DM may have existing campaigns)
+    const joinCode = crypto.randomUUID().slice(0, 8);
+    const { data: campaign, error: campaignErr } = await supabase
+      .from("campaigns")
+      .insert({ owner_id: userId, name: campaignName, join_code: joinCode, join_code_active: true })
+      .select("id")
+      .single();
+    if (campaignErr || !campaign) {
+      captureError(campaignErr, { component: "OnboardingWizard", action: "createCampaign", category: "database" });
+      throw new Error(t("error_campaign"));
+    }
+
+    // 2. Add DM as campaign member
+    const { error: memberErr } = await supabase.from("campaign_members").insert({
+      campaign_id: campaign.id,
+      user_id: userId,
+      role: "dm",
+      status: "active",
+    });
+    if (memberErr) {
+      captureError(memberErr, { component: "OnboardingWizard", action: "addDmMember", category: "database" });
+      // Non-fatal — campaign exists, DM membership can be added later
+    }
+
+    // 3. Mark wizard_completed
+    await supabase
+      .from("user_onboarding")
+      .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
+
+    return { campaignId: campaign.id, joinCode };
+  }
+
+  function handleFinishWizard() {
+    try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
+    setState((s) => ({ ...s, step: "done" as WizardStep, showCelebration: true }));
+  }
+
+  async function handleCopyJoinLink(): Promise<boolean> {
+    if (!state.joinCode) return false;
+    const link = `${window.location.origin}/join-campaign/${state.joinCode}`;
     try {
       await navigator.clipboard.writeText(link);
       setState((s) => ({ ...s, copyError: null }));
@@ -762,11 +551,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     );
   }
 
-  // ── Express Step (1-screen onboarding for guest_combat) ─────────
+  // ── Express Step (guest_combat → create campaign + go to combat) ─
   if (state.step === "express" && effectiveSource === "guest_combat") {
-    const pcCount = state.players.filter((p) => p.name.trim()).length;
-    const defaultEncounterName = t("express_encounter_default");
-
     async function handleExpressSubmit() {
       if (state.isSubmitting) return;
       const trimmedCampaign = state.campaignName.trim();
@@ -774,27 +560,12 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         setState((s) => ({ ...s, error: t("campaign_name_required"), fieldErrors: new Set(["campaign-name"]) }));
         return;
       }
-      const encName = state.encounterName.trim() || defaultEncounterName;
-      setState((s) => ({ ...s, encounterName: encName, isSubmitting: true, error: null }));
+      setState((s) => ({ ...s, isSubmitting: true, error: null }));
 
       try {
-        const result = await createCampaignWithSession({
-          campaignName: trimmedCampaign,
-          encounterName: encName,
-          players: state.players,
-        });
-
+        await createCampaign(trimmedCampaign);
         try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
-
-        setState((s) => ({
-          ...s,
-          sessionLink: `${window.location.origin}/join/${result.sessionToken}`,
-          inviteLink: `${window.location.origin}/invite/${result.inviteToken}`,
-          sessionId: result.sessionId,
-          step: "done",
-          isSubmitting: false,
-          showCelebration: true,
-        }));
+        router.push("/app/session/new");
       } catch (err) {
         const message = err instanceof Error ? err.message : t("error_generic");
         setState((s) => ({ ...s, error: message, isSubmitting: false }));
@@ -818,7 +589,6 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Campaign name */}
           <div className="space-y-2">
             <Label htmlFor="express-campaign">{t("campaign_name_label")}</Label>
             <Input
@@ -831,33 +601,6 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               className={state.fieldErrors.has("campaign-name") ? "border-red-500" : ""}
             />
           </div>
-
-          {/* Players preview (read-only) */}
-          {pcCount > 0 && (
-            <div className="space-y-2">
-              <Label>{t("express_players_label", { count: pcCount })}</Label>
-              <div className="flex flex-wrap gap-2">
-                {state.players.filter((p) => p.name.trim()).map((p) => (
-                  <span
-                    key={p._id}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] px-3 py-1 text-sm text-foreground"
-                  >
-                    {p.name}
-                    {p.max_hp > 0 && (
-                      <span className="text-xs text-muted-foreground">HP {p.max_hp}</span>
-                    )}
-                  </span>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setState((s) => ({ ...s, step: 2 as WizardStep }))}
-                className="text-xs text-gold hover:underline"
-              >
-                {t("express_edit_players")}
-              </button>
-            </div>
-          )}
 
           {state.error && (
             <p className="text-sm text-red-400">{state.error}</p>
@@ -886,15 +629,12 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     );
   }
 
-  // ── Render Campaign Wizard (steps 1-4 + done) ───────────────────
-  // Steps: 1 (Campaign) → 3 (Encounter) → 4 (Launch). Display as 1, 2, 3.
+  // ── Render Campaign Wizard (steps 1-2 + done) ───────────────────
   const WIZARD_STEPS = [
     { label: t("step_campaign"), internalStep: 1 },
-    { label: t("step_encounter"), internalStep: 3 },
-    { label: t("step_launch"), internalStep: 4 },
+    { label: t("step_invite"), internalStep: 2 },
   ];
 
-  // Campaign name label/placeholder vary by source
   const campaignNameLabel = t("campaign_name_label");
   const campaignNamePlaceholder = effectiveSource === "guest_combat"
     ? t("campaign_name_guest_default")
@@ -937,28 +677,18 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
             );
           })}
         </div>
-        {typeof state.step === "number" && STEP_ICONS[state.step] ? (
-          <Image
-            src={STEP_ICONS[state.step]}
-            alt=""
-            width={48}
-            height={48}
-            className="pixel-art mx-auto mb-2 opacity-60"
-            aria-hidden="true"
-            unoptimized
-          />
-        ) : null}
+        {state.step === 2 && (
+          <Users className="w-12 h-12 mx-auto mb-2 text-gold/60" aria-hidden="true" />
+        )}
         <CardTitle className="text-foreground">
           {state.step === 1 && t("campaign_name_title")}
-          {state.step === 3 && t("encounter_title")}
-          {state.step === 4 && t("launch_title")}
-          {state.step === "done" && t("launch_ready")}
+          {state.step === 2 && t("invite_title")}
+          {state.step === "done" && t("campaign_created_title")}
         </CardTitle>
         <CardDescription className="text-muted-foreground">
           {state.step === 1 && t("campaign_name_description")}
-          {state.step === 3 && t("encounter_description")}
-          {state.step === 4 && t("launch_description")}
-          {state.step === "done" && t("launch_invite_description")}
+          {state.step === 2 && t("invite_description")}
+          {state.step === "done" && t("campaign_created_description")}
         </CardDescription>
       </CardHeader>
 
@@ -986,56 +716,20 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           </div>
         )}
 
-        {/* ── Step 2 (Encounter Name) — internal step 3 ── */}
-        {state.step === 3 && (
-          <div className="space-y-2">
-            <Label htmlFor="encounter-name" className="text-foreground">
-              {t("encounter_name_label")}
-            </Label>
-            <Input
-              id="encounter-name"
-              placeholder={t("encounter_name_placeholder")}
-              value={state.encounterName}
-              onChange={(e) => handleEncounterNameChange(e.target.value)}
-              maxLength={50}
-              className={`bg-white/[0.04] border-border text-foreground placeholder:text-muted-foreground/60${state.fieldErrors.has("encounter-name") ? " field-error" : ""}`}
-              aria-invalid={state.fieldErrors.has("encounter-name") || undefined}
-              aria-describedby={state.fieldErrors.has("encounter-name") ? "encounter-name-error" : undefined}
-              onKeyDown={(e) => e.key === "Enter" && handleStep3Next()}
+        {/* ── Step 2: Invite Players (join link + QR) ── */}
+        {state.step === 2 && (
+          state.joinCode ? (
+            <InviteStep
+              joinCode={state.joinCode}
+              onCopy={handleCopyJoinLink}
+              copyError={state.copyError}
+              t={t}
             />
-            <p className="text-xs text-muted-foreground text-right">
-              {state.encounterName.length}/50
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              {t("invite_loading")}
             </p>
-          </div>
-        )}
-
-        {/* ── Step 4: Confirm ── */}
-        {state.step === 4 && (
-          <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                {t("launch_campaign_label")}
-              </p>
-              <p className="text-foreground font-medium">{state.campaignName}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-white/[0.04] border border-border">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                {t("launch_encounter_label")}
-              </p>
-              <p className="text-foreground font-medium">{state.encounterName}</p>
-            </div>
-          </div>
-        )}
-
-        {/* ── Done: Campaign Invite Link + Celebration (JO-08) ── */}
-        {state.step === "done" && (state.inviteLink || state.sessionLink) && (
-          <CelebrationStep
-            inviteLink={state.inviteLink || state.sessionLink!}
-            showCelebration={state.showCelebration}
-            onCopy={handleCopyLink}
-            copyError={state.copyError}
-            t={t}
-          />
+          )
         )}
 
         {/* Error message */}
@@ -1062,41 +756,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
             </Button>
             <Button
               onClick={handleStep1Next}
-              disabled={!state.campaignName.trim()}
-              variant="gold"
-            >
-              {tc("next")}
-            </Button>
-          </>
-        )}
-        {state.step === 3 && (
-          <>
-            <Button
-              variant="goldOutline"
-              onClick={() => setState((s) => ({ ...s, step: 1, error: null }))}
-            >
-              {tc("back")}
-            </Button>
-            <Button
-              onClick={handleStep3Next}
-              disabled={!state.encounterName.trim()}
-              variant="gold"
-            >
-              {tc("next")}
-            </Button>
-          </>
-        )}
-        {state.step === 4 && (
-          <>
-            <Button
-              variant="goldOutline"
-              onClick={() => setState((s) => ({ ...s, step: 3, error: null }))}
-            >
-              {tc("back")}
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={state.isSubmitting}
+              disabled={!state.campaignName.trim() || state.isSubmitting}
               variant="gold"
             >
               {state.isSubmitting ? (
@@ -1105,25 +765,37 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
                   {t("creating")}
                 </>
               ) : (
-                t("create_button")
+                tc("next")
               )}
             </Button>
           </>
         )}
-        {state.step === "done" && (
+        {state.step === 2 && (
           <div className="flex gap-2 w-full flex-col sm:flex-row">
             <Button
-              onClick={() => {
-                if (state.sessionId) {
-                  router.push(`/app/session/${state.sessionId}`);
-                } else {
-                  router.push("/app/session/new");
-                }
-              }}
+              onClick={handleFinishWizard}
               variant="gold"
               className="flex-1"
             >
-              {t("start_first_combat")}
+              {t("invite_done_cta")}
+            </Button>
+            <button
+              type="button"
+              onClick={handleFinishWizard}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
+              {t("invite_skip")}
+            </button>
+          </div>
+        )}
+        {state.step === "done" && (
+          <div className="flex gap-2 w-full flex-col sm:flex-row">
+            <Button
+              onClick={() => router.push(`/app/campaigns/${state.campaignId}`)}
+              variant="gold"
+              className="flex-1"
+            >
+              {t("configure_campaign_cta")}
             </Button>
             <Button
               variant="goldOutline"
@@ -1139,8 +811,129 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   );
 }
 
-// ── PlayerStep — Simplified Step 2 (JO-06) ──────────────────────────
-function PlayerStep({
+// ── InviteStep — Step 2: Join link + QR code ────────────────────────
+function InviteStep({
+  joinCode,
+  onCopy,
+  copyError,
+  t,
+}: {
+  joinCode: string;
+  onCopy: () => Promise<boolean> | void;
+  copyError: string | null;
+  t: (key: string) => string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const joinLink = typeof window !== "undefined"
+    ? `${window.location.origin}/join-campaign/${joinCode}`
+    : `/join-campaign/${joinCode}`;
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  // Render QR code
+  useEffect(() => {
+    if (!joinLink || !qrCanvasRef.current) return;
+    QRCode.toCanvas(qrCanvasRef.current, joinLink, {
+      width: 180,
+      margin: 2,
+      color: { dark: "#D4A853", light: "#13131E" },
+    }).catch(() => { /* silent fallback */ });
+  }, [joinLink]);
+
+  async function handleCopy() {
+    const result = onCopy();
+    const ok = result instanceof Promise ? await result : true;
+    if (ok === false) return;
+    setCopied(true);
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Join link card */}
+      <div className="p-3 rounded-lg bg-white/[0.04] border border-gold/20">
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
+          {t("invite_link_label")}
+        </p>
+        <p className="text-sm font-mono text-gold break-all">
+          {joinLink}
+        </p>
+      </div>
+
+      {/* Copy button */}
+      <Button
+        type="button"
+        variant={copied ? "gold" : "outline"}
+        onClick={handleCopy}
+        className={`w-full transition-all duration-300 ${
+          copied
+            ? "border-gold text-surface-primary"
+            : "border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.1]"
+        }`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {copied ? (
+            <motion.span
+              key="copied"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-2"
+            >
+              <Check className="w-4 h-4" />
+              {t("invite_copied")}
+            </motion.span>
+          ) : (
+            <motion.span
+              key="copy"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              {t("invite_copy_link")}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Button>
+
+      {copyError && (
+        <p className="text-xs text-red-400" role="alert">{copyError}</p>
+      )}
+
+      {/* QR Code */}
+      <div className="flex justify-center">
+        <canvas ref={qrCanvasRef} className="rounded-md" />
+      </div>
+
+      <p className="text-[11px] text-muted-foreground/60 text-center">
+        {t("invite_hint")}
+      </p>
+    </div>
+  );
+}
+
+// ── Dead code removed: PlayerStep, CelebrationStep (wizard redesigned) ──
+
+// ── PlayerStep — REMOVED (wizard no longer has players step) ────────
+// Kept comment for git blame reference. Was at lines 929-1111.
+
+// ── CelebrationStep — REMOVED (replaced by InviteStep) ─────────────
+// Kept comment for git blame reference. Was at lines 1113-1296.
+
+// ── PlayerStep + CelebrationStep REMOVED (wizard redesigned) ────────
+
+// ── DEAD CODE START — remove after confirming no references ──────────
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _PlayerStep_DEAD({
   players,
   fieldErrors,
   maxPlayers,

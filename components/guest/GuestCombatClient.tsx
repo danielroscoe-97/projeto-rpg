@@ -1330,7 +1330,7 @@ export function GuestCombatClient() {
       if (target) pushDefeatedUndo(target);
       setDefeated(id, isDefeated);
       // Track kills when a combatant is defeated
-      if (isDefeated) {
+      if (isDefeated && target) {
         const actor = store.combatants[store.currentTurnIndex];
         if (actor) {
           useGuestCombatStats.getState().trackKill(actor.name);
