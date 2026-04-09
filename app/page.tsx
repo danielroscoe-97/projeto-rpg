@@ -416,6 +416,167 @@ function FeaturesSection() {
 }
 
 // ── Compendium Showcase ─────────────────────────────────────────────────────
+
+/* Heraldic dragon silhouette — real traced SVG from reference image */
+function DragonSilhouette({ side }: { side: "left" | "right" }) {
+  const isRight = side === "right";
+  return (
+    <div
+      className={`absolute pointer-events-none hidden md:block ${
+        isRight
+          ? "-right-64 -bottom-36 -scale-x-100"
+          : "-left-64 -top-12"
+      }`}
+      aria-hidden="true"
+    >
+      {/* Fire glow behind dragon */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-[200px] h-[200px] rounded-full dragon-fire-bg" />
+      </div>
+      <Image
+        src="/art/decorations/dragon-silhouette.svg"
+        alt=""
+        width={360}
+        height={360}
+        className="relative w-[320px] h-[320px] opacity-[0.14] dragon-fire"
+      />
+    </div>
+  );
+}
+
+/* Large thematic SVG shown inside card — replaced by mockup on hover */
+function CompendiumCardIcon({ type }: { type: "monsters" | "spells" | "classes" | "races" }) {
+  const cls = "w-full h-full";
+  switch (type) {
+    case "monsters":
+      return (
+        <Image
+          src="/art/decorations/orc-silhouette.svg"
+          alt=""
+          width={80}
+          height={80}
+          className="w-full h-full opacity-60"
+        />
+      );
+    case "spells":
+      return (
+        <svg viewBox="0 0 80 80" fill="none" className={cls}>
+          {/* Star burst */}
+          <path d="M40 8l4 16 16 4-16 4-4 16-4-16-16-4 16-4z" stroke="#A855F7" strokeWidth="1.5" fill="#A855F7" fillOpacity="0.06" />
+          {/* Inner star */}
+          <path d="M40 20l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" stroke="#A855F7" strokeWidth="0.8" fill="#A855F7" fillOpacity="0.1" />
+          {/* Orbit rings */}
+          <circle cx="40" cy="40" r="24" stroke="#A855F7" strokeWidth="0.8" opacity="0.15" strokeDasharray="4 4" />
+          <circle cx="40" cy="40" r="32" stroke="#A855F7" strokeWidth="0.5" opacity="0.1" strokeDasharray="2 6" />
+          {/* Sparkle dots */}
+          <circle cx="18" cy="30" r="1.5" fill="#A855F7" opacity="0.25" />
+          <circle cx="62" cy="50" r="1.5" fill="#A855F7" opacity="0.25" />
+          <circle cx="52" cy="18" r="1" fill="#A855F7" opacity="0.2" />
+          <circle cx="28" cy="62" r="1" fill="#A855F7" opacity="0.2" />
+        </svg>
+      );
+    case "classes":
+      return (
+        <svg viewBox="0 0 80 80" fill="none" className={cls}>
+          {/* Shield shape */}
+          <path d="M40 10L14 24v18c0 14 10 24 26 30 16-6 26-16 26-30V24L40 10z" stroke="#D4A853" strokeWidth="1.5" fill="#D4A853" fillOpacity="0.06" />
+          {/* Inner cross */}
+          <path d="M40 24v32M28 40h24" stroke="#D4A853" strokeWidth="1.2" opacity="0.25" strokeLinecap="round" />
+          {/* Sword behind shield */}
+          <path d="M40 6v8M38 8h4" stroke="#D4A853" strokeWidth="1" opacity="0.2" strokeLinecap="round" />
+          {/* Decorative arcs */}
+          <path d="M24 28c4-2 10-4 16-4s12 2 16 4" stroke="#D4A853" strokeWidth="0.6" opacity="0.15" />
+          <path d="M22 52c6 6 12 10 18 12 6-2 12-6 18-12" stroke="#D4A853" strokeWidth="0.6" opacity="0.12" />
+        </svg>
+      );
+    case "races":
+      return (
+        <svg viewBox="0 0 80 80" fill="none" className={cls}>
+          {/* Central face circle */}
+          <circle cx="40" cy="32" r="14" stroke="#22C55E" strokeWidth="1.5" fill="#22C55E" fillOpacity="0.06" />
+          {/* Pointed ears */}
+          <path d="M26 28c-4-6-4-14 0-18M54 28c4-6 4-14 0-18" stroke="#22C55E" strokeWidth="1" opacity="0.25" strokeLinecap="round" />
+          {/* Eyes */}
+          <ellipse cx="35" cy="30" rx="2.5" ry="1.5" fill="#22C55E" opacity="0.3" />
+          <ellipse cx="45" cy="30" rx="2.5" ry="1.5" fill="#22C55E" opacity="0.3" />
+          {/* Body silhouette */}
+          <path d="M24 68c0-12 7-20 16-22 9 2 16 10 16 22" stroke="#22C55E" strokeWidth="1.2" fill="#22C55E" fillOpacity="0.04" strokeLinecap="round" />
+          {/* Crown / circlet */}
+          <path d="M30 20c2-2 6-4 10-4s8 2 10 4" stroke="#22C55E" strokeWidth="0.8" opacity="0.2" />
+          <circle cx="40" cy="16" r="1.5" fill="#22C55E" opacity="0.2" />
+        </svg>
+      );
+  }
+}
+
+/* Corner flourish — medieval filigree arc */
+function CornerFlourish({ position }: { position: "top-left" | "bottom-right" }) {
+  const isTopLeft = position === "top-left";
+  return (
+    <svg
+      width="28" height="28" viewBox="0 0 28 28" fill="none"
+      className={`absolute pointer-events-none w-5 h-5 md:w-7 md:h-7 opacity-[0.18] group-hover:opacity-[0.38] transition-opacity duration-300 ${
+        isTopLeft ? "top-0 left-0" : "bottom-0 right-0 rotate-180"
+      }`}
+      aria-hidden="true"
+    >
+      <path d="M2 26V10C2 5.6 5.6 2 10 2h16" stroke="#D4A853" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M2 18V10C2 5.6 5.6 2 10 2h8" stroke="#D4A853" strokeWidth="0.6" strokeLinecap="round" opacity="0.6" />
+      <circle cx="2" cy="26" r="1.5" fill="#D4A853" opacity="0.5" />
+      <circle cx="26" cy="2" r="1" fill="#D4A853" opacity="0.35" />
+    </svg>
+  );
+}
+
+/* Golden seam — horizontal divider between mockup and text */
+function GoldenSeam() {
+  return (
+    <div className="relative h-[8px] mx-3 flex items-center" aria-hidden="true">
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D4A853]/25 to-transparent" />
+      <svg width="8" height="8" viewBox="0 0 8 8" className="mx-1 shrink-0">
+        <path d="M4 0.5L7.5 4L4 7.5L0.5 4Z" fill="#D4A853" opacity="0.3" />
+        <circle cx="4" cy="4" r="1" fill="#D4A853" opacity="0.5" />
+      </svg>
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D4A853]/25 to-transparent" />
+    </div>
+  );
+}
+
+/* Thematic mini-icon for each compendium category */
+function CompendiumBadgeIcon({ type }: { type: "monsters" | "spells" | "classes" | "races" }) {
+  const cls = "w-2.5 h-2.5 shrink-0";
+  switch (type) {
+    case "monsters":
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cls}>
+          <path d="M8 2C5.5 2 3 4 3 7c0 2 1 3.5 2 4.5L6 14h4l1-2.5C12 10.5 13 9 13 7c0-3-2.5-5-5-5z" stroke="#EF4444" strokeWidth="1.2" fill="none" opacity="0.8" />
+          <circle cx="6" cy="6.5" r="0.8" fill="#EF4444" opacity="0.7" />
+          <circle cx="10" cy="6.5" r="0.8" fill="#EF4444" opacity="0.7" />
+        </svg>
+      );
+    case "spells":
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cls}>
+          <path d="M8 1L9.2 6.2L14 8L9.2 9.8L8 15L6.8 9.8L2 8L6.8 6.2Z" stroke="#A855F7" strokeWidth="1" fill="none" opacity="0.8" />
+        </svg>
+      );
+    case "classes":
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cls}>
+          <path d="M8 2L3 6v4l5 4 5-4V6L8 2z" stroke="#D4A853" strokeWidth="1.2" fill="none" opacity="0.8" />
+          <path d="M8 5v6M5.5 8h5" stroke="#D4A853" strokeWidth="0.8" opacity="0.5" />
+        </svg>
+      );
+    case "races":
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cls}>
+          <circle cx="8" cy="6" r="3" stroke="#22C55E" strokeWidth="1.2" fill="none" opacity="0.8" />
+          <path d="M3.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5" stroke="#22C55E" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.6" />
+        </svg>
+      );
+  }
+}
+
 function CompendiumShowcaseSection() {
   const cards: { title: string; count: number; suffix: string; description: string; href: string; mockup: "monsters" | "spells" | "classes" | "races"; borderHover: string; gradient: string }[] = [
     {
@@ -461,15 +622,36 @@ function CompendiumShowcaseSection() {
   ];
 
   return (
-    <section data-section="compendium-showcase" id="compendio" className="py-12 md:py-24 px-4 md:px-6 relative overflow-hidden">
+    <section data-section="compendium-showcase" id="compendio" className="py-14 md:py-28 px-4 md:px-6 relative overflow-visible">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/[0.03] rounded-full blur-[120px]" />
       </div>
 
       <div className="relative max-w-5xl mx-auto">
+        {/* P2: Subtle grid pattern background */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-100"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(212,168,83,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,83,0.025) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            maskImage: "radial-gradient(ellipse at center, black 30%, transparent 72%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 72%)",
+          }}
+        />
+
+        {/* Floating D20 accent — desktop only */}
+        <D20Icon className="hidden md:block absolute -top-6 -right-10 w-14 h-14 text-gold/[0.08] float-gentle pointer-events-none" aria-hidden="true" />
+        <SparkleIcon className="hidden md:block absolute -bottom-4 -left-8 w-8 h-8 text-gold/[0.06] float-drift-2 pointer-events-none" aria-hidden="true" />
+
+        {/* Golden dragon silhouettes — decorative background */}
+        <DragonSilhouette side="left" />
+        <DragonSilhouette side="right" />
+
         {/* Heading */}
-        <div className="text-center mb-8 md:mb-14 animate-fade-in">
+        <div className="text-center mb-8 md:mb-14 animate-fade-in relative">
           <span className="inline-block text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gold/80 bg-gold/10 border border-gold/20 rounded-full px-3 py-1 mb-3 md:mb-4">
             100% Gratuito
           </span>
@@ -482,7 +664,7 @@ function CompendiumShowcaseSection() {
         </div>
 
         {/* Cards grid — 2 cols mobile, 4 cols desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 md:gap-6 relative">
           {cards.map((card, i) => (
             <Link
               key={card.href}
@@ -493,18 +675,39 @@ function CompendiumShowcaseSection() {
               {/* Card gradient bg on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
+              {/* P1: Corner flourishes */}
+              <CornerFlourish position="top-left" />
+              <CornerFlourish position="bottom-right" />
+
               <div className="relative">
-                {/* Mockup illustration */}
-                <CompendiumMockup type={card.mockup} />
+                {/* Mockup area — fixed height so all cards align */}
+                <div className="relative overflow-hidden min-h-[160px]">
+                  {/* Thematic SVG icon — visible by default, fades on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center p-6 transition-all duration-500 ease-out opacity-100 scale-100 group-hover:opacity-0 group-hover:scale-90 z-10 pointer-events-none">
+                    <div className="w-16 h-16 md:w-20 md:h-20">
+                      <CompendiumCardIcon type={card.mockup} />
+                    </div>
+                  </div>
+                  {/* HTML mockup — hidden by default, appears on hover like a lens reveal */}
+                  <div className="transition-all duration-500 ease-out opacity-0 scale-[0.92] blur-[2px] group-hover:opacity-100 group-hover:scale-100 group-hover:blur-0">
+                    <CompendiumMockup type={card.mockup} />
+                  </div>
+                </div>
+
+                {/* Golden seam between mockup and text */}
+                <GoldenSeam />
 
                 {/* Text overlay below mockup */}
                 <div className="px-4 pb-4 pt-3">
-                  {/* Counter + Title */}
+                  {/* Counter + Badge Icon + Title */}
                   <div className="flex items-baseline gap-2 mb-1">
                     <span className="font-display text-xl md:text-2xl text-foreground">
                       <AnimatedCounter target={card.count} suffix={card.suffix} duration={1800} />
                     </span>
-                    <h3 className="font-display text-gold text-sm">{card.title}</h3>
+                    <div className="flex items-center gap-1">
+                      <CompendiumBadgeIcon type={card.mockup} />
+                      <h3 className="font-display text-gold text-sm">{card.title}</h3>
+                    </div>
                   </div>
 
                   {/* Description */}

@@ -5,7 +5,10 @@
 
 const CARD =
   "mockup-animated w-full rounded-xl border border-gold/[0.12] bg-[#111119] overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.4)]";
-const CARD_INNER = "relative";
+const CARD_INNER = "relative flex flex-col";
+const CARD_CONTENT = "px-2.5 py-2 space-y-1 flex-1";
+const CARD_FOOTER =
+  "flex items-center justify-center gap-3 px-2.5 py-2 border-t border-white/[0.04] bg-white/[0.015] mt-auto";
 
 // ── Monsters: Mini Bestiary ─────────────────────────────────────────────
 
@@ -45,7 +48,7 @@ function MonstersMockup() {
         </div>
 
         {/* Monster rows */}
-        <div className="px-2 py-1.5 space-y-1">
+        <div className={CARD_CONTENT}>
           {monsters.map((m, i) => (
             <div
               key={i}
@@ -79,7 +82,7 @@ function MonstersMockup() {
         </div>
 
         {/* Bottom */}
-        <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
+        <div className={CARD_FOOTER}>
           <span className="text-[10px] text-[#D4A853]/80 font-mono">SRD 5.1</span>
           <span className="text-[8px] text-white/20">|</span>
           <span className="text-[10px] text-[#D4A853]/80 font-mono">SRD 2024</span>
@@ -133,7 +136,7 @@ function SpellsMockup() {
         </div>
 
         {/* Spell rows */}
-        <div className="px-2 py-1.5 space-y-1">
+        <div className={CARD_CONTENT}>
           {spells.map((s, i) => (
             <div
               key={i}
@@ -174,7 +177,7 @@ function SpellsMockup() {
         </div>
 
         {/* Bottom */}
-        <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
+        <div className={CARD_FOOTER}>
           <span className="text-[10px] text-[#A855F7]/80 font-mono">cantrip → 9th</span>
           <span className="text-[8px] text-white/20">|</span>
           <span className="text-[10px] text-[#A855F7]/80 font-mono">8 escolas</span>
@@ -226,7 +229,7 @@ function ClassesMockup() {
         </div>
 
         {/* Class rows */}
-        <div className="px-2 py-1.5 space-y-1">
+        <div className={CARD_CONTENT}>
           {classes.map((c, i) => (
             <div
               key={i}
@@ -272,7 +275,7 @@ function ClassesMockup() {
         </div>
 
         {/* Bottom */}
-        <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
+        <div className={CARD_FOOTER}>
           <span className="text-[10px] text-[#D4A853]/80 font-mono">hit dice</span>
           <span className="text-[8px] text-white/20">|</span>
           <span className="text-[10px] text-[#D4A853]/80 font-mono">subclasses</span>
@@ -326,7 +329,7 @@ function RacesMockup() {
         </div>
 
         {/* Race rows */}
-        <div className="px-2 py-1.5 space-y-1">
+        <div className={CARD_CONTENT}>
           {races.map((r, i) => (
             <div
               key={i}
@@ -369,7 +372,7 @@ function RacesMockup() {
         </div>
 
         {/* Bottom */}
-        <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
+        <div className={CARD_FOOTER}>
           <span className="text-[10px] text-[#22C55E]/80 font-mono">traços</span>
           <span className="text-[8px] text-white/20">|</span>
           <span className="text-[10px] text-[#22C55E]/80 font-mono">bônus</span>

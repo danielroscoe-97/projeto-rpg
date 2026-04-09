@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pocket DM — Instagram Avatar</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+  }
+  .label {
+    font-family: monospace;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -30px;
+  }
+
+  /* Avatar — 1080x1080, centered for circular crop */
+  .avatar {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    background: #13131E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .avatar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle 400px at 50% 48%, rgba(212,168,83,0.10) 0%, transparent 70%);
+  }
+
+  .avatar svg {
+    width: 680px;
+    height: 680px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 50px rgba(212,168,83,0.25));
+  }
+
+  /* Preview of circular crop */
+  .preview-circle {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #333;
+    position: relative;
+  }
+  .preview-circle .avatar {
+    width: 320px;
+    height: 320px;
+  }
+  .preview-circle .avatar svg {
+    width: 200px;
+    height: 200px;
+  }
+</style>
+</head>
+<body>
+
+<p class="label">Avatar 1080x1080 (upload this)</p>
+<div class="avatar">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+    <defs>
+      <linearGradient id="a" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#e8c87a"/>
+        <stop offset="50%" stop-color="#d4a853"/>
+        <stop offset="100%" stop-color="#b8903d"/>
+      </linearGradient>
+      <linearGradient id="d" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#edcf82"/>
+        <stop offset="50%" stop-color="#d4a853"/>
+        <stop offset="100%" stop-color="#b89040"/>
+      </linearGradient>
+      <filter id="c" width="140%" height="140%" x="-20%" y="-20%">
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="7"/>
+        <feComposite in="SourceGraphic" in2="blur"/>
+      </filter>
+    </defs>
+    <g stroke="url(#a)" stroke-linejoin="round" filter="url(#c)">
+      <g stroke-linecap="round">
+        <path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/>
+        <path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/>
+        <path stroke-width="5" d="m256 110-80 216" opacity=".5"/>
+        <path stroke-width="5" d="m256 110 80 216" opacity=".5"/>
+        <path stroke-width="5" d="m256 410-80-84" opacity=".5"/>
+        <path stroke-width="5" d="m256 410 80-84" opacity=".5"/>
+        <path stroke-width="4" d="m133 185 123 9" opacity=".35"/>
+        <path stroke-width="4" d="m379 185-123 9" opacity=".35"/>
+        <path stroke-width="4" d="m133 185 43 141" opacity=".35"/>
+        <path stroke-width="4" d="m379 185-43 141" opacity=".35"/>
+        <path stroke-width="4" d="m133 335 43-9" opacity=".35"/>
+        <path stroke-width="4" d="m379 335-43-9" opacity=".35"/>
+      </g>
+      <path fill="url(#d)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/>
+    </g>
+  </svg>
+</div>
+
+<p class="label">Preview — circular crop (how it looks on Instagram)</p>
+<div class="preview-circle">
+  <div class="avatar">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+      <defs>
+        <linearGradient id="a2" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#e8c87a"/>
+          <stop offset="50%" stop-color="#d4a853"/>
+          <stop offset="100%" stop-color="#b8903d"/>
+        </linearGradient>
+        <linearGradient id="d2" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#edcf82"/>
+          <stop offset="50%" stop-color="#d4a853"/>
+          <stop offset="100%" stop-color="#b89040"/>
+        </linearGradient>
+        <filter id="c2" width="140%" height="140%" x="-20%" y="-20%">
+          <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="7"/>
+          <feComposite in="SourceGraphic" in2="blur"/>
+        </filter>
+      </defs>
+      <g stroke="url(#a2)" stroke-linejoin="round" filter="url(#c2)">
+        <g stroke-linecap="round">
+          <path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/>
+          <path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/>
+          <path stroke-width="5" d="m256 110-80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 110 80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 410-80-84" opacity=".5"/>
+          <path stroke-width="5" d="m256 410 80-84" opacity=".5"/>
+          <path stroke-width="4" d="m133 185 123 9" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-123 9" opacity=".35"/>
+          <path stroke-width="4" d="m133 185 43 141" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-43 141" opacity=".35"/>
+          <path stroke-width="4" d="m133 335 43-9" opacity=".35"/>
+          <path stroke-width="4" d="m379 335-43-9" opacity=".35"/>
+        </g>
+        <path fill="url(#d2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>

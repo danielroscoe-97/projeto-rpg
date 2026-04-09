@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Post #00 — Open Beta</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+  }
+  .label {
+    font-family: monospace;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -30px;
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    background: #13131E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* Subtle radial glow */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle 350px at 50% 42%, rgba(212,168,83,0.08) 0%, transparent 70%);
+  }
+
+  /* Thin gold border */
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(212,168,83,0.10);
+    pointer-events: none;
+  }
+
+  .logo {
+    width: 260px;
+    height: 260px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 60px rgba(212,168,83,0.20));
+  }
+
+  .brand {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 64px;
+    color: #D4A853;
+    letter-spacing: 8px;
+    position: relative;
+    z-index: 1;
+    margin-top: 40px;
+    text-shadow: 0 0 40px rgba(212,168,83,0.15);
+  }
+
+  .sep {
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,168,83,0.4), transparent);
+    position: relative;
+    z-index: 1;
+    margin: 32px 0;
+  }
+
+  .beta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: rgba(212,168,83,0.6);
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<p class="label">Post #00 — Open Beta (1080x1080)</p>
+<div class="slide">
+
+  <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+    <defs>
+      <linearGradient id="a" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#e8c87a"/>
+        <stop offset="50%" stop-color="#d4a853"/>
+        <stop offset="100%" stop-color="#b8903d"/>
+      </linearGradient>
+      <linearGradient id="d" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#edcf82"/>
+        <stop offset="50%" stop-color="#d4a853"/>
+        <stop offset="100%" stop-color="#b89040"/>
+      </linearGradient>
+      <filter id="c" width="140%" height="140%" x="-20%" y="-20%">
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="7"/>
+        <feComposite in="SourceGraphic" in2="blur"/>
+      </filter>
+    </defs>
+    <g stroke="url(#a)" stroke-linejoin="round" filter="url(#c)">
+      <g stroke-linecap="round">
+        <path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/>
+        <path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/>
+        <path stroke-width="5" d="m256 110-80 216" opacity=".5"/>
+        <path stroke-width="5" d="m256 110 80 216" opacity=".5"/>
+        <path stroke-width="5" d="m256 410-80-84" opacity=".5"/>
+        <path stroke-width="5" d="m256 410 80-84" opacity=".5"/>
+        <path stroke-width="4" d="m133 185 123 9" opacity=".35"/>
+        <path stroke-width="4" d="m379 185-123 9" opacity=".35"/>
+        <path stroke-width="4" d="m133 185 43 141" opacity=".35"/>
+        <path stroke-width="4" d="m379 185-43 141" opacity=".35"/>
+        <path stroke-width="4" d="m133 335 43-9" opacity=".35"/>
+        <path stroke-width="4" d="m379 335-43-9" opacity=".35"/>
+      </g>
+      <path fill="url(#d)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/>
+    </g>
+  </svg>
+
+  <div class="brand">POCKET DM</div>
+
+  <div class="sep"></div>
+
+  <div class="beta">Open Beta</div>
+
+</div>
+
+</body>
+</html>

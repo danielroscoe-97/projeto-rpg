@@ -579,7 +579,50 @@ html[data-combat-active="true"] main#main-content {
     50%      { opacity: 1; }
   }
 
+  /* ─── Dragon Fire Glow Animation ─── */
+
+  @keyframes dragon-fire-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 12px rgba(212,168,83,0.35)) drop-shadow(0 0 30px rgba(212,120,40,0.2));
+    }
+    33% {
+      filter: drop-shadow(0 0 20px rgba(212,168,83,0.5)) drop-shadow(0 0 40px rgba(200,100,30,0.3));
+    }
+    66% {
+      filter: drop-shadow(0 0 8px rgba(212,168,83,0.25)) drop-shadow(0 0 24px rgba(220,140,50,0.18));
+    }
+  }
+
+  @keyframes dragon-fire-bg {
+    0%, 100% {
+      opacity: 0.04;
+      transform: scale(1);
+    }
+    33% {
+      opacity: 0.08;
+      transform: scale(1.08);
+    }
+    66% {
+      opacity: 0.03;
+      transform: scale(0.95);
+    }
+  }
+
+  .dragon-fire {
+    animation: dragon-fire-glow 4s ease-in-out infinite;
+  }
+
+  .dragon-fire-bg {
+    background: radial-gradient(circle, rgba(212,168,83,0.3) 0%, rgba(200,100,30,0.15) 40%, transparent 70%);
+    animation: dragon-fire-bg 4s ease-in-out infinite;
+    filter: blur(30px);
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .dragon-fire,
+    .dragon-fire-bg {
+      animation: none !important;
+    }
     .glow-gold-flash,
     .field-error {
       animation: none;
