@@ -342,14 +342,13 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     return (
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Image
-            src="/art/icons/edenhat.png"
+          <img
+            src="/art/brand/logo-icon.svg"
             alt=""
             width={56}
             height={56}
-            className="pixel-art mx-auto mb-3 opacity-80"
+            className="mx-auto mb-3 glow-pulse cursor-pointer hover:drop-shadow-[0_0_14px_rgba(212,168,83,0.5)] transition-all duration-300"
             aria-hidden="true"
-            unoptimized
           />
           <h1 className="text-2xl font-bold text-foreground tracking-tight">
             {t("role_title")}
@@ -458,14 +457,13 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     return (
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <Image
-            src="/art/icons/edenhat.png"
+          <img
+            src="/art/brand/logo-icon.svg"
             alt=""
             width={56}
             height={56}
-            className="pixel-art mx-auto mb-3 opacity-80"
+            className="mx-auto mb-3 glow-pulse cursor-pointer hover:drop-shadow-[0_0_14px_rgba(212,168,83,0.5)] transition-all duration-300"
             aria-hidden="true"
-            unoptimized
           />
           <h1 className="text-2xl font-bold text-foreground tracking-tight">
             {t("choose_title")}
