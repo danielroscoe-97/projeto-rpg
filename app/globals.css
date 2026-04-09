@@ -551,6 +551,34 @@ html[data-combat-active="true"] main#main-content {
     animation: badge-fade-in 0.3s ease-out 0.2s both;
   }
 
+  /* ─── How It Works Mini-Mockup Animations ─── */
+
+  @keyframes mockup-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @keyframes mockup-slide-in {
+    from { opacity: 0; transform: translateX(10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes mockup-hp-drain {
+    0%, 15%  { transform: scaleX(1);    background: #22C55E; }
+    45%, 55% { transform: scaleX(0.38); background: #EAB308; }
+    85%, 100%{ transform: scaleX(1);    background: #22C55E; }
+  }
+
+  @keyframes mockup-signal {
+    0%   { transform: scale(0.5); opacity: 0.7; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  @keyframes mockup-turn-glow {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .glow-gold-flash,
     .field-error {
@@ -571,7 +599,10 @@ html[data-combat-active="true"] main#main-content {
     .animate-flow-dash,
     .node-reveal,
     .new-badge-enter,
-    .animate-critical-glow {
+    .animate-critical-glow,
+    .mockup-animated,
+    .mockup-animated *,
+    .mockup-animated [style*="animation"] {
       animation: none !important;
     }
   }

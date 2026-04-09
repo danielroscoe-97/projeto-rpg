@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
 import { getFireStepColor } from "@/lib/design/rpg-tokens";
+import { StepMockup } from "@/components/marketing/HowItWorksMockups";
 
 // ── Inline SVG primitives ────────────────────────────────────────────────────
 function ArrowRight({ className }: { className?: string }) {
@@ -527,28 +528,24 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
   const steps = [
     {
       step: 1,
-      emoji: "🗺️",
       title: "Crie o Encontro",
       description: "Busque no compendium completo, adicione NPCs custom, carregue sua campanha salva.",
       time: "~1 min",
     },
     {
       step: 2,
-      emoji: "🎲",
       title: "Role Iniciativa",
       description: "Insira os valores, ordene automaticamente, resolva empates com dragndrop.",
       time: "~30 seg",
     },
     {
       step: 3,
-      emoji: "🔗",
       title: "Compartilhe o Link",
       description: "Gere o link da sessão. Jogadores entram pelo celular — sem conta pra eles.",
       time: "~10 seg",
     },
     {
       step: 4,
-      emoji: "⚔️",
       title: "Mestre o Combate",
       description:
         "Avance turnos, aplique dano e gerencie condições. Seus jogadores veem as atualizações ao vivo.",
@@ -570,7 +567,7 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         />
       </div>
 
-      <div className="relative max-w-5xl mx-auto">
+      <div className="relative max-w-6xl mx-auto">
         <div className="text-center mb-8 md:mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
             Como funciona
@@ -600,11 +597,11 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
               return (
                 <div
                   key={s.step}
-                  className="flex-1 flex flex-col items-center text-center group animate-fade-in-up px-4"
+                  className="flex-1 flex flex-col items-center text-center group animate-fade-in-up px-6 cursor-default transition-transform duration-300 ease-out hover:-translate-y-2"
                   style={{ animationDelay: `${i * 0.12}s` }}
                 >
-                  {/* Step circle + emoji */}
-                  <div className="relative mb-3">
+                  {/* Step circle */}
+                  <div className="relative mb-2 transition-transform duration-300 group-hover:scale-110">
                     {isLast ? (
                       <TorchGlow intensity="high" className="rounded-full">
                         {circle}
@@ -612,19 +609,22 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
                     ) : (
                       circle
                     )}
-                    <span className="absolute -bottom-2 -right-2 text-lg leading-none">{s.emoji}</span>
                   </div>
                   {/* Time badge — color matches fire step progression */}
                   <span
-                    className="text-[10px] font-mono uppercase tracking-widest mb-2"
+                    className="text-[10px] font-mono uppercase tracking-widest mb-3 transition-opacity duration-300 group-hover:opacity-100"
                     style={{ color: stepColor, opacity: 0.75 }}
                   >
                     {s.time}
                   </span>
+                  {/* Mini-mockup illustration */}
+                  <div className="w-full max-w-[240px] mb-3 rounded-xl transition-all duration-300 group-hover:shadow-[0_0_24px_rgba(212,168,83,0.2),0_8px_32px_rgba(0,0,0,0.4)] group-hover:ring-1 group-hover:ring-gold/30">
+                    <StepMockup step={s.step} />
+                  </div>
                   <h3 className="font-display text-foreground text-base mb-1 group-hover:text-gold transition-colors duration-200">
                     {s.title}
                   </h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed max-w-[160px]">
+                  <p className="text-muted-foreground text-xs leading-relaxed max-w-[200px] transition-colors duration-300 group-hover:text-foreground/70">
                     {s.description}
                   </p>
                 </div>
@@ -642,40 +642,47 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             return (
               <div
                 key={s.step}
-                className="flex items-start gap-3.5 py-3.5 border-b border-white/[0.06] last:border-b-0"
+                className="flex flex-col gap-2 py-3.5 border-b border-white/[0.06] last:border-b-0"
               >
-                {/* Step circle with emoji */}
-                <div className="relative shrink-0">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold font-mono"
-                    style={{
-                      color: stepColor,
-                      border: `1.5px solid ${stepColor}`,
-                      background: `${stepColor}12`,
-                      boxShadow: isLast ? `0 0 16px ${stepColor}40` : `0 0 8px ${stepColor}15`,
-                    }}
-                  >
-                    {s.emoji}
-                  </div>
-                  {/* Fire connector line */}
-                  {!isLast && (
+                {/* Top row: step circle + text */}
+                <div className="flex items-start gap-3.5">
+                  {/* Step circle with number */}
+                  <div className="relative shrink-0">
                     <div
-                      className="absolute top-10 left-1/2 -translate-x-1/2 w-0.5 h-3.5"
-                      style={{ background: `linear-gradient(to bottom, ${stepColor}60, transparent)` }}
-                    />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0 pt-1">
-                  <div className="flex items-center justify-between gap-2 mb-0.5">
-                    <h3 className="font-display text-foreground text-sm">{s.title}</h3>
-                    <span
-                      className="text-[10px] font-mono uppercase tracking-wider shrink-0"
-                      style={{ color: stepColor, opacity: 0.8 }}
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold font-mono"
+                      style={{
+                        color: stepColor,
+                        border: `1.5px solid ${stepColor}`,
+                        background: `${stepColor}12`,
+                        boxShadow: isLast ? `0 0 16px ${stepColor}40` : `0 0 8px ${stepColor}15`,
+                      }}
                     >
-                      {s.time}
-                    </span>
+                      {String(s.step).padStart(2, "0")}
+                    </div>
+                    {/* Fire connector line */}
+                    {!isLast && (
+                      <div
+                        className="absolute top-10 left-1/2 -translate-x-1/2 w-0.5 h-3.5"
+                        style={{ background: `linear-gradient(to bottom, ${stepColor}60, transparent)` }}
+                      />
+                    )}
                   </div>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
+                  <div className="flex-1 min-w-0 pt-1">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <h3 className="font-display text-foreground text-sm">{s.title}</h3>
+                      <span
+                        className="text-[10px] font-mono uppercase tracking-wider shrink-0"
+                        style={{ color: stepColor, opacity: 0.8 }}
+                      >
+                        {s.time}
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground text-xs leading-relaxed">{s.description}</p>
+                  </div>
+                </div>
+                {/* Mini-mockup illustration — offset = w-10 (40px) + gap-3.5 (14px) */}
+                <div className="ml-[54px] max-w-[240px]">
+                  <StepMockup step={s.step} />
                 </div>
               </div>
             );
