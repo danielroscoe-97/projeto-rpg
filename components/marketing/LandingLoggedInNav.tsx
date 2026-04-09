@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, LayoutDashboard, Swords, Users, LogOut, ArrowRight } from "lucide-react";
+import { ChevronDown, Home, LayoutDashboard, Swords, Users, LogOut, ArrowRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -53,6 +53,16 @@ export function LandingLoggedInNav({ displayName }: Props) {
           align="end"
           className="bg-surface-secondary border-white/10 shadow-xl backdrop-blur-none w-48"
         >
+          <DropdownMenuItem asChild>
+            <Link
+              href="/app/dashboard"
+              className="flex items-center gap-2 text-foreground/80 hover:text-foreground"
+            >
+              <Home className="w-4 h-4 opacity-60" />
+              Minha Mesa
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-white/[0.08]" />
           <DropdownMenuItem asChild>
             <Link
               href="/app/dashboard/campaigns"
