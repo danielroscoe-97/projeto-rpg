@@ -118,7 +118,8 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     if (ss?.step && ss.step !== "done") {
       if (!userRole && ss.step !== "role") return "role";
       // Legacy steps 3/4 no longer exist → redirect to step 1
-      if (ss.step === 3 || ss.step === 4) return 1;
+      const legacyStep = ss.step as number;
+      if (legacyStep === 3 || legacyStep === 4) return 1;
       return ss.step as WizardStep;
     }
     if (savedStep) {
