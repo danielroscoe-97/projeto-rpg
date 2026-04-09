@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withRateLimit } from "@/lib/rate-limit";
 import { captureError } from "@/lib/errors/capture";
+import { grantXpAsync } from "@/lib/xp/grant-xp";
 
 const VALID_VOTES = ["S", "A", "B", "C", "D", "E"] as const;
 type SpellVote = (typeof VALID_VOTES)[number];
@@ -128,6 +129,20 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function POST(req
     });
 
     if (error) throw error;
+
+    // XP: spell vote — look up user's actual role to grant correct XP
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    const userRole = (userData?.role as string) ?? "dm";
+    if (userRole === "dm" || userRole === "both") {
+      grantXpAsync(user.id, "dm_spell_voted", "dm", { spell_name });
+    }
+    if (userRole === "player" || userRole === "both") {
+      grantXpAsync(user.id, "player_spell_voted", "player", { spell_name });
+    }
 
     return NextResponse.json(data ?? { success: true });
   } catch (err) {

@@ -3,6 +3,7 @@
 import { createClient, createServiceClient } from "./server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
+import { grantXpAsync } from "@/lib/xp/grant-xp";
 import type {
   CampaignMember,
   CampaignMemberWithUser,
@@ -268,6 +269,24 @@ export async function acceptCampaignInvite(
   trackServerEvent("campaign:invite_accepted", {
     properties: { campaign_id: result.campaign_id },
   });
+
+  // XP: Player joined campaign + DM gets XP for player invited
+  const userSupabase = await createClient();
+  const { data: { user: currentUser } } = await userSupabase.auth.getUser();
+  if (currentUser) {
+    grantXpAsync(currentUser.id, "player_campaign_joined", "player", { campaign_id: result.campaign_id });
+    // Grant XP to DM who owns the campaign
+    if (result.campaign_id) {
+      const { data: campaign } = await userSupabase
+        .from("campaigns")
+        .select("owner_id")
+        .eq("id", result.campaign_id)
+        .single();
+      if (campaign?.owner_id && campaign.owner_id !== currentUser.id) {
+        grantXpAsync(campaign.owner_id, "dm_player_invited", "dm", { campaign_id: result.campaign_id });
+      }
+    }
+  }
 
   return {
     campaign_id: result.campaign_id,

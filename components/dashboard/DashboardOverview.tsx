@@ -14,6 +14,7 @@ import { StreakBadge } from "@/components/dashboard/StreakBadge";
 import { PocketDmLabBadge } from "@/components/dashboard/PocketDmLabBadge";
 import { MethodologyMilestoneToast } from "@/components/dashboard/MethodologyMilestoneToast";
 import { ResearcherBadge } from "@/components/dashboard/ResearcherBadge";
+import { XpCard } from "@/components/xp/XpCard";
 import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import { CampaignCard } from "@/components/dashboard/CampaignCard";
@@ -397,6 +398,11 @@ export function DashboardOverview({
           />
         </div>
       )}
+
+      {/* XP Rank Card */}
+      <div className="mb-6">
+        <XpCard userRole={userRole} />
+      </div>
 
       {/* Invite Players Banner — show when DM has campaigns with characters but no linked players */}
       {isDmRole && campaigns.some((c) => c.player_count > 0) && playerMemberships.length === 0 && (

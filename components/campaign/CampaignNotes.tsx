@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -342,6 +343,8 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
       if (data) {
         setNotes((prev) => [data, ...prev]);
         setExpandedIds((prev) => new Set(prev).add(data.id));
+        // XP: DM created note
+        requestXpGrant("dm_note_created", "dm", { note_id: data.id });
       }
     } catch (err) {
       captureError(err, {

@@ -2,6 +2,7 @@
 
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { grantXpAsync } from "@/lib/xp/grant-xp";
 
 interface CharacterData {
   name: string;
@@ -54,6 +55,9 @@ export async function createStandaloneCharacterAction(data: CharacterData) {
     console.error("[createStandaloneCharacter]", error.message, error.code, error.details, error.hint);
     throw new Error(`Erro ao criar personagem: ${error.message}`);
   }
+
+  // XP: Player created character
+  grantXpAsync(user.id, "player_character_created", "player");
 
   revalidatePath("/app/dashboard/characters");
 }
@@ -125,6 +129,9 @@ export async function createCampaignCharacterAction(campaignId: string, data: Ch
     console.error("[createCampaignCharacter]", error.message, error.code, error.details, error.hint);
     throw new Error(`Erro ao criar personagem: ${error.message}`);
   }
+
+  // XP: Player created character
+  grantXpAsync(user.id, "player_character_created", "player");
 
   revalidatePath(`/app/campaigns/${campaignId}`);
 }

@@ -1,6 +1,7 @@
 import { createClient } from "./client";
 import type { Combatant } from "@/lib/types/combat";
 import { trackEvent } from "@/lib/analytics/track";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 
 /** Persists initiative values + order for all combatants, then marks encounter active. */
 export async function persistInitiativeAndStartCombat(
@@ -34,6 +35,9 @@ export async function persistInitiativeAndStartCombat(
     encounter_id: encounterId,
     combatant_count: combatants.length,
   });
+
+  // XP: DM started combat
+  requestXpGrant("dm_combat_started", "dm", { encounter_id: encounterId });
 }
 
 /** Persists HP changes (current_hp, temp_hp) for a combatant. */
@@ -243,6 +247,11 @@ export async function persistEndEncounter(
     encounter_id: encounterId,
     ...stats,
   });
+
+  // XP: DM completed combat (only if at least 1 round played — anti-gaming)
+  if ((stats?.rounds_total ?? 0) >= 1) {
+    requestXpGrant("dm_combat_completed", "dm", { encounter_id: encounterId, ...stats });
+  }
 }
 
 /** Persists DM-only notes for a combatant (never broadcast). */

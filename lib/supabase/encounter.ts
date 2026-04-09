@@ -4,6 +4,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { getLegendaryActionCount } from "@/lib/srd/legendary-actions";
 import { trackEvent } from "@/lib/analytics/track";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 import type { Plan } from "@/lib/types/subscription";
 
 export interface CreateEncounterResult {
@@ -46,6 +47,10 @@ export async function createSessionOnly(
     has_campaign: !!campaignId,
     ruleset: ruleset_version,
   });
+
+  // XP: DM created session
+  requestXpGrant("dm_session_created", "dm", { session_id: session.id });
+
   return session.id;
 }
 
@@ -210,6 +215,11 @@ export async function castLateVote(
     p_vote: vote,
   });
   if (error) throw new Error(error.message);
+
+  // XP: vote on combat difficulty (both DM and Player can vote)
+  // Caller determines role based on context
+  requestXpGrant("dm_combat_rated", "dm", { encounter_id: encounterId, vote });
+
   return data as { avg: number; count: number };
 }
 

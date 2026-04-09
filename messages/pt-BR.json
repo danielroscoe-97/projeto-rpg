@@ -3302,5 +3302,31 @@
     "race_placeholder": "Buscar raça...",
     "race_search_placeholder": "Buscar raça...",
     "race_no_results": "Nenhuma raça encontrada."
+  },
+  "xp": {
+    "dm_rank": "Rank de Mestre",
+    "player_rank": "Rank de Jogador",
+    "rank_up_title": "Rank Up!",
+    "rank_up_message": "Você é agora um {title}!",
+    "rank_up_dismiss": "Incrível!",
+    "toast_xp_gained": "+{xp} XP",
+    "toast_combat_completed": "Combate finalizado",
+    "toast_combat_rated": "Dificuldade avaliada",
+    "toast_combat_gold": "Combate Gold",
+    "toast_combat_participated": "Participou do combate",
+    "toast_combat_voted": "Votou na dificuldade",
+    "toast_campaign_created": "Campanha criada",
+    "toast_session_created": "Sessão criada",
+    "toast_player_invited": "Jogador convidado",
+    "toast_preset_created": "Preset criado",
+    "toast_npc_created": "NPC criado",
+    "toast_note_created": "Nota criada",
+    "toast_character_created": "Personagem criado",
+    "toast_spell_voted": "Voto de spell registrado",
+    "toast_streak": "Streak semanal",
+    "toast_profile": "Perfil completo",
+    "toast_onboarding": "Onboarding completo",
+    "toast_tour": "Tour completo",
+    "max_rank": "Rank Máximo!"
   }
 }

@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
 import { computeStreak } from "@/lib/utils/streak";
+import { grantXpAsync } from "@/lib/xp/grant-xp";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 import type { UserRole } from "@/lib/stores/role-store";
 import type { UserOnboarding } from "@/lib/types/database";
@@ -266,6 +267,11 @@ export default async function DashboardPage() {
 
   // F6: Streak counter
   const streakWeeks = userRole !== "player" ? await computeStreak(supabase, user.id) : 0;
+
+  // XP: Weekly streak bonus (fire-and-forget, cooldown 1/week handles dedup)
+  if (streakWeeks >= 2) {
+    grantXpAsync(user.id, "dm_streak_weekly", "dm", { streak_weeks: streakWeeks });
+  }
 
   return (
     <div>

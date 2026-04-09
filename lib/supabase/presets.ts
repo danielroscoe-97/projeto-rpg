@@ -1,5 +1,6 @@
 import { createClient } from "./client";
 import type { MonsterPresetEntry } from "@/lib/types/database";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 
 export interface PresetRow {
   id: string;
@@ -38,6 +39,10 @@ export async function createPreset(
     .single();
 
   if (error) throw new Error(error.message);
+
+  // XP: DM created preset
+  requestXpGrant("dm_preset_created", "dm", { preset_id: data.id });
+
   return data as PresetRow;
 }
 

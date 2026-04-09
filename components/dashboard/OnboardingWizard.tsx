@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -246,6 +247,10 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       .from("user_onboarding")
       .upsert({ user_id: userId, wizard_completed: true, wizard_step: null }, { onConflict: "user_id" });
 
+    // XP: DM created campaign + completed onboarding
+    requestXpGrant("dm_campaign_created", "dm", { campaign_id: campaign.id });
+    requestXpGrant("onboarding_completed", "dm");
+
     return { campaignId: campaign.id, joinCode };
   }
 
@@ -293,6 +298,10 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         toast.error(t("role_save_error"));
         return;
       }
+
+      // XP: Profile completed (role set)
+      const xpRole = selectedRole === "player" ? "player" : "dm";
+      requestXpGrant("profile_completed", xpRole as "dm" | "player");
 
       if (selectedRole === "player") {
         // Check if there's a pending invite/code in localStorage — auto-process it

@@ -3302,5 +3302,31 @@
     "race_placeholder": "Search race...",
     "race_search_placeholder": "Search race...",
     "race_no_results": "No races found."
+  },
+  "xp": {
+    "dm_rank": "DM Rank",
+    "player_rank": "Player Rank",
+    "rank_up_title": "Rank Up!",
+    "rank_up_message": "You are now a {title}!",
+    "rank_up_dismiss": "Awesome!",
+    "toast_xp_gained": "+{xp} XP",
+    "toast_combat_completed": "Combat completed",
+    "toast_combat_rated": "Difficulty rated",
+    "toast_combat_gold": "Gold Combat",
+    "toast_combat_participated": "Participated in combat",
+    "toast_combat_voted": "Voted on difficulty",
+    "toast_campaign_created": "Campaign created",
+    "toast_session_created": "Session created",
+    "toast_player_invited": "Player invited",
+    "toast_preset_created": "Preset created",
+    "toast_npc_created": "NPC created",
+    "toast_note_created": "Note created",
+    "toast_character_created": "Character created",
+    "toast_spell_voted": "Spell vote registered",
+    "toast_streak": "Weekly streak",
+    "toast_profile": "Profile completed",
+    "toast_onboarding": "Onboarding completed",
+    "toast_tour": "Tour completed",
+    "max_rank": "Max Rank!"
   }
 }

@@ -7,6 +7,7 @@ import type {
   CampaignNpcUpdate,
   NpcStats,
 } from "@/lib/types/campaign-npcs";
+import { requestXpGrant } from "@/lib/xp/request-xp";
 
 function mapRow(row: Record<string, unknown>): CampaignNpc {
   return {
@@ -70,6 +71,10 @@ export async function createNpc(npc: CampaignNpcInsert): Promise<CampaignNpc> {
     .single();
 
   if (error) throw new Error(`Failed to create NPC: ${error.message}`);
+
+  // XP: DM created NPC
+  requestXpGrant("dm_npc_created", "dm", { npc_id: data.id as string });
+
   return mapRow(data);
 }
 
