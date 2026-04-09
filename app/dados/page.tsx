@@ -3,6 +3,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicDiceRoller } from "@/components/public/PublicDiceRoller";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import Link from "next/link";
+import { PublicFooter } from "@/components/public/PublicFooter";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -68,7 +69,7 @@ export default function DadosPage() {
     <>
       <DiceRollerJsonLd />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav
           locale="pt-BR"
           breadcrumbs={[{ label: "Rolador de Dados" }]}
@@ -89,17 +90,7 @@ export default function DadosPage() {
           </p>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            <a
-              href="https://pocketdm.com.br"
-              className="underline hover:text-gray-300"
-            >
-              Pocket DM
-            </a>
-            {" "}— O rastreador de combate para D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter locale="pt-BR" />
       </div>
     </>
   );

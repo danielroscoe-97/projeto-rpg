@@ -3,6 +3,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicRacesIndex } from "@/components/public/PublicRacesIndex";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import Link from "next/link";
+import { PublicFooter } from "@/components/public/PublicFooter";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -103,7 +104,7 @@ export default function RacasPage() {
     <>
       <RacesJsonLd />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Raças" }]} />
 
         <main className="mx-auto max-w-6xl px-4 py-8">
@@ -121,30 +122,7 @@ export default function RacasPage() {
           </p>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            Conteúdo SRD utilizado sob{" "}
-            <a
-              href="https://creativecommons.org/licenses/by/4.0/"
-              className="underline hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Creative Commons Attribution 4.0
-            </a>
-            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
-            of the Coast.
-          </p>
-          <p className="mt-1">
-            <a
-              href="https://pocketdm.com.br"
-              className="underline hover:text-gray-300"
-            >
-              Pocket DM
-            </a>
-            {" "}&mdash; O rastreador de combate para D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter locale="pt-BR" />
       </div>
     </>
   );

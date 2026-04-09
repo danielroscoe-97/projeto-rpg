@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicDiceRoller } from "@/components/public/PublicDiceRoller";
 import { PublicCTA } from "@/components/public/PublicCTA";
+import { PublicFooter } from "@/components/public/PublicFooter";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -66,7 +67,7 @@ export default function DicePage() {
     <>
       <DiceRollerJsonLd />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav breadcrumbs={[{ label: "Dice Roller" }]} />
 
         <main className="mx-auto max-w-5xl px-4 py-8">
@@ -77,17 +78,7 @@ export default function DicePage() {
           </div>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            <a
-              href="https://pocketdm.com.br"
-              className="underline hover:text-gray-300"
-            >
-              Pocket DM
-            </a>
-            {" "}— The combat tracker for D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter />
       </div>
     </>
   );

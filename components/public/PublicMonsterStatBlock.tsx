@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { DiceText } from "@/components/dice/DiceText";
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
@@ -17,6 +18,57 @@ import {
 } from "@/lib/i18n/dnd-terms-ptbr";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import "@/styles/stat-card-5e.css";
+
+// ── Known terms for internal linking ──────────────────────────────────
+const DAMAGE_TYPES = new Set([
+  "acid", "bludgeoning", "cold", "fire", "force", "lightning",
+  "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder",
+]);
+const DAMAGE_TYPES_PT = new Set([
+  "ácido", "contundente", "frio", "fogo", "força", "elétrico",
+  "necrótico", "perfurante", "veneno", "psíquico", "radiante", "cortante", "trovão",
+]);
+const CONDITIONS = new Set([
+  "blinded", "charmed", "deafened", "exhaustion", "frightened", "grappled",
+  "incapacitated", "invisible", "paralyzed", "petrified", "poisoned",
+  "prone", "restrained", "stunned", "unconscious",
+]);
+const CONDITIONS_PT = new Set([
+  "cego", "enfeitiçado", "surdo", "exaustão", "amedrontado", "agarrado",
+  "incapacitado", "invisível", "paralisado", "petrificado", "envenenado",
+  "caído", "impedido", "atordoado", "inconsciente",
+]);
+
+function LinkedTerms({ text, knownTerms, href, isPt }: {
+  text: string;
+  knownTerms: Set<string>;
+  href: string;
+  isPt: boolean;
+}) {
+  // Split by comma, link known terms, leave qualifiers as plain text
+  const parts = text.split(/,\s*/);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const trimmed = part.trim();
+        const lower = trimmed.toLowerCase();
+        const isKnown = knownTerms.has(lower);
+        return (
+          <span key={i}>
+            {i > 0 && ", "}
+            {isKnown ? (
+              <Link href={href} className="underline decoration-dotted underline-offset-2 hover:text-[#D4A853] transition-colors">
+                {trimmed}
+              </Link>
+            ) : (
+              trimmed
+            )}
+          </span>
+        );
+      })}
+    </>
+  );
+}
 
 function abilityMod(score: number): string {
   const mod = Math.floor((score - 10) / 2);
@@ -271,25 +323,25 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
         {damageVuln && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
-            {damageVuln}
+            <LinkedTerms text={damageVuln} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageRes && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
-            {damageRes}
+            <LinkedTerms text={damageRes} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageImm && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
-            {damageImm}
+            <LinkedTerms text={damageImm} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {conditionImm && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
-            {conditionImm}
+            <LinkedTerms text={conditionImm} knownTerms={t ? CONDITIONS_PT : CONDITIONS} href={t ? "/condicoes" : "/conditions"} isPt={!!t} />
           </p>
         )}
         {sensesStr && (

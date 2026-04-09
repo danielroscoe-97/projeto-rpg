@@ -3,6 +3,7 @@ import { getSrdSpells, toSlug, toSpellSlugPt, getSpellNamePt, getSpellDescriptio
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
+import { PublicFooter } from "@/components/public/PublicFooter";
 
 export const metadata: Metadata = {
   title: "Magias D&D 5e — Compêndio SRD",
@@ -81,7 +82,7 @@ export default function MagiasIndexPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+    <div className="min-h-screen bg-background">
       <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Magias" }]} />
 
       <main className="mx-auto max-w-6xl px-4 py-8">
@@ -160,26 +161,7 @@ export default function MagiasIndexPage() {
         </p>
       </main>
 
-      <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-        <p>
-          Conteúdo SRD utilizado sob{" "}
-          <a
-            href="https://creativecommons.org/licenses/by/4.0/"
-            className="underline hover:text-gray-300"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            CC-BY-4.0
-          </a>
-          . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
-        </p>
-        <p className="mt-1">
-          <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
-            Pocket DM
-          </a>
-          {" "}— O rastreador de combate para D&amp;D 5e
-        </p>
-      </footer>
+      <PublicFooter locale="pt-BR" />
     </div>
     </>
   );

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 import {
   getSrdSpellStaticParams,
@@ -13,6 +14,7 @@ import { PublicSpellCard } from "@/components/public/PublicSpellCard";
 import { PublicSpellSearch } from "@/components/public/PublicSpellSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { SpellTierVotingMini } from "@/components/methodology/SpellTierVotingMini";
+import { PublicFooter } from "@/components/public/PublicFooter";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { getSpellTier } from "@/lib/srd/spell-tiers";
@@ -124,7 +126,7 @@ export default async function SpellPage({
     <>
       <SpellJsonLd spell={spell} slug={slug} />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav
           breadcrumbs={[
             { label: "Spells", href: "/spells" },
@@ -132,7 +134,7 @@ export default async function SpellPage({
           ]}
         />
 
-        <main className="mx-auto max-w-4xl px-4 py-8">
+        <main className="mx-auto max-w-5xl px-4 py-8">
           {/* Collapsible search */}
           <PublicSpellSearch spells={allSpells} />
 
@@ -159,28 +161,16 @@ export default async function SpellPage({
 
           {/* Two-box CTA */}
           <PublicCTA entityName={spell.name} />
+
+          <p className="text-xs text-muted-foreground mt-12 text-center">
+            Also available in{" "}
+            <Link href={`/magias/${toSpellSlugPt(toSlug(spell.name))}`} className="text-[#D4A853] hover:underline">
+              Português
+            </Link>
+          </p>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            SRD content used under the{" "}
-            <a
-              href="https://creativecommons.org/licenses/by/4.0/"
-              className="underline hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Creative Commons Attribution 4.0 License
-            </a>
-            . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of the Coast.
-          </p>
-          <p className="mt-1">
-            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
-              Pocket DM
-            </a>
-            {" "}— The combat tracker for D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter />
       </div>
     </>
   );

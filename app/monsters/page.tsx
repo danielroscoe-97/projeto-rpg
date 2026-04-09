@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getSrdMonstersDeduped, toSlug } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
+import { PublicFooter } from "@/components/public/PublicFooter";
 
 export const metadata: Metadata = {
   title: "D&D 5e Monster Compendium — SRD Bestiary",
@@ -70,7 +71,7 @@ export default function MonstersIndexPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+    <div className="min-h-screen bg-background">
       <PublicNav breadcrumbs={[{ label: "Monsters" }]} />
 
       <main className="mx-auto max-w-6xl px-4 py-8">
@@ -124,31 +125,7 @@ export default function MonstersIndexPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-        <p>
-          SRD content used under{" "}
-          <a
-            href="https://creativecommons.org/licenses/by/4.0/"
-            className="underline hover:text-gray-300"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            CC-BY-4.0
-          </a>
-          . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of the
-          Coast.
-        </p>
-        <p className="mt-1">
-          <a
-            href="https://pocketdm.com.br"
-            className="underline hover:text-gray-300"
-          >
-            Pocket DM
-          </a>
-          {" "}— The combat tracker for D&amp;D 5e
-        </p>
-      </footer>
+      <PublicFooter />
     </div>
     </>
   );

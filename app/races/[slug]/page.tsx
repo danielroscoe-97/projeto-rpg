@@ -4,6 +4,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicRaceDetail } from "@/components/public/PublicRaceDetail";
 import { getRaceSlugs, getRaceData } from "@/lib/srd/races-data";
 import { PublicCTA } from "@/components/public/PublicCTA";
+import { PublicFooter } from "@/components/public/PublicFooter";
 import Link from "next/link";
 
 // ── Static generation ──────────────────────────────────────────────
@@ -91,7 +92,7 @@ export default async function RaceDetailPage({
     <>
       <RaceJsonLd race={race} />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav
           breadcrumbs={[
             { label: "Races", href: "/races" },
@@ -99,7 +100,7 @@ export default async function RaceDetailPage({
           ]}
         />
 
-        <main className="mx-auto max-w-4xl px-4 py-8">
+        <main className="mx-auto max-w-5xl px-4 py-8">
           <PublicRaceDetail slug={slug} locale="en" />
 
           <div className="mt-12">
@@ -114,30 +115,7 @@ export default async function RaceDetailPage({
           </p>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            SRD content used under the{" "}
-            <a
-              href="https://creativecommons.org/licenses/by/4.0/"
-              className="underline hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Creative Commons Attribution 4.0 License
-            </a>
-            . D&amp;D and Dungeons &amp; Dragons are trademarks of Wizards of
-            the Coast.
-          </p>
-          <p className="mt-1">
-            <a
-              href="https://pocketdm.com.br"
-              className="underline hover:text-gray-300"
-            >
-              Pocket DM
-            </a>
-            {" "}&mdash; The combat tracker for D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter />
       </div>
     </>
   );

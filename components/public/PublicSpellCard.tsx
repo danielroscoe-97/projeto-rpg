@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { DiceText } from "@/components/dice/DiceText";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import { TIER_COLORS, TIER_LABELS, type SpellTier } from "@/lib/srd/spell-tiers";
@@ -130,12 +131,13 @@ export function PublicSpellCard({ spell, tier, locale = "en" }: PublicSpellCardP
           <hr className="card-divider" />
           <div className="flex flex-wrap gap-1.5">
             {spell.classes.map((cls) => (
-              <span
+              <Link
                 key={cls}
-                className={`text-xs px-2 py-0.5 rounded-md border ${CLASS_COLORS[cls] ?? "bg-gray-700/40 text-gray-300 border-gray-500/30"}`}
+                href={`/classes/${cls.toLowerCase()}`}
+                className={`text-xs px-2 py-0.5 rounded-md border hover:brightness-125 transition-all ${CLASS_COLORS[cls] ?? "bg-gray-700/40 text-gray-300 border-gray-500/30"}`}
               >
                 {isPt ? (CLASS_PT[cls] ?? cls) : cls}
-              </span>
+              </Link>
             ))}
           </div>
         </>

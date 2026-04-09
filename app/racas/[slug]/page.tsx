@@ -4,6 +4,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicRaceDetail } from "@/components/public/PublicRaceDetail";
 import { getRaceSlugs, getRaceData } from "@/lib/srd/races-data";
 import { PublicCTA } from "@/components/public/PublicCTA";
+import { PublicFooter } from "@/components/public/PublicFooter";
 import Link from "next/link";
 
 // ── Static generation ──────────────────────────────────────────────
@@ -92,7 +93,7 @@ export default async function RacaDetailPage({
     <>
       <RaceJsonLd race={race} />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav
           locale="pt-BR"
           breadcrumbs={[
@@ -101,7 +102,7 @@ export default async function RacaDetailPage({
           ]}
         />
 
-        <main className="mx-auto max-w-4xl px-4 py-8">
+        <main className="mx-auto max-w-5xl px-4 py-8">
           <PublicRaceDetail slug={slug} locale="pt-BR" />
 
           <div className="mt-12">
@@ -116,30 +117,7 @@ export default async function RacaDetailPage({
           </p>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            Conteúdo SRD utilizado sob{" "}
-            <a
-              href="https://creativecommons.org/licenses/by/4.0/"
-              className="underline hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Creative Commons Attribution 4.0
-            </a>
-            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards
-            of the Coast.
-          </p>
-          <p className="mt-1">
-            <a
-              href="https://pocketdm.com.br"
-              className="underline hover:text-gray-300"
-            >
-              Pocket DM
-            </a>
-            {" "}&mdash; O rastreador de combate para D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter locale="pt-BR" />
       </div>
     </>
   );

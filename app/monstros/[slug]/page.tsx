@@ -12,6 +12,7 @@ import { PublicMonsterStatBlock } from "@/components/public/PublicMonsterStatBlo
 import { PublicMonsterSearch } from "@/components/public/PublicMonsterSearch";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
+import { PublicFooter } from "@/components/public/PublicFooter";
 import monsterLore from "@/data/srd/monster-lore.json";
 import monsterLorePt from "@/data/srd/monster-lore-pt.json";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
@@ -131,7 +132,7 @@ export default async function MonstroPage({
     <>
       <MonsterJsonLd monster={monster} ptName={ptName} slug={slug} />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
+      <div className="min-h-screen bg-background">
         <PublicNav
           locale="pt-BR"
           breadcrumbs={[
@@ -140,7 +141,7 @@ export default async function MonstroPage({
           ]}
         />
 
-        <main className="mx-auto max-w-4xl px-4 py-8">
+        <main className="mx-auto max-w-5xl px-4 py-8">
           {/* Collapsible search */}
           <PublicMonsterSearch
             monsters={allMonsters}
@@ -171,26 +172,7 @@ export default async function MonstroPage({
           </p>
         </main>
 
-        <footer className="border-t border-gray-800 mt-16 py-8 text-center text-gray-500 text-xs">
-          <p>
-            Conteúdo SRD utilizado sob{" "}
-            <a
-              href="https://creativecommons.org/licenses/by/4.0/"
-              className="underline hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Creative Commons Attribution 4.0
-            </a>
-            . D&amp;D e Dungeons &amp; Dragons são marcas registradas da Wizards of the Coast.
-          </p>
-          <p className="mt-1">
-            <a href="https://pocketdm.com.br" className="underline hover:text-gray-300">
-              Pocket DM
-            </a>
-            {" "}— O rastreador de combate para D&amp;D 5e
-          </p>
-        </footer>
+        <PublicFooter locale="pt-BR" />
       </div>
     </>
   );
