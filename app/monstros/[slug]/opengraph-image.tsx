@@ -1,20 +1,13 @@
 import { ImageResponse } from "next/og";
 import {
-  getSrdMonstersDeduped,
   getMonsterBySlugPt,
-  toSlug,
-  toMonsterSlugPt,
 } from "@/lib/srd/srd-data-server";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export function generateStaticParams() {
-  return getSrdMonstersDeduped().map((m) => ({
-    slug: toMonsterSlugPt(toSlug(m.name)),
-  }));
-}
+// OG images are generated on-demand (ISR) — no need to pre-render ~776 PNGs at build time.
 
 export default async function MonstroOgImage({
   params,

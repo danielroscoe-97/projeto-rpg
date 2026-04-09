@@ -1,20 +1,13 @@
 import { ImageResponse } from "next/og";
 import {
-  getSrdSpellsDeduped,
   getSpellBySlugPt,
-  toSlug,
-  toSpellSlugPt,
   getSpellNamePt,
 } from "@/lib/srd/srd-data-server";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export function generateStaticParams() {
-  return getSrdSpellsDeduped().map((s) => ({
-    slug: toSpellSlugPt(toSlug(s.name)),
-  }));
-}
+// OG images are generated on-demand (ISR) — no need to pre-render ~302 PNGs at build time.
 
 export default async function MagiaOgImage({
   params,
