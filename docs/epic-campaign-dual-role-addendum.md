@@ -539,7 +539,7 @@ DM → Campanha → "Compartilhar" → Gerar Código
 │ 🔗 Link da Campanha      │
 │                         │
 │  Código: AB12CD          │
-│  Link: pocketdm.app/    │
+│  Link: pocketdm.com.br/    │
 │    join-campaign/AB12CD  │
 │                         │
 │  [📋 Copiar Link]        │

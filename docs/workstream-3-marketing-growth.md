@@ -110,9 +110,9 @@ Transição: Flip
 CENA 8 (2:45 - 3:00) — CTA
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Texto: "Teste agora — grátis, sem cadastro"
-Visual: Logo grande + URL pocketdm.app/try
+Visual: Logo grande + URL pocketdm.com.br/try
 QR Code animado aparecendo
-Texto: "pocketdm.app" grande e centralizado
+Texto: "pocketdm.com.br" grande e centralizado
 Transição: Zoom in
 ```
 
@@ -156,7 +156,7 @@ Criar arquivo `public/video/pocket-dm-demo.html` com:
   - Logo Pocket DM (crown d20)
   - QR code → pocketdm.com.br/try?utm_source=card&utm_medium=event
   - Texto: "Combat Tracker D&D 5e — Grátis" 
-  - URL visível: pocketdm.app
+  - URL visível: pocketdm.com.br
 - Formato: PDF pronto para impressão (gráfica ou impressora doméstica)
 - 50 cartões por folha A4
 

@@ -2252,6 +2252,8 @@
     "upsell_description_weather": "Add rain, snow, fog and storm effects to your combat! Create a free account to unlock.",
     "upsell_title_background": "Custom battle scenes",
     "upsell_description_background": "Customize the combat background to match your adventure! Create a free account to unlock.",
+    "upsell_title_end_combat": "Great combat! Save your data",
+    "upsell_description_end_combat": "Create your free account to save this encounter, build campaigns, and share combats with your players in real time.",
     "import_title": "Encounter found!",
     "import_description": "We found a saved encounter from guest mode. Would you like to import it?",
     "import_preview": "Encounter with {count} combatants, round {round}",

@@ -59,7 +59,7 @@ export default async function OgImage({ params }: { params: Promise<{ code: stri
         <p style={{ color: "#D4A853", fontSize: 18, letterSpacing: "0.15em", textTransform: "uppercase" as const }}>
           \u2694\ufe0f Pocket DM \u2014 Combat Recap
         </p>
-        <p style={{ color: "#555", fontSize: 16 }}>pocketdm.app</p>
+        <p style={{ color: "#555", fontSize: 16 }}>pocketdm.com.br</p>
       </div>
 
       {/* Divider */}

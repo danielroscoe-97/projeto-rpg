@@ -10,7 +10,7 @@
 
 | | MasterApp | Pocket DM |
 |---|-----------|-----------|
-| **URL** | masterapprpg.com / board.masterapprpg.com | pocketdm.app |
+| **URL** | masterapprpg.com / board.masterapprpg.com | pocketdm.com.br |
 | **Stack** | Next.js, Supabase, Babylon.js (dados 3D) | Next.js, Supabase, SRD real |
 | **Modelo** | Starter (grátis, 1 campanha) / Pro (R$10/mês, 3) / Master (R$25/mês, ilimitado) | Freemium com guest access |
 | **Foco** | Gestão completa de campanha + combate | Combate realtime + simplicidade |

@@ -142,7 +142,7 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
         </div>
       )}
 
-      {/* Action row — Share text + Save combat + New combat */}
+      {/* Action row — Share text + Save combat (auth only) + New combat */}
       <div className="flex gap-2">
         <button
           type="button"
@@ -153,26 +153,29 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
           <Share2 className="size-4" />
           {t("leaderboard_share")}
         </button>
-        <button
-          type="button"
-          onClick={handleSaveCombat}
-          disabled={isSaving}
-          className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border transition-colors text-sm font-medium min-h-[44px] disabled:opacity-50 ${
-            isSaved
-              ? "border-green-500/30 text-green-400 hover:bg-green-500/10"
-              : "border-gold/30 text-gold hover:bg-gold/10"
-          }`}
-          data-testid="recap-save-combat-btn"
-        >
-          {isSaving ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : isSaved ? (
-            <Check className="size-4" />
-          ) : (
-            <Save className="size-4" />
-          )}
-          {isSaved ? t("recap_saved") : t("recap_save_combat")}
-        </button>
+        {/* Hide "Salvar Combate" for guests — the primary CTA already covers save+signup */}
+        {!onSaveAndSignup && (
+          <button
+            type="button"
+            onClick={handleSaveCombat}
+            disabled={isSaving}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border transition-colors text-sm font-medium min-h-[44px] disabled:opacity-50 ${
+              isSaved
+                ? "border-green-500/30 text-green-400 hover:bg-green-500/10"
+                : "border-gold/30 text-gold hover:bg-gold/10"
+            }`}
+            data-testid="recap-save-combat-btn"
+          >
+            {isSaving ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : isSaved ? (
+              <Check className="size-4" />
+            ) : (
+              <Save className="size-4" />
+            )}
+            {isSaved ? t("recap_saved") : t("recap_save_combat")}
+          </button>
+        )}
         <button
           type="button"
           onClick={onNewCombat}

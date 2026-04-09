@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: "website",
-      url: `https://pocketdm.app/r/${code}`,
+      url: `https://pocketdm.com.br/r/${code}`,
     },
     twitter: { card: "summary_large_image" },
   };
@@ -193,7 +193,7 @@ export default async function ReportPage({ params }: PageProps) {
           >
             <Rocket className="size-4" /> {s.button}
           </Link>
-          <p className="text-[10px] text-gray-600 mt-2">pocketdm.app</p>
+          <p className="text-[10px] text-gray-600 mt-2">pocketdm.com.br</p>
         </div>
       </div>
     </div>

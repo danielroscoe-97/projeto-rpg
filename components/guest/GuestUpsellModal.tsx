@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { GoogleOAuthButton } from "@/components/auth/GoogleOAuthButton";
 
-export type UpsellTrigger = "save" | "export" | "player-link" | "weather" | "background";
+export type UpsellTrigger = "save" | "export" | "player-link" | "weather" | "background" | "end-combat";
 
 const TRIGGER_KEYS: Record<UpsellTrigger, { title: string; desc: string }> = {
   save:          { title: "upsell_title_save",       desc: "upsell_description_save" },
@@ -13,6 +13,7 @@ const TRIGGER_KEYS: Record<UpsellTrigger, { title: string; desc: string }> = {
   "player-link": { title: "upsell_title_share",      desc: "upsell_description_share" },
   weather:       { title: "upsell_title_weather",     desc: "upsell_description_weather" },
   background:    { title: "upsell_title_background",  desc: "upsell_description_background" },
+  "end-combat":  { title: "upsell_title_end_combat",  desc: "upsell_description_end_combat" },
 };
 
 interface GuestUpsellModalProps {

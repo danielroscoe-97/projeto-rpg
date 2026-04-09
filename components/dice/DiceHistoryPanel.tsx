@@ -26,7 +26,8 @@ export function DiceHistoryPanel() {
   // (not on campaign hub — only session/combat/compendium)
   const showPanel =
     pathname.startsWith("/app/session") ||
-    pathname.startsWith("/app/compendium");
+    pathname.startsWith("/app/compendium") ||
+    pathname.startsWith("/try");
 
   // Init the CustomEvent listener for roll results
   useEffect(() => {

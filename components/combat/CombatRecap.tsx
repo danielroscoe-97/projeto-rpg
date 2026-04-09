@@ -35,15 +35,28 @@ interface CombatRecapProps {
 
 export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign }: CombatRecapProps) {
   const t = useTranslations("combat");
-  const [phase, setPhase] = useState<RecapPhase>(report.awards.length > 0 ? "awards" : "details");
+  const [phase, setPhase] = useState<RecapPhase>(() => {
+    if (report.awards.length === 0) return "details";
+    // Skip awards if already seen for this combat
+    try {
+      if (sessionStorage.getItem(`recap-awards-seen-${report.timestamp}`)) return "details";
+    } catch { /* SSR / storage unavailable */ }
+    return "awards";
+  });
+
+  const markAwardsSeen = useCallback(() => {
+    try { sessionStorage.setItem(`recap-awards-seen-${report.timestamp}`, "1"); } catch {}
+  }, [report.timestamp]);
 
   const handleAwardsComplete = useCallback(() => {
+    markAwardsSeen();
     setPhase("details");
-  }, []);
+  }, [markAwardsSeen]);
 
   const handleSkipToDetails = useCallback(() => {
+    markAwardsSeen();
     setPhase("details");
-  }, []);
+  }, [markAwardsSeen]);
 
   // Lock body scroll while recap is open (prevents mobile scroll-through)
   useEffect(() => {

@@ -226,7 +226,7 @@ Slowpoke: Grimjaw (avg 52s/turn)
 💔 Baixas: 2 PCs cairam, 3 monstros eliminados
 🎲 5 crits | 2 fumbles
 ━━━━━━━━━━━━━���━━━━━━━━━━━━━━
-🔗 pocketdm.app/try
+🔗 pocketdm.com.br/try
 ```
 
 ---
@@ -367,7 +367,7 @@ useEffect(() => {
 ## Fora de Escopo (Futuro)
 
 - Imagem compartilhavel (Canvas API / html2canvas)
-- Link publico com OG preview (pocketdm.app/r/abc123)
+- Link publico com OG preview (pocketdm.com.br/r/abc123)
 - Dano por round (timeline chart)
 - Dano por tipo de acao (melee/ranged/spell)
 - Heal efficiency (cura vs dano no mesmo round)

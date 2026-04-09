@@ -36,7 +36,7 @@ export default function PricingError({
             {t("retry")}
           </button>
           <Link
-            href="mailto:support@pocketdm.app"
+            href="mailto:support@pocketdm.com.br"
             className="text-sm text-gold/70 hover:text-gold transition-colors"
           >
             {t("pricing_contact")}

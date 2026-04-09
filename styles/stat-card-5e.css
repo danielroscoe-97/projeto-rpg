@@ -519,7 +519,7 @@
 }
 
 .dice-history-pill-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #b0aca0;
   white-space: nowrap;
@@ -528,7 +528,7 @@
 .dice-history-badge {
   background: #922610;
   color: #e8e4d0;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   min-width: 18px;
   height: 18px;
@@ -554,7 +554,7 @@
   border-radius: 8px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7);
   color: #e8e4d0;
-  font-size: 13px;
+  font-size: 12px;
   animation: dice-pop-in 150ms ease-out;
 }
 
@@ -568,7 +568,7 @@
 }
 
 .dice-history-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -585,7 +585,7 @@
   background: none;
   border: 1px solid rgba(232, 228, 208, 0.15);
   color: #b0aca0;
-  font-size: 11px;
+  font-size: 12px;
   padding: 2px 8px;
   border-radius: 3px;
   cursor: pointer;
@@ -601,7 +601,7 @@
   background: none;
   border: none;
   color: #b0aca0;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   padding: 0 2px;
   line-height: 1;
@@ -648,13 +648,13 @@
 }
 
 .dice-history-time {
-  font-size: 10px;
+  font-size: 11px;
   color: #666;
   font-variant-numeric: tabular-nums;
 }
 
 .dice-history-source {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #c9a959;
   white-space: nowrap;
@@ -662,7 +662,7 @@
 }
 
 .dice-history-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #b0aca0;
   flex: 1;
@@ -679,7 +679,7 @@
 }
 
 .dice-history-breakdown {
-  font-size: 11px;
+  font-size: 12px;
   color: #888;
   flex: 1;
   overflow: hidden;

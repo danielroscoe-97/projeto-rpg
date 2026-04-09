@@ -856,6 +856,8 @@ export function GuestCombatClient() {
   // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
   type GuestPostCombatPhase = "leaderboard" | null;
   const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
+  // Track whether upsell was opened from post-combat context (needs reset on dismiss)
+  const [isPostCombatUpsell, setIsPostCombatUpsell] = useState(false);
 
   // BUG-I2: Mutual exclusion — derived state prevents log during any post-combat phase
   const effectiveShowActionLog = showActionLog && !guestPostCombatPhase;
@@ -952,6 +954,17 @@ export function GuestCombatClient() {
     pushTurnUndo(store.combatants, store.currentTurnIndex, store.roundNumber, store.turnTimeAccumulated, store.turnStartedAt, store.turnCountById);
     advanceTurn();
     playTurnSfx();
+    // Log turn entry (parity with auth mode)
+    const postAdvance = useGuestCombatStore.getState();
+    const current = postAdvance.combatants[postAdvance.currentTurnIndex];
+    if (current) {
+      useCombatLogStore.getState().addEntry({
+        round: postAdvance.roundNumber,
+        type: "turn",
+        actorName: current.name,
+        description: `Turn: ${current.name}`,
+      });
+    }
   }, [advanceTurn, pushTurnUndo]);
 
   // Keyboard shortcuts (space = next turn, arrow keys, D/H/C, etc.)
@@ -1034,6 +1047,38 @@ export function GuestCombatClient() {
     setUpsellOpen(true);
   }, []);
 
+  // Post-combat upsell: save snapshot, show CTA, and reset on dismiss
+  const openPostCombatUpsell = useCallback(() => {
+    try {
+      const state = useGuestCombatStore.getState();
+      if (state.combatants.length > 0) {
+        saveGuestCombatSnapshot({
+          combatants: state.combatants,
+          currentTurnIndex: state.currentTurnIndex,
+          roundNumber: state.roundNumber,
+        });
+      }
+    } catch {
+      // storage unavailable
+    }
+    trackEvent("guest:post_combat_upsell_shown");
+    setUpsellTrigger("end-combat");
+    setIsPostCombatUpsell(true);
+    setUpsellOpen(true);
+  }, []);
+
+  const handleUpsellClose = useCallback(() => {
+    setUpsellOpen(false);
+    if (isPostCombatUpsell) {
+      setIsPostCombatUpsell(false);
+      setGuestPostCombatPhase(null);
+      setGuestCombatReport(null);
+      useGuestCombatStats.getState().reset();
+      useCombatLogStore.getState().clear();
+      resetCombat();
+    }
+  }, [isPostCombatUpsell, resetCombat]);
+
   // Hide navbar during active combat — saves ~72px vertical space
   useEffect(() => {
     if (phase === "combat") {
@@ -1062,6 +1107,12 @@ export function GuestCombatClient() {
     const store = useGuestCombatStore.getState();
     trackEvent("guest:combat_started", { combatant_count: store.combatants.length });
     startCombat();
+    // Log initial turn entry (parity with auth mode)
+    const postStart = useGuestCombatStore.getState();
+    const first = postStart.combatants[postStart.currentTurnIndex];
+    if (first) {
+      useCombatLogStore.getState().addEntry({ round: 1, type: "turn", actorName: first.name, description: `Turn: ${first.name}` });
+    }
   }, [startCombat]);
 
   const handleAddCombatant = useCallback(
@@ -1252,10 +1303,21 @@ export function GuestCombatClient() {
   );
   const handleToggleCondition = useCallback(
     (id: string, condition: string) => {
-      const target = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+      const store = useGuestCombatStore.getState();
+      const target = store.combatants.find((c) => c.id === id);
       if (target) {
         const wasAdded = !target.conditions.includes(condition);
         pushConditionUndo(id, condition, wasAdded);
+        // Log condition change (parity with auth mode)
+        const actor = store.combatants[store.currentTurnIndex];
+        useCombatLogStore.getState().addEntry({
+          round: store.roundNumber,
+          type: "condition",
+          actorName: actor?.name ?? target.name,
+          targetName: target.name,
+          description: `${target.name} ${wasAdded ? "gained" : "lost"} ${condition}`,
+          details: { conditionName: condition, conditionAction: wasAdded ? "applied" : "removed" },
+        });
       }
       toggleCondition(id, condition);
     },
@@ -1273,6 +1335,14 @@ export function GuestCombatClient() {
         if (actor) {
           useGuestCombatStats.getState().trackKill(actor.name);
         }
+        // Log defeat (parity with auth mode)
+        useCombatLogStore.getState().addEntry({
+          round: store.roundNumber,
+          type: "defeat",
+          actorName: store.combatants[store.currentTurnIndex]?.name ?? "",
+          targetName: target.name,
+          description: `${target.name} defeated`,
+        });
       }
     },
     [setDefeated, pushDefeatedUndo]
@@ -1469,28 +1539,30 @@ export function GuestCombatClient() {
         setShowActionLog(false); // Close action log to avoid overlapping with recap
         setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
       } else {
-        useGuestCombatStats.getState().reset();
-        resetCombat();
+        // No meaningful combat activity — show sign-up CTA instead of silent reset
+        trackEvent("guest:combat_ended", {
+          rounds: guestStore.roundNumber,
+          combatant_count: guestStore.combatants.length,
+          duration_ms: duration,
+          had_activity: false,
+        });
+        openPostCombatUpsell();
       }
     } catch (err) {
-      // Defensive: if report building fails, still reset combat instead of leaving
+      // Defensive: if report building fails, show sign-up CTA instead of leaving
       // the user stuck on the active combat screen with no way to proceed.
       console.error("[GuestCombat] handleEndEncounter failed:", err);
       toast.error(t("recap_build_error"));
-      useGuestCombatStats.getState().reset();
-      useCombatLogStore.getState().clear();
-      resetCombat();
+      openPostCombatUpsell();
     }
-  }, [resetCombat, t, tg]);
+  }, [resetCombat, t, tg, openPostCombatUpsell]);
 
-  // C.15: Dismiss all post-combat screens — guest has no DB persistence
+  // C.15: Dismiss recap → show sign-up CTA before resetting
   const handleGuestDismissAll = useCallback(() => {
     setGuestPostCombatPhase(null);
     setGuestCombatReport(null);
-    useGuestCombatStats.getState().reset();
-    useCombatLogStore.getState().clear();
-    resetCombat();
-  }, [resetCombat]);
+    openPostCombatUpsell();
+  }, [openPostCombatUpsell]);
 
 
   // Conversion CTA: save guest snapshot and redirect to signup
@@ -1514,7 +1586,7 @@ export function GuestCombatClient() {
         />
         <GuestUpsellModal
           isOpen={upsellOpen}
-          onClose={() => setUpsellOpen(false)}
+          onClose={handleUpsellClose}
           trigger={upsellTrigger}
           redirectTo={googleRedirectTo}
         />
@@ -1841,7 +1913,7 @@ export function GuestCombatClient() {
 
       <GuestUpsellModal
         isOpen={upsellOpen}
-        onClose={() => setUpsellOpen(false)}
+        onClose={handleUpsellClose}
         trigger={upsellTrigger}
         redirectTo={googleRedirectTo}
       />

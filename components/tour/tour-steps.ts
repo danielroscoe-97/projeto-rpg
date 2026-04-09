@@ -71,7 +71,7 @@ export const TOUR_STEPS: TourStepConfig[] = [
     titleKey: "tour.manual_add_title",
     descriptionKey: "tour.manual_add_description",
     type: "info",
-    position: "top",
+    position: "bottom",
     phase: "setup",
   },
   // Step 5 — Import Hint (info)

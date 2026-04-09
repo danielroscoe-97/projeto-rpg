@@ -105,7 +105,7 @@ O chasm para o mainstream será: DMs que "sempre fizeram no papel" ou "usam D&D 
 |-------|-------------|
 | **Segmentos** | DMs de D&D 5e em mesa presencial (primário), Players (secundário/viral) |
 | **Proposta de Valor** | Combat tracking completo em uma tela + sync real-time com players + SRD integrado |
-| **Canais** | Web app (pocketdm.app), landing page, guest mode (/try) |
+| **Canais** | Web app (pocketdm.com.br), landing page, guest mode (/try) |
 | **Relacionamento** | Self-service, zero-friction onboarding |
 | **Receita** | Freemium: R$14,90/mês ou R$119,90/ano (Pro) |
 | **Recursos-chave** | Codebase (Next.js + Supabase), SRD data (CC-BY-4.0), AI agents para desenvolvimento |

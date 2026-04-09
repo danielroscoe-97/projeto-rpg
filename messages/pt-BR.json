@@ -2252,6 +2252,8 @@
     "upsell_description_weather": "Adicione chuva, neve, neblina e tempestade ao seu combate! Crie uma conta gratuita para desbloquear.",
     "upsell_title_background": "Cenários de batalha personalizados",
     "upsell_description_background": "Personalize o cenário do combate para combinar com sua aventura! Crie uma conta gratuita para desbloquear.",
+    "upsell_title_end_combat": "Bom combate! Salve seus dados",
+    "upsell_description_end_combat": "Crie sua conta gratuita para salvar este encontro, criar campanhas e compartilhar combates com seus jogadores em tempo real.",
     "import_title": "Encontro encontrado!",
     "import_description": "Encontramos um encontro salvo do modo visitante. Deseja importá-lo?",
     "import_preview": "Encontro com {count} combatentes, rodada {round}",

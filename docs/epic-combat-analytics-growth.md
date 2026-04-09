@@ -244,7 +244,7 @@ async function loadStarterEncounter() {
 ## Feature 3: Link Publico com OG Preview
 
 ### Objetivo
-Permitir que o DM compartilhe um link (pocketdm.app/r/abc123) que mostra o combat report como pagina publica, com OG preview rico pra WhatsApp/Discord/Twitter. Cada view e um potencial novo usuario via CTA.
+Permitir que o DM compartilhe um link (pocketdm.com.br/r/abc123) que mostra o combat report como pagina publica, com OG preview rico pra WhatsApp/Discord/Twitter. Cada view e um potencial novo usuario via CTA.
 
 ### 3.1 — Tabela `combat_reports`
 
@@ -337,7 +337,7 @@ export async function POST(req: Request) {
 - Awards em **grid 2-col** no mobile (economiza espaco vertical)
 - Narrativas limitadas a **2 no mobile** (3 no desktop)
 - Font-size minimo 16px no mobile
-- CTA fixo no final: "Rode seu combate gratis → pocketdm.app/try"
+- CTA fixo no final: "Rode seu combate gratis → pocketdm.com.br/try"
 
 **Estrutura da pagina**:
 
@@ -367,7 +367,7 @@ Mobile (< 640px):              Desktop (>= 640px):
 │ ━━━━━━━━━━━━━━━━━━│         │                           │
 │ Rode seu combate!  │         │                           │
 │ [🚀 Testar gratis] │         │                           │
-│ pocketdm.app       │         │                           │
+│ pocketdm.com.br       │         │                           │
 └────────────────────┘         └───────────────────────────┘
 ```
 
@@ -383,14 +383,14 @@ Usa `ImageResponse` do `next/og` (mesmo pattern do OG image existente em `app/op
 - Encounter name em fonte grande
 - MVP destacado: "🏆 Thorin — 67 dmg"
 - Matchup: "4 vs 3 · 7 rounds · 12min"
-- URL pocketdm.app no rodape
+- URL pocketdm.com.br no rodape
 
 **Meta tags**:
 ```html
 <meta property="og:title" content="⚔️ Thorin foi MVP com 67 de dano!" />
 <meta property="og:description" content="Goblin Ambush — 4 vs 3, 7 rounds, 12min. Rode seu combate gratis no Pocket DM." />
-<meta property="og:image" content="https://pocketdm.app/r/abc123/opengraph-image" />
-<meta property="og:url" content="https://pocketdm.app/r/abc123" />
+<meta property="og:image" content="https://pocketdm.com.br/r/abc123/opengraph-image" />
+<meta property="og:url" content="https://pocketdm.com.br/r/abc123" />
 ```
 
 ### 3.5 — Integracao no RecapActions

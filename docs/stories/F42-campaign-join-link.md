@@ -54,7 +54,7 @@ InvitePlayerDialog → aba "Via Link"
   → GET /api/campaign/[id]/join-link
     → se join_code IS NULL: gera 8 chars aleatórios, salva, ativa
     → retorna { code, is_active, link }
-  → exibe: "pocketdm.app/join-campaign/[code]"
+  → exibe: "pocketdm.com.br/join-campaign/[code]"
   → botão [📋 Copiar] [🔄 Renovar] [toggle Ativo/Inativo]
 ```
 

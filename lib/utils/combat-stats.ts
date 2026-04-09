@@ -786,7 +786,7 @@ export function formatRecapShareText(report: CombatReport): string {
     lines.push(`\ud83c\udfb2 ${summary.totalCrits} crits | ${summary.totalFumbles} fumbles`);
   }
   lines.push("\u2501".repeat(28));
-  lines.push("\ud83d\udd17 pocketdm.app/try");
+  lines.push("\ud83d\udd17 pocketdm.com.br/try");
 
   return lines.join("\n");
 }
