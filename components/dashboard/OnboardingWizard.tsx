@@ -644,53 +644,86 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   return (
     <Card className="max-w-lg w-full" data-testid="onboarding-wizard">
       <CardHeader>
-        <div className="flex gap-2 mb-2" aria-label="Onboarding progress" role="group">
-          {WIZARD_STEPS.map(({ label, internalStep }, i) => {
-            const isActive =
-              state.step === internalStep || (state.step === "done" && internalStep === 4);
-            const isDone =
-              (typeof state.step === "number" && state.step > internalStep) ||
-              state.step === "done";
-            return (
-              <div key={label} className="flex items-center gap-1">
-                <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    isDone
-                      ? "bg-green-700 text-foreground"
-                      : isActive
-                        ? "bg-gold text-foreground"
-                        : "bg-white/[0.06] text-muted-foreground"
-                  }`}
-                >
-                  {i + 1}
-                </span>
-                <span
-                  className={`text-xs ${
-                    isActive ? "text-gold font-medium" : "text-muted-foreground"
-                  }`}
-                >
-                  {label}
-                </span>
-                {i < WIZARD_STEPS.length - 1 && (
-                  <span className="text-muted-foreground/60 mx-1">›</span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        {state.step === 2 && (
-          <Users className="w-12 h-12 mx-auto mb-2 text-gold/60" aria-hidden="true" />
+        {state.step !== "done" ? (
+          <>
+            <div className="flex gap-2 mb-2" aria-label="Onboarding progress" role="group">
+              {WIZARD_STEPS.map(({ label, internalStep }, i) => {
+                const isActive =
+                  state.step === internalStep;
+                const isDone =
+                  typeof state.step === "number" && state.step > internalStep;
+                return (
+                  <div key={label} className="flex items-center gap-1">
+                    <span
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        isDone
+                          ? "bg-green-700 text-foreground"
+                          : isActive
+                            ? "bg-gold text-foreground"
+                            : "bg-white/[0.06] text-muted-foreground"
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                    <span
+                      className={`text-xs ${
+                        isActive ? "text-gold font-medium" : "text-muted-foreground"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                    {i < WIZARD_STEPS.length - 1 && (
+                      <span className="text-muted-foreground/60 mx-1">›</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {state.step === 2 && (
+              <Users className="w-12 h-12 mx-auto mb-2 text-gold/60" aria-hidden="true" />
+            )}
+            <CardTitle className="text-foreground">
+              {state.step === 1 && t("campaign_name_title")}
+              {state.step === 2 && t("invite_title")}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              {state.step === 1 && t("campaign_name_description")}
+              {state.step === 2 && t("invite_description")}
+            </CardDescription>
+          </>
+        ) : (
+          <div className="text-center">
+            {/* ── Logo celebration ── */}
+            <motion.div
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 180, damping: 12, delay: 0.1 }}
+              className="relative mx-auto mb-3 w-20 h-20"
+            >
+              <div className="absolute inset-0 rounded-full bg-gold/20 blur-xl animate-pulse pointer-events-none" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/art/brand/logo-icon.svg"
+                alt="Pocket DM"
+                width={80}
+                height={80}
+                className="relative drop-shadow-[0_0_24px_rgba(212,168,83,0.5)]"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <CardTitle className="text-foreground text-xl">
+                {t("campaign_created_title")}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground mt-1">
+                {t("campaign_created_description")}
+              </CardDescription>
+            </motion.div>
+          </div>
         )}
-        <CardTitle className="text-foreground">
-          {state.step === 1 && t("campaign_name_title")}
-          {state.step === 2 && t("invite_title")}
-          {state.step === "done" && t("campaign_created_title")}
-        </CardTitle>
-        <CardDescription className="text-muted-foreground">
-          {state.step === 1 && t("campaign_name_description")}
-          {state.step === 2 && t("invite_description")}
-          {state.step === "done" && t("campaign_created_description")}
-        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -731,6 +764,55 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               {t("invite_loading")}
             </p>
           )
+        )}
+
+        {/* ── Done: XP reward bar ── */}
+        {state.step === "done" && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="space-y-3"
+          >
+            {/* XP reward item: Community */}
+            <XpRewardRow
+              label={t("xp_community_contribution")}
+              points={25}
+              delay={0.7}
+            />
+            {/* XP reward item: DM Rank */}
+            <XpRewardRow
+              label={t("xp_dm_rank")}
+              points={50}
+              delay={1.0}
+            />
+            {/* XP bar */}
+            <div className="pt-1">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-gold/80">
+                  {t("xp_dm_level")}
+                </span>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.4 }}
+                  className="text-xs text-muted-foreground"
+                >
+                  75 / 200 XP
+                </motion.span>
+              </div>
+              <div className="h-2.5 rounded-full bg-white/[0.06] overflow-hidden relative">
+                <motion.div
+                  initial={{ width: "5%" }}
+                  animate={{ width: "37.5%" }}
+                  transition={{ delay: 1.2, duration: 1.2, ease: "easeOut" }}
+                  className="h-full rounded-full bg-gradient-to-r from-gold/70 via-gold to-amber-400 relative"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer-sweep" />
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {/* Error message */}
@@ -792,18 +874,22 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         {state.step === "done" && (
           <div className="flex gap-2 w-full flex-col sm:flex-row">
             <Button
-              onClick={() => router.push(`/app/campaigns/${state.campaignId}`)}
+              asChild
               variant="gold"
               className="flex-1"
             >
-              {t("configure_campaign_cta")}
+              <Link href={state.campaignId ? `/app/campaigns/${state.campaignId}` : "/app/dashboard"}>
+                {t("configure_campaign_cta")}
+              </Link>
             </Button>
             <Button
+              asChild
               variant="goldOutline"
-              onClick={() => router.push("/app/dashboard?from=wizard")}
               className="flex-1"
             >
-              {t("go_to_dashboard")}
+              <Link href="/app/dashboard?from=wizard">
+                {t("go_to_dashboard")}
+              </Link>
             </Button>
           </div>
         )}
@@ -919,6 +1005,36 @@ function InviteStep({
         {t("invite_hint")}
       </p>
     </div>
+  );
+}
+
+// ── XpRewardRow — Floating +XP animation row ────────────────────────
+function XpRewardRow({
+  label,
+  points,
+  delay,
+}: {
+  label: string;
+  points: number;
+  delay: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -12 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay, duration: 0.4 }}
+      className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.04] border border-gold/10"
+    >
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <motion.span
+        initial={{ opacity: 0, y: 8, scale: 0.6 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: delay + 0.3, type: "spring", stiffness: 300, damping: 15 }}
+        className="text-sm font-bold text-gold"
+      >
+        +{points} XP
+      </motion.span>
+    </motion.div>
   );
 }
 
