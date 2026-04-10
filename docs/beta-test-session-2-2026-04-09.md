@@ -1,7 +1,7 @@
 # Beta Test Session #2 — 2026-04-09
 
 > **Sessao**: Presencial, campanha "Curse of Strahd"
-> **DM**: Lucas Galuppo
+> **DM**: Luiz Alexandre
 > **Players**: Lucca, Victor, Daniel
 > **Duracao**: ~2h (22:30 - 00:30)
 > **Severidade geral**: ALTA — app crashou durante sessao (504 cascade), desync severo entre DM e players
