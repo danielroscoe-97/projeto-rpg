@@ -54,6 +54,19 @@ export async function persistHpChange(
   if (error) throw new Error(error.message);
 }
 
+/** Persists is_hidden flag for a combatant. */
+export async function persistHidden(
+  combatantId: string,
+  isHidden: boolean
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("combatants")
+    .update({ is_hidden: isHidden })
+    .eq("id", combatantId);
+  if (error) throw new Error(error.message);
+}
+
 /** Persists conditions array for a combatant. */
 export async function persistConditions(
   combatantId: string,

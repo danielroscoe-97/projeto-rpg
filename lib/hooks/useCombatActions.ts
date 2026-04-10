@@ -16,6 +16,7 @@ import {
   persistEndEncounter,
   persistDmNotes,
   persistPlayerNotes,
+  persistHidden,
 } from "@/lib/supabase/session";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
 import { useAudioStore } from "@/lib/stores/audio-store";
@@ -458,7 +459,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
         // Apply group rename to all members
         for (const [memberId, update] of result.updates) {
           snap.updateCombatantStats(memberId, update);
-          broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: memberId, ...update });
+          broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: memberId, is_player: before.is_player, ...update });
           persistCombatantStats(memberId, update).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
         }
         // Process remaining stats (non display_name) for the target only
@@ -479,7 +480,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
               snap.updateCombatantStats(id, { legendary_actions_used: 0 } as Parameters<typeof snap.updateCombatantStats>[1]);
             }
           }
-          broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...restStats });
+          broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, is_player: before.is_player, ...restStats });
           persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
         }
         return;
@@ -510,7 +511,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
         snap.updateCombatantStats(id, { legendary_actions_used: 0 } as Parameters<typeof snap.updateCombatantStats>[1]);
       }
     }
-    broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, ...stats });
+    broadcastEvent(getSessionId(), { type: "combat:stats_update", combatant_id: id, is_player: before.is_player, ...stats });
     persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError, getSessionId]);
 
@@ -620,7 +621,10 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       // Hiding: broadcast a remove so players see it disappear
       broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
     }
-  }, [getSessionId]);
+
+    // Persist to DB so polling fallback picks up the change
+    persistHidden(id, !wasHidden).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+  }, [getSessionId, setError]);
 
   const handleUndoLastAdd = useCallback(() => {
     const removedId = useCombatStore.getState().undoLastAdd();
