@@ -165,7 +165,7 @@ export function BlogPost1() {
     <>
       <P>
         Seis criaturas na iniciativa, o Barbarian acabou de acertar um crítico
-        no Goblin — peraí, era o Goblin 3 ou o 4? E aquele Hobgoblin tava
+        no Goblin, peraí, era o Goblin 3 ou o 4? E aquele Hobgoblin tava
         envenenado ou era o Orc? Enquanto você folheia seus post-its, a mesa
         inteira tá no celular. Essa cena é a realidade de 90% dos mestres que
         ainda gerenciam combate no papel. Um{" "}
@@ -178,7 +178,7 @@ export function BlogPost1() {
         Pensa nele como o substituto digital daquele caderno amassado. Ele
         mantém a ordem de iniciativa, mostra de quem é o turno, rastreia HP
         com barras visuais e marca condições ativas (<em>envenenado</em>,{" "}
-        <em>atordoado</em>, <em>agarrado</em>) — tudo automático.
+        <em>atordoado</em>, <em>agarrado</em>), tudo automático.
       </P>
       <P>
         Sim, existem VTTs como{" "}
@@ -186,7 +186,7 @@ export function BlogPost1() {
         <ExtLink href="https://foundryvtt.com">Foundry</ExtLink> que fazem
         isso e muito mais. Mas se sua mesa é presencial, você não precisa de
         um cockpit de avião pra gerenciar 4 goblins. Precisa de algo que abra
-        no celular e funcione em 30 segundos — sem forçar seus jogadores a
+        no celular e funcione em 30 segundos, sem forçar seus jogadores a
         criar conta em lugar nenhum.
       </P>
 
@@ -201,25 +201,25 @@ export function BlogPost1() {
       </P>
       <Ul>
         <Li>
-          <strong>Iniciativa</strong> — quem age primeiro, quem age depois.
+          <strong>Iniciativa:</strong> quem age primeiro, quem age depois.
           A ordem de turnos é a espinha dorsal do combate.
         </Li>
         <Li>
-          <strong>Dano e HP</strong> — quanto de vida cada criatura tem e quanto
+          <strong>Dano e HP:</strong> quanto de vida cada criatura tem e quanto
           já levou de dano. Sem isso, você não sabe quando o monstro morre.
         </Li>
         <Li>
-          <strong>Condições</strong> — efeitos como <em>blinded</em>,{" "}
+          <strong>Condições:</strong> efeitos como <em>blinded</em>,{" "}
           <em>stunned</em>, <em>prone</em>. Esquecer uma condição ativa pode
           mudar completamente o rumo do combate. Veja nosso{" "}
           <IntLink slug="guia-condicoes-dnd-5e">guia completo de condições D&D 5e</IntLink>.
         </Li>
         <Li>
-          <strong>Posicionamento</strong> — onde cada criatura está em relação
+          <strong>Posicionamento:</strong> onde cada criatura está em relação
           às outras. Importante para ataques de oportunidade e áreas de efeito.
         </Li>
         <Li>
-          <strong>Stat blocks</strong> — o que cada monstro pode fazer no turno
+          <strong>Stat blocks:</strong> o que cada monstro pode fazer no turno
           dele. Ataques, habilidades, CA e salvaguardas.
         </Li>
       </Ul>
@@ -228,7 +228,7 @@ export function BlogPost1() {
       <H3>1. Antes da sessão: monte o encontro</H3>
       <P>
         Jogue os monstros no tracker antes da sessão. Um tracker decente já tem
-        bestiário embutido — busca por nome, clica, pronto. No Pocket DM são{" "}
+        bestiário embutido: busca por nome, clica, pronto. No Pocket DM são{" "}
         <ProdLink href="/monstros">mais de 1.200 criaturas</ProdLink> do{" "}
         <ExtLink href="https://5e.d20srd.org/">SRD</ExtLink> + a coleção
         inteira do{" "}
@@ -241,7 +241,7 @@ export function BlogPost1() {
       <P>
         Jogadores rolam o d20, te passam o número, e você digita. O tracker
         ordena tudo sozinho. Monstros? Rola automático ou usa o valor médio
-        do stat block — sua escolha.
+        do stat block, sua escolha.
       </P>
 
       <H3>3. Durante o combate: só jogue</H3>
@@ -288,7 +288,7 @@ export function BlogPost1() {
       <P>
         Se você mestra presencialmente e ainda gerencia combate no papel, um
         tracker é o maior upgrade que existe. Não porque seja tecnologia
-        revolucionária — porque elimina exatamente as partes chatas que
+        revolucionária, porque elimina exatamente as partes chatas que
         fazem combate arrastar. O resto continua sendo você, seus jogadores e
         a história. Só que agora sem rasura. Se quiser ir além, dê uma olhada
         nas{" "}
@@ -318,7 +318,7 @@ export function BlogPost2() {
       <P>
         Combate é o momento em que mais coisa acontece ao mesmo tempo. 6
         criaturas, cada uma com HP diferente, condições ativas, ataques
-        multiaction — e você ali no meio tentando lembrar de quem é o turno.
+        multiaction, e você ali no meio tentando lembrar de quem é o turno.
         Um <ProdLink href="/try">combat tracker</ProdLink> tira todo esse
         peso das suas costas.
       </P>
@@ -326,7 +326,7 @@ export function BlogPost2() {
         O bom tracker adiciona monstros com um clique, rola iniciativa, mostra
         HP em barras coloridas e marca condições sem você precisar escrever
         nada. O Pocket DM faz tudo isso e ainda sincroniza no celular de cada
-        jogador — então ninguém mais pergunta "de quem é o turno?"
+        jogador, então ninguém mais pergunta "de quem é o turno?"
       </P>
 
       <H2>2. Bestiário Digital — tchau, Monster Manual no colo</H2>
@@ -339,10 +339,10 @@ export function BlogPost2() {
       <P>
         O conteúdo SRD (System Reference Document) do D&D 5e inclui centenas de
         monstros gratuitos. Ferramentas como o Pocket DM disponibilizam{" "}
-        <ProdLink href="/monstros">mais de 1.200+ monstros SRD</ProdLink> — além
+        <ProdLink href="/monstros">mais de 1.200+ monstros SRD</ProdLink>, além
         de monstros do compêndio{" "}
         <ExtLink href="https://www.reddit.com/r/monsteraday/">Monster a Day</ExtLink>{" "}
-        — com stat blocks completos, todos pesquisáveis.
+        com stat blocks completos, todos pesquisáveis.
       </P>
 
       <H2>3. Catálogo de Magias — "o que essa spell faz mesmo?"</H2>
@@ -353,7 +353,7 @@ export function BlogPost2() {
       </P>
       <Img src="/art/blog/spells-index.png" alt="Catálogo de magias SRD do Pocket DM — 750+ spells organizadas por nível e escola" />
       <P>
-        O Pocket DM inclui o que chamamos de {"\u201C"}oráculo de magias{"\u201D"} — uma{" "}
+        O Pocket DM inclui o que chamamos de {"\u201C"}oráculo de magias{"\u201D"}: uma{" "}
         <ProdLink href="/magias">busca inteligente em mais de 900 magias SRD</ProdLink>,
         acessível durante o combate sem interromper o fluxo do jogo.
       </P>
@@ -368,7 +368,7 @@ export function BlogPost2() {
       <P>
         Ter 3-4 presets prontos (taverna, dungeon, combate, épico) resolve
         90% das cenas. Troca rápida, sem perder o ritmo. O Pocket DM já vem
-        com 12+ presets embutidos na interface de combate — sem precisar de
+        com 12+ presets embutidos na interface de combate, sem precisar de
         app separado.
       </P>
 
@@ -383,26 +383,26 @@ export function BlogPost2() {
 
       <Tip linkHref="/try" linkText="Experimentar grátis">
         O Pocket DM integra todas essas 5 ferramentas em uma única interface
-        gratuita. Bestiário, magias, música, dados e combat tracker — tudo no
+        gratuita. Bestiário, magias, música, dados e combat tracker, tudo no
         mesmo lugar.
       </Tip>
 
       <H2>E o que NÃO é essencial (mas é legal)</H2>
       <Ul>
         <Li>
-          <strong>VTT completo (<ExtLink href="https://roll20.net">Roll20</ExtLink>, <ExtLink href="https://foundryvtt.com">Foundry</ExtLink>)</strong> — ótimo para mesas
+          <strong>VTT completo (<ExtLink href="https://roll20.net">Roll20</ExtLink>, <ExtLink href="https://foundryvtt.com">Foundry</ExtLink>):</strong> ótimo para mesas
           online, mas overkill para presencial
         </Li>
         <Li>
-          <strong>Gerador de mapas</strong> — útil para dungeon crawls, mas a
+          <strong>Gerador de mapas:</strong> útil para dungeon crawls, mas a
           maioria dos combates funciona com teatro da mente
         </Li>
         <Li>
-          <strong>Ficha de personagem digital</strong> — legal, mas os jogadores
+          <strong>Ficha de personagem digital:</strong> legal, mas os jogadores
           geralmente preferem a própria ficha (física ou <ExtLink href="https://www.dndbeyond.com">D&D Beyond</ExtLink>)
         </Li>
         <Li>
-          <strong>Gerador de NPCs/encontros com IA</strong> — promissor, mas
+          <strong>Gerador de NPCs/encontros com IA:</strong> promissor, mas
           ainda experimental
         </Li>
       </Ul>
@@ -414,7 +414,7 @@ export function BlogPost2() {
         Cinco ferramentas. Não dez, não quinze. O erro mais comum de mestre
         iniciante é achar que precisa de um cockpit inteiro pra rodar uma sessão.
         Não precisa. A ferramenta não pode ser mais complicada que o problema que
-        ela resolve — e se ela te atrapalha mais do que ajuda, volta pro papel sem
+        ela resolve. Se ela te atrapalha mais do que ajuda, volta pro papel sem
         culpa. Quer testar tudo isso junto? Veja o{" "}
         <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>{" "}
         ou o{" "}
@@ -431,7 +431,7 @@ export function BlogPost3() {
   return (
     <>
       <P>
-        "Usa Roll20?" — essa é a primeira pergunta que todo mestre escuta quando
+        "Usa Roll20?" Essa é a primeira pergunta que todo mestre escuta quando
         menciona que usa ferramenta digital. E a resposta geralmente é: "pra mesa
         presencial? Não, obrigado." A confusão entre combat tracker e VTT é
         real e faz muita gente usar ferramenta errada pro problema errado.
@@ -460,7 +460,7 @@ export function BlogPost3() {
       <H2>Combat Tracker: faz uma coisa e faz direito</H2>
       <P>
         Um <ProdLink href="/try">combat tracker</ProdLink> é cirúrgico. Ele
-        só gerencia combate — e por isso é muito mais rápido de usar:
+        só gerencia combate, e por isso é muito mais rápido de usar:
       </P>
       <Ul>
         <Li>Ordem de iniciativa automática</Li>
@@ -544,7 +544,7 @@ export function BlogPost3() {
       <Tip>
         Na prática, muitos mestres usam os dois. VTT na quarta-feira à noite
         quando o grupo joga online, combat tracker no sábado quando se encontram
-        presencialmente. Não são concorrentes — são ferramentas pra contextos
+        presencialmente. Não são concorrentes, são ferramentas pra contextos
         diferentes.
       </Tip>
 
@@ -692,7 +692,7 @@ export function BlogPost4() {
       <Tip>
         No <ProdLink href="/try">Pocket DM</ProdLink>, todas as 15 condições
         vêm com as regras integradas. Ao marcar uma condição em um combatente,
-        a descrição completa aparece para consulta rápida — sem precisar abrir
+        a descrição completa aparece para consulta rápida, sem precisar abrir
         o livro. Veja também nossa{" "}
         <ProdLink href="/condicoes">referência rápida de condições</ProdLink>.
       </Tip>
@@ -702,7 +702,7 @@ export function BlogPost4() {
         Detalhe que pega muita gente: <strong>Paralyzed</strong>,{" "}
         <strong>Stunned</strong> e <strong>Unconscious</strong> já incluem{" "}
         <strong>Incapacitated</strong> automaticamente. Se o monstro tá
-        paralisado, ele também tá incapacitado — você não precisa marcar
+        paralisado, ele também tá incapacitado, você não precisa marcar
         os dois. Saber disso evita aquela discussão de 5 minutos no meio
         do combate.
       </P>
@@ -728,7 +728,7 @@ export function BlogPost5() {
 
       <H2>1. Dano fixo: a dica que ninguém usa (e deveria)</H2>
       <P>
-        Todo stat block tem um número antes dos parênteses — é o dano médio.
+        Todo stat block tem um número antes dos parênteses: é o dano médio.
         O ogre faz 2d8+4? Usa 13. Pronto. Sem rolar dado pra cada ataque de
         cada monstro. O{" "}
         <ExtLink href="https://slyflourish.com/tips_to_speed_up_combat.html">Sly Flourish</ExtLink>{" "}
@@ -739,7 +739,7 @@ export function BlogPost5() {
       <H2>2. Menos tipos de monstro = menos dor de cabeça</H2>
       <P>
         4 ogres é rápido de rodar. 2 ogres + 6 goblins + 1 hobgoblin mago é
-        um pesadelo logístico — 3 stat blocks diferentes, 3 CAs diferentes,
+        um pesadelo logístico: 3 stat blocks diferentes, 3 CAs diferentes,
         3 listas de habilidades. Se quer velocidade, simplifique a composição.
         Variedade tática é ótima quando você tem ferramenta; sem ela, é puro
         caos.
@@ -768,7 +768,7 @@ export function BlogPost5() {
       <P>
         Combine com a mesa: cada jogador tem mais ou menos 1 minuto pra decidir
         sua ação. Passou? O personagem se defende (Dodge). Não precisa ser
-        cronômetro rígido — a mera existência da regra já acelera. Ninguém quer
+        cronômetro rígido, a mera existência da regra já acelera. Ninguém quer
         ser "o cara que perdeu o turno pensando".
       </P>
 
@@ -777,7 +777,7 @@ export function BlogPost5() {
         O mestre não precisa fazer tudo sozinho. Um jogador anota iniciativa,
         outro cuida do mapa, outro rastreia condições. Isso engaja gente que
         ficaria no celular esperando o turno. Com um tracker como o Pocket DM,
-        cada jogador já vê tudo no próprio celular — a delegação acontece
+        cada jogador já vê tudo no próprio celular, e a delegação acontece
         naturalmente.
       </P>
 
@@ -823,7 +823,7 @@ export function BlogPost5() {
       <H2>A diferença entre rápido e superficial</H2>
       <P>
         Combate rápido não significa combate sem graça. Significa combate sem
-        as partes chatas — sem aquela espera morta, sem burocracia de papel,
+        as partes chatas: sem aquela espera morta, sem burocracia de papel,
         sem turnos de 5 minutos pra decidir o que fazer. A tensão fica. A
         diversão fica. O tédio vai embora. Pra mais leitura, veja o{" "}
         <ExtLink href="https://www.hipstersanddragons.com/fixing-slow-combat-5e/">Hipsters &amp; Dragons</ExtLink>,
@@ -848,14 +848,14 @@ export function BlogPost6() {
         Vou ser direto: em 2 minutos você vai do zero a um combate rodando com
         monstros, iniciativa e seus jogadores acompanhando tudo no celular.
         Sem instalar nada, sem criar conta se não quiser. Esse tutorial mostra
-        cada passo com screenshots — é acompanhar e fazer.
+        cada passo com screenshots, é acompanhar e fazer.
       </P>
 
       <H2>Passo 1: Acessar o Pocket DM</H2>
       <P>
         Acesse{" "}
         <ExtLink href="https://pocketdm.com.br/try">pocketdm.com.br/try</ExtLink>{" "}
-        para entrar no modo visitante. Não precisa criar conta — você pode
+        para entrar no modo visitante. Não precisa criar conta, você pode
         experimentar tudo gratuitamente. Se quiser salvar campanhas e convidar
         jogadores por link, crie uma conta depois.
       </P>
@@ -869,7 +869,7 @@ export function BlogPost6() {
         <ExtLink href="https://5e.d20srd.org/">SRD (System Reference Document)</ExtLink>{" "}
         + monstros do compêndio{" "}
         <ExtLink href="https://www.reddit.com/r/monsteraday/">Monster a Day</ExtLink>,{" "}
-        com stat blocks completos — HP, CA, ataques, habilidades e Challenge
+        com stat blocks completos: HP, CA, ataques, habilidades e Challenge
         Rating.
       </P>
       <P>
@@ -882,7 +882,7 @@ export function BlogPost6() {
 
       <Tip>
         Você também pode adicionar jogadores e NPCs manualmente clicando em
-        {"\u201C"}+ Monstro/Jogador Manual{"\u201D"}. Só o nome é obrigatório — HP, CA e
+        {"\u201C"}+ Monstro/Jogador Manual{"\u201D"}. Só o nome é obrigatório, HP, CA e
         iniciativa são opcionais.
       </Tip>
 
@@ -893,15 +893,15 @@ export function BlogPost6() {
       </P>
       <Ul>
         <Li>
-          <strong>Rolar Todos</strong> — o Pocket DM rola d20 + modificador de
+          <strong>Rolar Todos:</strong> o Pocket DM rola d20 + modificador de
           DEX para todos os combatentes de uma vez
         </Li>
         <Li>
-          <strong>Rolar NPCs</strong> — rola só para os monstros (útil quando
+          <strong>Rolar NPCs:</strong> rola só para os monstros (útil quando
           os jogadores já rolaram seus próprios dados)
         </Li>
         <Li>
-          <strong>Manual</strong> — clique no número de iniciativa de cada
+          <strong>Manual:</strong> clique no número de iniciativa de cada
           combatente e digite o valor
         </Li>
       </Ul>
@@ -929,9 +929,9 @@ export function BlogPost6() {
         abrir o painel de vida. Você pode:
       </P>
       <Ul>
-        <Li><strong>Dano</strong> — aplicar dano (a barra de HP muda de cor conforme o nível de ferimento)</Li>
-        <Li><strong>Curar</strong> — restaurar pontos de vida</Li>
-        <Li><strong>Temp PV</strong> — adicionar pontos de vida temporários</Li>
+        <Li><strong>Dano:</strong> aplicar dano (a barra de HP muda de cor conforme o nível de ferimento)</Li>
+        <Li><strong>Curar:</strong> restaurar pontos de vida</Li>
+        <Li><strong>Temp PV:</strong> adicionar pontos de vida temporários</Li>
       </Ul>
       <P>
         As barras de HP usam cores por tier:{" "}
@@ -939,7 +939,7 @@ export function BlogPost6() {
         <span className="text-yellow-400">amarelo (70-40%)</span>,{" "}
         <span className="text-orange-400">laranja (40-10%)</span> e{" "}
         <span className="text-red-400">vermelho (&lt;10%)</span>.
-        Os jogadores veem apenas o tier, não o valor exato — mantendo a tensão.
+        Os jogadores veem apenas o tier, não o valor exato, mantendo a tensão.
       </P>
 
       <Img src="/art/blog/combat-hp-panel.png" alt="Painel de HP no Pocket DM — opções de Dano, Curar e Temp PV com campo de valor" />
@@ -948,7 +948,7 @@ export function BlogPost6() {
       <P>
         Clique no botão <strong>{"\u201C"}Cond{"\u201D"}</strong> para ver todas as 15{" "}
         <IntLink slug="guia-condicoes-dnd-5e">condições do D&D 5e</IntLink>.
-        Clique em qualquer condição para aplicar — ela fica visível para o
+        Clique em qualquer condição para aplicar: ela fica visível para o
         mestre e para os jogadores. Cada condição vem com a descrição das
         regras integrada, para consulta rápida durante o combate.
       </P>
@@ -970,13 +970,13 @@ export function BlogPost6() {
       </Ul>
       <P>
         Nenhum jogador precisa criar conta, baixar app ou instalar nada.
-        Funciona em qualquer navegador moderno — Chrome, Safari, Firefox.
+        Funciona em qualquer navegador moderno: Chrome, Safari, Firefox.
       </P>
 
       <H2>Passo 8: Usar o Bestiário e Oráculo de Magias</H2>
       <P>
         Durante o combate, você pode consultar o bestiário completo clicando em
-        <strong> {"\u201C"}Ver Ficha{"\u201D"}</strong> em qualquer monstro — o stat block completo
+        <strong> {"\u201C"}Ver Ficha{"\u201D"}</strong> em qualquer monstro: o stat block completo
         aparece sem sair da tela de combate.
       </P>
       <P>
@@ -990,7 +990,7 @@ export function BlogPost6() {
 
       <H2>Passo 9: Música Ambiente</H2>
       <P>
-        O Pocket DM tem mais de 12 presets de música ambiente integrados —
+        O Pocket DM tem mais de 12 presets de música ambiente integrados:
         taverna, dungeon, floresta, batalha épica, calmaria e mais. O ícone de
         música no topo do combate permite trocar a trilha a qualquer momento.
         Os jogadores ouvem no próprio celular.
@@ -999,20 +999,20 @@ export function BlogPost6() {
       <H2>Dicas para Aproveitar ao Máximo</H2>
       <Ul>
         <Li>
-          <strong>Monte o encontro antes da sessão</strong> — adicione monstros
+          <strong>Monte o encontro antes da sessão:</strong> adicione monstros
           e deixe tudo pronto. Na hora H, é só rolar iniciativa e começar.
         </Li>
         <Li>
-          <strong>Use dano fixo dos monstros</strong> — o stat block já mostra
+          <strong>Use dano fixo dos monstros:</strong> o stat block já mostra
           o dano médio. Isso{" "}
           <IntLink slug="como-agilizar-combate-dnd-5e">agiliza muito o combate</IntLink>.
         </Li>
         <Li>
-          <strong>Crie uma conta gratuita</strong> — para salvar campanhas,
+          <strong>Crie uma conta gratuita</strong> para salvar campanhas,
           reencontrar jogadores e manter histórico entre sessões.
         </Li>
         <Li>
-          <strong>Explore o bestiário fora do combate</strong> — em{" "}
+          <strong>Explore o bestiário fora do combate,</strong> em{" "}
           <ProdLink href="/monstros">pocketdm.com.br/monstros</ProdLink>{" "}
           você pode navegar todos os monstros SRD com stat blocks completos.
         </Li>
@@ -1045,14 +1045,14 @@ export function BlogPost7() {
         abre com Smite crítico, o Wizard larga um Hypnotic Pattern que pega
         dois dos três, e em 2 rodadas acabou. "Era pra ser difícil?" pergunta
         o Rogue, limpando a adaga. Se isso já aconteceu com você, bem-vindo
-        ao clube — e a este guia.
+        ao clube. E a este guia.
       </P>
 
       <H2>Por que se dar ao trabalho de balancear?</H2>
       <P>
         Encontro fácil demais? Jogadores param de pensar. Encontro brutal
         demais sem aviso? Frustração. O ponto bom é quando o grupo sente que
-        precisa jogar direito — usar recursos com inteligência, fazer escolhas
+        precisa jogar direito: usar recursos com inteligência, fazer escolhas
         táticas, trabalhar em equipe. Esse é o combate que gera histórias.
       </P>
       <P>
@@ -1068,8 +1068,8 @@ export function BlogPost7() {
 
       <H2>O método oficial: Orçamento de XP (DMG)</H2>
       <P>
-        O método do Dungeon Master{"'"}s Guide é o mais conhecido — e o mais
-        confuso na primeira vez. Mas é mais simples do que parece. Quatro
+        O método do Dungeon Master{"'"}s Guide é o mais conhecido, mas também
+        o mais confuso na primeira vez. É mais simples do que parece. Quatro
         passos:
       </P>
 
@@ -1381,7 +1381,7 @@ export function BlogPost7() {
         reais. O Paladin otimizado que faz 60 de dano no primeiro turno. O
         Wizard que larga Hypnotic Pattern e desliga metade do encontro. Ou o
         contrário: um crit do monstro que derruba o Cleric na rodada 1. O
-        bom mestre ajusta na hora — sem que ninguém perceba.
+        bom mestre ajusta na hora, sem que ninguém perceba.
       </P>
 
       <H3>Técnicas de Ajuste em Tempo Real</H3>
@@ -1535,14 +1535,14 @@ export function BlogPost8() {
         "Um monstro CR 5 contra um grupo de nível 5 é um encontro justo,
         certo?" Mais ou menos. Na verdade, depende de umas 8 variáveis que
         o número do CR não mostra. O Challenge Rating é a mecânica mais
-        mal-entendida do D&D 5e — e, paradoxalmente, uma das mais úteis
+        mal-entendida do D&D 5e, mas paradoxalmente uma das mais úteis
         quando você para de tratar como ciência exata. Como{" "}
         <ExtLink href="https://slyflourish.com/what_does_cr_mean.html">
           Sly Flourish explica
         </ExtLink>, o CR é um ponto de partida, não uma resposta absoluta. E como{" "}
         <ExtLink href="https://theangrygm.com/f-cr-theres-a-better-way-part-1/">
           The Angry GM argumenta
-        </ExtLink>, o sistema tem falhas sérias — mas conhecer essas falhas é o
+        </ExtLink>, o sistema tem falhas sérias, mas conhecer essas falhas é o
         que separa um mestre mediano de um mestre preparado.
       </P>
       <P>
@@ -1557,7 +1557,7 @@ export function BlogPost8() {
         monstro. Em teoria, um monstro com CR X deveria ser um desafio
         {'"'}médio{'"'} para um grupo de quatro aventureiros de nível X. Um
         grupo de quatro personagens de nível 5 deveria enfrentar um monstro
-        CR 5 como um encontro {'"'}justo{'"'} — nem trivial, nem mortal.
+        CR 5 como um encontro {'"'}justo{'"'}: nem trivial, nem mortal.
       </P>
       <P>
         Na prática, essa equivalência é muito mais sutil. O CR leva em conta HP,
@@ -1650,7 +1650,7 @@ export function BlogPost8() {
       <P>
         Exemplo: 3 Goblins (CR 1/4, 50 XP cada) somam 150 XP brutos. Com
         multiplicador x2 (3–6 monstros), o XP ajustado é 300 XP. Para um grupo
-        de 4 de nível 1, isso fica entre Difícil (300 XP) e Mortal (400 XP) —
+        de 4 de nível 1, isso fica entre Difícil (300 XP) e Mortal (400 XP),
         um encontro bem tenso.
       </P>
 
@@ -1668,8 +1668,8 @@ export function BlogPost8() {
 
       <H3>1. Habilidades de Controle</H3>
       <P>
-        Monstros com habilidades que removem jogadores do combate — como
-        petrificação, paralisia, <em>Hold Person</em> ou engolir — são muito mais
+        Monstros com habilidades que removem jogadores do combate, como
+        petrificação, paralisia, <em>Hold Person</em> ou engolir, são muito mais
         perigosos do que o CR sugere. Um Basilisk (CR 3) pode petrificar um PC de
         nível 5 em um único turno falhado, efetivamente removendo-o do combate.
         O CR não captura o impacto devastador de perder um membro do grupo.
@@ -1681,7 +1681,7 @@ export function BlogPost8() {
         monstro com AC 19 mas apenas 30 HP pode frustrar um grupo que não acerta
         ataques, mas desmoronar em dois turnos quando finalmente conectam. O CR
         trata isso como {'"'}médio{'"'}, mas a experiência real na mesa é
-        bipolar — ou o monstro parece invencível, ou morre instantaneamente.
+        bipolar: ora o monstro parece invencível, ora morre instantaneamente.
       </P>
 
       <H3>3. Economia de Ações Desproporcional</H3>
@@ -1702,7 +1702,7 @@ export function BlogPost8() {
         dano pode ser letal. Um encontro {'"'}Médio{'"'} para nível 1 pode
         facilmente se tornar mortal se os monstros rolam dano alto ou acertam
         crits. Mestres iniciantes devem tratar encontros de nível 1 com extrema
-        cautela — um grupo de 4 Goblins pode causar um TPK com facilidade.
+        cautela. Um grupo de 4 Goblins pode causar um TPK com facilidade.
       </P>
 
       <H3>5. Itens Mágicos e Otimização</H3>
@@ -1718,7 +1718,7 @@ export function BlogPost8() {
 
       <H2>Atalhos pra quem não quer fazer conta</H2>
       <P>
-        Tabelas e multiplicadores são úteis — na preparação. Na hora de
+        Tabelas e multiplicadores são úteis na preparação. Na hora de
         improvisar um encontro no meio da sessão, você precisa de algo mais
         rápido:
       </P>
@@ -1754,7 +1754,7 @@ export function BlogPost8() {
       <H3>Narrativa Primeiro</H3>
       <P>
         Tanto Sly Flourish quanto The Angry GM concordam em um ponto: o encontro
-        deve servir a história, não ao contrário. Comece pela narrativa — que
+        deve servir a história, não ao contrário. Comece pela narrativa: que
         monstros fazem sentido nesta cena? Depois verifique o CR como sanity
         check. Se o resultado é {'"'}mortal{'"'}, ajuste: reduza HP, remova um
         monstro ou dê ao grupo vantagem tática. Se é {'"'}fácil{'"'}, adicione
@@ -1771,7 +1771,7 @@ export function BlogPost8() {
       <P>
         Se o monstro está morrendo rápido demais, adicione HP silenciosamente.
         Se está tedioso porque os jogadores não conseguem derrubar, reduza. Os
-        jogadores não sabem o HP exato do monstro — use isso a seu favor. Dica:
+        jogadores não sabem o HP exato do monstro, use isso a seu favor. Dica:
         defina um range de HP em vez de um número fixo (ex: 80-130 para um
         monstro com HP listado como 110).
       </P>
@@ -1851,7 +1851,7 @@ export function BlogPost8() {
         </Li>
         <Li>
           <strong>Não multiplicar por quantidade:</strong> 4 Wolves (CR 1/4) não
-          são um encontro CR 1. Com o multiplicador x2, o XP ajustado dobra — e
+          são um encontro CR 1. Com o multiplicador x2, o XP ajustado dobra, e
           a <em>Pack Tactics</em> torna o encontro ainda mais perigoso.
         </Li>
         <Li>
@@ -1910,7 +1910,7 @@ export function BlogPost9() {
       </P>
       <P>
         Essa lista não é sobre os monstros mais fortes. É sobre os mais{" "}
-        <em>versáteis</em> — criaturas que funcionam em múltiplos contextos,
+        <em>versáteis</em>: criaturas que funcionam em múltiplos contextos,
         geram as melhores histórias e ensinam coisas sobre combate que nenhum
         tutorial explica. Do nível 1 ao 20. Se você dominar esses 10, vai
         rodar mesas melhores pelo resto da vida.
@@ -1927,7 +1927,7 @@ export function BlogPost9() {
       <H2>1. Goblin — O Clássico Versátil</H2>
       <P>
         Se existe um monstro que todo mestre deveria dominar, é o Goblin. Com
-        CR 1/4, ele parece inofensivo no papel — 7 pontos de vida, um
+        CR 1/4, ele parece inofensivo no papel: 7 pontos de vida, um
         arco curto e uma cimitarra. Mas subestimar goblins é exatamente o erro
         que eles exploram. A habilidade <strong>Nimble Escape</strong> permite
         que o goblin realize a ação Esconder ou Desengajar como ação bônus,
@@ -1938,7 +1938,7 @@ export function BlogPost9() {
         <Li>Funciona em qualquer nível: bandidos de estrada no nível 1, tropas de um hobgoblin warlord no nível 8</Li>
         <Li>Ensina novos jogadores sobre ação bônus, cobertura e vantagem/desvantagem</Li>
         <Li>Em grupo, goblins com arcos a 80 pés de distância são surpreendentemente letais</Li>
-        <Li>Perfeito para emboscadas — a habilidade Stealth (+6) é melhor que a de muitos personagens</Li>
+        <Li>Perfeito para emboscadas: a habilidade Stealth (+6) é melhor que a de muitos personagens</Li>
       </Ul>
       <Tip>
         Como{" "}
@@ -1966,7 +1966,7 @@ export function BlogPost9() {
       </P>
       <H3>Quando usar</H3>
       <Ul>
-        <Li>Viagens por floresta ou tundra — perfeito para encontros aleatórios com peso narrativo</Li>
+        <Li>Viagens por floresta ou tundra, perfeito para encontros aleatórios com peso narrativo</Li>
         <Li>Montaria de orcs, goblins ou druidas corrompidos</Li>
         <Li>Caçada reversa: os jogadores são a presa, não os predadores</Li>
         <Li>Introdução natural ao conceito de Pack Tactics para novos jogadores</Li>
@@ -1975,7 +1975,7 @@ export function BlogPost9() {
         Lobos terríveis caçam em matilha e tentam separar o grupo. Faça
         dois lobos focarem no mesmo alvo para derrubar, enquanto o terceiro
         circunda o mago na retaguarda. Se um lobo derruba alguém, os
-        outros ganham vantagem automática contra o alvo caído — é
+        outros ganham vantagem automática contra o alvo caído. É
         brutal e realista.
       </Tip>
       <P>
@@ -1987,7 +1987,7 @@ export function BlogPost9() {
       <H2>3. Owlbear — O Terror Icônico</H2>
       <P>
         Poucos monstros são tão <em>D&D</em> quanto o Owlbear (Urso-coruja).
-        Ele não existe em nenhuma mitologia — é uma criação original do
+        Ele não existe em nenhuma mitologia, é uma criação original do
         jogo, provavelmente inspirada em brinquedos de plástico dos anos 70. E
         é exatamente isso que o torna especial. Com CR 3, 59 HP e um
         multiattack de garra+bico que pode causar até 24 de dano em um turno,
@@ -1996,9 +1996,9 @@ export function BlogPost9() {
       </P>
       <H3>Por que funciona tão bem</H3>
       <Ul>
-        <Li>É puro instinto: sem magias, sem habilidades especiais, sem planos — só fúria</Li>
+        <Li>É puro instinto: sem magias, sem habilidades especiais, sem planos, só fúria</Li>
         <Li>Excelente para forçar decisões: lutar, fugir ou tentar acalmar a fera?</Li>
-        <Li>A descrição visual é inesquecível — cabeça de coruja no corpo de urso</Li>
+        <Li>A descrição visual é inesquecível: cabeça de coruja no corpo de urso</Li>
         <Li>Funciona como encontro aleatório, guardião de covil ou {"\u201C"}o que acordou na caverna{"\u201D"}</Li>
       </Ul>
       <Tip>
@@ -2006,7 +2006,7 @@ export function BlogPost9() {
         território e persegue até perder interesse ou ficar gravemente ferido.{" "}
         <ExtLink href="https://www.themonstersknow.com/owlbear-tactics/">Segundo a análise do The Monsters Know</ExtLink>,
         o Owlbear vai correr atrás do alvo mais próximo até derrubá-lo,
-        depois pular pro seguinte. Use isso — faça ele ignorar o
+        depois pular pro seguinte. Faça ele ignorar o
         tanque que bloqueia o caminho e correr direto pro bardo que
         tropeçou nos arbustos.
       </Tip>
@@ -2019,8 +2019,8 @@ export function BlogPost9() {
       <H2>4. Mimic — O Combustível de Paranoia</H2>
       <P>
         O Mimic é um dos monstros mais elegantes do D&D. Com CR 2, ele se
-        disfarça como um objeto mundano — um baú, uma porta, uma
-        estante — e ataca quando alguém toca nele. Sua existência muda
+        disfarça como um objeto mundano: um baú, uma porta, uma
+        estante. E ataca quando alguém toca nele. Sua existência muda
         fundamentalmente o comportamento dos jogadores: depois do primeiro
         encontro com um Mimic, <em>todo</em> baú se torna suspeito. E isso,
         como mestre, é ouro puro.
@@ -2028,7 +2028,7 @@ export function BlogPost9() {
       <H3>O impacto real do Mimic</H3>
       <Ul>
         <Li>Cria tensão em ambientes de exploração sem precisar de combate constante</Li>
-        <Li>Ensina jogadores a investigar antes de agir — hábito que melhora toda a campanha</Li>
+        <Li>Ensina jogadores a investigar antes de agir, hábito que melhora toda a campanha</Li>
         <Li>O efeito Adhesive gruda o alvo ao Mimic, criando pânico imediato</Li>
         <Li>Versatilidade de forma: pode ser qualquer objeto, em qualquer dungeon</Li>
       </Ul>
@@ -2036,8 +2036,8 @@ export function BlogPost9() {
         O segredo do Mimic é o setup. Descreva três baús normais com
         tesouro real nas sessões anteriores. Na quarta vez, quando o
         jogador disser {"\u201C"}abro o baú{"\u201D"} sem pensar duas vezes, revele
-        que o baú morde de volta. O Mimic funciona como predador emboscador
-        — ele ataca o primeiro alvo e se agarra. Se o grupo todo
+        que o baú morde de volta. O Mimic funciona como predador emboscador:
+        ele ataca o primeiro alvo e se agarra. Se o grupo todo
         reagir, ele larga e foge (Mimics são mais espertos do que parecem).
       </Tip>
       <P>
@@ -2053,12 +2053,12 @@ export function BlogPost9() {
         a magia certa. O Basilisk (CR 3) entrega exatamente essa ameaça: seu
         olhar petrificante força um teste de resistência de Constituição CD 12,
         e falhar em dois turnos seguidos significa estátua. Não é letal no
-        sentido tradicional — é pior.
+        sentido tradicional, mas é pior.
       </P>
       <H3>Quando brilha</H3>
       <Ul>
         <Li>Cavernas e ruínas subterrâneas com estátuas {"\u201C"}decorativas{"\u201D"} que são aventureiros anteriores</Li>
-        <Li>Como guardião de tesouros — alguém colocou esse basilisco ali de propósito</Li>
+        <Li>Como guardião de tesouros: alguém colocou esse basilisco ali de propósito</Li>
         <Li>Ensina jogadores sobre condições além de dano: desviar o olhar, espelhos, estratégia</Li>
         <Li>Funciona como puzzle de combate: como derrotar algo que você não pode olhar?</Li>
       </Ul>
@@ -2067,7 +2067,7 @@ export function BlogPost9() {
         não olhar para o Basilisk (evitando o olhar petrificante), mas
         ataques contra ele terão desvantagem. Isso cria uma escolha
         tática genuína em cada turno. Coloque espelhos quebrados na sala
-        como pista — e recompense jogadores criativos que tentarem
+        como pista, e recompense jogadores criativos que tentarem
         refletir o olhar.
       </Tip>
       <P>
@@ -2087,7 +2087,7 @@ export function BlogPost9() {
       <H3>O que a torna especial</H3>
       <Ul>
         <Li>Voo + ataque ranged: ela não precisa pousar se não quiser</Li>
-        <Li>24 espinhos na cauda, recarregando entre descansos — munição é finita, o que cria urgência</Li>
+        <Li>24 espinhos na cauda, recarregando entre descansos; munição finita cria urgência</Li>
         <Li>Pode negociar: Manticoras são inteligentes o suficiente para exigir tributo em vez de lutar</Li>
         <Li>Perfeita para encontros em áreas abertas, desfiladeiros e montanhas</Li>
       </Ul>
@@ -2109,17 +2109,17 @@ export function BlogPost9() {
       <P>
         Todos os dragões são ameaças formidáveis, mas o Green Dragon
         (Dragão Verde) é especial porque sua arma mais perigosa não é o
-        sopro venenoso — é a mente. Dragões verdes são manipuladores,
+        sopro venenoso, mas sim a mente. Dragões verdes são manipuladores,
         mentirosos e pacientes. O Young Green Dragon (CR 8) é forte o
         suficiente para ser um vilão de arco inteiro, mas inteligente o
         suficiente para nunca precisar lutar.
       </P>
       <H3>Por que o dragão verde é o melhor primeiro dragão</H3>
       <Ul>
-        <Li>CR 8 é acessível para grupos de nível 5-7 — o sweet spot de muitas campanhas</Li>
+        <Li>CR 8 é acessível para grupos de nível 5-7, o sweet spot de muitas campanhas</Li>
         <Li>Sopro venenoso em cone de 30 pés: 12d6 de dano, devastador em áreas fechadas</Li>
-        <Li>Anfíbio e pode respirar embaixo d{"'"}água — táticas de fuga inesperadas</Li>
-        <Li>Pode ser patrono, informante, chantagista ou vilão — raramente {"\u201C"}só um monstro{"\u201D"}</Li>
+        <Li>Anfíbio e pode respirar embaixo d{"'"}água, com táticas de fuga inesperadas</Li>
+        <Li>Pode ser patrono, informante, chantagista ou vilão; raramente {"\u201C"}só um monstro{"\u201D"}</Li>
       </Ul>
       <Tip>
         O Young Green Dragon não ataca um grupo que pode derrotá-lo.{" "}
@@ -2140,16 +2140,16 @@ export function BlogPost9() {
       <P>
         Poucos monstros geram tanto medo em jogadores experientes quanto o
         Mind Flayer (Devorador de Mentes). CR 7 não parece muito no papel, mas
-        o Mind Blast — um cone de 60 pés que causa 4d8+4 de dano psíquico
-        e atordoa quem falhar no teste — pode acabar com um encontro em
+        o Mind Blast, um cone de 60 pés que causa 4d8+4 de dano psíquico
+        e atordoa quem falhar no teste, podendo acabar com um encontro em
         um único turno. Jogadores atordoados não agem, não reagem e falham
         automaticamente em testes de Força e Destreza. Enquanto isso, o Mind
         Flayer caminha até alguém e tenta extrair o cérebro.
       </P>
       <H3>O que faz dele inesquecível</H3>
       <Ul>
-        <Li>O Mind Blast atordoa múltiplos alvos — é o grande equalizador contra grupos poderosos</Li>
-        <Li>Extract Brain mata instantaneamente criaturas incapacitadas — morte permanente, sem death saves</Li>
+        <Li>O Mind Blast atordoa múltiplos alvos: o grande equalizador contra grupos poderosos</Li>
+        <Li>Extract Brain mata instantaneamente criaturas incapacitadas: morte permanente, sem death saves</Li>
         <Li>Altamente inteligente: planeja, recua, usa lacaios e nunca luta em condições desfavoráveis</Li>
         <Li>Perfeito para arcos de horror, conspirações subterrâneas e momentos de desespero</Li>
       </Ul>
@@ -2168,7 +2168,7 @@ export function BlogPost9() {
       <P>
         O Beholder é, para muitos, <em>o</em> monstro de D&D. Uma esfera
         flutuante com um olho central gigante e dez pedúnculos oculares, cada
-        um disparando um raio diferente — desintegração, petrificação,
+        um disparando um raio diferente: desintegração, petrificação,
         charme, medo, telecinesia, entre outros. Com CR 13, é um boss fight
         de campanha inteira. E o mais impressionante: sua habilidade
         Antimagic Cone anula toda magia num cone de 150 pés na direção que
@@ -2176,19 +2176,19 @@ export function BlogPost9() {
       </P>
       <H3>Por que é o boss definitivo</H3>
       <Ul>
-        <Li>10 raios oculares com efeitos diferentes — cada turno é imprevisível</Li>
-        <Li>Antimagic Cone desliga magias, itens mágicos e concentração — terrível para casters</Li>
+        <Li>10 raios oculares com efeitos diferentes, cada turno é imprevisível</Li>
+        <Li>Antimagic Cone desliga magias, itens mágicos e concentração: terrível para casters</Li>
         <Li>Lair Actions tornam o covil tão perigoso quanto a criatura: limo no chão, tentáculos nas paredes</Li>
-        <Li>Paranoico e megalomaníaco — o roleplay de um Beholder escreve a aventura sozinho</Li>
+        <Li>Paranoico e megalomaníaco, o roleplay de um Beholder escreve a aventura sozinho</Li>
       </Ul>
       <Tip>
         <ExtLink href="https://www.themonstersknow.com/beholder-tactics/">Segundo a análise do The Monsters Know</ExtLink>,
-        Beholders são agressivos e antissociais — atacam invasores
+        Beholders são agressivos e antissociais, e atacam invasores
         imediatamente. O Beholder aponta o Antimagic Cone para onde estão
         os casters e usa os raios dos pedúnculos contra os marciais. Rode
         o covil com as Lair Actions: chão escorregadio, olhos nas paredes,
-        apêndices que agarram. O grupo precisa se dividir para vencer
-        — e dividir o grupo contra um Beholder é aterrorizante.
+        apêndices que agarram. O grupo precisa se dividir para vencer,
+        e dividir o grupo contra um Beholder é aterrorizante.
       </Tip>
 
       {/* ── 10. LICH ──────────────────────────────────────────────── */}
@@ -2199,14 +2199,14 @@ export function BlogPost9() {
         phylactery, o Lich (CR 21) tem acesso a magias de até 9º nível,
         Legendary Resistance (3/dia), Legendary Actions e um covil com
         efeitos devastadores. Derrotá-lo em combate é apenas metade da
-        batalha — se o phylactery não for destruído, ele retorna em
+        batalha. Se o phylactery não for destruído, ele retorna em
         1d10 dias com HP completo.
       </P>
       <H3>O que torna o Lich inigualável</H3>
       <Ul>
         <Li>Spellcasting de 18º nível: Power Word Kill, Disintegrate, Globe of Invulnerability</Li>
         <Li>Legendary Resistance garante que ele não morra para um único Banishment bem sucedido</Li>
-        <Li>O phylactery cria uma quest dentro da quest — encontrá-lo e destruí-lo é uma aventura à parte</Li>
+        <Li>O phylactery cria uma quest dentro da quest: encontrá-lo e destruí-lo é uma aventura à parte</Li>
         <Li>Lair Actions que drenam vida, invocam espíritos e conectam-se telepaticamente a intrusos</Li>
         <Li>Funciona como BBEG de campanha, patrono traiçoeiro ou ameaça ancestral adormecida</Li>
       </Ul>
@@ -2216,7 +2216,7 @@ export function BlogPost9() {
         necessário. Toda interação com os jogadores acontece através de
         lacaios, ilusões e manipulação política. Quando o grupo finalmente
         chega ao covil, o Lich já sabe tudo sobre eles. Rode o Lich como
-        alguém que teve <em>séculos</em> para se preparar — porque teve.
+        alguém que teve <em>séculos</em> para se preparar, porque teve.
         Ele sabe as magias do mago, as fraquezas do paladino e a
         identidade do assassino disfarçado.
       </Tip>
@@ -2253,9 +2253,8 @@ export function BlogPost9() {
         Monstros como o Beholder (10 raios + lair actions) e o Lich
         (spellcasting de 18º nível + legendary actions) exigem que o mestre
         gerencie muita informação simultânea. Um combat tracker digital
-        mantém HP, condições, ordem de iniciativa e stat blocks organizados
-        — para que você possa focar na narrativa em vez de consultar
-        tabelas.
+        mantém HP, condições, ordem de iniciativa e stat blocks organizados,
+        para que você possa focar na narrativa em vez de consultar tabelas.
       </P>
 
       <CTA category="lista" />
@@ -2264,15 +2263,15 @@ export function BlogPost9() {
       <Ul>
         <Li>
           <ExtLink href="https://www.themonstersknow.com/">The Monsters Know What They{"'"}re Doing</ExtLink>{" "}
-          — Análises táticas detalhadas para centenas de monstros do D&D 5e
+          — análises táticas detalhadas para centenas de monstros do D&D 5e
         </Li>
         <Li>
           <ExtLink href="https://slyflourish.com/making_monsters_interesting.html">Making Monsters Interesting (Sly Flourish)</ExtLink>{" "}
-          — Como customizar e dar personalidade a qualquer monstro
+          — como customizar e dar personalidade a qualquer monstro
         </Li>
         <Li>
           <ExtLink href="https://slyflourish.com/choosing_monsters.html">Choosing Monsters for Your Game (Sly Flourish)</ExtLink>{" "}
-          — Filosofia de seleção de monstros baseada na história
+          — filosofia de seleção de monstros baseada na história
         </Li>
       </Ul>
       <P>
@@ -2283,7 +2282,7 @@ export function BlogPost9() {
         <IntLink slug="como-montar-encontro-balanceado-dnd-5e">guia de encontros balanceados</IntLink>{" "}
         e o{" "}
         <IntLink slug="guia-challenge-rating-dnd-5e">guia de Challenge Rating</IntLink>.
-        Boas sessões começam com bons monstros — e agora você tem dez dos
+        Boas sessões começam com bons monstros, e agora você tem dez dos
         melhores no seu arsenal.
       </P>
 
@@ -2299,7 +2298,7 @@ export function BlogPost10() {
   return (
     <>
       <P>
-        Alguém do grupo disse "eu mestro" — e esse alguém foi você. Ou
+        Alguém do grupo disse "eu mestro", e esse alguém foi você. Ou
         ninguém disse, e você ficou com pena da mesa morrer antes de nascer.
         De qualquer jeito, agora tá aqui, nervoso, pensando:{" "}
         <strong>"e se eu esquecer as regras? E se eu travar? E se a sessão
@@ -2328,24 +2327,24 @@ export function BlogPost10() {
       </P>
       <Ul>
         <Li>
-          <strong>Preparar o cenário</strong> — criar ou adaptar a aventura, definir
+          <strong>Preparar o cenário:</strong> criar ou adaptar a aventura, definir
           NPCs, monstros e locais que os jogadores vão encontrar.
         </Li>
         <Li>
-          <strong>Narrar e reagir</strong> — descrever o que os personagens veem,
+          <strong>Narrar e reagir:</strong> descrever o que os personagens veem,
           ouvem e sentem, e responder às ações deles de forma coerente.
         </Li>
         <Li>
-          <strong>Arbitrar regras</strong> — decidir quando rolar dados, qual teste
+          <strong>Arbitrar regras:</strong> decidir quando rolar dados, qual teste
           usar e o que acontece em caso de sucesso ou falha.
         </Li>
         <Li>
-          <strong>Gerenciar o combate</strong> — controlar iniciativa, HP dos monstros,
+          <strong>Gerenciar o combate:</strong> controlar iniciativa, HP dos monstros,
           condições e turnos. Esta é a parte mais mecânica e onde ferramentas como
           o <ProdLink href="/try">Pocket DM</ProdLink> fazem a maior diferença.
         </Li>
         <Li>
-          <strong>Garantir que todo mundo se divirta</strong> — inclusive você. Se
+          <strong>Garantir que todo mundo se divirta,</strong> inclusive você. Se
           o mestre não está curtindo, a mesa sente.
         </Li>
       </Ul>
@@ -2391,7 +2390,7 @@ export function BlogPost10() {
         <ExtLink href="https://slyflourish.com/eight_steps_2023.html">
           Sly Flourish chama isso de Strong Start
         </ExtLink>{" "}
-        — e é o passo mais impactante da preparação.
+        , o passo mais impactante da preparação.
       </P>
 
       <H3>3. Esboce cenas, não roteiros</H3>
@@ -2407,7 +2406,7 @@ export function BlogPost10() {
         Anote 5-10 pedaços de informação que os jogadores podem descobrir durante
         a sessão. A chave, segundo Sly Flourish, é <strong>não vincular a pista a
         um local específico</strong>. Se você tem uma pista importante, ela pode
-        aparecer em qualquer lugar — num livro, na conversa com um NPC, ou no bolso
+        aparecer em qualquer lugar: num livro, na conversa com um NPC, ou no bolso
         de um goblin morto. Isso garante que os jogadores encontrem a informação
         independente do caminho que escolham.
       </P>
@@ -2430,7 +2429,7 @@ export function BlogPost10() {
       <H3>5. Prepare monstros e encontros</H3>
       <P>
         Escolha 2-3 combates possíveis e tenha os stats dos monstros à mão. Você
-        não precisa decorar — basta ter acesso rápido. Um{" "}
+        não precisa decorar, basta ter acesso rápido. Um{" "}
         <ProdLink href="/monstros">bestiário digital</ProdLink> resolve isso: busque o monstro
         por nome, veja HP, CA e ataques. A{" "}
         <ProdLink href="/calculadora-encontro">calculadora de encontros</ProdLink> ajuda a
@@ -2504,7 +2503,7 @@ export function BlogPost10() {
         <ProdLink href="/condicoes">condições ativas</ProdLink> (envenenado, atordoado, caído).
         Esquecer uma condição é um dos erros mais comuns e pode mudar o resultado
         de um combate inteiro. Usar uma ferramenta digital para isso elimina o
-        problema — o tracker mostra visualmente quem está com qual condição.
+        problema: o tracker mostra visualmente quem está com qual condição.
       </P>
 
       <H3>Passo 4: Dano fixo para agilizar</H3>
@@ -2520,13 +2519,13 @@ export function BlogPost10() {
       <Tip>
         Não tenha medo de narrar monstros fugindo ou se rendendo quando o combate
         já está decidido. Não é preciso matar todos até o último ponto de vida.
-        Encerre combates que já perderam a tensão — seus jogadores vão agradecer.
+        Encerre combates que já perderam a tensão. Seus jogadores vão agradecer.
       </Tip>
 
       <H2>Quando o plano morre (e o jogo fica bom de verdade)</H2>
       <P>
         Os jogadores VÃO fazer algo que você não previu. Isso não é um
-        problema — <strong>é o melhor do RPG</strong>. Improvisação não é
+        problema, <strong>é o melhor do RPG</strong>. Improvisação não é
         inventar do nada. É reagir ao inesperado usando os elementos que
         você já preparou, só que numa ordem diferente.
       </P>
@@ -2534,7 +2533,7 @@ export function BlogPost10() {
       <H3>Diga "sim, e..." ou "sim, mas..."</H3>
       <P>
         Quando um jogador tenta algo criativo, não diga "não" automaticamente.
-        "Sim, você consegue subir no lustre — mas precisa de um teste de
+        "Sim, você consegue subir no lustre, mas precisa de um teste de
         Acrobacia" mantém a ação fluindo e recompensa a criatividade. Reserve o
         "não" para coisas que quebram completamente a lógica do mundo.
       </P>
@@ -2543,7 +2542,7 @@ export function BlogPost10() {
       <P>
         Lembra dos segredos e pistas que você preparou sem vincular a um local
         específico? É aqui que eles brilham. Os jogadores decidiram ir para a
-        floresta em vez da caverna? Sem problema — a pista que estava na caverna
+        floresta em vez da caverna? Sem problema. A pista que estava na caverna
         agora está num tronco de árvore oco. A informação chega aos jogadores
         por outro caminho.
       </P>
@@ -2552,7 +2551,7 @@ export function BlogPost10() {
       <P>
         Se um jogador pergunta algo que você não preparou, peça um teste de
         habilidade. O resultado te dá tempo de pensar: "Você rola Investigação...
-        17? Ok, você percebe que..." — esses dois segundos são suficientes para
+        17? Ok, você percebe que..." Esses dois segundos são suficientes para
         inventar algo coerente.
       </P>
 
@@ -2584,7 +2583,7 @@ export function BlogPost10() {
       <P>
         O mestre cria o mundo, mas não controla o que os jogadores fazem nele.
         Se você precisa que os jogadores cheguem a um ponto específico, use pistas
-        e incentivos — não force a barra. Trilhos invisíveis são aceitáveis;
+        e incentivos, não force a barra. Trilhos invisíveis são aceitáveis;
         trilhos que os jogadores percebem destroem a imersão.
       </P>
 
@@ -2622,27 +2621,27 @@ export function BlogPost10() {
       </P>
       <Ul>
         <Li>
-          <strong>Combat tracker</strong> — gerencia iniciativa, HP, condições e
+          <strong>Combat tracker:</strong> gerencia iniciativa, HP, condições e
           turnos. O <ProdLink href="/try">Pocket DM</ProdLink> é gratuito, funciona no celular
           e não exige que seus jogadores criem conta.
         </Li>
         <Li>
-          <strong>Bestiário digital</strong> — consulte stats de{" "}
+          <strong>Bestiário digital:</strong> consulte stats de{" "}
           <ProdLink href="/monstros">monstros SRD</ProdLink> instantaneamente em vez de
           folhear o livro.
         </Li>
         <Li>
-          <strong>Oráculo de magias</strong> — quando o jogador perguntar "o que
+          <strong>Oráculo de magias:</strong> quando o jogador perguntar "o que
           Fireball faz mesmo?", basta buscar em{" "}
           <ProdLink href="/magias">magias</ProdLink> e ler a descrição em segundos.
         </Li>
         <Li>
-          <strong>Calculadora de encontros</strong> — use a{" "}
+          <strong>Calculadora de encontros:</strong> use a{" "}
           <ProdLink href="/calculadora-encontro">calculadora</ProdLink> para verificar se o
           combate que você planejou está no nível certo de dificuldade.
         </Li>
         <Li>
-          <strong>Referência de condições</strong> — tenha a lista de{" "}
+          <strong>Referência de condições:</strong> tenha a lista de{" "}
           <ProdLink href="/condicoes">condições do D&amp;D 5e</ProdLink> sempre à mão para
           não esquecer o que cada uma faz.
         </Li>
@@ -2662,22 +2661,22 @@ export function BlogPost10() {
       </P>
       <Ul>
         <Li>
-          <strong>Peça feedback</strong> — pergunte aos jogadores o que curtiram
+          <strong>Peça feedback:</strong> pergunte aos jogadores o que curtiram
           e o que pode melhorar. Seja específico: "O combate estava longo demais?"
           é melhor que "O que vocês acharam?"
         </Li>
         <Li>
-          <strong>Anote o que aconteceu</strong> — decisões dos jogadores, NPCs
+          <strong>Anote o que aconteceu:</strong> decisões dos jogadores, NPCs
           que apareceram, ganchos que ficaram abertos. Essas notas são ouro para
           a próxima sessão.
         </Li>
         <Li>
-          <strong>Não se cobre demais</strong> — sua primeira sessão não vai ser
+          <strong>Não se cobre demais.</strong> Sua primeira sessão não vai ser
           perfeita. Nem a décima. E tudo bem. Mestrar é uma habilidade que melhora
           com prática, não com perfeição.
         </Li>
         <Li>
-          <strong>Estude um pouco</strong> — leia um artigo do{" "}
+          <strong>Estude um pouco:</strong> leia um artigo do{" "}
           <ExtLink href="https://slyflourish.com/">Sly Flourish</ExtLink>,
           assista um episódio da série{" "}
           <ExtLink href="https://mcdm.fandom.com/wiki/Running_the_Game">
@@ -2691,7 +2690,7 @@ export function BlogPost10() {
       <H2>Conclusão: o mestre que sua mesa precisa é você</H2>
       <P>
         Mestrar D&amp;D pela primeira vez dá nervosismo, e isso é normal. Mas
-        lembre: seus jogadores não estão te avaliando — eles querem se
+        lembre: seus jogadores não estão te avaliando, eles querem se
         divertir tanto quanto você. Uma sessão imperfeita onde todo mundo ri é
         infinitamente melhor do que uma sessão "perfeita" que nunca acontece
         porque o mestre ficou com medo de começar.
@@ -2726,14 +2725,14 @@ export function BlogPost11() {
       <P>
         Imagine a cena: seus jogadores acabaram de entrar numa cripta esquecida,
         as tochas tremem, e ao fundo um coro grave ecoa entre as paredes de
-        pedra. Ninguém precisa dizer que o lugar é perigoso — a música já contou.
+        pedra. Ninguém precisa dizer que o lugar é perigoso: a música já contou.
         A trilha sonora certa transforma uma descrição verbal em algo que seus
         jogadores <em>sentem</em> na pele. E você não precisa ser DJ, ter
         equipamento caro ou gastar horas montando playlists para conseguir isso.
       </P>
       <P>
         Neste guia, vou compartilhar tudo que aprendi usando música ambiente para
-        RPG nas minhas próprias sessões de D&D 5e — desde os erros de iniciante
+        RPG nas minhas próprias sessões de D&D 5e, desde os erros de iniciante
         (spoiler: colocar a batalha de Pelennor Fields durante uma conversa na
         taverna é uma péssima ideia) até o setup que uso hoje, que leva menos de
         5 minutos para preparar e funciona em qualquer mesa presencial.
@@ -2744,8 +2743,8 @@ export function BlogPost11() {
         O{" "}
         <ExtLink href="https://slyflourish.com/three_ways_to_use_music_in_your_game.html">
           Sly Flourish
-        </ExtLink>{" "}
-        — uma das maiores referências mundiais para mestres de D&D — destaca
+        </ExtLink>,
+        uma das maiores referências mundiais para mestres de D&D, destaca
         três funções da música na mesa: <strong>inspiração</strong> durante a
         preparação, <strong>ambientação</strong> durante o jogo e até{" "}
         <strong>mecânica</strong>, quando a trilha do personagem toca e ele ganha
@@ -2756,7 +2755,7 @@ export function BlogPost11() {
         Sabe aquele momento em que você está descrevendo uma floresta encantada e
         alguém começa a mexer no celular? Uma camada sonora constante mantém a
         imersão mesmo nos micro-silêncios entre falas. Além disso, a música
-        funciona como um <strong>sinal emocional</strong> — quando a trilha muda
+        funciona como um <strong>sinal emocional</strong>: quando a trilha muda
         de calma para tensa, os jogadores percebem instintivamente que algo está
         para acontecer. Você ganha uma ferramenta narrativa poderosa sem precisar
         dizer uma palavra.
@@ -2789,14 +2788,14 @@ export function BlogPost11() {
       <Ul>
         <Li>Instrumentos: cordas, flauta, piano, harpa</Li>
         <Li>Andamento: lento a moderado</Li>
-        <Li>Volume: baixo — como um murmúrio de fundo</Li>
+        <Li>Volume: baixo, como um murmúrio de fundo</Li>
       </Ul>
 
       <H3>2. Tensão e Mistério</H3>
       <P>
         Sons sombrios, drones graves, cordas dissonantes. Use quando o grupo
         entra em dungeons, investiga um crime, ou quando algo sinistro está
-        prestes a acontecer. A ideia é criar desconforto sutil — sem jump
+        prestes a acontecer. A ideia é criar desconforto sutil, sem jump
         scares, sem sustos, apenas aquela sensação de "tem algo errado aqui".
         Trilhas de <em>Dark Souls</em>, <em>Bloodborne</em> e filmes de terror
         atmosférico funcionam bem.
@@ -2804,14 +2803,14 @@ export function BlogPost11() {
       <Ul>
         <Li>Instrumentos: cello grave, coros distantes, sons ambientes (vento, goteiras, correntes)</Li>
         <Li>Andamento: muito lento ou estático</Li>
-        <Li>Volume: baixo a médio — deixe os silêncios trabalharem</Li>
+        <Li>Volume: baixo a médio, deixe os silêncios trabalharem</Li>
       </Ul>
 
       <H3>3. Combate e Ação</H3>
       <P>
         Aqui é onde a música pode brilhar mais. Percussão pesada, metais
         épicos, ritmo acelerado. A trilha de combate precisa ter energia sem
-        ter letra — músicas com vocal distraem porque o mestre está falando
+        ter letra, porque músicas com vocal distraem quando o mestre está falando
         o tempo todo. Trilhas de <em>Two Steps from Hell</em>,{" "}
         <em>Immediate Music</em> e os combates de <em>God of War</em> são
         referências clássicas.
@@ -2819,7 +2818,7 @@ export function BlogPost11() {
       <Ul>
         <Li>Instrumentos: percussão taiko, metais, cordas rápidas, coro épico</Li>
         <Li>Andamento: rápido e constante</Li>
-        <Li>Volume: médio — alto o suficiente para sentir, baixo o suficiente para ouvir o mestre</Li>
+        <Li>Volume: médio, alto o suficiente para sentir, baixo o suficiente para ouvir o mestre</Li>
       </Ul>
 
       <Tip>
@@ -2852,7 +2851,7 @@ export function BlogPost11() {
         dramáticos, mudanças de intensidade. As trilhas de bosses de{" "}
         <em>Dark Souls III</em> e <em>Final Fantasy XIV</em> são
         espetaculares para isso. Reserve uma playlist separada e use só para
-        o confronto final — isso cria uma sensação de "essa luta é diferente"
+        o confronto final. Isso cria uma sensação de "essa luta é diferente"
         que seus jogadores vão adorar.
       </P>
 
@@ -2879,7 +2878,7 @@ export function BlogPost11() {
         </ExtLink>{" "}
         é simplesmente a melhor fonte gratuita de ambientação sonora para RPG.
         Ganhador de três ENnie Awards, o site oferece dezenas de ambientes de
-        10 minutos — desde "Dungeon I" e "Dark Forest" até "Tavern" e
+        10 minutos, desde "Dungeon I" e "Dark Forest" até "Tavern" e
         "Starship Bridge". Tudo produzido profissionalmente, sem propagandas,
         e licenciado sob Creative Commons. O SoundPad deles permite até misturar
         efeitos sonoros em tempo real, criando paisagens sonoras customizadas.
@@ -2892,23 +2891,23 @@ export function BlogPost11() {
       </P>
       <Ul>
         <Li>
-          <strong>Michael Ghelfi Studios</strong> — O maior criador de áudio
+          <strong>Michael Ghelfi Studios:</strong> o maior criador de áudio
           para TTRPG do mundo, com mais de 5.000 faixas e 160 mil inscritos.
           Tem ambientes para literalmente qualquer cena que você imaginar.
           Vencedor de ENnie Award.
         </Li>
         <Li>
-          <strong>Bardify</strong> — Focado especificamente em D&D, com
+          <strong>Bardify:</strong> focado especificamente em D&D, com
           playlists organizadas por situação: viagem, cidade, dungeon,
           combate. Excelente curadoria.
         </Li>
         <Li>
-          <strong>Sword Coast Soundscapes</strong> — Ambientes sonoros
+          <strong>Sword Coast Soundscapes:</strong> ambientes sonoros
           baseados em locais canônicos de D&D como a Sword Coast, Underdark e
           Waterdeep. Perfeito se você joga nos Reinos Esquecidos.
         </Li>
         <Li>
-          <strong>The Guild of Ambience</strong> — Vídeos de 1 a 3 horas com
+          <strong>The Guild of Ambience:</strong> vídeos de 1 a 3 horas com
           arte belíssima e paisagens sonoras imersivas. Ideal para deixar
           rodando durante a sessão inteira.
         </Li>
@@ -2921,7 +2920,7 @@ export function BlogPost11() {
         <ExtLink href="https://www.michaelghelfistudios.com/spotify-playlists/">
           Michael Ghelfi Studios no Spotify
         </ExtLink>{" "}
-        é a mais completa que eu conheço — com playlists separadas para
+        é a mais completa que eu conheço, com playlists separadas para
         taverna, combate, exploração, mistério, mar, deserto, e muito mais.
         O usuário <em>Ouranio Recordings</em> também tem uma playlist de
         background para D&D com mais de 500 faixas e 54 mil saves.
@@ -2943,7 +2942,7 @@ export function BlogPost11() {
           Syrinscape
         </ExtLink>{" "}
         é a ferramenta profissional mais popular para áudio de RPG. Diferente
-        de uma playlist, ele funciona como um motor de paisagem sonora — você
+        de uma playlist, ele funciona como um motor de paisagem sonora: você
         ativa um "soundset" e ele mistura música, efeitos ambientes e sons
         pontuais (espadas, rugidos, trovões) em tempo real. A versão gratuita
         oferece uma biblioteca inicial de ambientes, e a assinatura SuperSyrin
@@ -2969,12 +2968,12 @@ export function BlogPost11() {
       <Ul>
         <Li>
           Uma <strong>caixa de som Bluetooth</strong> pequena (JBL Clip, Anker
-          Soundcore ou similar) — posicione no centro da mesa ou perto de
+          Soundcore ou similar), posicionada no centro da mesa ou perto de
           você
         </Li>
         <Li>
-          Seu <strong>celular ou tablet</strong> com as playlists preparadas
-          — separado do dispositivo que você usa para mestrar
+          Seu <strong>celular ou tablet</strong> com as playlists preparadas,
+          separado do dispositivo que você usa para mestrar
         </Li>
         <Li>
           Alternativamente, use o <strong>próprio notebook</strong> onde
@@ -3002,7 +3001,7 @@ export function BlogPost11() {
       <Tip linkHref="/try" linkText="Ver soundboard do Pocket DM">
         O Pocket DM tem um recurso de soundboard integrado que permite
         controlar ambientação sonora direto da mesma tela onde você gerencia
-        o combate. Sem trocar de app, sem perder o foco — tudo num lugar só.
+        o combate. Sem trocar de app, sem perder o foco, tudo num lugar só.
         Ideal para mestres que não querem ficar malabarando entre abas e
         aplicativos durante a sessão.
       </Tip>
@@ -3015,7 +3014,7 @@ export function BlogPost11() {
           se você precisa levantar a voz para ser ouvido acima da música,
           está alto demais
         </strong>
-        . A música deve ser uma camada de fundo — presente, mas nunca
+        . A música deve ser uma camada de fundo, presente, mas nunca
         competindo com as vozes na mesa.
       </P>
       <Ul>
@@ -3024,11 +3023,11 @@ export function BlogPost11() {
           da caixa de som
         </Li>
         <Li>
-          <strong>Tensão e mistério:</strong> volume em ~15-20% — aqui o
+          <strong>Tensão e mistério:</strong> volume em ~15-20%, aqui o
           silêncio relativo é seu aliado
         </Li>
         <Li>
-          <strong>Combate:</strong> volume em ~30-35% — pode ser um pouco
+          <strong>Combate:</strong> volume em ~30-35%, pode ser um pouco
           mais alto para criar energia, mas ainda abaixo da conversa
         </Li>
         <Li>
@@ -3107,7 +3106,7 @@ export function BlogPost11() {
           levemente o volume
         </Li>
         <Li>
-          Pronto — você acabou de usar música ambiente pela primeira vez.
+          Pronto. Você acabou de usar música ambiente pela primeira vez.
           Refine nas próximas sessões.
         </Li>
       </Ul>
@@ -3115,13 +3114,13 @@ export function BlogPost11() {
       <P>
         Três playlists, uma caixinha de som, e a consciência de quando subir,
         baixar ou silenciar. É isso. Comece simples, experimente por 2-3
-        sessões, e vá refinando. Cada mesa tem sua personalidade sonora —
-        você vai encontrar a da sua.
+        sessões, e vá refinando. Cada mesa tem sua personalidade sonora.
+        Você vai encontrar a da sua.
       </P>
       <P>
         Se quiser combate + música no mesmo lugar, o{" "}
         <ProdLink href="/try">Pocket DM</ProdLink> tem soundboard embutido
-        no tracker — sem trocar de app. Veja também as{" "}
+        no tracker, sem trocar de app. Veja também as{" "}
         <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">
           ferramentas essenciais pra mestres
         </IntLink>{" "}
@@ -3143,7 +3142,7 @@ export function BlogPost12() {
   return (
     <>
       <P>
-        "A gente joga com mapa ou sem mapa?" — essa discussão surge em toda
+        "A gente joga com mapa ou sem mapa?" Essa discussão surge em toda
         mesa nova. Tem gente que jura que grid é essencial, tem gente que
         nunca usou uma miniatura na vida e roda sessões incríveis só na
         narração. A verdade? Depende da mesa, do combate e do quanto você
@@ -3162,7 +3161,7 @@ export function BlogPost12() {
       <P>
         No teatro da mente (<em>Theater of the Mind</em>, ou TotM), o combate
         acontece inteiramente na imaginação dos jogadores e do mestre. Não há
-        mapa, grid ou miniaturas — o mestre descreve o ambiente verbalmente e os
+        mapa, grid ou miniaturas, o mestre descreve o ambiente verbalmente e os
         jogadores declaram suas ações com base nessa descrição. O posicionamento
         é abstrato: {'"'}você está perto do ogro{'"'}, {'"'}o arqueiro está do
         outro lado da sala{'"'}, {'"'}há aproximadamente 30 pés entre
@@ -3222,7 +3221,7 @@ export function BlogPost12() {
           <tbody className="text-foreground/75">
             <tr className="border-b border-white/[0.05]">
               <td className="py-2 px-4 font-medium text-foreground/90">Preparação</td>
-              <td className="py-2 px-4">Zero — é só começar</td>
+              <td className="py-2 px-4">Zero (é só começar)</td>
               <td className="py-2 px-4">Requer mapa, tokens, setup</td>
             </tr>
             <tr className="border-b border-white/[0.05]">
@@ -3232,18 +3231,18 @@ export function BlogPost12() {
             </tr>
             <tr className="border-b border-white/[0.05]">
               <td className="py-2 px-4 font-medium text-foreground/90">Imersão</td>
-              <td className="py-2 px-4">Alta — narrativa contínua</td>
-              <td className="py-2 px-4">Visual — mapa cria cenário</td>
+              <td className="py-2 px-4">Alta (narrativa contínua)</td>
+              <td className="py-2 px-4">Visual (mapa cria cenário)</td>
             </tr>
             <tr className="border-b border-white/[0.05]">
               <td className="py-2 px-4 font-medium text-foreground/90">Clareza tática</td>
-              <td className="py-2 px-4">Ambígua — depende do mestre</td>
-              <td className="py-2 px-4">Exata — posições definidas</td>
+              <td className="py-2 px-4">Ambígua (depende do mestre)</td>
+              <td className="py-2 px-4">Exata (posições definidas)</td>
             </tr>
             <tr className="border-b border-white/[0.05]">
               <td className="py-2 px-4 font-medium text-foreground/90">Áreas de efeito</td>
               <td className="py-2 px-4">Estimativa do mestre</td>
-              <td className="py-2 px-4">Precisa — contar quadrados</td>
+              <td className="py-2 px-4">Precisa (contar quadrados)</td>
             </tr>
             <tr className="border-b border-white/[0.05]">
               <td className="py-2 px-4 font-medium text-foreground/90">Custo</td>
@@ -3252,7 +3251,7 @@ export function BlogPost12() {
             </tr>
             <tr className="border-b border-white/[0.05]">
               <td className="py-2 px-4 font-medium text-foreground/90">Criatividade</td>
-              <td className="py-2 px-4">Alta — sem limites visuais</td>
+              <td className="py-2 px-4">Alta (sem limites visuais)</td>
               <td className="py-2 px-4">Limitada pelo mapa disponível</td>
             </tr>
             <tr>
@@ -3289,7 +3288,7 @@ export function BlogPost12() {
       <P>
         Quando não há mapa físico, os jogadores e o mestre podem descrever o
         ambiente com detalhes ilimitados. O campo de batalha pode ter penhascos,
-        rios, pontes, prédios em colapso — qualquer coisa que a narrativa peça,
+        rios, pontes, prédios em colapso, qualquer coisa que a narrativa peça,
         sem precisar de um mapa pronto. Jogadores tendem a propor ações mais
         criativas quando não estão limitados pelo que veem no grid.
       </P>
@@ -3316,7 +3315,7 @@ export function BlogPost12() {
       <P>
         Spells como <em>Fireball</em>, <em>Web</em>, <em>Spirit Guardians</em>{" "}
         e <em>Cloud of Daggers</em> funcionam muito melhor com grid. Não há
-        debate sobre quantos inimigos estão na área — é só contar os quadrados.
+        debate sobre quantos inimigos estão na área: é só contar os quadrados.
         Para mesas onde casters de área são comuns, o grid resolve muitos
         problemas.
       </P>
@@ -3326,7 +3325,7 @@ export function BlogPost12() {
         O sistema de D&D 5e tem regras específicas sobre engajamento e ataques de
         oportunidade baseados em distância de 5 pés. Com grid, essas regras
         funcionam perfeitamente. No TotM, o mestre precisa decidir caso a caso
-        se um personagem provocou um ataque de oportunidade — e essa decisão nem
+        se um personagem provocou um ataque de oportunidade, e essa decisão nem
         sempre é percebida como justa.
       </P>
 
@@ -3343,7 +3342,7 @@ export function BlogPost12() {
       <P>
         Existe uma terceira opção que resolve 80% das brigas entre os dois
         campos: combate baseado em <strong>zonas</strong>. Em vez de quadrados precisos,
-        o campo de batalha é dividido em zonas abstratas — {'"'}entrada da
+        o campo de batalha é dividido em zonas abstratas: {'"'}entrada da
         caverna{'"'}, {'"'}rio de lava{'"'}, {'"'}ponte estreita{'"'},
         {'"'}altar do dragão{'"'}. Mover-se dentro da mesma zona custa pouco
         ou nada; mover entre zonas adjacentes custa um turno de movimento.
@@ -3360,15 +3359,15 @@ export function BlogPost12() {
       <P>
         Na prática, você pode desenhar as zonas como bolhas ou retângulos num
         papel comum (nem precisa de grid), com setas indicando conexões. Cada
-        zona pode ter propriedades — {'"'}cobertura parcial{'"'}, {'"'}terreno
-        difícil{'"'}, {'"'}escuridão total{'"'} — que afetam mecanicamente
+        zona pode ter propriedades, como {'"'}cobertura parcial{'"'}, {'"'}terreno
+        difícil{'"'} ou {'"'}escuridão total{'"'}, que afetam mecanicamente
         quem está lá dentro.
       </P>
 
       <Tip>
         Para usar zonas, comece com 3 a 5 zonas por encontro. Escreva o nome de
         cada zona e uma propriedade especial (se houver). Desenhe setas
-        conectando zonas adjacentes. Pronto — seu mapa de combate está feito em
+        conectando zonas adjacentes. Pronto, seu mapa de combate está feito em
         30 segundos.
       </Tip>
 
@@ -3397,7 +3396,7 @@ export function BlogPost12() {
         <Li>Você quer clareza espacial sem a lentidão do grid</Li>
         <Li>O ambiente tem locais distintos (salas, níveis, áreas com propriedades diferentes)</Li>
         <Li>Quer prep mínimo mas ainda manter alguma estrutura visual</Li>
-        <Li>O grupo é misto — alguns querem tática, outros querem narrativa</Li>
+        <Li>O grupo é misto, alguns querem tática, outros querem narrativa</Li>
       </Ul>
 
       <H2>O tracker funciona com qualquer estilo (de verdade)</H2>
@@ -3412,7 +3411,7 @@ export function BlogPost12() {
       <Ul>
         <Li>
           <strong>Teatro da Mente:</strong> use o Pocket DM no celular ou tablet
-          enquanto narra. Os jogadores não veem mapa nenhum — só a ordem de
+          enquanto narra. Os jogadores não veem mapa nenhum, só a ordem de
           iniciativa compartilhada.
         </Li>
         <Li>
@@ -3420,7 +3419,7 @@ export function BlogPost12() {
           físico. Ele gerencia os números enquanto você gerencia as posições.
         </Li>
         <Li>
-          <strong>Zonas:</strong> perfeito para zonas — você pode anotar em qual
+          <strong>Zonas:</strong> você pode anotar em qual
           zona cada criatura está usando as notas do combat tracker.
         </Li>
       </Ul>
@@ -3433,7 +3432,7 @@ export function BlogPost12() {
       <P>
         Se você usa{" "}
         <ProdLink href="/condicoes">condições</ProdLink>{" "}
-        no combate (e deveria!), o tracker aplica e rastreia automaticamente —
+        no combate (e deveria!), o tracker aplica e rastreia automaticamente,
         algo que fica confuso no papel independente do estilo de combate.
       </P>
 
@@ -3451,10 +3450,10 @@ export function BlogPost12() {
       <P>
         Experimente os três. Pergunte aos seus jogadores o que preferem. E
         lembre-se: o que realmente importa é que todos na mesa estejam se
-        divertindo — com ou sem miniaturas. Para manter o combate fluindo
+        divertindo, com ou sem miniaturas. Para manter o combate fluindo
         independente do estilo, experimente o{" "}
         <ProdLink href="/try">Pocket DM</ProdLink>{" "}
-        — combat tracker gratuito para D&D 5e que funciona direto no navegador.
+        , um combat tracker gratuito para D&D 5e que funciona direto no navegador.
         E para mais dicas de combate, confira nosso guia de{" "}
         <IntLink slug="como-agilizar-combate-dnd-5e">
           como agilizar o combate
@@ -3489,7 +3488,7 @@ export function BlogPost13() {
         Capa Barsavi não era o que causava mais dano, não era o que recebia os
         golpes, e não era o que roubava a cena. Ele era o motivo pelo qual todos
         os outros podiam fazer isso. Um <strong>Order Cleric 1 / Divine Soul Sorcerer</strong>{" "}
-        construído para ser a engrenagem invisível que faz a máquina funcionar —
+        construído para ser a engrenagem invisível que faz a máquina funcionar,
         e uma das builds de suporte mais eficientes do D&amp;D 5e.
       </P>
 
@@ -3657,12 +3656,12 @@ export function BlogPost13() {
       </div>
 
       <P>
-        <strong>Trade-offs com Point Buy:</strong> A maior diferença é CON — com
+        <strong>Trade-offs com Point Buy:</strong> A maior diferença é CON. Com
         dados rolados, Capa tinha +4 de modificador de CON durante toda a
         campanha, enquanto com Point Buy ficaria em +3. Isso significa{" "}
         <strong>&minus;1 HP por nível</strong> (&minus;10 no total) e &minus;1 nos testes de
         Constituição para manter concentração. Para uma build que depende de
-        manter Bless e Spirit Guardians ativos, é uma diferença real — mas
+        manter Bless e Spirit Guardians ativos, é uma diferença real, mas
         Resilient CON compensa boa parte disso com proficiência nos saves.
       </P>
 
@@ -3678,7 +3677,7 @@ export function BlogPost13() {
             (Tasha{"'"}s Cauldron / MotM),{" "}
             <strong>Shadar-kai</strong> é uma alternativa excelente a
             Half-Elf. Você consegue fechar{" "}
-            <strong>CHA 18, CON 18 e WIS par</strong> — todos os
+            <strong>CHA 18, CON 18 e WIS par:</strong> todos os
             atributos importantes em números pares, sem desperdício.
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
@@ -3712,7 +3711,7 @@ export function BlogPost13() {
           <p className="text-sm text-foreground/85 leading-relaxed">
             <strong>Vantagem da Shadar-kai:</strong>{" "}
             Além de fechar todos os atributos pares, você ganha{" "}
-            <em>Blessing of the Raven Queen</em> — teleporte de 30ft
+            <em>Blessing of the Raven Queen</em>: teleporte de 30ft
             como bônus action com resistência a todo dano até o
             próximo turno. Para um caster frontline, é uma ferramenta
             de sobrevivência brutal que Misty Step não oferece. O
@@ -3728,7 +3727,7 @@ export function BlogPost13() {
       <P>
         Half-Elf é uma das raças mais flexíveis do 5e. O +2 CHA é exatamente o
         que um Sorcerer precisa, e os dois +1 extras permitem arredondar CON e
-        DEX — atributos essenciais para sobrevivência e AC. A variante Drow
+        DEX, atributos essenciais para sobrevivência e AC. A variante Drow
         adiciona Darkvision 60ft e Fey Ancestry (vantagem contra charm e
         imunidade a sono mágico), traços defensivos valiosos para quem precisa
         manter concentração.
@@ -3742,22 +3741,22 @@ export function BlogPost13() {
         conjura uma magia com spell slot mirando um aliado, esse aliado pode
         usar sua reação para fazer um ataque de arma. Combine com Quickened
         Spell e você pode buffar alguém E conjurar uma magia ofensiva no mesmo
-        turno — enquanto seu aliado ainda ganha um ataque extra.
+        turno, enquanto seu aliado ainda ganha um ataque extra.
       </P>
       <P>
         Além disso, o nível de Cleric traz proficiência em armaduras pesadas e
         escudos (AC 19-21), saves de Sabedoria, e acesso a magias clericais de
-        1º nível que um Sorcerer normalmente não teria — como Command e
+        1º nível que um Sorcerer normalmente não teria, como Command e
         Heroism, ambas preparadas gratuitamente pelo domínio.
       </P>
 
       <H3>Sorcerer — Divine Soul</H3>
       <P>
         Divine Soul Sorcerer é avaliado pela comunidade como{" "}
-        <strong>tier S</strong> entre as subclasses de Sorcerer — e por bom
+        <strong>tier S</strong> entre as subclasses de Sorcerer, e por bom
         motivo. Ele dá acesso à <strong>lista inteira de magias de Cleric</strong>{" "}
         sem precisar de mais níveis em Cleric. Isso significa Spirit Guardians,
-        Aid, Revivify, Death Ward — tudo usando Carisma e com Metamagic
+        Aid, Revivify, Death Ward, tudo usando Carisma e com Metamagic
         disponível.
       </P>
       <P>
@@ -3826,19 +3825,19 @@ export function BlogPost13() {
 
       <H3>Onde a build brilha</H3>
       <Ul>
-        <Li>Multiplicação de ações — cada buff gera ataques extras para o grupo</Li>
-        <Li>Concentração blindada — Resilient CON + alta CON = saves quase garantidos</Li>
-        <Li>Versatilidade — acesso a listas de Cleric e Sorcerer simultaneamente</Li>
-        <Li>AC alta para caster — 19-21 com Half Plate/Mithril Plate + Shield</Li>
-        <Li>Contramágica — Counterspell e Silvery Barbs para proteger o grupo</Li>
+        <Li>Multiplicação de ações: cada buff gera ataques extras para o grupo</Li>
+        <Li>Concentração blindada: Resilient CON + alta CON = saves quase garantidos</Li>
+        <Li>Versatilidade: acesso a listas de Cleric e Sorcerer simultaneamente</Li>
+        <Li>AC alta para caster: 19-21 com Half Plate/Mithril Plate + Shield</Li>
+        <Li>Contramágica: Counterspell e Silvery Barbs para proteger o grupo</Li>
       </Ul>
 
       <H3>Onde a build sofre</H3>
       <Ul>
-        <Li>Magias conhecidas limitadas — Sorcerer tem poucas magias, escolha com cuidado</Li>
-        <Li>Dependência de concentração — perder Bless ou Spirit Guardians dói</Li>
-        <Li>Dano direto baixo — o dano vem dos aliados, não de você</Li>
-        <Li>Início lento — níveis 1-4 antes de Metamagic e magias de 3º nível</Li>
+        <Li>Magias conhecidas limitadas: Sorcerer tem poucas magias, escolha com cuidado</Li>
+        <Li>Dependência de concentração: perder Bless ou Spirit Guardians dói</Li>
+        <Li>Dano direto baixo: o dano vem dos aliados, não de você</Li>
+        <Li>Início lento: níveis 1-4 antes de Metamagic e magias de 3º nível</Li>
       </Ul>
 
       <H2>Como se compara com o meta?</H2>
@@ -3866,7 +3865,7 @@ export function BlogPost13() {
         A build do Capa seguiu Quickened e Extended como metamagic em vez do
         mais popular Twinned Spell. Isso troca a capacidade de buffar dois
         alvos simultaneamente pela flexibilidade de fazer duas ações por turno
-        e estender buffs como Aid para 16 horas — uma escolha que prioriza
+        e estender buffs como Aid para 16 horas, uma escolha que prioriza
         preparação e versatilidade sobre raw output.
       </P>
 
@@ -3874,17 +3873,17 @@ export function BlogPost13() {
 
       <Ul>
         <Li>
-          <strong>Nível 11 (Sorc 10):</strong> Mais um Metamagic — Twinned
+          <strong>Nível 11 (Sorc 10):</strong> mais um Metamagic. Twinned
           Spell é a escolha óbvia aqui, finalmente adicionando a capacidade de
           buffar dois aliados ao mesmo tempo.
         </Li>
         <Li>
-          <strong>Nível 12 (Sorc 11):</strong> Magias de 6º nível — Mass
+          <strong>Nível 12 (Sorc 11):</strong> magias de 6º nível. Mass
           Suggestion para controle fora de combate, ou Heal para cura massiva
           de emergência.
         </Li>
         <Li>
-          <strong>Nível 13 (Sorc 12):</strong> ASI — +2 CHA (chegando a 20 com
+          <strong>Nível 13 (Sorc 12):</strong> ASI. +2 CHA (chegando a 20 com
           o Tome) ou um feat como Alert para garantir iniciativa alta.
         </Li>
         <Li>
@@ -3927,7 +3926,7 @@ export function BlogPost13() {
         tivesse acesso às melhores instituições de ensino: escolas clericais,
         academias de filosofia, fortalezas-biblioteca lendárias e centros
         religiosos de todo o continente. Foi nesse período que desenvolveu
-        habilidades em retórica, diplomacia, teologia e magia divina — e
+        habilidades em retórica, diplomacia, teologia e magia divina, e
         conheceu uma duquesa influente, após impressioná-la com um discurso
         sobre a ética da paz em tempos de guerra.
       </P>
@@ -3935,7 +3934,7 @@ export function BlogPost13() {
         Tudo mudou quando seu pai partiu em uma expedição rumo a mares
         distantes e nunca retornou. Nenhum corpo. Nenhuma pista. Nenhuma
         resposta. Se o deus que servia representava justiça e ordem, por que
-        permitiu tal silêncio? Esse questionamento não destruiu sua fé — mas
+        permitiu tal silêncio? Esse questionamento não destruiu sua fé, mas
         a transformou em algo mais pragmático: ele acredita na justiça e na
         ordem, mas não depende cegamente delas.
       </P>
@@ -3944,7 +3943,7 @@ export function BlogPost13() {
         começaram a se manifestar. Um sábio em uma antiga fortaleza-biblioteca
         revelou a verdade: sua mãe, Lyna, possuía linhagem descendente de um
         ser celestial tocado por uma deusa da magia. Esse sangue despertou
-        dentro de Capa, tornando-o portador de duas fontes de poder — a
+        dentro de Capa, tornando-o portador de duas fontes de poder: a
         disciplina da fé clerical e o poder inato de seu sangue divino.
       </P>
       <P>
@@ -3952,12 +3951,12 @@ export function BlogPost13() {
         iniciou a jornada que o levaria às névoas de uma terra amaldiçoada sob
         o domínio de um vampiro ancestral. Em apenas{" "}
         <strong>19 dias</strong>, enfrentou horrores sobrenaturais, viu aldeias
-        destruídas, ficou cara a cara com o senhor das névoas — e morreu{" "}
+        destruídas, ficou cara a cara com o senhor das névoas, e morreu{" "}
         <strong>duas vezes</strong>. E voltou duas vezes.
       </P>
       <P>
-        Entre seus companheiros — Amum Titus, Skid, Sócrates, Auditore e
-        Lauren Nailo — Capa se tornou o elo que mantinha o grupo unido.
+        Com seus companheiros Amum Titus, Skid, Sócrates, Auditore e
+        Lauren Nailo, Capa se tornou o elo que mantinha o grupo unido.
         Estrategista em combate, curandeiro, voz de comando em momentos
         críticos, defensor dos mais vulneráveis. Ele não buscava protagonismo.
         Mas quando tudo começava a ruir, todos olhavam para ele.
@@ -3979,7 +3978,7 @@ export function BlogPost13() {
         <div className="relative">
           <p className="font-display text-lg text-gold mb-1">Gostou dessa build?</p>
           <p className="text-sm text-muted-foreground mb-4">
-            Monte o encontro perfeito para testá-la — use o Pocket DM gratuitamente.
+            Monte o encontro perfeito para testá-la. Use o Pocket DM gratuitamente.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
@@ -4020,7 +4019,7 @@ export function BlogPost14() {
         Capa Barsavi wasn{"'"}t the one dealing the most damage, taking the
         hits, or stealing the spotlight. He was the reason everyone else could.
         An <strong>Order Cleric 1 / Divine Soul Sorcerer</strong> built to be
-        the invisible gear that makes the machine work — and one of the most
+        the invisible gear that makes the machine work, and one of the most
         efficient support builds in D&amp;D 5e.
       </P>
 
@@ -4188,12 +4187,12 @@ export function BlogPost14() {
       </div>
 
       <P>
-        <strong>Point Buy trade-offs:</strong> The biggest difference is CON —
+        <strong>Point Buy trade-offs:</strong> The biggest difference is CON:
         with rolled stats, Capa had a +4 CON modifier throughout the campaign,
         while Point Buy would give +3. That means{" "}
         <strong>&minus;1 HP per level</strong> (&minus;10 total) and &minus;1 to concentration
         saving throws. For a build that depends on maintaining Bless and Spirit
-        Guardians, that{"'"}s a real difference — but Resilient CON compensates
+        Guardians, that{"'"}s a real difference, but Resilient CON compensates
         significantly by granting proficiency in CON saves.
       </P>
 
@@ -4209,7 +4208,7 @@ export function BlogPost14() {
             (Tasha{"'"}s Cauldron / MotM),{" "}
             <strong>Shadar-kai</strong> is an excellent alternative to
             Half-Elf. You can close{" "}
-            <strong>CHA 18, CON 18, and WIS even</strong> — every
+            <strong>CHA 18, CON 18, and WIS even:</strong> every
             important ability score on an even number, zero waste.
           </p>
           <p className="text-sm text-foreground/85 leading-relaxed mb-3">
@@ -4244,7 +4243,7 @@ export function BlogPost14() {
           <p className="text-sm text-foreground/85 leading-relaxed">
             <strong>Shadar-kai advantage:</strong>{" "}
             Beyond closing all scores even, you gain{" "}
-            <em>Blessing of the Raven Queen</em> — a 30ft teleport
+            <em>Blessing of the Raven Queen</em>: a 30ft teleport
             as a bonus action with resistance to all damage until
             your next turn. For a frontline caster, this is a brutal
             survival tool that Misty Step doesn{"'"}t offer. The
@@ -4261,7 +4260,7 @@ export function BlogPost14() {
       <P>
         Half-Elf is one of the most flexible races in 5e. The +2 CHA is exactly
         what a Sorcerer needs, and the two floating +1s let you round out CON
-        and DEX — essential for survivability and AC. The Drow variant adds
+        and DEX, essential for survivability and AC. The Drow variant adds
         Darkvision 60ft and Fey Ancestry (advantage against charm, immunity to
         magical sleep), valuable defensive traits for someone who needs to
         maintain concentration.
@@ -4274,23 +4273,23 @@ export function BlogPost14() {
         action economy multiplier: every time you cast a spell with a spell slot
         targeting an ally, that ally can use their reaction to make a weapon
         attack. Combine with Quickened Spell and you can buff someone AND cast
-        an offensive spell in the same turn — while your ally still gets a
+        an offensive spell in the same turn, while your ally still gets a
         bonus attack.
       </P>
       <P>
         The Cleric level also brings heavy armor and shield proficiency (AC
         19-21), Wisdom save proficiency, and access to 1st-level Cleric spells
-        a Sorcerer normally wouldn{"'"}t have — like Command and Heroism, both
+        a Sorcerer normally wouldn{"'"}t have, like Command and Heroism, both
         prepared for free through the domain.
       </P>
 
       <H3>Sorcerer — Divine Soul</H3>
       <P>
         Divine Soul Sorcerer is rated by the optimization community as{" "}
-        <strong>S-tier</strong> among Sorcerer subclasses — and for good reason.
+        <strong>S-tier</strong> among Sorcerer subclasses, and for good reason.
         It grants access to the <strong>entire Cleric spell list</strong>{" "}
         without needing additional Cleric levels. That means Spirit Guardians,
-        Aid, Revivify, Death Ward — all using Charisma and with Metamagic
+        Aid, Revivify, Death Ward, all using Charisma and with Metamagic
         available.
       </P>
       <P>
@@ -4359,19 +4358,19 @@ export function BlogPost14() {
 
       <H3>Where the build shines</H3>
       <Ul>
-        <Li>Action economy multiplication — every buff generates extra attacks for the party</Li>
-        <Li>Armored concentration — Resilient CON + high CON = nearly guaranteed saves</Li>
-        <Li>Versatility — access to both Cleric and Sorcerer spell lists</Li>
-        <Li>High AC for a caster — 19-21 with Half Plate/Mithril Plate + Shield</Li>
-        <Li>Counter-magic — Counterspell and Silvery Barbs to protect the group</Li>
+        <Li>Action economy multiplication: every buff generates extra attacks for the party</Li>
+        <Li>Armored concentration: Resilient CON + high CON = nearly guaranteed saves</Li>
+        <Li>Versatility: access to both Cleric and Sorcerer spell lists</Li>
+        <Li>High AC for a caster: 19-21 with Half Plate/Mithril Plate + Shield</Li>
+        <Li>Counter-magic: Counterspell and Silvery Barbs to protect the group</Li>
       </Ul>
 
       <H3>Where the build struggles</H3>
       <Ul>
-        <Li>Limited spells known — Sorcerer has few spell picks, choose carefully</Li>
-        <Li>Concentration-dependent — losing Bless or Spirit Guardians hurts</Li>
-        <Li>Low direct damage — your damage comes from allies, not from you</Li>
-        <Li>Slow start — levels 1-4 before Metamagic and 3rd-level spells feel weak</Li>
+        <Li>Limited spells known: Sorcerer has few spell picks, choose carefully</Li>
+        <Li>Concentration-dependent: losing Bless or Spirit Guardians hurts</Li>
+        <Li>Low direct damage: your damage comes from allies, not from you</Li>
+        <Li>Slow start: levels 1-4 before Metamagic and 3rd-level spells feel weak</Li>
       </Ul>
 
       <H2>How it stacks up against the meta</H2>
@@ -4400,7 +4399,7 @@ export function BlogPost14() {
         Capa{"'"}s build chose Quickened and Extended as metamagic instead of
         the more popular Twinned Spell. This trades the ability to buff two
         targets simultaneously for the flexibility of two actions per turn and
-        extending buffs like Aid to 16 hours — a choice that prioritizes
+        extending buffs like Aid to 16 hours, a choice that prioritizes
         preparation and versatility over raw output.
       </P>
 
@@ -4408,17 +4407,17 @@ export function BlogPost14() {
 
       <Ul>
         <Li>
-          <strong>Level 11 (Sorc 10):</strong> Another Metamagic — Twinned
+          <strong>Level 11 (Sorc 10):</strong> Another Metamagic: Twinned
           Spell is the obvious pick, finally adding the ability to buff two
           allies simultaneously.
         </Li>
         <Li>
-          <strong>Level 12 (Sorc 11):</strong> 6th-level spells — Mass
+          <strong>Level 12 (Sorc 11):</strong> 6th-level spells: Mass
           Suggestion for out-of-combat control, or Heal for emergency massive
           healing.
         </Li>
         <Li>
-          <strong>Level 13 (Sorc 12):</strong> ASI — +2 CHA (reaching 20 with
+          <strong>Level 13 (Sorc 12):</strong> ASI: +2 CHA (reaching 20 with
           the Tome) or a feat like Alert for high initiative.
         </Li>
         <Li>
@@ -4461,7 +4460,7 @@ export function BlogPost14() {
         access to the finest institutions: clerical schools, philosophy
         academies, legendary fortress-libraries, and religious centers across
         the continent. During those years he developed skills in rhetoric,
-        diplomacy, theology, and divine magic — and met an influential
+        diplomacy, theology, and divine magic, and met an influential
         duchess, after impressing her with a speech on the ethics of peace in
         times of war.
       </P>
@@ -4469,7 +4468,7 @@ export function BlogPost14() {
         Everything changed when his father departed on an expedition to distant
         seas and never returned. No body. No clues. No answers. If the god he
         served stood for justice and order, why allow such silence? This
-        questioning didn{"'"}t destroy his faith — it transformed it into
+        questioning didn{"'"}t destroy his faith, it transformed it into
         something more pragmatic: he believes in justice and order, but no
         longer depends on them blindly.
       </P>
@@ -4478,7 +4477,7 @@ export function BlogPost14() {
         sage in an ancient fortress-library revealed the truth: his mother, Lyna,
         carried a bloodline descended from a celestial being touched by a goddess
         of magic. That blood awakened within Capa, making him the bearer of two
-        sources of power — the discipline of clerical faith and the innate
+        sources of power: the discipline of clerical faith and the innate
         force of his divine heritage.
       </P>
       <P>
@@ -4486,12 +4485,12 @@ export function BlogPost14() {
         Capa began the journey that would lead him into the mists of a cursed
         land ruled by an ancient vampire. In just{" "}
         <strong>19 days</strong>, he faced supernatural horrors, watched
-        villages burn, stood face to face with the lord of the mists — and
+        villages burn, stood face to face with the lord of the mists, and
         died <strong>twice</strong>. And came back twice.
       </P>
       <P>
-        Among his companions — Amum Titus, Skid, Socrates, Auditore, and
-        Lauren Nailo — Capa became the link that held the group together.
+        With his companions Amum Titus, Skid, Socrates, Auditore, and
+        Lauren Nailo, Capa became the link that held the group together.
         Combat strategist, healer, voice of command in critical moments,
         defender of the vulnerable. He never sought the spotlight. But when
         everything started to crumble, everyone looked to him.
@@ -4513,7 +4512,7 @@ export function BlogPost14() {
         <div className="relative">
           <p className="font-display text-lg text-gold mb-1">Like this build?</p>
           <p className="text-sm text-muted-foreground mb-4">
-            Build the perfect encounter to test it — use Pocket DM for free.
+            Build the perfect encounter to test it. Use Pocket DM for free.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
