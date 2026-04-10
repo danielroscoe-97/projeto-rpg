@@ -28,17 +28,35 @@ export function SrdIconSword({ className }: IconProps) {
 
 export function SrdIconCrossedSwords({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
-      <path d="M13 13l8 8" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Left sword blade */}
+      <path d="M5 2l6.5 6.5" fill="currentColor" fillOpacity="0.15" />
+      <path d="M5 2l1.5-.5L13 8l-1.5 1.5L5 3.5 4.5 2z" fill="currentColor" fillOpacity="0.15" stroke="currentColor" strokeWidth="1.5" />
+      {/* Right sword blade */}
+      <path d="M19 2l-1.5-.5L11 8l1.5 1.5L19 3.5l.5-1.5z" fill="currentColor" fillOpacity="0.15" stroke="currentColor" strokeWidth="1.5" />
+      {/* Left crossguard */}
+      <path d="M8.5 8L6 10.5" strokeWidth="2.5" />
+      {/* Right crossguard */}
+      <path d="M15.5 8L18 10.5" strokeWidth="2.5" />
+      {/* Left grip + pommel */}
+      <path d="M6 10.5l-2.5 2.5" strokeWidth="2" />
+      <circle cx="3" cy="13.5" r="0.75" fill="currentColor" />
+      {/* Right grip + pommel */}
+      <path d="M18 10.5l2.5 2.5" strokeWidth="2" />
+      <circle cx="21" cy="13.5" r="0.75" fill="currentColor" />
+      {/* Center clash spark */}
+      <path d="M12 9l-1.5 3.5h3L12 16" fill="currentColor" fillOpacity="0.15" strokeWidth="1.5" />
     </svg>
   );
 }
 
 export function SrdIconShield({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" fill="currentColor" fillOpacity="0.15" />
+      {/* Inner shield border / heraldic band */}
+      <path d="M12 6.5v12" strokeWidth="1.5" strokeOpacity="0.4" />
+      <path d="M7 9.5h10" strokeWidth="1.5" strokeOpacity="0.4" />
     </svg>
   );
 }
@@ -100,8 +118,18 @@ export function SrdIconSparkle({ className }: IconProps) {
 
 export function SrdIconBook({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Book cover with fill */}
+      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18H6.5a2.5 2.5 0 0 1 0-5H20" fill="currentColor" fillOpacity="0.15" />
+      {/* Spine detail */}
+      <path d="M6.5 2v17" strokeWidth="1.5" strokeOpacity="0.3" />
+      {/* Clasp / bookmark */}
+      <path d="M10 2v5l2-1.5L14 7V2" fill="currentColor" fillOpacity="0.2" strokeWidth="1.5" />
+      {/* Page lines for arcane tome feel */}
+      <path d="M9 11h7" strokeWidth="1" strokeOpacity="0.3" />
+      <path d="M9 13.5h5" strokeWidth="1" strokeOpacity="0.3" />
+      {/* Corner embellishment */}
+      <circle cx="16.5" cy="5" r="0.75" fill="currentColor" fillOpacity="0.3" strokeWidth="0" />
     </svg>
   );
 }
@@ -128,8 +156,14 @@ export function SrdIconTarget({ className }: IconProps) {
 
 export function SrdIconFlame({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Outer flame */}
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" fill="currentColor" fillOpacity="0.15" />
+      {/* Inner flame core */}
+      <path d="M12 19a3.5 3.5 0 0 0 3.5-3.5c0-1-.5-2-1.5-3 .5-1.5.5-2.5 0-4-1 2-2 3-2 4.5a1.5 1.5 0 0 1-1.5 1.5A1.5 1.5 0 0 0 9 16a3 3 0 0 0 3 3z" fill="currentColor" fillOpacity="0.12" strokeWidth="1.5" strokeOpacity="0.5" />
+      {/* Ember sparks */}
+      <circle cx="9" cy="5" r="0.5" fill="currentColor" fillOpacity="0.4" strokeWidth="0" />
+      <circle cx="15" cy="4" r="0.5" fill="currentColor" fillOpacity="0.3" strokeWidth="0" />
     </svg>
   );
 }
@@ -271,80 +305,157 @@ export function SrdIconWand({ className }: IconProps) {
 
 export function SrdIconMusic({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 18V5l12-2v13" />
-      <circle cx="6" cy="18" r="3" />
-      <circle cx="18" cy="16" r="3" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Lute body */}
+      <ellipse cx="9" cy="15" rx="5" ry="6" fill="currentColor" fillOpacity="0.15" strokeWidth="2" />
+      {/* Sound hole */}
+      <circle cx="9" cy="15" r="1.5" strokeWidth="1.5" />
+      {/* Neck */}
+      <path d="M14 11l4-7" strokeWidth="2.5" />
+      {/* Tuning pegs */}
+      <path d="M17 4.5l1.5-.5" strokeWidth="2" />
+      <path d="M17.5 3l1.5-.5" strokeWidth="2" />
+      {/* Strings */}
+      <path d="M8 10v10" strokeWidth="1" strokeOpacity="0.5" />
+      <path d="M10 10v10" strokeWidth="1" strokeOpacity="0.5" />
+      {/* Musical notes */}
+      <circle cx="20" cy="7" r="1" fill="currentColor" fillOpacity="0.4" strokeWidth="1" />
+      <path d="M20 7v-4" strokeWidth="1.5" />
+      <path d="M20 3h2" strokeWidth="1.5" />
     </svg>
   );
 }
 
 export function SrdIconCross({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 2h8v6h6v8h-6v6H8v-6H2V8h6V2z" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Holy cross with ornate ends */}
+      <path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7V2z" fill="currentColor" fillOpacity="0.15" />
+      {/* Flared/ornate ends */}
+      <path d="M9 2L8 1h8l-1 1" strokeWidth="1.5" strokeOpacity="0.5" />
+      <path d="M9 22l-1 1h8l-1-1" strokeWidth="1.5" strokeOpacity="0.5" />
+      <path d="M2 9L1 8v8l1-1" strokeWidth="1.5" strokeOpacity="0.5" />
+      <path d="M22 9l1-1v8l-1-1" strokeWidth="1.5" strokeOpacity="0.5" />
+      {/* Inner glow / radiance lines */}
+      <circle cx="12" cy="12" r="2" strokeWidth="1.5" strokeOpacity="0.4" fill="currentColor" fillOpacity="0.1" />
     </svg>
   );
 }
 
 export function SrdIconLeaf({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z" />
-      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z" fill="currentColor" fillOpacity="0.15" />
+      {/* Leaf veins */}
+      <path d="M14 8c-1.5 2-2.5 4-3 7" strokeWidth="1.5" strokeOpacity="0.4" />
+      <path d="M16 7c-1 1.5-1 3-1 5" strokeWidth="1" strokeOpacity="0.3" />
+      <path d="M11.5 11c1-1 2.5-1.5 4-1.5" strokeWidth="1" strokeOpacity="0.3" />
+      {/* Stem curving to ground */}
+      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" strokeWidth="2.5" />
     </svg>
   );
 }
 
 export function SrdIconFist({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Fist body fill */}
+      <path d="M7 11V4a2 2 0 0 1 4 0v3h0V3a2 2 0 0 1 4 0v4h0V5a2 2 0 0 1 4 0v9a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6v-3a2 2 0 0 1 4 0v0" fill="currentColor" fillOpacity="0.15" />
+      {/* Fingers */}
       <path d="M7 11V4a2 2 0 0 1 4 0v3" />
       <path d="M11 7V3a2 2 0 0 1 4 0v4" />
       <path d="M15 7V5a2 2 0 0 1 4 0v9a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6v-3a2 2 0 0 1 4 0" />
+      {/* Knuckle lines */}
+      <path d="M7 11h12" strokeWidth="1.5" strokeOpacity="0.3" />
+      {/* Impact lines */}
+      <path d="M1 7l1.5.5" strokeWidth="1.5" strokeOpacity="0.5" />
+      <path d="M1.5 4l1.5 1" strokeWidth="1.5" strokeOpacity="0.5" />
     </svg>
   );
 }
 
 export function SrdIconDagger({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2l2 10-2 2-2-2 2-10z" />
-      <path d="M8 14h8" />
-      <path d="M12 16v6" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Blade with fuller groove */}
+      <path d="M12 2l2.5 10-2.5 2-2.5-2L12 2z" fill="currentColor" fillOpacity="0.15" />
+      <path d="M12 3v8" strokeWidth="1" strokeOpacity="0.35" />
+      {/* Crossguard with curved ends */}
+      <path d="M7 13.5c0 0 1.5 1 5 1s5-1 5-1" strokeWidth="2.5" />
+      <circle cx="7" cy="13.5" r="0.75" fill="currentColor" />
+      <circle cx="17" cy="13.5" r="0.75" fill="currentColor" />
+      {/* Grip with wrap texture */}
+      <path d="M11 15h2v4h-2z" fill="currentColor" fillOpacity="0.15" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M11 16h2" strokeWidth="1" strokeOpacity="0.3" />
+      <path d="M11 18h2" strokeWidth="1" strokeOpacity="0.3" />
+      {/* Pommel */}
+      <circle cx="12" cy="20.5" r="1.25" fill="currentColor" fillOpacity="0.2" strokeWidth="1.5" />
     </svg>
   );
 }
 
 export function SrdIconFleurDeLis({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3c-1 4-4 6-4 10a4 4 0 0 0 4 4 4 4 0 0 0 4-4c0-4-3-6-4-10z" />
-      <path d="M12 17v4" />
-      <path d="M8 21h8" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Center petal */}
+      <path d="M12 2c-1.5 3-3 5.5-3 9a3 3 0 0 0 3 3 3 3 0 0 0 3-3c0-3.5-1.5-6-3-9z" fill="currentColor" fillOpacity="0.15" />
+      {/* Left petal curling outward */}
+      <path d="M9 11c-3-1-5 0-5.5 2.5S5 17 7 17c1 0 2-.5 2.5-1.5" fill="currentColor" fillOpacity="0.1" strokeWidth="2" />
+      {/* Right petal curling outward */}
+      <path d="M15 11c3-1 5 0 5.5 2.5S19 17 17 17c-1 0-2-.5-2.5-1.5" fill="currentColor" fillOpacity="0.1" strokeWidth="2" />
+      {/* Stem */}
+      <path d="M12 14v5" strokeWidth="2.5" />
+      {/* Base crossbar with ornate ends */}
+      <path d="M7.5 19.5h9" strokeWidth="2" />
+      <path d="M8 21h8" strokeWidth="2.5" />
+      {/* Base finials */}
+      <circle cx="8" cy="21" r="0.5" fill="currentColor" />
+      <circle cx="16" cy="21" r="0.5" fill="currentColor" />
     </svg>
   );
 }
 
 export function SrdIconBow({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 2c-2 0-6 4-6 10s4 10 6 10" />
-      <path d="M18 2v20" />
-      <path d="M4 12h14" />
-      <path d="M4 12l3-2" />
-      <path d="M4 12l3 2" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Bow limb (curved) with fill */}
+      <path d="M18 2c-2 0-6 4-6 10s4 10 6 10" fill="currentColor" fillOpacity="0.08" />
+      {/* Bowstring */}
+      <path d="M18 2v20" strokeWidth="1.5" />
+      {/* Arrow shaft */}
+      <path d="M2 12h16" strokeWidth="2" />
+      {/* Arrowhead */}
+      <path d="M2 12l-0.5-1.5L0 12l1.5 1.5z" fill="currentColor" fillOpacity="0.3" strokeWidth="0" />
+      <path d="M1 10.5L4 12l-3 1.5" strokeWidth="2" fill="currentColor" fillOpacity="0.2" />
+      {/* Fletching */}
+      <path d="M15 10.5l2 1.5-2 1.5" strokeWidth="1.5" strokeOpacity="0.5" />
+      {/* Bow tip nocks */}
+      <circle cx="18" cy="2" r="0.75" fill="currentColor" />
+      <circle cx="18" cy="22" r="0.75" fill="currentColor" />
+      {/* Arrow rest / grip area */}
+      <path d="M17 10v4" strokeWidth="2.5" strokeOpacity="0.4" />
     </svg>
   );
 }
 
 export function SrdIconCrystal({ className }: IconProps) {
   return (
-    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 3h12l4 6-10 13L2 9z" />
-      <path d="M2 9h20" />
-      <path d="m10 3 2 6" />
-      <path d="m12 3-2 6" />
+    <svg className={cn(className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Main crystal body */}
+      <path d="M12 2L7 8l5 14 5-14-5-6z" fill="currentColor" fillOpacity="0.15" />
+      {/* Left facet */}
+      <path d="M12 2L5 9l7 13" strokeWidth="2" />
+      {/* Right facet */}
+      <path d="M12 2l7 7-7 13" strokeWidth="2" />
+      {/* Inner facet lines for crystalline look */}
+      <path d="M5 9h14" strokeWidth="1.5" />
+      <path d="M8 9l4 6" strokeWidth="1" strokeOpacity="0.4" />
+      <path d="M16 9l-4 6" strokeWidth="1" strokeOpacity="0.4" />
+      {/* Sparkle at tip */}
+      <path d="M10 3.5l2-2 2 2" strokeWidth="1" strokeOpacity="0.5" />
+      {/* Energy glow lines */}
+      <path d="M3 8l-1.5-.5" strokeWidth="1.5" strokeOpacity="0.4" />
+      <path d="M21 8l1.5-.5" strokeWidth="1.5" strokeOpacity="0.4" />
     </svg>
   );
 }

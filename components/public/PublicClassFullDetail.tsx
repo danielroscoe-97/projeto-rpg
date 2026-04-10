@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -13,6 +13,9 @@ import {
   Shield,
   ScrollText,
   X,
+  Backpack,
+  GitFork,
+  Wand2,
 } from "lucide-react";
 import type {
   SrdClassFull,
@@ -113,6 +116,13 @@ const LABELS: Record<string, Record<string, string>> = {
     hitPoints: "Hit Points",
     toolProf: "Tool Proficiencies",
     skillChoices: "Skills",
+    armor: "Armor",
+    weapons: "Weapons",
+    tools: "Tools",
+    skills: "Skills",
+    saves: "Saving Throws",
+    showMore: "Show more",
+    showLess: "Show less",
   },
   "pt-BR": {
     hitDie: "Dado de Vida",
@@ -157,6 +167,13 @@ const LABELS: Record<string, Record<string, string>> = {
     hitPoints: "Pontos de Vida",
     toolProf: "Ferramentas",
     skillChoices: "Perícias",
+    armor: "Armaduras",
+    weapons: "Armas",
+    tools: "Ferramentas",
+    skills: "Perícias",
+    saves: "Salvaguardas",
+    showMore: "Mostrar mais",
+    showLess: "Mostrar menos",
   },
 };
 
@@ -195,8 +212,9 @@ export function PublicClassFullDetail({
   subclasses,
   locale = "en",
 }: Props) {
-  const L = LABELS[locale];
-  const isPt = locale === "pt-BR";
+  const [currentLocale, setCurrentLocale] = useState(locale);
+  const L = LABELS[currentLocale];
+  const isPt = currentLocale === "pt-BR";
   const roleMeta = ROLE_BADGE[cls.role];
   const displayName = isPt ? cls.name_pt : cls.name;
   const description = isPt ? cls.description_pt : cls.description_en;
@@ -247,6 +265,11 @@ export function PublicClassFullDetail({
   const tocItems: TocItem[] = useMemo(() => {
     const items: TocItem[] = [
       {
+        id: "overview",
+        label: L.overview,
+        icon: <Shield className="w-4 h-4" />,
+      },
+      {
         id: "description",
         label: L.description,
         icon: <BookOpen className="w-4 h-4" />,
@@ -273,14 +296,14 @@ export function PublicClassFullDetail({
       items.push({
         id: "subclasses",
         label: isPt ? cls.subclass_name_pt : cls.subclass_name,
-        icon: <Shield className="w-4 h-4" />,
+        icon: <GitFork className="w-4 h-4" />,
       });
     }
     if (cls.starting_equipment_en) {
       items.push({
         id: "starting-equipment",
         label: L.startingEquipment,
-        icon: <Shield className="w-4 h-4" />,
+        icon: <Backpack className="w-4 h-4" />,
       });
     }
     if (cls.multiclass_prerequisites) {
@@ -294,7 +317,7 @@ export function PublicClassFullDetail({
       items.push({
         id: "spellcasting",
         label: L.spellcastingSection,
-        icon: <Sparkles className="w-4 h-4" />,
+        icon: <Wand2 className="w-4 h-4" />,
       });
     }
     return items;
@@ -332,10 +355,36 @@ export function PublicClassFullDetail({
 
   return (
     <article className="relative">
+      {/* ── EN/PT Language Toggle ─────────────────────────────── */}
+      <div className="flex justify-end mb-4">
+        <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
+          <button
+            onClick={() => setCurrentLocale("en")}
+            className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+              !isPt
+                ? "bg-[#D4A853] text-gray-950"
+                : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => setCurrentLocale("pt-BR")}
+            className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+              isPt
+                ? "bg-[#D4A853] text-gray-950"
+                : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            PT
+          </button>
+        </div>
+      </div>
+
       {/* ── Layout: content + sticky TOC ────────────────────────── */}
-      <div className="lg:grid lg:grid-cols-[1fr_240px] lg:gap-8">
+      <div className="lg:grid lg:grid-cols-[1fr_220px] lg:gap-8">
         {/* ── Main content column ──────────────────────────────── */}
-        <div className="space-y-6 min-w-0">
+        <div className="space-y-8 min-w-0">
           {/* 1. Hero Section */}
           <HeroSection
             cls={cls}
@@ -347,34 +396,38 @@ export function PublicClassFullDetail({
             L={L}
           />
 
-          {/* 2. Overview Stats */}
-          <OverviewSection cls={cls} isPt={isPt} L={L} />
+          {/* 2. Hit Points & Proficiencies (stat-block style) */}
+          <section id="overview" className="scroll-mt-20">
+            <StatBlockSection cls={cls} isPt={isPt} L={L} />
+          </section>
 
           {/* 3. Class Description */}
           <section id="description" className="scroll-mt-20">
-            <Card>
+            <SectionCard>
               <SectionHeader>{L.description}</SectionHeader>
+              <GoldDivider />
               <Prose
                 text={
                   isPt
                     ? cls.description_full_pt
                     : cls.description_full_en
                 }
+                dropcap
               />
-            </Card>
+            </SectionCard>
           </section>
 
           {/* 4. Quick Build */}
           {cls.quick_build_en && (
             <section id="quick-build" className="scroll-mt-20">
-              <Card>
+              <SectionCard>
                 <button
                   onClick={() => setQuickBuildOpen(!quickBuildOpen)}
                   className="w-full flex items-center justify-between group"
                 >
                   <SectionHeader as="span">{L.quickBuild}</SectionHeader>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+                    className={`w-5 h-5 text-[#D4A853]/60 transition-transform duration-200 ${
                       quickBuildOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -382,109 +435,114 @@ export function PublicClassFullDetail({
                 <div
                   className={`overflow-hidden transition-all duration-300 ${
                     quickBuildOpen
-                      ? "max-h-[2000px] opacity-100 mt-4"
+                      ? "max-h-[2000px] opacity-100 mt-2"
                       : "max-h-0 opacity-0"
                   }`}
                 >
+                  <GoldDivider />
                   <Prose
                     text={isPt ? cls.quick_build_pt : cls.quick_build_en}
                   />
                 </div>
-              </Card>
+              </SectionCard>
             </section>
           )}
 
           {/* 5. Class Table */}
           <section id="class-table" className="scroll-mt-20">
-            <Card>
-              <SectionHeader>{L.classTable}</SectionHeader>
-              <ClassProgressionTable
-                rows={cls.class_table ?? []}
-                isCaster={isCaster}
-                hasSpellSlots={hasSpellSlots ?? false}
-                maxSlotLevel={maxSlotLevel}
-                extrasColumns={extrasColumns}
-                isPt={isPt}
-                L={L}
-              />
-            </Card>
+            <SectionCard noPadding>
+              <div className="px-6 md:px-8 pt-6 md:pt-8">
+                <SectionHeader>{L.classTable}</SectionHeader>
+              </div>
+              <div className="mt-2 border-t-2 border-[#D4A853]/30">
+                <ClassProgressionTable
+                  rows={cls.class_table ?? []}
+                  isCaster={isCaster}
+                  hasSpellSlots={hasSpellSlots ?? false}
+                  maxSlotLevel={maxSlotLevel}
+                  extrasColumns={extrasColumns}
+                  isPt={isPt}
+                  L={L}
+                />
+              </div>
+            </SectionCard>
           </section>
 
           {/* 6. Class Features */}
           <section id="class-features" className="scroll-mt-20">
-            <Card>
+            <div className="mb-6">
               <SectionHeader>{L.classFeatures}</SectionHeader>
-              <div className="space-y-8 mt-6">
-                {(cls.class_features ?? []).map((feat, i) => (
-                  <FeatureBlock
-                    key={`${feat.name}-${feat.level}-${i}`}
-                    feature={feat}
-                    isPt={isPt}
-                    showDivider={i > 0}
-                  />
-                ))}
-              </div>
-            </Card>
+              <GoldDivider className="mt-2" />
+            </div>
+            <div className="space-y-4">
+              {(cls.class_features ?? []).map((feat, i) => (
+                <FeatureCard
+                  key={`${feat.name}-${feat.level}-${i}`}
+                  feature={feat}
+                  isPt={isPt}
+                  L={L}
+                />
+              ))}
+            </div>
           </section>
 
           {/* 7. Subclasses */}
           {subclasses.length > 0 && (
             <section id="subclasses" className="scroll-mt-20">
-              <Card>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                  <div>
-                    <SectionHeader as="span">
-                      {isPt ? cls.subclass_name_pt : cls.subclass_name}
-                    </SectionHeader>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {L.subclassLevel} {cls.subclass_level}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setShowSubclassFeatures(!showSubclassFeatures)
-                    }
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
-                      showSubclassFeatures
-                        ? "bg-[#D4A853]/10 border-[#D4A853]/30 text-[#D4A853]"
-                        : "bg-gray-800/60 border-white/[0.06] text-gray-400 hover:text-gray-200 hover:border-white/10"
-                    }`}
-                  >
-                    {showSubclassFeatures ? (
-                      <>
-                        <ChevronUp className="w-4 h-4" />
-                        {L.hideSubclasses}
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-4 h-4" />
-                        {L.showSubclasses}
-                      </>
-                    )}
-                  </button>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                <div>
+                  <SectionHeader>
+                    {isPt ? cls.subclass_name_pt : cls.subclass_name}
+                  </SectionHeader>
+                  <p className="text-sm text-[#9896A0] mt-1">
+                    {L.subclassLevel} {cls.subclass_level}
+                  </p>
                 </div>
+                <button
+                  onClick={() =>
+                    setShowSubclassFeatures(!showSubclassFeatures)
+                  }
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                    showSubclassFeatures
+                      ? "bg-[#D4A853]/10 border-[#D4A853]/30 text-[#D4A853]"
+                      : "bg-transparent border-[#D4A853]/30 text-[#D4A853]/70 hover:text-[#D4A853] hover:border-[#D4A853]/50 hover:bg-[#D4A853]/5"
+                  }`}
+                >
+                  {showSubclassFeatures ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      {L.hideSubclasses}
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4" />
+                      {L.showSubclasses}
+                    </>
+                  )}
+                </button>
+              </div>
 
-                <div className="grid gap-4">
-                  {subclasses.map((sub) => (
-                    <SubclassCard
-                      key={sub.id}
-                      sub={sub}
-                      classId={cls.id}
-                      isPt={isPt}
-                      showFeatures={showSubclassFeatures}
-                      L={L}
-                    />
-                  ))}
-                </div>
-              </Card>
+              <div className="grid gap-4">
+                {subclasses.map((sub) => (
+                  <SubclassCard
+                    key={sub.id}
+                    sub={sub}
+                    classId={cls.id}
+                    isPt={isPt}
+                    showFeatures={showSubclassFeatures}
+                    L={L}
+                  />
+                ))}
+              </div>
             </section>
           )}
 
           {/* 8. Starting Equipment */}
           {cls.starting_equipment_en && (
             <section id="starting-equipment" className="scroll-mt-20">
-              <Card>
+              <SectionCard>
                 <SectionHeader>{L.startingEquipment}</SectionHeader>
+                <GoldDivider />
                 <Prose
                   text={
                     isPt
@@ -492,46 +550,55 @@ export function PublicClassFullDetail({
                       : cls.starting_equipment_en
                   }
                 />
-              </Card>
+              </SectionCard>
             </section>
           )}
 
           {/* 9. Multiclassing */}
           {cls.multiclass_prerequisites && (
             <section id="multiclassing" className="scroll-mt-20">
-              <Card>
+              <SectionCard>
                 <SectionHeader>{L.multiclassing}</SectionHeader>
-                <div className="space-y-4 mt-4">
+                <GoldDivider />
+                <div className="space-y-5 mt-5">
                   <div>
-                    <h3 className="text-sm font-semibold text-[#D4A853] mb-1">
+                    <h3 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider mb-2">
                       {L.multiclassPrereqs}
                     </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                    <p className="text-[#E8E6E0]/80 text-base leading-relaxed">
                       {isPt
                         ? cls.multiclass_prerequisites_pt
                         : cls.multiclass_prerequisites}
                     </p>
                   </div>
+                  <div
+                    className="h-px"
+                    style={{
+                      background:
+                        "linear-gradient(to right, transparent, rgba(146,38,16,0.3), rgba(201,169,89,0.3), rgba(146,38,16,0.3), transparent)",
+                    }}
+                  />
                   <div>
-                    <h3 className="text-sm font-semibold text-[#D4A853] mb-1">
+                    <h3 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider mb-2">
                       {L.multiclassProf}
                     </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                    <p className="text-[#E8E6E0]/80 text-base leading-relaxed">
                       {isPt
                         ? cls.multiclass_proficiencies_pt
                         : cls.multiclass_proficiencies}
                     </p>
                   </div>
                 </div>
-              </Card>
+              </SectionCard>
             </section>
           )}
 
           {/* 10. Spellcasting */}
           {cls.spellcasting && (
             <section id="spellcasting" className="scroll-mt-20">
-              <Card>
+              <SectionCard>
                 <SectionHeader>{L.spellcastingSection}</SectionHeader>
+                <GoldDivider />
                 <Prose
                   text={
                     isPt
@@ -539,19 +606,19 @@ export function PublicClassFullDetail({
                       : cls.spellcasting.description_en
                   }
                 />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
-                  <MiniStat
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                  <PropLine
                     label={L.spellcastingAbility}
                     value={cls.spellcasting.ability}
                   />
                   {cls.spellcasting.cantrips !== undefined && (
-                    <MiniStat
+                    <PropLine
                       label={L.cantrips}
                       value={cls.spellcasting.cantrips ? L.yes : L.no}
                     />
                   )}
                   {cls.spellcasting.ritual_casting !== undefined && (
-                    <MiniStat
+                    <PropLine
                       label={L.ritualCasting}
                       value={
                         cls.spellcasting.ritual_casting ? L.yes : L.no
@@ -559,7 +626,7 @@ export function PublicClassFullDetail({
                     />
                   )}
                   {cls.spellcasting.spellcasting_focus && (
-                    <MiniStat
+                    <PropLine
                       label={L.spellcastingFocus}
                       value={
                         isPt
@@ -570,89 +637,106 @@ export function PublicClassFullDetail({
                     />
                   )}
                 </div>
-              </Card>
+              </SectionCard>
             </section>
           )}
 
           {/* 11. SRD Attribution */}
-          <p className="text-xs text-gray-600 text-center leading-relaxed px-4 pb-8">
+          <p className="text-xs text-[#9896A0]/60 text-center leading-relaxed px-4 pb-8">
             {L.srdNote}
           </p>
         </div>
 
         {/* ── Sticky TOC (desktop) ─────────────────────────────── */}
         <aside className="hidden lg:block">
-          <nav className="sticky top-20 rounded-xl border border-white/[0.06] bg-gray-900/60 p-4">
-            <h2 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider mb-3 font-[family-name:var(--font-cinzel)]">
+          <nav className="sticky top-20">
+            <h2 className="text-[11px] font-semibold text-[#D4A853] uppercase tracking-[0.15em] mb-4 font-[family-name:var(--font-cinzel)]">
               {L.toc}
             </h2>
-            <ul className="space-y-1">
-              {tocItems.map((item) => (
-                <li key={item.id}>
-                  <button
-                    onClick={() => scrollTo(item.id)}
-                    className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors ${
-                      activeSection === item.id
-                        ? "text-[#D4A853] bg-[#D4A853]/10"
-                        : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]"
-                    }`}
-                  >
-                    {item.icon}
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                </li>
-              ))}
+            <ul className="space-y-0.5 relative">
+              {/* Gold accent line */}
+              <div className="absolute left-[7px] top-0 bottom-0 w-px bg-white/[0.06]" />
+              {tocItems.map((item) => {
+                const isActive = activeSection === item.id;
+                return (
+                  <li key={item.id} className="relative">
+                    {/* Gold dot */}
+                    <div
+                      className={`absolute left-[4px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border transition-all duration-200 ${
+                        isActive
+                          ? "bg-[#D4A853] border-[#D4A853] shadow-[0_0_6px_rgba(212,168,83,0.4)]"
+                          : "bg-[#13131E] border-white/[0.15]"
+                      }`}
+                    />
+                    <button
+                      onClick={() => scrollTo(item.id)}
+                      className={`w-full text-left pl-6 pr-2 py-1.5 rounded-r-md text-[13px] transition-all duration-200 ${
+                        isActive
+                          ? "text-[#D4A853] font-medium"
+                          : "text-[#9896A0] hover:text-[#E8E6E0]"
+                      }`}
+                    >
+                      <span className="truncate block">{item.label}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </aside>
       </div>
 
-      {/* ── Mobile TOC (floating button + drawer) ──────────────── */}
+      {/* ── Mobile TOC (floating button + bottom sheet) ──────────── */}
       <div className="lg:hidden">
         <button
           onClick={() => setTocOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gray-800 border border-[#D4A853]/30 text-[#D4A853] shadow-lg shadow-black/40 hover:bg-gray-700 transition-colors"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-[#1A1A28]/90 backdrop-blur-md border border-[#D4A853]/30 text-[#D4A853] shadow-lg shadow-black/40 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all"
           aria-label={L.toc}
         >
           <ScrollText className="w-5 h-5" />
           <span className="text-sm font-medium">{L.toc}</span>
         </button>
 
-        {/* Drawer overlay */}
+        {/* Bottom sheet overlay */}
         {tocOpen && (
           <div className="fixed inset-0 z-50">
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setTocOpen(false)}
             />
-            <nav className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-white/[0.06] bg-gray-900 p-6 max-h-[60vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
+            <nav className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-[#D4A853]/20 bg-[#1A1A28]/95 backdrop-blur-md p-6 max-h-[60vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-5">
                 <h2 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider font-[family-name:var(--font-cinzel)]">
                   {L.toc}
                 </h2>
                 <button
                   onClick={() => setTocOpen(false)}
-                  className="text-gray-500 hover:text-gray-300"
+                  className="text-gray-500 hover:text-gray-300 p-1"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <ul className="space-y-1">
-                {tocItems.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => scrollTo(item.id)}
-                      className={`w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                        activeSection === item.id
-                          ? "text-[#D4A853] bg-[#D4A853]/10"
-                          : "text-gray-300 hover:bg-white/[0.04]"
-                      }`}
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </button>
-                  </li>
-                ))}
+              <ul className="space-y-0.5">
+                {tocItems.map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <li key={item.id}>
+                      <button
+                        onClick={() => scrollTo(item.id)}
+                        className={`w-full text-left flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all ${
+                          isActive
+                            ? "text-[#D4A853] bg-[#D4A853]/10 font-medium"
+                            : "text-[#E8E6E0]/70 hover:bg-white/[0.04] hover:text-[#E8E6E0]"
+                        }`}
+                      >
+                        <span className={`${isActive ? "text-[#D4A853]" : "text-[#9896A0]"}`}>
+                          {item.icon}
+                        </span>
+                        <span>{item.label}</span>
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
           </div>
@@ -664,9 +748,23 @@ export function PublicClassFullDetail({
 
 // ── Sub-components ──────────────────────────────────────────────────
 
-function Card({ children }: { children: React.ReactNode }) {
+/** Card with the stat-block texture background */
+function SectionCard({
+  children,
+  noPadding,
+}: {
+  children: React.ReactNode;
+  noPadding?: boolean;
+}) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-gray-900/60 p-6 md:p-8">
+    <div
+      className={`rounded-xl border border-white/[0.06] bg-[#1A1A28] shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_8px_rgba(146,38,16,0.1)] transition-shadow duration-200 ${
+        noPadding ? "" : "p-6 md:p-8"
+      }`}
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%231A1A28'/%3E%3Crect width='1' height='1' x='1' y='1' fill='%231e1e2a' fill-opacity='0.4'/%3E%3C/svg%3E")`,
+      }}
+    >
       {children}
     </div>
   );
@@ -679,20 +777,31 @@ function SectionHeader({
   children: React.ReactNode;
   as?: "h2" | "span";
 }) {
-  const cls =
-    "text-xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)]";
-  if (as === "span") return <span className={cls}>{children}</span>;
-  return <h2 className={cls}>{children}</h2>;
+  const className =
+    "text-xl md:text-2xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] tracking-wide";
+  if (as === "span") return <span className={className}>{children}</span>;
+  return <h2 className={className}>{children}</h2>;
 }
 
-function Prose({ text }: { text: string }) {
+/** The decorative gold/red gradient divider from 5e stat cards */
+function GoldDivider({ className: cn }: { className?: string }) {
+  return (
+    <div
+      className={`h-[2px] my-4 ${cn ?? ""}`}
+      style={{
+        background:
+          "linear-gradient(to right, transparent, #922610, #c9a959, #922610, transparent)",
+      }}
+    />
+  );
+}
+
+function Prose({ text, dropcap }: { text: string; dropcap?: boolean }) {
   if (!text) return null;
-  // Split on double newlines for paragraphs, single newlines for line breaks
   const paragraphs = text.split(/\n\n+/);
   return (
     <div className="mt-4 space-y-4 max-w-prose">
       {paragraphs.map((p, i) => {
-        // Check if this is a bullet list
         const lines = p.split("\n");
         const isList = lines.every(
           (l) => l.startsWith("- ") || l.startsWith("* ") || l.trim() === ""
@@ -700,18 +809,31 @@ function Prose({ text }: { text: string }) {
 
         if (isList) {
           return (
-            <ul key={i} className="list-disc list-inside space-y-1 text-gray-300 text-sm leading-relaxed">
+            <ul
+              key={i}
+              className="space-y-1.5 text-[#E8E6E0]/80 text-base leading-relaxed ml-4"
+            >
               {lines
                 .filter((l) => l.trim())
                 .map((l, j) => (
-                  <li key={j}>{l.replace(/^[-*]\s*/, "")}</li>
+                  <li key={j} className="flex items-start gap-2">
+                    <span className="text-[#D4A853] mt-1.5 text-xs">&#9670;</span>
+                    <span>{l.replace(/^[-*]\s*/, "")}</span>
+                  </li>
                 ))}
             </ul>
           );
         }
 
+        const isFirstParagraph = i === 0 && dropcap;
+
         return (
-          <p key={i} className="text-gray-300 text-sm leading-relaxed">
+          <p
+            key={i}
+            className={`text-[#E8E6E0]/80 text-base leading-relaxed ${
+              isFirstParagraph ? "first-letter:text-4xl first-letter:font-bold first-letter:text-[#D4A853] first-letter:float-left first-letter:mr-2 first-letter:mt-1 first-letter:font-[family-name:var(--font-cinzel)]" : ""
+            }`}
+          >
             {p.split("\n").map((line, j, arr) => (
               <span key={j}>
                 {line}
@@ -725,20 +847,21 @@ function Prose({ text }: { text: string }) {
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: string }) {
+/** Stat-block style property line */
+function PropLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-gray-800/50 border border-white/[0.04] p-3">
-      <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">
+    <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3">
+      <p className="text-[11px] text-[#D4A853] font-semibold uppercase tracking-wider mb-1">
         {label}
       </p>
-      <p className="text-sm font-semibold text-gray-200">{value}</p>
+      <p className="text-sm font-medium text-[#E8E6E0]">{value}</p>
     </div>
   );
 }
 
 function LevelBadge({ level }: { level: number }) {
   return (
-    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-[#D4A853]/15 text-[#D4A853] text-xs font-semibold tabular-nums min-w-[2rem]">
+    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#D4A853]/15 text-[#D4A853] text-sm font-bold font-mono border border-[#D4A853]/20 shrink-0">
       {level}
     </span>
   );
@@ -764,34 +887,53 @@ function HeroSection({
   L: (typeof LABELS)["en"];
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-gray-900/60 p-6 md:p-8">
-      <div className="flex items-start gap-4">
-        <span className="shrink-0 text-[#D4A853]" aria-hidden="true">
-          <SrdClassIcon iconName={cls.icon} className="w-12 h-12" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] leading-tight">
-            {displayName}
-          </h1>
-          {isPt && (
-            <p className="text-sm text-gray-500 italic mt-0.5">{cls.name}</p>
-          )}
-          <p className="text-gray-400 text-lg mt-2">{description}</p>
+    <div className="relative rounded-xl border border-white/[0.06] bg-[#1A1A28] overflow-hidden">
+      {/* Left gold accent bar */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-1"
+        style={{
+          background:
+            "linear-gradient(to bottom, #D4A853, #B8903D, #D4A853)",
+        }}
+      />
 
-          <div className="flex flex-wrap items-center gap-2 mt-4">
-            <span
-              className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.badge}`}
-            >
-              {roleLabel}
+      <div className="p-6 md:p-8 pl-8 md:pl-10">
+        <div className="flex items-start gap-5">
+          {/* Icon with subtle glow */}
+          <div className="shrink-0 relative">
+            <div className="absolute inset-0 bg-[#D4A853]/10 rounded-xl blur-xl" />
+            <span className="relative text-[#D4A853]" aria-hidden="true">
+              <SrdClassIcon iconName={cls.icon} className="w-14 h-14 md:w-16 md:h-16" />
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-800 border border-gray-700 text-sm font-mono text-[#D4A853]">
-              {cls.hit_die}
-            </span>
-            {cls.spellcaster && cls.spellcasting_ability && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-900/30 border border-indigo-500/20 text-xs text-indigo-300">
-                {L.spellcasting}: {cls.spellcasting_ability}
-              </span>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] leading-tight tracking-wide">
+              {displayName}
+            </h1>
+            {isPt && (
+              <p className="text-sm text-[#9896A0] italic mt-1">{cls.name}</p>
             )}
+            <p className="text-[#E8E6E0]/70 text-lg mt-3 leading-relaxed max-w-prose">
+              {description}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2 mt-5">
+              <span
+                className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.badge}`}
+              >
+                {roleLabel}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#13131E] border border-[#D4A853]/20 text-sm font-mono text-[#D4A853] font-bold">
+                {cls.hit_die}
+              </span>
+              {cls.spellcaster && cls.spellcasting_ability && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-900/20 border border-indigo-500/20 text-xs text-indigo-300">
+                  <Wand2 className="w-3 h-3" />
+                  {cls.spellcasting_ability}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -799,9 +941,9 @@ function HeroSection({
   );
 }
 
-// ── Overview Section ────────────────────────────────────────────────
+// ── Stat Block Section (Hit Points + Proficiencies) ─────────────────
 
-function OverviewSection({
+function StatBlockSection({
   cls,
   isPt,
   L,
@@ -811,50 +953,94 @@ function OverviewSection({
   L: (typeof LABELS)["en"];
 }) {
   return (
-    <Card>
-      <SectionHeader>{L.overview}</SectionHeader>
-
+    <SectionCard>
       {/* Hit Points block */}
       {cls.hit_points_en && (
-        <div className="mt-4 mb-5 rounded-lg bg-gray-800/50 border border-white/[0.04] p-4">
-          <h3 className="text-sm font-semibold text-[#D4A853] mb-2">{L.hitPoints}</h3>
-          <p className="text-gray-300 text-sm whitespace-pre-line">
-            {isPt ? cls.hit_points_pt : cls.hit_points_en}
-          </p>
-        </div>
+        <>
+          <h3 className="text-sm font-bold text-[#922610] uppercase tracking-wider italic">
+            {L.hitPoints}
+          </h3>
+          <div className="mt-2 space-y-1">
+            {(isPt ? cls.hit_points_pt : cls.hit_points_en)
+              .split("\n")
+              .filter((l) => l.trim())
+              .map((line, i) => {
+                const colonIdx = line.indexOf(":");
+                if (colonIdx === -1)
+                  return (
+                    <p key={i} className="text-[#E8E6E0]/80 text-sm leading-relaxed">
+                      {line}
+                    </p>
+                  );
+                const label = line.slice(0, colonIdx + 1);
+                const value = line.slice(colonIdx + 1);
+                return (
+                  <p key={i} className="text-sm leading-relaxed">
+                    <span className="font-bold text-[#E8E6E0]">{label}</span>
+                    <span className="text-[#E8E6E0]/70">{value}</span>
+                  </p>
+                );
+              })}
+          </div>
+        </>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-        <MiniStat label={L.hitDie} value={cls.hit_die} />
-        <MiniStat label={L.primaryAbility} value={cls.primary_ability} />
-        <MiniStat label={L.savingThrows} value={cls.saving_throws.join(", ")} />
-        <MiniStat
-          label={L.armorProf}
+      <GoldDivider />
+
+      {/* Proficiencies block */}
+      <h3 className="text-sm font-bold text-[#922610] uppercase tracking-wider italic">
+        {L.proficiencies}
+      </h3>
+      <div className="mt-3 space-y-2">
+        <ProfLine
+          label={L.armor}
           value={cls.armor_proficiencies === "None" ? L.none : cls.armor_proficiencies}
         />
-        <MiniStat label={L.weaponProf} value={cls.weapon_proficiencies} />
+        <ProfLine label={L.weapons} value={cls.weapon_proficiencies} />
         {cls.tool_proficiencies_en && (
-          <MiniStat
-            label={L.toolProf}
+          <ProfLine
+            label={L.tools}
             value={isPt ? cls.tool_proficiencies_pt : cls.tool_proficiencies_en}
           />
         )}
         {cls.skill_choices_en && (
-          <MiniStat
-            label={L.skillChoices}
+          <ProfLine
+            label={L.skills}
             value={isPt ? cls.skill_choices_pt : cls.skill_choices_en}
           />
         )}
-        <MiniStat
-          label={L.spellcasting}
-          value={
-            cls.spellcaster
-              ? `${L.yes} (${cls.spellcasting_ability})`
-              : L.no
-          }
-        />
+        <ProfLine label={L.saves} value={cls.saving_throws.join(", ")} />
       </div>
-    </Card>
+
+      <GoldDivider />
+
+      {/* Quick stats row */}
+      <div className="flex flex-wrap gap-x-8 gap-y-2">
+        <div>
+          <span className="font-bold text-[#E8E6E0] text-sm">{L.hitDie}: </span>
+          <span className="text-[#D4A853] font-mono font-bold text-sm">{cls.hit_die}</span>
+        </div>
+        <div>
+          <span className="font-bold text-[#E8E6E0] text-sm">{L.primaryAbility}: </span>
+          <span className="text-[#E8E6E0]/70 text-sm">{cls.primary_ability}</span>
+        </div>
+        {cls.spellcaster && (
+          <div>
+            <span className="font-bold text-[#E8E6E0] text-sm">{L.spellcasting}: </span>
+            <span className="text-[#E8E6E0]/70 text-sm">{cls.spellcasting_ability}</span>
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+}
+
+function ProfLine({ label, value }: { label: string; value: string }) {
+  return (
+    <p className="text-sm leading-relaxed">
+      <span className="font-bold text-[#D4A853]">{label}: </span>
+      <span className="text-[#E8E6E0]/70">{value}</span>
+    </p>
   );
 }
 
@@ -879,7 +1065,7 @@ function ClassProgressionTable({
 }) {
   if (rows.length === 0) {
     return (
-      <p className="text-gray-500 text-sm mt-4 italic">
+      <p className="text-[#9896A0] text-sm p-6 italic">
         No class table data available.
       </p>
     );
@@ -889,55 +1075,57 @@ function ClassProgressionTable({
   const extraKeys = Array.from(extrasColumns.keys());
 
   return (
-    <div className="mt-4 -mx-6 md:-mx-8 overflow-x-auto">
+    <div className="overflow-x-auto">
       <table className="w-full text-sm min-w-[640px]">
         <thead>
-          <tr className="bg-gray-800 text-[#D4A853] text-xs uppercase tracking-wider">
-            <th className="sticky left-0 z-10 bg-gray-800 px-3 py-2.5 text-left font-semibold">
+          <tr
+            className="text-[11px] uppercase tracking-wider"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(212,168,83,0.08), transparent)",
+            }}
+          >
+            <th className="sticky left-0 z-10 px-3 py-3 text-left font-semibold text-[#D4A853] bg-[#1A1A28]">
               {L.level}
             </th>
-            <th className="px-3 py-2.5 text-center font-semibold">
+            <th className="px-3 py-3 text-center font-semibold text-[#D4A853]">
               {L.profBonus}
             </th>
-            <th className="px-3 py-2.5 text-left font-semibold min-w-[180px]">
+            <th className="px-3 py-3 text-left font-semibold text-[#D4A853] min-w-[200px]">
               {L.features}
             </th>
-            {/* Class-specific extras */}
             {extraKeys.map((key) => (
               <th
                 key={key}
-                className="px-3 py-2.5 text-center font-semibold whitespace-nowrap"
+                className="px-3 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap"
               >
                 {extrasColumns.get(key)}
               </th>
             ))}
-            {/* Cantrips Known */}
             {isCaster &&
               rows.some((r) => r.cantrips_known !== undefined) && (
-                <th className="px-3 py-2.5 text-center font-semibold whitespace-nowrap">
+                <th className="px-3 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap">
                   {L.cantripsKnown}
                 </th>
               )}
-            {/* Spells Known */}
             {isCaster &&
               rows.some((r) => r.spells_known !== undefined) && (
-                <th className="px-3 py-2.5 text-center font-semibold whitespace-nowrap">
+                <th className="px-3 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap">
                   {L.spellsKnown}
                 </th>
               )}
-            {/* Spell Slot columns */}
             {hasSpellSlots &&
               slotHeaders.map((lvl) => (
                 <th
                   key={lvl}
-                  className="px-2 py-2.5 text-center font-semibold whitespace-nowrap"
+                  className="px-2 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap"
                 >
                   {lvl}
                 </th>
               ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.06]">
+        <tbody>
           {rows.map((row, i) => {
             const features = isPt ? row.features_pt : row.features;
             const extras = isPt ? row.extras_pt ?? row.extras : row.extras;
@@ -948,63 +1136,59 @@ function ClassProgressionTable({
                 key={row.level}
                 className={`${
                   isEven ? "bg-transparent" : "bg-white/[0.02]"
-                } hover:bg-white/[0.04] transition-colors`}
+                } hover:bg-[#D4A853]/[0.04] transition-colors border-b border-white/[0.04]`}
               >
-                <td className="sticky left-0 z-10 px-3 py-2.5 font-semibold text-gray-200 tabular-nums bg-inherit">
+                <td className="sticky left-0 z-10 px-3 py-2.5 font-bold text-[#D4A853] font-mono text-center bg-inherit">
                   {row.level}
                 </td>
-                <td className="px-3 py-2.5 text-center text-[#D4A853] font-mono text-xs">
+                <td className="px-3 py-2.5 text-center text-[#E8E6E0]/60 font-mono text-xs">
                   {row.proficiency_bonus || profBonusForLevel(row.level)}
                 </td>
-                <td className="px-3 py-2.5 text-gray-300">
+                <td className="px-3 py-2.5 text-[#E8E6E0]/80">
                   {features ? (
                     <FeatureLinks features={features} />
                   ) : (
-                    <span className="text-gray-600">&mdash;</span>
+                    <span className="text-white/10">&mdash;</span>
                   )}
                 </td>
-                {/* Extras */}
                 {extraKeys.map((key) => (
                   <td
                     key={key}
-                    className="px-3 py-2.5 text-center text-gray-300 tabular-nums"
+                    className="px-3 py-2.5 text-center text-[#E8E6E0]/70 font-mono tabular-nums"
                   >
                     {extras?.[key] || (
-                      <span className="text-gray-600">&mdash;</span>
+                      <span className="text-white/10">&mdash;</span>
                     )}
                   </td>
                 ))}
-                {/* Cantrips Known */}
                 {isCaster &&
                   rows.some((r) => r.cantrips_known !== undefined) && (
-                    <td className="px-3 py-2.5 text-center text-gray-300 tabular-nums">
+                    <td className="px-3 py-2.5 text-center text-[#E8E6E0]/70 font-mono tabular-nums">
                       {row.cantrips_known ?? (
-                        <span className="text-gray-600">&mdash;</span>
+                        <span className="text-white/10">&mdash;</span>
                       )}
                     </td>
                   )}
-                {/* Spells Known */}
                 {isCaster &&
                   rows.some((r) => r.spells_known !== undefined) && (
-                    <td className="px-3 py-2.5 text-center text-gray-300 tabular-nums">
+                    <td className="px-3 py-2.5 text-center text-[#E8E6E0]/70 font-mono tabular-nums">
                       {row.spells_known ?? (
-                        <span className="text-gray-600">&mdash;</span>
+                        <span className="text-white/10">&mdash;</span>
                       )}
                     </td>
                   )}
-                {/* Spell Slots */}
                 {hasSpellSlots &&
                   slotHeaders.map((lvl) => {
                     const val = row.spell_slots?.[lvl];
                     return (
                       <td
                         key={lvl}
-                        className="px-2 py-2.5 text-center tabular-nums text-gray-300"
+                        className="px-2 py-2.5 text-center font-mono tabular-nums text-[#E8E6E0]/70"
                       >
                         {val ? (
                           val
                         ) : (
-                          <span className="text-gray-600">&mdash;</span>
+                          <span className="text-white/10">&mdash;</span>
                         )}
                       </td>
                     );
@@ -1038,7 +1222,7 @@ function FeatureLinks({ features }: { features: string }) {
             {i > 0 && ", "}
             <a
               href={`#feature-${slug}`}
-              className="text-gray-300 hover:text-[#D4A853] underline decoration-dotted underline-offset-2 transition-colors"
+              className="text-[#E8E6E0]/80 hover:text-[#D4A853] underline decoration-dotted decoration-[#D4A853]/30 underline-offset-2 transition-colors"
             >
               {feat}
             </a>
@@ -1049,37 +1233,83 @@ function FeatureLinks({ features }: { features: string }) {
   );
 }
 
-// ── Feature Block ───────────────────────────────────────────────────
+// ── Feature Card ────────────────────────────────────────────────────
 
-function FeatureBlock({
+function FeatureCard({
   feature,
   isPt,
-  showDivider,
+  L,
 }: {
   feature: ClassFeature;
   isPt: boolean;
-  showDivider: boolean;
+  L: (typeof LABELS)["en"];
 }) {
   const name = isPt ? feature.name_pt : feature.name;
   const desc = isPt ? feature.description_pt : feature.description_en;
   const slug = slugify(feature.name);
+  const isLong = desc.length > 500;
+  const [expanded, setExpanded] = useState(!isLong);
 
   return (
-    <div id={`feature-${slug}`} className="scroll-mt-20">
-      {showDivider && (
-        <div className="border-t border-white/[0.06] mb-8" />
-      )}
-      <div className="flex items-start gap-3">
-        <LevelBadge level={feature.level} />
-        <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-bold text-gray-100 font-[family-name:var(--font-cinzel)]">
-            {name}
-          </h3>
-          {isPt && feature.name !== feature.name_pt && (
-            <p className="text-xs text-gray-500 italic">{feature.name}</p>
-          )}
-          <Prose text={desc} />
+    <div
+      id={`feature-${slug}`}
+      className="scroll-mt-20 rounded-lg border border-white/[0.04] bg-[#1A1A28]/80 hover:border-white/[0.08] transition-all duration-200 overflow-hidden"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%231A1A28'/%3E%3Crect width='1' height='1' x='1' y='1' fill='%231e1e2a' fill-opacity='0.3'/%3E%3C/svg%3E")`,
+      }}
+    >
+      <div className="p-5 md:p-6">
+        <div className="flex items-start gap-3">
+          <LevelBadge level={feature.level} />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold text-[#E8C87A] font-[family-name:var(--font-cinzel)] leading-tight">
+              {name}
+            </h3>
+            {isPt && feature.name !== feature.name_pt && (
+              <p className="text-xs text-[#9896A0] italic mt-0.5">
+                {feature.name}
+              </p>
+            )}
+          </div>
         </div>
+
+        {/* Thin divider */}
+        <div
+          className="h-px mt-3 mb-3"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, rgba(146,38,16,0.2), rgba(201,169,89,0.2), rgba(146,38,16,0.2), transparent)",
+          }}
+        />
+
+        {/* Description with collapse */}
+        <div
+          className={`relative ${
+            !expanded ? "max-h-[120px] overflow-hidden" : ""
+          }`}
+        >
+          <Prose text={desc} />
+          {!expanded && (
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#1A1A28] to-transparent" />
+          )}
+        </div>
+
+        {isLong && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-2 text-xs font-medium text-[#D4A853] hover:text-[#E8C87A] transition-colors flex items-center gap-1"
+          >
+            {expanded ? (
+              <>
+                <ChevronUp className="w-3 h-3" /> {L.showLess}
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-3 h-3" /> {L.showMore}
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -1105,65 +1335,81 @@ function SubclassCard({
 
   return (
     <div
-      className={`rounded-xl border transition-colors duration-200 ${
+      className={`relative rounded-xl border transition-all duration-200 overflow-hidden ${
         sub.is_srd
-          ? "border-[#D4A853]/20 bg-gradient-to-r from-[#D4A853]/[0.04] to-gray-900/60"
-          : "border-white/[0.06] bg-gray-900/40"
-      } p-5 md:p-6`}
+          ? "border-[#D4A853]/20 hover:border-[#D4A853]/30"
+          : "border-white/[0.06] hover:border-white/[0.1]"
+      } bg-[#1A1A28]`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-bold text-gray-100 font-[family-name:var(--font-cinzel)]">
-              {name}
-            </h3>
-            {sub.is_srd && (
-              <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4A853]/15 text-[#D4A853] border border-[#D4A853]/20">
-                {L.srdSubclass}
-              </span>
+      {/* Gold left accent */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-1"
+        style={{
+          background: sub.is_srd
+            ? "linear-gradient(to bottom, #D4A853, #B8903D)"
+            : "linear-gradient(to bottom, rgba(255,255,255,0.1), transparent)",
+        }}
+      />
+
+      <div className="p-5 md:p-6 pl-6 md:pl-8">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-lg font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)]">
+                {name}
+              </h3>
+              {sub.is_srd && (
+                <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4A853]/15 text-[#D4A853] border border-[#D4A853]/20">
+                  {L.srdSubclass}
+                </span>
+              )}
+              {sub.source && (
+                <span className="text-[10px] text-[#9896A0] uppercase tracking-wide">
+                  {sub.source}
+                </span>
+              )}
+            </div>
+            {isPt && sub.name !== sub.name_pt && (
+              <p className="text-xs text-[#9896A0] italic mt-0.5">{sub.name}</p>
             )}
           </div>
-          {isPt && sub.name !== sub.name_pt && (
-            <p className="text-xs text-gray-500 italic mt-0.5">{sub.name}</p>
-          )}
-          {sub.source && (
-            <p className="text-xs text-gray-600 mt-0.5">{sub.source}</p>
+          <Link
+            href={`/classes/${classId}/subclasses/${sub.id}`}
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#D4A853] border border-[#D4A853]/30 rounded-md hover:bg-[#D4A853]/10 hover:border-[#D4A853]/50 transition-all whitespace-nowrap"
+          >
+            {L.viewSubclass}
+            <ChevronRight className="w-3 h-3" />
+          </Link>
+        </div>
+
+        {desc && (
+          <p className="text-[#E8E6E0]/60 text-sm mt-3 leading-relaxed line-clamp-3">
+            {desc}
+          </p>
+        )}
+
+        {/* Expandable features */}
+        <div
+          className={`overflow-hidden transition-all duration-300 ${
+            showFeatures && sub.features?.length > 0
+              ? "max-h-[5000px] opacity-100 mt-4"
+              : "max-h-0 opacity-0"
+          }`}
+        >
+          {sub.features?.length > 0 && (
+            <div className="pt-4 space-y-4">
+              <GoldDivider />
+              {sub.features.map((feat, i) => (
+                <FeatureCard
+                  key={`${feat.name}-${feat.level}-${i}`}
+                  feature={feat}
+                  isPt={isPt}
+                  L={L}
+                />
+              ))}
+            </div>
           )}
         </div>
-        <Link
-          href={`/classes/${classId}/subclasses/${sub.id}`}
-          className="shrink-0 text-xs text-gray-500 hover:text-[#D4A853] underline decoration-dotted underline-offset-2 transition-colors whitespace-nowrap"
-        >
-          {L.viewSubclass} <ChevronRight className="w-3 h-3 inline" />
-        </Link>
-      </div>
-
-      {desc && (
-        <p className="text-gray-400 text-sm mt-2 leading-relaxed line-clamp-3">
-          {desc}
-        </p>
-      )}
-
-      {/* Expandable features */}
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          showFeatures && sub.features?.length > 0
-            ? "max-h-[5000px] opacity-100 mt-4"
-            : "max-h-0 opacity-0"
-        }`}
-      >
-        {sub.features?.length > 0 && (
-          <div className="border-t border-white/[0.06] pt-4 space-y-6">
-            {sub.features.map((feat, i) => (
-              <FeatureBlock
-                key={`${feat.name}-${feat.level}-${i}`}
-                feature={feat}
-                isPt={isPt}
-                showDivider={i > 0}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
