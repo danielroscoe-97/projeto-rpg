@@ -54,4 +54,4 @@ const handler: Parameters<typeof withRateLimit>[0] = async function (
   return NextResponse.json({ dm_last_seen_at: sessionResult.data.dm_last_seen_at });
 };
 
-export const GET = withRateLimit(handler, { max: 120, window: "1 m", skipForAuthenticated: true });
+export const GET = withRateLimit(handler, { max: 120, window: "1 m" });
