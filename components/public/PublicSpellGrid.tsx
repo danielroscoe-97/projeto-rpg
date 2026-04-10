@@ -204,7 +204,8 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
 
   const levelKeys = Array.from(byLevel.keys()).sort((a, b) => a - b);
   const hasFilters = !!(query || editionFilter || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
-  const hasChipFilters = !!(editionFilter || levelFilter !== null || schoolFilter || classFilter || concFilter || ritualFilter);
+  const activeFilterCount = (editionFilter ? 1 : 0) + (levelFilter !== null ? 1 : 0) + (schoolFilter ? 1 : 0) + (classFilter ? 1 : 0) + (concFilter ? 1 : 0) + (ritualFilter ? 1 : 0);
+  const hasChipFilters = activeFilterCount > 0;
 
   // Smart hover positioning — flip popover above when near bottom of viewport
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -250,7 +251,9 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
             </svg>
             {filtersLabel}
             {hasChipFilters && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#D4A853] border-2 border-gray-800" />
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#D4A853] text-gray-950 text-[10px] font-bold">
+                {activeFilterCount}
+              </span>
             )}
           </button>
         </div>
@@ -403,7 +406,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                 onMouseLeave={handleMouseLeave}
               >
                 <Link href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
-                  className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-[#D4A853]/20 transition-all group"
+                  className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
                 >
                   <span className="flex-1 min-w-0 flex flex-col">
                     <span className="flex items-center gap-1.5">
