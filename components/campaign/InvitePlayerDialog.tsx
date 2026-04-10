@@ -52,6 +52,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
   const [linkLoading, setLinkLoading] = useState(false);
   const [linkError, setLinkError] = useState(false);
   const [confirmRenew, setConfirmRenew] = useState(false);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
 
   // ----- Via Email state -----
   const [email, setEmail] = useState("");
@@ -73,6 +74,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
       const { data } = await res.json();
       setLinkCode(data.code);
       setLinkActive(data.is_active);
+      setExpiresAt(data.expires_at ?? null);
     } catch (err) {
       console.error("[InvitePlayerDialog] loadJoinLink failed:", err);
       setLinkError(true);
@@ -119,6 +121,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
         const { data } = await res.json();
         setLinkCode(data.code);
         setLinkActive(true);
+        setExpiresAt(data.expires_at ?? null);
         toast.success("Link renovado!");
       }
     } catch (err) {
@@ -250,6 +253,18 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
                     <Copy className="w-4 h-4" />
                   </Button>
                 </div>
+
+                {/* Expiration info */}
+                {expiresAt && (
+                  <p className="text-xs text-muted-foreground">
+                    {(() => {
+                      const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86400000);
+                      if (days <= 0) return t("invite_link_expired");
+                      if (days === 1) return t("invite_link_expires_tomorrow");
+                      return t("invite_link_expires_in", { days });
+                    })()}
+                  </p>
+                )}
 
                 {/* Active toggle */}
                 <div className="flex items-center justify-between">

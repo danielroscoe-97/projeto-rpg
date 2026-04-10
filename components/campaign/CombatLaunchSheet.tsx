@@ -20,6 +20,9 @@ interface CombatLaunchSheetProps {
   campaignName: string;
   playerEmails?: string[];
   activeSessionId?: string | null;
+  /** If there's a planned session, show "Start Session" as primary option */
+  plannedSessionName?: string | null;
+  plannedSessionId?: string | null;
   children?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -30,6 +33,8 @@ export function CombatLaunchSheet({
   campaignName,
   playerEmails = [],
   activeSessionId,
+  plannedSessionName,
+  plannedSessionId,
   children,
   open: controlledOpen,
   onOpenChange,
@@ -126,6 +131,26 @@ export function CombatLaunchSheet({
         {/* Menu principal */}
         {view === "menu" && (
           <div className="grid gap-2">
+            {/* Start Planned Session — primary option when available */}
+            {plannedSessionId && plannedSessionName && (
+              <button
+                type="button"
+                onClick={() => {
+                  router.push(`/app/session/new?campaign=${campaignId}&session=${plannedSessionId}`);
+                  setOpen(false);
+                }}
+                className="flex items-center gap-3 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-left min-h-[56px]"
+              >
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-400/15">
+                  <Swords className="w-5 h-5 text-amber-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-amber-300">{t("start_session_combat", { name: plannedSessionName })}</p>
+                  <p className="text-xs text-muted-foreground">{t("start_session_combat_desc")}</p>
+                </div>
+              </button>
+            )}
+
             {/* Novo Combate */}
             <button
               type="button"
@@ -158,21 +183,6 @@ export function CombatLaunchSheet({
               </button>
             )}
 
-            {/* Combate Rápido */}
-            <button
-              type="button"
-              onClick={handleQuickCombat}
-              className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.08] hover:bg-white/[0.04] transition-colors text-left min-h-[56px]"
-            >
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-400/10">
-                <Zap className="w-5 h-5 text-green-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">{t("quick_combat")}</p>
-                <p className="text-xs text-muted-foreground">{t("quick_combat_desc")}</p>
-              </div>
-            </button>
-
             {/* Carregar Preset de Combate */}
             <button
               type="button"
@@ -185,6 +195,21 @@ export function CombatLaunchSheet({
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">{t("load_preset")}</p>
                 <p className="text-xs text-muted-foreground">{t("load_preset_desc")}</p>
+              </div>
+            </button>
+
+            {/* Combate Rápido */}
+            <button
+              type="button"
+              onClick={handleQuickCombat}
+              className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.08] hover:bg-white/[0.04] transition-colors text-left min-h-[56px]"
+            >
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-400/10">
+                <Zap className="w-5 h-5 text-green-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">{t("quick_combat")}</p>
+                <p className="text-xs text-muted-foreground">{t("quick_combat_desc")}</p>
               </div>
             </button>
           </div>

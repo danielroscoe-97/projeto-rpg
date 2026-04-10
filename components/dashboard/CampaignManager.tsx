@@ -5,22 +5,10 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Loader2, MoreVertical, Swords, FileText, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { Loader2, MoreVertical, Swords, FileText, Pencil, Trash2, Archive, RotateCcw, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CampaignCreationWizard } from "@/components/campaign/CampaignCreationWizard";
+import { CampaignArchiveDialog } from "@/components/campaign/CampaignArchiveDialog";
 import { CampaignHealthBadge } from "@/components/campaign/CampaignHealthBadge";
 import { calculateCampaignHealth } from "@/lib/utils/campaign-health";
 
@@ -41,6 +30,7 @@ export interface CampaignWithCount {
   note_count?: number;
   npc_count?: number;
   last_session_date?: string | null;
+  is_archived?: boolean;
 }
 
 interface Props {
@@ -72,7 +62,12 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<CampaignWithCount | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
+  const [archiveTarget, setArchiveTarget] = useState<{ campaign: CampaignWithCount; mode: "archive" | "restore" | "delete" } | null>(null);
+
+  const activeCampaigns = campaigns.filter((c) => !c.is_archived);
+  const archivedCampaigns = campaigns.filter((c) => c.is_archived);
+  const visibleCampaigns = showArchived ? campaigns : activeCampaigns;
 
   const supabase = createClient();
 
@@ -117,31 +112,6 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
     }
   };
 
-  // ── Delete ─────────────────────────────────────────────────────────────────
-
-  const handleDelete = async (campaignId: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const { error: dbError } = await supabase
-        .from("campaigns")
-        .delete()
-        .eq("id", campaignId)
-        .eq("owner_id", userId);
-
-      if (dbError)
-        throw new Error(t("campaigns_delete_error"));
-
-      setCampaigns((prev) => prev.filter((c) => c.id !== campaignId));
-      setDeleteTarget(null);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t("campaigns_delete_error")
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -150,14 +120,27 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">{t("campaigns_title")}</h2>
-        <Button
-          size="sm"
-          variant="gold"
-          disabled={isLoading}
-          onClick={() => setWizardOpen(true)}
-        >
-          {t("campaigns_new")}
-        </Button>
+        <div className="flex items-center gap-2">
+          {archivedCampaigns.length > 0 && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs text-muted-foreground hover:text-foreground gap-1.5"
+              onClick={() => setShowArchived((v) => !v)}
+            >
+              {showArchived ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              {showArchived ? t("campaigns_hide_archived") : t("campaigns_show_archived", { count: archivedCampaigns.length })}
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="gold"
+            disabled={isLoading}
+            onClick={() => setWizardOpen(true)}
+          >
+            {t("campaigns_new")}
+          </Button>
+        </div>
       </div>
 
       {/* Error */}
@@ -168,23 +151,37 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
       )}
 
       {/* Empty state */}
-      {campaigns.length === 0 && (
+      {visibleCampaigns.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-12 text-center">
           <Image src="/art/icons/pet-cat.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
-          <p className="text-muted-foreground text-sm">{t("campaigns_empty")}</p>
-          <Button
-            variant="gold"
-            className="mt-2 min-h-[44px]"
-            onClick={() => setWizardOpen(true)}
-          >
-            {t("campaigns_new")}
-          </Button>
+          <p className="text-muted-foreground text-sm">
+            {archivedCampaigns.length > 0 && !showArchived
+              ? t("campaigns_all_archived")
+              : t("campaigns_empty")}
+          </p>
+          {archivedCampaigns.length > 0 && !showArchived ? (
+            <Button
+              variant="outline"
+              className="mt-2 min-h-[44px]"
+              onClick={() => setShowArchived(true)}
+            >
+              {t("campaigns_show_archived", { count: archivedCampaigns.length })}
+            </Button>
+          ) : (
+            <Button
+              variant="gold"
+              className="mt-2 min-h-[44px]"
+              onClick={() => setWizardOpen(true)}
+            >
+              {t("campaigns_new")}
+            </Button>
+          )}
         </div>
       )}
 
       {/* Campaign Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {campaigns.map((campaign, index) => (
+        {visibleCampaigns.map((campaign, index) => (
           <div key={campaign.id} className="relative">
             {editingId === campaign.id ? (
               /* Edit form card */
@@ -234,7 +231,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                 href={`/app/campaigns/${campaign.id}`}
                 className="group block"
               >
-                <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] h-full">
+                <div className={`bg-card border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] h-full ${campaign.is_archived ? "opacity-50" : ""}`}>
                   {/* Campaign cover */}
                   <div className="h-28 relative overflow-hidden">
                     <Image
@@ -317,7 +314,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                             <MoreVertical className="h-3.5 w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuContent align="end" className="w-44">
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
@@ -329,11 +326,32 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                             <Pencil className="h-3.5 w-3.5 mr-2" />
                             {tc("edit")}
                           </DropdownMenuItem>
+                          {campaign.is_archived ? (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setArchiveTarget({ campaign, mode: "restore" });
+                              }}
+                            >
+                              <RotateCcw className="h-3.5 w-3.5 mr-2" />
+                              {t("campaigns_restore")}
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setArchiveTarget({ campaign, mode: "archive" });
+                              }}
+                            >
+                              <Archive className="h-3.5 w-3.5 mr-2" />
+                              {t("campaigns_archive")}
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem
                             className="text-red-400 focus:text-red-400"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setDeleteTarget(campaign);
+                              setArchiveTarget({ campaign, mode: "delete" });
                             }}
                           >
                             <Trash2 className="h-3.5 w-3.5 mr-2" />
@@ -350,42 +368,29 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
         ))}
       </div>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">
-              {t("campaigns_delete")}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
-              {t("campaigns_delete_confirm")}{" "}
-              <span className="text-foreground font-medium">
-                {deleteTarget?.name}
-              </span>
-              {t("campaigns_delete_confirm_suffix")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="border-border text-muted-foreground hover:text-foreground bg-transparent hover:bg-white/[0.1]">
-              {tc("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-foreground"
-              disabled={isLoading}
-              onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("campaigns_delete_button")}
-                </>
-              ) : (
-                t("campaigns_delete_button")
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Archive / Restore / Delete Dialog */}
+      {archiveTarget && (
+        <CampaignArchiveDialog
+          campaignId={archiveTarget.campaign.id}
+          campaignName={archiveTarget.campaign.name}
+          sessionCount={archiveTarget.campaign.session_count}
+          encounterCount={archiveTarget.campaign.encounter_count}
+          noteCount={archiveTarget.campaign.note_count}
+          mode={archiveTarget.mode}
+          open={!!archiveTarget}
+          onOpenChange={(open) => { if (!open) setArchiveTarget(null); }}
+          onComplete={() => {
+            if (archiveTarget.mode === "delete") {
+              setCampaigns((prev) => prev.filter((c) => c.id !== archiveTarget.campaign.id));
+            } else if (archiveTarget.mode === "archive") {
+              setCampaigns((prev) => prev.map((c) => c.id === archiveTarget.campaign.id ? { ...c, is_archived: true } : c));
+            } else {
+              setCampaigns((prev) => prev.map((c) => c.id === archiveTarget.campaign.id ? { ...c, is_archived: false } : c));
+            }
+            setArchiveTarget(null);
+          }}
+        />
+      )}
 
       {/* Campaign Creation Wizard */}
       <CampaignCreationWizard

@@ -70,7 +70,7 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       if (message === "Campanha cheia") {
-        toast.error("Esta campanha está cheia.");
+        toast.error(t("campaign_full"));
       } else {
         toast.error(t("invite_error"));
         captureError(err, { component: "JoinCampaignClient", action: "joinCampaign", category: "network" });

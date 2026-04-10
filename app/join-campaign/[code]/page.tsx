@@ -17,7 +17,7 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
   // Validate join code (service client — join_code is a secret)
   const { data: campaign } = await service
     .from("campaigns")
-    .select("id, name, owner_id, join_code_active, users!campaigns_owner_id_fkey(display_name, email)")
+    .select("id, name, owner_id, join_code_active, max_players, users!campaigns_owner_id_fkey(display_name, email)")
     .eq("join_code", code)
     .maybeSingle();
 
@@ -27,6 +27,33 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
 
   if (!campaign.join_code_active) {
     return <ErrorPage message="Este link foi desativado pelo Mestre." />;
+  }
+
+  // Check join code expiration
+  const { data: settingsData } = await service
+    .from("campaign_settings")
+    .select("join_code_expires_at")
+    .eq("campaign_id", campaign.id)
+    .maybeSingle();
+
+  if (settingsData?.join_code_expires_at) {
+    const expiresAt = new Date(settingsData.join_code_expires_at);
+    if (expiresAt < new Date()) {
+      return <ErrorPage message="Este link expirou. Peça um novo ao Mestre." />;
+    }
+  }
+
+  // Check max_players capacity
+  if (campaign.max_players !== null) {
+    const { count: memberCount } = await service
+      .from("campaign_members")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaign.id)
+      .eq("status", "active");
+
+    if ((memberCount ?? 0) >= campaign.max_players) {
+      return <ErrorPage message="Esta campanha está cheia. Peça ao Mestre para aumentar o limite de jogadores." />;
+    }
   }
 
   // Check if user is authenticated

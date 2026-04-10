@@ -13,10 +13,10 @@ function generateJoinCode(): string {
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+const DEFAULT_EXPIRY_DAYS = 30;
+
 async function getAuthenticatedOwner(campaignId: string) {
   const supabase = await createClient();
-  // Use getUser() to validate session — the middleware already refreshed tokens
-  // via getClaims(), so this should have a valid access token.
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (!user) {
     captureError(authError ?? new Error("No user in session"), {
@@ -69,11 +69,28 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
       if (updateError) throw updateError;
     }
 
+    // Fetch member count + expiration in parallel
+    const [{ count: currentPlayers }, { data: settingsRow }] = await Promise.all([
+      supabase
+        .from("campaign_members")
+        .select("id", { count: "exact", head: true })
+        .eq("campaign_id", campaignId)
+        .eq("status", "active"),
+      supabase
+        .from("campaign_settings")
+        .select("join_code_expires_at")
+        .eq("campaign_id", campaignId)
+        .maybeSingle(),
+    ]);
+
     return NextResponse.json({
       data: {
         code: join_code,
         is_active: join_code_active,
         link: `${BASE_URL}/join-campaign/${join_code}`,
+        current_players: currentPlayers ?? 0,
+        max_players: campaign!.max_players,
+        expires_at: settingsRow?.join_code_expires_at ?? null,
       },
     });
   } catch (err) {
@@ -117,17 +134,29 @@ export async function POST(_req: NextRequest, { params }: RouteContext) {
 
     const { supabase } = result;
     const join_code = generateJoinCode();
+    const expires_at = new Date(Date.now() + DEFAULT_EXPIRY_DAYS * 86400000).toISOString();
 
-    const { error: updateError } = await supabase
-      .from("campaigns")
-      .update({ join_code, join_code_active: true })
-      .eq("id", campaignId);
+    // Update join code + set new expiration
+    const [{ error: updateError }, { error: settingsError }] = await Promise.all([
+      supabase
+        .from("campaigns")
+        .update({ join_code, join_code_active: true })
+        .eq("id", campaignId),
+      supabase
+        .from("campaign_settings")
+        .upsert(
+          { campaign_id: campaignId, join_code_expires_at: expires_at },
+          { onConflict: "campaign_id" },
+        ),
+    ]);
     if (updateError) throw updateError;
+    if (settingsError) throw settingsError;
 
     return NextResponse.json({
       data: {
         code: join_code,
         link: `${BASE_URL}/join-campaign/${join_code}`,
+        expires_at,
       },
     });
   } catch (err) {

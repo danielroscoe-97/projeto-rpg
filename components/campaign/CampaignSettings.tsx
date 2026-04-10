@@ -33,6 +33,8 @@ interface CampaignSettingsProps {
   isOwner: boolean;
 }
 
+type ExpiryOption = "7" | "30" | "90" | "never";
+
 interface SettingsData {
   name: string;
   description: string;
@@ -40,6 +42,7 @@ interface SettingsData {
   party_level: number;
   game_system: string;
   max_players: number;
+  join_expiry: ExpiryOption;
 }
 
 const DEFAULT_SETTINGS: SettingsData = {
@@ -49,6 +52,7 @@ const DEFAULT_SETTINGS: SettingsData = {
   party_level: 1,
   game_system: "5e",
   max_players: 10,
+  join_expiry: "30",
 };
 
 const CAMPAIGN_TYPES: CampaignType[] = ["long_campaign", "oneshot", "dungeon_crawl"];
@@ -77,6 +81,7 @@ export function CampaignSettings({
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSavedExpiryRef = useRef<ExpiryOption | null>(null);
 
   // ── Load settings on mount ─────────────────────────────────────────────
 
@@ -93,7 +98,7 @@ export function CampaignSettings({
         // Fetch campaign_settings (may not exist for old campaigns)
         const { data: campaignSettings } = await supabase
           .from("campaign_settings")
-          .select("theme, party_level, game_system, max_players")
+          .select("theme, party_level, game_system, max_players, join_code_expires_at")
           .eq("campaign_id", campaignId)
           .maybeSingle();
 
@@ -108,6 +113,20 @@ export function CampaignSettings({
           });
         }
 
+        // Derive expiry option from saved date (approximate to nearest option)
+        let expiryOption: ExpiryOption = "30";
+        if (campaignSettings?.join_code_expires_at) {
+          const daysLeft = Math.round(
+            (new Date(campaignSettings.join_code_expires_at).getTime() - Date.now()) / 86400000,
+          );
+          if (daysLeft <= 10) expiryOption = "7";
+          else if (daysLeft <= 60) expiryOption = "30";
+          else expiryOption = "90";
+        } else {
+          expiryOption = "never";
+        }
+
+        lastSavedExpiryRef.current = expiryOption;
         setSettings({
           name: campaign?.name ?? campaignName,
           description: campaign?.description ?? "",
@@ -115,6 +134,7 @@ export function CampaignSettings({
           party_level: campaignSettings?.party_level ?? 1,
           game_system: campaignSettings?.game_system ?? "5e",
           max_players: campaignSettings?.max_players ?? 10,
+          join_expiry: expiryOption,
         });
       } catch {
         // Fall back to defaults with campaign name
@@ -151,19 +171,27 @@ export function CampaignSettings({
 
         if (campaignError) throw campaignError;
 
+        // Only recompute expiry date when the expiry option actually changed
+        const expiryChanged = lastSavedExpiryRef.current !== data.join_expiry;
+        const settingsPayload: Record<string, unknown> = {
+          campaign_id: campaignId,
+          theme: data.theme,
+          party_level: data.party_level,
+          game_system: data.game_system,
+          max_players: data.max_players,
+        };
+
+        if (expiryChanged) {
+          settingsPayload.join_code_expires_at = data.join_expiry === "never"
+            ? null
+            : new Date(Date.now() + Number(data.join_expiry) * 86400000).toISOString();
+          lastSavedExpiryRef.current = data.join_expiry;
+        }
+
         // Update campaign_settings
         const { error: settingsError } = await supabase
           .from("campaign_settings")
-          .upsert(
-            {
-              campaign_id: campaignId,
-              theme: data.theme,
-              party_level: data.party_level,
-              game_system: data.game_system,
-              max_players: data.max_players,
-            },
-            { onConflict: "campaign_id" },
-          );
+          .upsert(settingsPayload, { onConflict: "campaign_id" });
 
         if (settingsError) throw settingsError;
 
@@ -386,6 +414,24 @@ export function CampaignSettings({
             }}
             className="bg-background border-border text-foreground min-h-[44px] w-24"
           />
+        </div>
+
+        {/* Join Code Expiration */}
+        <div className="space-y-1.5">
+          <Label htmlFor="join-expiry" className="text-sm text-foreground">
+            {t("expiry_label")}
+          </Label>
+          <select
+            id="join-expiry"
+            value={settings.join_expiry}
+            onChange={(e) => handleChange({ join_expiry: e.target.value as ExpiryOption })}
+            className="flex h-11 min-h-[44px] w-full max-w-xs rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <option value="7">{t("expiry_7d")}</option>
+            <option value="30">{t("expiry_30d")}</option>
+            <option value="90">{t("expiry_90d")}</option>
+            <option value="never">{t("expiry_never")}</option>
+          </select>
         </div>
       </section>
 
