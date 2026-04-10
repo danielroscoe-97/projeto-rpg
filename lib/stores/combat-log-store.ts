@@ -22,6 +22,8 @@ export interface CombatLogEntry {
     isNat20?: boolean;
     conditionName?: string;
     conditionAction?: "applied" | "removed";
+    /** Death save result — "success" or "failure". */
+    saveResult?: "success" | "failure";
   };
 }
 

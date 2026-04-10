@@ -192,10 +192,16 @@ export function CombatSessionClient({
       const qualityFlags = computeDataQualityFlags(snapshotCombatants, preloadedPlayers);
       const combatStarted = useCombatStore.getState().combatStartedAt;
       // Load start-of-combat snapshot for difficulty analysis delta
+      // CR: Validate encounter_id to prevent stale snapshot from a previous combat
       let combatStartSnap: CombatStartSnapshot | undefined;
       try {
         const raw = localStorage.getItem("pocketdm_combat_start_snapshot");
-        if (raw) combatStartSnap = JSON.parse(raw);
+        if (raw) {
+          const parsed = JSON.parse(raw) as CombatStartSnapshot;
+          if (!parsed.encounter_id || parsed.encounter_id === encIdForSnapshot) {
+            combatStartSnap = parsed;
+          }
+        }
       } catch { /* ignore */ }
 
       persistEncounterSnapshot(encIdForSnapshot, {
@@ -571,6 +577,7 @@ export function CombatSessionClient({
         // Capture start-of-combat snapshot for difficulty analysis (HP delta, etc.)
         try {
           const startSnapshot: CombatStartSnapshot = {
+            encounter_id: store.encounter_id!,
             combatants: sorted.map((c) => ({
               id: c.id, name: c.name, is_player: c.is_player,
               max_hp: c.max_hp, current_hp: c.current_hp, ac: c.ac,
@@ -1169,7 +1176,7 @@ export function CombatSessionClient({
           description: `Death save: ${result}`,
           details: {
             targetId: combatant_id,
-            rollMode: result, // "success" or "failure"
+            saveResult: result,
           },
         });
       }

@@ -42,6 +42,8 @@ export type CombatResult = "victory" | "tpk" | "fled" | "dm_ended";
 
 /** Lightweight snapshot of all combatants at combat start — for difficulty analysis delta. */
 export interface CombatStartSnapshot {
+  /** Encounter this snapshot belongs to — used to validate against stale localStorage data. */
+  encounter_id?: string;
   combatants: {
     id: string;
     name: string;
