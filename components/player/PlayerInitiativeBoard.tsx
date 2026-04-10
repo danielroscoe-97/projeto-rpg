@@ -64,20 +64,11 @@ interface PlayerCombatant {
 }
 
 
-/** Abbreviated tier labels for mobile */
-const TIER_SHORT: Record<string, string> = {
-  FULL: "FULL",
-  LIGHT: "LGT",
-  MODERATE: "MOD",
-  HEAVY: "HVY",
-  CRITICAL: "CRT",
-};
 
 function HpStatusBadge({ status, percentage }: { status: string; percentage?: number }) {
   const t = useTranslations("player");
   const style = (HP_STATUS_STYLES as Record<string, (typeof HP_STATUS_STYLES)[keyof typeof HP_STATUS_STYLES]>)[status] ?? HP_STATUS_STYLES.LIGHT;
   const label = t(`hp_status_${status.toLowerCase()}` as Parameters<typeof t>[0]);
-  const shortLabel = TIER_SHORT[status] ?? status.slice(0, 3);
 
   return (
     <span
@@ -95,8 +86,7 @@ function HpStatusBadge({ status, percentage }: { status: string; percentage?: nu
       ) : (
         <span aria-hidden="true">♥</span>
       )}
-      <span className="sm:hidden">{shortLabel}</span>
-      <span className="hidden sm:inline">{label}</span>
+      <span>{label}</span>
       {percentage != null && status !== "FULL" && (
         <span className="font-normal opacity-70">· {percentage}%</span>
       )}
