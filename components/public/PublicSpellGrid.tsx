@@ -226,7 +226,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
   return (
     <div>
       {/* Filter bar */}
-      <div className="rounded-xl bg-gray-800/50 border border-white/[0.06] p-4 mb-8 space-y-3">
+      <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 mb-8 space-y-3">
         {/* Search + Filters toggle — always visible */}
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -406,7 +406,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                 onMouseLeave={handleMouseLeave}
               >
                 <Link href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
-                  className="flex items-center gap-2 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
+                  className="flex items-center gap-2 rounded-lg bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
                 >
                   <span className="flex-1 min-w-0 flex flex-col">
                     <span className="flex items-center gap-1.5">

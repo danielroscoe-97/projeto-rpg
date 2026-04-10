@@ -271,7 +271,7 @@ export function PublicRacesIndex({ locale = "en", linkPrefix }: PublicRacesIndex
       </div>
 
       {/* Search + filter container */}
-      <div className="rounded-xl bg-gray-800/50 border border-white/[0.06] p-4 space-y-3">
+      <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 space-y-3">
         {/* Search input */}
         <div className="relative">
           <svg
@@ -383,7 +383,7 @@ export function PublicRacesIndex({ locale = "en", linkPrefix }: PublicRacesIndex
             <Link
               key={race.slug}
               href={`${basePath}/${race.slug}`}
-              className="group rounded-xl border border-white/[0.04] bg-gray-800/40 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5 block"
+              className="group rounded-xl border border-white/[0.04] bg-card hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5 block"
             >
               {/* Icon + Name */}
               <div className="flex items-start gap-3 mb-3">

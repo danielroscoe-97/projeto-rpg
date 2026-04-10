@@ -125,7 +125,7 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
       </div>
 
       {/* Search + filter container */}
-      <div className="rounded-xl bg-gray-800/50 border border-white/[0.06] p-4 space-y-3">
+      <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 space-y-3">
         {/* Search input */}
         <div className="relative">
           <svg
@@ -239,7 +239,7 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
             <Link
               key={cls.id}
               href={`${linkPrefix}/${cls.id}`}
-              className={`group block rounded-xl border border-white/[0.04] bg-gray-800/40 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5`}
+              className={`group block rounded-xl border border-white/[0.04] bg-card hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5`}
             >
               {/* Icon + Name row */}
               <div className="flex items-start gap-3 mb-3">

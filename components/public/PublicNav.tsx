@@ -18,6 +18,8 @@ const LABELS = {
     spellsHref: "/spells",
     conditions: "Conditions",
     conditionsHref: "/conditions",
+    items: "Items",
+    itemsHref: "/items",
     dice: "Dice",
     diceHref: "/dice",
     rules: "Rules",
@@ -37,6 +39,8 @@ const LABELS = {
     spellsHref: "/magias",
     conditions: "Condições",
     conditionsHref: "/condicoes",
+    items: "Itens",
+    itemsHref: "/itens",
     dice: "Dados",
     diceHref: "/dados",
     rules: "Regras",
@@ -115,18 +119,6 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
         {/* Center: nav links */}
         <div className="hidden lg:flex items-center gap-4 shrink-0">
           <Link
-            href={l.classesHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.classes}
-          </Link>
-          <Link
-            href={l.racesHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.races}
-          </Link>
-          <Link
             href={l.monstersHref}
             className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
           >
@@ -143,6 +135,24 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
             className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
           >
             {l.conditions}
+          </Link>
+          <Link
+            href={l.itemsHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.items}
+          </Link>
+          <Link
+            href={l.classesHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.classes}
+          </Link>
+          <Link
+            href={l.racesHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.races}
           </Link>
           <Link
             href={l.diceHref}

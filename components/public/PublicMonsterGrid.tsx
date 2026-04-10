@@ -170,7 +170,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
   return (
     <div>
       {/* Filter bar */}
-      <div className="rounded-xl bg-gray-800/50 border border-white/[0.06] p-4 mb-8 space-y-3">
+      <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 mb-8 space-y-3">
         {/* Search input */}
         <div className="relative">
           <svg
@@ -320,7 +320,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
                 <Link
                   key={m.name}
                   href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
-                  className="flex items-center gap-2.5 rounded-lg bg-gray-800/40 border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
+                  className="flex items-center gap-2.5 rounded-lg bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
                 >
                   <span className="relative inline-flex shrink-0 transition-transform duration-200 group-hover:scale-[1.8] group-hover:z-10">
                     <MonsterToken
