@@ -22,13 +22,13 @@ export function ConnectionStatus() {
   useEffect(() => {
     const unsub = onSyncStatusChange((newStatus) => {
       setStatus(newStatus);
-      setQueueSize(getQueueSize());
+      getQueueSize().then(setQueueSize);
     });
 
     // Poll queue size while offline
     const interval = setInterval(() => {
       if (getSyncStatus() !== "online") {
-        setQueueSize(getQueueSize());
+        getQueueSize().then(setQueueSize);
       }
     }, 2000);
 

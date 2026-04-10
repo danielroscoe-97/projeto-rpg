@@ -127,8 +127,14 @@ export async function getQueuedActions(
   }
 }
 
-export function getQueueSize(): number {
-  return _memoryQueue.length;
+export async function getQueueSize(): Promise<number> {
+  try {
+    const db = await getDb();
+    const count = await db.count(STORE_NAME);
+    return count || _memoryQueue.length;
+  } catch {
+    return _memoryQueue.length;
+  }
 }
 
 export async function clearQueue(sessionId?: string): Promise<void> {
@@ -207,8 +213,8 @@ export async function replayQueue(
       result.succeeded++;
     } catch {
       result.failed++;
-      // Stop replaying on first failure to avoid state divergence
-      break;
+      // Continue replaying — a transient failure on one event shouldn't lose the rest.
+      // The final state_sync from DM will reconcile any gaps.
     }
   }
 

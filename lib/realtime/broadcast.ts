@@ -94,8 +94,8 @@ export function resetDmChannel(): void {
 /** Sanitize a full combatant for player broadcast.
  *  Strips DM notes, monster stats, LA counts, and applies display_name anti-metagaming. */
 function sanitizeCombatant(c: Combatant): SanitizedCombatant {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only fields + LA counts
-  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, ...base } = c;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only fields + LA counts + internal IDs
+  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, session_token_id: _stid, ...base } = c;
 
   if (c.is_player) {
     // Players: keep all stats, just strip dm_notes and display_name
@@ -359,13 +359,24 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   const seq = ++_broadcastSeq;
   const payloadWithSeq = { ...safeEvent, _seq: seq };
 
-  const doSend = () => {
+  const doSend = async () => {
     try {
-      ch.send({
+      const sendPromise = ch.send({
         type: "broadcast",
         event: safeEvent.type,
         payload: payloadWithSeq,
       });
+      // 3s timeout — don't block the DM on slow networks
+      const status = await Promise.race([
+        sendPromise,
+        new Promise<"timed out">((resolve) => setTimeout(() => resolve("timed out"), 3000)),
+      ]);
+      if (status === "error" || status === "timed out") {
+        setSyncStatus("offline");
+        enqueueAction(sessionId, event);
+      } else {
+        if (getSyncStatus() === "offline") setSyncStatus("online");
+      }
     } catch {
       setSyncStatus("offline");
       enqueueAction(sessionId, event);
@@ -382,13 +393,9 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     waitForChannel().then(doSend);
   }
 
-  // Phase 1 (dual mode): Also send via server-side API for secure sanitization.
-  // Server re-sanitizes and broadcasts to players — this is the anti-metagaming gate.
-  // Fire-and-forget: server broadcast is supplementary; client already sent above.
-  // In Phase 3, client-side send above will be removed and only server remains.
-  broadcastViaServer(sessionId, event).catch(() => {
-    // Server broadcast failed — client-side already handled it above
-  });
+  // Server-side broadcast for secure sanitization (anti-metagaming gate).
+  // Fire-and-forget: supplementary to client-side broadcast.
+  broadcastViaServer(sessionId, event).catch(() => {});
 }
 
 /** Replay queued offline actions for a session.

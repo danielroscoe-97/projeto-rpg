@@ -20,11 +20,11 @@ export function DmOfflineBanner() {
 
 /** Poll queue size every 2s while banner is visible so the count stays fresh. */
 function useReactiveQueueSize() {
-  const [size, setSize] = useState(() => getQueueSize());
+  const [size, setSize] = useState(0);
 
   useEffect(() => {
-    setSize(getQueueSize()); // sync on mount
-    const id = setInterval(() => setSize(getQueueSize()), 2_000);
+    getQueueSize().then(setSize); // async on mount
+    const id = setInterval(() => { getQueueSize().then(setSize); }, 2_000);
     return () => clearInterval(id);
   }, []);
 

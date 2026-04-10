@@ -333,7 +333,7 @@ export function PlayerInitiativeBoard({
       dcFlashTimerRef.current = setTimeout(() => { setDcFlash(false); dcFlashTimerRef.current = null; }, 1500);
     }
     prevDcRef.current = pc.spell_save_dc;
-  }, [combatants, registeredName]);
+  }, [combatants, registeredName, effectiveTokenId]);
   useEffect(() => {
     return () => {
       if (acFlashTimerRef.current) clearTimeout(acFlashTimerRef.current);
@@ -917,7 +917,7 @@ export function PlayerInitiativeBoard({
                     <HpStatusBadge status={aggStatus} />
                     {avgStatus !== aggStatus && (
                       <span className="text-muted-foreground text-[10px] hidden sm:inline">
-                        média {avgStatus}
+                        {t("group_avg_label", { status: avgStatus })}
                       </span>
                     )}
                   </div>

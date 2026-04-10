@@ -21,7 +21,7 @@ import { getHpStatus, getHpPercentage } from "@/lib/utils/hp-status";
 /** Sanitize a combatant for player-visible broadcast. */
 export function sanitizeCombatant(c: Combatant): SanitizedCombatant {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, ...base } = c;
+  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, session_token_id: _stid, ...base } = c;
 
   if (c.is_player) {
     return {

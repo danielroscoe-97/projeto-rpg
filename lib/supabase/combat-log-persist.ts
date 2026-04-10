@@ -6,16 +6,24 @@ import type { CombatLogEntry } from "@/lib/stores/combat-log-store";
  * Called periodically during combat (each round advance) and on encounter end.
  * Fire-and-forget — errors are logged but never block gameplay.
  */
+/** Max combat log entries to persist (prevents unbounded JSONB growth) */
+const MAX_COMBAT_LOG_ENTRIES = 1000;
+
 export async function persistCombatLog(
   encounterId: string,
   entries: CombatLogEntry[],
 ): Promise<void> {
   if (!encounterId || entries.length === 0) return;
 
+  // Cap entries to prevent unbounded JSONB growth in DB
+  const capped = entries.length > MAX_COMBAT_LOG_ENTRIES
+    ? entries.slice(-MAX_COMBAT_LOG_ENTRIES)
+    : entries;
+
   const supabase = createClient();
   const { error } = await supabase
     .from("encounters")
-    .update({ combat_log: entries })
+    .update({ combat_log: capped })
     .eq("id", encounterId);
 
   if (error) {
