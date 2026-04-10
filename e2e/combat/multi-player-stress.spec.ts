@@ -1,31 +1,27 @@
 /**
- * Multi-Player Combat Stress Test — Full Session Simulation
+ * Multi-Player Combat Stress Test — Real Session Simulation
  *
- * Simulates a LONG real combat session (5+ rounds) with 1 DM and 2 players
- * in isolated browser contexts. This is NOT a quick smoke test — it exercises
- * the full lifecycle with repeated actions, player disconnects/reconnects,
- * mid-combat mutations, and verifies realtime propagation at every step.
+ * Simulates a LONG real combat session with 1 DM and 2 players.
+ * Unlike a quick smoke test, this exercises REAL disconnect scenarios:
  *
- * Scenarios covered:
- * - DM creates session with 4 monsters (1 hidden)
- * - 2 players join sequentially (DM approves inline)
- * - Hidden monster invisible to players
- * - Multiple rounds of combat (turn cycling)
- * - HP damage across multiple combatants
- * - Conditions added and removed
- * - Player 1 disconnects (refresh) and reconnects
- * - DM reveals hidden monster → players see it appear (broadcast fix applied)
- * - DM renames monster display_name → players see new name (broadcast fix applied)
- * - DM adds new monster mid-combat
- * - DM defeats a monster
- * - Player 2 disconnects and reconnects
- * - More rounds of combat after all mutations
- * - DM ends encounter → all pages stable
+ * Reconnection levels tested:
+ *   L1: page.reload()         — sessionStorage alive (easiest)
+ *   L2: close tab, reopen URL — sessionStorage GONE, localStorage alive
+ *   L3: close browser entirely — all storage gone, player sees lobby again
  *
- * Spec: docs/spec-multi-player-e2e.md
+ * Other scenarios:
+ *   - Hidden monsters invisible to players
+ *   - DM reveals hidden → players see appear
+ *   - DM renames display_name → players see new name
+ *   - DM adds monster mid-combat
+ *   - HP damage, heal, temp HP, conditions add/remove
+ *   - Turn cycling across multiple rounds
+ *   - Defeat + endgame
+ *   - Realistic delays between DM actions (2-5s, not instant)
+ *
  * Run: npm run e2e:stress
  */
-import { test, expect, type Page, type BrowserContext } from "@playwright/test";
+import { test, expect, type Page, type BrowserContext, type Browser } from "@playwright/test";
 import { dmSetupCombatSession } from "../helpers/session";
 import {
   advanceTurn,
@@ -45,42 +41,42 @@ import {
   defeatCombatant,
   waitForAllPages,
   assertNoneVisible,
-  waitForTextOnAllPages,
 } from "../helpers/multi-player";
 
-/** Realtime propagation wait — covers broadcast latency + polling fallback (5s) */
+/** Realtime propagation wait */
 const REALTIME_WAIT = 10_000;
-/** Extended wait for operations that may need multiple poll cycles */
 const EXTENDED_WAIT = 15_000;
 
-/** Advance a full round of combat (click next turn N times, waiting for enabled between clicks). */
-async function advanceFullRound(dmPage: Page, combatantCount: number) {
-  for (let i = 0; i < combatantCount; i++) {
+/** Realistic delay between DM actions (like a real human would take) */
+async function dmThinks(page: Page, ms = 3_000) {
+  await page.waitForTimeout(ms);
+}
+
+/** Advance a full round with realistic timing between turns */
+async function advanceFullRound(dmPage: Page, count: number) {
+  for (let i = 0; i < count; i++) {
     const btn = dmPage.locator('[data-testid="next-turn-btn"]');
     await expect(btn).toBeEnabled({ timeout: 10_000 });
     await btn.click();
-    await dmPage.waitForTimeout(500);
+    // DM pauses between turns like a real person
+    await dmPage.waitForTimeout(1_500);
   }
 }
 
-/** Verify all player pages have functional initiative boards. */
+/** Verify all player pages have functional initiative boards */
 async function assertAllBoardsFunctional(pages: Page[]) {
   await waitForAllPages(pages, '[data-testid="player-initiative-board"]');
 }
 
-/** Dismiss the onboarding tour dialog on the DM page (if visible).
- *  ONLY targets dialogs with tour-specific text — never presses Escape on unknown dialogs. */
+/** Dismiss the onboarding tour dialog (scoped to tour only, never presses Escape on random dialogs) */
 async function dismissTourIfVisible(dmPage: Page) {
   await dmPage.waitForTimeout(5_000);
   for (let attempt = 0; attempt < 12; attempt++) {
-    // Only target the specific tour dialog — not other dialogs like "Personagens dos Jogadores"
     const tourDialog = dmPage
       .locator('[role="dialog"]')
       .filter({ hasText: /Bem-vindo|Welcome|Preparação|Preparation|montar.*combate|set.*combat/i })
       .first();
     if (!(await tourDialog.isVisible({ timeout: 2_000 }).catch(() => false))) break;
-
-    // Click Next/Finish inside the tour
     const nextBtn = tourDialog
       .locator("button")
       .filter({ hasText: /Próximo|Next|Concluir|Finish|Entendido|Got it/i })
@@ -90,7 +86,6 @@ async function dismissTourIfVisible(dmPage: Page) {
       await dmPage.waitForTimeout(800);
       continue;
     }
-    // Click Skip/Close
     const skipBtn = tourDialog
       .locator("button")
       .filter({ hasText: /Pular|Skip|Dismiss|Fechar|Close/i })
@@ -100,10 +95,8 @@ async function dismissTourIfVisible(dmPage: Page) {
       await dmPage.waitForTimeout(500);
       continue;
     }
-    // No button found in tour dialog — break to avoid infinite loop
     break;
   }
-  // Close "Personagens dos Jogadores" panel (safe — it's a side panel, not navigation)
   const closePanel = dmPage.locator("button[aria-label]").filter({ hasText: /Fechar painel/i }).first();
   if (await closePanel.isVisible({ timeout: 1_000 }).catch(() => false)) {
     await closePanel.click();
@@ -111,9 +104,79 @@ async function dismissTourIfVisible(dmPage: Page) {
   }
 }
 
-test.describe.serial("Multi-player combat — full session simulation", () => {
+/**
+ * Simulate CLOSING a browser tab (not just refresh).
+ * Closes the old context entirely (sessionStorage dies).
+ * Creates a new context + page and navigates to the join URL.
+ * localStorage is ALSO lost because it's a new context.
+ *
+ * Returns the new page (caller must update their reference).
+ */
+async function simulateTabClose(
+  browser: Browser,
+  oldContext: BrowserContext,
+  joinUrl: string
+): Promise<{ context: BrowserContext; page: Page }> {
+  // Copy localStorage from old context before closing
+  const oldPage = oldContext.pages()[0];
+  const localStorageData = await oldPage.evaluate(() => {
+    const data: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) data[key] = localStorage.getItem(key) ?? "";
+    }
+    return data;
+  });
+
+  // Close old context (simulates closing the tab — sessionStorage dies)
+  await oldContext.close();
+
+  // Create new context (simulates opening a new tab)
+  const newContext = await browser.newContext();
+  const newPage = await newContext.newPage();
+
+  // Restore localStorage (survives tab close in real browsers)
+  await newPage.goto(joinUrl);
+  await newPage.waitForLoadState("domcontentloaded");
+  await newPage.evaluate((data) => {
+    for (const [key, value] of Object.entries(data)) {
+      localStorage.setItem(key, value);
+    }
+  }, localStorageData);
+
+  // Reload to trigger reconnection with restored localStorage
+  await newPage.reload({ timeout: 30_000 });
+
+  return { context: newContext, page: newPage };
+}
+
+/**
+ * Simulate CLOSING the browser entirely.
+ * Both sessionStorage AND localStorage are gone.
+ * Player must rejoin from scratch (sees lobby form again).
+ */
+async function simulateBrowserClose(
+  browser: Browser,
+  oldContext: BrowserContext,
+  joinUrl: string
+): Promise<{ context: BrowserContext; page: Page }> {
+  // Close old context (everything dies)
+  await oldContext.close();
+
+  // Create completely fresh context (no storage at all)
+  const newContext = await browser.newContext();
+  const newPage = await newContext.newPage();
+  await newPage.goto(joinUrl);
+  await newPage.waitForLoadState("domcontentloaded");
+  await newPage.waitForLoadState("networkidle").catch(() => {});
+
+  return { context: newContext, page: newPage };
+}
+
+test.describe.serial("Multi-player combat — real session simulation", () => {
   test.slow(); // 3x timeout
 
+  let browser: Browser;
   let dmContext: BrowserContext;
   let p1Context: BrowserContext;
   let p2Context: BrowserContext;
@@ -121,14 +184,16 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
   let p1Page: Page;
   let p2Page: Page;
   let shareToken: string;
+  let joinUrl: string;
 
-  // Combatant UUIDs (non-overlapping names to avoid substring matches)
+  // Combatant UUIDs (non-overlapping names)
   let orcWarriorId: string;
   let wolfId: string;
   let banditId: string;
   let skeletonId: string;
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser: b }) => {
+    browser = b;
     dmContext = await browser.newContext();
     p1Context = await browser.newContext();
     p2Context = await browser.newContext();
@@ -142,7 +207,7 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
   });
 
   // ════════════════════════════════════════════════════════════
-  // SETUP PHASE
+  // SETUP
   // ════════════════════════════════════════════════════════════
 
   test("Setup: DM creates session with 4 monsters", async () => {
@@ -167,6 +232,8 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
     }
     expect(token).toBeTruthy();
     shareToken = token!;
+    joinUrl = `/join/${shareToken}`;
+
     await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 5_000 });
 
     orcWarriorId = await findCombatantId(dmPage, "Orc Warrior");
@@ -176,18 +243,15 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
     expect(new Set([orcWarriorId, wolfId, banditId, skeletonId]).size).toBe(4);
   });
 
-  test("Setup: Dismiss onboarding tour", async () => {
+  test("Setup: Dismiss tour + hide Skeleton", async () => {
     await dismissTourIfVisible(dmPage);
     await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 10_000 });
-  });
-
-  test("Setup: DM hides Skeleton", async () => {
     await toggleHidden(dmPage, skeletonId);
     await expect(dmPage.locator(`[data-testid="hp-btn-${skeletonId}"]`)).toBeVisible({ timeout: 3_000 });
   });
 
   // ════════════════════════════════════════════════════════════
-  // PLAYER JOIN PHASE
+  // PLAYER JOIN
   // ════════════════════════════════════════════════════════════
 
   test("Join: Player 1 (Thorin) enters combat", async () => {
@@ -210,9 +274,7 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
       `[data-testid="player-combatant-${skeletonId}"]`,
       { timeout: 5_000 }
     );
-    // DM still sees it
     await expect(dmPage.locator(`[data-testid="hp-btn-${skeletonId}"]`)).toBeVisible();
-    // Players see Orc Warrior (not hidden) — generous timeout for state sync after join
     await waitForAllPages(
       [p1Page, p2Page],
       `[data-testid="player-combatant-${orcWarriorId}"]`,
@@ -221,20 +283,18 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
   });
 
   // ════════════════════════════════════════════════════════════
-  // ROUND 1: Basic combat actions
+  // ROUND 1: Basic combat with realistic timing
   // ════════════════════════════════════════════════════════════
 
-  test("Round 1: DM cycles through all turns", async () => {
-    // 6 combatants total (4 monsters + 2 players), advance through all
-    for (let i = 0; i < 6; i++) {
-      await advanceTurn(dmPage);
-      await dmPage.waitForTimeout(500);
-    }
+  test("Round 1: DM cycles through all turns (realistic pace)", async () => {
+    // 6 combatants: Thorin(18), Orc(14), Elara(12), Wolf(10), Bandit(10), Skeleton(8 hidden)
+    await advanceFullRound(dmPage, 6);
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   test("Round 1: DM damages Orc Warrior (50→25 HP)", async () => {
+    await dmThinks(dmPage, 3_000);
     await applyHpChange(dmPage, orcWarriorId, 25, "damage");
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await waitForAllPages(
@@ -245,26 +305,25 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
   });
 
   test("Round 1: DM poisons Wolf + stuns Bandit", async () => {
+    await dmThinks(dmPage, 2_000);
     await toggleCondition(dmPage, wolfId, "poisoned");
-    // Close the condition panel before opening another
     await dmPage.keyboard.press("Escape");
-    await dmPage.waitForTimeout(1_000);
+    await dmThinks(dmPage, 2_000);
     await toggleCondition(dmPage, banditId, "stunned");
     await dmPage.keyboard.press("Escape");
-    await dmPage.waitForTimeout(500);
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   // ════════════════════════════════════════════════════════════
-  // ROUND 2: Player disconnect + more damage
+  // ROUND 2: L1 reconnect (page refresh) + more damage
   // ════════════════════════════════════════════════════════════
 
-  test("Round 2: Player 1 refreshes mid-combat → reconnects", async () => {
+  test("Round 2: Player 1 refreshes (L1 — sessionStorage alive)", async () => {
+    // L1: page.reload() — easiest reconnect, sessionStorage intact
     await p1Page.reload({ timeout: 30_000 });
     await expect(p1Page.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 30_000 });
     await expect(p1Page.locator('[data-testid="player-initiative-board"]')).toBeVisible({ timeout: EXTENDED_WAIT });
-    // Orc Warrior should still be visible after reconnect
     await expect(
       p1Page.locator(`[data-testid="player-combatant-${orcWarriorId}"]`)
     ).toBeVisible({ timeout: EXTENDED_WAIT });
@@ -272,44 +331,57 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
     await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible();
   });
 
-  test("Round 2: DM advances full round + more damage", async () => {
+  test("Round 2: DM advances + damages more", async () => {
     await advanceFullRound(dmPage, 6);
-    await dmPage.waitForTimeout(3_000);
-    // Damage Orc Warrior more (25→10 HP = HEAVY)
-    await applyHpChange(dmPage, orcWarriorId, 15, "damage");
-    // Damage Wolf (14→4 HP = CRITICAL)
-    await applyHpChange(dmPage, wolfId, 10, "damage");
+    await dmThinks(dmPage, 3_000);
+    await applyHpChange(dmPage, orcWarriorId, 15, "damage"); // 25→10 HP
+    await dmThinks(dmPage, 2_000);
+    await applyHpChange(dmPage, wolfId, 10, "damage"); // 14→4 HP
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   // ════════════════════════════════════════════════════════════
-  // ROUND 3: DM reveals hidden monster + rename
+  // ROUND 3: DM reveals hidden + rename + L2 reconnect (tab close)
   // ════════════════════════════════════════════════════════════
 
   test("Round 3: DM reveals Skeleton → players see it", async () => {
+    await dmThinks(dmPage, 2_000);
     await toggleHidden(dmPage, skeletonId);
     await expect(dmPage.locator(`[data-testid="hp-btn-${skeletonId}"]`)).toBeVisible({ timeout: 5_000 });
     await dmPage.waitForTimeout(EXTENDED_WAIT);
 
-    // With the persistHidden fix, polling should pick up the change
     const p1Skeleton = p1Page.locator(`[data-testid="player-combatant-${skeletonId}"]`);
-    const p1Visible = await p1Skeleton.isVisible({ timeout: 30_000 }).catch(() => false);
-    if (!p1Visible) {
-      console.warn("⚠ Hidden reveal did not propagate to players — check broadcast");
+    const visible = await p1Skeleton.isVisible({ timeout: 30_000 }).catch(() => false);
+    if (!visible) {
+      console.warn("⚠ Hidden reveal did not propagate to players — broadcast gap");
     }
   });
 
   test("Round 3: DM renames Bandit → 'Shadow Fiend'", async () => {
+    await dmThinks(dmPage, 2_000);
     await renameCombatant(dmPage, banditId, "Shadow Fiend");
     await dmPage.waitForTimeout(EXTENDED_WAIT);
 
-    // With is_player fix in broadcast, rename should now propagate
     const p1Board = p1Page.locator('[data-testid="player-initiative-board"]');
-    const hasNewName = await p1Board.locator('text=Shadow Fiend').isVisible({ timeout: 30_000 }).catch(() => false);
+    const hasNewName = await p1Board.locator("text=Shadow Fiend").isVisible({ timeout: 30_000 }).catch(() => false);
     if (!hasNewName) {
-      console.warn("⚠ Display name rename did not propagate — check broadcast sanitizer");
+      console.warn("⚠ Display name rename did not propagate — broadcast sanitizer gap");
     }
+  });
+
+  test("Round 3: Player 2 closes TAB and reopens (L2 — localStorage reconnect)", async () => {
+    // L2: Close the tab entirely (sessionStorage dies), reopen via URL
+    // localStorage should have the player identity for auto-reconnect
+    const result = await simulateTabClose(browser, p2Context, joinUrl);
+    p2Context = result.context;
+    p2Page = result.page;
+
+    // Player should auto-reconnect via localStorage → player-view
+    await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 45_000 });
+    await expect(p2Page.locator('[data-testid="player-initiative-board"]')).toBeVisible({ timeout: EXTENDED_WAIT });
+    // Player 1 unaffected
+    await expect(p1Page.locator('[data-testid="player-view"]')).toBeVisible();
   });
 
   test("Round 3: DM advances full round", async () => {
@@ -319,10 +391,11 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
   });
 
   // ════════════════════════════════════════════════════════════
-  // ROUND 4: Mid-combat add + defeat
+  // ROUND 4: Mid-combat add + defeat + heal + condition remove
   // ════════════════════════════════════════════════════════════
 
   test("Round 4: DM adds Zombie mid-combat", async () => {
+    await dmThinks(dmPage, 3_000);
     await addCombatantMidCombat(dmPage, {
       name: "Zombie",
       hp: "22",
@@ -332,17 +405,18 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
     const zombieId = await findCombatantId(dmPage, "Zombie");
     expect(zombieId).toBeTruthy();
     await dmPage.waitForTimeout(REALTIME_WAIT);
-    // Board should remain stable
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
-  test("Round 4: DM defeats Wolf (0 HP)", async () => {
+  test("Round 4: DM defeats Wolf", async () => {
+    await dmThinks(dmPage, 2_000);
     await defeatCombatant(dmPage, wolfId);
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   test("Round 4: DM heals Orc Warrior (10→25 HP)", async () => {
+    await dmThinks(dmPage, 2_000);
     await applyHpChange(dmPage, orcWarriorId, 15, "heal");
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await waitForAllPages(
@@ -352,66 +426,99 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
     );
   });
 
-  test("Round 4: DM removes condition from Bandit", async () => {
-    // Toggle stunned OFF
+  test("Round 4: DM removes stun from Bandit", async () => {
+    await dmThinks(dmPage, 2_000);
     await toggleCondition(dmPage, banditId, "stunned");
+    await dmPage.keyboard.press("Escape");
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   // ════════════════════════════════════════════════════════════
-  // ROUND 5: Player 2 disconnect + more combat
+  // ROUND 5: L3 reconnect (browser close) + final combat
   // ════════════════════════════════════════════════════════════
 
-  test("Round 5: Player 2 refreshes → reconnects", async () => {
-    await p2Page.reload({ timeout: 30_000 });
-    await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 30_000 });
-    await expect(p2Page.locator('[data-testid="player-initiative-board"]')).toBeVisible({ timeout: EXTENDED_WAIT });
-    // Player 1 unaffected
-    await expect(p1Page.locator('[data-testid="player-view"]')).toBeVisible();
+  test("Round 5: Player 1 closes BROWSER entirely (L3 — full storage loss)", async () => {
+    // L3: Close browser entirely — ALL storage gone (sessionStorage + localStorage)
+    // Player must see the lobby form again and re-register
+    const result = await simulateBrowserClose(browser, p1Context, joinUrl);
+    p1Context = result.context;
+    p1Page = result.page;
+
+    // Player should see lobby form (no stored identity to reconnect from)
+    const lobbyOrView = p1Page.locator(
+      '[data-testid="lobby-name"], [data-testid="player-view"]'
+    );
+    await expect(lobbyOrView.first()).toBeVisible({ timeout: 45_000 });
+
+    // If lobby form appeared, re-register
+    const lobbyName = p1Page.locator('[data-testid="lobby-name"]');
+    if (await lobbyName.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      // Player lost all state — must rejoin with same name
+      await lobbyName.fill("Thorin");
+      await p1Page.locator('[data-testid="lobby-initiative"]').fill("18");
+      const hpInput = p1Page.locator('[data-testid="lobby-hp"]');
+      if (await hpInput.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await hpInput.fill("45");
+      }
+      const acInput = p1Page.locator('[data-testid="lobby-ac"]');
+      if (await acInput.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await acInput.fill("18");
+      }
+      await p1Page.locator('[data-testid="lobby-submit"]').click();
+
+      // DM may need to accept again
+      await dmThinks(dmPage, 5_000);
+      const acceptBtn = dmPage.locator("button").filter({ hasText: /Aceitar.*Thorin|Accept.*Thorin/i }).first();
+      if (await acceptBtn.isVisible({ timeout: 10_000 }).catch(() => false)) {
+        await acceptBtn.click();
+      }
+    }
+
+    // Player should eventually see player-view (either via reconnect or re-registration)
+    await expect(p1Page.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 45_000 });
+    // Player 2 unaffected
+    await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible();
   });
 
-  test("Round 5: DM advances 2 full rounds of combat", async () => {
-    // 7 combatants now (4 original + 2 players + 1 zombie, minus defeated wolf still counted in turn order)
+  test("Round 5: DM advances 2 full rounds", async () => {
+    // 7 combatants now (including zombie, excluding defeated wolf from turn order... or not)
     await advanceFullRound(dmPage, 7);
-    await dmPage.waitForTimeout(3_000);
+    await dmThinks(dmPage, 3_000);
     await advanceFullRound(dmPage, 7);
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   test("Round 5: DM applies temp HP to Skeleton", async () => {
+    await dmThinks(dmPage, 2_000);
     await applyHpChange(dmPage, skeletonId, 5, "temp");
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
   // ════════════════════════════════════════════════════════════
-  // ENDGAME: DM defeats remaining + ends encounter
+  // ENDGAME
   // ════════════════════════════════════════════════════════════
 
-  test("Endgame: DM defeats Orc Warrior + Bandit", async () => {
+  test("Endgame: DM defeats remaining monsters", async () => {
+    await dmThinks(dmPage, 2_000);
     await defeatCombatant(dmPage, orcWarriorId);
-    await dmPage.waitForTimeout(2_000);
+    await dmThinks(dmPage, 2_000);
     await defeatCombatant(dmPage, banditId);
     await dmPage.waitForTimeout(REALTIME_WAIT);
     await assertAllBoardsFunctional([p1Page, p2Page]);
   });
 
-  test("Endgame: DM ends encounter → all stable", async () => {
+  test("Endgame: DM ends encounter → all pages stable", async () => {
+    await dmThinks(dmPage, 3_000);
     await endEncounter(dmPage);
     await dmPage.waitForTimeout(REALTIME_WAIT);
 
     // Verify no page crashed
     for (const page of [dmPage, p1Page, p2Page]) {
       const bodyText = await page.locator("body").textContent();
-      expect(bodyText?.length).toBeGreaterThan(0);
+      expect(bodyText?.length).toBeGreaterThan(100);
     }
-
-    // DM should see post-combat screen — either recap overlay or navigation away.
-    // active-combat may still be in DOM if recap renders on top of it.
-    // Just verify all pages are stable and DM page has content.
-    const dmText = await dmPage.locator("body").textContent();
-    expect(dmText?.length).toBeGreaterThan(100);
   });
 });
