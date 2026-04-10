@@ -399,7 +399,13 @@ export function PlayerLobby({
       }
     } catch (error) {
       setIsSubmitting(false);
-      toast.error(t('registerError'));
+      // Show specific validation message if available, otherwise generic error
+      const msg = error instanceof Error ? error.message : "";
+      if (msg.includes("AC must") || msg.includes("Initiative must") || msg.includes("HP must") || msg.includes("Invalid name")) {
+        toast.error(msg);
+      } else {
+        toast.error(t('registerError'));
+      }
       captureError(error, {
         component: "PlayerLobby",
         action: isCombatActive ? "lateJoinRequest" : "playerRegistration",
