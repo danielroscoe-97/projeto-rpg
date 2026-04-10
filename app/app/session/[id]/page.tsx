@@ -141,8 +141,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
         campaignId={session.campaign_id ?? null}
       />
 
-      {/* Authenticated combat tour — auto-starts on first visit */}
-      <AuthCombatTourProvider shouldAutoStart={!combatTourCompleted} />
+      {/* Authenticated combat tour — only during setup, NEVER during active combat */}
+      <AuthCombatTourProvider shouldAutoStart={!combatTourCompleted && !(encounter?.is_active)} />
     </div>
   );
 }
