@@ -239,7 +239,7 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
             <Link
               key={cls.id}
               href={`${linkPrefix}/${cls.id}`}
-              className={`group block rounded-xl border ${roleStyle.border} bg-card hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5`}
+              className={`group block rounded-xl border border-white/[0.04] bg-gray-800/40 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5`}
             >
               {/* Icon + Name row */}
               <div className="flex items-start gap-3 mb-3">
@@ -247,7 +247,7 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
                   <SrdClassIcon iconName={cls.icon} className="w-8 h-8" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-bold text-gray-100 font-[family-name:var(--font-cinzel)] text-lg leading-tight">
+                  <h2 className="font-bold text-gray-200 group-hover:text-white font-[family-name:var(--font-cinzel)] text-lg leading-tight">
                     {displayName}
                   </h2>
                   {isPt && (

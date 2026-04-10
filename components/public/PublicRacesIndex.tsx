@@ -383,7 +383,7 @@ export function PublicRacesIndex({ locale = "en", linkPrefix }: PublicRacesIndex
             <Link
               key={race.slug}
               href={`${basePath}/${race.slug}`}
-              className="group rounded-xl border border-gray-700/50 bg-gray-900/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] hover:bg-gray-900/80 transition-all p-5 block"
+              className="group rounded-xl border border-white/[0.04] bg-gray-800/40 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5 block"
             >
               {/* Icon + Name */}
               <div className="flex items-start gap-3 mb-3">
@@ -393,7 +393,7 @@ export function PublicRacesIndex({ locale = "en", linkPrefix }: PublicRacesIndex
                   className="w-10 h-10 text-base shrink-0"
                 />
                 <div className="min-w-0">
-                  <h2 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-lg leading-tight group-hover:text-[#D4A853] transition-colors">
+                  <h2 className="font-bold text-gray-200 font-[family-name:var(--font-cinzel)] text-lg leading-tight group-hover:text-white transition-colors">
                     {displayName}
                   </h2>
                   <p className="text-xs text-gray-500 italic">
