@@ -53,7 +53,7 @@ function rarityBorderColor(rarity: ItemRarity): string {
     case "uncommon": return "border-l-green-500";
     case "rare": return "border-l-blue-500";
     case "very rare": return "border-l-purple-500";
-    case "legendary": return "border-l-[#d4a853]";
+    case "legendary": return "border-l-gold";
     case "artifact": return "border-l-red-500";
     default: return "border-l-gray-600";
   }

@@ -2,6 +2,10 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { FilterChips } from "@/components/public/shared/FilterChips";
+import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
+import { CollapseSection } from "@/components/public/shared/CollapseSection";
 
 const SPELL_LEVELS = [
   { value: 0, label: "Cantrip" },
@@ -69,7 +73,7 @@ const SCHOOL_COLORS: Record<string, string> = {
   Evocation: "text-red-400",
   Illusion: "text-indigo-400",
   Necromancy: "text-green-400",
-  Transmutation: "text-[#D4A853]",
+  Transmutation: "text-gold",
 };
 
 function toSlug(name: string): string {
@@ -229,29 +233,25 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
       <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 mb-8 space-y-3">
         {/* Search + Filters toggle — always visible */}
         <div className="flex gap-2">
-          <div className="relative flex-1">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input
-              type="text"
+          <div className="flex-1">
+            <CompendiumSearchInput
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={setQuery}
               placeholder={searchPlaceholder}
-              className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
             />
           </div>
           <button
             type="button"
+            aria-expanded={filtersOpen}
             onClick={() => setFiltersOpen((v) => !v)}
-            className={`relative flex items-center gap-1.5 h-11 px-3 rounded-lg border text-sm font-medium transition-colors shrink-0 ${filtersOpen ? "bg-[#D4A853]/10 border-[#D4A853]/40 text-[#D4A853]" : "bg-white/[0.04] border-white/[0.08] text-gray-400 hover:text-gray-300 hover:border-white/[0.15]"}`}
+            className={`relative flex items-center gap-1.5 h-11 px-3 rounded-lg border text-sm font-medium transition-colors shrink-0 ${filtersOpen ? "bg-gold/10 border-gold/40 text-gold" : "bg-white/[0.04] border-white/[0.08] text-gray-400 hover:text-gray-300 hover:border-white/[0.15]"}`}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
             </svg>
             {filtersLabel}
             {hasChipFilters && (
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#D4A853] text-gray-950 text-[10px] font-bold">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-gray-950 text-[10px] font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -259,76 +259,50 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
         </div>
 
         {/* Collapsible filter chips */}
-        <div
-          className="grid transition-[grid-template-rows] duration-200 ease-in-out"
-          style={{ gridTemplateRows: filtersOpen ? "1fr" : "0fr" }}
-        >
-          <div className="overflow-hidden">
-            <div className="space-y-3 pt-1">
-              {/* Level chips */}
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="text-xs text-gray-500 font-medium mr-1">{levelLabel}</span>
-                {levelOptions.map((l) => (
-                  <button key={l.value} type="button"
-                    onClick={() => setLevelFilter(levelFilter === l.value ? null : l.value)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${levelFilter === l.value ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* School chips */}
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="text-xs text-gray-500 font-medium mr-1">{schoolLabel}</span>
-                {SPELL_SCHOOLS.map((s) => (
-                  <button key={s} type="button"
-                    onClick={() => setSchoolFilter(schoolFilter === s ? null : s)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${schoolFilter === s ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
-                  >
-                    {schoolDisplay(s)}
-                  </button>
-                ))}
-              </div>
-
-              {/* Class chips */}
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="text-xs text-gray-500 font-medium mr-1">{classLabel}</span>
-                {SPELL_CLASSES.map((c) => (
-                  <button key={c} type="button"
-                    onClick={() => setClassFilter(classFilter === c ? null : c)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${classFilter === c ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"}`}
-                  >
-                    {classDisplay(c)}
-                  </button>
-                ))}
-              </div>
-
-              {/* Toggles */}
-              <div className="flex flex-wrap gap-2 items-center">
-                <button type="button" onClick={() => setConcFilter((v) => !v)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${concFilter ? "bg-amber-600/20 text-amber-300 border-amber-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
-                >
-                  {concentrationLabel}
-                </button>
-                <button type="button" onClick={() => setRitualFilter((v) => !v)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${ritualFilter ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
-                >
-                  {ritualLabel}
-                </button>
-              </div>
+        <CollapseSection open={filtersOpen}>
+          <div className="space-y-3 pt-1">
+            <FilterChips
+              label={levelLabel}
+              options={levelOptions.map((l) => ({ label: l.label, value: String(l.value) }))}
+              selected={levelFilter !== null ? String(levelFilter) : null}
+              onSelect={(v) => setLevelFilter(v !== null ? Number(v) : null)}
+            />
+            <FilterChips
+              label={schoolLabel}
+              options={SPELL_SCHOOLS.map((s) => ({ label: schoolDisplay(s), value: s }))}
+              selected={schoolFilter}
+              onSelect={(v) => setSchoolFilter(v)}
+            />
+            <FilterChips
+              label={classLabel}
+              options={SPELL_CLASSES.map((c) => ({ label: classDisplay(c), value: c }))}
+              selected={classFilter}
+              onSelect={(v) => setClassFilter(v)}
+            />
+            {/* Toggles */}
+            <div className="flex flex-wrap gap-2 items-center">
+              <button type="button" aria-pressed={concFilter} onClick={() => setConcFilter((v) => !v)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${concFilter ? "bg-amber-600/20 text-amber-300 border-amber-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
+              >
+                {concentrationLabel}
+              </button>
+              <button type="button" aria-pressed={ritualFilter} onClick={() => setRitualFilter((v) => !v)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${ritualFilter ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
+              >
+                {ritualLabel}
+              </button>
             </div>
           </div>
-        </div>
+        </CollapseSection>
 
         {/* Count + clear + language toggle — always visible */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-400" role="status" aria-live="polite">
             {hasFilters ? `${filtered.length} ${of} ${spells.length} ${spellsLabel}` : `${spells.length} ${spellsLabel}`}
           </span>
           <div className="flex items-center gap-2">
             {hasFilters && (
-              <button type="button" onClick={clearAllFilters} className="text-xs text-[#D4A853] hover:underline">
+              <button type="button" onClick={clearAllFilters} className="text-xs text-gold hover:underline">
                 {clearAll}
               </button>
             )}
@@ -336,41 +310,26 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
               <button
                 type="button"
                 onClick={() => setEditionFilter(null)}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === null ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === null ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
               >
                 {editionAll}
               </button>
               <button
                 type="button"
                 onClick={() => setEditionFilter(editionFilter === "2014" ? null : "2014")}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2014" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2014" ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
               >
                 2014
               </button>
               <button
                 type="button"
                 onClick={() => setEditionFilter(editionFilter === "2024" ? null : "2024")}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2024" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2024" ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
               >
                 2024
               </button>
             </div>
-            <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setDescLang("en")}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "en" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setDescLang("pt-BR")}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "pt-BR" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
-              >
-                PT
-              </button>
-            </div>
+            <LanguageToggle locale={descLang} onToggle={setDescLang} />
           </div>
         </div>
       </div>
@@ -380,7 +339,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
         <div className="flex flex-wrap gap-2 mb-8">
           {levelKeys.map((level) => (
             <a key={level} href={`#level-${level}`}
-              className="px-3 py-1 rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-[#D4A853]/90 hover:text-white transition-colors"
+              className="px-3 py-1 rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-gold/90 hover:text-white transition-colors"
             >
               {levelNavLabel(level)}
             </a>
@@ -389,12 +348,13 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
       )}
 
       {/* Spell grid by level */}
-      {levelKeys.map((level) => (
+      {levelKeys.map((level, idx) => (
         <section key={level} id={`level-${level}`} className="mb-8">
-          <h2 className="text-xl font-bold text-[#D4A853] border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)]">
+          {idx > 0 && <div className="gold-divider mb-6" />}
+          <h2 className="text-xl font-bold text-gold border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)] tracking-wide">
             {levelHeading(level)}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="compendium-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {byLevel.get(level)!.map((s) => {
               const spellId = `${s.slug ?? toSlug(s.name)}-${s.ruleset_version ?? ""}`;
               const isHovered = hoveredId === spellId;
@@ -406,7 +366,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                 onMouseLeave={handleMouseLeave}
               >
                 <Link href={`${basePath}/${s.slug ?? toSlug(s.name)}`}
-                  className="flex items-center gap-2 rounded-lg bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
+                  className="compendium-card flex items-center gap-2 rounded-xl bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 transition-all group"
                 >
                   <span className="flex-1 min-w-0 flex flex-col">
                     <span className="flex items-center gap-1.5">
@@ -428,16 +388,16 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     {s.concentration && <span className="text-amber-400/60 text-xs" title="Concentration">©</span>}
                     {s.ritual && <span className="text-emerald-400/60 text-xs" title="Ritual">®</span>}
-                    <span className={`text-xs ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>
+                    <span className={`text-xs font-mono ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>
                       {schoolAbbr(s.school)}
                     </span>
                   </div>
                 </Link>
                 {/* Hover card — desktop only, smart positioning */}
                 {s.description && (
-                  <div className={`hidden lg:block absolute left-0 z-50 w-96 rounded-lg border border-[#D4A853]/20 bg-gray-900 shadow-xl shadow-black/40 p-4 transition-opacity duration-150 ${isHovered ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} ${flipUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
+                  <div className={`hidden lg:block absolute left-0 z-50 w-96 rounded-lg border border-gold/20 bg-gray-900 shadow-xl shadow-black/40 p-4 transition-opacity duration-150 ${isHovered ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} ${flipUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">{displayName(s)}</span>
+                      <span className="text-sm font-bold text-foreground font-[family-name:var(--font-cinzel)]">{displayName(s)}</span>
                       <span className={`text-xs ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>{schoolDisplay(s.school)}</span>
                     </div>
                     <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-gray-400 mb-2">
@@ -468,9 +428,12 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
       ))}
 
       {filtered.length === 0 && hasFilters && (
-        <div className="text-center py-12">
+        <div className="compendium-empty">
+          <svg className="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
           <p className="text-gray-400 text-lg">{noResults}</p>
-          <button type="button" onClick={clearAllFilters} className="mt-3 text-[#D4A853] text-sm hover:underline">
+          <button type="button" onClick={clearAllFilters} className="mt-3 text-gold text-sm hover:underline">
             {clearAll}
           </button>
         </div>

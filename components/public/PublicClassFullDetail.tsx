@@ -382,7 +382,7 @@ export function PublicClassFullDetail({
             onClick={() => setCurrentLocale("en")}
             className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
               !isPt
-                ? "bg-[#D4A853] text-gray-950"
+                ? "bg-gold text-gray-950"
                 : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
             }`}
           >
@@ -392,7 +392,7 @@ export function PublicClassFullDetail({
             onClick={() => setCurrentLocale("pt-BR")}
             className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
               isPt
-                ? "bg-[#D4A853] text-gray-950"
+                ? "bg-gold text-gray-950"
                 : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
             }`}
           >
@@ -447,7 +447,7 @@ export function PublicClassFullDetail({
                 >
                   <SectionHeader as="span">{L.quickBuild}</SectionHeader>
                   <ChevronDown
-                    className={`w-5 h-5 text-[#D4A853]/60 transition-transform duration-200 ${
+                    className={`w-5 h-5 text-gold/60 transition-transform duration-200 ${
                       quickBuildOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -474,7 +474,7 @@ export function PublicClassFullDetail({
               <div className="px-6 md:px-8 pt-6 md:pt-8">
                 <SectionHeader>{L.classTable}</SectionHeader>
               </div>
-              <div className="mt-2 border-t-2 border-[#D4A853]/30">
+              <div className="mt-2 border-t-2 border-gold/30">
                 <ClassProgressionTable
                   rows={cls.class_table ?? []}
                   isCaster={isCaster}
@@ -524,8 +524,8 @@ export function PublicClassFullDetail({
                   }
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
                     showSubclassFeatures
-                      ? "bg-[#D4A853]/10 border-[#D4A853]/30 text-[#D4A853]"
-                      : "bg-transparent border-[#D4A853]/30 text-[#D4A853]/70 hover:text-[#D4A853] hover:border-[#D4A853]/50 hover:bg-[#D4A853]/5"
+                      ? "bg-gold/10 border-gold/30 text-gold"
+                      : "bg-transparent border-gold/30 text-gold/70 hover:text-gold hover:border-gold/50 hover:bg-gold/5"
                   }`}
                 >
                   {showSubclassFeatures ? (
@@ -582,7 +582,7 @@ export function PublicClassFullDetail({
                 <GoldDivider />
                 <div className="space-y-5 mt-5">
                   <div>
-                    <h3 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider mb-2">
+                    <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">
                       {L.multiclassPrereqs}
                     </h3>
                     <p className="text-[#E8E6E0]/80 text-base leading-relaxed">
@@ -599,7 +599,7 @@ export function PublicClassFullDetail({
                     }}
                   />
                   <div>
-                    <h3 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider mb-2">
+                    <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">
                       {L.multiclassProf}
                     </h3>
                     <p className="text-[#E8E6E0]/80 text-base leading-relaxed">
@@ -670,7 +670,7 @@ export function PublicClassFullDetail({
         {/* ── Sticky TOC (desktop) ─────────────────────────────── */}
         <aside className="hidden lg:block">
           <nav className="sticky top-20">
-            <h2 className="text-[11px] font-semibold text-[#D4A853] uppercase tracking-[0.15em] mb-4 font-[family-name:var(--font-cinzel)]">
+            <h2 className="text-[11px] font-semibold text-gold uppercase tracking-[0.15em] mb-4 font-[family-name:var(--font-cinzel)]">
               {L.toc}
             </h2>
             <ul className="space-y-0.5 relative">
@@ -686,15 +686,15 @@ export function PublicClassFullDetail({
                     <div
                       className={`absolute left-[4px] top-[12px] w-[7px] h-[7px] rounded-full border transition-all duration-200 ${
                         isActive || hasActiveChild
-                          ? "bg-[#D4A853] border-[#D4A853] shadow-[0_0_6px_rgba(212,168,83,0.4)]"
-                          : "bg-[#13131E] border-white/[0.15]"
+                          ? "bg-gold border-gold shadow-[0_0_6px_rgba(212,168,83,0.4)]"
+                          : "bg-surface-primary border-white/[0.15]"
                       }`}
                     />
                     <button
                       onClick={() => scrollTo(item.id)}
                       className={`w-full text-left pl-6 pr-2 py-1.5 rounded-r-md text-[13px] transition-all duration-200 ${
                         isActive || hasActiveChild
-                          ? "text-[#D4A853] font-medium"
+                          ? "text-gold font-medium"
                           : "text-[#9896A0] hover:text-[#E8E6E0]"
                       }`}
                     >
@@ -711,7 +711,7 @@ export function PublicClassFullDetail({
                                 onClick={() => scrollTo(child.id)}
                                 className={`w-full text-left py-1 text-[11px] transition-all duration-200 truncate ${
                                   isChildActive
-                                    ? "text-[#D4A853] font-medium"
+                                    ? "text-gold font-medium"
                                     : "text-[#9896A0]/70 hover:text-[#E8E6E0]"
                                 }`}
                               >
@@ -734,7 +734,7 @@ export function PublicClassFullDetail({
       <div className="lg:hidden">
         <button
           onClick={() => setTocOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-[#1A1A28]/90 backdrop-blur-md border border-[#D4A853]/30 text-[#D4A853] shadow-lg shadow-black/40 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-surface-secondary/90 backdrop-blur-md border border-gold/30 text-gold shadow-lg shadow-black/40 hover:shadow-gold-subtle transition-all"
           aria-label={L.toc}
         >
           <ScrollText className="w-5 h-5" />
@@ -748,9 +748,9 @@ export function PublicClassFullDetail({
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setTocOpen(false)}
             />
-            <nav className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-[#D4A853]/20 bg-[#1A1A28]/95 backdrop-blur-md p-6 max-h-[60vh] overflow-y-auto">
+            <nav className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-gold/20 bg-surface-secondary/95 backdrop-blur-md p-6 max-h-[60vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-sm font-semibold text-[#D4A853] uppercase tracking-wider font-[family-name:var(--font-cinzel)]">
+                <h2 className="text-sm font-semibold text-gold uppercase tracking-wider font-[family-name:var(--font-cinzel)]">
                   {L.toc}
                 </h2>
                 <button
@@ -770,11 +770,11 @@ export function PublicClassFullDetail({
                         onClick={() => scrollTo(item.id)}
                         className={`w-full text-left flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all ${
                           isActive || hasActiveChild
-                            ? "text-[#D4A853] bg-[#D4A853]/10 font-medium"
+                            ? "text-gold bg-gold/10 font-medium"
                             : "text-[#E8E6E0]/70 hover:bg-white/[0.04] hover:text-[#E8E6E0]"
                         }`}
                       >
-                        <span className={`${isActive || hasActiveChild ? "text-[#D4A853]" : "text-[#9896A0]"}`}>
+                        <span className={`${isActive || hasActiveChild ? "text-gold" : "text-[#9896A0]"}`}>
                           {item.icon}
                         </span>
                         <span>{item.label}</span>
@@ -787,7 +787,7 @@ export function PublicClassFullDetail({
                                 onClick={() => scrollTo(child.id)}
                                 className={`w-full text-left py-1.5 text-xs transition-all truncate ${
                                   activeSection === child.id
-                                    ? "text-[#D4A853] font-medium"
+                                    ? "text-gold font-medium"
                                     : "text-[#9896A0]/70 hover:text-[#E8E6E0]"
                                 }`}
                               >
@@ -821,7 +821,7 @@ function SectionCard({
 }) {
   return (
     <div
-      className={`rounded-xl border border-white/[0.06] bg-[#1A1A28] shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_8px_rgba(146,38,16,0.1)] transition-shadow duration-200 ${
+      className={`rounded-xl border border-white/[0.06] bg-surface-secondary shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_8px_rgba(146,38,16,0.1)] transition-shadow duration-200 ${
         noPadding ? "" : "p-6 md:p-8"
       }`}
       style={{
@@ -880,7 +880,7 @@ function Prose({ text, dropcap }: { text: string; dropcap?: boolean }) {
                 .filter((l) => l.trim())
                 .map((l, j) => (
                   <li key={j} className="flex items-start gap-2">
-                    <span className="text-[#D4A853] mt-1.5 text-xs">&#9670;</span>
+                    <span className="text-gold mt-1.5 text-xs">&#9670;</span>
                     <span>{l.replace(/^[-*]\s*/, "")}</span>
                   </li>
                 ))}
@@ -894,7 +894,7 @@ function Prose({ text, dropcap }: { text: string; dropcap?: boolean }) {
           <p
             key={i}
             className={`text-[#E8E6E0]/80 text-base leading-relaxed ${
-              isFirstParagraph ? "first-letter:text-4xl first-letter:font-bold first-letter:text-[#D4A853] first-letter:float-left first-letter:mr-2 first-letter:mt-1 first-letter:font-[family-name:var(--font-cinzel)]" : ""
+              isFirstParagraph ? "first-letter:text-4xl first-letter:font-bold first-letter:text-gold first-letter:float-left first-letter:mr-2 first-letter:mt-1 first-letter:font-[family-name:var(--font-cinzel)]" : ""
             }`}
           >
             {p.split("\n").map((line, j, arr) => (
@@ -914,7 +914,7 @@ function Prose({ text, dropcap }: { text: string; dropcap?: boolean }) {
 function PropLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-3">
-      <p className="text-[11px] text-[#D4A853] font-semibold uppercase tracking-wider mb-1">
+      <p className="text-[11px] text-gold font-semibold uppercase tracking-wider mb-1">
         {label}
       </p>
       <p className="text-sm font-medium text-[#E8E6E0]">{value}</p>
@@ -924,7 +924,7 @@ function PropLine({ label, value }: { label: string; value: string }) {
 
 function LevelBadge({ level }: { level: number }) {
   return (
-    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#D4A853]/15 text-[#D4A853] text-sm font-bold font-mono border border-[#D4A853]/20 shrink-0">
+    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gold/15 text-gold text-sm font-bold font-mono border border-gold/20 shrink-0">
       {level}
     </span>
   );
@@ -950,7 +950,7 @@ function HeroSection({
   L: (typeof LABELS)["en"];
 }) {
   return (
-    <div className="relative rounded-xl border border-white/[0.06] bg-[#1A1A28] overflow-hidden">
+    <div className="relative rounded-xl border border-white/[0.06] bg-surface-secondary overflow-hidden">
       {/* Left gold accent bar */}
       <div
         className="absolute left-0 top-0 bottom-0 w-1"
@@ -964,8 +964,8 @@ function HeroSection({
         <div className="flex items-start gap-5">
           {/* Icon with subtle glow */}
           <div className="shrink-0 relative">
-            <div className="absolute inset-0 bg-[#D4A853]/10 rounded-xl blur-xl" />
-            <span className="relative text-[#D4A853]" aria-hidden="true">
+            <div className="absolute inset-0 bg-gold/10 rounded-xl blur-xl" />
+            <span className="relative text-gold" aria-hidden="true">
               <SrdClassIcon iconName={cls.icon} className="w-14 h-14 md:w-16 md:h-16" />
             </span>
           </div>
@@ -987,7 +987,7 @@ function HeroSection({
               >
                 {roleLabel}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#13131E] border border-[#D4A853]/20 text-sm font-mono text-[#D4A853] font-bold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-surface-primary border border-gold/20 text-sm font-mono text-gold font-bold">
                 {cls.hit_die}
               </span>
               {cls.spellcaster && cls.spellcasting_ability && (
@@ -1020,7 +1020,7 @@ function StatBlockSection({
       {/* Hit Points block */}
       {cls.hit_points_en && (
         <>
-          <h3 className="text-sm font-bold text-[#922610] uppercase tracking-wider italic">
+          <h3 className="text-sm font-bold text-srd-accent uppercase tracking-wider italic">
             {L.hitPoints}
           </h3>
           <div className="mt-2 space-y-1">
@@ -1051,7 +1051,7 @@ function StatBlockSection({
       <GoldDivider />
 
       {/* Proficiencies block */}
-      <h3 className="text-sm font-bold text-[#922610] uppercase tracking-wider italic">
+      <h3 className="text-sm font-bold text-srd-accent uppercase tracking-wider italic">
         {L.proficiencies}
       </h3>
       <div className="mt-3 space-y-2">
@@ -1081,7 +1081,7 @@ function StatBlockSection({
       <div className="flex flex-wrap gap-x-8 gap-y-2">
         <div>
           <span className="font-bold text-[#E8E6E0] text-sm">{L.hitDie}: </span>
-          <span className="text-[#D4A853] font-mono font-bold text-sm">{cls.hit_die}</span>
+          <span className="text-gold font-mono font-bold text-sm">{cls.hit_die}</span>
         </div>
         <div>
           <span className="font-bold text-[#E8E6E0] text-sm">{L.primaryAbility}: </span>
@@ -1101,7 +1101,7 @@ function StatBlockSection({
 function ProfLine({ label, value }: { label: string; value: string }) {
   return (
     <p className="text-sm leading-relaxed">
-      <span className="font-bold text-[#D4A853]">{label}: </span>
+      <span className="font-bold text-gold">{label}: </span>
       <span className="text-[#E8E6E0]/70">{value}</span>
     </p>
   );
@@ -1148,32 +1148,32 @@ function ClassProgressionTable({
                 "linear-gradient(to right, rgba(212,168,83,0.08), transparent)",
             }}
           >
-            <th className="sticky left-0 z-10 px-3 py-3 text-left font-semibold text-[#D4A853] bg-[#1A1A28]">
+            <th className="sticky left-0 z-10 px-3 py-3 text-left font-semibold text-gold bg-surface-secondary">
               {L.level}
             </th>
-            <th className="px-3 py-3 text-center font-semibold text-[#D4A853]">
+            <th className="px-3 py-3 text-center font-semibold text-gold">
               {L.profBonus}
             </th>
-            <th className="px-3 py-3 text-left font-semibold text-[#D4A853] min-w-[200px]">
+            <th className="px-3 py-3 text-left font-semibold text-gold min-w-[200px]">
               {L.features}
             </th>
             {extraKeys.map((key) => (
               <th
                 key={key}
-                className="px-3 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap"
+                className="px-3 py-3 text-center font-semibold text-gold whitespace-nowrap"
               >
                 {extrasColumns.get(key)}
               </th>
             ))}
             {isCaster &&
               rows.some((r) => r.cantrips_known !== undefined) && (
-                <th className="px-3 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap">
+                <th className="px-3 py-3 text-center font-semibold text-gold whitespace-nowrap">
                   {L.cantripsKnown}
                 </th>
               )}
             {isCaster &&
               rows.some((r) => r.spells_known !== undefined) && (
-                <th className="px-3 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap">
+                <th className="px-3 py-3 text-center font-semibold text-gold whitespace-nowrap">
                   {L.spellsKnown}
                 </th>
               )}
@@ -1181,7 +1181,7 @@ function ClassProgressionTable({
               slotHeaders.map((lvl) => (
                 <th
                   key={lvl}
-                  className="px-2 py-3 text-center font-semibold text-[#D4A853] whitespace-nowrap"
+                  className="px-2 py-3 text-center font-semibold text-gold whitespace-nowrap"
                 >
                   {lvl}
                 </th>
@@ -1199,9 +1199,9 @@ function ClassProgressionTable({
                 key={row.level}
                 className={`${
                   isEven ? "bg-transparent" : "bg-white/[0.02]"
-                } hover:bg-[#D4A853]/[0.04] transition-colors border-b border-white/[0.04]`}
+                } hover:bg-gold/[0.04] transition-colors border-b border-white/[0.04]`}
               >
-                <td className="sticky left-0 z-10 px-3 py-2.5 font-bold text-[#D4A853] font-mono text-center bg-inherit">
+                <td className="sticky left-0 z-10 px-3 py-2.5 font-bold text-gold font-mono text-center bg-inherit">
                   {row.level}
                 </td>
                 <td className="px-3 py-2.5 text-center text-[#E8E6E0]/60 font-mono text-xs">
@@ -1285,7 +1285,7 @@ function FeatureLinks({ features }: { features: string }) {
             {i > 0 && ", "}
             <a
               href={`#feature-${slug}`}
-              className="text-[#E8E6E0]/80 hover:text-[#D4A853] underline decoration-dotted decoration-[#D4A853]/30 underline-offset-2 transition-colors"
+              className="text-[#E8E6E0]/80 hover:text-gold underline decoration-dotted decoration-gold/30 underline-offset-2 transition-colors"
             >
               {feat}
             </a>
@@ -1316,7 +1316,7 @@ function FeatureCard({
   return (
     <div
       id={`feature-${slug}`}
-      className="scroll-mt-20 rounded-lg border border-white/[0.04] bg-[#1A1A28]/80 hover:border-white/[0.08] transition-all duration-200 overflow-hidden"
+      className="scroll-mt-20 rounded-lg border border-white/[0.04] bg-surface-secondary/80 hover:border-white/[0.08] transition-all duration-200 overflow-hidden"
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%231A1A28'/%3E%3Crect width='1' height='1' x='1' y='1' fill='%231e1e2a' fill-opacity='0.3'/%3E%3C/svg%3E")`,
       }}
@@ -1325,7 +1325,7 @@ function FeatureCard({
         <div className="flex items-start gap-3">
           <LevelBadge level={feature.level} />
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-bold text-[#E8C87A] font-[family-name:var(--font-cinzel)] leading-tight">
+            <h3 className="text-lg font-bold text-gold-light font-[family-name:var(--font-cinzel)] leading-tight">
               {name}
             </h3>
             {isPt && feature.name !== feature.name_pt && (
@@ -1353,14 +1353,14 @@ function FeatureCard({
         >
           <Prose text={desc} />
           {!expanded && (
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#1A1A28] to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-surface-secondary to-transparent" />
           )}
         </div>
 
         {isLong && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="mt-2 text-xs font-medium text-[#D4A853] hover:text-[#E8C87A] transition-colors flex items-center gap-1"
+            className="mt-2 text-xs font-medium text-gold hover:text-gold-light transition-colors flex items-center gap-1"
           >
             {expanded ? (
               <>
@@ -1400,9 +1400,9 @@ function SubclassCard({
     <div
       className={`relative rounded-xl border transition-all duration-200 overflow-hidden ${
         sub.is_srd
-          ? "border-[#D4A853]/20 hover:border-[#D4A853]/30"
+          ? "border-gold/20 hover:border-gold/30"
           : "border-white/[0.06] hover:border-white/[0.1]"
-      } bg-[#1A1A28]`}
+      } bg-surface-secondary`}
     >
       {/* Gold left accent */}
       <div
@@ -1422,7 +1422,7 @@ function SubclassCard({
                 {name}
               </h3>
               {sub.is_srd && (
-                <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#D4A853]/15 text-[#D4A853] border border-[#D4A853]/20">
+                <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-gold/15 text-gold border border-gold/20">
                   {L.srdSubclass}
                 </span>
               )}
@@ -1438,7 +1438,7 @@ function SubclassCard({
           </div>
           <Link
             href={`/classes/${classId}/subclasses/${sub.id}`}
-            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#D4A853] border border-[#D4A853]/30 rounded-md hover:bg-[#D4A853]/10 hover:border-[#D4A853]/50 transition-all whitespace-nowrap"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gold border border-gold/30 rounded-md hover:bg-gold/10 hover:border-gold/50 transition-all whitespace-nowrap"
           >
             {L.viewSubclass}
             <ChevronRight className="w-3 h-3" />

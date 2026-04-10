@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { roll, type RollResult, type RollMode } from "@/lib/dice/roll";
+import { DICE_LABELS, getDicePresets, type PresetGroup } from "@/lib/data/dice-presets";
 
 // ── Types ─────────────────────────────────────────────────────────
 type DieType = 4 | 6 | 8 | 10 | 12 | 20 | 100;
@@ -25,7 +26,7 @@ const DIE_COLORS: Record<DieType, string> = {
   8: "border-purple-500/40 hover:border-purple-400 text-purple-400",
   10: "border-pink-500/40 hover:border-pink-400 text-pink-400",
   12: "border-orange-500/40 hover:border-orange-400 text-orange-400",
-  20: "border-[#D4A853]/40 hover:border-[#D4A853] text-[#D4A853]",
+  20: "border-gold/40 hover:border-gold text-gold",
   100: "border-red-500/40 hover:border-red-400 text-red-400",
 };
 
@@ -35,107 +36,11 @@ const DIE_ACTIVE_COLORS: Record<DieType, string> = {
   8: "border-purple-400 bg-purple-500/10 text-purple-300 shadow-purple-500/20",
   10: "border-pink-400 bg-pink-500/10 text-pink-300 shadow-pink-500/20",
   12: "border-orange-400 bg-orange-500/10 text-orange-300 shadow-orange-500/20",
-  20: "border-[#D4A853] bg-[#D4A853]/10 text-[#D4A853] shadow-[#D4A853]/20",
+  20: "border-gold bg-gold/10 text-gold shadow-gold/20",
   100: "border-red-400 bg-red-500/10 text-red-300 shadow-red-500/20",
 };
 
-const LABELS = {
-  en: {
-    title: "D&D 5e Dice Roller",
-    subtitle: "Roll dice online — click to add, then roll",
-    rollButton: "Roll!",
-    clearTray: "Clear",
-    customLabel: "Custom notation",
-    customPlaceholder: "e.g. 2d6+5",
-    customRoll: "Roll",
-    history: "Roll History",
-    clearHistory: "Clear",
-    emptyHistory: "No rolls yet — click a die to start!",
-    presets: "Quick Presets",
-    modifier: "Modifier",
-    mode: "Mode",
-    normal: "Normal",
-    advantage: "Advantage",
-    disadvantage: "Disadvantage",
-    critical: "Critical",
-    resistance: "Resistance",
-    presetsAbility: "Ability Checks",
-    presetsSaves: "Saving Throws",
-    presetsAttack: "Attacks",
-    presetsDamage: "Common Damage",
-    presetsHealing: "Healing",
-  },
-  "pt-BR": {
-    title: "Rolador de Dados D&D 5e",
-    subtitle: "Role dados online — clique para adicionar, depois role",
-    rollButton: "Rolar!",
-    clearTray: "Limpar",
-    customLabel: "Notação personalizada",
-    customPlaceholder: "ex: 2d6+5",
-    customRoll: "Rolar",
-    history: "Histórico de Rolagens",
-    clearHistory: "Limpar",
-    emptyHistory: "Nenhuma rolagem ainda — clique num dado!",
-    presets: "Rolagens Rápidas",
-    modifier: "Modificador",
-    mode: "Modo",
-    normal: "Normal",
-    advantage: "Vantagem",
-    disadvantage: "Desvantagem",
-    critical: "Crítico",
-    resistance: "Resistência",
-    presetsAbility: "Testes de Habilidade",
-    presetsSaves: "Testes de Resistência",
-    presetsAttack: "Ataques",
-    presetsDamage: "Dano Comum",
-    presetsHealing: "Cura",
-  },
-} as const;
-
-interface PresetGroup {
-  label: string;
-  presets: { name: string; notation: string }[];
-}
-
-function getPresets(locale: "en" | "pt-BR"): PresetGroup[] {
-  return [
-    {
-      label: LABELS[locale].presetsAttack,
-      presets: [
-        { name: locale === "pt-BR" ? "Ataque (d20)" : "Attack (d20)", notation: "1d20" },
-        { name: locale === "pt-BR" ? "Ataque +5" : "Attack +5", notation: "1d20+5" },
-        { name: locale === "pt-BR" ? "Ataque +8" : "Attack +8", notation: "1d20+8" },
-      ],
-    },
-    {
-      label: LABELS[locale].presetsDamage,
-      presets: [
-        { name: locale === "pt-BR" ? "Espada longa" : "Longsword", notation: "1d8+3" },
-        { name: locale === "pt-BR" ? "Besta pesada" : "Heavy Crossbow", notation: "1d10+3" },
-        { name: locale === "pt-BR" ? "Espada grande" : "Greatsword", notation: "2d6+4" },
-        { name: "Fireball", notation: "8d6" },
-        { name: "Sneak Attack (5d6)", notation: "5d6" },
-      ],
-    },
-    {
-      label: LABELS[locale].presetsHealing,
-      presets: [
-        { name: locale === "pt-BR" ? "Curar Ferimentos" : "Cure Wounds", notation: "1d8+3" },
-        { name: locale === "pt-BR" ? "Palavra Curativa" : "Healing Word", notation: "1d4+3" },
-        { name: locale === "pt-BR" ? "Poção de Cura" : "Healing Potion", notation: "2d4+2" },
-      ],
-    },
-    {
-      label: LABELS[locale].presetsAbility,
-      presets: [
-        { name: locale === "pt-BR" ? "Teste simples" : "Plain check", notation: "1d20" },
-        { name: locale === "pt-BR" ? "Com +2" : "With +2", notation: "1d20+2" },
-        { name: locale === "pt-BR" ? "Com +5" : "With +5", notation: "1d20+5" },
-        { name: locale === "pt-BR" ? "Iniciativa" : "Initiative", notation: "1d20+2" },
-      ],
-    },
-  ];
-}
+const LABELS = DICE_LABELS;
 
 // ── Component ─────────────────────────────────────────────────────
 export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
@@ -234,7 +139,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
     }
   }, [lastResult]);
 
-  const presetGroups = getPresets(locale);
+  const presetGroups = getDicePresets(L, locale);
   const trayNotation = Object.entries(tray)
     .filter(([, n]) => n > 0)
     .map(([s, n]) => `${n}d${s}`)
@@ -244,7 +149,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">
+        <h1 className="text-3xl font-bold text-foreground font-[family-name:var(--font-cinzel)]">
           {L.title}
         </h1>
         <p className="text-gray-400 mt-1">{L.subtitle}</p>
@@ -254,7 +159,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
         {/* Left: Dice Tray + Controls */}
         <div className="lg:col-span-2 space-y-4">
           {/* Dice buttons */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
               {DIE_TYPES.map((sides) => {
                 const count = tray[sides] ?? 0;
@@ -264,7 +169,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                     <button
                       type="button"
                       onClick={() => addDie(sides)}
-                      className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 transition-all font-[family-name:var(--font-cinzel)] font-bold text-base sm:text-lg shadow-md ${
+                      className={`compendium-card relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 transition-all font-[family-name:var(--font-cinzel)] font-bold text-base sm:text-lg shadow-md ${
                         isActive
                           ? `${DIE_ACTIVE_COLORS[sides]} shadow-lg scale-105`
                           : `${DIE_COLORS[sides]} bg-gray-900/80`
@@ -272,7 +177,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                     >
                       d{sides}
                       {count > 0 && (
-                        <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#D4A853] text-gray-950 text-xs font-bold flex items-center justify-center">
+                        <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gold text-gray-950 text-xs font-bold flex items-center justify-center">
                           {count}
                         </span>
                       )}
@@ -311,7 +216,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                   >
                     −
                   </button>
-                  <span className="w-8 text-center text-sm font-mono text-[#F5F0E8]">
+                  <span className="w-8 text-center text-sm font-mono text-foreground">
                     {mod >= 0 ? `+${mod}` : mod}
                   </span>
                   <button
@@ -331,6 +236,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                   {(["normal", "advantage", "disadvantage", "critical", "resistance"] as RollMode[]).map((m) => (
                     <button
                       key={m}
+                      aria-pressed={mode === m}
                       onClick={() => setMode(m)}
                       className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
                         mode === m
@@ -375,7 +281,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                 disabled={!hasAnyDie || rolling}
                 className={`px-6 py-2.5 rounded-lg font-bold text-base transition-all ${
                   hasAnyDie
-                    ? "bg-[#D4A853] text-gray-950 hover:bg-[#D4A853]/90 shadow-lg shadow-[#D4A853]/20"
+                    ? "bg-gold text-gray-950 hover:bg-gold/90 shadow-lg shadow-gold/20"
                     : "bg-gray-800 text-gray-600 cursor-not-allowed"
                 } ${rolling ? "animate-pulse scale-95" : ""}`}
               >
@@ -389,7 +295,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
             {lastResult && (
               <div className={`rounded-xl border p-5 text-center transition-all ${
                 lastResult.isNat20
-                  ? "border-[#D4A853] bg-[#D4A853]/10 shadow-lg shadow-[#D4A853]/20"
+                  ? "border-gold bg-gold/10 shadow-lg shadow-gold/20"
                   : lastResult.isNat1
                     ? "border-red-500 bg-red-500/10 shadow-lg shadow-red-500/20"
                     : "border-gray-700 bg-gray-900/50"
@@ -408,10 +314,10 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                       {L[lastResult.mode]}
                     </span>
                   )}
-                  <span className={`text-5xl font-bold font-[family-name:var(--font-cinzel)] ${
-                    lastResult.isNat20 ? "text-[#D4A853]" :
-                    lastResult.isNat1 ? "text-red-400" :
-                    "text-[#F5F0E8]"
+                  <span className={`text-6xl sm:text-7xl font-bold font-[family-name:var(--font-cinzel)] ${
+                    lastResult.isNat20 ? "text-gold drop-shadow-[0_0_12px_rgba(212,175,55,0.4)]" :
+                    lastResult.isNat1 ? "text-red-400 drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]" :
+                    "text-foreground"
                   }`}>
                     {lastResult.mode === "resistance" && lastResult.resistanceTotal !== undefined
                       ? lastResult.resistanceTotal
@@ -419,7 +325,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                   </span>
                 </div>
                 {lastResult.isNat20 && (
-                  <p className="text-[#D4A853] font-bold mt-1">Natural 20!</p>
+                  <p className="text-gold font-bold mt-1">Natural 20!</p>
                 )}
                 {lastResult.isNat1 && (
                   <p className="text-red-400 font-bold mt-1">Natural 1!</p>
@@ -443,7 +349,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
           </div>
 
           {/* Custom notation */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <label className="text-sm text-gray-400 block mb-2">{L.customLabel}</label>
             <div className="flex gap-2">
               <input
@@ -452,13 +358,14 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                 onChange={(e) => setCustomNotation(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCustomRoll()}
                 placeholder={L.customPlaceholder}
-                className="flex-1 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-[#F5F0E8] placeholder-gray-600 focus:outline-none focus:border-[#D4A853]/50 font-mono"
+                aria-label={L.customLabel}
+                className="flex-1 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-foreground placeholder-gray-600 focus:outline-none focus:border-gold/50 font-mono"
               />
               <button
                 type="button"
                 onClick={handleCustomRoll}
                 disabled={!customNotation.trim()}
-                className="px-4 py-2 rounded-lg bg-[#D4A853] text-gray-950 font-semibold text-sm hover:bg-[#D4A853]/90 disabled:bg-gray-800 disabled:text-gray-600 transition-colors"
+                className="px-4 py-2 rounded-lg bg-gold text-gray-950 font-semibold text-sm hover:bg-gold/90 disabled:bg-gray-800 disabled:text-gray-600 transition-colors"
               >
                 {L.customRoll}
               </button>
@@ -466,8 +373,8 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
           </div>
 
           {/* Presets */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-            <h2 className="text-sm font-semibold text-[#D4A853] mb-3">{L.presets}</h2>
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
+            <h2 className="text-sm font-semibold text-gold mb-3 font-[family-name:var(--font-cinzel)] tracking-wide">{L.presets}</h2>
             <div className="space-y-3">
               {presetGroups.map((group) => (
                 <div key={group.label}>
@@ -478,7 +385,7 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
                         key={preset.notation + preset.name}
                         type="button"
                         onClick={() => handlePresetRoll(preset.notation, preset.name)}
-                        className="px-2.5 py-1 rounded-lg border border-gray-700 text-xs text-gray-300 hover:border-[#D4A853]/40 hover:text-[#D4A853] transition-colors"
+                        className="px-2.5 py-1 rounded-lg border border-gray-700 text-xs text-gray-300 hover:border-gold/40 hover:text-gold transition-colors"
                       >
                         {preset.name}{" "}
                         <span className="text-gray-500 font-mono">{preset.notation}</span>
@@ -493,9 +400,9 @@ export function PublicDiceRoller({ locale = "en" }: PublicDiceRollerProps) {
 
         {/* Right: History panel */}
         <div className="lg:col-span-1">
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4 sticky top-20">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4 sticky top-20">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-[#D4A853]">{L.history}</h2>
+              <h2 className="text-sm font-semibold text-gold font-[family-name:var(--font-cinzel)] tracking-wide">{L.history}</h2>
               {history.length > 0 && (
                 <button
                   type="button"
@@ -540,7 +447,7 @@ function HistoryRow({ entry, locale }: { entry: HistoryEntry; locale: string }) 
       : result.total;
 
   const natClass = result.isNat20
-    ? "border-[#D4A853]/30"
+    ? "border-gold/30"
     : result.isNat1
       ? "border-red-500/30"
       : "border-gray-800/50";
@@ -565,9 +472,9 @@ function HistoryRow({ entry, locale }: { entry: HistoryEntry; locale: string }) 
           )}
         </div>
         <span className={`text-lg font-bold font-[family-name:var(--font-cinzel)] shrink-0 ${
-          result.isNat20 ? "text-[#D4A853]" :
+          result.isNat20 ? "text-gold" :
           result.isNat1 ? "text-red-400" :
-          "text-[#F5F0E8]"
+          "text-foreground"
         }`}>
           {displayTotal}
         </span>

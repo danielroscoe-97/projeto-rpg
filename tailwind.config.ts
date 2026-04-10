@@ -122,6 +122,9 @@ export default {
         card: "0 4px 32px rgba(0, 0, 0, 0.4)",
         "gold-glow": "0 0 15px rgba(212, 168, 83, 0.4)",
         "gold-glow-lg": "0 0 25px rgba(212, 168, 83, 0.5)",
+        "gold-subtle": "0 0 15px rgba(212, 168, 83, 0.15)",
+        "gold-card": "0 4px 20px rgba(212, 168, 83, 0.12), 0 0 15px rgba(212, 168, 83, 0.08)",
+        "card-hover": "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 168, 83, 0.15)",
       },
       transitionTimingFunction: {
         theme: "cubic-bezier(0.4, 0, 0.2, 1)",

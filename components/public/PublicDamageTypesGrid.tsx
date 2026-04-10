@@ -1,418 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { ReactNode } from "react";
-import {
-  SrdIconDroplet,
-  SrdIconHammer,
-  SrdIconSnowflake,
-  SrdIconFlame,
-  SrdIconSparkle,
-  SrdIconLightning,
-  SrdIconMoon,
-  SrdIconDagger,
-  SrdIconVial,
-  SrdIconBrain,
-  SrdIconSun,
-  SrdIconSlash,
-  SrdIconExplosion,
-} from "./SrdIcons";
-
-// ── Types ─────────────────────────────────────────────────────────
-interface DamageTypeEntry {
-  id: string;
-  nameEn: string;
-  namePt: string;
-  icon: ReactNode;
-  color: string;
-  group: "physical" | "elemental" | "magical";
-  descriptionEn: string;
-  descriptionPt: string;
-  sourcesEn: string[];
-  sourcesPt: string[];
-  resistanceEn: string;
-  resistancePt: string;
-  immunityEn: string;
-  immunityPt: string;
-}
+import { DAMAGE_TYPES } from "@/lib/data/damage-types";
 
 interface PublicDamageTypesGridProps {
   locale?: "en" | "pt-BR";
 }
 
-// ── Data ──────────────────────────────────────────────────────────
-const DAMAGE_TYPES: DamageTypeEntry[] = [
-  {
-    id: "acid",
-    nameEn: "Acid",
-    namePt: "Acido",
-    icon: <SrdIconDroplet className="w-6 h-6" />,
-    color: "#68D391",
-    group: "elemental",
-    descriptionEn:
-      "Corrosive spray of black dragon breath and dissolving enzymes.",
-    descriptionPt:
-      "Spray corrosivo do sopro de dragao negro e enzimas dissolventes.",
-    sourcesEn: [
-      "Black Dragon breath weapon",
-      "Acid Splash cantrip",
-      "Melf's Acid Arrow",
-      "Green Dragon (poison/acid variant creatures)",
-    ],
-    sourcesPt: [
-      "Sopro de Dragao Negro",
-      "Truque Respingo Acido",
-      "Flecha Acida de Melf",
-      "Dragao Verde (criaturas variantes de acido)",
-    ],
-    resistanceEn: "Black dragons, some oozes, and acid-dwelling creatures.",
-    resistancePt: "Dragoes negros, algumas gosmas e criaturas acidas.",
-    immunityEn: "Black dragons (immune), ochre jelly, gray ooze.",
-    immunityPt: "Dragoes negros (imune), geleia ocre, gosma cinzenta.",
-  },
-  {
-    id: "bludgeoning",
-    nameEn: "Bludgeoning",
-    namePt: "Contundente",
-    icon: <SrdIconHammer className="w-6 h-6" />,
-    color: "#A0AEC0",
-    group: "physical",
-    descriptionEn:
-      "Blunt force attacks -- hammers, falling, constriction.",
-    descriptionPt:
-      "Ataques de forca bruta -- martelos, quedas, constricao.",
-    sourcesEn: [
-      "Mace, warhammer, quarterstaff",
-      "Falling damage",
-      "Giant's slam attacks",
-      "Constriction (snakes, tentacles)",
-    ],
-    sourcesPt: [
-      "Maca, martelo de guerra, bordao",
-      "Dano por queda",
-      "Ataques de esmagar de gigantes",
-      "Constricao (cobras, tentaculos)",
-    ],
-    resistanceEn:
-      "Skeletons (vulnerable), many constructs, were-creatures (nonmagical).",
-    resistancePt:
-      "Esqueletos (vulneraveis), muitos constructos, licantropos (nao-magico).",
-    immunityEn: "Some golems, swarms (partial).",
-    immunityPt: "Alguns golems, enxames (parcial).",
-  },
-  {
-    id: "cold",
-    nameEn: "Cold",
-    namePt: "Frio",
-    icon: <SrdIconSnowflake className="w-6 h-6" />,
-    color: "#63B3ED",
-    group: "elemental",
-    descriptionEn:
-      "Infernal chill of ice storm and white dragon breath.",
-    descriptionPt:
-      "Frio infernal de tempestade de gelo e sopro de dragao branco.",
-    sourcesEn: [
-      "White Dragon breath weapon",
-      "Ray of Frost cantrip",
-      "Ice Storm, Cone of Cold",
-      "Ice mephits, frost giants",
-    ],
-    sourcesPt: [
-      "Sopro de Dragao Branco",
-      "Truque Raio de Gelo",
-      "Tempestade de Gelo, Cone de Frio",
-      "Mefitas de gelo, gigantes de gelo",
-    ],
-    resistanceEn: "White dragons, frost giants, ice elementals.",
-    resistancePt: "Dragoes brancos, gigantes de gelo, elementais de gelo.",
-    immunityEn: "White dragons (immune), ice devils, frost salamanders.",
-    immunityPt: "Dragoes brancos (imune), diabos de gelo, salamandras glaciais.",
-  },
-  {
-    id: "fire",
-    nameEn: "Fire",
-    namePt: "Fogo",
-    icon: <SrdIconFlame className="w-6 h-6" />,
-    color: "#F56565",
-    group: "elemental",
-    descriptionEn:
-      "Red dragon breath and fireball -- the most resisted damage type.",
-    descriptionPt:
-      "Sopro de dragao vermelho e bola de fogo -- o tipo de dano mais resistido.",
-    sourcesEn: [
-      "Red Dragon breath weapon",
-      "Fireball, Fire Bolt cantrip",
-      "Burning Hands, Wall of Fire",
-      "Fire elementals, hell hounds",
-    ],
-    sourcesPt: [
-      "Sopro de Dragao Vermelho",
-      "Bola de Fogo, Truque Rajada de Fogo",
-      "Maos Flamejantes, Muralha de Fogo",
-      "Elementais de fogo, caes infernais",
-    ],
-    resistanceEn:
-      "Red dragons, fire giants, tieflings, many fiends. Most common resistance.",
-    resistancePt:
-      "Dragoes vermelhos, gigantes de fogo, tieflings, muitos demonianos. Resistencia mais comum.",
-    immunityEn: "Red dragons (immune), fire elementals, efreeti.",
-    immunityPt: "Dragoes vermelhos (imune), elementais de fogo, efreeti.",
-  },
-  {
-    id: "force",
-    nameEn: "Force",
-    namePt: "Forca",
-    icon: <SrdIconSparkle className="w-6 h-6" />,
-    color: "#B794F4",
-    group: "magical",
-    descriptionEn:
-      "Pure magical energy. Almost nothing resists force damage.",
-    descriptionPt:
-      "Energia magica pura. Quase nada resiste a dano de forca.",
-    sourcesEn: [
-      "Magic Missile (auto-hit)",
-      "Eldritch Blast cantrip",
-      "Spiritual Weapon, Bigby's Hand",
-      "Wall of Force (no damage, but force barrier)",
-    ],
-    sourcesPt: [
-      "Misseis Magicos (acerto automatico)",
-      "Truque Rajada Mistica",
-      "Arma Espiritual, Mao de Bigby",
-      "Muralha de Forca (sem dano, mas barreira de forca)",
-    ],
-    resistanceEn: "Helmed horror is one of the very few creatures with force resistance.",
-    resistancePt: "Horror encouracado e uma das raras criaturas com resistencia a forca.",
-    immunityEn: "Virtually no creatures are immune to force damage.",
-    immunityPt: "Praticamente nenhuma criatura e imune a dano de forca.",
-  },
-  {
-    id: "lightning",
-    nameEn: "Lightning",
-    namePt: "Relampago",
-    icon: <SrdIconLightning className="w-6 h-6" />,
-    color: "#ECC94B",
-    group: "elemental",
-    descriptionEn:
-      "Blue dragon breath and lightning bolt.",
-    descriptionPt:
-      "Sopro de dragao azul e relampago.",
-    sourcesEn: [
-      "Blue Dragon breath weapon",
-      "Lightning Bolt, Shocking Grasp",
-      "Call Lightning, Chain Lightning",
-      "Storm giants, blue dragon-related creatures",
-    ],
-    sourcesPt: [
-      "Sopro de Dragao Azul",
-      "Relampago, Toque Chocante",
-      "Invocar Relampago, Relampago em Cadeia",
-      "Gigantes de tempestade, criaturas draconicas azuis",
-    ],
-    resistanceEn: "Blue dragons, storm giants, some constructs.",
-    resistancePt: "Dragoes azuis, gigantes de tempestade, alguns constructos.",
-    immunityEn: "Blue dragons (immune), flesh golems (absorb), shambling mound (absorb).",
-    immunityPt: "Dragoes azuis (imune), golems de carne (absorvem), monstro de lodo ambulante (absorve).",
-  },
-  {
-    id: "necrotic",
-    nameEn: "Necrotic",
-    namePt: "Necrotico",
-    icon: <SrdIconMoon className="w-6 h-6" />,
-    color: "#A0AEC0",
-    group: "magical",
-    descriptionEn:
-      "Life-draining energy dealt by undead and some spells.",
-    descriptionPt:
-      "Energia drenadora de vida causada por mortos-vivos e algumas magias.",
-    sourcesEn: [
-      "Chill Touch cantrip, Blight",
-      "Inflict Wounds, Harm",
-      "Wights, wraiths, specters (life drain)",
-      "Shadow demons, bodaks",
-    ],
-    sourcesPt: [
-      "Truque Toque Arrepiante, Deterioracao",
-      "Infligir Ferimentos, Nocividade",
-      "Aparicoes, espectros (drenar vida)",
-      "Demonios sombrios, bodaks",
-    ],
-    resistanceEn: "Some undead, shadow creatures, and fiends.",
-    resistancePt: "Alguns mortos-vivos, criaturas sombrias e demonianos.",
-    immunityEn: "Most undead are immune. Zombies, liches, vampires.",
-    immunityPt: "A maioria dos mortos-vivos e imune. Zumbis, liches, vampiros.",
-  },
-  {
-    id: "piercing",
-    nameEn: "Piercing",
-    namePt: "Perfurante",
-    icon: <SrdIconDagger className="w-6 h-6" />,
-    color: "#A0AEC0",
-    group: "physical",
-    descriptionEn:
-      "Puncturing attacks -- arrows, bites, spears.",
-    descriptionPt:
-      "Ataques perfurantes -- flechas, mordidas, lancas.",
-    sourcesEn: [
-      "Longbow, shortbow, crossbow",
-      "Spear, rapier, pike",
-      "Bite attacks (wolves, dragons)",
-      "Spike Growth, spike traps",
-    ],
-    sourcesPt: [
-      "Arco longo, arco curto, besta",
-      "Lanca, rapieira, alabarda",
-      "Ataques de mordida (lobos, dragoes)",
-      "Crescimento de Espinhos, armadilhas de espinhos",
-    ],
-    resistanceEn: "Were-creatures (nonmagical), treants, some constructs.",
-    resistancePt: "Licantropos (nao-magico), treants, alguns constructos.",
-    immunityEn: "Some oozes, certain swarms.",
-    immunityPt: "Algumas gosmas, certos enxames.",
-  },
-  {
-    id: "poison",
-    nameEn: "Poison",
-    namePt: "Veneno",
-    icon: <SrdIconVial className="w-6 h-6" />,
-    color: "#48BB78",
-    group: "elemental",
-    descriptionEn:
-      "Venomous stings and toxic gas.",
-    descriptionPt:
-      "Picadas venenosas e gas toxico.",
-    sourcesEn: [
-      "Green Dragon breath weapon",
-      "Poison Spray cantrip, Cloudkill",
-      "Giant spiders, wyverns, poisonous snakes",
-      "Assassin's poisoned blades",
-    ],
-    sourcesPt: [
-      "Sopro de Dragao Verde",
-      "Truque Borrifo Venenoso, Nuvem Mortal",
-      "Aranhas gigantes, wyverns, cobras venenosas",
-      "Laminas envenenadas de assassinos",
-    ],
-    resistanceEn: "Dwarves (Stout), many fiends, yuan-ti.",
-    resistancePt: "Anoes (Robusto), muitos demonianos, yuan-ti.",
-    immunityEn:
-      "Most undead, most constructs, most fiends. The most commonly immunized type.",
-    immunityPt:
-      "Maioria dos mortos-vivos, constructos e demonianos. O tipo mais comumente imune.",
-  },
-  {
-    id: "psychic",
-    nameEn: "Psychic",
-    namePt: "Psiquico",
-    icon: <SrdIconBrain className="w-6 h-6" />,
-    color: "#D53F8C",
-    group: "magical",
-    descriptionEn:
-      "Mental assault that targets the mind.",
-    descriptionPt:
-      "Assalto mental que atinge a mente.",
-    sourcesEn: [
-      "Mind Blast (mind flayers)",
-      "Phantasmal Killer, Synaptic Static",
-      "Psychic Scream (9th level)",
-      "Vicious Mockery cantrip",
-    ],
-    sourcesPt: [
-      "Explosao Mental (devoradores de mentes)",
-      "Assassino Fantasmagorico, Estatica Sinaptica",
-      "Grito Psiquico (nivel 9)",
-      "Truque Zombaria Cruel",
-    ],
-    resistanceEn: "Rare. Some aberrations and mindless creatures.",
-    resistancePt: "Raro. Algumas aberracoes e criaturas sem mente.",
-    immunityEn: "Mindless undead (zombies), some constructs, intellect devourers.",
-    immunityPt: "Mortos-vivos sem mente (zumbis), alguns constructos, devoradores de intelecto.",
-  },
-  {
-    id: "radiant",
-    nameEn: "Radiant",
-    namePt: "Radiante",
-    icon: <SrdIconSun className="w-6 h-6" />,
-    color: "#F6E05E",
-    group: "magical",
-    descriptionEn:
-      "Divine fire and searing light.",
-    descriptionPt:
-      "Fogo divino e luz abrasadora.",
-    sourcesEn: [
-      "Sacred Flame cantrip, Guiding Bolt",
-      "Spirit Guardians, Sunbeam",
-      "Divine Smite (paladins)",
-      "Angels, couatls, solar creatures",
-    ],
-    sourcesPt: [
-      "Truque Chama Sagrada, Raio Guiado",
-      "Guardioes Espirituais, Raio Solar",
-      "Golpe Divino (paladinos)",
-      "Anjos, couatls, criaturas solares",
-    ],
-    resistanceEn: "Some celestials, solar-aspected creatures.",
-    resistancePt: "Alguns celestiais, criaturas solares.",
-    immunityEn: "Very rare. Some high-tier celestials only.",
-    immunityPt: "Muito raro. Apenas alguns celestiais de alto nivel.",
-  },
-  {
-    id: "slashing",
-    nameEn: "Slashing",
-    namePt: "Cortante",
-    icon: <SrdIconSlash className="w-6 h-6" />,
-    color: "#A0AEC0",
-    group: "physical",
-    descriptionEn:
-      "Swords, axes, and claws that cut.",
-    descriptionPt:
-      "Espadas, machados e garras que cortam.",
-    sourcesEn: [
-      "Longsword, greatsword, scimitar",
-      "Greataxe, handaxe, sickle",
-      "Claw attacks (dragons, beasts)",
-      "Blade Barrier spell",
-    ],
-    sourcesPt: [
-      "Espada longa, montante, cimitarra",
-      "Machado grande, machadinha, foice",
-      "Ataques de garra (dragoes, bestas)",
-      "Magia Barreira de Laminas",
-    ],
-    resistanceEn: "Were-creatures (nonmagical), treants, some constructs.",
-    resistancePt: "Licantropos (nao-magico), treants, alguns constructos.",
-    immunityEn: "Black pudding (splits instead), some oozes.",
-    immunityPt: "Pudim negro (se divide), algumas gosmas.",
-  },
-  {
-    id: "thunder",
-    nameEn: "Thunder",
-    namePt: "Trovao",
-    icon: <SrdIconExplosion className="w-6 h-6" />,
-    color: "#76E4F7",
-    group: "magical",
-    descriptionEn:
-      "Concussive burst of sound.",
-    descriptionPt:
-      "Explosao concussiva de som.",
-    sourcesEn: [
-      "Thunderwave, Shatter",
-      "Thunderous Smite (paladins)",
-      "Destructive Wave",
-      "Androsphinx roar",
-    ],
-    sourcesPt: [
-      "Onda Trovejante, Despedacar",
-      "Golpe Trovejante (paladinos)",
-      "Onda Destrutiva",
-      "Rugido de androesfinge",
-    ],
-    resistanceEn: "Some constructs, storm-related creatures.",
-    resistancePt: "Alguns constructos, criaturas de tempestade.",
-    immunityEn: "Very rare. Few creatures are immune to thunder.",
-    immunityPt: "Muito raro. Poucas criaturas sao imunes a trovao.",
-  },
-];
 
 // ── Labels ────────────────────────────────────────────────────────
 const LABELS = {
@@ -503,10 +97,11 @@ export function PublicDamageTypesGrid({
         {groups.map(({ key, label }) => (
           <button
             key={key}
+            aria-pressed={filter === key}
             onClick={() => setFilter(key)}
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
               filter === key
-                ? "border-[#D4A853] bg-[#D4A853]/10 text-[#D4A853]"
+                ? "border-gold bg-gold/10 text-gold"
                 : "border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600"
             }`}
           >
@@ -540,9 +135,10 @@ export function PublicDamageTypesGrid({
           return (
             <button
               key={dt.id}
+              aria-expanded={isExpanded}
               onClick={() => setExpanded(isExpanded ? null : dt.id)}
               className={`text-left rounded-xl bg-gray-900/50 hover:bg-gray-900/80 transition-all p-4 group cursor-pointer border-l-4 border ${
-                isExpanded ? "ring-1 ring-[#D4A853]/30" : ""
+                isExpanded ? "ring-1 ring-gold/30" : ""
               }`}
               style={{
                 borderLeftColor: dt.color,
@@ -563,14 +159,14 @@ export function PublicDamageTypesGrid({
                   {dt.icon}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-base">
+                  <h3 className="font-bold text-foreground font-[family-name:var(--font-cinzel)] text-base">
                     {name}
                   </h3>
                   <p className="text-xs text-gray-500 italic">{altName}</p>
                   <p className="text-sm text-gray-400 mt-1.5">{description}</p>
 
                   {!isExpanded && (
-                    <span className="text-xs text-[#D4A853] mt-1.5 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs text-gold mt-1.5 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
                       {L.clickToExpand}
                     </span>
                   )}

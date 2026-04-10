@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import {
   SrdIconEye,
   SrdIconHeart,
@@ -55,21 +57,21 @@ const CATEGORY_MAP: Record<string, CategoryFilter> = {
 };
 
 const CONDITION_ICONS: Record<string, ReactNode> = {
-  blinded: <SrdIconEye className="w-6 h-6" />,
-  charmed: <SrdIconHeart className="w-6 h-6" />,
-  deafened: <SrdIconEar className="w-6 h-6" />,
-  exhaustion: <SrdIconSleepZz className="w-6 h-6" />,
-  frightened: <SrdIconGhost className="w-6 h-6" />,
-  grappled: <SrdIconFist className="w-6 h-6" />,
-  incapacitated: <SrdIconStop className="w-6 h-6" />,
-  invisible: <SrdIconEyeOff className="w-6 h-6" />,
-  paralyzed: <SrdIconLightning className="w-6 h-6" />,
-  petrified: <SrdIconStone className="w-6 h-6" />,
-  poisoned: <SrdIconSkull className="w-6 h-6" />,
-  prone: <SrdIconProneBody className="w-6 h-6" />,
-  restrained: <SrdIconChain className="w-6 h-6" />,
-  stunned: <SrdIconDizzy className="w-6 h-6" />,
-  unconscious: <SrdIconSleepZz className="w-6 h-6" />,
+  blinded: <SrdIconEye className="w-8 h-8" />,
+  charmed: <SrdIconHeart className="w-8 h-8" />,
+  deafened: <SrdIconEar className="w-8 h-8" />,
+  exhaustion: <SrdIconSleepZz className="w-8 h-8" />,
+  frightened: <SrdIconGhost className="w-8 h-8" />,
+  grappled: <SrdIconFist className="w-8 h-8" />,
+  incapacitated: <SrdIconStop className="w-8 h-8" />,
+  invisible: <SrdIconEyeOff className="w-8 h-8" />,
+  paralyzed: <SrdIconLightning className="w-8 h-8" />,
+  petrified: <SrdIconStone className="w-8 h-8" />,
+  poisoned: <SrdIconSkull className="w-8 h-8" />,
+  prone: <SrdIconProneBody className="w-8 h-8" />,
+  restrained: <SrdIconChain className="w-8 h-8" />,
+  stunned: <SrdIconDizzy className="w-8 h-8" />,
+  unconscious: <SrdIconSleepZz className="w-8 h-8" />,
 };
 
 const CONDITION_NAMES_PT: Record<string, string> = {
@@ -244,10 +246,10 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[var(--5e-text,#F5F0E8)] font-[family-name:var(--font-cinzel)]">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)]">
           {L.title}
         </h1>
-        <p className="text-[var(--5e-text-muted,#9C8E7C)] mt-1">{L.subtitle}</p>
+        <p className="text-gray-400 text-lg mt-1">{L.subtitle}</p>
       </div>
 
       {/* Controls */}
@@ -256,20 +258,22 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 bg-gray-900/50 rounded-lg p-1 border border-gray-800">
             <button
+              aria-pressed={version === "2014"}
               onClick={() => setVersion("2014")}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 version === "2014"
-                  ? "bg-[#D4A853] text-white"
+                  ? "bg-gold text-white"
                   : "text-gray-400 hover:text-gray-200"
               }`}
             >
               {L.version2014}
             </button>
             <button
+              aria-pressed={version === "2024"}
               onClick={() => setVersion("2024")}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 version === "2024"
-                  ? "bg-[#D4A853] text-white"
+                  ? "bg-gold text-white"
                   : "text-gray-400 hover:text-gray-200"
               }`}
             >
@@ -277,28 +281,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
             </button>
           </div>
 
-          <div className="flex items-center gap-1 bg-gray-900/50 rounded-lg p-1 border border-gray-800">
-            <button
-              onClick={() => setDescLang("en")}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                descLang === "en"
-                  ? "bg-[#D4A853] text-white"
-                  : "text-gray-400 hover:text-gray-200"
-              }`}
-            >
-              {L.langEn}
-            </button>
-            <button
-              onClick={() => setDescLang("pt-BR")}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                descLang === "pt-BR"
-                  ? "bg-[#D4A853] text-white"
-                  : "text-gray-400 hover:text-gray-200"
-              }`}
-            >
-              {L.langPt}
-            </button>
-          </div>
+          <LanguageToggle locale={descLang} onToggle={setDescLang} size="md" />
         </div>
 
         {/* Category filters */}
@@ -306,10 +289,11 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
           {categories.map(({ key, label }) => (
             <button
               key={key}
+              aria-pressed={filter === key}
               onClick={() => setFilter(key)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
                 filter === key
-                  ? "border-[#D4A853] bg-[#D4A853]/10 text-[#D4A853]"
+                  ? "border-gold bg-gold/10 text-gold"
                   : "border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600"
               }`}
             >
@@ -320,18 +304,16 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
       </div>
 
       {/* Search bar */}
-      <div>
-        <input
-          type="text"
+      <div className="sm:max-w-sm">
+        <CompendiumSearchInput
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={setSearch}
           placeholder={L.searchPlaceholder}
-          className="w-full sm:max-w-sm rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-[#F5F0E8] placeholder-gray-600 focus:outline-none focus:border-[#D4A853]/50 transition-colors"
         />
       </div>
 
       {/* Conditions grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="compendium-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {filtered.map((cond) => {
           const baseName = cond.name.toLowerCase();
           const icon = CONDITION_ICONS[baseName] ?? <SrdIconSkull className="w-6 h-6" />;
@@ -356,17 +338,18 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
           return (
             <button
               key={cond.id}
+              aria-expanded={isExpanded}
               onClick={() => setExpanded(isExpanded ? null : cond.id)}
-              className={`text-left rounded-xl border ${catColors[cat]} bg-gray-900/50 hover:bg-gray-900/80 transition-all p-4 group cursor-pointer ${
-                isExpanded ? "ring-1 ring-[#D4A853]/30" : ""
+              className={`compendium-card text-left rounded-xl border ${catColors[cat]} bg-gray-900/50 hover:bg-gray-900/80 transition-all p-4 group cursor-pointer ${
+                isExpanded ? "ring-1 ring-gold/30" : ""
               }`}
             >
               <div className="flex items-start gap-3">
-                <span className="shrink-0 text-[#D4A853]" aria-hidden>
+                <span className="shrink-0 text-gold" aria-hidden>
                   {icon}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-base">
+                  <h3 className="font-bold text-foreground font-[family-name:var(--font-cinzel)] text-base">
                     {displayName}
                   </h3>
                   {subtitleName && subtitleName.toLowerCase() !== displayName.toLowerCase() && (
@@ -380,7 +363,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
                     {displayDescription}
                   </p>
                   {!isExpanded && displayDescription.length > 120 && (
-                    <span className="text-xs text-[#D4A853] mt-1 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs text-gold mt-1 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
                       {L.clickToExpand}
                     </span>
                   )}
@@ -393,9 +376,12 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
 
       {/* Exhaustion special section */}
       {(filter === "all" || filter === "debuff") && (
-        <div className="mt-8 rounded-xl border border-red-900/30 bg-gray-900/50 p-5">
-          <h2 className="text-xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] mb-4 flex items-center gap-2">
-            <SrdIconSleepZz className="w-5 h-5 text-[#D4A853]" />
+        <div className="gold-divider mt-8 mb-4" />
+      )}
+      {(filter === "all" || filter === "debuff") && (
+        <div className="rounded-xl border border-red-900/30 bg-gray-900/50 p-5">
+          <h2 className="text-xl font-bold text-foreground font-[family-name:var(--font-cinzel)] tracking-wide mb-4 flex items-center gap-2">
+            <SrdIconSleepZz className="w-5 h-5 text-gold" />
             {L.exhaustionLevels}
             <span className="text-xs font-normal text-gray-500 ml-2">{version}</span>
           </h2>
@@ -404,10 +390,10 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-800">
-                  <th className="text-left py-2 text-[#D4A853] font-medium w-20">
+                  <th className="text-left py-2 text-gold font-medium w-20">
                     {L.level}
                   </th>
-                  <th className="text-left py-2 text-[#D4A853] font-medium">
+                  <th className="text-left py-2 text-gold font-medium">
                     {L.effect}
                   </th>
                 </tr>
@@ -415,7 +401,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
               <tbody>
                 {EXHAUSTION_2014[descLang === "pt-BR" ? "pt-BR" : "en"].map(({ level, effect }) => (
                   <tr key={level} className="border-b border-gray-800/50">
-                    <td className={`py-2.5 font-bold ${levelColor(level)}`}>
+                    <td className={`py-2.5 font-bold font-mono tabular-nums ${levelColor(level)}`}>
                       {level}
                     </td>
                     <td className="py-2.5 text-gray-300">{effect}</td>

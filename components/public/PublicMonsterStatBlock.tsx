@@ -5,6 +5,7 @@ import { MonsterToken } from "@/components/srd/MonsterToken";
 import { DiceText } from "@/components/dice/DiceText";
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { useMonsterTranslation } from "@/lib/hooks/useMonsterTranslation";
+import { formatSpeed } from "@/lib/utils/monster";
 import {
   translateSize,
   translateType,
@@ -57,7 +58,7 @@ function LinkedTerms({ text, knownTerms, href, isPt }: {
           <span key={i}>
             {i > 0 && ", "}
             {isKnown ? (
-              <Link href={href} className="underline decoration-dotted underline-offset-2 hover:text-[#D4A853] transition-colors">
+              <Link href={href} className="underline decoration-dotted underline-offset-2 hover:text-gold transition-colors">
                 {trimmed}
               </Link>
             ) : (
@@ -77,13 +78,6 @@ function abilityMod(score: number): string {
 
 function abilityModNum(score: number): number {
   return Math.floor((score - 10) / 2);
-}
-
-function formatSpeed(speed: Record<string, string | number> | undefined): string {
-  if (!speed) return "30 ft.";
-  return Object.entries(speed)
-    .map(([k, v]) => (k === "walk" ? String(v) : `${k} ${v}`))
-    .join(", ");
 }
 
 const STAT_LABELS = {

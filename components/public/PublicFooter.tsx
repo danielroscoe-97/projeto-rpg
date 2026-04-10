@@ -40,7 +40,7 @@ export function PublicFooter({ locale = "en" }: PublicFooterProps) {
           <Link
             key={s.href}
             href={s.href}
-            className="text-xs text-muted-foreground hover:text-[#D4A853] transition-colors"
+            className="text-xs text-muted-foreground hover:text-gold transition-colors"
           >
             {s.label}
           </Link>

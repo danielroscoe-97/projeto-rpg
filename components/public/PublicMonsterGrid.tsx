@@ -1,24 +1,13 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { MonsterToken } from "@/components/srd/MonsterToken";
-
-const CR_RANGES = [
-  { label: "0–1", min: 0, max: 1 },
-  { label: "2–4", min: 2, max: 4 },
-  { label: "5–8", min: 5, max: 8 },
-  { label: "9–12", min: 9, max: 12 },
-  { label: "13–16", min: 13, max: 16 },
-  { label: "17–20", min: 17, max: 20 },
-  { label: "21+", min: 21, max: 99 },
-];
-
-const CREATURE_TYPES = [
-  "Aberration", "Beast", "Celestial", "Construct", "Dragon",
-  "Elemental", "Fey", "Fiend", "Giant", "Humanoid",
-  "Monstrosity", "Ooze", "Plant", "Undead",
-];
+import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { FilterChips } from "@/components/public/shared/FilterChips";
+import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
+import { CollapseSection } from "@/components/public/shared/CollapseSection";
+import { CR_RANGES, CREATURE_TYPES, parseCR, toSlug } from "@/lib/utils/monster";
 
 const TYPE_EMOJI: Record<string, string> = {
   aberration: "\u{1F441}",
@@ -36,21 +25,6 @@ const TYPE_EMOJI: Record<string, string> = {
   plant: "\u{1F33F}",
   undead: "\u{1F480}",
 };
-
-function parseCR(cr: string): number {
-  if (cr === "1/8") return 0.125;
-  if (cr === "1/4") return 0.25;
-  if (cr === "1/2") return 0.5;
-  return parseFloat(cr) || 0;
-}
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/['']/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 interface MonsterEntry {
   name: string;
@@ -102,14 +76,6 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
   const [crFilter, setCrFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const filtersRef = useRef<HTMLDivElement>(null);
-  const [filtersHeight, setFiltersHeight] = useState(0);
-
-  useEffect(() => {
-    if (filtersRef.current) {
-      setFiltersHeight(filtersRef.current.scrollHeight);
-    }
-  }, [filtersOpen]);
 
   const activeFilterCount = (crFilter ? 1 : 0) + (typeFilter ? 1 : 0);
 
@@ -172,32 +138,16 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
       {/* Filter bar */}
       <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 mb-8 space-y-3">
         {/* Search input */}
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-            />
-          </svg>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={searchPlaceholder}
-            className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
-          />
-        </div>
+        <CompendiumSearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={searchPlaceholder}
+        />
 
         {/* Filter toggle */}
         <button
           type="button"
+          aria-expanded={filtersOpen}
           onClick={() => setFiltersOpen(!filtersOpen)}
           className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
         >
@@ -212,83 +162,38 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
           </svg>
           {filtersLabel}
           {activeFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#D4A853] text-gray-950 text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-gray-950 text-[10px] font-bold">
               {activeFilterCount}
             </span>
           )}
         </button>
 
         {/* Collapsible CR + Type chips */}
-        <div
-          ref={filtersRef}
-          className="overflow-hidden transition-all duration-200 ease-in-out"
-          style={{ maxHeight: filtersOpen ? filtersHeight : 0, opacity: filtersOpen ? 1 : 0 }}
-        >
+        <CollapseSection open={filtersOpen}>
           <div className="space-y-3 pt-1">
-            {/* CR chips */}
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-xs text-gray-500 font-medium mr-1">{crLabel}</span>
-              {CR_RANGES.map((r) => (
-                <button
-                  key={r.label}
-                  type="button"
-                  onClick={() => setCrFilter(crFilter === r.label ? null : r.label)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                    crFilter === r.label
-                      ? "bg-[#D4A853] text-gray-950 shadow-sm"
-                      : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Type chips */}
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-xs text-gray-500 font-medium mr-1">{typeLabel}</span>
-              {CREATURE_TYPES.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTypeFilter(typeFilter === t ? null : t)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
-                    typeFilter === t
-                      ? "bg-[#D4A853] text-gray-950 shadow-sm"
-                      : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
-                  }`}
-                >
-                  <span className="text-[10px]">{TYPE_EMOJI[t.toLowerCase()] ?? ""}</span>
-                  {t}
-                </button>
-              ))}
-            </div>
+            <FilterChips
+              label={crLabel}
+              options={CR_RANGES.map((r) => ({ label: r.label, value: r.label }))}
+              selected={crFilter}
+              onSelect={(v) => setCrFilter(v)}
+            />
+            <FilterChips
+              label={typeLabel}
+              options={CREATURE_TYPES.map((t) => ({ label: t, value: t, icon: TYPE_EMOJI[t.toLowerCase()] ?? "" }))}
+              selected={typeFilter}
+              onSelect={(v) => setTypeFilter(v)}
+            />
           </div>
-        </div>
+        </CollapseSection>
 
         {/* Result count + language toggle — always visible */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-400" role="status" aria-live="polite">
             {hasFilters
               ? `${filtered.length} ${of} ${monsters.length} ${monstersLabel}`
               : `${monsters.length} ${monstersLabel}`}
           </span>
-          <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setDescLang("en")}
-              className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "en" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              onClick={() => setDescLang("pt-BR")}
-              className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "pt-BR" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
-            >
-              PT
-            </button>
-          </div>
+          <LanguageToggle locale={descLang} onToggle={setDescLang} />
         </div>
       </div>
 
@@ -299,7 +204,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
             <a
               key={letter}
               href={`#letter-${letter}`}
-              className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-[#D4A853]/90 hover:text-white transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-800/60 text-gray-300 text-sm font-medium hover:bg-gold/90 hover:text-white transition-colors"
             >
               {letter}
             </a>
@@ -308,19 +213,20 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
       )}
 
       {/* Monster grid by letter */}
-      {Array.from(grouped.entries()).map(([letter, group]) => (
+      {Array.from(grouped.entries()).map(([letter, group], idx) => (
         <section key={letter} id={`letter-${letter}`} className="mb-8">
-          <h2 className="text-xl font-bold text-[#D4A853] border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)]">
+          {idx > 0 && <div className="gold-divider mb-6" />}
+          <h2 className="text-xl font-bold text-gold border-b border-white/[0.06] pb-1 mb-3 font-[family-name:var(--font-cinzel)] tracking-wide">
             {letter}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="compendium-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {group.map((m) => {
               const baseType = m.type.split("(")[0].trim();
               return (
                 <Link
-                  key={m.name}
+                  key={m.nameEn ?? m.name}
                   href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
-                  className="flex items-center gap-2.5 rounded-lg bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all group"
+                  className="compendium-card flex items-center gap-2.5 rounded-xl bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 transition-all group"
                 >
                   <span className="relative inline-flex shrink-0 transition-transform duration-200 group-hover:scale-[1.8] group-hover:z-10">
                     <MonsterToken
@@ -342,11 +248,11 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
                       </span>
                     )}
                   </span>
-                  <span className="text-gray-500 text-xs whitespace-nowrap">
+                  <span className="text-gray-500 text-xs font-mono tabular-nums whitespace-nowrap">
                     CR {m.cr}
                   </span>
                   {m.isMAD && (
-                    <span className="text-[8px] font-bold bg-[#D4A853] text-gray-950 rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0" title="Monster a Day">
+                    <span className="text-[8px] font-bold bg-gold text-gray-950 rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0" title="Monster a Day">
                       r/
                     </span>
                   )}
@@ -358,12 +264,15 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
       ))}
 
       {filtered.length === 0 && hasFilters && (
-        <div className="text-center py-12">
+        <div className="compendium-empty">
+          <svg className="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
           <p className="text-gray-400 text-lg">{noResults}</p>
           <button
             type="button"
             onClick={() => { setQuery(""); setCrFilter(null); setTypeFilter(null); }}
-            className="mt-3 text-[#D4A853] text-sm hover:underline"
+            className="mt-3 text-gold text-sm hover:underline"
           >
             {clearAll}
           </button>

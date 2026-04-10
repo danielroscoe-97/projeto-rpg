@@ -1,242 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { ReactNode } from "react";
-import {
-  SrdIconMuscle,
-  SrdIconRun,
-  SrdIconHeart,
-  SrdIconBrain,
-  SrdIconEye,
-  SrdIconSparkle,
-} from "./SrdIcons";
+import { ABILITIES } from "@/lib/data/ability-scores";
 
 // ── Types ─────────────────────────────────────────────────────────
 interface PublicAbilityScoresGridProps {
   locale?: "en" | "pt-BR";
 }
-
-interface AbilityScore {
-  key: string;
-  nameEN: string;
-  namePT: string;
-  abbrEN: string;
-  abbrPT: string;
-  icon: ReactNode;
-  color: string;
-  colorBg: string;
-  colorBorder: string;
-  descriptionEN: string;
-  descriptionPT: string;
-  skillsEN: string[];
-  skillsPT: string[];
-  savingThrowEN: string;
-  savingThrowPT: string;
-  commonUsesEN: string[];
-  commonUsesPT: string[];
-}
-
-// ── Data ──────────────────────────────────────────────────────────
-const ABILITIES: AbilityScore[] = [
-  {
-    key: "str",
-    nameEN: "Strength",
-    namePT: "Forca",
-    abbrEN: "STR",
-    abbrPT: "FOR",
-    icon: <SrdIconMuscle className="w-8 h-8" />,
-    color: "#E53E3E",
-    colorBg: "rgba(229,62,62,0.08)",
-    colorBorder: "rgba(229,62,62,0.25)",
-    descriptionEN:
-      "Strength measures bodily power, athletic training, and the extent to which you can exert raw physical force.",
-    descriptionPT:
-      "Forca mede o poder corporal, treinamento atletico e a extensao com que voce pode exercer forca fisica bruta.",
-    skillsEN: ["Athletics"],
-    skillsPT: ["Atletismo"],
-    savingThrowEN: "Strength saving throws resist being pushed, restrained, or physically overpowered.",
-    savingThrowPT: "Testes de resistencia de Forca resistem a empurroes, contencao e sobrecarga fisica.",
-    commonUsesEN: [
-      "Melee attack rolls (most weapons)",
-      "Damage rolls with melee weapons",
-      "Carrying capacity & encumbrance",
-      "Breaking objects & forcing doors",
-      "Grapple & shove contests",
-    ],
-    commonUsesPT: [
-      "Rolagens de ataque corpo a corpo (maioria das armas)",
-      "Rolagens de dano com armas corpo a corpo",
-      "Capacidade de carga & sobrecarga",
-      "Quebrar objetos & forcar portas",
-      "Disputas de agarrar & empurrar",
-    ],
-  },
-  {
-    key: "dex",
-    nameEN: "Dexterity",
-    namePT: "Destreza",
-    abbrEN: "DEX",
-    abbrPT: "DES",
-    icon: <SrdIconRun className="w-8 h-8" />,
-    color: "#38A169",
-    colorBg: "rgba(56,161,105,0.08)",
-    colorBorder: "rgba(56,161,105,0.25)",
-    descriptionEN:
-      "Dexterity measures agility, reflexes, and balance. It is the key ability for ranged attacks and avoiding danger.",
-    descriptionPT:
-      "Destreza mede agilidade, reflexos e equilibrio. E o atributo principal para ataques a distancia e para evitar perigos.",
-    skillsEN: ["Acrobatics", "Sleight of Hand", "Stealth"],
-    skillsPT: ["Acrobacia", "Prestidigitacao", "Furtividade"],
-    savingThrowEN: "Dexterity saving throws dodge area effects like fireballs, traps, and breath weapons.",
-    savingThrowPT: "Testes de resistencia de Destreza esquivam de efeitos em area como bolas de fogo, armadilhas e sopros.",
-    commonUsesEN: [
-      "Ranged attack rolls",
-      "Initiative rolls",
-      "Armor Class (light armor, no armor)",
-      "Finesse weapon attacks",
-      "Dodging area-of-effect spells",
-    ],
-    commonUsesPT: [
-      "Rolagens de ataque a distancia",
-      "Rolagens de iniciativa",
-      "Classe de Armadura (armadura leve, sem armadura)",
-      "Ataques com armas de acuidade",
-      "Esquivar de magias de area",
-    ],
-  },
-  {
-    key: "con",
-    nameEN: "Constitution",
-    namePT: "Constituicao",
-    abbrEN: "CON",
-    abbrPT: "CON",
-    icon: <SrdIconHeart className="w-8 h-8" />,
-    color: "#DD6B20",
-    colorBg: "rgba(221,107,32,0.08)",
-    colorBorder: "rgba(221,107,32,0.25)",
-    descriptionEN:
-      "Constitution measures health, stamina, and vital force. It determines how many hit points you have.",
-    descriptionPT:
-      "Constituicao mede saude, vigor e forca vital. Determina quantos pontos de vida voce possui.",
-    skillsEN: [],
-    skillsPT: [],
-    savingThrowEN: "Constitution saving throws resist poison, disease, and effects that drain vitality.",
-    savingThrowPT: "Testes de resistencia de Constituicao resistem a veneno, doencas e efeitos que drenam vitalidade.",
-    commonUsesEN: [
-      "Hit point maximum (per level)",
-      "Concentration checks on spells",
-      "Resisting poison & disease",
-      "Enduring harsh environments",
-      "Death saving throws are not CON-based but benefit from high HP",
-    ],
-    commonUsesPT: [
-      "Maximo de pontos de vida (por nivel)",
-      "Testes de concentracao em magias",
-      "Resistir a veneno & doencas",
-      "Suportar ambientes hostis",
-      "Salvaguardas contra morte se beneficiam de HP alto",
-    ],
-  },
-  {
-    key: "int",
-    nameEN: "Intelligence",
-    namePT: "Inteligencia",
-    abbrEN: "INT",
-    abbrPT: "INT",
-    icon: <SrdIconBrain className="w-8 h-8" />,
-    color: "#3182CE",
-    colorBg: "rgba(49,130,206,0.08)",
-    colorBorder: "rgba(49,130,206,0.25)",
-    descriptionEN:
-      "Intelligence measures mental acuity, accuracy of recall, and the ability to reason. It is the spellcasting ability for wizards.",
-    descriptionPT:
-      "Inteligencia mede acuidade mental, precisao de memoria e capacidade de raciocinio. E o atributo de conjuracao para magos.",
-    skillsEN: ["Arcana", "History", "Investigation", "Nature", "Religion"],
-    skillsPT: ["Arcanismo", "Historia", "Investigacao", "Natureza", "Religiao"],
-    savingThrowEN: "Intelligence saving throws resist illusions, psychic attacks, and mental manipulation.",
-    savingThrowPT: "Testes de resistencia de Inteligencia resistem a ilusoes, ataques psiquicos e manipulacao mental.",
-    commonUsesEN: [
-      "Wizard spellcasting modifier",
-      "Spell save DC (wizards)",
-      "Recalling lore & knowledge",
-      "Solving puzzles & riddles",
-      "Detecting illusions",
-    ],
-    commonUsesPT: [
-      "Modificador de conjuracao do mago",
-      "CD de resistencia a magias (magos)",
-      "Recordar conhecimento & lendas",
-      "Resolver enigmas & charadas",
-      "Detectar ilusoes",
-    ],
-  },
-  {
-    key: "wis",
-    nameEN: "Wisdom",
-    namePT: "Sabedoria",
-    abbrEN: "WIS",
-    abbrPT: "SAB",
-    icon: <SrdIconEye className="w-8 h-8" />,
-    color: "#805AD5",
-    colorBg: "rgba(128,90,213,0.08)",
-    colorBorder: "rgba(128,90,213,0.25)",
-    descriptionEN:
-      "Wisdom reflects how attuned you are to the world around you and represents perceptiveness and intuition. It is the spellcasting ability for clerics, druids, and rangers.",
-    descriptionPT:
-      "Sabedoria reflete o quao sintonizado voce esta com o mundo ao redor e representa percepcao e intuicao. E o atributo de conjuracao para clerigos, druidas e patrulheiros.",
-    skillsEN: ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"],
-    skillsPT: ["Lidar com Animais", "Intuicao", "Medicina", "Percepcao", "Sobrevivencia"],
-    savingThrowEN: "Wisdom saving throws resist charm, fear, and effects that assault willpower.",
-    savingThrowPT: "Testes de resistencia de Sabedoria resistem a encantamentos, medo e efeitos contra a forca de vontade.",
-    commonUsesEN: [
-      "Cleric, druid, ranger spellcasting",
-      "Passive Perception (10 + modifier)",
-      "Detecting hidden creatures",
-      "Resisting charm & fear effects",
-      "Sensing motives & deception",
-    ],
-    commonUsesPT: [
-      "Conjuracao de clerigo, druida, patrulheiro",
-      "Percepcao Passiva (10 + modificador)",
-      "Detectar criaturas ocultas",
-      "Resistir efeitos de encantamento & medo",
-      "Perceber motivacoes & enganos",
-    ],
-  },
-  {
-    key: "cha",
-    nameEN: "Charisma",
-    namePT: "Carisma",
-    abbrEN: "CHA",
-    abbrPT: "CAR",
-    icon: <SrdIconSparkle className="w-8 h-8" />,
-    color: "#D69E2E",
-    colorBg: "rgba(214,158,46,0.08)",
-    colorBorder: "rgba(214,158,46,0.25)",
-    descriptionEN:
-      "Charisma measures your ability to interact effectively with others. It includes confidence, eloquence, and leadership. It is the spellcasting ability for bards, sorcerers, warlocks, and paladins.",
-    descriptionPT:
-      "Carisma mede sua capacidade de interagir efetivamente com outros. Inclui confianca, eloquencia e lideranca. E o atributo de conjuracao para bardos, feiticeiros, bruxos e paladinos.",
-    skillsEN: ["Deception", "Intimidation", "Performance", "Persuasion"],
-    skillsPT: ["Enganacao", "Intimidacao", "Atuacao", "Persuasao"],
-    savingThrowEN: "Charisma saving throws resist banishment, possession, and effects that override personality.",
-    savingThrowPT: "Testes de resistencia de Carisma resistem a banimento, possessao e efeitos que anulam a personalidade.",
-    commonUsesEN: [
-      "Bard, sorcerer, warlock, paladin spellcasting",
-      "Social interactions & negotiations",
-      "Counterspell & dispel magic contests",
-      "Resisting banishment & possession",
-      "Inspiring allies & commanding presence",
-    ],
-    commonUsesPT: [
-      "Conjuracao de bardo, feiticeiro, bruxo, paladino",
-      "Interacoes sociais & negociacoes",
-      "Disputas de Contramágica & Dissipar Magia",
-      "Resistir a banimento & possessao",
-      "Inspirar aliados & impor presenca",
-    ],
-  },
-];
 
 // ── Labels ────────────────────────────────────────────────────────
 const LABELS = {
@@ -329,9 +99,9 @@ export function PublicAbilityScoresGrid({
       </div>
 
       {/* Modifier Calculator */}
-      <section className="rounded-xl border border-[#D4A853]/20 bg-gray-900/60 p-6 space-y-6">
+      <section className="rounded-xl border border-gold/20 bg-gray-900/60 p-6 space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] mb-1">
+          <h2 className="text-xl font-bold text-foreground font-[family-name:var(--font-cinzel)] mb-1">
             {L.calcTitle}
           </h2>
           <p className="text-gray-400 text-sm">{L.calcDesc}</p>
@@ -346,7 +116,7 @@ export function PublicAbilityScoresGrid({
             value={scoreInput}
             onChange={(e) => setScoreInput(e.target.value)}
             placeholder={L.scorePlaceholder}
-            className="w-full sm:w-40 rounded-lg border border-gray-700 bg-gray-800 px-4 py-3 text-center text-2xl font-bold text-[#F5F0E8] placeholder-gray-600 focus:border-[#D4A853] focus:outline-none focus:ring-1 focus:ring-[#D4A853]/50 transition-colors"
+            className="w-full sm:w-40 rounded-lg border border-gray-700 bg-gray-800 px-4 py-3 text-center text-2xl font-bold text-foreground placeholder-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50 transition-colors"
           />
           <div className="flex items-center gap-3">
             <span className="text-gray-500 text-xl">=</span>
@@ -378,7 +148,7 @@ export function PublicAbilityScoresGrid({
 
         {/* Full Modifier Table */}
         <div>
-          <h3 className="text-sm font-semibold text-[#D4A853] mb-3 uppercase tracking-wide">
+          <h3 className="text-sm font-semibold text-gold mb-3 uppercase tracking-wide">
             {L.tableTitle}
           </h3>
           <div className="overflow-x-auto">
@@ -390,7 +160,7 @@ export function PublicAbilityScoresGrid({
                     mod
                   )} ${
                     isValid && parsedScore === score
-                      ? "ring-2 ring-[#D4A853] ring-offset-1 ring-offset-gray-900"
+                      ? "ring-2 ring-gold ring-offset-1 ring-offset-gray-900"
                       : ""
                   }`}
                 >

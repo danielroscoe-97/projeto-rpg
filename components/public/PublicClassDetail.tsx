@@ -66,7 +66,7 @@ export function PublicClassDetail({ cls, locale = "en" }: PublicClassDetailProps
       {/* ── Hero section ────────────────────────────────────────── */}
       <div className="rounded-xl border border-white/[0.06] bg-gray-900/60 p-6 md:p-8">
         <div className="flex items-start gap-4">
-          <span className="shrink-0 text-[#D4A853]" aria-hidden="true">
+          <span className="shrink-0 text-gold" aria-hidden="true">
             <SrdClassIcon iconName={cls.icon} className="w-12 h-12" />
           </span>
           <div className="min-w-0 flex-1">
@@ -83,7 +83,7 @@ export function PublicClassDetail({ cls, locale = "en" }: PublicClassDetailProps
               <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.badge}`}>
                 {roleLabel}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-800 border border-gray-700 text-sm font-mono text-[#D4A853]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-800 border border-gray-700 text-sm font-mono text-gold">
                 {cls.hit_die}
               </span>
               {cls.spellcaster && (
@@ -133,24 +133,24 @@ export function PublicClassDetail({ cls, locale = "en" }: PublicClassDetailProps
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.armorProf}</h3>
+            <h3 className="text-sm font-semibold text-gold mb-1">{L.armorProf}</h3>
             <p className="text-gray-300 text-sm">
               {cls.armor_proficiencies === "None" ? L.none : cls.armor_proficiencies}
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[#D4A853] mb-1">{L.weaponProf}</h3>
+            <h3 className="text-sm font-semibold text-gold mb-1">{L.weaponProf}</h3>
             <p className="text-gray-300 text-sm">{cls.weapon_proficiencies}</p>
           </div>
         </div>
       </div>
 
       {/* ── SRD Subclass ────────────────────────────────────────── */}
-      <div className="rounded-xl border border-[#D4A853]/15 bg-gradient-to-r from-[#D4A853]/[0.04] to-gray-900/60 p-6 md:p-8">
+      <div className="rounded-xl border border-gold/15 bg-gradient-to-r from-gold/[0.04] to-gray-900/60 p-6 md:p-8">
         <h2 className="text-xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-2">
           {L.srdSubclass}
         </h2>
-        <p className="text-[#D4A853] text-lg font-semibold">{subclass}</p>
+        <p className="text-gold text-lg font-semibold">{subclass}</p>
         {locale === "pt-BR" && (
           <p className="text-sm text-gray-500 italic mt-1">{cls.srd_subclass}</p>
         )}
@@ -182,7 +182,7 @@ function StatItem({
       <p
         className={`text-base font-semibold ${
           highlight ? "text-indigo-300" : "text-gray-200"
-        } ${mono ? "font-mono text-[#D4A853]" : ""}`}
+        } ${mono ? "font-mono text-gold" : ""}`}
       >
         {value}
       </p>

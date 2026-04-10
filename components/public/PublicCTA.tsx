@@ -68,15 +68,19 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
           </div>
 
           {/* Tab strip */}
-          <div className="flex border-t border-white/[0.06]">
+          <div className="flex border-t border-white/[0.06]" role="tablist">
             {availableTabs.map((tab) => (
               <button
                 key={tab.id}
+                id={`tab-${tab.id}`}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`tabpanel-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors ${
                   activeTab === tab.id
-                    ? "text-[#D4A853] border-b-2 border-[#D4A853] bg-[#D4A853]/[0.06]"
-                    : "text-gray-500 hover:text-gray-300 border-b-2 border-transparent"
+                    ? "text-gold border-b-2 border-gold bg-gold/[0.06]"
+                    : "text-gray-400 hover:text-gray-300 border-b-2 border-transparent"
                 }`}
               >
                 {tab.label}
@@ -85,10 +89,10 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
           </div>
 
           {/* Tab content */}
-          <ul className="px-6 py-4 space-y-2">
+          <ul role="tabpanel" id={`tabpanel-${activeTab}`} aria-labelledby={`tab-${activeTab}`} className="px-6 py-4 space-y-2">
             {activeItems.map((tip, i) => (
               <li key={i} className="text-gray-400 text-sm flex gap-2">
-                <span className="text-[#D4A853]/60 mt-0.5 shrink-0">&#x2022;</span>
+                <span className="text-gold/60 mt-0.5 shrink-0">&#x2022;</span>
                 <span>{tip}</span>
               </li>
             ))}
@@ -97,16 +101,16 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
       )}
 
       {/* CTA banner — full-width, horizontal */}
-      <div className="rounded-xl bg-gradient-to-r from-[#D4A853]/[0.08] to-gray-800/40 border border-[#D4A853]/15 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-xl bg-gradient-to-r from-gold/[0.08] to-gray-800/40 border border-gold/15 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-gray-100 font-semibold text-base leading-snug">
             {L.ctaHeadline(entityName)}
           </p>
-          <p className="text-gray-500 text-sm mt-0.5">{L.ctaSub}</p>
+          <p className="text-gray-400 text-sm mt-0.5">{L.ctaSub}</p>
         </div>
         <Link
           href="/try"
-          className="shrink-0 rounded-lg bg-[#D4A853] px-5 py-2.5 text-white font-semibold text-sm hover:bg-[#D4A853]/90 transition-colors whitespace-nowrap"
+          className="shrink-0 rounded-lg bg-gold px-5 py-2.5 text-white font-semibold text-sm hover:bg-gold/90 transition-colors whitespace-nowrap"
         >
           {L.ctaBtn}
         </Link>

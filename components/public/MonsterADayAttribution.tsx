@@ -10,7 +10,7 @@ export function MonsterADayAttribution({
   dayId,
 }: MonsterADayAttributionProps) {
   return (
-    <aside className="mb-6 rounded-xl border border-[#D4A853]/20 bg-orange-950/20 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+    <aside className="mb-6 rounded-xl border border-gold/20 bg-orange-950/20 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
       {/* Reddit Snoo logo */}
       <div className="flex-shrink-0 w-12 h-12">
         <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-label="Reddit">
@@ -33,7 +33,7 @@ export function MonsterADayAttribution({
             href="https://www.reddit.com/r/monsteraday"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#D4A853] hover:text-orange-300 underline underline-offset-2"
+            className="text-gold hover:text-orange-300 underline underline-offset-2"
           >
             r/monsteraday
           </a>{" "}
@@ -47,7 +47,7 @@ export function MonsterADayAttribution({
                 href={postUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#D4A853] hover:text-orange-300 underline underline-offset-2"
+                className="text-gold hover:text-orange-300 underline underline-offset-2"
               >
                 u/{author}
               </a>
@@ -64,7 +64,7 @@ export function MonsterADayAttribution({
         href={postUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[#D4A853]/30 px-3 py-2 text-xs font-medium text-[#D4A853] hover:bg-[#D4A853]/10 transition-colors whitespace-nowrap"
+        className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-gold/30 px-3 py-2 text-xs font-medium text-gold hover:bg-gold/10 transition-colors whitespace-nowrap"
       >
         <svg
           className="w-3.5 h-3.5"

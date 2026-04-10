@@ -3,37 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-
-const CR_RANGES = [
-  { label: "0–1", min: 0, max: 1 },
-  { label: "2–4", min: 2, max: 4 },
-  { label: "5–8", min: 5, max: 8 },
-  { label: "9–12", min: 9, max: 12 },
-  { label: "13–16", min: 13, max: 16 },
-  { label: "17–20", min: 17, max: 20 },
-  { label: "21+", min: 21, max: 99 },
-];
-
-const CREATURE_TYPES = [
-  "Aberration", "Beast", "Celestial", "Construct", "Dragon",
-  "Elemental", "Fey", "Fiend", "Giant", "Humanoid",
-  "Monstrosity", "Ooze", "Plant", "Undead",
-];
-
-function parseCR(cr: string): number {
-  if (cr === "1/8") return 0.125;
-  if (cr === "1/4") return 0.25;
-  if (cr === "1/2") return 0.5;
-  return parseFloat(cr) || 0;
-}
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/['']/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+import { CR_RANGES, CREATURE_TYPES, parseCR, toSlug } from "@/lib/utils/monster";
 
 interface MonsterSearchEntry extends Pick<SrdMonster, "name" | "cr" | "type"> {
   slug?: string;
@@ -95,6 +65,7 @@ export function PublicMonsterSearch({ monsters, basePath = "/monsters", buttonLa
     <div className="mb-6">
       <button
         type="button"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen((o) => !o)}
         className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
       >
@@ -132,7 +103,8 @@ export function PublicMonsterSearch({ monsters, basePath = "/monsters", buttonLa
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name..."
-              className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
+              aria-label="Search monsters"
+              className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-gold/40 transition-colors"
               autoFocus
             />
           </div>
@@ -147,7 +119,7 @@ export function PublicMonsterSearch({ monsters, basePath = "/monsters", buttonLa
                 onClick={() => setCrFilter(crFilter === r.label ? null : r.label)}
                 className={`px-2 py-0.5 rounded-md text-xs transition-colors ${
                   crFilter === r.label
-                    ? "bg-[#D4A853] text-gray-950"
+                    ? "bg-gold text-gray-950"
                     : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1]"
                 }`}
               >
@@ -166,7 +138,7 @@ export function PublicMonsterSearch({ monsters, basePath = "/monsters", buttonLa
                 onClick={() => setTypeFilter(typeFilter === t ? null : t)}
                 className={`px-2 py-0.5 rounded-md text-xs transition-colors ${
                   typeFilter === t
-                    ? "bg-[#D4A853] text-gray-950"
+                    ? "bg-gold text-gray-950"
                     : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1]"
                 }`}
               >
@@ -178,7 +150,7 @@ export function PublicMonsterSearch({ monsters, basePath = "/monsters", buttonLa
           {/* Results */}
           {hasFilters && (
             <div className="border-t border-white/[0.06] pt-3">
-              <p className="text-xs text-gray-500 mb-2">{filtered.length} results</p>
+              <p className="text-xs text-gray-400" role="status" aria-live="polite">{filtered.length} results</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                 {filtered.map((m) => (
                   <button

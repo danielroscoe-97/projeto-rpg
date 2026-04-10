@@ -93,7 +93,7 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
             className="flex items-center gap-2 group shrink-0"
           >
             <CrownD20Logo className="w-6 h-6 transition-opacity group-hover:opacity-80" />
-            <span className="text-[#D4A853] font-semibold font-[family-name:var(--font-cinzel)] tracking-wide text-sm whitespace-nowrap">
+            <span className="text-gold font-semibold font-[family-name:var(--font-cinzel)] tracking-wide text-sm whitespace-nowrap">
               Pocket DM
             </span>
           </Link>

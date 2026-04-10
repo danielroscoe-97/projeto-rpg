@@ -53,7 +53,7 @@ interface Props {
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="rounded-xl border border-white/[0.06] bg-[#1A1A28] shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_8px_rgba(146,38,16,0.1)] transition-shadow duration-200 p-6 md:p-8"
+      className="rounded-xl border border-white/[0.06] bg-surface-secondary shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_8px_rgba(146,38,16,0.1)] transition-shadow duration-200 p-6 md:p-8"
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%231A1A28'/%3E%3Crect width='1' height='1' x='1' y='1' fill='%231e1e2a' fill-opacity='0.4'/%3E%3C/svg%3E")`,
       }}
@@ -79,7 +79,7 @@ function GoldDivider({ className: cn }: { className?: string }) {
 /** Gold circular level badge */
 function LevelBadge({ level }: { level: number }) {
   return (
-    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#D4A853]/15 text-[#D4A853] text-sm font-bold font-mono border border-[#D4A853]/20 shrink-0">
+    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gold/15 text-gold text-sm font-bold font-mono border border-gold/20 shrink-0">
       {level}
     </span>
   );
@@ -107,7 +107,7 @@ function Prose({ text }: { text: string }) {
                 .filter((l) => l.trim())
                 .map((l, j) => (
                   <li key={j} className="flex items-start gap-2">
-                    <span className="text-[#D4A853] mt-1.5 text-xs">
+                    <span className="text-gold mt-1.5 text-xs">
                       &#9670;
                     </span>
                     <span>{l.replace(/^[-*]\s*/, "")}</span>
@@ -167,7 +167,7 @@ export function PublicSubclassDetail({
             onClick={() => setCurrentLocale("en")}
             className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
               !isPt
-                ? "bg-[#D4A853] text-gray-950"
+                ? "bg-gold text-gray-950"
                 : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
             }`}
           >
@@ -177,7 +177,7 @@ export function PublicSubclassDetail({
             onClick={() => setCurrentLocale("pt-BR")}
             className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
               isPt
-                ? "bg-[#D4A853] text-gray-950"
+                ? "bg-gold text-gray-950"
                 : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
             }`}
           >
@@ -188,7 +188,7 @@ export function PublicSubclassDetail({
 
       <div className="space-y-8">
         {/* ── Hero Section ──────────────────────────────────────── */}
-        <div className="relative rounded-xl border border-white/[0.06] bg-[#1A1A28] overflow-hidden">
+        <div className="relative rounded-xl border border-white/[0.06] bg-surface-secondary overflow-hidden">
           {/* Left gold accent bar */}
           <div
             className="absolute left-0 top-0 bottom-0 w-1"
@@ -207,8 +207,8 @@ export function PublicSubclassDetail({
             <div className="flex items-start gap-5">
               {/* Icon with subtle glow */}
               <div className="shrink-0 relative">
-                <div className="absolute inset-0 bg-[#D4A853]/10 rounded-xl blur-xl" />
-                <span className="relative text-[#D4A853]" aria-hidden="true">
+                <div className="absolute inset-0 bg-gold/10 rounded-xl blur-xl" />
+                <span className="relative text-gold" aria-hidden="true">
                   <SrdClassIcon
                     iconName={parentClass.icon}
                     className="w-14 h-14 md:w-16 md:h-16"
@@ -230,7 +230,7 @@ export function PublicSubclassDetail({
                 <p className="text-[#E8E6E0]/70 text-lg mt-3">
                   <Link
                     href={classHref}
-                    className="text-[#D4A853] hover:text-[#E8C87A] transition-colors underline underline-offset-2"
+                    className="text-gold hover:text-gold-light transition-colors underline underline-offset-2"
                   >
                     {className}
                   </Link>
@@ -240,12 +240,12 @@ export function PublicSubclassDetail({
 
                 {/* Badges row */}
                 <div className="flex flex-wrap items-center gap-2 mt-5">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#13131E] border border-[#D4A853]/20 text-sm font-mono text-[#D4A853] font-bold">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-surface-primary border border-gold/20 text-sm font-mono text-gold font-bold">
                     {L.levelPrefix} {parentClass.subclass_level}
                     {L.levelSuffix}
                   </span>
                   {subclass.source && (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#13131E] text-xs font-medium text-[#9896A0] border border-white/[0.06]">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-surface-primary text-xs font-medium text-[#9896A0] border border-white/[0.06]">
                       {subclass.source}
                     </span>
                   )}
@@ -302,7 +302,7 @@ export function PublicSubclassDetail({
         <div className="flex flex-col items-center gap-4">
           <Link
             href={classHref}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#D4A853]/30 text-[#D4A853] hover:bg-[#D4A853]/10 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gold/30 text-gold hover:bg-gold/10 transition-colors text-sm font-medium"
           >
             <ArrowLeftIcon />
             {L.backToClass} {className}
@@ -310,7 +310,7 @@ export function PublicSubclassDetail({
 
           <Link
             href={altLocaleHref}
-            className="text-xs text-[#9896A0] hover:text-[#D4A853] transition-colors"
+            className="text-xs text-[#9896A0] hover:text-gold transition-colors"
           >
             {L.alsoAvailable}
           </Link>
@@ -342,7 +342,7 @@ function FeatureCard({
 
   return (
     <div
-      className="rounded-lg border border-white/[0.04] bg-[#1A1A28]/80 hover:border-white/[0.08] transition-all duration-200 overflow-hidden"
+      className="rounded-lg border border-white/[0.04] bg-surface-secondary/80 hover:border-white/[0.08] transition-all duration-200 overflow-hidden"
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%231A1A28'/%3E%3Crect width='1' height='1' x='1' y='1' fill='%231e1e2a' fill-opacity='0.3'/%3E%3C/svg%3E")`,
       }}
@@ -351,7 +351,7 @@ function FeatureCard({
         <div className="flex items-start gap-3">
           <LevelBadge level={feature.level} />
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-bold text-[#E8C87A] font-[family-name:var(--font-cinzel)] leading-tight">
+            <h3 className="text-lg font-bold text-gold-light font-[family-name:var(--font-cinzel)] leading-tight">
               {name}
             </h3>
             {isPt && feature.name !== feature.name_pt && (
@@ -379,14 +379,14 @@ function FeatureCard({
         >
           <Prose text={desc} />
           {!expanded && (
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#1A1A28] to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-surface-secondary to-transparent" />
           )}
         </div>
 
         {isLong && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="mt-2 text-xs font-medium text-[#D4A853] hover:text-[#E8C87A] transition-colors flex items-center gap-1"
+            className="mt-2 text-xs font-medium text-gold hover:text-gold-light transition-colors flex items-center gap-1"
           >
             {expanded ? (
               <>

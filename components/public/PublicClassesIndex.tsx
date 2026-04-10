@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { SrdClass } from "@/lib/types/srd-class";
 import { SrdClassIcon } from "./SrdIcons";
+import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { FilterChips } from "@/components/public/shared/FilterChips";
+import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
+import { CollapseSection } from "@/components/public/shared/CollapseSection";
 
 // ── Role colors ──────────────────────────────────────────────────
 const ROLE_STYLES: Record<SrdClass["role"], { border: string; badge: string; label: string; labelPt: string }> = {
@@ -73,17 +77,9 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
   const [query, setQuery] = useState("");
   const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const filtersRef = useRef<HTMLDivElement>(null);
-  const [filtersHeight, setFiltersHeight] = useState(0);
 
   const isPt = descLang === "pt-BR";
   const L = LABELS[descLang];
-
-  useEffect(() => {
-    if (filtersRef.current) {
-      setFiltersHeight(filtersRef.current.scrollHeight);
-    }
-  }, [filtersOpen]);
 
   const filtered = useMemo(() => {
     let result = classes;
@@ -126,33 +122,16 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
 
       {/* Search + filter container */}
       <div className="rounded-xl bg-card/80 border border-white/[0.06] p-4 space-y-3">
-        {/* Search input */}
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-            />
-          </svg>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={L.searchPlaceholder}
-            className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-[#D4A853]/40 transition-colors"
-          />
-        </div>
+        <CompendiumSearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={L.searchPlaceholder}
+        />
 
         {/* Filter toggle */}
         <button
           type="button"
+          aria-expanded={filtersOpen}
           onClick={() => setFiltersOpen(!filtersOpen)}
           className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
         >
@@ -167,67 +146,37 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
           </svg>
           {L.filters}
           {activeFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#D4A853] text-gray-950 text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-gray-950 text-[10px] font-bold">
               {activeFilterCount}
             </span>
           )}
         </button>
 
         {/* Collapsible role chips */}
-        <div
-          ref={filtersRef}
-          className="overflow-hidden transition-all duration-200 ease-in-out"
-          style={{ maxHeight: filtersOpen ? filtersHeight : 0, opacity: filtersOpen ? 1 : 0 }}
-        >
+        <CollapseSection open={filtersOpen}>
           <div className="space-y-3 pt-1">
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-xs text-gray-500 font-medium mr-1">{L.roleLabel}</span>
-              {roleFilters.map(({ key, label }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setFilter(key)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                    filter === key
-                      ? "bg-[#D4A853] text-gray-950 shadow-sm"
-                      : "bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <FilterChips
+              label={L.roleLabel}
+              options={roleFilters.map(({ key, label }) => ({ label, value: key }))}
+              selected={filter === "all" ? null : filter}
+              onSelect={(v) => setFilter((v as RoleFilter) ?? "all")}
+            />
           </div>
-        </div>
+        </CollapseSection>
 
         {/* Result count + language toggle */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-400" role="status" aria-live="polite">
             {hasFilters
               ? `${filtered.length} ${L.of} ${classes.length} ${L.classes}`
               : `${classes.length} ${L.classes}`}
           </span>
-          <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setDescLang("en")}
-              className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "en" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              onClick={() => setDescLang("pt-BR")}
-              className={`px-2 py-0.5 text-xs font-medium transition-colors ${descLang === "pt-BR" ? "bg-[#D4A853] text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
-            >
-              PT
-            </button>
-          </div>
+          <LanguageToggle locale={descLang} onToggle={setDescLang} />
         </div>
       </div>
 
       {/* Card grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="compendium-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((cls) => {
           const roleStyle = ROLE_STYLES[cls.role];
           const displayName = isPt ? cls.name_pt : cls.name;
@@ -239,11 +188,11 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
             <Link
               key={cls.id}
               href={`${linkPrefix}/${cls.id}`}
-              className={`group block rounded-xl border border-white/[0.04] bg-card hover:border-amber-400/30 hover:shadow-[0_0_15px_rgba(212,168,83,0.15)] transition-all p-5`}
+              className="compendium-card group block rounded-xl border border-white/[0.04] bg-card transition-all p-5"
             >
               {/* Icon + Name row */}
               <div className="flex items-start gap-3 mb-3">
-                <span className="shrink-0 text-[#D4A853]" aria-hidden="true">
+                <span className="shrink-0 text-gold" aria-hidden="true">
                   <SrdClassIcon iconName={cls.icon} className="w-8 h-8" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -265,7 +214,7 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
               {/* Stats row */}
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 {/* Hit Die badge */}
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-800 border border-gray-700 text-xs font-mono text-[#D4A853]">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-800 border border-gray-700 text-xs font-mono tabular-nums text-gold">
                   {cls.hit_die}
                 </span>
 
@@ -296,7 +245,7 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
               </div>
 
               {/* Hover hint */}
-              <p className="text-xs text-[#D4A853] mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <p className="text-xs text-gold mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
                 {L.viewDetails} &rarr;
               </p>
             </Link>
@@ -306,12 +255,15 @@ export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/clas
 
       {/* Empty state */}
       {filtered.length === 0 && hasFilters && (
-        <div className="text-center py-12">
+        <div className="compendium-empty">
+          <svg className="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
           <p className="text-gray-400 text-lg">{L.noResults}</p>
           <button
             type="button"
             onClick={() => { setQuery(""); setFilter("all"); }}
-            className="mt-3 text-[#D4A853] text-sm hover:underline"
+            className="mt-3 text-gold text-sm hover:underline"
           >
             {L.clearAll}
           </button>

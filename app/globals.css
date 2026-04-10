@@ -650,3 +650,79 @@ html[data-combat-active="true"] main#main-content {
     }
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   Compendium Design System — Shared Utilities
+   ═══════════════════════════════════════════════════ */
+
+@layer components {
+  /* Card hover — premium lift + glow */
+  .compendium-card {
+    @apply transition-all duration-200 ease-out;
+    border-top: 2px solid transparent;
+    background-image: linear-gradient(to bottom, rgba(212, 168, 83, 0.03), transparent 40%);
+  }
+  .compendium-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 168, 83, 0.15);
+    border-top-color: rgba(212, 168, 83, 0.25);
+  }
+
+  /* Gold divider — gradient line */
+  .gold-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(212, 168, 83, 0.4), transparent);
+  }
+
+  /* SRD section header — red italic uppercase */
+  .srd-section-header {
+    font-family: var(--font-cinzel), 'Cinzel', serif;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #922610;
+    border-bottom: 2px solid #7a200d;
+    padding-bottom: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Compendium hero — left gold border accent */
+  .compendium-hero {
+    border-left: 4px solid transparent;
+    border-image: linear-gradient(to bottom, #D4A853, #B8903D, transparent) 1;
+  }
+
+  /* Staggered fade-in for grid children */
+  @keyframes compendium-fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .compendium-grid > * {
+    animation: compendium-fade-in 0.4s ease-out both;
+  }
+  .compendium-grid > *:nth-child(1)  { animation-delay: 0ms; }
+  .compendium-grid > *:nth-child(2)  { animation-delay: 40ms; }
+  .compendium-grid > *:nth-child(3)  { animation-delay: 80ms; }
+  .compendium-grid > *:nth-child(4)  { animation-delay: 120ms; }
+  .compendium-grid > *:nth-child(5)  { animation-delay: 160ms; }
+  .compendium-grid > *:nth-child(6)  { animation-delay: 200ms; }
+  .compendium-grid > *:nth-child(7)  { animation-delay: 240ms; }
+  .compendium-grid > *:nth-child(8)  { animation-delay: 280ms; }
+  .compendium-grid > *:nth-child(9)  { animation-delay: 320ms; }
+  .compendium-grid > *:nth-child(10) { animation-delay: 360ms; }
+  .compendium-grid > *:nth-child(11) { animation-delay: 400ms; }
+  .compendium-grid > *:nth-child(12) { animation-delay: 440ms; }
+  .compendium-grid > *:nth-child(n+13) { animation-delay: 480ms; }
+
+  /* Empty state container */
+  .compendium-empty {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+  .compendium-empty svg {
+    @apply w-16 h-16 text-gold/30 mb-4;
+  }
+  .compendium-empty p {
+    @apply text-muted-foreground text-sm max-w-xs;
+  }
+}

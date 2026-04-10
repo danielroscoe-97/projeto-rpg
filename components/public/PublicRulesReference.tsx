@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { RULES_LABELS, SECTION_IDS, type SectionId } from "@/lib/data/rules-labels";
 
 // ── Types ─────────────────────────────────────────────────────────
 type Locale = "en" | "pt-BR";
@@ -9,19 +10,6 @@ type Locale = "en" | "pt-BR";
 interface PublicRulesReferenceProps {
   locale?: Locale;
 }
-
-// ── Section IDs ───────────────────────────────────────────────────
-const SECTION_IDS = [
-  "combat-flow",
-  "making-attacks",
-  "damage-healing",
-  "cover",
-  "resting",
-  "conditions",
-  "spellcasting",
-] as const;
-
-type SectionId = (typeof SECTION_IDS)[number];
 
 // ── Icons (SVG inline for zero dependencies) ──────────────────────
 function SwordIcon({ className }: { className?: string }) {
@@ -111,38 +99,7 @@ const SECTION_ICONS: Record<SectionId, React.FC<{ className?: string }>> = {
 };
 
 // ── Labels ────────────────────────────────────────────────────────
-const LABELS = {
-  en: {
-    title: "D&D 5e Rules Reference",
-    subtitle: "Essential rules from the SRD 5.1 for your table",
-    toc: "Contents",
-    sections: {
-      "combat-flow": "Combat Flow",
-      "making-attacks": "Making Attacks",
-      "damage-healing": "Damage & Healing",
-      "cover": "Cover",
-      "resting": "Resting",
-      "conditions": "Conditions Quick Reference",
-      "spellcasting": "Spellcasting Basics",
-    } as Record<SectionId, string>,
-    srdNotice: "All content from the Systems Reference Document 5.1, licensed under CC-BY-4.0.",
-  },
-  "pt-BR": {
-    title: "Referencia de Regras D&D 5e",
-    subtitle: "Regras essenciais do SRD 5.1 para sua mesa",
-    toc: "Sumario",
-    sections: {
-      "combat-flow": "Fluxo de Combate",
-      "making-attacks": "Realizando Ataques",
-      "damage-healing": "Dano & Cura",
-      "cover": "Cobertura",
-      "resting": "Descanso",
-      "conditions": "Referencia Rapida de Condicoes",
-      "spellcasting": "Basico de Conjuracao",
-    } as Record<SectionId, string>,
-    srdNotice: "Todo conteudo do Systems Reference Document 5.1, licenciado sob CC-BY-4.0.",
-  },
-} as const;
+const LABELS = RULES_LABELS;
 
 // ── Rule Card Component ───────────────────────────────────────────
 function RuleCard({
@@ -158,12 +115,12 @@ function RuleCard({
     <div
       className={`rounded-xl border-l-4 p-4 ${
         highlight
-          ? "border-[#D4A853] bg-[#D4A853]/[0.06]"
-          : "border-[#D4A853]/40 bg-gray-800/40"
+          ? "border-gold bg-gold/[0.06]"
+          : "border-gold/40 bg-gray-800/40"
       }`}
     >
       {title && (
-        <h4 className="text-sm font-bold text-[#D4A853] mb-2 uppercase tracking-wider">
+        <h4 className="text-sm font-bold text-gold mb-2 uppercase tracking-wider">
           {title}
         </h4>
       )}
@@ -175,7 +132,7 @@ function RuleCard({
 // ── Key Value Highlight ───────────────────────────────────────────
 function GoldNum({ children }: { children: React.ReactNode }) {
   return (
-    <span className="text-[#D4A853] font-bold tabular-nums">{children}</span>
+    <span className="text-gold font-bold tabular-nums">{children}</span>
   );
 }
 
@@ -191,11 +148,11 @@ function RulesTable({
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr className="bg-[#D4A853]/10">
+          <tr className="bg-gold/10">
             {headers.map((h, i) => (
               <th
                 key={i}
-                className="text-left text-[#D4A853] font-semibold px-3 py-2 border-b border-[#D4A853]/20 text-xs uppercase tracking-wider"
+                className="text-left text-gold font-semibold px-3 py-2 border-b border-gold/20 text-xs uppercase tracking-wider"
               >
                 {h}
               </th>
@@ -232,27 +189,27 @@ function CombatTurnVisual({ locale }: { locale: Locale }) {
   const steps = [
     {
       label: L ? "Movimento" : "Movement",
-      desc: L ? "Ate sua velocidade" : "Up to your speed",
+      desc: L ? "Até sua velocidade" : "Up to your speed",
       color: "from-blue-500/20 to-blue-600/20",
       border: "border-blue-500/40",
       dot: "bg-blue-500",
     },
     {
-      label: L ? "Acao" : "Action",
+      label: L ? "Ação" : "Action",
       desc: L ? "Atacar, conjurar, etc." : "Attack, cast spell, etc.",
       color: "from-red-500/20 to-red-600/20",
       border: "border-red-500/40",
       dot: "bg-red-500",
     },
     {
-      label: L ? "Acao Bonus" : "Bonus Action",
-      desc: L ? "Se disponivel" : "If available",
+      label: L ? "Ação Bônus" : "Bonus Action",
+      desc: L ? "Se disponível" : "If available",
       color: "from-amber-500/20 to-amber-600/20",
       border: "border-amber-500/40",
       dot: "bg-amber-500",
     },
     {
-      label: L ? "Interacao Livre" : "Free Interaction",
+      label: L ? "Interação Livre" : "Free Interaction",
       desc: L ? "Abrir porta, sacar arma" : "Open door, draw weapon",
       color: "from-emerald-500/20 to-emerald-600/20",
       border: "border-emerald-500/40",
@@ -391,7 +348,7 @@ function DeathSaveTracker({ locale }: { locale: Locale }) {
       {successes >= 3 && (
         <p className="mt-3 text-emerald-400 text-sm font-semibold animate-pulse">
           {L
-            ? "Estabilizado! A criatura nao precisa mais fazer testes."
+            ? "Estabilizado! A criatura não precisa mais fazer testes."
             : "Stabilized! The creature no longer needs to make death saves."}
         </p>
       )}
@@ -429,7 +386,7 @@ function CoverDiagram({ locale }: { locale: Locale }) {
     },
     {
       label: L ? "Cobertura Total" : "Full Cover",
-      bonus: L ? "Nao pode ser alvo" : "Can't be targeted",
+      bonus: L ? "Não pode ser alvo" : "Can't be targeted",
       example: L ? "Parede completa" : "Complete wall",
       coverPct: 100,
       color: "text-red-400",
@@ -467,7 +424,7 @@ function CoverDiagram({ locale }: { locale: Locale }) {
           </div>
 
           <h4 className={`text-sm font-bold ${c.color} mb-1`}>{c.label}</h4>
-          <p className="text-[#D4A853] text-xs font-semibold mb-1">
+          <p className="text-gold text-xs font-semibold mb-1">
             {c.bonus}
           </p>
           <p className="text-gray-500 text-xs">{c.example}</p>
@@ -503,11 +460,11 @@ function CollapsibleSection({
         aria-expanded={isOpen}
         aria-controls={`content-${id}`}
       >
-        <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#D4A853]/10 border border-[#D4A853]/20 text-[#D4A853] shrink-0">
+        <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-gold/10 border border-gold/20 text-gold shrink-0">
           <Icon className="w-5 h-5" />
         </span>
         <span className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="text-[#D4A853]/60 text-lg font-bold font-[family-name:var(--font-cinzel)] tabular-nums">
+          <span className="text-gold/60 text-lg font-bold font-[family-name:var(--font-cinzel)] tabular-nums">
             {number}.
           </span>
           <h2 className="text-lg md:text-xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] truncate">
@@ -549,7 +506,7 @@ function CombatFlowSection({ locale }: { locale: Locale }) {
       >
         <p>
           {L
-            ? "No inicio do combate, cada participante faz um teste de Destreza para determinar a ordem dos turnos. Isso determina a ordem da rodada."
+            ? "No início do combate, cada participante faz um teste de Destreza para determinar a ordem dos turnos. Isso determina a ordem da rodada."
             : "At the start of combat, every participant makes a Dexterity check to determine turn order. This sets the order for the round."}
         </p>
         <p className="mt-2 text-gray-400">
@@ -567,14 +524,14 @@ function CombatFlowSection({ locale }: { locale: Locale }) {
             <span>
               <strong className="text-gray-200">{L ? "Movimento" : "Movement"}:</strong>{" "}
               {L
-                ? "Mova ate sua velocidade (em qualquer direcao). Pode ser dividido antes e depois da acao."
+                ? "Mova até sua velocidade (em qualquer direção). Pode ser dividido antes e depois da ação."
                 : "Move up to your speed (in any direction). Can be split before and after your action."}
             </span>
           </li>
           <li className="flex gap-2">
             <span className="text-red-400 shrink-0">&#9654;</span>
             <span>
-              <strong className="text-gray-200">{L ? "Acao" : "Action"}:</strong>{" "}
+              <strong className="text-gray-200">{L ? "Ação" : "Action"}:</strong>{" "}
               {L
                 ? "Atacar, Conjurar uma Magia, Disparada, Esquivar, Desengajar, Ajudar, Esconder-se, Preparar, Procurar, ou Usar um Objeto."
                 : "Attack, Cast a Spell, Dash, Dodge, Disengage, Help, Hide, Ready, Search, or Use an Object."}
@@ -583,28 +540,28 @@ function CombatFlowSection({ locale }: { locale: Locale }) {
           <li className="flex gap-2">
             <span className="text-amber-400 shrink-0">&#9654;</span>
             <span>
-              <strong className="text-gray-200">{L ? "Acao Bonus" : "Bonus Action"}:</strong>{" "}
+              <strong className="text-gray-200">{L ? "Ação Bônus" : "Bonus Action"}:</strong>{" "}
               {L
-                ? "Somente se uma habilidade de classe, magia ou outra caracteristica diz que voce pode. Apenas uma por turno."
+                ? "Somente se uma habilidade de classe, magia ou outra característica diz que você pode. Apenas uma por turno."
                 : "Only if a class feature, spell, or other ability says you can. Only one per turn."}
             </span>
           </li>
           <li className="flex gap-2">
             <span className="text-emerald-400 shrink-0">&#9654;</span>
             <span>
-              <strong className="text-gray-200">{L ? "Interacao com Objetos" : "Object Interaction"}:</strong>{" "}
+              <strong className="text-gray-200">{L ? "Interação com Objetos" : "Object Interaction"}:</strong>{" "}
               {L
-                ? "Uma interacao gratuita por turno (sacar uma espada, abrir uma porta). Interacoes adicionais requerem a acao Usar um Objeto."
+                ? "Uma interação gratuita por turno (sacar uma espada, abrir uma porta). Interações adicionais requerem a ação Usar um Objeto."
                 : "One free interaction per turn (draw a sword, open a door). Additional interactions require the Use an Object action."}
             </span>
           </li>
         </ul>
       </RuleCard>
 
-      <RuleCard title={L ? "Reacoes" : "Reactions"}>
+      <RuleCard title={L ? "Reações" : "Reactions"}>
         <p>
           {L
-            ? "Voce tem uma reacao por rodada. Ela se recupera no inicio do seu proximo turno."
+            ? "Você tem uma reação por rodada. Ela se recupera no início do seu próximo turno."
             : "You get one reaction per round. It resets at the start of your next turn."}
         </p>
         <ul className="mt-2 space-y-1 text-gray-400">
@@ -617,14 +574,14 @@ function CombatFlowSection({ locale }: { locale: Locale }) {
           </li>
           <li>
             &#8226;{" "}
-            <strong className="text-gray-300">{L ? "Acao Preparada" : "Readied Action"}:</strong>{" "}
+            <strong className="text-gray-300">{L ? "Ação Preparada" : "Readied Action"}:</strong>{" "}
             {L
-              ? "Gatilho definido durante sua acao Preparar"
+              ? "Gatilho definido durante sua ação Preparar"
               : "Trigger defined during your Ready action"}
           </li>
           <li>
             &#8226;{" "}
-            <strong className="text-gray-300">{L ? "Magias Especificas" : "Specific Spells"}:</strong>{" "}
+            <strong className="text-gray-300">{L ? "Magias Específicas" : "Specific Spells"}:</strong>{" "}
             {L
               ? "Shield, counterspell, feather fall, etc."
               : "Shield, counterspell, feather fall, etc."}
@@ -648,7 +605,7 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
         <p className="text-base text-gray-200">
           <GoldNum>d20</GoldNum> +{" "}
           {L ? "modificador de habilidade" : "ability modifier"} +{" "}
-          {L ? "bonus de proficiencia" : "proficiency bonus"} {L ? "vs" : "vs"}{" "}
+          {L ? "bônus de proficiência" : "proficiency bonus"} {L ? "vs" : "vs"}{" "}
           <GoldNum>AC</GoldNum>
         </p>
         <p className="mt-2 text-gray-400">
@@ -661,13 +618,13 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <RuleCard title={L ? "Corpo a Corpo" : "Melee Attacks"}>
           <ul className="space-y-1">
-            <li>&#8226; {L ? "Alcance padrao: " : "Standard reach: "}<GoldNum>{L ? "1,5m" : "5 ft."}</GoldNum></li>
-            <li>&#8226; {L ? "Usa Forca (ou Destreza com armas acuidade)" : "Uses Strength (or Dexterity with finesse weapons)"}</li>
-            <li>&#8226; {L ? "Desarmado: " : "Unarmed strike: "}<GoldNum>1</GoldNum> + {L ? "mod de Forca" : "Strength mod"}</li>
+            <li>&#8226; {L ? "Alcance padrão: " : "Standard reach: "}<GoldNum>{L ? "1,5m" : "5 ft."}</GoldNum></li>
+            <li>&#8226; {L ? "Usa Força (ou Destreza com armas acuidade)" : "Uses Strength (or Dexterity with finesse weapons)"}</li>
+            <li>&#8226; {L ? "Desarmado: " : "Unarmed strike: "}<GoldNum>1</GoldNum> + {L ? "mod de Força" : "Strength mod"}</li>
           </ul>
         </RuleCard>
 
-        <RuleCard title={L ? "Ataques a Distancia" : "Ranged Attacks"}>
+        <RuleCard title={L ? "Ataques a Distância" : "Ranged Attacks"}>
           <ul className="space-y-1">
             <li>&#8226; {L ? "Alcance normal / longo (desvantagem)" : "Normal range / long range (disadvantage)"}</li>
             <li>&#8226; {L ? "Usa Destreza" : "Uses Dexterity"}</li>
@@ -696,14 +653,14 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
           <li>
             &#8226;{" "}
             {L
-              ? "Ataque extra como acao bonus"
+              ? "Ataque extra como ação bônus"
               : "Extra attack as a bonus action"}
           </li>
           <li>
             &#8226;{" "}
             <span className="text-amber-400">
               {L
-                ? "Nao adiciona modificador de habilidade ao dano do segundo ataque (exceto se negativo)"
+                ? "Não adiciona modificador de habilidade ao dano do segundo ataque (exceto se negativo)"
                 : "Don't add ability modifier to damage of the second attack (unless negative)"}
             </span>
           </li>
@@ -714,7 +671,7 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
         <RuleCard title={L ? "Agarrar" : "Grappling"}>
           <p>
             {L
-              ? "Substitui um dos ataques. Alvo deve ser no maximo uma categoria maior."
+              ? "Substitui um dos ataques. Alvo deve ser no máximo uma categoria maior."
               : "Replaces one of your attacks. Target must be no more than one size larger."}
           </p>
           <p className="mt-2">
@@ -733,7 +690,7 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
         <RuleCard title={L ? "Empurrar" : "Shoving"}>
           <p>
             {L
-              ? "Substitui um dos ataques. Alvo no maximo uma categoria maior."
+              ? "Substitui um dos ataques. Alvo no máximo uma categoria maior."
               : "Replaces one of your attacks. Target at most one size larger."}
           </p>
           <p className="mt-2">
@@ -744,14 +701,14 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
           </p>
           <p className="mt-1 text-amber-400">
             {L
-              ? "Sucesso: derruba Caido ou empurra 1,5m"
+              ? "Sucesso: derruba Caído ou empurra 1,5m"
               : "Success: knock Prone or push 5 ft. away"}
           </p>
         </RuleCard>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <RuleCard title={L ? "Acerto Critico" : "Critical Hit"} highlight>
+        <RuleCard title={L ? "Acerto Crítico" : "Critical Hit"} highlight>
           <p>
             {L ? "Resultado natural " : "Natural "}
             <GoldNum>20</GoldNum>{" "}
@@ -759,7 +716,7 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
           </p>
           <p className="mt-1">
             {L
-              ? "Dobre todos os dados de dano do ataque (nao os modificadores)."
+              ? "Dobre todos os dados de dano do ataque (não os modificadores)."
               : "Double all the attack's damage dice (not modifiers)."}
           </p>
           <p className="mt-1 text-gray-400">
@@ -767,7 +724,7 @@ function MakingAttacksSection({ locale }: { locale: Locale }) {
           </p>
         </RuleCard>
 
-        <RuleCard title={L ? "Falha Critica" : "Critical Miss"}>
+        <RuleCard title={L ? "Falha Crítica" : "Critical Miss"}>
           <p>
             {L ? "Resultado natural " : "Natural "}
             <GoldNum>1</GoldNum>{" "}
@@ -809,7 +766,7 @@ function DamageHealingSection({ locale }: { locale: Locale }) {
         ]}
         rows={[
           [
-            L ? "Resistencia" : "Resistance",
+            L ? "Resistência" : "Resistance",
             L ? "Dano / 2 (arredonda para baixo)" : "Damage / 2 (round down)",
             L ? "Tiefling vs dano de fogo" : "Tiefling vs fire damage",
           ],
@@ -829,7 +786,7 @@ function DamageHealingSection({ locale }: { locale: Locale }) {
       <RuleCard title={L ? "Cura" : "Healing"}>
         <p>
           {L
-            ? "Cura nunca pode exceder os pontos de vida maximos da criatura. Uma criatura morta nao pode recuperar pontos de vida."
+            ? "Cura nunca pode exceder os pontos de vida máximos da criatura. Uma criatura morta não pode recuperar pontos de vida."
             : "Healing can never exceed a creature's hit point maximum. A dead creature can't regain hit points."}
         </p>
       </RuleCard>
@@ -840,7 +797,7 @@ function DamageHealingSection({ locale }: { locale: Locale }) {
       >
         <p>
           {L
-            ? "Se o dano reduz voce a 0 PV, voce cai inconsciente e comeca a fazer testes contra a morte."
+            ? "Se o dano reduz você a 0 PV, você cai inconsciente e começa a fazer testes contra a morte."
             : "If damage reduces you to 0 HP, you fall unconscious and begin making death saving throws."}
         </p>
       </RuleCard>
@@ -854,7 +811,7 @@ function DamageHealingSection({ locale }: { locale: Locale }) {
             &#8226;{" "}
             {L ? "Jogue " : "Roll "}
             <GoldNum>d20</GoldNum>
-            {L ? " no inicio de cada turno (sem modificadores)" : " at the start of each turn (no modifiers)"}
+            {L ? " no início de cada turno (sem modificadores)" : " at the start of each turn (no modifiers)"}
           </li>
           <li>
             &#8226;{" "}
@@ -891,21 +848,21 @@ function DamageHealingSection({ locale }: { locale: Locale }) {
 
       <DeathSaveTracker locale={locale} />
 
-      <RuleCard title={L ? "Morte Instantanea" : "Instant Death"}>
+      <RuleCard title={L ? "Morte Instantânea" : "Instant Death"}>
         <p className="text-red-400 font-semibold">
           {L
-            ? "Se o dano restante apos chegar a 0 PV for igual ou maior que o maximo de pontos de vida da criatura, ela morre instantaneamente."
+            ? "Se o dano restante após chegar a 0 PV for igual ou maior que o máximo de pontos de vida da criatura, ela morre instantaneamente."
             : "If remaining damage after reaching 0 HP equals or exceeds the creature's hit point maximum, it dies instantly."}
         </p>
         <p className="mt-2 text-gray-400">
           {L ? "Exemplo: um personagem com " : "Example: a character with "}
           <GoldNum>12 HP</GoldNum>
-          {L ? " (maximo " : " (max "}
+          {L ? " (máximo " : " (max "}
           <GoldNum>20 HP</GoldNum>
           {L ? ") que toma " : ") who takes "}
           <GoldNum>{L ? "32 de dano" : "32 damage"}</GoldNum>
           {L
-            ? " morre instantaneamente (20 sobram apos chegar a 0, que iguala o maximo de 20)."
+            ? " morre instantaneamente (20 sobram após chegar a 0, que iguala o máximo de 20)."
             : " dies instantly (20 remaining after reaching 0, which equals the max of 20)."}
         </p>
       </RuleCard>
@@ -921,7 +878,7 @@ function CoverSection({ locale }: { locale: Locale }) {
     <>
       <p className="text-gray-400 text-sm">
         {L
-          ? "Paredes, arvores, criaturas e outros obstaculos podem fornecer cobertura durante o combate, tornando alvos mais dificeis de acertar."
+          ? "Paredes, árvores, criaturas e outros obstáculos podem fornecer cobertura durante o combate, tornando alvos mais difíceis de acertar."
           : "Walls, trees, creatures, and other obstacles can provide cover during combat, making targets harder to hit."}
       </p>
 
@@ -930,8 +887,8 @@ function CoverSection({ locale }: { locale: Locale }) {
       <RulesTable
         headers={[
           L ? "Cobertura" : "Cover",
-          L ? "Bonus de CA" : "AC Bonus",
-          L ? "Bonus em Testes de DEX" : "DEX Save Bonus",
+          L ? "Bônus de CA" : "AC Bonus",
+          L ? "Bônus em Testes de DEX" : "DEX Save Bonus",
           L ? "Exemplos" : "Examples",
         ]}
         rows={[
@@ -939,7 +896,7 @@ function CoverSection({ locale }: { locale: Locale }) {
             L ? "Meia (+2)" : "Half (+2)",
             "+2",
             "+2",
-            L ? "Muro baixo, mobilia, outra criatura" : "Low wall, furniture, another creature",
+            L ? "Muro baixo, mobília, outra criatura" : "Low wall, furniture, another creature",
           ],
           [
             L ? "3/4 (+5)" : "Three-Quarters (+5)",
@@ -949,7 +906,7 @@ function CoverSection({ locale }: { locale: Locale }) {
           ],
           [
             L ? "Total" : "Full",
-            L ? "Nao pode ser alvo" : "Can't be targeted",
+            L ? "Não pode ser alvo" : "Can't be targeted",
             "N/A",
             L ? "Parede completa, pilar largo" : "Complete wall, wide pillar",
           ],
@@ -959,7 +916,7 @@ function CoverSection({ locale }: { locale: Locale }) {
       <RuleCard>
         <p className="text-gray-400">
           {L
-            ? "Um alvo com cobertura total nao pode ser alvo direto de um ataque ou magia, embora algumas magias possam incluir um alvo atingindo uma area de efeito."
+            ? "Um alvo com cobertura total não pode ser alvo direto de um ataque ou magia, embora algumas magias possam incluir um alvo atingindo uma área de efeito."
             : "A target with full cover can't be targeted directly by an attack or spell, although some spells can reach a target by including it in an area of effect."}
         </p>
       </RuleCard>
@@ -1012,19 +969,19 @@ function RestingSection({ locale }: { locale: Locale }) {
             </li>
             <li>
               &#8226;{" "}
-              {L ? "Recupera Dados de Vida gastos (ate " : "Regain spent Hit Dice (up to "}
+              {L ? "Recupera Dados de Vida gastos (até " : "Regain spent Hit Dice (up to "}
               <GoldNum>{L ? "metade do total" : "half your total"}</GoldNum>)
             </li>
             <li>
               &#8226;{" "}
               {L
-                ? "Espacos de magia se recuperam"
+                ? "Espaços de magia se recuperam"
                 : "Spell slots are restored"}
             </li>
             <li>
               &#8226;{" "}
               {L
-                ? "Maximo de 1 descanso longo por 24h"
+                ? "Máximo de 1 descanso longo por 24h"
                 : "Max 1 long rest per 24 hours"}
             </li>
           </ul>
@@ -1040,21 +997,21 @@ function ConditionsSection({ locale }: { locale: Locale }) {
 
   const conditions = L
     ? [
-        { name: "Cego", brief: "Nao pode ver, falha em testes de visao" },
-        { name: "Encantado", brief: "Nao pode atacar quem encantou" },
-        { name: "Surdo", brief: "Nao pode ouvir, falha em testes de audicao" },
-        { name: "Amedrontado", brief: "Desvantagem enquanto a fonte de medo estiver visivel" },
+        { name: "Cego", brief: "Não pode ver, falha em testes de visão" },
+        { name: "Encantado", brief: "Não pode atacar quem encantou" },
+        { name: "Surdo", brief: "Não pode ouvir, falha em testes de audição" },
+        { name: "Amedrontado", brief: "Desvantagem enquanto a fonte de medo estiver visível" },
         { name: "Agarrado", brief: "Velocidade se torna 0" },
-        { name: "Incapacitado", brief: "Nao pode realizar acoes ou reacoes" },
-        { name: "Invisivel", brief: "Impossivel de ver sem magia/sentido especial" },
+        { name: "Incapacitado", brief: "Não pode realizar ações ou reações" },
+        { name: "Invisível", brief: "Impossível de ver sem magia/sentido especial" },
         { name: "Paralisado", brief: "Incapacitado, falha em testes de FOR e DEX" },
-        { name: "Petrificado", brief: "Transformado em substancia solida" },
+        { name: "Petrificado", brief: "Transformado em substância sólida" },
         { name: "Envenenado", brief: "Desvantagem em jogadas de ataque e testes de habilidade" },
-        { name: "Caido", brief: "Desvantagem em ataques; ataques corpo a corpo tem vantagem" },
+        { name: "Caído", brief: "Desvantagem em ataques; ataques corpo a corpo têm vantagem" },
         { name: "Contido", brief: "Velocidade 0, desvantagem em ataques e DEX saves" },
         { name: "Atordoado", brief: "Incapacitado, falha em FOR e DEX saves" },
-        { name: "Inconsciente", brief: "Incapacitado, derruba tudo, nao percebe arredores" },
-        { name: "Exaustao", brief: "6 niveis, efeitos cumulativos, morte no nivel 6" },
+        { name: "Inconsciente", brief: "Incapacitado, derruba tudo, não percebe arredores" },
+        { name: "Exaustão", brief: "6 níveis, efeitos cumulativos, morte no nível 6" },
       ]
     : [
         { name: "Blinded", brief: "Can't see, auto-fails sight checks" },
@@ -1086,7 +1043,7 @@ function ConditionsSection({ locale }: { locale: Locale }) {
         {conditions.map((c) => (
           <div
             key={c.name}
-            className="rounded-lg bg-gray-800/40 border border-gray-700/40 px-3 py-2.5 hover:border-[#D4A853]/30 transition-colors"
+            className="rounded-lg bg-gray-800/40 border border-gray-700/40 px-3 py-2.5 hover:border-gold/30 transition-colors"
           >
             <span className="text-gray-200 text-sm font-semibold">{c.name}</span>
             <p className="text-gray-500 text-xs mt-0.5">{c.brief}</p>
@@ -1097,9 +1054,9 @@ function ConditionsSection({ locale }: { locale: Locale }) {
       <div className="mt-2">
         <Link
           href={L ? "/condicoes" : "/conditions"}
-          className="inline-flex items-center gap-1.5 text-[#D4A853] text-sm font-semibold hover:underline transition-colors"
+          className="inline-flex items-center gap-1.5 text-gold text-sm font-semibold hover:underline transition-colors"
         >
-          {L ? "Ver referencia completa de condicoes" : "View full conditions reference"}{" "}
+          {L ? "Ver referência completa de condições" : "View full conditions reference"}{" "}
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="m9 18 6-6-6-6" />
           </svg>
@@ -1116,12 +1073,12 @@ function SpellcastingSection({ locale }: { locale: Locale }) {
   return (
     <>
       <RuleCard
-        title={L ? "Espacos de Magia" : "Spell Slots"}
+        title={L ? "Espaços de Magia" : "Spell Slots"}
         highlight
       >
         <p>
           {L
-            ? "Conjurar uma magia de nivel 1 ou superior gasta um espaco de magia do nivel correspondente (ou superior). Espacos gastos sao recuperados apos um descanso longo."
+            ? "Conjurar uma magia de nível 1 ou superior gasta um espaço de magia do nível correspondente (ou superior). Espaços gastos são recuperados após um descanso longo."
             : "Casting a spell of 1st level or higher expends a spell slot of the spell's level (or higher). Expended slots are regained after a long rest."}
         </p>
       </RuleCard>
@@ -1129,25 +1086,25 @@ function SpellcastingSection({ locale }: { locale: Locale }) {
       <RuleCard title={L ? "Truques" : "Cantrips"}>
         <p>
           {L
-            ? "Magias de nivel 0. Podem ser conjuradas a vontade, sem gastar espacos de magia. Dominadas e sempre disponiveis."
+            ? "Magias de nível 0. Podem ser conjuradas à vontade, sem gastar espaços de magia. Dominadas e sempre disponíveis."
             : "Level 0 spells. Can be cast at will without expending spell slots. Mastered and always available."}
         </p>
       </RuleCard>
 
       <RuleCard
-        title={L ? "Concentracao" : "Concentration"}
+        title={L ? "Concentração" : "Concentration"}
         highlight
       >
         <ul className="space-y-2">
           <li>
             &#8226;{" "}
             {L
-              ? "Apenas uma magia de concentracao ativa por vez"
+              ? "Apenas uma magia de concentração ativa por vez"
               : "Only one concentration spell active at a time"}
           </li>
           <li>
             &#8226;{" "}
-            {L ? "Ao tomar dano, faca um teste de CON:" : "When you take damage, make a CON save:"}
+            {L ? "Ao tomar dano, faça um teste de CON:" : "When you take damage, make a CON save:"}
           </li>
           <li className="pl-4 text-gray-200">
             DC = {L ? "o maior entre " : "the greater of "}
@@ -1164,23 +1121,23 @@ function SpellcastingSection({ locale }: { locale: Locale }) {
           <li>
             &#8226;{" "}
             {L
-              ? "Ser incapacitado ou morto tambem encerra a concentracao"
+              ? "Ser incapacitado ou morto também encerra a concentração"
               : "Being incapacitated or killed also ends concentration"}
           </li>
         </ul>
       </RuleCard>
 
-      <RuleCard title={L ? "Conjuracao Ritual" : "Ritual Casting"}>
+      <RuleCard title={L ? "Conjuração Ritual" : "Ritual Casting"}>
         <p>
           {L
-            ? "Se uma magia tem a tag ritual, pode ser conjurada sem gastar um espaco de magia, adicionando "
+            ? "Se uma magia tem a tag ritual, pode ser conjurada sem gastar um espaço de magia, adicionando "
             : "If a spell has the ritual tag, it can be cast without expending a spell slot by adding "}
           <GoldNum>{L ? "10 minutos extras" : "10 extra minutes"}</GoldNum>
-          {L ? " ao tempo de conjuracao." : " to the casting time."}
+          {L ? " ao tempo de conjuração." : " to the casting time."}
         </p>
         <p className="mt-1 text-gray-400">
           {L
-            ? "A magia nao pode ser conjurada em nivel superior ao usar conjuracao ritual."
+            ? "A magia não pode ser conjurada em nível superior ao usar conjuração ritual."
             : "The spell can't be cast at a higher level when using ritual casting."}
         </p>
       </RuleCard>
@@ -1189,25 +1146,25 @@ function SpellcastingSection({ locale }: { locale: Locale }) {
         <RulesTable
           headers={[
             L ? "Componente" : "Component",
-            L ? "Abreviacao" : "Abbreviation",
+            L ? "Abreviação" : "Abbreviation",
             L ? "Requer" : "Requires",
           ]}
           rows={[
             [
               L ? "Verbal" : "Verbal",
               "V",
-              L ? "Falar palavras misticas em voz audivel" : "Speaking mystic words aloud",
+              L ? "Falar palavras místicas em voz audível" : "Speaking mystic words aloud",
             ],
             [
-              L ? "Somatico" : "Somatic",
+              L ? "Somático" : "Somatic",
               "S",
-              L ? "Gestos com uma mao livre" : "Gestures with a free hand",
+              L ? "Gestos com uma mão livre" : "Gestures with a free hand",
             ],
             [
               L ? "Material" : "Material",
               "M",
               L
-                ? "Itens especificos (ou foco arcano/saco de componentes)"
+                ? "Itens específicos (ou foco arcano/saco de componentes)"
                 : "Specific items (or arcane focus / component pouch)",
             ],
           ]}
@@ -1308,7 +1265,7 @@ export function PublicRulesReference({
                     onClick={() => scrollToSection(id)}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-sm transition-all ${
                       isActive
-                        ? "bg-[#D4A853]/10 text-[#D4A853] font-semibold"
+                        ? "bg-gold/10 text-gold font-semibold"
                         : "text-gray-500 hover:text-gray-300 hover:bg-gray-800/40"
                     }`}
                   >

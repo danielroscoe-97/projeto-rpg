@@ -45,7 +45,7 @@ const ABILITY_COLORS: Record<string, string> = {
   CON: "bg-orange-900/40 text-orange-300 border-orange-800/50",
   INT: "bg-blue-900/40 text-blue-300 border-blue-800/50",
   WIS: "bg-purple-900/40 text-purple-300 border-purple-800/50",
-  CHA: "bg-yellow-900/30 text-[#D4A853] border-yellow-800/50",
+  CHA: "bg-yellow-900/30 text-gold border-yellow-800/50",
   ALL: "bg-gray-800/50 text-gray-200 border-gray-700/50",
 };
 
@@ -68,13 +68,13 @@ const LABELS = {
     abilityScores: "Bonus de Atributo",
     size: "Tamanho",
     speed: "Velocidade",
-    darkvision: "Visao no Escuro",
+    darkvision: "Visão no Escuro",
     languages: "Idiomas",
-    racialTraits: "Tracos Raciais",
-    subrace: "Sub-raca",
+    racialTraits: "Traços Raciais",
+    subrace: "Sub-raça",
     ft: "ft",
     small: "Pequeno",
-    medium: "Medio",
+    medium: "Médio",
     none: "Nenhuma",
   },
 } as const;
@@ -97,30 +97,30 @@ const RACE_DATA: Record<string, RaceData> = {
   dwarf: {
     slug: "dwarf",
     nameEn: "Dwarf",
-    namePt: "Anao",
+    namePt: "Anão",
     icon: "D",
     abilityBonuses: [{ ability: "CON", bonus: "+2" }],
     size: "Medium",
     speed: 25,
     darkvision: 60,
     languagesEn: "Common, Dwarvish",
-    languagesPt: "Comum, Anao",
+    languagesPt: "Comum, Anão",
     traits: [
       {
         nameEn: "Dwarven Resilience",
-        namePt: "Resiliencia Ana",
+        namePt: "Resiliência Anã",
         descriptionEn:
           "You have advantage on saving throws against poison, and you have resistance against poison damage.",
         descriptionPt:
-          "Voce tem vantagem em testes de resistencia contra veneno e tem resistencia contra dano de veneno.",
+          "Você tem vantagem em testes de resistência contra veneno e tem resistência contra dano de veneno.",
       },
       {
         nameEn: "Dwarven Combat Training",
-        namePt: "Treinamento de Combate Anao",
+        namePt: "Treinamento de Combate Anão",
         descriptionEn:
           "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
         descriptionPt:
-          "Voce tem proficiencia com machado de batalha, machadinha, martelo leve e martelo de guerra.",
+          "Você tem proficiência com machado de batalha, machadinha, martelo leve e martelo de guerra.",
       },
       {
         nameEn: "Stonecunning",
@@ -128,15 +128,15 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check.",
         descriptionPt:
-          "Sempre que fizer um teste de Inteligencia (Historia) relacionado a origem de trabalhos em pedra, voce e considerado proficiente na pericia Historia e adiciona o dobro do seu bonus de proficiencia ao teste.",
+          "Sempre que fizer um teste de Inteligência (História) relacionado a origem de trabalhos em pedra, você é considerado proficiente na perícia História e adiciona o dobro do seu bônus de proficiência ao teste.",
       },
       {
         nameEn: "Darkvision",
-        namePt: "Visao no Escuro",
+        namePt: "Visão no Escuro",
         descriptionEn:
           "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
         descriptionPt:
-          "Voce enxerga em luz fraca a ate 18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Voce nao consegue discernir cores no escuro, apenas tons de cinza.",
+          "Você enxerga em luz fraca a até18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Você não consegue discernir cores no escuro, apenas tons de cinza.",
       },
     ],
     subrace: {
@@ -146,11 +146,11 @@ const RACE_DATA: Record<string, RaceData> = {
       traits: [
         {
           nameEn: "Dwarven Toughness",
-          namePt: "Robustez Ana",
+          namePt: "Robustez Anã",
           descriptionEn:
             "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
           descriptionPt:
-            "Seu maximo de pontos de vida aumenta em 1 e aumenta em 1 cada vez que voce ganha um nivel.",
+            "Seu máximo de pontos de vida aumenta em 1 e aumenta em 1 cada vez que você ganha um nível.",
         },
       ],
     },
@@ -165,21 +165,21 @@ const RACE_DATA: Record<string, RaceData> = {
     speed: 30,
     darkvision: 60,
     languagesEn: "Common, Elvish",
-    languagesPt: "Comum, Elfico",
+    languagesPt: "Comum, Élfico",
     traits: [
       {
         nameEn: "Keen Senses",
-        namePt: "Sentidos Aguados",
+        namePt: "Sentidos Aguçados",
         descriptionEn: "You have proficiency in the Perception skill.",
-        descriptionPt: "Voce tem proficiencia na pericia Percepcao.",
+        descriptionPt: "Você tem proficiência na perícia Percepção.",
       },
       {
         nameEn: "Fey Ancestry",
-        namePt: "Ancestralidade Ferica",
+        namePt: "Ancestralidade Férica",
         descriptionEn:
           "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
         descriptionPt:
-          "Voce tem vantagem em testes de resistencia contra ser encantado e magia nao pode coloca-lo para dormir.",
+          "Você tem vantagem em testes de resistência contra ser encantado e magia não pode colocá-lo para dormir.",
       },
       {
         nameEn: "Trance",
@@ -187,15 +187,15 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "Elves don't need to sleep. Instead, they meditate deeply for 4 hours a day. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep.",
         descriptionPt:
-          "Elfos nao precisam dormir. Em vez disso, meditam profundamente por 4 horas por dia. Apos descansar dessa forma, voce ganha o mesmo beneficio que um humano ganha com 8 horas de sono.",
+          "Elfos não precisam dormir. Em vez disso, meditam profundamente por 4 horas por dia. Após descansar dessa forma, você ganha o mesmo benefício que um humano ganha com 8 horas de sono.",
       },
       {
         nameEn: "Darkvision",
-        namePt: "Visao no Escuro",
+        namePt: "Visão no Escuro",
         descriptionEn:
           "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
         descriptionPt:
-          "Voce enxerga em luz fraca a ate 18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Voce nao consegue discernir cores no escuro, apenas tons de cinza.",
+          "Você enxerga em luz fraca a até18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Você não consegue discernir cores no escuro, apenas tons de cinza.",
       },
     ],
     subrace: {
@@ -205,11 +205,11 @@ const RACE_DATA: Record<string, RaceData> = {
       traits: [
         {
           nameEn: "Elf Weapon Training",
-          namePt: "Treinamento com Armas Elficas",
+          namePt: "Treinamento com Armas Élficas",
           descriptionEn:
             "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
           descriptionPt:
-            "Voce tem proficiencia com espada longa, espada curta, arco curto e arco longo.",
+            "Você tem proficiência com espada longa, espada curta, arco curto e arco longo.",
         },
         {
           nameEn: "Cantrip",
@@ -217,7 +217,7 @@ const RACE_DATA: Record<string, RaceData> = {
           descriptionEn:
             "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.",
           descriptionPt:
-            "Voce conhece um truque a sua escolha da lista de magias de mago. Inteligencia e seu atributo de conjuracao para ele.",
+            "Você conhece um truque a sua escolha da lista de magias de mago. Inteligência é seu atributo de conjuração para ele.",
         },
         {
           nameEn: "Extra Language",
@@ -225,7 +225,7 @@ const RACE_DATA: Record<string, RaceData> = {
           descriptionEn:
             "You can speak, read, and write one extra language of your choice.",
           descriptionPt:
-            "Voce pode falar, ler e escrever um idioma adicional a sua escolha.",
+            "Você pode falar, ler e escrever um idioma adicional a sua escolha.",
         },
       ],
     },
@@ -248,7 +248,7 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
         descriptionPt:
-          "Quando voce rolar um 1 no d20 para uma jogada de ataque, teste de habilidade ou teste de resistencia, voce pode rolar o dado novamente e deve usar a nova rolagem.",
+          "Quando você rolar um 1 no d20 para uma jogada de ataque, teste de habilidade ou teste de resistência, você pode rolar o dado novamente e deve usar a nova rolagem.",
       },
       {
         nameEn: "Brave",
@@ -256,7 +256,7 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "You have advantage on saving throws against being frightened.",
         descriptionPt:
-          "Voce tem vantagem em testes de resistencia contra ser amedrontado.",
+          "Você tem vantagem em testes de resistência contra ser amedrontado.",
       },
       {
         nameEn: "Halfling Nimbleness",
@@ -264,12 +264,12 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "You can move through the space of any creature that is of a size larger than yours.",
         descriptionPt:
-          "Voce pode se mover atraves do espaco de qualquer criatura que seja de um tamanho maior que o seu.",
+          "Você pode se mover através do espaco de qualquer criatura que seja de um tamanho maior que o seu.",
       },
     ],
     subrace: {
       nameEn: "Lightfoot",
-      namePt: "Pes Leves",
+      namePt: "Pés Leves",
       abilityBonuses: [{ ability: "CHA", bonus: "+1" }],
       traits: [
         {
@@ -278,7 +278,7 @@ const RACE_DATA: Record<string, RaceData> = {
           descriptionEn:
             "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you.",
           descriptionPt:
-            "Voce pode tentar se esconder mesmo quando esta obscurecido apenas por uma criatura que seja pelo menos um tamanho maior que voce.",
+            "Você pode tentar se esconder mesmo quando está obscurecido apenas por uma criatura que seja pelo menos um tamanho maior que você.",
         },
       ],
     },
@@ -309,7 +309,7 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "You can speak, read, and write one extra language of your choice.",
         descriptionPt:
-          "Voce pode falar, ler e escrever um idioma adicional a sua escolha.",
+          "Você pode falar, ler e escrever um idioma adicional a sua escolha.",
       },
     ],
     subrace: null,
@@ -327,15 +327,15 @@ const RACE_DATA: Record<string, RaceData> = {
     speed: 30,
     darkvision: null,
     languagesEn: "Common, Draconic",
-    languagesPt: "Comum, Draconico",
+    languagesPt: "Comum, Dracônico",
     traits: [
       {
         nameEn: "Draconic Ancestry",
-        namePt: "Ancestralidade Draconica",
+        namePt: "Ancestralidade Dracônica",
         descriptionEn:
           "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type.",
         descriptionPt:
-          "Voce tem ancestralidade draconica. Escolha um tipo de dragao da tabela de Ancestralidade Draconica. Sua arma de sopro e resistencia a dano sao determinados pelo tipo de dragao.",
+          "Você tem ancestralidade dracônica. Escolha um tipo de dragão da tabela de Ancestralidade Dracônica. Sua arma de sopro e resistência a dano são determinados pelo tipo de dragão.",
       },
       {
         nameEn: "Breath Weapon",
@@ -343,15 +343,15 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. Each creature in the area must make a saving throw (DC = 8 + CON mod + proficiency bonus). Damage: 2d6 at 1st level, scaling to 3d6 at 6th, 4d6 at 11th, and 5d6 at 16th level. Usable once per short or long rest.",
         descriptionPt:
-          "Voce pode usar sua acao para exalar energia destrutiva. Sua ancestralidade draconica determina o tamanho, forma e tipo de dano da exalacao. Cada criatura na area deve fazer um teste de resistencia (CD = 8 + mod CON + bonus de proficiencia). Dano: 2d6 no 1o nivel, escalando para 3d6 no 6o, 4d6 no 11o e 5d6 no 16o nivel. Utilizavel uma vez por descanso curto ou longo.",
+          "Você pode usar sua ação para exalar energia destrutiva. Sua ancestralidade dracônica determina o tamanho, forma e tipo de dano da exalação. Cada criatura na área deve fazer um teste de resistência (CD = 8 + mod CON + bônus de proficiência). Dano: 2d6 no 1o nível, escalando para 3d6 no 6o, 4d6 no 11o e 5d6 no 16o nível. Utilizável uma vez por descanso curto ou longo.",
       },
       {
         nameEn: "Damage Resistance",
-        namePt: "Resistencia a Dano",
+        namePt: "Resistência a Dano",
         descriptionEn:
           "You have resistance to the damage type associated with your draconic ancestry.",
         descriptionPt:
-          "Voce tem resistencia ao tipo de dano associado a sua ancestralidade draconica.",
+          "Você tem resistência ao tipo de dano associado a sua ancestralidade dracônica.",
       },
     ],
     subrace: null,
@@ -366,7 +366,7 @@ const RACE_DATA: Record<string, RaceData> = {
     speed: 25,
     darkvision: 60,
     languagesEn: "Common, Gnomish",
-    languagesPt: "Comum, Gnomico",
+    languagesPt: "Comum, Gnômico",
     traits: [
       {
         nameEn: "Gnome Cunning",
@@ -374,15 +374,15 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic.",
         descriptionPt:
-          "Voce tem vantagem em todos os testes de resistencia de Inteligencia, Sabedoria e Carisma contra magia.",
+          "Você tem vantagem em todos os testes de resistência de Inteligência, Sabedoria e Carisma contra magia.",
       },
       {
         nameEn: "Darkvision",
-        namePt: "Visao no Escuro",
+        namePt: "Visão no Escuro",
         descriptionEn:
           "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
         descriptionPt:
-          "Voce enxerga em luz fraca a ate 18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Voce nao consegue discernir cores no escuro, apenas tons de cinza.",
+          "Você enxerga em luz fraca a até18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Você não consegue discernir cores no escuro, apenas tons de cinza.",
       },
     ],
     subrace: {
@@ -396,7 +396,7 @@ const RACE_DATA: Record<string, RaceData> = {
           descriptionEn:
             "Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply.",
           descriptionPt:
-            "Sempre que fizer um teste de Inteligencia (Historia) relacionado a itens magicos, objetos alquimicos ou dispositivos tecnologicos, voce pode adicionar o dobro do seu bonus de proficiencia, em vez de qualquer bonus de proficiencia que normalmente aplicaria.",
+            "Sempre que fizer um teste de Inteligência (História) relacionado a itens mágicos, objetos alquímicos ou dispositivos tecnológicos, você pode adicionar o dobro do seu bônus de proficiência, em vez de qualquer bônus de proficiência que normalmente aplicaria.",
         },
         {
           nameEn: "Tinker",
@@ -404,7 +404,7 @@ const RACE_DATA: Record<string, RaceData> = {
           descriptionEn:
             "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours unless you spend 1 hour repairing it.",
           descriptionPt:
-            "Voce tem proficiencia com ferramentas de artesao (ferramentas de funileiro). Usando essas ferramentas, voce pode gastar 1 hora e 10 po em materiais para construir um Minusculo dispositivo mecanico (CA 5, 1 pv). O dispositivo para de funcionar apos 24 horas, a menos que voce gaste 1 hora consertando-o.",
+            "Você tem proficiência com ferramentas de artesão (ferramentas de funileiro). Usando essas ferramentas, você pode gastar 1 hora e 10 po em materiais para construir um Minúsculo dispositivo mecânico (CA 5, 1 pv). O dispositivo para de funcionar após24 horas, a menos que você gaste 1 hora consertando-o.",
         },
       ],
     },
@@ -422,31 +422,31 @@ const RACE_DATA: Record<string, RaceData> = {
     speed: 30,
     darkvision: 60,
     languagesEn: "Common, Elvish, one extra language of your choice",
-    languagesPt: "Comum, Elfico, um idioma adicional a sua escolha",
+    languagesPt: "Comum, Élfico, um idioma adicional a sua escolha",
     traits: [
       {
         nameEn: "Fey Ancestry",
-        namePt: "Ancestralidade Ferica",
+        namePt: "Ancestralidade Férica",
         descriptionEn:
           "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
         descriptionPt:
-          "Voce tem vantagem em testes de resistencia contra ser encantado e magia nao pode coloca-lo para dormir.",
+          "Você tem vantagem em testes de resistência contra ser encantado e magia não pode colocá-lo para dormir.",
       },
       {
         nameEn: "Skill Versatility",
-        namePt: "Versatilidade em Pericias",
+        namePt: "Versatilidade em Perícias",
         descriptionEn:
           "You gain proficiency in two skills of your choice.",
         descriptionPt:
-          "Voce ganha proficiencia em duas pericias a sua escolha.",
+          "Você ganha proficiência em duas perícias a sua escolha.",
       },
       {
         nameEn: "Darkvision",
-        namePt: "Visao no Escuro",
+        namePt: "Visão no Escuro",
         descriptionEn:
           "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
         descriptionPt:
-          "Voce enxerga em luz fraca a ate 18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Voce nao consegue discernir cores no escuro, apenas tons de cinza.",
+          "Você enxerga em luz fraca a até18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Você não consegue discernir cores no escuro, apenas tons de cinza.",
       },
     ],
     subrace: null,
@@ -468,19 +468,19 @@ const RACE_DATA: Record<string, RaceData> = {
     traits: [
       {
         nameEn: "Menacing",
-        namePt: "Ameacador",
+        namePt: "Ameaçador",
         descriptionEn:
           "You gain proficiency in the Intimidation skill.",
         descriptionPt:
-          "Voce ganha proficiencia na pericia Intimidacao.",
+          "Você ganha proficiência na perícia Intimidação.",
       },
       {
         nameEn: "Relentless Endurance",
-        namePt: "Resistencia Incansavel",
+        namePt: "Resistência Incansável",
         descriptionEn:
           "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can't use this feature again until you finish a long rest.",
         descriptionPt:
-          "Quando voce e reduzido a 0 pontos de vida mas nao e morto instantaneamente, voce pode cair para 1 ponto de vida em vez disso. Voce nao pode usar essa caracteristica novamente ate terminar um descanso longo.",
+          "Quando você é reduzido a 0 pontos de vida mas não é morto instantaneamente, você pode cair para 1 ponto de vida em vez disso. Você não pode usar essa característica novamente até terminar um descanso longo.",
       },
       {
         nameEn: "Savage Attacks",
@@ -488,15 +488,15 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "When you score a critical hit with a melee weapon attack, you can roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit.",
         descriptionPt:
-          "Quando voce acerta um critico com um ataque corpo a corpo com arma, voce pode rolar um dos dados de dano da arma uma vez adicional e somar ao dano extra do critico.",
+          "Quando você acerta um critico com um ataque corpo a corpo com arma, você pode rolar um dos dados de dano da arma uma vez adicional e somar ao dano extra do critico.",
       },
       {
         nameEn: "Darkvision",
-        namePt: "Visao no Escuro",
+        namePt: "Visão no Escuro",
         descriptionEn:
           "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
         descriptionPt:
-          "Voce enxerga em luz fraca a ate 18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Voce nao consegue discernir cores no escuro, apenas tons de cinza.",
+          "Você enxerga em luz fraca a até18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Você não consegue discernir cores no escuro, apenas tons de cinza.",
       },
     ],
     subrace: null,
@@ -518,9 +518,9 @@ const RACE_DATA: Record<string, RaceData> = {
     traits: [
       {
         nameEn: "Hellish Resistance",
-        namePt: "Resistencia Infernal",
+        namePt: "Resistência Infernal",
         descriptionEn: "You have resistance to fire damage.",
-        descriptionPt: "Voce tem resistencia a dano de fogo.",
+        descriptionPt: "Você tem resistência a dano de fogo.",
       },
       {
         nameEn: "Infernal Legacy",
@@ -528,15 +528,15 @@ const RACE_DATA: Record<string, RaceData> = {
         descriptionEn:
           "You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
         descriptionPt:
-          "Voce conhece o truque taumaturgia. Quando atingir o 3o nivel, voce pode conjurar repreensao infernal como magia de 2o nivel uma vez com esse traco e recupera a habilidade de faze-lo ao terminar um descanso longo. Quando atingir o 5o nivel, voce pode conjurar escuridao uma vez com esse traco e recupera a habilidade de faze-lo ao terminar um descanso longo. Carisma e seu atributo de conjuracao para essas magias.",
+          "Você conhece o truque taumaturgia. Quando atingir o 3o nível, você pode conjurar repreensão infernal como magia de 2o nível uma vez com esse traço e recupera a habilidade de fazê-lo ao terminar um descanso longo. Quando atingir o 5o nível, você pode conjurar escuridão uma vez com esse traço e recupera a habilidade de fazê-lo ao terminar um descanso longo. Carisma é seu atributo de conjuração para essas magias.",
       },
       {
         nameEn: "Darkvision",
-        namePt: "Visao no Escuro",
+        namePt: "Visão no Escuro",
         descriptionEn:
           "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
         descriptionPt:
-          "Voce enxerga em luz fraca a ate 18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Voce nao consegue discernir cores no escuro, apenas tons de cinza.",
+          "Você enxerga em luz fraca a até18 metros como se fosse luz plena, e no escuro como se fosse luz fraca. Você não consegue discernir cores no escuro, apenas tons de cinza.",
       },
     ],
     subrace: null,
@@ -557,11 +557,12 @@ function TraitCard({
 
   return (
     <button
+      aria-expanded={open}
       onClick={() => setOpen(!open)}
       className="w-full text-left rounded-lg border border-white/[0.06] bg-gray-900/50 hover:bg-gray-900/80 transition-all p-4 group"
     >
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold text-[#F5F0E8] text-sm">
+        <h3 className="font-semibold text-foreground text-sm">
           {name}
         </h3>
         <span
@@ -609,7 +610,7 @@ export function PublicRaceDetail({
           className="w-14 h-14 text-2xl shrink-0"
         />
         <div className="min-w-0">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground font-[family-name:var(--font-cinzel)]">
             {displayName}
           </h1>
           <p className="text-gray-500 italic text-sm mt-0.5">
@@ -673,7 +674,7 @@ export function PublicRaceDetail({
 
       {/* Racial Traits */}
       <section>
-        <h2 className="text-xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] mb-4">
+        <h2 className="text-xl font-bold text-foreground font-[family-name:var(--font-cinzel)] mb-4">
           {L.racialTraits}
         </h2>
         <div className="space-y-2">
@@ -689,10 +690,10 @@ export function PublicRaceDetail({
 
       {/* Subrace */}
       {race.subrace && (
-        <section className="ml-0 sm:ml-4 pl-4 border-l-2 border-[#D4A853]/20">
-          <h2 className="text-xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] mb-1">
+        <section className="ml-0 sm:ml-4 pl-4 border-l-2 border-gold/20">
+          <h2 className="text-xl font-bold text-foreground font-[family-name:var(--font-cinzel)] mb-1">
             {L.subrace}:{" "}
-            <span className="text-[#D4A853]">
+            <span className="text-gold">
               {locale === "pt-BR"
                 ? race.subrace.namePt
                 : race.subrace.nameEn}

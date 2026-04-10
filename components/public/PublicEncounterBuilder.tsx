@@ -196,7 +196,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)]">
+          <h1 className="text-3xl font-bold text-foreground font-[family-name:var(--font-cinzel)]">
             {L.title}
           </h1>
           <p className="text-gray-400 mt-1">{L.subtitle}</p>
@@ -207,7 +207,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
             onClick={() => setFormulaVersion("2014")}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
               formulaVersion === "2014"
-                ? "bg-[#D4A853]/20 text-[#D4A853] border border-[#D4A853]/30"
+                ? "bg-gold/20 text-gold border border-gold/30"
                 : "text-gray-500 hover:text-gray-300 border border-transparent"
             }`}
           >
@@ -217,7 +217,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
             onClick={() => setFormulaVersion("2024")}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
               formulaVersion === "2024"
-                ? "bg-[#D4A853]/20 text-[#D4A853] border border-[#D4A853]/30"
+                ? "bg-gold/20 text-gold border border-gold/30"
                 : "text-gray-500 hover:text-gray-300 border border-transparent"
             }`}
           >
@@ -230,7 +230,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
         {/* Left: Party config + Monster search */}
         <div className="lg:col-span-2 space-y-4">
           {/* Party config */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">{L.partySize}</label>
@@ -241,7 +241,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                   >
                     −
                   </button>
-                  <span className="text-xl font-bold text-[#F5F0E8] w-8 text-center">{partySize}</span>
+                  <span className="text-xl font-bold text-foreground w-8 text-center">{partySize}</span>
                   <button
                     onClick={() => setPartySize((n) => Math.min(10, n + 1))}
                     className="w-8 h-8 rounded border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 flex items-center justify-center"
@@ -260,7 +260,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                   >
                     −
                   </button>
-                  <span className="text-xl font-bold text-[#F5F0E8] w-8 text-center">{partyLevel}</span>
+                  <span className="text-xl font-bold text-foreground w-8 text-center">{partyLevel}</span>
                   <button
                     onClick={() => setPartyLevel((n) => Math.min(20, n + 1))}
                     className="w-8 h-8 rounded border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 flex items-center justify-center"
@@ -273,8 +273,8 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
           </div>
 
           {/* Monster search */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-            <label className="text-sm text-[#D4A853] font-semibold block mb-2">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
+            <label className="text-sm text-gold font-semibold block mb-2">
               {L.addMonster}
             </label>
             <div className="relative">
@@ -284,7 +284,8 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                 onChange={(e) => { setSearch(e.target.value); setShowSearch(true); }}
                 onFocus={() => setShowSearch(true)}
                 placeholder={L.searchPlaceholder}
-                className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-[#F5F0E8] placeholder-gray-600 focus:outline-none focus:border-[#D4A853]/50"
+                aria-label={L.addMonster}
+                className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-foreground placeholder-gray-600 focus:outline-none focus:border-gold/50"
               />
               {showSearch && searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-gray-700 bg-gray-900 shadow-xl z-30 max-h-60 overflow-y-auto">
@@ -304,7 +305,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                           </div>
                         )}
                       </div>
-                      <span className="text-[#F5F0E8] flex-1 truncate">{m.name}</span>
+                      <span className="text-foreground flex-1 truncate">{m.name}</span>
                       <span className="text-xs text-gray-500 shrink-0">CR {m.cr}</span>
                     </button>
                   ))}
@@ -314,9 +315,9 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
           </div>
 
           {/* Encounter monster list */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-[#D4A853]">
+              <h2 className="text-sm font-semibold text-gold font-[family-name:var(--font-cinzel)] tracking-wide">
                 {L.encounter} ({totalCount} {L.monsterCount})
               </h2>
               {encounter.length > 0 && (
@@ -336,7 +337,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                 {encounter.map((m) => (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between rounded-lg border border-gray-800/50 bg-gray-950/50 px-3 py-2"
+                    className="compendium-card flex items-center justify-between rounded-xl border border-white/[0.04] bg-gray-950/50 px-3 py-2"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {/* Token */}
@@ -362,7 +363,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                         >
                           −
                         </button>
-                        <span className="w-6 text-center text-sm font-bold text-[#F5F0E8]">
+                        <span className="w-6 text-center text-sm font-bold text-foreground">
                           {m.count}
                         </span>
                         <button
@@ -378,18 +379,18 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                           href={`/monsters/${m.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-[#F5F0E8] truncate hover:text-[#D4A853] transition-colors"
+                          className="text-sm text-foreground truncate hover:text-gold transition-colors"
                           title={locale === "pt-BR" ? "Ver ficha" : "View stat block"}
                         >
                           {m.name}
                         </a>
                       ) : (
-                        <span className="text-sm text-[#F5F0E8] truncate">{m.name}</span>
+                        <span className="text-sm text-foreground truncate">{m.name}</span>
                       )}
                       <span className="text-xs text-gray-500 shrink-0">CR {m.cr}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 font-mono tabular-nums">
                         {(crToXP(String(m.cr)) * m.count).toLocaleString()} XP
                       </span>
                       <button
@@ -409,7 +410,7 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
 
         {/* Right: Difficulty panel */}
         <div className="lg:col-span-1">
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4 sticky top-20 space-y-4">
+          <div className="rounded-xl border border-white/[0.04] bg-card p-4 sticky top-20 space-y-4">
             {/* Difficulty badge */}
             <div className={`rounded-xl border-2 p-4 text-center ${DIFFICULTY_COLORS[difficulty]}`}>
               <p className="text-xs opacity-70 mb-1">{L.difficulty}</p>
@@ -424,22 +425,22 @@ export function PublicEncounterBuilder({ monsters, locale = "en" }: PublicEncoun
                 <>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{L.totalXP}</span>
-                    <span className="text-[#F5F0E8] font-mono">{totalXP.toLocaleString()}</span>
+                    <span className="text-foreground font-mono">{totalXP.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-800 pt-2">
-                    <span className="text-[#D4A853] font-semibold">{L.adjustedXP}</span>
-                    <span className="text-[#D4A853] font-bold font-mono">{adjustedXP.toLocaleString()}</span>
+                    <span className="text-gold font-semibold">{L.adjustedXP}</span>
+                    <span className="text-gold font-bold font-mono">{adjustedXP.toLocaleString()}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{L.totalXP}</span>
-                    <span className="text-[#F5F0E8] font-mono">{totalXP.toLocaleString()}</span>
+                    <span className="text-foreground font-mono">{totalXP.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-800 pt-2">
-                    <span className="text-[#D4A853] font-semibold">{L.totalCR}</span>
-                    <span className="text-[#D4A853] font-bold font-mono">{adjustedXP}</span>
+                    <span className="text-gold font-semibold">{L.totalCR}</span>
+                    <span className="text-gold font-bold font-mono">{adjustedXP}</span>
                   </div>
                 </>
               )}

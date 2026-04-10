@@ -41,28 +41,28 @@ const SOURCE_LABELS: Record<string, string> = {
 // -- PT-BR translations -------------------------------------------------------
 const DISEASE_NAMES_PT: Record<string, string> = {
   "arcane blight": "Praga Arcana",
-  "blinding sickness": "Doenca Cegante",
-  "blue mist fever": "Febre da Nevoa Azul",
-  "bluerot": "Podridao Azul",
+  "blinding sickness": "Doença Cegante",
+  "blue mist fever": "Febre da Névoa Azul",
+  "bluerot": "Podridão Azul",
   "cackle fever": "Febre da Gargalhada",
-  "filth fever": "Febre da Imundice",
-  "flesh rot": "Podridao da Carne",
-  "frigid woe": "Tormento Gelido",
+  "filth fever": "Febre da Imundície",
+  "flesh rot": "Podridão da Carne",
+  "frigid woe": "Tormento Gélido",
   "ghoul gut": "Intestino Carniceiro",
-  "grackle-lung": "Pulmao de Gralha",
-  "lichen plague": "Praga do Liquen",
+  "grackle-lung": "Pulmão de Gralha",
+  "lichen plague": "Praga do Líquen",
   "mindfire": "Fogo Mental",
-  "mudpox": "Varicela Lamacenta",
+  "mudpox": "Varíola Lamacenta",
   "redface": "Face Vermelha",
-  "saprophytic plague": "Praga Saprofita",
-  "seizure": "Convulsao",
+  "saprophytic plague": "Praga Saprofítica",
+  "seizure": "Convulsão",
   "sewer plague": "Praga do Esgoto",
-  "shaking plague": "Praga Tremula",
-  "shivering sickness": "Doenca dos Tremores",
-  "sight rot": "Podridao da Visao",
-  "slimy doom": "Perdiao Viscosa",
+  "shaking plague": "Praga Trêmula",
+  "shivering sickness": "Doença dos Tremores",
+  "sight rot": "Podridão da Visão",
+  "slimy doom": "Perdição Viscosa",
   "spider eggs": "Ovos de Aranha",
-  "super-tetanus": "Super-Tetano",
+  "super-tetanus": "Super-Tétano",
   "the gnawing plague": "A Praga Roedora",
   "the rusting": "A Ferrugem",
   "throat leeches": "Sanguessugas de Garganta",
@@ -82,15 +82,15 @@ const LABELS = {
     diseaseCount: (n: number) => `${n} disease${n !== 1 ? "s" : ""}`,
   },
   "pt-BR": {
-    title: "Doencas D&D 5e",
-    subtitle: "Referencia de doencas, pragas e aflicoes do D&D 5a Edicao",
+    title: "Doenças D&D 5e",
+    subtitle: "Referência de doenças, pragas e aflições do D&D 5ª Edição",
     version2014: "2014",
     version2024: "2024",
-    search: "Buscar doencas...",
+    search: "Buscar doenças...",
     clickToExpand: "Clique para expandir",
     source: "Fonte",
-    noResults: "Nenhuma doenca encontrada.",
-    diseaseCount: (n: number) => `${n} doenca${n !== 1 ? "s" : ""}`,
+    noResults: "Nenhuma doença encontrada.",
+    diseaseCount: (n: number) => `${n} doença${n !== 1 ? "s" : ""}`,
   },
 } as const;
 
@@ -134,7 +134,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
             onClick={() => setVersion("2014")}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               version === "2014"
-                ? "bg-[#D4A853] text-white"
+                ? "bg-gold text-white"
                 : "text-gray-400 hover:text-gray-200"
             }`}
           >
@@ -144,7 +144,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
             onClick={() => setVersion("2024")}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               version === "2024"
-                ? "bg-[#D4A853] text-white"
+                ? "bg-gold text-white"
                 : "text-gray-400 hover:text-gray-200"
             }`}
           >
@@ -159,7 +159,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={L.search}
-            className="w-full sm:w-64 bg-gray-900/50 border border-gray-800 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#D4A853]/50 transition-colors"
+            className="w-full sm:w-64 bg-gray-900/50 border border-gray-800 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold/50 transition-colors"
           />
           {search && (
             <button
@@ -196,7 +196,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
                 key={disease.id}
                 onClick={() => setExpanded(isExpanded ? null : disease.id)}
                 className={`text-left rounded-xl border border-emerald-900/40 bg-gray-900/50 hover:bg-gray-900/80 transition-all p-4 group cursor-pointer ${
-                  isExpanded ? "ring-1 ring-[#D4A853]/30" : ""
+                  isExpanded ? "ring-1 ring-gold/30" : ""
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -205,7 +205,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-bold text-[#F5F0E8] font-[family-name:var(--font-cinzel)] text-base">
+                      <h3 className="font-bold text-foreground font-[family-name:var(--font-cinzel)] text-base">
                         {displayName}
                       </h3>
                       {sourceLabel && (
@@ -225,7 +225,7 @@ export function PublicDiseasesGrid({ diseases, locale = "en" }: PublicDiseasesGr
                       {disease.description}
                     </p>
                     {!isExpanded && disease.description.length > 120 && (
-                      <span className="text-xs text-[#D4A853] mt-1 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-xs text-gold mt-1 inline-block opacity-0 group-hover:opacity-100 transition-opacity">
                         {L.clickToExpand}
                       </span>
                     )}

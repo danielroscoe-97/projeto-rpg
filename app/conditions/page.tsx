@@ -85,7 +85,7 @@ export default function ConditionsPage() {
           breadcrumbs={[{ label: "Conditions" }]}
         />
 
-        <main className="mx-auto max-w-5xl px-4 py-8">
+        <main className="mx-auto max-w-6xl px-4 py-8">
           <PublicConditionsGrid conditions={conditions} locale="en" />
 
           <div className="mt-12">
